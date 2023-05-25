@@ -1,8 +1,8 @@
 <div class="applied-filters-container flex flex-wrap gap-16">
     <app-table-filter-item
-        *ngFor="let category of appliedFilters"
-        [category]="category"
-        [filterValues]="appliedFiltersDict[category]"
+        *ngFor="let appliedFilter of appliedFilters"
+        [category]="appliedFilter"
+        [filterValues]="appliedFiltersDict[appliedFilter]"
         (clearFilter)="clearFilter($event)"
         (updateFilter)="updateFilter($event)"
     ></app-table-filter-item>
@@ -35,7 +35,7 @@
                 *ngFor="let category of filterCategoryByQuery()"
                 (click)="openFilterCategory(category)"
             >
-                {{ category.name }}
+                {{ category }}
             </li>
         </ng-container>
 
@@ -47,7 +47,7 @@
             </li>
             <li *ngFor="let childFilter of filterSelectedCategoryChildrenByQuery()">
                 <mat-checkbox
-                    [checked]="appliedFiltersDict[selectedFilterCategory.name][childFilter]"
+                    [checked]="appliedFiltersDict[selectedFilterCategory][childFilter]"
                     (change)="applyFilter(childFilter, $event)"
                 >
                     {{ childFilter }}

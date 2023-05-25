@@ -6,7 +6,7 @@
             [style.padding-bottom]="
                 tableTitle
                     ? '0px'
-                    : gapBetweenFilterAndTable != undefined
+                    : gapBetweenFilterAndTable !== undefined
                     ? gapBetweenFilterAndTable
                     : '20px'
             "
@@ -79,7 +79,9 @@
                 <app-table-filters
                     *ngIf="showFilterBtn"
                     style="flex: 1"
-                    [filters]="tableFilters"
+                    [categories]="filterTypeLabels"
+                    [categoryOptions]="filterTagLabels"
+                    (filterCategorySelected)="filterOptionClick($event)"
                 ></app-table-filters>
                 <div class="flex flex-align-center gap-24">
                     <div class="flex flex-align-center gap-24" *ngIf="tableTitle">
@@ -90,7 +92,7 @@
                         <!-- <span *ngIf="isDataLoading">Loading...</span> -->
                         <span>
                             {{
-                                (totalRows == 0 ? dataSource?.data?.length : totalRows) ?? 0
+                                (totalRows === 0 ? dataSource?.data?.length : totalRows) ?? 0
                                     | number
                             }}
                             Results</span
@@ -122,7 +124,7 @@
         </div>
     </div>
     <div #customTable class="table-content-container relative" (scroll)="onScroll($event)">
-        <div [class.loader]="!tableDataLoaded && tableErrorMessage == ''"></div>
+        <div [class.loader]="!tableDataLoaded && tableErrorMessage === ''"></div>
         <app-error-message
             *ngIf="tableErrorMessage"
             [selectedValue]="tableErrorMessage"
@@ -233,7 +235,7 @@
                                                     ? 'checked'
                                                     : 'unchecked'
                                             "
-                                            [isChecked]="element[column].valueText == 'checked'"
+                                            [isChecked]="element[column].valueText === 'checked'"
                                         ></app-check-box-btn>
                                     </div>
                                 </ng-template>
@@ -256,7 +258,7 @@
                                     >
                                         <img
                                             *ngIf="element[column].imgSrc"
-                                            [class.noImg]="element[column].imgSrc == 'noImg'"
+                                            [class.noImg]="element[column].imgSrc === 'noImg'"
                                             style="
                                                 vertical-align: text-bottom;
                                                 height: 16px;
@@ -287,12 +289,12 @@
                                             class="symbol"
                                             [class]="element[column].symbol.type"
                                             [style.background-color]="
-                                                element[column].symbol.type != 'triangle'
+                                                element[column].symbol.type !== 'triangle'
                                                     ? element[column].symbol.color
                                                     : ''
                                             "
                                             [style.border-bottom-color]="
-                                                element[column].symbol.type == 'triangle'
+                                                element[column].symbol.type === 'triangle'
                                                     ? element[column].symbol.color
                                                     : ''
                                             "
