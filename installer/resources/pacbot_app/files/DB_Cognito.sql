@@ -60,6 +60,7 @@ INSERT IGNORE INTO `permission`(`permission_id`,`permission_name`,`permission_de
 INSERT IGNORE INTO `permission`(`permission_id`,`permission_name`,`permission_description`,`is_admin`) VALUES (18,'operational-metrics','Permission to access Operational metrics- uptime, maintenance, updates',true);
 INSERT IGNORE INTO `permission`(`permission_id`,`permission_name`,`permission_description`,`is_admin`) VALUES (19,'activity-log','Permission to manage activity logs',true);
 INSERT IGNORE INTO `permission`(`permission_id`,`permission_name`,`permission_description`,`is_admin`) VALUES (20,'readonly','Read only permission',false);
+INSERT IGNORE INTO `permission`(`permission_id`,`permission_name`,`permission_description`,`is_admin`) VALUES (22,'account-management','Permission to manage cloud accounts',true);
 INSERT IGNORE INTO `permission`(`permission_id`,`permission_name`,`permission_description`,`is_admin`) VALUES (23,'notification-preferences','Permission to manage notification preferences',true);
 
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (1,20);
@@ -85,4 +86,5 @@ INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,17);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,18);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,19);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,20);
+INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,22);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,23);
