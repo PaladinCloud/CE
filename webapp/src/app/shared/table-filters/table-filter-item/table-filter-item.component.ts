@@ -13,15 +13,22 @@ export interface FilterChipUpdateEvent {
 })
 export class TableFilterItemComponent implements OnInit {
     @Input() category: string;
-    @Input() set filterValues(values: { [key: string]: boolean }) {
-        this.appliedFilters = Object.entries(values)
-            .filter(([, v]) => v)
-            .map(([n]) => n);
+    @Input() filterValues: string[] = [];
+    @Input() set appliedFilters(values: { [key: string]: boolean }) {
+        this._appliedFilters = Object.entries(values)
+            .filter(([, value]) => value)
+            .map(([name, value]) => ({
+                name,
+                value,
+            }));
+        this._appliedFiltersDict = values;
+    }
+    get appliedFilters() {
+        return this._appliedFiltersDict;
+    }
 
-        this._filterItems = Object.entries(values).map(([name, value]) => ({
-            name,
-            value,
-        }));
+    get appliedItems() {
+        return this._appliedFilters;
     }
 
     @Output() clearFilter = new EventEmitter<string>();
@@ -29,13 +36,10 @@ export class TableFilterItemComponent implements OnInit {
 
     isFilterMenuShown = false;
 
-    appliedFilters: string[] = [];
     filterOptionQuery = '';
 
-    get filterItems() {
-        return this._filterItems;
-    }
-    private _filterItems: { name: string; value: boolean }[] = [];
+    private _appliedFilters: { name: string; value: boolean }[] = [];
+    private _appliedFiltersDict: { [key: string]: boolean } = {};
 
     constructor() {}
 
@@ -60,8 +64,8 @@ export class TableFilterItemComponent implements OnInit {
     }
 
     filterOptionsByQuery() {
-        return this.filterItems.filter((f) =>
-            f.name.toLowerCase().includes(this.filterOptionQuery.toLowerCase()),
+        return this.filterValues.filter((f) =>
+            f.toLowerCase().includes(this.filterOptionQuery.toLowerCase()),
         );
     }
 }
