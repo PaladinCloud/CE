@@ -26,77 +26,84 @@ import { WindowExpansionService } from 'src/app/core/services/window-expansion.s
     styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, AfterViewInit, OnChanges {
-    @Input() data = [];
-    @Input() columnWidths;
-    @Input() columnsSortFunctionMap;
     @Input() centeredColumns: { [key: string]: boolean } = {};
-    @Input() headerColName;
-    @Input() direction;
-    @Input() searchQuery = '';
-    @Input() showSearchBar;
-    @Input() showAddRemoveCol;
-    @Input() showDownloadBtn;
-    @Input() showFilterBtn;
-    @Input() showMoreMenu = true;
-    @Input() rowClickable = true;
-    @Input() tableTitle;
-    @Input() imageDataMap = {};
-    @Input() filterTypeLabels = [];
-    @Input() filterTagLabels: { [key: string]: string[] };
-    @Input() tableErrorMessage = '';
-    @Input() onScrollDataLoader: Subject<any>;
-    @Input() totalRows = 0;
-    @Input() tableScrollTop;
+    @Input() columnsSortFunctionMap;
+    @Input() columnWidths: { [key: string]: number };
+    @Input() data = [];
+    @Input() direction: 'desc' | 'asc';
+    @Input() doLocalFilter = false;
     @Input() doLocalSearch = false;
     @Input() doLocalSort = true;
-    @Input() doLocalFilter = false;
-    @Input() tableDataLoaded;
     @Input() doNotSort = false;
-    @Input() rowSize: 'SM' | 'MD' | 'LG' = 'SM';
+    @Input() filterTagLabels: { [key: string]: string[] };
+    @Input() filterTypeLabels = [];
     @Input() gapBetweenFilterAndTable;
+    @Input() headerColName;
+    @Input() imageDataMap = {};
+    @Input() onScrollDataLoader: Subject<any>;
+    @Input() rowClickable = true;
+    @Input() rowSize: 'SM' | 'MD' | 'LG' = 'SM';
+    @Input() searchQuery = '';
+    @Input() selectedRowIndex: number;
+    @Input() showAddRemoveCol: boolean;
     @Input() showCopyButton = true;
-    @Input() selectedRowIndex;
-    @Output() rowSelectEventEmitter = new EventEmitter<any>();
+    @Input() showDownloadBtn: boolean;
+    @Input() showFilterBtn: boolean;
+    @Input() showMoreMenu = true;
+    @Input() showSearchBar: boolean;
+    @Input() tableDataLoaded: boolean;
+    @Input() tableErrorMessage = '';
+    @Input() tableScrollTop: number;
+    @Input() tableTitle: string;
+    @Input() totalRows = 0;
+    @Input() whiteListColumns = [];
+    @Input() filteredArray: {
+        filterValue: string | undefined;
+        key?: string;
+        keyDisplayValue: string;
+        value?: string | undefined;
+        compareKey?: string;
+        filterkey?: string;
+    }[] = [];
+    @Input() filterTypeOptions: {
+        optionName: string;
+        optionURL: string;
+        optionValue: string;
+    }[];
+
     @Output() actionSelected = new EventEmitter();
+    @Output() deleteFilters = new EventEmitter<any>();
+    @Output() downloadClicked = new EventEmitter<any>();
     @Output() headerColNameSelected = new EventEmitter<any>();
+    @Output() nextPageCalled = new EventEmitter<any>();
+    @Output() rowSelectEventEmitter = new EventEmitter<any>();
     @Output() searchCalledEventEmitter = new EventEmitter<string>();
     @Output() searchEventEmitter = new EventEmitter<string>();
-    @Output() whitelistColumnsChanged = new EventEmitter<any>();
     @Output() searchInColumnsChanged = new EventEmitter<any>();
-    @Output() nextPageCalled = new EventEmitter<any>();
-    @Output() downloadClicked = new EventEmitter<any>();
-    @Output() selectedFilterType = new EventEmitter<any>();
     @Output() selectedFilter = new EventEmitter<any>();
-    @Output() deleteFilters = new EventEmitter<any>();
+    @Output() selectedFilterType = new EventEmitter<any>();
+    @Output() whitelistColumnsChanged = new EventEmitter<any>();
+
+    @ViewChild('select') select: MatSelect;
+    @ViewChild('tableContainer') tableContainer: ElementRef;
+    @ViewChildren('customTable') customTable: any;
 
     mainDataSource;
     dataSource;
 
-    displayedColumns;
-    @Input() whiteListColumns = [];
+    displayedColumns: string[];
     searchInColumns = new FormControl();
 
-    @ViewChild('select') select: MatSelect;
-    @ViewChild('allColumnsSelected') private allColumnsSelected: MatOption;
-    @ViewChildren('customTable') customTable: any;
-    @ViewChild('tableContainer') tableContainer: ElementRef;
-    @ViewChild('filtersContainer') filtersContainer: ElementRef;
-
     allSelected = true;
-    screenWidth;
-    denominator;
-    screenWidthFactor;
+    screenWidth: number;
+    denominator: number;
+    screenWidthFactor: number;
     isWindowExpanded = true;
     isDataLoading = false;
-
-    @Input() filteredArray = [];
-    @Input() filterTypeOptions;
-    totalChips;
-    chips;
     selectedFiltersList = [];
 
     constructor(private windowExpansionService: WindowExpansionService) {
-        this.windowExpansionService.getExpansionStatus().subscribe((res) => {
+        this.windowExpansionService.getExpansionStatus().subscribe(() => {
             this.waitAndResizeTable();
         });
     }
@@ -131,14 +138,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
             if (this.columnWidths) {
                 this.displayedColumns = Object.keys(this.columnWidths);
             }
-            if (this.displayedColumns.length == this.whiteListColumns.length) {
-                this.allSelected = true;
-            } else {
-                this.allSelected = false;
-            }
-            // if(this.displayedColumns[this.displayedColumns.length-1].toLowerCase() == 'actions'){
-            //   this.displayedColumns.pop();
-            // }
+
+            this.allSelected = this.displayedColumns.length === this.whiteListColumns.length;
 
             this.displayedColumns.sort();
 
@@ -159,20 +160,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
 
                 this.waitAndResizeTable();
             }
-            // this.filteredArray.forEach((item, i) => {
-            //   if(item.filterValue.length==0){
-            //     this.filteredArray.splice(i, 1);
-            //   }
-            // })
+
             this.selectedFiltersList = this.filteredArray.map((item) => item.keyDisplayValue);
-            if (!this.doLocalFilter) {
-                this.chips = this.filteredArray.map((obj) => {
-                    return { ...obj };
-                }); // cloning filteredArray
-                this.chips.splice(2);
-                this.totalChips = this.filteredArray.length;
-                this.addFilter();
-            }
         }
         if ((this.doLocalSearch || this.doLocalSort) && this.tableDataLoaded) {
             this.filterAndSort();
@@ -190,15 +179,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         }
         if (this.headerColName && this.direction && this.doLocalSort) {
             this.customSort(this.headerColName, this.direction);
-        }
-    }
-
-    scrollFilterModalToBottom(forceScroll?) {
-        if (this.filtersContainer) {
-            if (this.totalChips > 2 || forceScroll) {
-                this.filtersContainer.nativeElement.scrollTop =
-                    this.filtersContainer.nativeElement.scrollHeight;
-            }
         }
     }
 
@@ -271,7 +251,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
 
     handleColumnSelection(e) {
         const cols = [];
-        const shouldIncludeActions = this.whiteListColumns.includes('Actions');
         const allCols = Object.keys(this.columnWidths);
         allCols.forEach((col) => {
             if (e.includes(col)) {
@@ -279,7 +258,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
             }
         });
         this.whiteListColumns = cols;
-        // if(shouldIncludeActions) this.whiteListColumns.push("Actions");
         this.getWidthFactor();
         this.waitAndResizeTable();
         this.whiteListColumnsChanged();
@@ -311,7 +289,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         }
     }
 
-    onSelectFilter(e, i: number) {
+    onSelectFilter(e: string | undefined, i: number) {
+        console.warn(e, i, this.selectedFiltersList);
         if (!e) {
             this.selectedFiltersList.splice(i, 1);
             this.removeFilter(i);
@@ -366,26 +345,12 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.selectedFilterType.emit(e);
     }
 
-    addFilter() {
-        // let obj = {
-        //   keyDisplayValue: "",
-        //   filterValue: ""
-        // };
-        // this.filteredArray.push(obj);
-        // setTimeout(() => this.scrollFilterModalToBottom(true), 1);
-    }
-
     removeFilter(i: number) {
         this.selectedFiltersList.splice(i, 1);
-        // if(this.filteredArray[i].value==undefined){
-        //   this.filteredArray.splice(i, 1);
-        //   return;
-        // }
 
         if (this.doLocalFilter) {
             this.filteredArray.splice(i, 1);
             this.filterAndSort();
-            // return;
         }
         const event = {
             index: i,
@@ -436,25 +401,14 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
                     } else if (!(String(cellValue).toLowerCase() == filterValue.toLowerCase())) {
                         return false;
                     }
-                } else {
-                    // this.filteredArray.splice(i, 1);
                 }
             }
             return true;
         });
 
-        this.chips = this.filteredArray.map((obj) => {
-            return { ...obj };
-        }); // cloning filteredArray
-        this.chips = this.chips.filter((obj) => obj.keyDisplayValue && obj.filterValue);
-        this.totalChips = this.chips.length;
-        this.chips.splice(2);
-
         this.totalRows = this.dataSource.data.length;
         if (this.dataSource.data.length == 0) {
             this.tableErrorMessage = 'noDataAvailable';
-        } else {
-            this.addFilter();
         }
     }
 
@@ -486,7 +440,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.searchQuery = searchTxt;
 
         if (event.keyCode === 13 || searchTxt == '') {
-            // this.customTable.first.nativeElement.scrollTop = 0;
             this.tableErrorMessage = '';
             if (this.doLocalSearch) {
                 this.filterAndSort();
@@ -520,7 +473,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
 
     customSort(columnName, direction) {
         if (!columnName || direction === '' || this.doNotSort) {
-            // this.dataSource.data = this.mainDataSource.data.slice();
             return;
         }
         const isAsc = this.direction == 'asc';
