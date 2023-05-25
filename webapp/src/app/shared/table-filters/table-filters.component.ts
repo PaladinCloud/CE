@@ -9,13 +9,18 @@ interface AppliedFilter {
     };
 }
 
+export interface FilterOptionChange {
+    category: string;
+    option: string;
+    value: boolean;
+}
+
 @Component({
     selector: 'app-table-filters',
     templateUrl: './table-filters.component.html',
     styleUrls: ['./table-filters.component.css'],
 })
 export class TableFiltersComponent implements OnInit {
-    // @Input() categories: string[] = [];
     @Input() set categories(values) {
         this._categories = values;
         this.appliedFiltersDict = values.reduce(
@@ -29,8 +34,12 @@ export class TableFiltersComponent implements OnInit {
     get categories() {
         return this._categories;
     }
+
     @Input() categoryOptions: { [key: string]: string[] } = {};
+
     @Output() filterCategorySelected = new EventEmitter<string>();
+    @Output() filterCategoryRemoved = new EventEmitter<string>();
+    @Output() filterOptionSelected = new EventEmitter<FilterOptionChange>();
 
     appliedFiltersDict: AppliedFilter = {};
     appliedFilters: string[] = [];
@@ -72,10 +81,33 @@ export class TableFiltersComponent implements OnInit {
         if (this.appliedFilters.includes(filterCatName)) {
             if (Object.values(this.appliedFiltersDict[filterCatName]).every((i) => !i)) {
                 this.appliedFilters = this.appliedFilters.filter((f) => f !== filterCatName);
+                this.filterCategoryRemoved.emit(filterCatName);
             }
         } else {
             this.appliedFilters = this.appliedFilters.concat(filterCatName);
+            this.filterOptionSelected.emit({
+                category: filterCatName,
+                option: filterChild,
+                value: event.checked,
+            });
         }
+    }
+
+    updateFilter(event: FilterChipUpdateEvent) {
+        const filterCategory = event.category;
+        const updatedFilter = merge({}, this.appliedFiltersDict[filterCategory], {
+            [event.filterName]: event.filterValue,
+        });
+
+        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
+            [filterCategory]: updatedFilter,
+        });
+
+        this.filterOptionSelected.emit({
+            category: event.category,
+            option: event.filterName,
+            value: event.filterValue,
+        });
     }
 
     clearFilter(filterCategory: string) {
@@ -91,17 +123,8 @@ export class TableFiltersComponent implements OnInit {
         this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
             [filterCategory]: resettedFilter,
         });
-    }
 
-    updateFilter(event: FilterChipUpdateEvent) {
-        const filterCategory = event.category;
-        const updatedFilter = merge({}, this.appliedFiltersDict[filterCategory], {
-            [event.filterName]: event.filterValue,
-        });
-
-        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
-            [filterCategory]: updatedFilter,
-        });
+        this.filterCategoryRemoved.emit(filterCategory);
     }
 
     overlayKeyDown(event: KeyboardEvent) {

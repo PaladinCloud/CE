@@ -1,58 +1,5 @@
 <div #tableContainer class="table-container flex flex-col">
     <div class="flex" [style.flex-direction]="tableTitle ? 'column-reverse' : 'column'">
-        <div
-            class="new-filter-wrapper"
-            *ngIf="showFilterBtn"
-            [style.padding-bottom]="
-                tableTitle
-                    ? '0px'
-                    : gapBetweenFilterAndTable !== undefined
-                    ? gapBetweenFilterAndTable
-                    : '20px'
-            "
-        >
-            <div class="filters-section flex flex-row gap-16">
-                <div class="menu-wrapper flex gap-8 flex-wrap" *ngIf="filteredArray.length">
-                    <app-dropdown
-                        *ngFor="let filter of filteredArray; let i = index"
-                        [customLabel]="filter.keyDisplayValue + ' :'"
-                        [items]="
-                            filterTagLabels[filter.keyDisplayValue]
-                                ? filterTagLabels[filter.keyDisplayValue]
-                                : []
-                        "
-                        [placeholder]="filter.keyDisplayValue + ' :'"
-                        [selectedItem]="filter.filterValue"
-                        (selected)="onSelectFilter($event, i)"
-                    ></app-dropdown>
-                </div>
-                <div
-                    class="flex flex-row gap-8 flex-align-center filters-button-wrapper"
-                    style="margin-left: auto"
-                >
-                    <app-dropdown
-                        style="width: 90px; padding: 0px 8px 1px"
-                        [isDisabled]="false"
-                        [items]="filterTypeLabels"
-                        [isMultiSelect]="true"
-                        [selectedList]="selectedFiltersList"
-                        [isChipListEnabled]="true"
-                        (optionClicked)="filterOptionClick($event)"
-                        [buttonLabel]="'Filters'"
-                        [isButton]="true"
-                        (openEventEmitter)="handleFilterDropdownOpen()"
-                    >
-                    </app-dropdown>
-                    <hr style="height: 25px" />
-                    <app-text
-                        (click)="removeAllFilters()"
-                        text="Clear All"
-                        classNames="body-2 primary-400 pointer"
-                        style="width: max-content"
-                    ></app-text>
-                </div>
-            </div>
-        </div>
         <div class="table-header">
             <div class="table-column-modifier flex flex-row">
                 <div class="header-left flex flex-row">
@@ -82,6 +29,8 @@
                     [categories]="filterTypeLabels"
                     [categoryOptions]="filterTagLabels"
                     (filterCategorySelected)="filterOptionClick($event)"
+                    (filterCategoryRemoved)="removeFilterCategory($event)"
+                    (filterOptionSelected)="selectCategoryOption($event)"
                 ></app-table-filters>
                 <div class="flex flex-align-center gap-24">
                     <div class="flex flex-align-center gap-24" *ngIf="tableTitle">
@@ -89,7 +38,6 @@
                         <hr style="height: 20px" />
                     </div>
                     <div class="table-count-info">
-                        <!-- <span *ngIf="isDataLoading">Loading...</span> -->
                         <span>
                             {{
                                 (totalRows === 0 ? dataSource?.data?.length : totalRows) ?? 0
@@ -117,7 +65,6 @@
                     </app-dropdown>
                     <div *ngIf="showDownloadBtn" class="download-btn pointer" (click)="download()">
                         <img src="/assets/icons/download-icon.svg" alt="" />
-                        <!-- <span >Export</span> -->
                     </div>
                 </div>
             </div>

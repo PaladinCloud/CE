@@ -19,6 +19,16 @@ import { MatTableDataSource } from '@angular/material/table';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
+import { FilterOptionChange } from '../table-filters/table-filters.component';
+
+interface FilterItem {
+    filterValue?: string | undefined;
+    key?: string;
+    keyDisplayValue: string;
+    value?: string | undefined;
+    compareKey?: string;
+    filterkey?: string;
+}
 
 @Component({
     selector: 'app-table',
@@ -57,14 +67,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     @Input() tableTitle: string;
     @Input() totalRows = 0;
     @Input() whiteListColumns = [];
-    @Input() filteredArray: {
-        filterValue: string | undefined;
-        key?: string;
-        keyDisplayValue: string;
-        value?: string | undefined;
-        compareKey?: string;
-        filterkey?: string;
-    }[] = [];
+    @Input() filteredArray: FilterItem[] = [];
     @Input() filterTypeOptions: {
         optionName: string;
         optionURL: string;
@@ -72,7 +75,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     }[];
 
     @Output() actionSelected = new EventEmitter();
-    @Output() deleteFilters = new EventEmitter<any>();
+    @Output() deleteFilters = new EventEmitter<{
+        index?: number;
+        clearAll?: boolean;
+    }>();
     @Output() downloadClicked = new EventEmitter<any>();
     @Output() headerColNameSelected = new EventEmitter<any>();
     @Output() nextPageCalled = new EventEmitter<any>();
@@ -80,7 +86,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     @Output() searchCalledEventEmitter = new EventEmitter<string>();
     @Output() searchEventEmitter = new EventEmitter<string>();
     @Output() searchInColumnsChanged = new EventEmitter<any>();
-    @Output() selectedFilter = new EventEmitter<any>();
+    @Output() selectedFilter = new EventEmitter<{
+        index: number;
+        filterValue: string;
+        filterKeyDisplayValue: string;
+    }>();
     @Output() selectedFilterType = new EventEmitter<any>();
     @Output() whitelistColumnsChanged = new EventEmitter<any>();
 
@@ -100,7 +110,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     screenWidthFactor: number;
     isWindowExpanded = true;
     isDataLoading = false;
-    selectedFiltersList = [];
+    selectedFiltersList: string[] = [];
 
     constructor(private windowExpansionService: WindowExpansionService) {
         this.windowExpansionService.getExpansionStatus().subscribe(() => {
@@ -281,16 +291,52 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
                 filterValue: undefined,
             });
             this.onSelectFilterType(e, this.filteredArray.length - 1);
-        } else {
-            // remove from filteredArray
-            const filterIdx = this.selectedFiltersList.indexOf(e);
-            // warning: this may give wierd results if filteredArray keys and selectedFiltersList are not in sync
-            this.removeFilter(filterIdx);
         }
     }
 
+    selectCategoryOption(event: FilterOptionChange) {
+        let index = this.filteredArray.findIndex((i) => i.key === event.category);
+
+        if (index === -1) {
+            let filterItem = {
+                key: event.category,
+                keyDisplayValue: event.category,
+                value: undefined,
+            };
+
+            if (!this.doLocalFilter) {
+                const key = _.find(this.filterTypeOptions, {
+                    optionName: event.category,
+                }).optionValue;
+
+                filterItem = {
+                    ...filterItem,
+                    ...{
+                        compareKey: key.toLowerCase().trim(),
+                        filterkey: key.trim(),
+                        filterValue: undefined,
+                    },
+                };
+            }
+
+            this.filteredArray = [...this.filteredArray, filterItem];
+            index = this.filteredArray.length - 1;
+        } else {
+            this.filteredArray[index].filterValue = this.filteredArray[index].value = event.option;
+        }
+
+        if (this.doLocalFilter) {
+            this.filterAndSort();
+        }
+
+        this.selectedFilter.emit({
+            index,
+            filterKeyDisplayValue: event.category,
+            filterValue: event.option,
+        });
+    }
+
     onSelectFilter(e: string | undefined, i: number) {
-        console.warn(e, i, this.selectedFiltersList);
         if (!e) {
             this.selectedFiltersList.splice(i, 1);
             this.removeFilter(i);
@@ -327,21 +373,19 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     onSelectFilterType(e, i) {
-        if (this.doLocalFilter) {
-            this.filteredArray[i].key = e;
-            this.filteredArray[i].keyDisplayValue = e;
-            this.filteredArray[i].value = undefined;
-        } else {
+        this.filteredArray[i].key = e;
+        this.filteredArray[i].keyDisplayValue = e;
+        this.filteredArray[i].value = undefined;
+
+        if (!this.doLocalFilter) {
             const key = _.find(this.filterTypeOptions, {
                 optionName: e,
             })['optionValue'];
             this.filteredArray[i].compareKey = key.toLowerCase().trim();
             this.filteredArray[i].filterkey = key.trim();
-            this.filteredArray[i].key = e;
-            this.filteredArray[i].keyDisplayValue = e;
-            this.filteredArray[i].value = undefined;
             this.filteredArray[i].filterValue = undefined;
         }
+
         this.selectedFilterType.emit(e);
     }
 
@@ -356,6 +400,18 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
             index: i,
         };
         this.deleteFilters.emit(event);
+    }
+
+    removeFilterCategory(filterCategory: string) {
+        const index = this.selectedFiltersList.indexOf(filterCategory);
+        this.selectedFiltersList.splice(index, 1);
+        if (this.doLocalFilter) {
+            this.filteredArray.splice(index, 1);
+            this.filterAndSort();
+        }
+        this.deleteFilters.emit({
+            index,
+        });
     }
 
     removeAllFilters() {
