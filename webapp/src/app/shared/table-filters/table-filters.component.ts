@@ -1,12 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { merge } from 'lodash';
 import { FilterChipUpdateEvent } from './table-filter-item/table-filter-item.component';
-
-export interface TableFilter {
-    name: string;
-    children: string[];
-}
 
 interface AppliedFilter {
     [name: string]: {
@@ -20,29 +15,27 @@ interface AppliedFilter {
     styleUrls: ['./table-filters.component.css'],
 })
 export class TableFiltersComponent implements OnInit {
-    @Input() set filters(values: TableFilter[]) {
+    // @Input() categories: string[] = [];
+    @Input() set categories(values) {
+        this._categories = values;
         this.appliedFiltersDict = values.reduce(
             (acc, next) => ({
                 ...acc,
-                [next.name]: next.children.reduce((prev, child) => {
-                    prev[child] = false;
-                    return prev;
-                }, {}),
+                [next]: {},
             }),
             {} as AppliedFilter,
         );
-
-        this._filters = values;
     }
-
-    get filters() {
-        return this._filters;
+    get categories() {
+        return this._categories;
     }
+    @Input() categoryOptions: { [key: string]: string[] } = {};
+    @Output() filterCategorySelected = new EventEmitter<string>();
 
     appliedFiltersDict: AppliedFilter = {};
     appliedFilters: string[] = [];
 
-    selectedFilterCategory: TableFilter = null;
+    selectedFilterCategory: string = null;
 
     isFilterMenuOpen = false;
     isFilterSubCategoryOpen = false;
@@ -50,7 +43,7 @@ export class TableFiltersComponent implements OnInit {
     categoryFilterQuery = '';
     categoryChildFilterQuery = '';
 
-    private _filters: TableFilter[] = [];
+    private _categories: string[] = [];
 
     constructor() {}
 
@@ -61,13 +54,14 @@ export class TableFiltersComponent implements OnInit {
         this.isFilterSubCategoryOpen = false;
     }
 
-    openFilterCategory(filterCategory: TableFilter) {
+    openFilterCategory(filterCategory: string) {
         this.isFilterSubCategoryOpen = true;
         this.selectedFilterCategory = filterCategory;
+        this.filterCategorySelected.emit(filterCategory);
     }
 
     applyFilter(filterChild: string, event: MatCheckboxChange) {
-        const filterCatName = this.selectedFilterCategory.name;
+        const filterCatName = this.selectedFilterCategory;
 
         this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
             [filterCatName]: {
@@ -117,14 +111,14 @@ export class TableFiltersComponent implements OnInit {
     }
 
     filterCategoryByQuery() {
-        return this.filters.filter((f) =>
-            f.name.toLowerCase().includes(this.categoryFilterQuery.toLowerCase()),
+        return this.categories.filter((c) =>
+            c.toLowerCase().includes(this.categoryFilterQuery.toLowerCase()),
         );
     }
 
     filterSelectedCategoryChildrenByQuery() {
         return (
-            this.selectedFilterCategory?.children.filter((c) =>
+            this.categoryOptions[this.selectedFilterCategory]?.filter((c) =>
                 c?.toLowerCase().includes(this.categoryChildFilterQuery.toLowerCase()),
             ) || []
         );

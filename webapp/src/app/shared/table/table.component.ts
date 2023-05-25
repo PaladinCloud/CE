@@ -1,6 +1,5 @@
 import {
     AfterViewInit,
-    ChangeDetectorRef,
     Component,
     ElementRef,
     EventEmitter,
@@ -20,7 +19,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
-import { TableFilter } from '../table-filters/table-filters.component';
 
 @Component({
     selector: 'app-table',
@@ -44,19 +42,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     @Input() tableTitle;
     @Input() imageDataMap = {};
     @Input() filterTypeLabels = [];
-    @Input() set filterTagLabels(values: { [key: string]: string[] }) {
-        this._filterTagLabels = values;
-        this.tableFilters = Object.keys(values).reduce((acc, key) => {
-            acc.push({
-                name: key,
-                children: values[key],
-            });
-            return acc;
-        }, [] as TableFilter[]);
-    }
-    get filterTagLabels(): { [key: string]: string[] } {
-        return this._filterTagLabels;
-    }
+    @Input() filterTagLabels: { [key: string]: string[] };
     @Input() tableErrorMessage = '';
     @Input() onScrollDataLoader: Subject<any>;
     @Input() totalRows = 0;
@@ -86,8 +72,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     mainDataSource;
     dataSource;
 
-    tableFilters: TableFilter[] = [];
-
     displayedColumns;
     @Input() whiteListColumns = [];
     searchInColumns = new FormControl();
@@ -111,12 +95,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     chips;
     selectedFiltersList = [];
 
-    private _filterTagLabels = {};
-
-    constructor(
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private windowExpansionService: WindowExpansionService,
-    ) {
+    constructor(private windowExpansionService: WindowExpansionService) {
         this.windowExpansionService.getExpansionStatus().subscribe((res) => {
             this.waitAndResizeTable();
         });
@@ -241,8 +220,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
 
     getWidthFactor() {
         this.denominator = 0;
-        for (let i in this.whiteListColumns) {
-            let col = this.whiteListColumns[i];
+        for (const i in this.whiteListColumns) {
+            const col = this.whiteListColumns[i];
             this.denominator += this.columnWidths[col];
         }
         this.getScreenWidthFactor();
@@ -269,7 +248,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         if (row[col].isMenuBtn) {
             return;
         }
-        let event = {
+        const event = {
             tableScrollTop: this.customTable.first.nativeElement.scrollTop,
             rowSelected: row,
             data: this.data,
@@ -281,8 +260,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.rowSelectEventEmitter.emit(event);
     }
 
-    handleAction(element, action, i) {
-        let event = {
+    handleAction(element, action, i: number) {
+        const event = {
             action: action,
             rowSelected: element,
             selectedRowIndex: i,
@@ -332,14 +311,14 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         }
     }
 
-    onSelectFilter(e, i) {
+    onSelectFilter(e, i: number) {
         if (!e) {
             this.selectedFiltersList.splice(i, 1);
             this.removeFilter(i);
             return;
         }
 
-        let filterIndex = _.findIndex(this.filteredArray, (el, j) => {
+        const filterIndex = _.findIndex(this.filteredArray, (el, j) => {
             return el['keyDisplayValue'] === this.filteredArray[i].keyDisplayValue && i != j;
         });
         let currIdx = i;
@@ -359,9 +338,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
 
         if (this.doLocalFilter) {
             this.filterAndSort();
-        } else {
         }
-        let event = {
+        const event = {
             index: currIdx,
             filterKeyDisplayValue: this.filteredArray[currIdx].keyDisplayValue,
             filterValue: this.filteredArray[currIdx].filterValue,
@@ -375,7 +353,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
             this.filteredArray[i].keyDisplayValue = e;
             this.filteredArray[i].value = undefined;
         } else {
-            let key = _.find(this.filterTypeOptions, {
+            const key = _.find(this.filterTypeOptions, {
                 optionName: e,
             })['optionValue'];
             this.filteredArray[i].compareKey = key.toLowerCase().trim();
@@ -397,7 +375,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         // setTimeout(() => this.scrollFilterModalToBottom(true), 1);
     }
 
-    removeFilter(i) {
+    removeFilter(i: number) {
         this.selectedFiltersList.splice(i, 1);
         // if(this.filteredArray[i].value==undefined){
         //   this.filteredArray.splice(i, 1);
@@ -409,7 +387,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
             this.filterAndSort();
             // return;
         }
-        let event = {
+        const event = {
             index: i,
         };
         this.deleteFilters.emit(event);
@@ -421,7 +399,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
             this.filteredArray = [];
             this.filterAndSort();
         }
-        let event = {
+        const event = {
             clearAll: true,
         };
         this.deleteFilters.emit(event);
@@ -504,7 +482,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     handleSearch(event) {
-        let searchTxt = event.target.value.toLowerCase();
+        const searchTxt = event.target.value.toLowerCase();
         this.searchQuery = searchTxt;
 
         if (event.keyCode === 13 || searchTxt == '') {
@@ -569,13 +547,13 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
                 );
             }
 
-            let elementAValue =
+            const elementAValue =
                 elementA && elementA.valueText
                     ? elementA.valueText.toLowerCase()
                     : isAsc
                     ? 'zzzzzz'
                     : '000000';
-            let elementBValue =
+            const elementBValue =
                 elementB && elementB.valueText
                     ? elementB.valueText.toLowerCase()
                     : isAsc
