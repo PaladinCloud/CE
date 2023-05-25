@@ -72,25 +72,37 @@ export class TableFiltersComponent implements OnInit {
     applyFilter(filterChild: string, event: MatCheckboxChange) {
         const filterCatName = this.selectedFilterCategory;
 
-        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
-            [filterCatName]: {
-                [filterChild]: event.checked,
+        // TODO: REMOVE WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
+        const uncheckedOptionsDict = Object.entries(this.appliedFiltersDict[filterCatName]).reduce(
+            (prev, [name]) => {
+                if (name !== filterChild) {
+                    prev[name] = false;
+                }
+                return prev;
             },
+            {},
+        );
+
+        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
+            [filterCatName]: merge({}, uncheckedOptionsDict, {
+                [filterChild]: event.checked,
+            }),
         });
 
         if (this.appliedFilters.includes(filterCatName)) {
             if (Object.values(this.appliedFiltersDict[filterCatName]).every((i) => !i)) {
                 this.appliedFilters = this.appliedFilters.filter((f) => f !== filterCatName);
                 this.filterCategoryRemoved.emit(filterCatName);
+                return;
             }
         } else {
             this.appliedFilters = this.appliedFilters.concat(filterCatName);
-            this.filterOptionSelected.emit({
-                category: filterCatName,
-                option: filterChild,
-                value: event.checked,
-            });
         }
+        this.filterOptionSelected.emit({
+            category: filterCatName,
+            option: filterChild,
+            value: event.checked,
+        });
     }
 
     updateFilter(event: FilterChipUpdateEvent) {
