@@ -22,7 +22,7 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanPolicy(key = "disable-enable-database-flags-for-cloudsql-server", desc = "checks if Google cloud sql server instance database flag is disabled or enabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+@PacmanPolicy(key = "disable-contained-database-Auth-flag-for-sql-server", desc = "checks if Google cloud sql server instance database flag is disabled or enabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class DisableOrEnableDBFlagsRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(DisableOrEnableDBFlagsRule.class);
 
