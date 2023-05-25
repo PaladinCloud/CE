@@ -154,7 +154,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             }
           })
           this.columnWidths = {...this.columnWidths};
-          
+
         });
       });
 
@@ -173,7 +173,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.bucketNumber = state.bucketNumber ?? 0;
       this.totalRows = state.totalRows ?? 0;
       this.searchTxt = state?.searchTxt ?? '';
-      
+
       this.tableDataLoaded = true;
 
       this.tableData = state?.data ?? [];
@@ -182,7 +182,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.tableScrollTop = state?.tableScrollTop;
       this.selectedRowIndex = state?.selectedRowIndex;
 
-      if(this.tableData && this.tableData.length>0){        
+      if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
         this.selectedRowIndex = state.selectedRowIndex;
       }else{
@@ -191,7 +191,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       // if(filter){
       //   console.log("chose to navigate: ", filter);
-        
+
       //   this.router.navigate(["./"], {
       //     relativeTo: this.activatedRoute,
       //     queryParams: {filter: filter},
@@ -204,7 +204,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    
+
     this.getDataFromPreservedState();
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
 
@@ -262,12 +262,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleHeaderColNameSelection(event: any) {    
+  handleHeaderColNameSelection(event: any) {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    
+
     this.bucketNumber = 0;
-    
+
     this.storeState();
     this.updateComponent();
   }
@@ -386,7 +386,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
    */
   getFilterArray() {
     try {
-      const filterObjKeys = Object.keys(this.filterText);      
+      const filterObjKeys = Object.keys(this.filterText);
       const dataArray = [];
       for (let i = 0; i < filterObjKeys.length; i++) {
         let obj = {};
@@ -398,11 +398,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           filterkey: filterObjKeys[i],
         };
         dataArray.push(obj);
-      }      
-      
+      }
+
       const state = this.tableStateService.getState(this.pageTitle) ?? {};
       const filters = state?.filters;
-      
+
       if(filters){
         const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
         filters.forEach(filter => {
@@ -431,7 +431,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           });
 
           let filterKey = dataArray[i].filterkey;
-          
+
           if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
             const eachObj = {
               keyDisplayValue: keyDisplayValue,
@@ -443,7 +443,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             };
             this.filters.push(eachObj);
             this.filters = [...this.filters];
-            this.storeState();            
+            this.storeState();
           }
         })
       }
@@ -517,8 +517,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         )
         .subscribe((response) => {
           this.filterTagOptions[value] = response[0].response;
-          this.filterTagLabels[value] = _.map(response[0].response, "name");
-          this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
+          this.filterTagLabels = {
+              ...this.filterTagLabels,
+              ...{
+                  [value]: _.map(response[0].response, 'name').sort((a, b) =>
+                      a.localeCompare(b),
+                  ),
+              },
+          };
           if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
           resolve(this.filterTagOptions[value]);
           this.storeState();
@@ -744,7 +750,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         // change data value
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
-      
+
       newData.push(newObj);
     });
     return newData;
