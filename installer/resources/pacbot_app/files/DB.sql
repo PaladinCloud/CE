@@ -1455,7 +1455,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (33,8,'Region','region.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=region&type=asset');
 
 /* Notification filters */
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (34,10,'Event','eventName','/compliance/v1/filters/attribute?ag=aws&attribute=accountid&type=asset');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (34,10,'Event','eventName','/compliance/v1/filters/eventname');
 
 /* UI Widgets */
 INSERT IGNORE INTO pac_v2_ui_widgets (widgetId,pageName,widgetName) VALUES (1,'Tagging','TaggingSummary');
