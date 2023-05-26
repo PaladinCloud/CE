@@ -7,14 +7,14 @@ export interface FilterChipUpdateEvent {
 }
 
 @Component({
-    selector: 'app-table-filter-item',
-    templateUrl: './table-filter-item.component.html',
-    styleUrls: ['./table-filter-item.component.css'],
+    selector: 'app-table-filter-chip',
+    templateUrl: './table-filter-chip.component.html',
+    styleUrls: ['./table-filter-chip.component.css'],
 })
-export class TableFilterItemComponent implements OnInit {
+export class TableFilterChipComponent implements OnInit {
     @Input() category: string;
     @Input() filterValues: string[] = [];
-    @Input() set appliedFilters(values: { [key: string]: boolean }) {
+    @Input() set appliedFiltersDict(values: { [key: string]: boolean }) {
         this._appliedFilters = Object.entries(values)
             .filter(([, value]) => value)
             .map(([name, value]) => ({
@@ -23,11 +23,11 @@ export class TableFilterItemComponent implements OnInit {
             }));
         this._appliedFiltersDict = values;
     }
-    get appliedFilters() {
+    get appliedFiltersDict() {
         return this._appliedFiltersDict;
     }
 
-    get appliedItems() {
+    get appliedFilters() {
         return this._appliedFilters;
     }
 

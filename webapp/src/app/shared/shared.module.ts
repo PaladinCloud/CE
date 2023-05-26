@@ -113,6 +113,8 @@ import { ToastObservableService } from './services/toast-observable.service';
 import { UtilsService } from './services/utils.service';
 import { StepperComponent } from './stepper/stepper.component';
 import { SubFooterComponent } from './sub-footer/sub-footer.component';
+import { TableFilterChipComponent } from './table-filters/table-filter-chip/table-filter-chip.component';
+import { TableFilterSearchComponent } from './table-filters/table-filter-search/table-filter-search.component';
 import { TableFiltersComponent } from './table-filters/table-filters.component';
 import { TableListComponent } from './table-list/table-list.component';
 import { TableTabsComponent } from './table-tabs/table-tabs.component';
@@ -120,8 +122,6 @@ import { TableComponent } from './table/table.component';
 import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.component';
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
-import { TableFilterItemComponent } from './table-filters/table-filter-item/table-filter-item.component';
-import { TableFilterSearchComponent } from './table-filters/table-filter-search/table-filter-search.component';
 
 @NgModule({
     imports: [
@@ -215,6 +215,9 @@ import { TableFilterSearchComponent } from './table-filters/table-filter-search/
         StepperComponent,
         SubFooterComponent,
         TableComponent,
+        TableFilterChipComponent,
+        TableFiltersComponent,
+        TableFilterSearchComponent,
         TableListComponent,
         TableTabsComponent,
         TextComponent,
@@ -222,9 +225,6 @@ import { TableFilterSearchComponent } from './table-filters/table-filter-search/
         TitleBurgerHeadComponent,
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
-        TableFiltersComponent,
-        TableFilterItemComponent,
-        TableFilterSearchComponent,
     ],
     exports: [
         AgGridTableComponent,

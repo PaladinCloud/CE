@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { merge } from 'lodash';
 import { FilterItem } from '../table/table.component';
-import { FilterChipUpdateEvent } from './table-filter-item/table-filter-item.component';
+import { FilterChipUpdateEvent } from './table-filter-chip/table-filter-chip.component';
 
 interface AppliedFilter {
     [name: string]: {
