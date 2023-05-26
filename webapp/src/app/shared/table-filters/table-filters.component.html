@@ -26,34 +26,37 @@
     [cdkConnectedOverlayOpen]="isFilterMenuOpen"
     (overlayOutsideClick)="isFilterMenuOpen = false"
     (overlayKeydown)="overlayKeyDown($event)"
+    [cdkConnectedOverlayOffsetY]="filterMenuOffsetY"
 >
-    <ul class="filters-category-menu mat-elevation-z4">
+    <div class="filters-menu-container flex flex-col">
         <ng-container *ngIf="!isFilterSubCategoryOpen">
-            <li>
-                <app-table-filter-search [(text)]="categoryFilterQuery"></app-table-filter-search>
-            </li>
-            <li
-                *ngFor="let category of filterCategoryByQuery()"
-                (click)="openFilterCategory(category)"
-            >
-                {{ category }}
-            </li>
+            <app-table-filter-search [(text)]="categoryFilterQuery"></app-table-filter-search>
+            <ul class="filters-category-menu">
+                <li
+                    *ngFor="let category of filterCategoryByQuery()"
+                    class="fcm-item"
+                    (click)="openFilterCategory(category)"
+                >
+                    {{ category }}
+                </li>
+            </ul>
         </ng-container>
 
         <ng-container *ngIf="isFilterSubCategoryOpen">
-            <li>
-                <app-table-filter-search
-                    [(text)]="categoryChildFilterQuery"
-                ></app-table-filter-search>
-            </li>
-            <li *ngFor="let childFilter of filterSelectedCategoryChildrenByQuery()">
-                <mat-checkbox
-                    [checked]="appliedFiltersDict[selectedFilterCategory][childFilter]"
-                    (change)="applyFilter(childFilter, $event)"
+            <app-table-filter-search [(text)]="categoryChildFilterQuery"></app-table-filter-search>
+            <ul class="filters-category-menu">
+                <li
+                    *ngFor="let childFilter of filterSelectedCategoryChildrenByQuery()"
+                    class="fcm-item"
                 >
-                    {{ childFilter }}
-                </mat-checkbox>
-            </li>
+                    <mat-checkbox
+                        [checked]="appliedFiltersDict[selectedFilterCategory][childFilter]"
+                        (change)="applyFilter(childFilter, $event)"
+                    >
+                        {{ childFilter }}
+                    </mat-checkbox>
+                </li>
+            </ul>
         </ng-container>
-    </ul>
+    </div>
 </ng-template>

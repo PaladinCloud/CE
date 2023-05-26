@@ -13,6 +13,7 @@
 }
 
 .filter-search-input {
+    width: 100%;
     padding-left: 24px;
     border: none;
     font-size: 14px;
