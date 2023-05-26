@@ -3,16 +3,26 @@
 }
 
 .filters-menu-btn {
-    border: 1px dashed gray;
+    padding: 4px 8px;
+    border: 1px dashed #cbcbcb;
     background: transparent;
-    color: gray;
     border-radius: 4px;
     font-weight: bold;
-    align-self: flex-start;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #1e2022;
 }
 
 .filters-menu-btn:hover {
     cursor: pointer;
+}
+
+.filters-menu-btn .fmb-icon {
+    margin-right: 4px;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    line-height: 11px;
 }
 
 .filters-category-menu {
