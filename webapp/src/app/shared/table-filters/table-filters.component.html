@@ -3,9 +3,9 @@
         *ngFor="let appliedFilter of appliedFilters; trackBy: trackByAppliedFilter"
         [category]="appliedFilter.keyDisplayValue"
         [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
-        [filterValues]="categoryOptions[appliedFilter.keyDisplayValue]"
-        (clearFilter)="clearFilter($event)"
-        (updateFilter)="updateFilter($event)"
+        [options]="categoryOptions[appliedFilter.keyDisplayValue]"
+        (clear)="clearFilter($event)"
+        (update)="updateFilter($event)"
     ></app-table-filter-chip>
 
     <button
@@ -13,7 +13,7 @@
         class="filters-menu-btn flex flex-align-center"
         (click)="openMenu()"
         cdkOverlayOrigin
-        #filterMenuBtn="cdkOverlayOrigin"
+        #menuTrigger="cdkOverlayOrigin"
     >
         <mat-icon class="fmb-icon">add</mat-icon>
         Filters
@@ -22,18 +22,18 @@
 
 <ng-template
     cdkConnectedOverlay
-    [cdkConnectedOverlayOrigin]="filterMenuBtn"
-    [cdkConnectedOverlayOpen]="isFilterMenuOpen"
-    (overlayOutsideClick)="isFilterMenuOpen = false"
+    [cdkConnectedOverlayOrigin]="menuTrigger"
+    [cdkConnectedOverlayOpen]="isCategoryMenuOpen"
+    (overlayOutsideClick)="isCategoryMenuOpen = false"
     (overlayKeydown)="overlayKeyDown($event)"
     [cdkConnectedOverlayOffsetY]="filterMenuOffsetY"
 >
     <div class="filters-menu-container flex flex-col">
-        <ng-container *ngIf="!isFilterSubCategoryOpen">
+        <ng-container *ngIf="!isCategoryOptionsMenuOpen">
             <app-table-filter-search [(text)]="categoryFilterQuery"></app-table-filter-search>
             <ul class="filters-category-menu">
                 <li
-                    *ngFor="let category of filterCategoryByQuery()"
+                    *ngFor="let category of filterCategoriesByQuery()"
                     class="fcm-item"
                     (click)="openFilterCategory(category)"
                 >
@@ -42,19 +42,19 @@
             </ul>
         </ng-container>
 
-        <ng-container *ngIf="isFilterSubCategoryOpen">
-            <app-table-filter-search [(text)]="categoryChildFilterQuery"></app-table-filter-search>
+        <ng-container *ngIf="isCategoryOptionsMenuOpen">
+            <app-table-filter-search [(text)]="categoryOptionFilterQuery"></app-table-filter-search>
             <ul class="filters-category-menu">
                 <li
-                    *ngFor="let childFilter of filterSelectedCategoryChildrenByQuery()"
+                    *ngFor="let option of filterSelectedCategoryOptionsByQuery()"
                     class="fcm-item"
-                    [title]="childFilter"
+                    [title]="option"
                 >
                     <mat-checkbox
-                        [checked]="appliedFiltersDict[selectedFilterCategory][childFilter]"
-                        (change)="applyFilter(childFilter, $event)"
+                        [checked]="appliedFiltersDict[selectedCategory][option]"
+                        (change)="applyFilter(option, $event)"
                     >
-                        {{ childFilter | slice : 0 : maxOptionChars }}
+                        {{ option | slice : 0 : maxOptionChars }}
                     </mat-checkbox>
                 </li>
             </ul>

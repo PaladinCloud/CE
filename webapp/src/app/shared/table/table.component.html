@@ -25,13 +25,13 @@
                 </div>
                 <app-table-filters
                     *ngIf="showFilterBtn"
-                    style="flex: 1"
+                    class="table-filters"
                     [appliedFilters]="filteredArray"
                     [categories]="filterTypeLabels"
                     [categoryOptions]="filterTagLabels"
-                    (filterCategorySelected)="filterOptionClick($event)"
-                    (filterCategoryRemoved)="removeFilterCategory($event)"
-                    (filterOptionSelected)="selectCategoryOption($event)"
+                    (categoryChange)="selectFilterCategory($event)"
+                    (categoryClear)="removeFilterCategory($event)"
+                    (optionChange)="selectFilterCategoryOption($event)"
                 ></app-table-filters>
                 <div class="flex flex-align-center gap-24">
                     <div class="flex flex-align-center gap-24" *ngIf="tableTitle">
