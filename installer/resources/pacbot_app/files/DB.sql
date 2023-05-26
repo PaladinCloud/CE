@@ -2808,3 +2808,7 @@ DELIMITER ;
 
 CALL update_displayFields_for_azure_gcp(@MANDATORY_TAGS);
 
+
+
+update pac_v2_ui_options set optionURL="/compliance/v1/filters/eventname" where optionId=34;
+
