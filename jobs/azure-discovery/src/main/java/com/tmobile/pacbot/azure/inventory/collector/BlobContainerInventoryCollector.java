@@ -30,7 +30,7 @@ public class BlobContainerInventoryCollector {
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
 	
-	private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Storage/storageAccounts/%s/blobServices/default/containers?api-version=2019-04-01";
+	private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Storage/storageAccounts/%s/blobServices/default/containers?api-version=2022-09-01";
 	private static Logger log = LoggerFactory.getLogger(BlobContainerInventoryCollector.class);
 	
 	public List<BlobContainerVH> fetchBlobContainerDetails(SubscriptionVH subscription,Map<String, Map<String, String>> tagMap) {
@@ -60,8 +60,8 @@ public class BlobContainerInventoryCollector {
 					blobContainerVH.setName(blobObject.get("name").getAsString());
 					blobContainerVH.setType(blobObject.get("type").getAsString());
 					blobContainerVH.setTag(blobObject.get("etag").getAsString());
-					blobContainerVH.setHasImmutabilityPolicy(blobObject.get("hasImmutabilityPolicy").getAsBoolean());
-					blobContainerVH.setHasLegalHold(blobObject.get("hasLegalHold").getAsBoolean());
+					blobContainerVH.setHasImmutabilityPolicy(properties.get("hasImmutabilityPolicy").getAsBoolean());
+					blobContainerVH.setHasLegalHold(properties.get("hasLegalHold").getAsBoolean());
 					blobContainerVH.setTags(Util.tagsList(tagMap, storageAccount.resourceGroupName(), tags));
 					if (properties != null) {
 						HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),

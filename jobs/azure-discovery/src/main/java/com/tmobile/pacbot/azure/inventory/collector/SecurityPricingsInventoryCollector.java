@@ -48,7 +48,7 @@ public class SecurityPricingsInventoryCollector {
 				securityPricingsVH.setType(securityPricingsObject.get("type").getAsString());
 				securityPricingsVH.setSubscription(subscription.getSubscriptionId());
 				securityPricingsVH.setSubscriptionName(subscription.getSubscriptionName());
-				securityPricingsVH.setRegion(securityPricingsObject.get("location").getAsString());
+				securityPricingsVH.setRegion(subscription.getRegion());
 				securityPricingsVH.setResourceGroupName(Util.getResourceGroupNameFromId(securityPricingsObject.get("id").getAsString()));
 
 				if (properties != null) {
