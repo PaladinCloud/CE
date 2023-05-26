@@ -1,4 +1,4 @@
-<div class="applied-filters-container flex flex-wrap gap-16">
+<div class="applied-filters-container flex flex-align-center flex-wrap gap-16">
     <app-table-filter-chip
         *ngFor="let appliedFilter of appliedFilters"
         [category]="appliedFilter.keyDisplayValue"
@@ -7,18 +7,18 @@
         (clearFilter)="clearFilter($event)"
         (updateFilter)="updateFilter($event)"
     ></app-table-filter-chip>
-</div>
 
-<button
-    type="button"
-    class="filters-menu-btn flex flex-align-center"
-    (click)="openMenu()"
-    cdkOverlayOrigin
-    #filterMenuBtn="cdkOverlayOrigin"
->
-    <mat-icon>add</mat-icon>
-    &nbsp;Filters
-</button>
+    <button
+        type="button"
+        class="filters-menu-btn flex flex-align-center"
+        (click)="openMenu()"
+        cdkOverlayOrigin
+        #filterMenuBtn="cdkOverlayOrigin"
+    >
+        <mat-icon class="fmb-icon">add</mat-icon>
+        Filters
+    </button>
+</div>
 
 <ng-template
     cdkConnectedOverlay
