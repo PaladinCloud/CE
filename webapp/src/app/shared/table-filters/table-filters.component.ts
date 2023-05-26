@@ -165,4 +165,8 @@ export class TableFiltersComponent implements OnInit {
             ) || []
         );
     }
+
+    trackByAppliedFilter(index: number, item: FilterItem) {
+        return item.key || index;
+    }
 }
