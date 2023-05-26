@@ -3,7 +3,7 @@
 }
 
 .filters-menu-btn {
-    padding: 4px 8px;
+    padding: 3px 8px;
     border: 1px dashed #cbcbcb;
     background: transparent;
     border-radius: 4px;
@@ -25,16 +25,29 @@
     line-height: 11px;
 }
 
-.filters-category-menu {
+.filters-menu-container {
+    width: 202px;
+    max-height: 336px;
     background: white;
-    border-radius: 8px;
-    padding: 16px;
+    border: 1px solid rgba(16 40 72 / 9%);
+    border-radius: 6px;
+    box-shadow: 0 2px 2px -1px rgba(27 35 44 / 4%), 0 8px 16px -2px rgba(27 36 44 / 12%);
 }
 
-.filters-category-menu > li {
-    font-size: 16px;
+.filters-category-menu {
+    padding-bottom: 8px;
+    font-size: 14px;
+    line-height: 24px;
+    font-family: var(--text-font-family);
+    overflow-y: auto;
 }
 
-.filters-category-menu > li:not(:last-of-type) {
-    margin-bottom: 16px;
+.filters-category-menu .fcm-item {
+    padding: 6px 16px;
+    color: #272e35;
+}
+
+.filters-category-menu .fcm-item:hover {
+    cursor: pointer;
+    background: rgba(2 47 82 / 6%);
 }

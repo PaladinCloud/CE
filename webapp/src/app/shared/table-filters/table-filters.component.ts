@@ -66,6 +66,8 @@ export class TableFiltersComponent implements OnInit {
     @Output() filterCategoryRemoved = new EventEmitter<string>();
     @Output() filterOptionSelected = new EventEmitter<FilterOptionChange>();
 
+    readonly filterMenuOffsetY = 7;
+
     appliedFiltersDict: AppliedFilter = {};
 
     selectedFilterCategory: string = null;
