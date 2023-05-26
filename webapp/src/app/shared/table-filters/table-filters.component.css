@@ -26,7 +26,6 @@
 }
 
 .filters-menu-container {
-    width: 202px;
     max-height: 336px;
     background: white;
     border: 1px solid rgba(16 40 72 / 9%);
@@ -43,7 +42,7 @@
 }
 
 .filters-category-menu .fcm-item {
-    padding: 6px 16px;
+    padding: 6px 8px 6px 16px;
     color: #272e35;
 }
 

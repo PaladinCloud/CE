@@ -67,6 +67,7 @@ export class TableFiltersComponent implements OnInit {
     @Output() filterOptionSelected = new EventEmitter<FilterOptionChange>();
 
     readonly filterMenuOffsetY = 7;
+    readonly maxOptionChars = 30;
 
     appliedFiltersDict: AppliedFilter = {};
 

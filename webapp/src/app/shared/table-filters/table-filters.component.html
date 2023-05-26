@@ -48,12 +48,13 @@
                 <li
                     *ngFor="let childFilter of filterSelectedCategoryChildrenByQuery()"
                     class="fcm-item"
+                    [title]="childFilter"
                 >
                     <mat-checkbox
                         [checked]="appliedFiltersDict[selectedFilterCategory][childFilter]"
                         (change)="applyFilter(childFilter, $event)"
                     >
-                        {{ childFilter }}
+                        {{ childFilter | slice : 0 : maxOptionChars }}
                     </mat-checkbox>
                 </li>
             </ul>

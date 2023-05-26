@@ -6,9 +6,9 @@
     <div class="tfc-text-container" (click)="toggleFilterMenu()">
         <span class="tfc-name"> {{ category }}:&nbsp;</span>
 
-        <span class="tfc-value">
+        <span class="tfc-value" [title]="appliedFilters.length === 1 ? appliedFilters[0].name : ''">
             <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
-                {{ appliedFilters[0].name }}
+                {{ appliedFilters[0].name | slice : 0 : maxOptionChars }}
             </ng-container>
 
             <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
@@ -28,12 +28,12 @@
     <div class="filters-menu-container flex flex-col">
         <app-table-filter-search [(text)]="filterOptionQuery"></app-table-filter-search>
         <ul class="filters-chip-menu">
-            <li *ngFor="let option of filterOptionsByQuery()" class="fcm-item">
+            <li *ngFor="let option of filterOptionsByQuery()" class="fcm-item" [title]="option">
                 <mat-checkbox
                     [checked]="appliedFiltersDict[option]"
                     (change)="updateFilterOption(option, $event.checked)"
                 >
-                    {{ option }}
+                    {{ option | slice : 0 : maxOptionChars }}
                 </mat-checkbox>
             </li>
         </ul>
