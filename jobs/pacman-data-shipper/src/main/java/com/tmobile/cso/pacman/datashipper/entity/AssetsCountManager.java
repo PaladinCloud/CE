@@ -39,7 +39,17 @@ public class AssetsCountManager implements Constants {
             String assetCount;
             try {
                 if(platform.equals("azure")) {
-                    assetCount = AssetGroupUtil.fetchAssetCount(ASSET_API_URL, token, platform, getSubscriptionsForTenant(accountId));
+                    String combinedSubscriptionStr = getSubscriptionsForTenant(accountId);
+                    String[] subscriptionArray = combinedSubscriptionStr.split(",");
+                    Integer totalAssetCount = 0;
+                    for(String subscriptionStr : subscriptionArray){
+                        String assetCountForSubscription = AssetGroupUtil.fetchAssetCount(ASSET_API_URL, token, platform, subscriptionStr);
+                        Integer aCount = Integer.parseInt(assetCountForSubscription);
+                        String query="UPDATE cf_AzureTenantSubscription SET assets="+assetCountForSubscription+" WHERE subscription ='"+subscriptionStr+"'";
+                        totalAssetCount+=aCount;
+                        RDSDBManager.executeUpdate(query);
+                    }
+                    assetCount = totalAssetCount.toString();
                 }
                 else {
                     assetCount = AssetGroupUtil.fetchAssetCount(ASSET_API_URL, token, platform, accountId);

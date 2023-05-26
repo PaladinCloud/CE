@@ -1,4 +1,5 @@
 package com.tmobile.cso.pacman.datashipper.entity;
+import com.microsoft.azure.management.resources.Subscription;
 import com.tmobile.cso.pacman.datashipper.util.AuthManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import org.slf4j.Logger;
@@ -35,7 +36,17 @@ public class IssueCountManager implements Constants{
             String assetCount;
             try {
                 if(platform.equals("azure")) {
-                    assetCount = AssetGroupUtil.fetchViolationsCount(COMP_API_URL, token, platform, getSubscriptionsForTenant(accountId));
+                    String combinedSubscriptionStr = getSubscriptionsForTenant(accountId);
+                    String[] subscriptionArray = combinedSubscriptionStr.split(",");
+                    Integer totalViolationCount = 0;
+                    for(String subscriptionStr : subscriptionArray){
+                        String violationCountForSubscription = AssetGroupUtil.fetchViolationsCount(COMP_API_URL, token, platform, subscriptionStr);
+                        Integer vCount = Integer.parseInt(violationCountForSubscription);
+                        String query="UPDATE cf_AzureTenantSubscription SET violations="+violationCountForSubscription+" WHERE subscription ='"+subscriptionStr+"'";
+                        totalViolationCount+=vCount;
+                        RDSDBManager.executeUpdate(query);
+                    }
+                    assetCount = totalViolationCount.toString();
                 }
                 else {
                     assetCount = AssetGroupUtil.fetchViolationsCount(COMP_API_URL, token, platform, accountId);
