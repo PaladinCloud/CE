@@ -1,20 +1,26 @@
 .table-filter-chip {
-    padding: 4px 12px;
-    border: 1px solid gray;
-    border-radius: 8px;
-    font-size: 16px;
+    padding: 3px 8px 3px 12px;
+    gap: 6px;
+    border: 1px solid #cfd6dd;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 24px;
+    box-shadow: 0 1px 2px 0 #1B242C1F;
 }
 
-.table-filter-chip .tfc-value {
+.table-filter-chip .tfc-text-container:hover {
+    cursor: pointer;
+}
+
+.table-filter-chip .tfc-text-container .tfc-value {
     font-weight: bold;
-    color: black;
+    color: #272e35;
 }
 
 .table-filter-chip .tfc-close-icon {
-    width: 16px;
-    height: 16px;
-    margin-left: 4px;
-    font-size: 16px;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
 }
 
 .table-filter-chip .tfc-close-icon:hover {
