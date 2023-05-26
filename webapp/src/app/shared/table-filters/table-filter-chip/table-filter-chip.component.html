@@ -21,20 +21,21 @@
     cdkConnectedOverlay
     [cdkConnectedOverlayOrigin]="filterMenu"
     [cdkConnectedOverlayOpen]="isFilterMenuShown"
+    [cdkConnectedOverlayOffsetY]="filtersMenuOffsetY"
     (overlayOutsideClick)="isFilterMenuShown = false"
     (overlayKeydown)="overlayKeyDown($event)"
 >
-    <ul class="filter-chip-menu mat-elevation-z4">
-        <li>
-            <app-table-filter-search [(text)]="filterOptionQuery"></app-table-filter-search>
-        </li>
-        <li *ngFor="let option of filterOptionsByQuery()">
-            <mat-checkbox
-                [checked]="appliedFiltersDict[option]"
-                (change)="updateFilterOption(option, $event.checked)"
-            >
-                {{ option }}
-            </mat-checkbox>
-        </li>
-    </ul>
+    <div class="filters-menu-container flex flex-col">
+        <app-table-filter-search [(text)]="filterOptionQuery"></app-table-filter-search>
+        <ul class="filters-chip-menu">
+            <li *ngFor="let option of filterOptionsByQuery()" class="fcm-item">
+                <mat-checkbox
+                    [checked]="appliedFiltersDict[option]"
+                    (change)="updateFilterOption(option, $event.checked)"
+                >
+                    {{ option }}
+                </mat-checkbox>
+            </li>
+        </ul>
+    </div>
 </ng-template>
