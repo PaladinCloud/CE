@@ -16,7 +16,7 @@ import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
-import * as _ from 'lodash';
+import { find, findIndex } from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { FilterOptionChange } from '../table-filters/table-filters.component';
@@ -305,7 +305,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
             };
 
             if (!this.doLocalFilter) {
-                const key = _.find(this.filterTypeOptions, {
+                const key = find(this.filterTypeOptions, {
                     optionName: event.category,
                 }).optionValue;
 
@@ -343,7 +343,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
             return;
         }
 
-        const filterIndex = _.findIndex(this.filteredArray, (el, j) => {
+        const filterIndex = findIndex(this.filteredArray, (el, j) => {
             return el['keyDisplayValue'] === this.filteredArray[i].keyDisplayValue && i != j;
         });
         let currIdx = i;
@@ -378,7 +378,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.filteredArray[i].value = undefined;
 
         if (!this.doLocalFilter) {
-            const key = _.find(this.filterTypeOptions, {
+            const key = find(this.filterTypeOptions, {
                 optionName: e,
             })['optionValue'];
             this.filteredArray[i].compareKey = key.toLowerCase().trim();

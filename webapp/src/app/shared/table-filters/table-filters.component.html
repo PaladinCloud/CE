@@ -1,6 +1,6 @@
 <div class="applied-filters-container flex flex-align-center flex-wrap gap-16">
     <app-table-filter-chip
-        *ngFor="let appliedFilter of appliedFilters"
+        *ngFor="let appliedFilter of appliedFilters; trackBy: trackByAppliedFilter"
         [category]="appliedFilter.keyDisplayValue"
         [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
         [filterValues]="categoryOptions[appliedFilter.keyDisplayValue]"
