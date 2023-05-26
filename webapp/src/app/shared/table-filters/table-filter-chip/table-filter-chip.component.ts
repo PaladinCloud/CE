@@ -35,6 +35,7 @@ export class TableFilterChipComponent implements OnInit {
     @Output() updateFilter = new EventEmitter<FilterChipUpdateEvent>();
 
     readonly filtersMenuOffsetY = 7;
+    readonly maxOptionChars = 30;
 
     isFilterMenuShown = false;
 
