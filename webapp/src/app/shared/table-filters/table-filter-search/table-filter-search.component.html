@@ -1,6 +1,10 @@
-<input
-    class="filter-search-input"
-    type="text"
-    [(ngModel)]="text"
-    (ngModelChange)="textChange.emit(text)"
-/>
+<div class="filter-search-container">
+    <mat-icon class="filter-search-icon">search</mat-icon>
+    <input
+        class="filter-search-input"
+        type="text"
+        [(ngModel)]="text"
+        (ngModelChange)="textChange.emit(text)"
+        placeholder="Search"
+    />
+</div>

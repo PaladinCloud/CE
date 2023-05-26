@@ -1,0 +1,20 @@
+.filter-search-container {
+    padding: 8px 16px;
+    position: relative;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.filter-search-icon {
+    top: 12px;
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+.filter-search-input {
+    padding-left: 24px;
+    border: none;
+    font-size: 14px;
+    line-height: 24px;
+}
