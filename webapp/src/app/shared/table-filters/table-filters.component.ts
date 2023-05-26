@@ -5,12 +5,12 @@ import { FilterItem } from '../table/table.component';
 import { FilterChipUpdateEvent } from './table-filter-chip/table-filter-chip.component';
 
 interface AppliedFilter {
-    [name: string]: {
-        [child: string]: boolean;
+    [categoryName: string]: {
+        [optionName: string]: boolean;
     };
 }
 
-export interface FilterOptionChange {
+export interface OptionChange {
     category: string;
     option: string;
     value: boolean;
@@ -62,22 +62,22 @@ export class TableFiltersComponent implements OnInit {
 
     @Input() categoryOptions: { [key: string]: string[] } = {};
 
-    @Output() filterCategorySelected = new EventEmitter<string>();
-    @Output() filterCategoryRemoved = new EventEmitter<string>();
-    @Output() filterOptionSelected = new EventEmitter<FilterOptionChange>();
+    @Output() categoryChange = new EventEmitter<string>();
+    @Output() categoryClear = new EventEmitter<string>();
+    @Output() optionChange = new EventEmitter<OptionChange>();
 
     readonly filterMenuOffsetY = 7;
     readonly maxOptionChars = 30;
 
     appliedFiltersDict: AppliedFilter = {};
 
-    selectedFilterCategory: string = null;
+    selectedCategory: string = null;
 
-    isFilterMenuOpen = false;
-    isFilterSubCategoryOpen = false;
+    isCategoryMenuOpen = false;
+    isCategoryOptionsMenuOpen = false;
 
     categoryFilterQuery = '';
-    categoryChildFilterQuery = '';
+    categoryOptionFilterQuery = '';
 
     private _appliedFilters: FilterItem[] = [];
     private _categories: string[] = [];
@@ -87,19 +87,19 @@ export class TableFiltersComponent implements OnInit {
     ngOnInit(): void {}
 
     openMenu() {
-        this.isFilterMenuOpen = !this.isFilterMenuOpen;
-        this.isFilterSubCategoryOpen = false;
+        this.isCategoryMenuOpen = !this.isCategoryMenuOpen;
+        this.isCategoryOptionsMenuOpen = false;
     }
 
     openFilterCategory(filterCategory: string) {
-        this.isFilterSubCategoryOpen = true;
-        this.selectedFilterCategory = filterCategory;
-        this.filterCategorySelected.emit(filterCategory);
+        this.isCategoryOptionsMenuOpen = true;
+        this.selectedCategory = filterCategory;
+        this.categoryChange.emit(filterCategory);
     }
 
     applyFilter(filterOption: string, event: MatCheckboxChange) {
         this.updateFilter({
-            category: this.selectedFilterCategory,
+            category: this.selectedCategory,
             filterName: filterOption,
             filterValue: event.checked,
         });
@@ -124,7 +124,7 @@ export class TableFiltersComponent implements OnInit {
             }),
         });
 
-        this.filterOptionSelected.emit({
+        this.optionChange.emit({
             category: event.category,
             option: event.filterName,
             value: event.filterValue,
@@ -144,25 +144,25 @@ export class TableFiltersComponent implements OnInit {
             [filterCategory]: resettedFilter,
         });
 
-        this.filterCategoryRemoved.emit(filterCategory);
+        this.categoryClear.emit(filterCategory);
     }
 
     overlayKeyDown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
-            this.isFilterMenuOpen = false;
+            this.isCategoryMenuOpen = false;
         }
     }
 
-    filterCategoryByQuery() {
+    filterCategoriesByQuery() {
         return this.categories.filter((c) =>
             c.toLowerCase().includes(this.categoryFilterQuery.toLowerCase()),
         );
     }
 
-    filterSelectedCategoryChildrenByQuery() {
+    filterSelectedCategoryOptionsByQuery() {
         return (
-            this.categoryOptions[this.selectedFilterCategory]?.filter((c) =>
-                c?.toLowerCase().includes(this.categoryChildFilterQuery.toLowerCase()),
+            this.categoryOptions[this.selectedCategory]?.filter((c) =>
+                c?.toLowerCase().includes(this.categoryOptionFilterQuery.toLowerCase()),
             ) || []
         );
     }

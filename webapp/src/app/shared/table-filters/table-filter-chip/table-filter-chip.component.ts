@@ -13,7 +13,7 @@ export interface FilterChipUpdateEvent {
 })
 export class TableFilterChipComponent implements OnInit {
     @Input() category: string;
-    @Input() filterValues: string[] = [];
+    @Input() options: string[] = [];
     @Input() set appliedFiltersDict(values: { [key: string]: boolean }) {
         this._appliedFilters = Object.entries(values)
             .filter(([, value]) => value)
@@ -31,15 +31,15 @@ export class TableFilterChipComponent implements OnInit {
         return this._appliedFilters;
     }
 
-    @Output() clearFilter = new EventEmitter<string>();
-    @Output() updateFilter = new EventEmitter<FilterChipUpdateEvent>();
+    @Output() clear = new EventEmitter<string>();
+    @Output() update = new EventEmitter<FilterChipUpdateEvent>();
 
-    readonly filtersMenuOffsetY = 7;
+    readonly optionsMenuOffsetY = 7;
     readonly maxOptionChars = 30;
 
-    isFilterMenuShown = false;
+    isOptionsMenuOpen = false;
 
-    filterOptionQuery = '';
+    optionFilterQuery = '';
 
     private _appliedFilters: { name: string; value: boolean }[] = [];
     private _appliedFiltersDict: { [key: string]: boolean } = {};
@@ -48,12 +48,12 @@ export class TableFilterChipComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    toggleFilterMenu() {
-        this.isFilterMenuShown = !this.isFilterMenuShown;
+    toggleOptionsMenu() {
+        this.isOptionsMenuOpen = !this.isOptionsMenuOpen;
     }
 
     updateFilterOption(filterName: string, filterValue: boolean) {
-        this.updateFilter.next({
+        this.update.next({
             category: this.category,
             filterName,
             filterValue,
@@ -62,13 +62,13 @@ export class TableFilterChipComponent implements OnInit {
 
     overlayKeyDown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
-            this.isFilterMenuShown = false;
+            this.isOptionsMenuOpen = false;
         }
     }
 
     filterOptionsByQuery() {
-        return this.filterValues.filter((f) =>
-            f.toLowerCase().includes(this.filterOptionQuery.toLowerCase()),
+        return this.options.filter((f) =>
+            f.toLowerCase().includes(this.optionFilterQuery.toLowerCase()),
         );
     }
 }

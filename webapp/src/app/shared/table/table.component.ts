@@ -19,7 +19,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { find, findIndex } from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
-import { FilterOptionChange } from '../table-filters/table-filters.component';
+import { OptionChange } from '../table-filters/table-filters.component';
 
 export interface FilterItem {
     filterValue?: string | undefined;
@@ -280,21 +280,21 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         });
     }
 
-    filterOptionClick(e) {
+    selectFilterCategory(category: string) {
         const filteredArrayKeys = this.filteredArray.map((item) => item.keyDisplayValue);
 
-        if (!filteredArrayKeys.includes(e)) {
+        if (!filteredArrayKeys.includes(category)) {
             // add to filteredArray
-            this.selectedFiltersList.push(e);
+            this.selectedFiltersList.push(category);
             this.filteredArray.push({
-                keyDisplayValue: e,
+                keyDisplayValue: category,
                 filterValue: undefined,
             });
-            this.onSelectFilterType(e, this.filteredArray.length - 1);
+            this.onSelectFilterType(category, this.filteredArray.length - 1);
         }
     }
 
-    selectCategoryOption(event: FilterOptionChange) {
+    selectFilterCategoryOption(event: OptionChange) {
         let index = this.filteredArray.findIndex((i) => i.key === event.category);
 
         if (index === -1) {

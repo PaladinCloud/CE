@@ -475,7 +475,6 @@ tr.mat-header-row{
   display: block;
 }
 
-.new-filter-wrapper app-dropdown ::ng-deep .button{
-  padding: 0 16px 0px 0px;
-  border: none;
+.table-filters {
+    flex: 1;
 }
