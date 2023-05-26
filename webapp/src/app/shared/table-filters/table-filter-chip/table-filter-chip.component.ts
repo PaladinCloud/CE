@@ -34,6 +34,8 @@ export class TableFilterChipComponent implements OnInit {
     @Output() clearFilter = new EventEmitter<string>();
     @Output() updateFilter = new EventEmitter<FilterChipUpdateEvent>();
 
+    readonly filtersMenuOffsetY = 7;
+
     isFilterMenuShown = false;
 
     filterOptionQuery = '';
