@@ -1,12 +1,12 @@
 <div class="applied-filters-container flex flex-wrap gap-16">
-    <app-table-filter-item
+    <app-table-filter-chip
         *ngFor="let appliedFilter of appliedFilters"
         [category]="appliedFilter.keyDisplayValue"
-        [appliedFilters]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
+        [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
         [filterValues]="categoryOptions[appliedFilter.keyDisplayValue]"
         (clearFilter)="clearFilter($event)"
         (updateFilter)="updateFilter($event)"
-    ></app-table-filter-item>
+    ></app-table-filter-chip>
 </div>
 
 <button

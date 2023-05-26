@@ -1,26 +1,26 @@
-.table-filter-item {
+.table-filter-chip {
     padding: 4px 12px;
     border: 1px solid gray;
     border-radius: 8px;
     font-size: 16px;
 }
 
-.table-filter-item .tfi-value {
+.table-filter-chip .tfc-value {
     font-weight: bold;
     color: black;
 }
 
-.table-filter-item .tfi-close-icon {
+.table-filter-chip .tfc-close-icon {
     width: 16px;
     height: 16px;
     margin-left: 4px;
     font-size: 16px;
 }
 
-.table-filter-item .tfi-close-icon:hover {
+.table-filter-chip .tfc-close-icon:hover {
     cursor: pointer;
 }
 
-.filter-item-menu {
+.filter-chip-menu {
     background: white;
 }
