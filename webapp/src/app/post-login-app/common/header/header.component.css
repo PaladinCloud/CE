@@ -173,6 +173,10 @@
     height: 28px;
 }
 
+.header-company-logo:hover {
+    cursor: pointer;
+}
+
 .header-user-notification {
     margin: 4px 16px 0 0;
     width: 25px;

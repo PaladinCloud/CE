@@ -1,5 +1,9 @@
 <div class="header-wrapper">
-    <img class="header-company-logo" src="/assets/images/Paladin_Logo.svg" />
+    <img
+        class="header-company-logo"
+        (click)="openDashboard()"
+        src="/assets/images/Paladin_Logo.svg"
+    />
 
     <div class="header-search-wrapper" (click)="handleSearch()">
         <div class="header-search-content-container flex flex-row">
