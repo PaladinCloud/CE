@@ -38,7 +38,7 @@ import { AssetTypeMapService } from "src/app/core/services/asset-type-map.servic
   providers: [LoggerService, ErrorHandlingService, AdminService],
 })
 export class PoliciesComponent implements OnInit, OnDestroy {
-  pageTitle: String = "Policy";
+  readonly pageTitle = "Policy";
   allPolicies: any = [];
 
   filterTypeLabels = [];
@@ -200,7 +200,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     if(this.filters){
       this.getFiltersData(this.tableData);
     }
-  
+
     if(this.tableData && this.tableData.length>0){
       this.isStatePreserved = true;
     }else{
@@ -230,11 +230,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     } catch (error) { }
   }
 
-  handleFilterSelection(){    
+  handleFilterSelection(){
     this.storeState();
   }
 
-  handleFilterTypeSelection(){    
+  handleFilterTypeSelection(){
     this.storeState();
   }
 
@@ -492,7 +492,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
           if(col.toLowerCase()=="policy"){
             let imgSrc = 'noImg';
             let imageTitleText = "";
-            
+
             if (autoFixAvailable=="true") {
               imgSrc = autoFixEnabled=="true" ? 'autofix' : 'no-autofix';
               imageTitleText = autoFixEnabled=="true" ? 'Autofix Enabled': 'Autofix Available'
@@ -515,7 +515,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
           }
           else if (col.toLowerCase() == "actions") {
             let dropDownItems: Array<String> = ["Edit"];
-          if (autoFixAvailable === "true"){ 
+          if (autoFixAvailable === "true"){
              if(autoFixEnabled == "true") {
               dropDownItems.push("Disable Autofix");
              } else {
