@@ -33,6 +33,7 @@ import * as _ from 'lodash';
   providers: [CommonResponseService, LoggerService, ErrorHandlingService]
 })
 export class RecommendationsComponent implements OnInit, OnChanges, OnDestroy {
+  readonly pageTitle = 'Recommendations';
   selectedAssetGroup: string;
   selectedDomain: string;
   subscriptionToAssetGroup: Subscription;
