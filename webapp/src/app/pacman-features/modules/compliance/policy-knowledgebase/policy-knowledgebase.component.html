@@ -13,11 +13,7 @@
  -->
 
 <div class="policy-knowledgebase-wrapper flex flex-between flex-col">
-    <div class="policy-header">
-        <div class="title">
-            {{ breadcrumbPresent }}
-        </div>
-    </div>
+    <app-page-title [title]="breadcrumbPresent"></app-page-title>
     <div class="policy-categories-container flex flex-row">
         <div
             class="policy-category-item flex flex-align-center"
