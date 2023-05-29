@@ -124,7 +124,7 @@ public class EntityManager implements Constants {
                 stats.put("end_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
                 stats.put("newly_discovered",entities.stream().filter(entity->entity.get(DISCOVERY_DATE).equals(entity.get(FIRST_DISCOVERED))).count());
                 String statsJson = ESManager.createESDoc(stats);
-                ESManager.invokeAPI("POST", "/datashipper/stats", statsJson);
+                ESManager.invokeAPI("POST", "/datashipper/_doc", statsJson);
             } catch (Exception e) {
                 LOGGER.error("Exception in collecting/uploading data for {}" ,type,e);
                 Map<String,String> errorMap = new HashMap<>();

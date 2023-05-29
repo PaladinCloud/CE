@@ -374,7 +374,7 @@ public class ESManager implements Constants {
      */
     private static int getTypeCount(String indexName, String type) {
         try {
-            Response response = invokeAPI("GET", indexName + "/" + type + "/_count?filter_path=count",
+            Response response = invokeAPI("GET", indexName  + "/_count?filter_path=count",
                 "{\"query\":{ \"match\":{\"latest\":true}}}");
             String rspJson = EntityUtils.toString(response.getEntity());
             return new ObjectMapper().readTree(rspJson).at("/count").asInt();
@@ -430,6 +430,32 @@ public class ESManager implements Constants {
                 }
             }
         }
+
+        /* Below 3 dummy indices are created so that there will be atleast one index starting with aws_, gcp_ and azure_.
+        Reason for creating them is - when new asset group is created without selecting cloudProvider, then alias of asset group is
+        created on aws_*, gcp_* and azure_* if atleast one index exists which start with aws_, gcp_ and azure_ respectively. If
+        gcp or any account out of 3 is not configured at the time of creation of asset group(with cloud provider not selected),
+        then asset group is created only for the configured cloud provider accounts at that time. In future if any other cloud provider
+        account is configured(lets say gcp in this case), then indices related to the newly added accounts will not be automatically added to the previously
+        created asset group. To overcome this issue, we are adding below three indices.
+         */
+        try{
+            ESManager.createIndex("exceptions", errorList);
+            ESManager.createIndex("aws_info", errorList);
+            invokeAPI("PUT", "/" + "aws_info" + "/_alias/" + "aws", null);
+            invokeAPI("PUT", "/" + "aws_info" + "/_alias/" + "ds-all", null);
+            ESManager.createIndex("gcp_info", errorList);
+            invokeAPI("PUT", "/" + "gcp_info" + "/_alias/" + "gcp", null);
+            invokeAPI("PUT", "/" + "gcp_info" + "/_alias/" + "ds-all", null);
+            ESManager.createIndex("azure_info", errorList);
+            invokeAPI("PUT", "/" + "azure_info" + "/_alias/" + "azure", null);
+            invokeAPI("PUT", "/" + "azure_info" + "/_alias/" + "ds-all", null);
+        }
+        catch(Exception exception){
+            LOGGER.error("Index creation Error: {}", exception.getMessage());
+            LOGGER.error("Index creation Error Trace: {}", exception.getStackTrace());
+        }
+
     }
 
     /**
@@ -460,9 +486,9 @@ public class ESManager implements Constants {
         }
         filter_path.deleteCharAt(filter_path.length() - 1);
 
-        String endPoint = indexName + "/" + type + "/_search?scroll=1m" + filter_path.toString() + "&size=" + _count;
+        String endPoint = indexName + "/_search?scroll=1m" + filter_path.toString() + "&size=" + _count;
         if (count == 0) {
-            endPoint = indexName + "/" + type + "/_search?scroll=1m" + filter_path.toString();
+            endPoint = indexName + "/_search?scroll=1m" + filter_path.toString();
         }
         String payLoad = "{ \"query\": { \"match\": {\"latest\": true}}}";
         Map<String, Map<String, String>> _data = new HashMap<>();
@@ -648,7 +674,7 @@ public class ESManager implements Constants {
      * @throws IOException ioexception
      */
     public static void createType(String index, String type, String parent) throws IOException {
-        if (!typeExists(index, type)) {
+     //   if (!typeExists(index, type)) {
             String endPoint = index + "/_mapping";
 
             // Get existing children
@@ -669,37 +695,38 @@ public class ESManager implements Constants {
             }
 
             // Add new child
-            existingChildTypes.add(type);
-            existingChildren.put(parent, existingChildTypes);
+            if(!existingChildTypes.contains(type)){
+                existingChildTypes.add(type);
+                existingChildren.put(parent, existingChildTypes);
 
-            // Create childMap with updated relations
-            Map<String, Object> childMap = new HashMap<>();
-            childMap.put("type", "join");
-            childMap.put("relations", existingChildren);
+                // Create childMap with updated relations
+                Map<String, Object> childMap = new HashMap<>();
+                childMap.put("type", "join");
+                childMap.put("relations", existingChildren);
 
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(parent + "_relations", childMap);
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(parent + "_relations", childMap);
 
-            Map<String, Object> payloadMap = new HashMap<>();
-            payloadMap.put("properties", properties);
+                Map<String, Object> payloadMap = new HashMap<>();
+                payloadMap.put("properties", properties);
 
-            String payLoad = new ObjectMapper().writeValueAsString(payloadMap);
-            LOGGER.info("creating Type: ");
-            LOGGER.info("Index: {}", index);
-            LOGGER.info("type: {}", type);
-            LOGGER.info("parent: {}", parent);
-            LOGGER.info("payLoad: {}", payLoad);
-            try {
-                invokeAPI("PUT", endPoint, payLoad);
-            } catch (IOException e) {
-                LOGGER.error("Error createType ", e);
-                LOGGER.error("Index: {}", index);
-                LOGGER.error("type: {}", type);
-                LOGGER.error("parent: {}", parent);
-                LOGGER.error("payLoad: {}", payLoad);
+                String payLoad = new ObjectMapper().writeValueAsString(payloadMap);
+                LOGGER.info("creating Type: ");
+                LOGGER.info("Index: {}", index);
+                LOGGER.info("type: {}", type);
+                LOGGER.info("parent: {}", parent);
+                LOGGER.info("payLoad: {}", payLoad);
+                try {
+                    invokeAPI("PUT", endPoint, payLoad);
+                } catch (IOException e) {
+                    LOGGER.error("Error createType ", e);
+                    LOGGER.error("Index: {}", index);
+                    LOGGER.error("type: {}", type);
+                    LOGGER.error("parent: {}", parent);
+                    LOGGER.error("payLoad: {}", payLoad);
 
+                }
             }
-        }
     }
 
     // Helper function to retrieve existing child relations
@@ -796,7 +823,7 @@ public class ESManager implements Constants {
         String deleteJson = "{\"query\": {\"bool\": {\"must_not\": [{ \"match\": {\"" + field + "\":\"" + value
                 + "\"}}]}}}";
         try {
-            invokeAPI("POST", index + "/" + type + "/" + "_delete_by_query", deleteJson);
+            invokeAPI("POST", index + "/" + "_delete_by_query", deleteJson);
         } catch (IOException e) {
             LOGGER.error("Error deleteOldDocuments ", e);
         }
@@ -830,7 +857,7 @@ public class ESManager implements Constants {
     	}
     	updateJson.append("]}}}");
         try {
-        	Response updateInfo = invokeAPI("POST", index + "/" + type + "/" + "_update_by_query", updateJson.toString());
+        	Response updateInfo = invokeAPI("POST", index + "/" + "_update_by_query", updateJson.toString());
         	String updateInfoJson = EntityUtils.toString(updateInfo.getEntity());
         	return new JsonParser().parse(updateInfoJson).getAsJsonObject().get("updated").getAsLong();
         } catch (IOException e) {
