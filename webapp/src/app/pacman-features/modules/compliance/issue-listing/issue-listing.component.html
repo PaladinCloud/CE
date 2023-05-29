@@ -11,7 +11,7 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-<div class="violations-table" [class.admin-rights]="adminAccess">
+<div class="violations-container" [class.admin-rights]="adminAccess">
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
         <app-breadcrumb
             *ngIf="breadcrumbLinks.length > 0"
@@ -20,12 +20,8 @@
             [breadcrumbPresent]="breadcrumbPresent"
         ></app-breadcrumb>
     </div>
-    <div class="violations-header">
-        <div class="flex flex-align-center">
-            <span class="title">{{ breadcrumbPresent }}</span>
-        </div>
-    </div>
-    <div class="wrapper">
+    <app-page-title [title]="breadcrumbPresent"></app-page-title>
+    <div class="table-wrapper">
         <app-table
             style="height: 100%; width: 100%"
             [centeredColumns]="centeredColumns"
