@@ -126,4 +126,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
             queryParams: this.route.snapshot.queryParams,
         });
     }
+
+    openDashboard() {
+        const queryParams = this.route.snapshot.queryParams;
+        this.router.navigate(['pl/compliance/compliance-dashboard'], {
+            queryParams: {
+                ag: queryParams.ag,
+                domain: queryParams.domain,
+            },
+        });
+    }
 }
