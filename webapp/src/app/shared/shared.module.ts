@@ -86,6 +86,7 @@ import { MultilineTrendComponent } from './multiline-trend/multiline-trend.compo
 import { MultilineZoomGraphComponent } from './multiline-zoom-graph/multiline-zoom-graph.component';
 import { NestedAccordionComponent } from './nested-accordion/nested-accordion.component';
 import { OverlayComponent } from './overlay/overlay.component';
+import { PageTitleComponent } from './page-title/page-title.component';
 import { AssetSummarySearchFilterPipe } from './pipes/asset-summary-search-filter.pipe';
 import { OrderBySumPipe } from './pipes/order-by-sum.pipe';
 import { OrderByPipe } from './pipes/order-by.pipe';
@@ -202,6 +203,7 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         OrderBySumPipe,
         OverlayComponent,
         OverviewTileComponent,
+        PageTitleComponent,
         PrimaryPieChartComponent,
         RadioButtonComponent,
         ScrollTrackerDirective,
@@ -282,6 +284,7 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         OrderBySumPipe,
         OverlayComponent,
         OverviewTileComponent,
+        PageTitleComponent,
         PrimaryPieChartComponent,
         RadioButtonComponent,
         ReactiveFormsModule,
