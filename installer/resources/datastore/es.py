@@ -1,7 +1,8 @@
 from core.terraform.resources.aws.elasticsearch import ElasticsearchDomainResource, ElasticsearchDomainPolicyResource
 from core.terraform.resources.aws.cloudwatch import CloudWatchLogGroupResource, CloudWatchLogResourcePolicy
 from core.providers.aws.boto3.iam import create_iam_service_linked_role
-from resources.vpc.security_group import InfraSecurityGroupResource
+from resources.kms.kmscmk import kms_key_resources
+from resources.vpc.security_group import InfraOSSecurityGroupResource
 from core.config import Settings
 from core.log import SysLog
 import json
@@ -35,7 +36,7 @@ class ESCloudWatchLogResourcePolicy(CloudWatchLogResourcePolicy):
 
 class ESDomain(ElasticsearchDomainResource):
     domain_name = "data"
-    elasticsearch_version = "5.5"
+    elasticsearch_version = "OpenSearch_2.5"
     instance_type = Settings.get('ES_INSTANCE_TYPE', "m5.large.elasticsearch")
     instance_count =  Settings.get('ES_NODE_COUNT',3)
     dedicated_master_enabled = Settings.get('ES_DEDICATED_MASTER_ENABLED',False)
@@ -46,11 +47,13 @@ class ESDomain(ElasticsearchDomainResource):
     volume_type = "gp2"
     volume_size = Settings.get('ES_VOLUME_SIZE', 20)
     automated_snapshot_start_hour = 23
-    security_group_ids = [InfraSecurityGroupResource.get_output_attr('id')]
+    security_group_ids = [InfraOSSecurityGroupResource.get_output_attr('id')]
     subnet_ids = [Settings.get('VPC')['SUBNETS'][0]]
     cloudwatch_log_group_arn = ESCloudWatchLogGroup.get_output_attr('arn')
     log_type = "ES_APPLICATION_LOGS"
-
+    enabled = True
+    kms_key_id = kms_key_resources.get_output_attr('arn')
+    
     @classmethod
     def get_http_url_with_port(cls):
         return "%s:%s" % (cls.get_http_url(), "80")

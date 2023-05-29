@@ -11,7 +11,7 @@ class ElasticsearchDomainResource(TerraformResource):
         resource_instance_name (str): Type of resource instance
         available_args (dict): Instance configurations
     """
-    resource_instance_name = "aws_elasticsearch_domain"
+    resource_instance_name = "aws_opensearch_domain"
     OUTPUT_LIST = ['endpoint', 'kibana_endpoint']
     setup_time = 600
 
@@ -58,6 +58,13 @@ class ElasticsearchDomainResource(TerraformResource):
                 'cloudwatch_log_group_arn': {'required': True},
                 'log_type': {'required': True},
             }
+        },
+        'encrypt_at_rest' : {
+            'required': False,
+            'inline_args': {
+                'enabled': {'required': True},
+                'kms_key_id ': {'required': True},
+            }
         }
     }
 
@@ -92,7 +99,7 @@ class ElasticsearchDomainPolicyResource(TerraformResource):
         resource_instance_name (str): Type of resource instance
         available_args (dict): Instance configurations
     """
-    resource_instance_name = "aws_elasticsearch_domain_policy"
+    resource_instance_name = "aws_opensearch_domain_policy"
     setup_time = 60
     available_args = {
         'domain_name': {'required': True},
