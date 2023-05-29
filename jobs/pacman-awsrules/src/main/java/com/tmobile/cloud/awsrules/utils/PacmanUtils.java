@@ -1091,7 +1091,7 @@ public class PacmanUtils {
 		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
 
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_NACL_ID_ATTRIBUTE), networkAclId);
-		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.EGRESS), PacmanRuleConstants.FALSE);
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.EGRESS.toLowerCase()), PacmanRuleConstants.FALSE);
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_RULE_ACTION_ATTRIBUTE), "allow");
 
 		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esNaclEntryUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
