@@ -18,8 +18,8 @@ class Buildpacbot(object):
         archive_type (str): Archive format
         issue_email_template (str): file to make public after uploading to s3
     """
-    mvn_build_command = "mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
-    mvn_clean_command = "mvn clean"
+    mvn_build_command = "/opt/apache-maven-3.6.3/bin/mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
+    mvn_clean_command = "/opt/apache-maven-3.6.3/bin/mvn clean"
     archive_type = "zip"  # What type of archive is required
     issue_email_template = ''
 
