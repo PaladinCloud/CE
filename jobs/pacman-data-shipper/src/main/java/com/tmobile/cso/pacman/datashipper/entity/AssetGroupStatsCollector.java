@@ -17,6 +17,8 @@ import com.tmobile.cso.pacman.datashipper.util.AuthManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 
+import static com.tmobile.cso.pacman.datashipper.es.ESManager.invokeAPI;
+
 /**
  * The Class AssetGroupStatsCollector.
  */
@@ -78,20 +80,6 @@ public class AssetGroupStatsCollector implements Constants{
         }
 
         ESManager.createIndex(AG_STATS, errorList);
-        ESManager.createIndex("exceptions", errorList);
-
-        /* Below 3 dummy indices are created so that there will be atleast one index starting with aws_, gcp_ and azure_.
-        Reason for creating them is - when new asset group is created without selecting cloudProvider, then alias of asset group is
-        created on aws_*, gcp_* and azure_* if atleast one index exists which start with aws_, gcp_ and azure_ respectively. If
-        gcp or any account out of 3 is not configured at the time of creation of asset group(with cloud provider not selected),
-        then asset group is created only for the configured cloud provider accounts at that time. In future if any other cloud provider
-        account is configured(lets say gcp in this case), then indices related to the newly added accounts will not be automatically added to the previously
-        created asset group. To overcome this issue, we are adding below three indices.
-         */
-
-        ESManager.createIndex("aws_info", errorList);
-        ESManager.createIndex("gcp_info", errorList);
-        ESManager.createIndex("azure_info", errorList);
 
 //        ESManager.createType(AG_STATS, "count_type", errorList);
 //        ESManager.createType(AG_STATS, "count_asset", errorList);
