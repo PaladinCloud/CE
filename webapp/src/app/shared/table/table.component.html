@@ -47,26 +47,14 @@
                             Results</span
                         >
                     </div>
-                </div>
-                <div class="header-right flex flex-row gap-24">
-                    <app-dropdown
-                        class="add-remove-columns-wrapper"
-                        *ngIf="showAddRemoveCol"
-                        [isDisabled]="false"
-                        [items]="displayedColumns"
-                        [isMultiSelect]="true"
-                        [selectedList]="whiteListColumns"
-                        [isChipListEnabled]="true"
-                        (selected)="handleColumnSelection($event)"
-                        [buttonLabel]="'Columns'"
-                        [isButton]="true"
-                        [selectAll]="'Select All'"
-                        [dropdownTitle]="'Show/hide columns'"
-                    >
-                    </app-dropdown>
-                    <div *ngIf="showDownloadBtn" class="download-btn pointer" (click)="download()">
-                        <img src="/assets/icons/download-icon.svg" alt="" />
-                    </div>
+                    <app-table-options
+                        [isDownloadEnabled]="showDownloadBtn"
+                        [isColumnsEnabled]="showAddRemoveCol"
+                        [availableColumns]="displayedColumns"
+                        [selectedColumns]="whiteListColumns"
+                        (download)="download()"
+                        (selectColumns)="handleColumnSelection($event)"
+                    ></app-table-options>
                 </div>
             </div>
         </div>
