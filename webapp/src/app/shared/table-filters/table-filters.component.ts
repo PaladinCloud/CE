@@ -25,19 +25,28 @@ export class TableFiltersComponent implements OnInit {
     @Input() set appliedFilters(filters) {
         this._appliedFilters = filters;
         const optionDict = filters.reduce((prev, next) => {
-            if (!next.value) {
+            if (!next.filterValue) {
                 return prev;
             }
             prev = merge({}, prev, {
                 [next.key]: {
-                    [next.value]: true,
+                    [next.filterValue]: true,
                 },
             });
             return prev;
         }, {});
 
+        // TODO: REMOVE IF STATEMENT WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
+        if (Object.keys(this.appliedFiltersDict).length) {
+            this.appliedFiltersDict = Object.keys(this.appliedFiltersDict).reduce((acc, next) => {
+                acc[next] = optionDict[next] ? optionDict[next] : this.appliedFiltersDict[next];
+                return acc;
+            }, {});
+            return;
+        }
         this.appliedFiltersDict = merge({}, this.appliedFiltersDict, optionDict);
     }
+
     get appliedFilters() {
         return this._appliedFilters;
     }
