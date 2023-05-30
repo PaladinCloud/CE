@@ -1,0 +1,66 @@
+<mat-icon
+    cdkOverlayOrigin
+    #menuTrigger="cdkOverlayOrigin"
+    class="table-options-icon"
+    (click)="openMenu()"
+>
+    more_horiz
+</mat-icon>
+
+<ng-template
+    cdkConnectedOverlay
+    cdkConnectedOverlayFlexibleDimensions
+    [cdkConnectedOverlayPositions]="overlayPositions"
+    [cdkConnectedOverlayOrigin]="menuTrigger"
+    [cdkConnectedOverlayOpen]="isMenuOpen"
+    (overlayKeydown)="overlayKeyDown($event)"
+    (overlayOutsideClick)="hideMenus()"
+>
+    <div class="table-options-menu">
+        <ul class="column-option-list" *ngIf="isColumnOptionsOpen; else menuBlock">
+            <li class="column-option-item">
+                <mat-checkbox
+                    [checked]="
+                        selectedColumns.length > 0 &&
+                        selectedColumns.length === availableColumns.length
+                    "
+                    [indeterminate]="
+                        selectedColumns.length > 0 &&
+                        selectedColumns.length !== availableColumns.length
+                    "
+                    (change)="selectAllColumns($event.checked)"
+                >
+                    Select All
+                </mat-checkbox>
+            </li>
+            <li *ngFor="let columnOption of availableColumns" class="column-option-item">
+                <mat-checkbox
+                    [checked]="selectedColumnsDict[columnOption]"
+                    (change)="selectColumn(columnOption, $event.checked)"
+                >
+                    {{ columnOption }}
+                </mat-checkbox>
+            </li>
+        </ul>
+        <ng-template #menuBlock>
+            <ul class="table-options-list" *ngIf="!isColumnOptionsOpen">
+                <li
+                    *ngIf="isColumnsEnabled"
+                    class="table-options-item flex flex-align-center"
+                    (click)="isColumnOptionsOpen = true"
+                >
+                    <mat-icon class="material-icons-outlined">view_columns</mat-icon>
+                    Columns
+                </li>
+                <li
+                    *ngIf="isDownloadEnabled"
+                    class="table-options-item flex flex-align-center"
+                    (click)="download.emit()"
+                >
+                    <mat-icon class="material-icons-outlined">download</mat-icon>
+                    Download
+                </li>
+            </ul>
+        </ng-template>
+    </div>
+</ng-template>

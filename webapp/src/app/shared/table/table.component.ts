@@ -259,15 +259,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.actionSelected.emit(event);
     }
 
-    handleColumnSelection(e) {
-        const cols = [];
-        const allCols = Object.keys(this.columnWidths);
-        allCols.forEach((col) => {
-            if (e.includes(col)) {
-                cols.push(col);
-            }
-        });
-        this.whiteListColumns = cols;
+    handleColumnSelection(selectedColumns: string[]) {
+        this.whiteListColumns = Object.keys(this.columnWidths).filter((c) =>
+            selectedColumns.includes(c),
+        );
         this.getWidthFactor();
         this.waitAndResizeTable();
         this.whiteListColumnsChanged();
@@ -294,23 +289,23 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         }
     }
 
-    removeOnlyFilterValue(index){
+    removeOnlyFilterValue(index) {
         this.filteredArray[index].value = undefined;
         this.filteredArray[index].filterValue = undefined;
         let event = {
-          index,
-          removeOnlyFilterValue: true,
-        }
-        if(this.doLocalFilter){
-          this.filterAndSort();
+            index,
+            removeOnlyFilterValue: true,
+        };
+        if (this.doLocalFilter) {
+            this.filterAndSort();
         }
         this.deleteFilters.emit(event);
-      }
+    }
 
     selectFilterCategoryOption(event: OptionChange) {
         let index = this.filteredArray.findIndex((i) => i.key === event.category);
 
-        if(event.value==false){
+        if (event.value == false) {
             this.removeOnlyFilterValue(index);
             return;
         }

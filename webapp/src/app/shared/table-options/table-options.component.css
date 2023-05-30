@@ -1,0 +1,40 @@
+.table-options-icon,
+.table-options-item .mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    line-height: 20px;
+    color: #272e35;
+}
+
+.table-options-icon:hover {
+    cursor: pointer;
+}
+
+.table-options-menu {
+    background: white;
+    border: 1px solid rgba(16 40 72 / 9%);
+    border-radius: 6px;
+    box-shadow: 0 2px 2px -1px rgba(27 35 44 / 4%), 0 8px 16px -2px rgba(27 36 44 / 12%);
+    font-family: var(--text-font-family);
+}
+
+.column-option-list {
+    max-height: 270px;
+    overflow-y: auto;
+}
+
+.column-option-item,
+.table-options-item {
+    padding: 6px 12px;
+    gap: 6px;
+}
+
+.table-options-item:not(:last-of-type) {
+    border-bottom: 1px solid var(--border-200);
+}
+
+.table-options-item:hover {
+    cursor: pointer;
+    background: rgba(2 47 82 / 6%);
+}
