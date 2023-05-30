@@ -2843,3 +2843,12 @@ CALL update_displayFields_for_azure_gcp(@MANDATORY_TAGS);
 
 update pac_v2_ui_options set optionURL="/compliance/v1/filters/eventname" where optionId=34;
 
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (12,'plugins');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account ID','accountId','admin/accounts/filter/attribute?attribute=accountId');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account Name','accountName','admin/accounts/filter/attribute?attribute=accountName');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Assets','assets','admin/accounts/filter/attribute?attribute=assets');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Violations','violations','admin/accounts/filter/attribute?attribute=violations');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Status','accountStatus','admin/accounts/filter/attribute?attribute=accountStatus');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Created By','createdBy','admin/accounts/filter/attribute?attribute=createdBy');
+
