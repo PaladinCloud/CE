@@ -158,8 +158,16 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
     .subscribe((assetGroupName) => {
-      this.tableScrollTop = 0;
-      this.searchTxt = "";
+      if(this.selectedAssetGroup){
+        this.filterTagLabels = {};
+        this.tableStateService.clearPreservedFilters(this.pageTitle);
+      }
+      this.filters = [];
+      this.filterText = {};
+      this.getPreservedState();
+      if(this.selectedAssetGroup){
+        this.tableScrollTop = 0;
+      }
       this.backButtonRequired =
       this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
       this.selectedAssetGroup = assetGroupName;
@@ -185,8 +193,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-
+  getPreservedState(){
     const state = this.tableStateService.getState(this.pageTitle) || {};
     this.headerColName = state.headerColName ?? 'Asset ID';
     this.direction = state.direction ?? 'asc';
@@ -206,7 +213,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }else{
       this.isStatePreserved = false;
     }
+  }
 
+  ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
 

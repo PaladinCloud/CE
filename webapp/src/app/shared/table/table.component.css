@@ -38,6 +38,8 @@
     border: 1px solid var(--border-100);
     padding: 12px 19px 12px 24px;
     align-items: center;
+    display: flex;
+    gap: 12px;
 }
 
 .table-header .search-bar-wrapper {
@@ -297,7 +299,7 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell{
 }
 
 tr.mat-header-row{
-  height: 52px;
+  height: 40px;
   padding: 16px 0;
   font: var(--text-body-2);
   color: var(--text-low-emphasis);

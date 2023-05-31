@@ -167,43 +167,45 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notificationObservableService.getMessage();
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const stateUpdated =  history.state.dataUpdated;
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
-    let state = this.tableStateService.getState("adminPolicies") || {};
+    this.getPreservedState();
+    this.routerParam();
+    this.updateComponent();
+  }
+
+  getPreservedState(){
+    const stateUpdated =  history.state.dataUpdated;
+    const state = this.tableStateService.getState("adminPolicies") || {};
     if(stateUpdated){
       // this.clearState();
       state.data = [];
       // state = {};
     }
-    if(state){      
-      this.headerColName = state.headerColName || 'Severity';
-      this.direction = state.direction || 'desc';
-      this.bucketNumber = state.bucketNumber || 0;
-      this.totalRows = state.totalRows || 0;
-      this.searchTxt = state?.searchTxt || '';
+    this.headerColName = state.headerColName || 'Severity';
+    this.direction = state.direction || 'desc';
+    this.bucketNumber = state.bucketNumber || 0;
+    this.totalRows = state.totalRows || 0;
+    this.searchTxt = state?.searchTxt || '';
 
-      this.tableDataLoaded = true;
+    this.tableDataLoaded = true;
 
-      this.tableData = state?.data || [];
-      this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
-      this.tableScrollTop = state?.tableScrollTop;
-      this.filters = state?.filters || [];
-      this.selectedRowIndex = state?.selectedRowIndex;
+    this.tableData = state?.data || [];
+    this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
+    this.tableScrollTop = state?.tableScrollTop;
+    this.filters = state?.filters || [];
+    this.selectedRowIndex = state?.selectedRowIndex;
 
-      if(this.filters){
-        this.getFiltersData(this.tableData);
-      }
-   
-      if(this.tableData && this.tableData.length>0){
-        this.isStatePreserved = true;
-      }else{
-        this.isStatePreserved = false;
-      }
+    if(this.filters){
+      this.getFiltersData(this.tableData);
     }
-    this.routerParam();
-    this.updateComponent();
+  
+    if(this.tableData && this.tableData.length>0){
+      this.isStatePreserved = true;
+    }else{
+      this.isStatePreserved = false;
+    }
   }
 
   handleHeaderColNameSelection(event){
