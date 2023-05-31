@@ -6,6 +6,7 @@ import {
     HostListener,
     Input,
     OnChanges,
+    OnDestroy,
     OnInit,
     Output,
     SimpleChanges,
@@ -18,6 +19,8 @@ import { MatSelect } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
 import { find, findIndex } from 'lodash';
 import { Subject } from 'rxjs';
+import { skip, takeUntil } from 'rxjs/operators';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { OptionChange } from '../table-filters/table-filters.component';
 
@@ -30,25 +33,26 @@ export interface FilterItem {
     filterkey?: string;
 }
 
+type SortDirection = 'asc' | 'desc';
+
 @Component({
     selector: 'app-table',
     templateUrl: './table.component.html',
     styleUrls: ['./table.component.css'],
 })
-export class TableComponent implements OnInit, AfterViewInit, OnChanges {
+export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @Input() centeredColumns: { [key: string]: boolean } = {};
     @Input() columnsSortFunctionMap;
     @Input() columnWidths: { [key: string]: number };
     @Input() data = [];
-    @Input() direction: 'desc' | 'asc';
+    @Input() direction: SortDirection;
     @Input() doLocalFilter = false;
     @Input() doLocalSearch = false;
     @Input() doLocalSort = true;
     @Input() doNotSort = false;
     @Input() filterTagLabels: { [key: string]: string[] };
     @Input() filterTypeLabels = [];
-    @Input() gapBetweenFilterAndTable;
-    @Input() headerColName;
+    @Input() headerColName: string;
     @Input() imageDataMap = {};
     @Input() onScrollDataLoader: Subject<any>;
     @Input() rowClickable = true;
@@ -77,21 +81,28 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     @Output() actionSelected = new EventEmitter();
     @Output() deleteFilters = new EventEmitter<{
         index?: number;
+        removeOnlyFilterValue?: boolean;
         clearAll?: boolean;
     }>();
-    @Output() downloadClicked = new EventEmitter<any>();
-    @Output() headerColNameSelected = new EventEmitter<any>();
-    @Output() nextPageCalled = new EventEmitter<any>();
+    @Output() downloadClicked = new EventEmitter<{
+        searchTxt: string;
+        filters: FilterItem[];
+    }>();
+    @Output() headerColNameSelected = new EventEmitter<{
+        headerColName: string;
+        direction: SortDirection;
+    }>();
+    @Output() nextPageCalled = new EventEmitter<number>();
     @Output() rowSelectEventEmitter = new EventEmitter<any>();
     @Output() searchCalledEventEmitter = new EventEmitter<string>();
     @Output() searchEventEmitter = new EventEmitter<string>();
-    @Output() searchInColumnsChanged = new EventEmitter<any>();
+    @Output() searchInColumnsChanged = new EventEmitter<string>();
     @Output() selectedFilter = new EventEmitter<{
         index: number;
         filterValue: string;
         filterKeyDisplayValue: string;
     }>();
-    @Output() selectedFilterType = new EventEmitter<any>();
+    @Output() selectedFilterType = new EventEmitter<string>();
     @Output() whitelistColumnsChanged = new EventEmitter<any>();
 
     @ViewChild('select') select: MatSelect;
@@ -111,8 +122,12 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     isWindowExpanded = true;
     isDataLoading = false;
     selectedFiltersList: string[] = [];
+    destroy$ = new Subject<void>();
 
-    constructor(private windowExpansionService: WindowExpansionService) {
+    constructor(
+        private assetGroupChangeService: AssetGroupObservableService,
+        private windowExpansionService: WindowExpansionService,
+    ) {
         this.windowExpansionService.getExpansionStatus().subscribe(() => {
             this.waitAndResizeTable();
         });
@@ -129,6 +144,13 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
                 }
             });
         }
+
+        this.assetGroupChangeService
+            .getAssetGroup()
+            .pipe(skip(1), takeUntil(this.destroy$))
+            .subscribe(() => {
+                this.removeAllFilters();
+            });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -183,6 +205,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.waitAndResizeTable();
     }
 
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     filterAndSort() {
         if (this.doLocalSearch) {
             this.customSearch();
@@ -234,7 +261,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.whitelistColumnsChanged.emit(this.whiteListColumns);
     }
 
-    handleClick(row, col, i) {
+    handleClick(row, col, i: number) {
         if (row[col].isMenuBtn) {
             return;
         }
@@ -289,17 +316,16 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         }
     }
 
-    removeOnlyFilterValue(index) {
+    removeOnlyFilterValue(index: number) {
         this.filteredArray[index].value = undefined;
         this.filteredArray[index].filterValue = undefined;
-        let event = {
-            index,
-            removeOnlyFilterValue: true,
-        };
         if (this.doLocalFilter) {
             this.filterAndSort();
         }
-        this.deleteFilters.emit(event);
+        this.deleteFilters.emit({
+            index,
+            removeOnlyFilterValue: true,
+        });
     }
 
     selectFilterCategoryOption(event: OptionChange) {
@@ -385,7 +411,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.selectedFilter.emit(event);
     }
 
-    onSelectFilterType(e, i) {
+    onSelectFilterType(e: string, i: number) {
         this.filteredArray[i].key = e;
         this.filteredArray[i].keyDisplayValue = e;
         this.filteredArray[i].value = undefined;
@@ -528,7 +554,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         }
     }
 
-    announceSortChange(sort: any) {
+    announceSortChange(sort: { active: string; direction: SortDirection }) {
         if (this.doNotSort) {
             return;
         }
@@ -540,11 +566,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         });
     }
 
-    customSort(columnName, direction) {
+    customSort(columnName: string, direction: SortDirection | '') {
         if (!columnName || direction === '' || this.doNotSort) {
             return;
         }
-        const isAsc = this.direction == 'asc';
+        const isAsc = this.direction === 'asc';
 
         this.dataSource.data = this.dataSource.data.sort((a, b) => {
             if (this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]) {
