@@ -133,45 +133,56 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         this.currentPageLevel = this.routerUtilityService.getpageLevel(
             this.router.routerState.snapshot.root,
         );
-        this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+
+        this.assetGroupSubscription = this.assetGroupObservableService
+            .getAssetGroup()
+            .subscribe(assetGroupName => {
+                if(this.selectedAssetGroup){
+                    this.filterTagLabels = {};
+                    this.tableStateService.clearPreservedFilters(this.pageTitle);
+                  }
+                  this.filters = [];
+                  this.filterText = {};
+                  this.getPreservedState();
+                  if(this.selectedAssetGroup){
+                    this.tableScrollTop = 0;
+                  }
+                this.getFilters();
+                this.selectedAssetGroup = assetGroupName;
+            });
+
+        this.domainSubscription = this.domainObservableService
+            .getDomainType()
+            .subscribe((domain) => {
+                this.selectedDomain = domain;
+            });
+    }
+
+    getPreservedState() {
+        const state = this.tableStateService.getState(this.pageTitle) || {};
+        this.headerColName = state.headerColName || '';
+        this.direction = state.direction || '';
+        this.bucketNumber = state.bucketNumber || 0;
+        this.totalRows = state.totalRows || 0;
+        this.searchTxt = state?.searchTxt || '';
+        this.selectedRowIndex = state?.selectedRowIndex;
+
+        this.tableDataLoaded = true;
+
+        this.tableData = state?.data || [];
+        this.displayedColumns = Object.keys(this.columnWidths);
+        this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+        this.tableScrollTop = state?.tableScrollTop;
+
+        if (this.tableData && this.tableData.length > 0) {
+            this.isTableStatePreserved = true;
+        } else {
+            this.isTableStatePreserved = false;
+        }
     }
 
     ngOnInit() {
-        const state = this.tableStateService.getState(this.pageTitle) || {};
-        if (state) {
-            this.headerColName = state.headerColName || '';
-            this.direction = state.direction || '';
-            this.bucketNumber = state.bucketNumber || 0;
-            this.totalRows = state.totalRows || 0;
-            this.searchTxt = state?.searchTxt || '';
-            this.selectedRowIndex = state?.selectedRowIndex;
-
-            this.tableDataLoaded = true;
-
-            this.tableData = state?.data || [];
-            this.displayedColumns = Object.keys(this.columnWidths);
-            this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-            this.tableScrollTop = state?.tableScrollTop;
-
-            if (this.tableData && this.tableData.length > 0) {
-                this.isTableStatePreserved = true;
-            } else {
-                this.isTableStatePreserved = false;
-            }
-
-            this.assetGroupSubscription = this.assetGroupObservableService
-                .getAssetGroup()
-                .subscribe((assetGroupName) => {
-                    this.selectedAssetGroup = assetGroupName;
-                });
-
-            this.domainSubscription = this.domainObservableService
-                .getDomainType()
-                .subscribe((domain) => {
-                    this.selectedDomain = domain;
-                });
-            this.getFilters();
-        }
+        this.getPreservedState();
     }
 
     /*

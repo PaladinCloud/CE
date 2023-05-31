@@ -140,7 +140,16 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
       .subscribe((assetGroupName) => {
-        this.tableScrollTop = 0;
+        if(this.selectedAssetGroup){
+          this.filterTagLabels = {};
+          this.tableStateService.clearPreservedFilters(this.pageTitle);
+        }
+        this.filters = [];
+        this.filterText = {};
+        this.getPreservedState();
+        if(this.selectedAssetGroup){
+          this.tableScrollTop = 0;
+        }
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
@@ -165,7 +174,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       });
   }
 
-  getDataFromPreservedState(){
+  getPreservedState(){
     const state = this.tableStateService.getState(this.pageTitle) ?? {};
     if(state){
       this.headerColName = state.headerColName ?? 'Severity';
@@ -188,24 +197,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       }else{
         this.isStatePreserved = false;
       }
-
-      // if(filter){
-      //   console.log("chose to navigate: ", filter);
-
-      //   this.router.navigate(["./"], {
-      //     relativeTo: this.activatedRoute,
-      //     queryParams: {filter: filter},
-      //     queryParamsHandling: "merge"
-      //   }).catch(e => {
-      //     console.log("error navigating: ", e);
-      //   })
-      // }
     }
   }
 
   ngOnInit() {
-
-    this.getDataFromPreservedState();
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
 
     if(breadcrumbInfo){
@@ -232,7 +227,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldType = "number";
       this.sortOrder = ["low", "medium", "high", "critical"]
     } else if (sortColName === "violation id") {
-      this.fieldName = "_uid";
+      this.fieldName = "_id";
       this.fieldType = "string";
     } else if (sortColName === "resource id") {
       this.fieldName = "_resourceid.keyword";
@@ -240,12 +235,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     } else if (sortColName === "category") {
       this.fieldName = "policyCategory.keyword";
       this.fieldType = "number";
-      this.sortOrder = ["tagging", "costOptimization", "governance", "security"]
+      this.sortOrder = ["tagging", "cost", "operations", "security"]
     } else if (sortColName === "policy") {
       this.fieldType = "number";
       this.fieldName = "policyId.keyword";
     }else if (sortColName === "asset type") {
-      this.fieldType = "string";
+      this.fieldType = "number";
       this.fieldName = "resourcetType.keyword";
     }else if (sortColName === "age") {
       this.fieldType = "number";
@@ -529,6 +524,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                   ),
               },
           };
+          if(value.toLowerCase()=="age"){
+            const filterValues = this.filterTagLabels[value].splice(1);            
+            filterValues.sort((a, b) => a-b);
+            this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
+          }
           if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
           resolve(this.filterTagOptions[value]);
           this.storeState();

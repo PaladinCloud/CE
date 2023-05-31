@@ -45,6 +45,33 @@ export class TableStateService {
         this.setState(componentKey, componentState);
     }
 
+    clearPreservedData(componentKey){
+        try{
+            const componentState = this.getState(componentKey);
+            componentState["data"] = [];
+            componentState["bucketNumber"] = 0;
+            componentState["selectedRowIndex"] = 0;
+            this.setState(componentKey, componentState);
+        }catch(e){
+            this.logger.log(componentKey, ": Error in clearing state: "+e);
+        }
+    }
+
+    clearPreservedFilters(componentKey){
+        try{
+            const componentState = this.getState(componentKey);
+            componentState["filters"]?.forEach(filter => {
+                filter.value = undefined;
+                filter.filterValue = undefined;
+            });  
+            componentState["bucketNumber"] = 0; 
+            componentState["selectedRowIndex"] = 0;         
+            this.setState(componentKey, componentState);
+        }catch(e){
+            this.logger.log(componentKey, ": Error in clearing state: "+e);
+        }
+    }
+
     clearState(componentKey){
         try{
             const componentState = this.getState(componentKey);
