@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.publisher.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.google.gson.*;
 import org.slf4j.Logger;
@@ -198,6 +195,7 @@ public class AnnotationPublisher {
             relMap.put("parent", _annotation.get(PacmanSdkConstants.DOC_ID));
             logger.info("Printing relations: {}", serializer.toJson(relMap));
             _annotation.put(_annotation.get(TARGET_TYPE) + "_relations", serializer.toJson(relMap));
+            _annotation.put(PacmanSdkConstants.DOC_ID, annotationId);
             if (null != issueAttributes) {
                 // now we are using this to modify and post hence remove all ES
                 // specific fields
