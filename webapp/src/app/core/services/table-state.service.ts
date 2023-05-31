@@ -11,7 +11,7 @@ export class TableStateService {
 
     setState(componentKey, obj){
         try{
-            const state = this.getStateFromLocalStorage();        
+            const state = this.getStateFromLocalStorage();
             state[componentKey] = obj;
             localStorage.setItem(this.stateLabel, JSON.stringify(state));
         }catch(e){
@@ -23,7 +23,7 @@ export class TableStateService {
         let componentState:any = {};
         try{
             const state = this.getStateFromLocalStorage();
-            componentState = state[componentKey];    
+            componentState = state[componentKey];
         }catch(e){
             this.logger.log(componentKey, ": Error in getting state: "+e);
         }
@@ -31,7 +31,7 @@ export class TableStateService {
     }
 
     getStateFromLocalStorage(){
-        const state = localStorage.getItem(this.stateLabel); 
+        const state = localStorage.getItem(this.stateLabel);
         if(!(state && state!="undefined")){
             localStorage.setItem("allTableStates", JSON.stringify({}));
             return {};
@@ -63,13 +63,28 @@ export class TableStateService {
             componentState["filters"]?.forEach(filter => {
                 filter.value = undefined;
                 filter.filterValue = undefined;
-            });  
-            componentState["bucketNumber"] = 0; 
-            componentState["selectedRowIndex"] = 0;         
+            });
+            componentState["bucketNumber"] = 0;
+            componentState["selectedRowIndex"] = 0;
             this.setState(componentKey, componentState);
         }catch(e){
             this.logger.log(componentKey, ": Error in clearing state: "+e);
         }
+    }
+
+    clearAllPreservedFilters() {
+        const storedState = this.getStateFromLocalStorage();
+        const updatedState = Object.keys(storedState).reduce((acc, next) => {
+            storedState[next].filters?.forEach(f => {
+                f.value = undefined;
+                f.filterValue = undefined;
+            });
+            storedState[next].bucketNumber = 0;
+            storedState[next].selectedRowIndex = undefined;
+            acc[next] = storedState[next];
+            return acc;
+        }, {});
+        localStorage.setItem(this.stateLabel, JSON.stringify(updatedState));
     }
 
     clearState(componentKey){

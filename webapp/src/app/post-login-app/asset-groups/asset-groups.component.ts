@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -25,6 +25,7 @@ import { DataCacheService } from '../../core/services/data-cache.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { TableStateService } from 'src/app/core/services/table-state.service';
 
 @Component({
   selector: 'app-asset-groups',
@@ -43,6 +44,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
               private activatedRoute: ActivatedRoute,
               private errorHandlingService: ErrorHandlingService,
               private logger: LoggerService,
+              private tableStateService: TableStateService,
               private utils: UtilsService,
               private workflowService: WorkflowService) {
               this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
@@ -144,7 +146,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
 
   setDefault() {
     this.workflowService.clearAllLevels();
-    
+
     try {
 
       this.instructParentToCloseAssetGroup(this.thisAssetTile);
@@ -152,6 +154,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
 
       if (this.thisAssetTile !== userDefaultAssetGroup) {
         this.updateDefaultAssetGroupForUser(this.thisAssetTile);
+        this.tableStateService.clearAllPreservedFilters();
       }
     } catch (error) {
       this.errorHandlingService.handleJavascriptError(error);
