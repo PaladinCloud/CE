@@ -12,45 +12,27 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { DataCacheService } from "../../../../core/services/data-cache.service";
-import { Router, ActivatedRoute } from "@angular/router";
-import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
-import { OmniSearchDataService } from "../../../services/omni-search-data.service";
-import { environment } from "./../../../../../environments/environment";
-import { Subscription } from "rxjs";
-import { AutorefreshService } from "../../../services/autorefresh.service";
-import { LoggerService } from "../../../../shared/services/logger.service";
-import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from "@angular/animations";
-import { WorkflowService } from "../../../../core/services/workflow.service";
-import { UtilsService } from "../../../../shared/services/utils.service";
-import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
-import { ICONS } from "./../../../../shared/constants/icons-mapping";
-import {
-  FormControl,
-  FormGroup,
-  FormBuilder,
-  Validators,
-} from "@angular/forms";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { AutorefreshService } from 'src/app/pacman-features/services/autorefresh.service';
+import { OmniSearchDataService } from 'src/app/pacman-features/services/omni-search-data.service';
+import { ICONS } from 'src/app/shared/constants/icons-mapping';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: "app-omni-search-details",
-  templateUrl: "./omni-search-details.component.html",
-  styleUrls: ["./omni-search-details.component.css"],
-  providers: [
-    OmniSearchDataService,
-    AutorefreshService,
-    LoggerService,
-    ErrorHandlingService,
-  ],
-  animations: [],
+    selector: 'app-omni-search-details',
+    templateUrl: './omni-search-details.component.html',
+    styleUrls: ['./omni-search-details.component.css'],
+    providers: [OmniSearchDataService, AutorefreshService, LoggerService, ErrorHandlingService],
 })
 export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
   /*
@@ -756,73 +738,45 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
    * @desc this fucntion takes care of the navigation to different links when clicked on particular type of card
    */
 
-  navigateTo(data) {
+  navigateTo(data: { _id: string; _entitytype: string; searchCategory: string; }) {
     try {
-      // this.workflowService.addToLevel(this.urlToRedirect, this.pageLevel);
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root,
+        0,
+        'Search'
       );
-      let resourceID;
-      let resourceType;
-      if (data["_id"]) {
-        resourceID = encodeURIComponent(data["_id"]);
+      let resourceID: string;
+      let resourceType: string;
+      if (data._id) {
+        resourceID = encodeURIComponent(data._id);
       }
-      if (data["_entitytype"]) {
-        resourceType = encodeURIComponent(data["_entitytype"]);
+      if (data._entitytype) {
+        resourceType = encodeURIComponent(data._entitytype);
       }
 
-      if (data["searchCategory"].toLowerCase() === "assets") {
-        this.router
-          .navigate(
-            ["../../../../assets/asset-list", resourceType, resourceID],
-            { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
-          )
-          .then((response) => {
-            this.logger.log(
-              "info",
-              "Successfully navigated to asset details page: " + response
-            );
-          })
-          .catch((error) => {
-            this.logger.log("error", "Error in navigation - " + error);
-          });
-      } else if (data["searchCategory"].toLowerCase() === "policy violations") {
-        this.router
-          .navigate(["../../../../compliance/issue-listing/issue-details", resourceID], {
-            relativeTo: this.activatedRoute,
-            queryParamsHandling: "merge",
-          })
-          .then((response) => {
-            this.logger.log(
-              "info",
-              "Successfully navigated to issue details page: " + response
-            );
-          })
-          .catch((error) => {
-            this.logger.log("error", "Error in navigation - " + error);
-          });
-      } else if (data["searchCategory"].toLowerCase() === "vulnerabilities") {
-        const apiTarget = { TypeAsset: "vulnerable" };
-        const eachParams = { qid: resourceID }; // resourceID is qid here
-        let newParams = this.utils.makeFilterObj(eachParams);
-        newParams = Object.assign(newParams, apiTarget);
-        newParams["mandatory"] = "qid";
-        this.router
-          .navigate(["../../../../", "assets", "asset-list"], {
-            relativeTo: this.activatedRoute,
-            queryParams: newParams,
-            queryParamsHandling: "merge",
-          })
-          .then((response) => {
-            this.logger.log(
-              "info",
-              "Successfully navigated to issue details page: " + response
-            );
-          })
-          .catch((error) => {
-            this.logger.log("error", "Error in navigation - " + error);
-          });
+      const searchCategory = data.searchCategory.toLowerCase();
+      let routeCommands = [];
+      let queryParams: Params;
+
+      if (searchCategory === 'assets') {
+        routeCommands = ['pl/assets/asset-list', resourceType, resourceID];
+      } else if (searchCategory === "policy violations") {
+        routeCommands = ['pl/compliance/issue-listing/issue-details', resourceID];
+      } else if (searchCategory === 'vulnerabilities') {
+        routeCommands = ['pl/assets/asset-list'];
+        queryParams = {
+            ...this.utils.makeFilterObj({ qid: resourceID }), // resourceID is qid here
+            ...{
+                TypeAsset: 'vulnerable',
+                mandatory: 'qid'
+            }
+        }
       }
+
+      this.router.navigate(routeCommands, {
+          queryParams,
+          queryParamsHandling: 'merge',
+      });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
