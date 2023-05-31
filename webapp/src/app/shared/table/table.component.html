@@ -33,19 +33,15 @@
                     (categoryClear)="removeFilterCategory($event)"
                     (optionChange)="selectFilterCategoryOption($event)"
                 ></app-table-filters>
-                <div class="flex flex-align-center gap-24">
-                    <div class="flex flex-align-center gap-24" *ngIf="tableTitle">
-                        <app-text [text]="tableTitle" classNames="body-2 high-emphasis"></app-text>
-                        <hr style="height: 20px" />
-                    </div>
+                <div class="flex flex-align-center table-right-items">
+                    <app-text
+                        *ngIf="tableTitle"
+                        [text]="tableTitle"
+                        classNames="body-2 high-emphasis"
+                    ></app-text>
                     <div class="table-count-info">
-                        <span>
-                            {{
-                                (totalRows === 0 ? dataSource?.data?.length : totalRows) ?? 0
-                                    | number
-                            }}
-                            Results</span
-                        >
+                        {{ (totalRows === 0 ? dataSource?.data?.length : totalRows) ?? 0 | number }}
+                        Results
                     </div>
                     <app-table-options
                         [isDownloadEnabled]="showDownloadBtn"
