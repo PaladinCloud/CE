@@ -20,6 +20,7 @@
         <ul class="column-option-list" *ngIf="isColumnOptionsOpen; else menuBlock">
             <li class="column-option-item">
                 <mat-checkbox
+                    color="primary"
                     [checked]="
                         selectedColumns.length > 0 &&
                         selectedColumns.length === availableColumns.length
@@ -35,6 +36,7 @@
             </li>
             <li *ngFor="let columnOption of availableColumns" class="column-option-item">
                 <mat-checkbox
+                    color="primary"
                     [checked]="selectedColumnsDict[columnOption]"
                     (change)="selectColumn(columnOption, $event.checked)"
                 >
