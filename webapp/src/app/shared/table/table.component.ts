@@ -128,14 +128,17 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         private assetGroupChangeService: AssetGroupObservableService,
         private windowExpansionService: WindowExpansionService,
     ) {
-        this.windowExpansionService.getExpansionStatus().subscribe(() => {
-            this.waitAndResizeTable();
-        });
+        this.windowExpansionService
+            .getExpansionStatus()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                this.waitAndResizeTable();
+            });
     }
 
     ngOnInit(): void {
         if (this.onScrollDataLoader) {
-            this.onScrollDataLoader.subscribe((data) => {
+            this.onScrollDataLoader.pipe(takeUntil(this.destroy$)).subscribe((data) => {
                 this.isDataLoading = false;
                 if (data && data.length > 0) {
                     this.data.push(...data);
