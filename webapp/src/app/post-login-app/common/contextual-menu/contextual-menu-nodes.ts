@@ -91,8 +91,7 @@ export const MENU_NODES: MenuItem[] = [
         id: 'Statistics',
         name: 'Statistics',
         image: 'statistics-icon',
-        route: 'stats-overlay',
-        overlay: true,
+        route: '/pl/stats-overlay',
     },
     {
         id: 'Admin',
