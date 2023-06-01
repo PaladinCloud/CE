@@ -43,9 +43,9 @@
     display: grid;
     gap: 16px;
     grid-template:
-        '. . . total-violations'
-        '. . . total-violations'
-        '. . . total-violations';
+        'total-violations . . .'
+        'total-violations . . .'
+        'total-violations . . .';
     grid-template-rows: repeat(3, minmax(min-content, auto));
     grid-template-columns: repeat(4, 1fr);
 }

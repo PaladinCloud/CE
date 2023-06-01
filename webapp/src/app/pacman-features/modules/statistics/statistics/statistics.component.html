@@ -23,6 +23,24 @@
         </div>
     </header>
     <div class="stats-tiles-container">
+        <div class="total-violations flex flex-col flex-align-center gap-16">
+            <div class="total-violations-header uppercase">Total Violations</div>
+            <div class="graph-chart-cont relative" id="statsDoughnut">
+                <app-doughnut-chart
+                    *ngIf="dataComing && doughNutData"
+                    (error)="getErrorValues($event)"
+                    [chartContId]="'statsDoughnut'"
+                    [graphData]="doughNutData"
+                    [graphWidth]="widgetWidth"
+                    [graphHeight]="widgetHeight"
+                    [MainTextcolor]="MainTextcolor"
+                    [innerRadius]="innerRadius"
+                    [outerRadius]="outerRadius"
+                    [strokeColor]="strokeColor"
+                ></app-doughnut-chart>
+            </div>
+        </div>
+
         <app-statistics-tile
             title="Policies Enforced"
             icon="Enforce"
@@ -64,24 +82,6 @@
 
         <app-statistics-tile title="Assets Scanned" icon="Barcode" [counter]="totalNumberOfAssets">
         </app-statistics-tile>
-
-        <div class="total-violations flex flex-col flex-align-center gap-16">
-            <div class="total-violations-header uppercase">Total Violations</div>
-            <div class="graph-chart-cont relative" id="statsDoughnut">
-                <app-doughnut-chart
-                    *ngIf="dataComing && doughNutData"
-                    (error)="getErrorValues($event)"
-                    [chartContId]="'statsDoughnut'"
-                    [graphData]="doughNutData"
-                    [graphWidth]="widgetWidth"
-                    [graphHeight]="widgetHeight"
-                    [MainTextcolor]="MainTextcolor"
-                    [innerRadius]="innerRadius"
-                    [outerRadius]="outerRadius"
-                    [strokeColor]="strokeColor"
-                ></app-doughnut-chart>
-            </div>
-        </div>
     </div>
     <article class="center error_handling" *ngIf="!dataComing">
         <div class="error_msg">
