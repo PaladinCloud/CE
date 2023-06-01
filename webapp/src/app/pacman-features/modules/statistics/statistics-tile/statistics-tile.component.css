@@ -2,7 +2,7 @@
     width: 100%;
     height: 100%;
     padding: 16px;
-    background: white;
+    background: var(--background-white);
     border: 1px solid rgba(16 40 72 / 9%);
     border-radius: 6px;
     box-shadow: 0 2px 2px -1px rgba(27 35 44 / 4%), 0 8px 16px -2px rgba(27 36 44 / 12%);
@@ -23,9 +23,15 @@
     font-size: var(--text-body-2-font-size);
 }
 
+.tile-icon-container {
+    border-radius: var(--border-radius);
+    background-color: var(--background-grey);
+    padding: 7px 9px;
+}
+
 .statistics-tile-icon {
-    width: 86px;
-    height: 86px;
+    width: 24px;
+    height: 24px;
 }
 
 .statistics-tile-counter {

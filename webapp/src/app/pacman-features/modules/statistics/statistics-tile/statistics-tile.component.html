@@ -1,6 +1,18 @@
-<div class="statistics-tile-container flex flex-col flex-align-center flex-between">
-    <div class="statistics-tile-title uppercase">{{ title }}</div>
-    <div class="statistics-tile-subtitle uppercase">{{ subTitle }}</div>
-    <img class="statistics-tile-icon" [src]="'/assets/icons/' + icon + '.svg'" />
-    <div class="statistics-tile-counter">{{ counter | number }}</div>
+<div class="flex flex-col statistics-tile-container gap-16">
+    <div class="flex flex-between flex-align-center">
+        <div class="tile-icon-container">
+            <img class="statistics-tile-icon" [src]="'/assets/icons/' + icon + '.svg'" />
+        </div>
+        <div class="statistics-tile-counter">
+            {{ counter | number }}
+        </div>
+    </div>
+    <div class="flex flex-col gap-8">
+        <div class="statistics-tile-title uppercase">
+            {{ title }}
+        </div>
+        <div class="statistics-tile-subtitle uppercase">
+            {{ subTitle }}
+        </div>
+    </div>
 </div>

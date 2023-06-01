@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.stats-container {
+.statistics-container {
     height: 100%;
     padding: 18px 24px;
 }
@@ -22,13 +22,14 @@
     margin-bottom: 18px;
 }
 
-.download {
+.screenshot-btn {
     cursor: pointer;
-    padding-left: 10em;
+    margin-left: auto;
 }
 
-.download-icon {
-    width: 2em;
+.screenshot-btn-icon {
+    width: 24px;
+    height: 24px;
 }
 
 .header-text {
@@ -38,13 +39,14 @@
 }
 
 .stats-tiles-container {
+    height: 100%;
     display: grid;
     gap: 16px;
     grid-template:
-        '. . . .'
+        '. . . total-violations'
         '. . . total-violations'
         '. . . total-violations';
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(3, minmax(min-content, auto));
     grid-template-columns: repeat(4, 1fr);
 }
 

@@ -12,15 +12,15 @@
  * limitations under the License.
  -->
 
-<div class="stats-container">
+<div #statisticsContainer class="statistics-container flex flex-col">
     <header class="header flex flex-align-baseline gap-16">
         <div class="header-text">{{ appName }}&nbsp;Statistics</div>
         <div class="stats-date flex titlecase">
             {{ currentDate | date : 'MMMM y' }}
         </div>
-        <!-- <div id="stats-overlay-download" class="download" (click)="takeScreenshot()">
-            <img class="download-icon" src="/assets/icons/Download.svg" />
-        </div> -->
+        <div class="screenshot-btn" (click)="takeScreenshot()">
+            <img class="screenshot-btn-icon" src="/assets/icons/Download.svg" />
+        </div>
     </header>
     <div class="stats-tiles-container">
         <app-statistics-tile

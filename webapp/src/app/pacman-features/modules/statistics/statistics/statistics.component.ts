@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import html2canvas from 'html2canvas';
 import { Subscription } from 'rxjs';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
@@ -32,6 +32,7 @@ import { environment } from 'src/environments/environment';
 })
 export class StatisticsComponent implements OnInit, OnDestroy {
     readonly appName = CONFIGURATIONS.required.APP_NAME;
+    @ViewChild('statisticsContainer') statisticsContainer: ElementRef<HTMLDivElement>;
     currentDate = new Date();
     selectedAssetGroup: string;
     apiData: any;
@@ -65,35 +66,31 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     constructor(
         private commonResponseService: CommonResponseService,
         private errorHandling: ErrorHandlingService,
-    ) {
+    ) {}
+
+    ngOnInit() {
+        this.updateComponent();
+    }
+
+    ngOnDestroy() {
+        try {
+            if (this.dataSubscription) {
+                this.dataSubscription.unsubscribe();
+            }
+        } catch (error) {
+            this.errorMessage = this.errorHandling.handleJavascriptError(error);
+            this.getErrorValues();
+        }
     }
 
     takeScreenshot() {
-        // todo: fix me
-        return;
-        const page = document.getElementById('stats-overlay-screenshot');
-        const pageClone: any = page.cloneNode(true);
-        const download = pageClone.querySelector('#stats-overlay-download');
-        download.style.opacity = 0;
-
-        const statsOverlayPage = document.getElementById('stats-overlay-page');
-        statsOverlayPage.appendChild(pageClone);
-
-        html2canvas(pageClone).then(function (canvas) {
-            statsOverlayPage.removeChild(pageClone);
+        html2canvas(this.statisticsContainer.nativeElement, {
+            ignoreElements: (el) => el.classList.contains('screenshot-btn'),
+        }).then((canvas) => {
             const url = canvas.toDataURL('image/png');
-            const binStr = atob(url.split(',')[1]),
-                len = binStr.length,
-                arr = new Uint8Array(len);
-
-            for (let i = 0; i < len; i++) {
-                arr[i] = binStr.charCodeAt(i);
-            }
-            const blob = new Blob([arr]);
             const a = document.createElement('a');
             a.download = 'PacBot-Statistics.png';
-            a.innerHTML = 'download';
-            a.href = URL.createObjectURL(blob);
+            a.href = url;
 
             a.click();
         });
@@ -120,10 +117,6 @@ export class StatisticsComponent implements OnInit, OnDestroy {
                     10,
                 ) - 20;
         }
-    }
-
-    ngOnInit() {
-        this.updateComponent();
     }
 
     updateComponent() {
@@ -223,16 +216,5 @@ export class StatisticsComponent implements OnInit, OnDestroy {
             },
         };
         this.doughNutData = formattedObject;
-    }
-
-    ngOnDestroy() {
-        try {
-            if (this.dataSubscription) {
-                this.dataSubscription.unsubscribe();
-            }
-        } catch (error) {
-            this.errorMessage = this.errorHandling.handleJavascriptError(error);
-            this.getErrorValues();
-        }
     }
 }
