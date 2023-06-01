@@ -1,0 +1,6 @@
+<div class="statistics-tile-container flex flex-col flex-align-center flex-between">
+    <div class="statistics-tile-title uppercase">{{ title }}</div>
+    <div class="statistics-tile-subtitle uppercase">{{ subTitle }}</div>
+    <img class="statistics-tile-icon" [src]="'/assets/icons/' + icon + '.svg'" />
+    <div class="statistics-tile-counter">{{ counter | number }}</div>
+</div>
