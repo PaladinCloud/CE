@@ -1,0 +1,33 @@
+.statistics-tile-container {
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    background: white;
+    border: 1px solid rgba(16 40 72 / 9%);
+    border-radius: 6px;
+    box-shadow: 0 2px 2px -1px rgba(27 35 44 / 4%), 0 8px 16px -2px rgba(27 36 44 / 12%);
+    color: #272e35;
+}
+
+.statistics-tile-title,
+.statistics-tile-counter {
+    font-weight: 600;
+}
+
+.statistics-tile-title {
+    font-size: var(--text-body-1-font-size);
+}
+
+.statistics-tile-subtitle {
+    color: #555f6d;
+    font-size: var(--text-body-2-font-size);
+}
+
+.statistics-tile-icon {
+    width: 86px;
+    height: 86px;
+}
+
+.statistics-tile-counter {
+    font-size: var(--text-headline-6-font-size);
+}
