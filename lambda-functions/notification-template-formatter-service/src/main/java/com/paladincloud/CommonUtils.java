@@ -97,6 +97,8 @@ public class CommonUtils {
                 return getExemptionTemplateName(channelName,action,exemptionType);
             case "autofix":
                 return getAutofixTemplateName(channelName,action);
+            case "policyaction":
+                return "policyActionEmailTemplate.html";
         }
         return null;
     }
