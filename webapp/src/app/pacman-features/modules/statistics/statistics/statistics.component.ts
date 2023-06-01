@@ -82,6 +82,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     takeScreenshot() {
         html2canvas(this.statisticsContainer.nativeElement, {
             ignoreElements: (el) => el.classList.contains('screenshot-btn'),
+            backgroundColor: 'transparent',
         }).then((canvas) => {
             const url = canvas.toDataURL('image/png');
             const a = document.createElement('a');
