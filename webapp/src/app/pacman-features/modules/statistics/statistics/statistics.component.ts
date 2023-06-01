@@ -25,10 +25,6 @@ import { environment } from 'src/environments/environment';
     templateUrl: './statistics.component.html',
     styleUrls: ['./statistics.component.css'],
     providers: [CommonResponseService],
-    // eslint-disable-next-line
-    host: {
-        '(window:resize)': 'onResize($event)',
-    },
 })
 export class StatisticsComponent implements OnInit, OnDestroy {
     readonly appName = CONFIGURATIONS.required.APP_NAME;
@@ -94,10 +90,6 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
             a.click();
         });
-    }
-
-    onResize() {
-        this.getDimensions();
     }
 
     getDimensions() {
