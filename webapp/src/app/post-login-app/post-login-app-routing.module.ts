@@ -24,7 +24,6 @@ import { DomainOverlayComponent } from './domain-overlay/domain-overlay.componen
 import { FirstTimeUserJourneyComponent } from './first-time-user-journey/first-time-user-journey.component';
 import { KnowYourDashboardComponent } from './know-your-dashboard/know-your-dashboard.component';
 import { PostLoginAppComponent } from './post-login-app.component';
-import { StatsOverlayComponent } from './stats-overlay/stats-overlay.component';
 import { VulnerabilityReportComponent } from './vulnerability-report/vulnerability-report.component';
 
 const routes: Routes = [
@@ -93,8 +92,11 @@ const routes: Routes = [
                     ),
             },
             {
-                path: 'stats-overlay',
-                component: StatsOverlayComponent,
+                path: 'statistics',
+                loadChildren: () =>
+                    import('../pacman-features/modules/statistics/statistics.module').then(
+                        (m) => m.StatisticsModule,
+                    ),
             },
             {
                 path: 'change-default-asset-group',

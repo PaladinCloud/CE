@@ -13,7 +13,6 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import html2canvas from 'html2canvas';
 import { Subscription } from 'rxjs';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
@@ -22,16 +21,17 @@ import { CONFIGURATIONS } from 'src/config/configurations';
 import { environment } from 'src/environments/environment';
 
 @Component({
-    selector: 'app-stats-overlay',
-    templateUrl: './stats-overlay.component.html',
-    styleUrls: ['./stats-overlay.component.css'],
+    selector: 'app-statistics',
+    templateUrl: './statistics.component.html',
+    styleUrls: ['./statistics.component.css'],
     providers: [CommonResponseService],
     // eslint-disable-next-line
     host: {
         '(window:resize)': 'onResize($event)',
     },
 })
-export class StatsOverlayComponent implements OnInit, OnDestroy {
+export class StatisticsComponent implements OnInit, OnDestroy {
+    readonly appName = CONFIGURATIONS.required.APP_NAME;
     currentDate = new Date();
     selectedAssetGroup: string;
     apiData: any;
@@ -59,24 +59,20 @@ export class StatsOverlayComponent implements OnInit, OnDestroy {
     outerRadius = 50;
     strokeColor = 'transparent';
     totalAutoFixesApplied = '';
-    config;
 
     private dataSubscription: Subscription;
 
     constructor(
-        private router: Router,
-        private activatedRoute: ActivatedRoute,
         private commonResponseService: CommonResponseService,
         private errorHandling: ErrorHandlingService,
     ) {
-        this.config = CONFIGURATIONS;
     }
 
     takeScreenshot() {
+        // todo: fix me
+        return;
         const page = document.getElementById('stats-overlay-screenshot');
         const pageClone: any = page.cloneNode(true);
-        const back = pageClone.querySelector('#stats-overlay-back');
-        back.style.opacity = 0;
         const download = pageClone.querySelector('#stats-overlay-download');
         download.style.opacity = 0;
 
@@ -227,27 +223,6 @@ export class StatsOverlayComponent implements OnInit, OnDestroy {
             },
         };
         this.doughNutData = formattedObject;
-    }
-
-    /**
-     * this function closes the stats model page and navigates to the last active route
-     */
-
-    closeStatsModal() {
-        this.router.navigate(
-            [
-                // No relative path pagination
-                {
-                    outlets: {
-                        modalBGMenu: null,
-                    },
-                },
-            ],
-            {
-                relativeTo: this.activatedRoute.parent, // <-- Parent activated route
-                queryParamsHandling: 'merge',
-            },
-        );
     }
 
     ngOnDestroy() {

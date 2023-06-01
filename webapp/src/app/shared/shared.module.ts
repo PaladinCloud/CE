@@ -37,7 +37,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
-import { StatsOverlayComponent } from '../post-login-app/stats-overlay/stats-overlay.component';
 import { AgGridTableComponent } from './ag-grid-table/ag-grid-table.component';
 import { BackNavigationComponent } from './back-navigation/back-navigation.component';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
@@ -214,7 +213,6 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         SearchInfoComponent,
         SearchPipe,
         SnackbarComponent,
-        StatsOverlayComponent,
         StepperComponent,
         SubFooterComponent,
         TableComponent,
@@ -298,7 +296,6 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         SearchPipe,
         SelectDropDownModule,
         SnackbarComponent,
-        StatsOverlayComponent,
         StepperComponent,
         SubFooterComponent,
         TableComponent,

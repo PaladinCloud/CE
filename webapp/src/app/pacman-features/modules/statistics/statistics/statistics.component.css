@@ -1,0 +1,170 @@
+/*
+ *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+ * this file except in compliance with the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+ * implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.overlay-vertical-center {
+    width: 100%;
+    height: 100%;
+    transition: 0.4s ease;
+    margin: auto;
+    font-size: 1em;
+}
+
+.overlay-innerwrap {
+    width: 100%;
+    margin: 0;
+    height: 100%;
+    background-image: url('/assets/images/statistics-background.svg') no-repeat;
+    background-color: var(--background-white);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    background-size: cover;
+}
+
+.stats-container {
+    padding: 18px 24px;
+}
+
+.header {
+    color: var(--text-high-emphasis);
+}
+
+.download {
+    cursor: pointer;
+    padding-left: 10em;
+}
+
+.download-icon {
+    width: 2em;
+}
+
+.header-text {
+    font-size: 2em;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.topSection {
+    color: var(--text-high-emphasis);
+    padding: 2em 4em;
+    justify-content: space-around;
+    height: 42vh;
+}
+
+.bottomSection {
+    color: var(--text-high-emphasis);
+    padding: 2em 4em;
+    justify-content: space-around;
+    height: 46vh;
+}
+
+.events {
+    font-size: 1.2em;
+    text-align: center;
+    font-family: var(--text-medium-font-family);
+    margin: 0 1em;
+    min-height: 16em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 20%;
+}
+
+.events-icon {
+    height: 6em;
+}
+
+.events-icon-middle {
+    height: 5em;
+}
+
+.events-text {
+    font-family: var(--text-font-family);
+    margin-bottom: 0.5em;
+    font-size: 1.1em;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.events-image-wrapper {
+    padding: 1.5em 0;
+}
+
+.opacity-0 {
+    opacity: 0;
+    font-size: 1.3em;
+    text-align: center;
+}
+
+.hide-this {
+    opacity: 1;
+}
+
+.events-count {
+    font-size: 1.5em;
+    margin: 1em 0;
+}
+
+.sub-text {
+    font-size: 0.8em;
+    font-family: ex2-extralight;
+}
+
+.stats-date {
+    font-size: 16px;
+}
+
+.graph-wrapper {
+    width: 18em;
+    height: 18em;
+}
+
+.topsection-each {
+    height: 17em;
+}
+
+.graph-chart-cont {
+    width: 100%;
+    height: 15em;
+}
+
+:host ::ng-deep app-error-message .error-handling .bold-text {
+    color: #fff;
+}
+
+:host ::ng-deep app-error-message .error-handling .light-text {
+    color: #ffffff;
+}
+
+/* ******************************************************************* */
+
+@media only screen and (min-width: 1920px) {
+    .overlay-innerwrap {
+        font-size: 1.4em;
+    }
+}
+@media only screen and (max-width: 1200px) {
+    .year-wrapper {
+        font-size: 0.5em;
+    }
+}
+
+.total-violations {
+    height: 21em;
+    max-width: 22em;
+    margin: 0 1em;
+}
+
+.bottomsection-each {
+    height: 17em;
+}
