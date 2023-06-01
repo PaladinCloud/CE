@@ -2857,6 +2857,9 @@ DELIMITER ;
 CALL create_composite_key_if_not_exists();
 
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (12,'plugins');
+
+DELETE from pac_v2_ui_options where filterId=12;
+
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account ID','accountId','/admin/accounts/filter/attribute?attribute=accountId');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account Name','accountName','/admin/accounts/filter/attribute?attribute=accountName');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Assets','assets','/admin/accounts/filter/attribute?attribute=assets');
