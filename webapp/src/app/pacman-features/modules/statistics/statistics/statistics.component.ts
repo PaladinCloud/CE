@@ -84,7 +84,7 @@ export class StatisticsComponent implements OnInit {
                 const el = document.getElementById('watermark');
                 el.style.display = 'block';
             },
-            ignoreElements: (el) => el.classList.contains('screenshot-btn'),
+            ignoreElements: (el) => el.classList.contains('screenshot-icon'),
         }).then((canvas) => {
             const url = canvas.toDataURL('image/png');
             const a = document.createElement('a');

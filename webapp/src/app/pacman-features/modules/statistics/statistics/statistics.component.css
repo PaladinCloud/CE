@@ -22,12 +22,9 @@
     margin-bottom: 18px;
 }
 
-.screenshot-btn {
-    cursor: pointer;
+.screenshot-icon {
     margin-left: auto;
-}
-
-.screenshot-btn-icon {
+    cursor: pointer;
     width: 24px;
     height: 24px;
 }
