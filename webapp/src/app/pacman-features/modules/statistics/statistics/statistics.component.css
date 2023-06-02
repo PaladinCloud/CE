@@ -43,7 +43,7 @@
         'total-violations . . .'
         'total-violations . . .'
         'total-violations . . .';
-    grid-template-rows: repeat(3, minmax(min-content, auto));
+    grid-template-rows: repeat(3, 1fr);
     grid-template-columns: repeat(4, 1fr);
 }
 
@@ -61,7 +61,7 @@
 }
 
 .total-violations {
-    padding: 16px 0;
+    padding: 16px;
     background: white;
     border: 1px solid rgba(16 40 72 / 9%);
     border-radius: 6px;
