@@ -46,10 +46,15 @@ export interface TotalViolations {
 })
 export class StatisticsComponent implements OnInit {
     readonly appName = CONFIGURATIONS.required.APP_NAME;
+    readonly innerRadius = 70;
+    readonly outerRadius = 50;
+    readonly currentDate = new Date();
+
     @ViewChild('statisticsContainer') statisticsContainer: ElementRef<HTMLDivElement>;
-    currentDate = new Date();
+
     errorMessage: string;
     showLoader = true;
+
     numberOfAwsAccounts = 0;
     numberOfEventsProcessed = 0;
     numberOfPolicyWithAutoFixes = 0;
@@ -57,14 +62,11 @@ export class StatisticsComponent implements OnInit {
     numberOfPoliciesEnforced = 0;
     totalNumberOfAssets = 0;
     totalAutoFixesApplied = 0;
-    totalViolationsGraph: any = [];
-    doughNutData: any = [];
+
+    doughNutData = {};
+
     widgetWidth: number;
     widgetHeight: number;
-    MainTextcolor = '';
-    innerRadius = 60;
-    outerRadius = 50;
-    strokeColor = 'transparent';
 
     constructor(
         private commonResponseService: CommonResponseService,
@@ -77,12 +79,12 @@ export class StatisticsComponent implements OnInit {
 
     takeScreenshot() {
         html2canvas(this.statisticsContainer.nativeElement, {
+            backgroundColor: '#f2f3f5',
             onclone: (document) => {
                 const el = document.getElementById('watermark');
                 el.style.display = 'block';
             },
             ignoreElements: (el) => el.classList.contains('screenshot-btn'),
-            backgroundColor: '#f2f3f5',
         }).then((canvas) => {
             const url = canvas.toDataURL('image/png');
             const a = document.createElement('a');
@@ -93,41 +95,41 @@ export class StatisticsComponent implements OnInit {
         });
     }
 
-    getDimensions() {
+    private getDimensions() {
         const element = document.getElementById('statsDoughnut');
-        if (element) {
-            this.widgetWidth =
-                parseInt(
-                    window.getComputedStyle(element, null).getPropertyValue('width').split('px')[0],
-                    10,
-                ) + 20;
-            this.widgetHeight =
-                parseInt(
-                    window
-                        .getComputedStyle(element, null)
-                        .getPropertyValue('height')
-                        .split('px')[0],
-                    10,
-                ) - 20;
+        if (!element) {
+            return;
         }
+
+        this.widgetWidth =
+            parseInt(
+                window.getComputedStyle(element, null).getPropertyValue('width').split('px')[0],
+                10,
+            ) + 20;
+        this.widgetHeight =
+            parseInt(
+                window.getComputedStyle(element, null).getPropertyValue('height').split('px')[0],
+                10,
+            ) - 20;
     }
 
-    getStatsData() {
-        const statspageUrl = environment.statspage.url;
-        const statspageMethod = environment.statspage.method;
-
+    private getStatsData() {
         this.showLoader = true;
         this.errorMessage = '';
 
-        this.commonResponseService.getData(statspageUrl, statspageMethod).subscribe(
+        const { url, method } = environment.statspage;
+
+        this.commonResponseService.getData(url, method).subscribe(
             (response: { response: StatsResponse[] }) => {
                 if (response.response.length === 0) {
                     this.showErrorMessage('noDataAvailable');
-                } else {
-                    this.getDimensions();
-                    this.processData(response.response[0]);
-                    this.showLoader = false;
+                    return;
                 }
+
+                this.getDimensions();
+                this.updateStatCounters(response.response[0]);
+                this.updateChartData(response.response[0]);
+                this.showLoader = false;
             },
             (error) => {
                 this.showErrorMessage(this.errorHandling.handleJavascriptError(error));
@@ -135,55 +137,39 @@ export class StatisticsComponent implements OnInit {
         );
     }
 
-    showErrorMessage(message: string) {
+    private showErrorMessage(message: string) {
         this.showLoader = false;
         if (message) {
             this.errorMessage = message;
         }
     }
 
-    processData(data: StatsResponse) {
+    private updateStatCounters(data: StatsResponse) {
         this.numberOfAwsAccounts = data.numberOfAwsAccounts;
         this.numberOfEventsProcessed = data.numberOfEventsProcessed;
         this.numberOfPolicyEvaluations = data.numberOfPolicyEvaluations;
         this.numberOfPoliciesEnforced = data.numberOfPoliciesEnforced;
         this.totalNumberOfAssets = data.totalNumberOfAssets;
-        this.totalViolationsGraph = data.totalViolations;
         this.numberOfPolicyWithAutoFixes = data.numberOfPolicyWithAutoFixes;
         this.totalAutoFixesApplied = data.totalAutoFixesApplied;
+    }
 
-        /**
-         ------ this is the data for statspage doughnut chart for policy with violations ---------
-         */
-        this.MainTextcolor = '#fff';
-        this.strokeColor = 'eff3f6';
-        const colorTransData = ['#D95140', '#FF8888', '#FFCFCF', '#F1D668'];
-        const graphLegend = ['Critical', 'High', 'Medium', 'Low'];
-        const graphDataArray = [];
-        const legendTextcolor = '#fff';
-        /**
-         * Added by Trinanjan on 02/03/2018
-         * Inorder to sort objkeys in a logical way, objKeys are hardcoded
-         */
-        const objKeys = ['critical', 'high', 'medium', 'low', 'totalViolations'];
-        /* ****************************************************************** */
-        objKeys.splice(objKeys.indexOf('totalViolations'), 1);
-        objKeys.forEach((element) => {
-            graphDataArray.push(this.totalViolationsGraph[element]);
-        });
-        this.innerRadius = 70;
-        this.outerRadius = 50;
-        const formattedObject = {
-            color: colorTransData,
-            data: graphDataArray,
-            legend: graphLegend,
-            totalCount: this.totalViolationsGraph.totalViolations,
-            legendTextcolor,
+    private updateChartData({ totalViolations }: StatsResponse) {
+        const legend = ['Critical', 'High', 'Medium', 'Low'];
+        const data = legend.reduce(
+            (acc, next) => [...acc, totalViolations[next.toLowerCase()]],
+            [],
+        );
+        this.doughNutData = {
+            color: ['#D95140', '#FF8888', '#FFCFCF', '#F1D668'],
+            legend,
+            data,
+            totalCount: totalViolations.totalViolations,
+            legendTextcolor: '#fff',
             link: false,
             styling: {
                 cursor: 'text',
             },
         };
-        this.doughNutData = formattedObject;
     }
 }
