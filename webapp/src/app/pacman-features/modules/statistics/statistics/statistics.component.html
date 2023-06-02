@@ -30,7 +30,7 @@
     <div *ngIf="!errorMessage" class="stats-tiles-container">
         <div class="total-violations flex flex-col flex-align-center gap-16">
             <div class="total-violations-header uppercase">Total Violations</div>
-            <div class="graph-chart-cont relative" id="statsDoughnut">
+            <div class="graph-chart-containter" id="statsDoughnut">
                 <app-doughnut-chart
                     *ngIf="doughNutData"
                     (error)="getErrorValues($event)"
@@ -41,7 +41,6 @@
                     [MainTextcolor]="MainTextcolor"
                     [innerRadius]="innerRadius"
                     [outerRadius]="outerRadius"
-                    [strokeColor]="strokeColor"
                 ></app-doughnut-chart>
             </div>
         </div>
