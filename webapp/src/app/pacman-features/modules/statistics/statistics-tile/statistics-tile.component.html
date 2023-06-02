@@ -1,4 +1,4 @@
-<div class="flex flex-col statistics-tile-container gap-16" (click)="isLoading = false">
+<div class="flex flex-col statistics-tile-container gap-16">
     <ng-container *ngIf="isLoading; else mainContent">
         <div class="flex flex-between flex-align-center">
             <div class="shimmer shimmer-image"></div>
@@ -11,7 +11,7 @@
     </ng-container>
 
     <ng-template #mainContent>
-        <div class="flex flex-between flex-align-center">
+        <div class="flex flex-between flex-align-center" [@fadeInAnimation]>
             <div class="tile-icon-container">
                 <img class="statistics-tile-icon" [src]="'/assets/icons/' + icon + '.svg'" />
             </div>
@@ -19,7 +19,7 @@
                 {{ counter | number }}
             </div>
         </div>
-        <div class="flex flex-col gap-8">
+        <div class="flex flex-col gap-8" [@fadeInAnimation]>
             <div class="statistics-tile-title uppercase">
                 {{ title }}
             </div>
