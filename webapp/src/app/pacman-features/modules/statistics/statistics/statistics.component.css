@@ -71,3 +71,10 @@
     box-shadow: 0 2px 2px -1px rgba(27 35 44 / 4%), 0 8px 16px -2px rgba(27 36 44 / 12%);
     grid-area: total-violations;
 }
+
+#watermark {
+    width: 10%;
+    position: absolute;
+    right: 24px;
+    bottom: 18px;
+}

@@ -20,6 +20,25 @@ import { ErrorHandlingService } from 'src/app/shared/services/error-handling.ser
 import { CONFIGURATIONS } from 'src/config/configurations';
 import { environment } from 'src/environments/environment';
 
+export interface StatsResponse {
+    numberOfAwsAccounts: number;
+    numberOfEventsProcessed: number;
+    numberOfPoliciesEnforced: number;
+    numberOfPolicyEvaluations: string; // TODO: should be fixed on backend
+    numberOfPolicyWithAutoFixes: number;
+    totalAutoFixesApplied: number;
+    totalNumberOfAssets: number;
+    totalViolations: TotalViolations;
+}
+
+export interface TotalViolations {
+    critical: number;
+    high: number;
+    low: number;
+    medium: number;
+    totalViolations: number;
+}
+
 @Component({
     selector: 'app-statistics',
     templateUrl: './statistics.component.html',
@@ -40,13 +59,13 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     placeHolderText: string;
     returnedSearch = '';
     seekdata = false;
-
-    numberOfAwsAccounts = '';
-    numberOfEventsProcessed = '';
-    numberOfPolicyWithAutoFixes = '';
+    isScreenshoting = false;
+    numberOfAwsAccounts = 0;
+    numberOfEventsProcessed = 0;
+    numberOfPolicyWithAutoFixes = 0;
     numberOfPolicyEvaluations = '';
-    numberOfPoliciesEnforced = '';
-    totalNumberOfAssets = '';
+    numberOfPoliciesEnforced = 0;
+    totalNumberOfAssets = 0;
     totalViolationsGraph: any = [];
     doughNutData: any = [];
     widgetWidth: number;
@@ -55,7 +74,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     innerRadius = 60;
     outerRadius = 50;
     strokeColor = 'transparent';
-    totalAutoFixesApplied = '';
+    totalAutoFixesApplied = 0;
 
     private dataSubscription: Subscription;
 
@@ -81,16 +100,22 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
     takeScreenshot() {
         html2canvas(this.statisticsContainer.nativeElement, {
+            onclone: (document) => {
+                const el = document.getElementById('watermark');
+                el.style.display = 'block';
+            },
             ignoreElements: (el) => el.classList.contains('screenshot-btn'),
-            backgroundColor: 'transparent',
-        }).then((canvas) => {
-            const url = canvas.toDataURL('image/png');
-            const a = document.createElement('a');
-            a.download = 'PacBot-Statistics.png';
-            a.href = url;
+            backgroundColor: '#f2f3f5',
+        })
+            .then((canvas) => {
+                const url = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.download = 'PacBot-Statistics.png';
+                a.href = url;
 
-            a.click();
-        });
+                a.click();
+            })
+            .finally(() => (this.isScreenshoting = false));
     }
 
     getDimensions() {
@@ -131,7 +156,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
         this.dataSubscription = this.commonResponseService
             .getData(statspageUrl, statspageMethod, {}, queryParams)
             .subscribe(
-                (response) => {
+                (response: { response: StatsResponse[] }) => {
                     try {
                         if (response.response.length === 0) {
                             this.getErrorValues();
@@ -141,7 +166,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
                             this.seekdata = false;
                             this.dataComing = true;
                             this.getDimensions();
-                            this.processData(response);
+                            this.processData(response.response[0]);
                         }
                     } catch (e) {
                         this.errorMessage = this.errorHandling.handleJavascriptError(e);
@@ -165,16 +190,15 @@ export class StatisticsComponent implements OnInit, OnDestroy {
         }
     }
 
-    processData(data) {
-        const response = data;
-        this.numberOfAwsAccounts = response.response[0].numberOfAwsAccounts;
-        this.numberOfEventsProcessed = response.response[0].numberOfEventsProcessed;
-        this.numberOfPolicyEvaluations = response.response[0].numberOfPolicyEvaluations;
-        this.numberOfPoliciesEnforced = response.response[0].numberOfPoliciesEnforced;
-        this.totalNumberOfAssets = response.response[0].totalNumberOfAssets;
-        this.totalViolationsGraph = response.response[0].totalViolations;
-        this.numberOfPolicyWithAutoFixes = response.response[0].numberOfPolicyWithAutoFixes;
-        this.totalAutoFixesApplied = response.response[0].totalAutoFixesApplied;
+    processData(data: StatsResponse) {
+        this.numberOfAwsAccounts = data.numberOfAwsAccounts;
+        this.numberOfEventsProcessed = data.numberOfEventsProcessed;
+        this.numberOfPolicyEvaluations = data.numberOfPolicyEvaluations;
+        this.numberOfPoliciesEnforced = data.numberOfPoliciesEnforced;
+        this.totalNumberOfAssets = data.totalNumberOfAssets;
+        this.totalViolationsGraph = data.totalViolations;
+        this.numberOfPolicyWithAutoFixes = data.numberOfPolicyWithAutoFixes;
+        this.totalAutoFixesApplied = data.totalAutoFixesApplied;
 
         /**
          ------ this is the data for statspage doughnut chart for policy with violations ---------
@@ -202,7 +226,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
             data: graphDataArray,
             legend: graphLegend,
             totalCount: this.totalViolationsGraph.totalViolations,
-            legendTextcolor: legendTextcolor,
+            legendTextcolor,
             link: false,
             styling: {
                 cursor: 'text',
