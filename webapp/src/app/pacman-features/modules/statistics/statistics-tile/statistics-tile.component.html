@@ -1,14 +1,14 @@
-<div class="flex flex-col statistics-tile-container gap-16">
-    <div *ngIf="isLoading; else mainContent" class="shimmer-container flex flex-col gap-16">
+<div class="flex flex-col statistics-tile-container gap-16" (click)="isLoading = false">
+    <ng-container *ngIf="isLoading; else mainContent">
         <div class="flex flex-between flex-align-center">
-            <div class="shimmer-image shimmer"></div>
-            <div class="shimmer-counter shimmer"></div>
+            <div class="shimmer shimmer-image"></div>
+            <div class="shimmer shimmer-counter"></div>
         </div>
         <div class="flex flex-col gap-8">
             <div class="shimmer shimmer-title"></div>
             <div class="shimmer shimmer-subtitle"></div>
         </div>
-    </div>
+    </ng-container>
 
     <ng-template #mainContent>
         <div class="flex flex-between flex-align-center">

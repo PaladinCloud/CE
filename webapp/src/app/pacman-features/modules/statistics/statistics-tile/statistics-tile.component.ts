@@ -7,7 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class StatisticsTileComponent implements OnInit {
     @Input() title: string;
-    @Input() subTitle = ' ';
+    @Input() subTitle: string;
     @Input() icon: string;
     @Input() counter: number;
     @Input() isLoading = false;
