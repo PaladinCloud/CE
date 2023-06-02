@@ -12,9 +12,8 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import html2canvas from 'html2canvas';
-import { Subscription } from 'rxjs';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
 import { CONFIGURATIONS } from 'src/config/configurations';
@@ -45,27 +44,19 @@ export interface TotalViolations {
     styleUrls: ['./statistics.component.css'],
     providers: [CommonResponseService],
 })
-export class StatisticsComponent implements OnInit, OnDestroy {
+export class StatisticsComponent implements OnInit {
     readonly appName = CONFIGURATIONS.required.APP_NAME;
     @ViewChild('statisticsContainer') statisticsContainer: ElementRef<HTMLDivElement>;
     currentDate = new Date();
-    selectedAssetGroup: string;
-    apiData: any;
-    applicationValue: any;
     errorMessage: string;
-    dataComing = false;
     showLoader = true;
-    tableHeaderData: any;
-    placeHolderText: string;
-    returnedSearch = '';
-    seekdata = false;
-    isScreenshoting = false;
     numberOfAwsAccounts = 0;
     numberOfEventsProcessed = 0;
     numberOfPolicyWithAutoFixes = 0;
     numberOfPolicyEvaluations = '';
     numberOfPoliciesEnforced = 0;
     totalNumberOfAssets = 0;
+    totalAutoFixesApplied = 0;
     totalViolationsGraph: any = [];
     doughNutData: any = [];
     widgetWidth: number;
@@ -74,9 +65,6 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     innerRadius = 60;
     outerRadius = 50;
     strokeColor = 'transparent';
-    totalAutoFixesApplied = 0;
-
-    private dataSubscription: Subscription;
 
     constructor(
         private commonResponseService: CommonResponseService,
@@ -84,18 +72,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.updateComponent();
-    }
-
-    ngOnDestroy() {
-        try {
-            if (this.dataSubscription) {
-                this.dataSubscription.unsubscribe();
-            }
-        } catch (error) {
-            this.errorMessage = this.errorHandling.handleJavascriptError(error);
-            this.getErrorValues();
-        }
+        this.getStatsData();
     }
 
     takeScreenshot() {
@@ -106,16 +83,14 @@ export class StatisticsComponent implements OnInit, OnDestroy {
             },
             ignoreElements: (el) => el.classList.contains('screenshot-btn'),
             backgroundColor: '#f2f3f5',
-        })
-            .then((canvas) => {
-                const url = canvas.toDataURL('image/png');
-                const a = document.createElement('a');
-                a.download = 'PacBot-Statistics.png';
-                a.href = url;
+        }).then((canvas) => {
+            const url = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.download = 'PacBot-Statistics.png';
+            a.href = url;
 
-                a.click();
-            })
-            .finally(() => (this.isScreenshoting = false));
+            a.click();
+        });
     }
 
     getDimensions() {
@@ -137,54 +112,31 @@ export class StatisticsComponent implements OnInit, OnDestroy {
         }
     }
 
-    updateComponent() {
-        this.showLoader = true;
-        this.dataComing = false;
-        this.seekdata = false;
-        this.getData();
-    }
-
-    getData() {
-        this.getStatsData();
-    }
-
     getStatsData() {
-        const queryParams = {};
-
         const statspageUrl = environment.statspage.url;
         const statspageMethod = environment.statspage.method;
-        this.dataSubscription = this.commonResponseService
-            .getData(statspageUrl, statspageMethod, {}, queryParams)
-            .subscribe(
-                (response: { response: StatsResponse[] }) => {
-                    try {
-                        if (response.response.length === 0) {
-                            this.getErrorValues();
-                            this.errorMessage = 'noDataAvailable';
-                        } else {
-                            this.showLoader = false;
-                            this.seekdata = false;
-                            this.dataComing = true;
-                            this.getDimensions();
-                            this.processData(response.response[0]);
-                        }
-                    } catch (e) {
-                        this.errorMessage = this.errorHandling.handleJavascriptError(e);
-                        this.getErrorValues();
-                    }
-                },
-                (error) => {
-                    this.errorMessage = error;
-                    this.getErrorValues();
-                },
-            );
+
+        this.showLoader = true;
+        this.errorMessage = '';
+
+        this.commonResponseService.getData(statspageUrl, statspageMethod).subscribe(
+            (response: { response: StatsResponse[] }) => {
+                if (response.response.length === 0) {
+                    this.showErrorMessage('noDataAvailable');
+                } else {
+                    this.getDimensions();
+                    this.processData(response.response[0]);
+                    this.showLoader = false;
+                }
+            },
+            (error) => {
+                this.showErrorMessage(this.errorHandling.handleJavascriptError(error));
+            },
+        );
     }
 
-    // error values
-    getErrorValues(message?: string) {
+    showErrorMessage(message: string) {
         this.showLoader = false;
-        this.dataComing = false;
-        this.seekdata = true;
         if (message) {
             this.errorMessage = message;
         }
