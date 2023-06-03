@@ -71,7 +71,7 @@
         </div>
     </mat-card-content>
     <mat-card-actions *ngIf="card.footer">
-        <button mat-button (click)="card.cardButtonAction()">
+        <button (click)="card.cardButtonAction()">
             {{ card.footer }} <img src="/assets/icons/right-arrow-icon.svg" />
         </button>
     </mat-card-actions>

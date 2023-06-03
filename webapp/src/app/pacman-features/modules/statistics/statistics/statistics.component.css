@@ -18,7 +18,6 @@
 }
 
 .header {
-    padding-top: 14px;
     color: var(--text-high-emphasis);
     grid-area: header;
 }
@@ -29,10 +28,8 @@
     letter-spacing: 0.5px;
 }
 
-.screenshot-icon {
+.screenshot-btn {
     margin-left: auto;
-    cursor: pointer;
-    height: 24px;
 }
 
 .stats-tiles-container {
