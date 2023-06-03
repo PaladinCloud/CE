@@ -19,14 +19,7 @@
 
 .header {
     color: var(--text-high-emphasis);
-    margin-bottom: 18px;
-}
-
-.screenshot-icon {
-    margin-left: auto;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
+    grid-area: header;
 }
 
 .header-text {
@@ -35,14 +28,20 @@
     letter-spacing: 0.5px;
 }
 
+.screenshot-icon {
+    margin-left: auto;
+    cursor: pointer;
+    height: 24px;
+}
+
 .stats-tiles-container {
     height: 100%;
     display: grid;
     gap: 16px;
     grid-template:
-        'total-violations . . .'
-        'total-violations . . .'
-        'total-violations . . .';
+        'header header . total-violations'
+        '. . . total-violations'
+        '. . . total-violations';
     grid-template-rows: repeat(3, 1fr);
     grid-template-columns: repeat(4, 1fr);
 }
@@ -69,9 +68,6 @@
     grid-area: total-violations;
 }
 
-#watermark {
-    width: 10%;
-    position: absolute;
-    right: 24px;
-    bottom: 18px;
+.paladin-logo {
+    margin: auto 0;
 }

@@ -13,26 +13,26 @@
  -->
 
 <div #statisticsContainer class="statistics-container flex flex-col">
-    <img id="watermark" src="/assets/images/Paladin_Logo.svg" hidden />
-    <header class="header flex flex-align-center gap-16">
-        <!-- TODO: UPDATE WITH PAGE-TITLE COMPONENT -->
-        <div class="header-text">{{ appName }}&nbsp;Statistics</div>
+    <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
+    <div *ngIf="!errorMessage" class="stats-tiles-container">
+        <div class="header flex flex-col">
+            <div class="flex flex-align-center gap-8">
+                <div class="header-text">{{ appName }}&nbsp;Statistics</div>
 
-        <div class="stats-date flex titlecase">
-            {{ currentDate | date : 'MMMM y' }}
+                <div class="stats-date flex titlecase">
+                    {{ currentDate | date : 'MMMM y' }}
+                </div>
+
+                <img
+                    class="screenshot-icon"
+                    src="/assets/icons/Download.svg"
+                    (click)="takeScreenshot()"
+                />
+            </div>
+
+            <img class="paladin-logo" src="/assets/images/Paladin_Logo.svg" />
         </div>
 
-        <img
-            *ngIf="!errorMessage && !showLoader"
-            class="screenshot-icon"
-            src="/assets/icons/Download.svg"
-            (click)="takeScreenshot()"
-        />
-    </header>
-
-    <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
-
-    <div *ngIf="!errorMessage" class="stats-tiles-container">
         <div class="total-violations flex flex-col flex-align-center gap-16">
             <div class="total-violations-header uppercase">Total Violations</div>
             <div class="graph-chart-containter" id="statsDoughnut">
