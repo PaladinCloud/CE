@@ -80,7 +80,7 @@ export class StatisticsComponent implements OnInit {
     takeScreenshot() {
         html2canvas(this.statisticsContainer.nativeElement, {
             backgroundColor: '#f2f3f5',
-            ignoreElements: (el) => el.classList.contains('screenshot-icon'),
+            ignoreElements: (el) => el.classList.contains('screenshot-btn'),
             onclone: (document) => {
                 const el = document.getElementById('watermark');
                 el.style.display = 'block';

@@ -25,11 +25,14 @@
                     {{ currentDate | date : 'MMMM y' }}
                 </div>
 
-                <img
-                    class="screenshot-icon"
-                    src="/assets/icons/Download.svg"
+                <button
+                    mat-icon-button
+                    class="screenshot-btn"
                     (click)="takeScreenshot()"
-                />
+                    title="Take page screenshot"
+                >
+                    <mat-icon> download </mat-icon>
+                </button>
             </div>
 
             <!-- TODO: UNCOMMENT IF THIS APPROACH WORKS -->

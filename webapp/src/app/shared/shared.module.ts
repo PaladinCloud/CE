@@ -270,6 +270,7 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         LinkComponent,
         LoaderMsgComponent,
         MainFilterComponent,
+        MatButtonModule,
         MatIconModule,
         MatSelectModule,
         MatTooltipModule,
