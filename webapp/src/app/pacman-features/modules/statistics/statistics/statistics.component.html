@@ -15,7 +15,9 @@
 <div #statisticsContainer class="statistics-container flex flex-col">
     <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
     <div *ngIf="!errorMessage" class="stats-tiles-container">
-        <div class="header flex flex-col">
+        <img id="watermark" src="/assets/icons/paladin-logo.svg" hidden />
+
+        <div class="header flex flex-col gap-16">
             <div class="flex flex-align-center gap-8">
                 <div class="header-text">{{ appName }}&nbsp;Statistics</div>
 
@@ -30,7 +32,11 @@
                 />
             </div>
 
-            <img class="paladin-logo" src="/assets/images/Paladin_Logo.svg" />
+            <!-- TODO: UNCOMMENT IF THIS APPROACH WORKS -->
+            <!-- <div
+                class="company-logo"
+                [style.background-image]="'url(/assets/icons/company-icon.svg)'"
+            ></div> -->
         </div>
 
         <div class="total-violations flex flex-col flex-align-center gap-16">
