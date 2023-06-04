@@ -12,33 +12,21 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { DataCacheService } from "../../../../core/services/data-cache.service";
-import { Router, ActivatedRoute, Params } from "@angular/router";
-import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
-import { OmniSearchDataService } from "../../../services/omni-search-data.service";
-import { environment } from "./../../../../../environments/environment";
-import { Subscription } from "rxjs";
-import { AutorefreshService } from "../../../services/autorefresh.service";
-import { LoggerService } from "../../../../shared/services/logger.service";
-import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from "@angular/animations";
-import { WorkflowService } from "../../../../core/services/workflow.service";
-import { UtilsService } from "../../../../shared/services/utils.service";
-import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
-import { ICONS } from "./../../../../shared/constants/icons-mapping";
-import {
-  UntypedFormControl,
-  UntypedFormGroup,
-  FormBuilder,
-  Validators,
-} from "@angular/forms";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { AutorefreshService } from 'src/app/pacman-features/services/autorefresh.service';
+import { OmniSearchDataService } from 'src/app/pacman-features/services/omni-search-data.service';
+import { ICONS } from 'src/app/shared/constants/icons-mapping';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-omni-search-details',
