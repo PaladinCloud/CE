@@ -14,10 +14,10 @@
 
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { DataCacheService } from "../../../../core/services/data-cache.service";
-import { Router, ActivatedRoute } from "@angular/router";
+import { Router, ActivatedRoute, Params } from "@angular/router";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { OmniSearchDataService } from "../../../services/omni-search-data.service";
-import { environment } from ">./../../../../../environments/environment";
+import { environment } from "./../../../../../environments/environment";
 import { Subscription } from "rxjs";
 import { AutorefreshService } from "../../../services/autorefresh.service";
 import { LoggerService } from "../../../../shared/services/logger.service";

@@ -1,5 +1,17 @@
-import { Component, Input, EventEmitter, Output, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import {
+    Component,
+    Input,
+    EventEmitter,
+    Output,
+    OnChanges,
+    SimpleChanges,
+    AfterViewInit,
+    ChangeDetectorRef,
+    ViewChild,
+} from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-dropdown',
