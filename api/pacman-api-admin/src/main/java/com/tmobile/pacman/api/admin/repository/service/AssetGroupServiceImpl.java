@@ -102,6 +102,9 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	@Autowired
 	private CreateAssetGroupService createAssetGroupService;
 
+	@Autowired
+	private EsCommonService esCommonService;
+
 	@Value("${tagging.mandatoryTags}")
 	private String mandatoryTags;
 
@@ -688,62 +691,73 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			Map<String, Object> cloudTypeObject = new HashMap<>();
 			cloudTypeObject.put("CloudType",cloudType);
 			log.info(cloudType);
-			try {
-				responseDetails=esRepository.getRequiredObject(cloudType,aggsForTagsList);
-			} catch (DataException e) {
-				throw new ServiceException(e);
-			}
-			JsonParser parser = new JsonParser();
-			JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
-			JsonObject aggs = (JsonObject) responseJson.get("aggregations");
-
-			List<String>targetTypes=new ArrayList<>();
-			JsonObject targetTypeObj = (JsonObject) aggs.get("TargetType");
-			JsonArray targetTypeBuckets = targetTypeObj.get(BUCKETS).getAsJsonArray();
-			for (JsonElement bucket : targetTypeBuckets) {
-				targetTypes.add(bucket.getAsJsonObject().get(KEY).getAsString());
-			}
-			cloudTypeObject.put("TargetType",targetTypes);
-
-
-			List<String>regions=new ArrayList<>();
-			JsonObject regionObj = (JsonObject) aggs.get("Region");
-			JsonArray regionBuckets = regionObj.get(BUCKETS).getAsJsonArray();
-			for (JsonElement bucket : regionBuckets) {
-				regions.add(bucket.getAsJsonObject().get(KEY).getAsString());
-			}
-			cloudTypeObject.put("Region",regions);
-
-			List<String>ids=new ArrayList<>();
-			JsonObject idObj = (JsonObject) aggs.get("Id");
-			JsonArray idBuckets = idObj.get(BUCKETS).getAsJsonArray();
-			for (JsonElement bucket : idBuckets ) {
-				ids.add(bucket.getAsJsonObject().get(KEY).getAsString());
-			}
-
-			cloudTypeObject.put("Id",ids);
-
-			List<String>tagsPool=new ArrayList<>();
-
-			for(String agg : aggsForTagsList) {
-				String[] parts = agg.split(":");
-				String valueBeforeColon = parts[0];
-				tagsPool.add(valueBeforeColon);
-			}
-
-			for(String tag:tagsPool){
-				log.info(tag);
-				tag=tag.substring(1,tag.length()-1);
-				List<String>tagList=new ArrayList<>();
-				JsonObject tagObj = (JsonObject) aggs.get(tag);
-
-				JsonArray tagBuckets = tagObj.get(BUCKETS).getAsJsonArray();
-				for (JsonElement bucket : tagBuckets ) {
-					tagList.add(bucket.getAsJsonObject().get(KEY).getAsString());
+			if(esCommonService.isDataStreamOrIndexOrAliasExists(cloudType)) {
+				try {
+					responseDetails = esRepository.getRequiredObject(cloudType, aggsForTagsList);
+				} catch (DataException e) {
+					throw new ServiceException(e);
 				}
-				cloudTypeObject.put(tag,tagList);
+				JsonParser parser = new JsonParser();
+				JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
+				JsonObject aggs = (JsonObject) responseJson.get("aggregations");
+
+				List<String> targetTypes = new ArrayList<>();
+				JsonObject targetTypeObj = (JsonObject) aggs.get("TargetType");
+				JsonArray targetTypeBuckets = targetTypeObj.get(BUCKETS).getAsJsonArray();
+				for (JsonElement bucket : targetTypeBuckets) {
+					targetTypes.add(bucket.getAsJsonObject().get(KEY).getAsString());
+				}
+				cloudTypeObject.put("TargetType", targetTypes);
+
+
+				List<String> regions = new ArrayList<>();
+				JsonObject regionObj = (JsonObject) aggs.get("Region");
+				JsonArray regionBuckets = regionObj.get(BUCKETS).getAsJsonArray();
+				for (JsonElement bucket : regionBuckets) {
+					regions.add(bucket.getAsJsonObject().get(KEY).getAsString());
+				}
+				cloudTypeObject.put("Region", regions);
+
+				List<String> ids = new ArrayList<>();
+				JsonObject idObj = (JsonObject) aggs.get("Id");
+				JsonArray idBuckets = idObj.get(BUCKETS).getAsJsonArray();
+				for (JsonElement bucket : idBuckets) {
+					ids.add(bucket.getAsJsonObject().get(KEY).getAsString());
+				}
+
+				cloudTypeObject.put("Id", ids);
+
+				List<String> tagsPool = new ArrayList<>();
+
+				for (String agg : aggsForTagsList) {
+					String[] parts = agg.split(":");
+					String valueBeforeColon = parts[0];
+					tagsPool.add(valueBeforeColon);
+				}
+
+				for (String tag : tagsPool) {
+					log.info(tag);
+					tag = tag.substring(1, tag.length() - 1);
+					List<String> tagList = new ArrayList<>();
+					JsonObject tagObj = (JsonObject) aggs.get(tag);
+
+					JsonArray tagBuckets = tagObj.get(BUCKETS).getAsJsonArray();
+					for (JsonElement bucket : tagBuckets) {
+						tagList.add(bucket.getAsJsonObject().get(KEY).getAsString());
+					}
+					cloudTypeObject.put(tag, tagList);
+				}
+				boolean allValuesEmpty=true;
+				for(Object value:cloudTypeObject.values()){
+					if(value!= null){
+						allValuesEmpty=false;
+						break;
+					}
+				}
+
+				if(!allValuesEmpty){
+					cloudProviderObjList.add(cloudTypeObject);}
 			}
-			cloudProviderObjList.add(cloudTypeObject);
 		}
 		return cloudProviderObjList ;
 	}
