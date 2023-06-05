@@ -120,7 +120,7 @@ public class PacmanRuleConstants {
     public static final String SUBTYPE = "subtype";
     public static final String MEDIUM = "MEDIUM";
     public static final String MISSING_TAGS = "missingTags";
-    public static final String SUCCESS_MESSAGE = "Rule evaluation sucessfull";
+    public static final String SUCCESS_MESSAGE = "Policy evaluation sucessfull";
     public static final String S3_BUCKET_NAME = "s3BucketName";
     public static final String ANY_S3_AUTHENTICATED_USER_URI = "http://acs.amazonaws.com/groups/global/AuthenticatedUsers";
     public static final String ALL_S3_USER_URI = "http://acs.amazonaws.com/groups/global/AllUsers";
