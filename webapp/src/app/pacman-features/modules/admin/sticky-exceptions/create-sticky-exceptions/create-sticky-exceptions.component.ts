@@ -20,7 +20,6 @@ import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 // import * as frLocale from 'date-fns/locale/en';
 import { WorkflowService } from '../../../../../core/services/workflow.service';
-import * as moment from 'moment';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
@@ -32,6 +31,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UploadFileService } from '../../../../services/upload-file-service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-admin-create-sticky-exceptions',
@@ -81,7 +81,6 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   allAssetGroupNames: Array<string>;
   selectedAssetGroup: string;
   dataForm: FormGroup;
-  user: FormGroup;
 
   assetLoaderTitle: string = '';
   assetLoader: boolean = false;
@@ -189,6 +188,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
+    private datePipe: DatePipe,
     private activatedRoute: ActivatedRoute,
     private utils: UtilsService,
     private logger: LoggerService,
@@ -214,10 +214,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
-    this.expiryDate = moment(new Date()).format('DD/MM/YYYY');
-    this.user = new FormGroup({
-      name: new FormControl(moment('2018-07-14', 'YYYY-MM-DD').toDate(), [Validators.required, Validators.minLength(1)])
-    });
+    this.expiryDate = this.datePipe.transform(new Date(), 'dd/MM/yyyy');
   }
 
   state: string = 'closed';
@@ -352,7 +349,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       this.exceptionDetailsForm = {
         name: reponse[0].exceptionName,
         reason: reponse[0].exceptionReason,
-        expiry: moment(reponse[0].expiryDate).format('YYYY-MM-DD'),
+        expiry: this.datePipe.transform(reponse[0].expiryDate, 'yyyy-MM-dd'),
         assetGroup: [{ text: reponse[0].groupName, id: reponse[0].groupName }]
       }
       this.selectedAssetGroup = reponse[0].groupName;
@@ -437,7 +434,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   expiryDate: any;
   getDateData(date: any): any {
-    this.expiryDate = moment(date).format('DD/MM/YYYY');
+    this.expiryDate = this.datePipe.transform(date, 'dd/MM/yyyy');
   }
 
   closeAssetErrorMessage() {
