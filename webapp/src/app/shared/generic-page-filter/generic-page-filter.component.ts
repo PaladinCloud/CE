@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -22,7 +22,9 @@ import {DomainTypeObservableService} from '../../core/services/domain-type-obser
 import {UtilsService} from '../services/utils.service';
 import {LoggerService} from '../services/logger.service';
 
-import * as _ from 'lodash';
+import find from 'lodash/find';
+import map from 'lodash/map';
+import reject from 'lodash/reject';
 
 @Component({
   selector: 'app-generic-page-filter',
@@ -118,7 +120,7 @@ export class GenericPageFilterComponent implements OnInit, OnDestroy, OnChanges 
             .subscribe(response => {
               this.dataAvailable = true;
               const responseData = this.removeMandatoryFilter(response[0].response);
-              this.filterValues['filterTypeLabels'] = _.map(responseData, 'optionName');
+              this.filterValues['filterTypeLabels'] = map(responseData, 'optionName');
               this.filterValues['filterTypeOptions'] = responseData;
               if (this.filterValues['filterTypeLabels'].length === 1) {
                 this.changeFilterType({
@@ -145,7 +147,7 @@ export class GenericPageFilterComponent implements OnInit, OnDestroy, OnChanges 
       this.filterValues.filterValuesLabels = [];
       this.filterValues.currentSelectedFilterType = {};
       this.disableFilterTags = false;
-      this.filterValues.currentSelectedFilterType = _.find(this.filterValues.filterTypeOptions, {
+      this.filterValues.currentSelectedFilterType = find(this.filterValues.filterTypeOptions, {
         optionName: value.value
       });
 
@@ -156,7 +158,7 @@ export class GenericPageFilterComponent implements OnInit, OnDestroy, OnChanges 
 
       this.filterSubscription = this.filterManagementService.getValuesForFilterType(this.filterValues.currentSelectedFilterType, queryParams).subscribe(response => {
         this.dataAvailable = true;
-        this.filterValues.filterValuesLabels = _.map(response[0].response, 'name');
+        this.filterValues.filterValuesLabels = map(response[0].response, 'name');
         this.filterValues.filterValuesOptions = response[0].response;
         if (this.filterValues.filterValuesOptions.length === 1 && this.selectOnSingleValue) {
           this.changeFilterValue(this.filterValues.filterValuesOptions[0], true);
@@ -172,7 +174,7 @@ export class GenericPageFilterComponent implements OnInit, OnDestroy, OnChanges 
   changeFilterValue(value, mandatory?) {
     try {
       if (this.filterValues.currentSelectedFilterType) {
-        const filterTag = mandatory ? value : _.find(this.filterValues.filterValuesOptions, { name: value.value });
+        const filterTag = mandatory ? value : find(this.filterValues.filterValuesOptions, { name: value.value });
         this.utils.addOrReplaceElement(
             this.filterArray,
             {
@@ -205,10 +207,10 @@ export class GenericPageFilterComponent implements OnInit, OnDestroy, OnChanges 
       mandatory = mandatory.split('|');
     }
     if (mandatory) {
-      const filteredOptionValue = _.map(data, 'optionValue');
+      const filteredOptionValue = map(data, 'optionValue');
       filteredOptionValue.forEach(value => {
         if (mandatory.includes(value.trim())) {
-          data = _.reject(data, {'optionValue': value});
+          data = reject(data, {'optionValue': value});
         }
       });
     }

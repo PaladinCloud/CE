@@ -16,7 +16,8 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DecimalPipe } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as _ from 'lodash';
+import find from 'lodash/find';
+import map from 'lodash/map';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
@@ -451,11 +452,11 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         this.storeState();
     }
 
-    handleFilterTypeSelection(){    
+    handleFilterTypeSelection(){
         this.storeState();
     }
 
-    handleFilterSelection(){    
+    handleFilterSelection(){
         this.storeState();
     }
 
@@ -682,11 +683,11 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             }
             const formattedFilters = dataArray;
             for (let i = 0; i < formattedFilters.length; i++) {
-                const keyValue = _.find(this.filterTypeOptions, {
+                const keyValue = find(this.filterTypeOptions, {
                     optionValue: formattedFilters[i].name,
                 })['optionName'];
                 this.changeFilterType(keyValue).then(() => {
-                    const filterValue = _.find(this.filterTagOptions[keyValue], {
+                    const filterValue = find(this.filterTagOptions[keyValue], {
                         id: this.filterText[filterObjKeys[i]],
                     })['name'];
                     const eachObj = {
@@ -721,7 +722,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
                     environment.issueFilter.method,
                 )
                 .subscribe((response) => {
-                    this.filterTypeLabels = _.map(response[0].response, 'optionName');
+                    this.filterTypeLabels = map(response[0].response, 'optionName');
                     this.filterTypeOptions = response[0].response;
 
                     this.routerParam();
@@ -738,7 +739,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     changeFilterType(value) {
         return new Promise((resolve) => {
             try {
-                this.currentFilterType = _.find(this.filterTypeOptions, {
+                this.currentFilterType = find(this.filterTypeOptions, {
                     optionName: value,
                 });
                 if (!this.filterTagOptions[value] || !this.filterTagLabels[value]) {
@@ -755,7 +756,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
                         )
                         .subscribe((response) => {
                             this.filterTagOptions[value] = response[0].response;
-                            this.filterTagLabels[value] = _.map(response[0].response, 'name');
+                            this.filterTagLabels[value] = map(response[0].response, 'name');
                             this.filterTagLabels[value].sort((a, b) => a.localeCompare(b));
                             resolve(this.filterTagOptions[value]);
                         });
@@ -769,13 +770,13 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
 
     changeFilterTags(event) {
         const value = event.filterValue;
-        this.currentFilterType = _.find(this.filterTypeOptions, {
+        this.currentFilterType = find(this.filterTypeOptions, {
             optionName: event.filterKeyDisplayValue,
         });
 
         try {
             if (this.currentFilterType) {
-                const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], {
+                const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], {
                     name: value,
                 });
                 this.utils.addOrReplaceElement(

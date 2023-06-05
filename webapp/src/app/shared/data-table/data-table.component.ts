@@ -23,7 +23,9 @@ import {
   ViewChildren,
   ViewChild,
 } from "@angular/core";
-import * as _ from "lodash";
+import chain from 'lodash/chain';
+import filter from 'lodash/filter';
+import find from 'lodash/find';
 import { LoggerService } from "../services/logger.service";
 import {
   animate,
@@ -208,7 +210,7 @@ export class DataTableComponent implements OnInit, OnChanges {
       this.currentTableData = this.outerArr;
       this.allTableData = this.outerArr;
       if (this.tabFilterProperty) {
-        this.tabsData = _(this.allTableData)
+        this.tabsData = chain(this.allTableData)
           .map((row: any) => {
             return row[this.tabFilterProperty];
           })
@@ -338,7 +340,7 @@ export class DataTableComponent implements OnInit, OnChanges {
     }
     this.previousTableData = this.currentTableData;
     if (tab) {
-      const list = _.filter(this.allTableData, (row) => {
+      const list = filter(this.allTableData, (row) => {
         return (
           tab[this.rowAccessProperty] ===
           row[this.tabFilterProperty][this.rowAccessProperty]
@@ -452,8 +454,8 @@ export class DataTableComponent implements OnInit, OnChanges {
 
   restrictShownColumns(columnNames) {
     if (columnNames) {
-      const list = _.filter(columnNames, (whiteListedColumn) => {
-        return _.find(this.allColumns, (column) => {
+      const list = filter(columnNames, (whiteListedColumn) => {
+        return find(this.allColumns, (column) => {
           return whiteListedColumn.toLowerCase() === column.toLowerCase();
         });
       });

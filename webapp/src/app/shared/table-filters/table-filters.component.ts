@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { FilterItem } from '../table/table.component';
 import { FilterChipUpdateEvent } from './table-filter-chip/table-filter-chip.component';
 

@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -21,7 +21,7 @@ import { Router} from '@angular/router';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import * as _ from 'lodash';
+import map from 'lodash/map';
 const date = new Date();
 
 @Component({
@@ -115,7 +115,7 @@ export class PatchingProjectionsComponent implements OnInit, OnDestroy {
       };
       this.yearsArray.push(this.dropdownValue);
     });
-    this.yearsDropdown = _.map(this.yearsArray, 'text');
+    this.yearsDropdown = map(this.yearsArray, 'text');
     this.yearSelected = date.getFullYear().toString();
   }
 
@@ -129,7 +129,7 @@ export class PatchingProjectionsComponent implements OnInit, OnDestroy {
       };
       this.quarterArray.push(this.dropdownValue);
     });
-    this.quarterDropdown = _.map(this.quarterArray, 'text');
+    this.quarterDropdown = map(this.quarterArray, 'text');
     this.quarterSelected = Math.ceil((date.getMonth() + 1) / 3).toString();
   }
 
@@ -233,7 +233,7 @@ export class PatchingProjectionsComponent implements OnInit, OnDestroy {
           };
           this.tiles.push(this.dropdownValue);
         });
-        this.targetDropdown = _.map(this.tiles, 'text');
+        this.targetDropdown = map(this.tiles, 'text');
       } catch (e) {
         this.errorValue = -4;
         this.logger.log('error', e);

@@ -18,7 +18,8 @@ import { environment } from './../../../../../../environments/environment';
 
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import * as _ from 'lodash';
+import find from 'lodash/find';
+import cloneDeep from 'lodash/cloneDeep';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
@@ -214,8 +215,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -307,7 +308,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   }
 
   checkAttributeAlreadyTaken(attributeValue) {
-    const attributeSearchedResult = _.find(this.allAttributeDetails[this.selectedIndex].attributes, { name: this.attributeName, value: attributeValue });
+    const attributeSearchedResult = find(this.allAttributeDetails[this.selectedIndex].attributes, { name: this.attributeName, value: attributeValue });
     if (attributeSearchedResult === undefined) {
       this.isAttributeAlreadyAdded = -1;
     } else {
@@ -360,8 +361,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   addTagetType(targetTypeValue) {
     const targetTypeName = targetTypeValue;
-    const targetTypeDetails1 = _.find(this.remainingTargetTypesFullDetails, { targetName: targetTypeName });
-    const targetTypeDetails2 = _.find(this.remainingTargetTypes, { id: targetTypeName });
+    const targetTypeDetails1 = find(this.remainingTargetTypesFullDetails, { targetName: targetTypeName });
+    const targetTypeDetails2 = find(this.remainingTargetTypes, { id: targetTypeName });
     this.allAttributeDetails.push(targetTypeDetails1);
     const itemIndex2 = this.remainingTargetTypes.indexOf(targetTypeDetails2);
     this.remainingTargetTypes.splice(itemIndex2, 1);
@@ -421,10 +422,10 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
             if (reponse !== undefined) {
               this.availableItems = reponse[0];
               this.selectedItems = [];
-              this.availableItemsBackUp = _.cloneDeep(this.availableItems);
-              this.selectedItemsBackUp = _.cloneDeep(this.selectedItems);
-              this.availableItemsCopy = _.cloneDeep(this.availableItems);
-              this.selectedItemsCopy = _.cloneDeep(this.selectedItems);
+              this.availableItemsBackUp = cloneDeep(this.availableItems);
+              this.selectedItemsBackUp = cloneDeep(this.selectedItems);
+              this.availableItemsCopy = cloneDeep(this.availableItems);
+              this.selectedItemsCopy = cloneDeep(this.selectedItems);
               this.searchAvailableDomains();
               this.searchSelectedDomains();
               this.goToNextStep();
@@ -460,7 +461,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
               this.selectedTdItems = [];
               if (this.selectedTdItemsCopyForPrevNext.length > 0) {
                 this.selectedTdItemsCopyForPrevNext.forEach(tdItem => {
-                  const availableTdSearchedResult = _.find(this.availableTdItems, { targetName: tdItem.targetName });
+                  const availableTdSearchedResult = find(this.availableTdItems, { targetName: tdItem.targetName });
                   const itemIndex = this.availableTdItems.indexOf(availableTdSearchedResult);
                   if (itemIndex !== -1) {
                     this.availableTdItems.splice(itemIndex, 1);
@@ -468,10 +469,10 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
                   }
                 });
               }
-              this.availableTdItemsBackUp = _.cloneDeep(this.availableTdItems);
-              this.selectedTdItemsBackUp = _.cloneDeep(this.selectedTdItems);
-              this.availableTdItemsCopy = _.cloneDeep(this.availableTdItems);
-              this.selectedTdItemsCopy = _.cloneDeep(this.selectedTdItems);
+              this.availableTdItemsBackUp = cloneDeep(this.availableTdItems);
+              this.selectedTdItemsBackUp = cloneDeep(this.selectedTdItems);
+              this.availableTdItemsCopy = cloneDeep(this.availableTdItems);
+              this.selectedTdItemsCopy = cloneDeep(this.selectedTdItems);
               this.searchAvailableTargets();
               this.searchSelectedTargets();
               this.goToNextStep();
@@ -505,14 +506,14 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
               this.allAttributeDetails = reponse[0].data;
               if (this.allAttributeDetailsCopyForPrevNext.length > 0) {
                 this.allAttributeDetailsCopyForPrevNext.forEach(attrElement => {
-                  const attributeSearchedResult = _.find(this.allAttributeDetails, { targetName: attrElement.targetName });
+                  const attributeSearchedResult = find(this.allAttributeDetails, { targetName: attrElement.targetName });
                   const itemIndex = this.allAttributeDetails.indexOf(attributeSearchedResult);
                   if (itemIndex !== -1) {
                     this.allAttributeDetails[itemIndex] = attrElement;
                   }
                 });
               }
-              this.allSelectedAttributeDetailsCopy = _.cloneDeep(this.allAttributeDetails);
+              this.allSelectedAttributeDetailsCopy = cloneDeep(this.allAttributeDetails);
               this.goToNextStep();
             }
           },
@@ -557,10 +558,10 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.stepTitle = this.pageContent[this.stepIndex].title;
     this.pageContent[this.stepIndex].hide = false;
     if (this.stepIndex + 1 === 3) {
-      this.allAttributeDetailsCopyForPrevNext = _.cloneDeep(this.allAttributeDetails);
+      this.allAttributeDetailsCopyForPrevNext = cloneDeep(this.allAttributeDetails);
     }
     if (this.stepIndex + 1 === 2) {
-      this.selectedTdItemsCopyForPrevNext = _.cloneDeep(this.selectedTdItems);
+      this.selectedTdItemsCopyForPrevNext = cloneDeep(this.selectedTdItems);
     }
   }
 
@@ -680,8 +681,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.pageContent[this.stepIndex].isChanged = false;
     this.pageContent[2].isChanged = false;
     if (this.searchSelectedDomainTerms.length === 0) {
-      this.availableItems = _.cloneDeep(this.availableItemsBackUp);
-      this.availableItemsCopy = _.cloneDeep(this.availableItemsBackUp);
+      this.availableItems = cloneDeep(this.availableItemsBackUp);
+      this.availableItemsCopy = cloneDeep(this.availableItemsBackUp);
       this.selectedItems = [];
       this.selectedItemsCopy = [];
       this.selectChoosedItems = {};
@@ -703,8 +704,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.pageContent[this.stepIndex].isChanged = false;
     this.pageContent[2].isChanged = false;
     if (this.searchAvailableDomainTerms.length === 0) {
-      this.selectedItems = _.cloneDeep(this.availableItemsBackUp);
-      this.selectedItemsCopy = _.cloneDeep(this.availableItemsBackUp);
+      this.selectedItems = cloneDeep(this.availableItemsBackUp);
+      this.selectedItemsCopy = cloneDeep(this.availableItemsBackUp);
       this.availableItemsCopy = [];
       this.availableItems = [];
       this.availChoosedItems = {};
@@ -830,8 +831,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   moveTdAllItemsToLeft() {
     this.pageContent[this.stepIndex].isChanged = false;
     if (this.searchSelectedTargetTerms.length === 0) {
-      this.availableTdItems = _.cloneDeep(this.availableTdItemsBackUp);
-      this.availableTdItemsCopy = _.cloneDeep(this.availableTdItemsBackUp);
+      this.availableTdItems = cloneDeep(this.availableTdItemsBackUp);
+      this.availableTdItemsCopy = cloneDeep(this.availableTdItemsBackUp);
       this.selectedTdItems = [];
       this.selectedTdItemsCopy = [];
       this.selectTdChoosedItems = {};
@@ -852,8 +853,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   moveTdAllItemsToRight() {
     this.pageContent[this.stepIndex].isChanged = false;
     if (this.searchAvailableTargetTerms.length === 0) {
-      this.selectedTdItems = _.cloneDeep(this.availableTdItemsBackUp);
-      this.selectedTdItemsCopy = _.cloneDeep(this.availableTdItemsBackUp);
+      this.selectedTdItems = cloneDeep(this.availableTdItemsBackUp);
+      this.selectedTdItemsCopy = cloneDeep(this.availableTdItemsBackUp);
       this.availableTdItemsCopy = [];
       this.availableTdItems = [];
       this.availTdChoosedItems = {};

@@ -17,7 +17,9 @@ import { environment } from './../../../../../../environments/environment';
 
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import * as _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import find from 'lodash/find';
+import orderBy from 'lodash/orderBy';
 // import * as frLocale from 'date-fns/locale/en';
 import { WorkflowService } from '../../../../../core/services/workflow.service';
 import * as moment from 'moment';
@@ -241,7 +243,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   addAttributes(attributeName, attributeValue) {
-    let ruleDetails = _.find(this.allAttributeDetails[this.selectedIndex].allPolicies, { text: attributeName });
+    let ruleDetails = find(this.allAttributeDetails[this.selectedIndex].allPolicies, { text: attributeName });
     this.allAttributeDetails[this.selectedIndex].policies.push(ruleDetails);
     let itemIndex = this.allAttributeDetails[this.selectedIndex].allPolicies.indexOf(ruleDetails);
     if (itemIndex !== -1) {
@@ -384,7 +386,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
         reponse[0].sort(function (a, b) {
           return b.policies.length - a.policies.length;
         });
-        reponse[0] = _.orderBy(reponse[0], ['added'], ['desc']);
+        reponse[0] = orderBy(reponse[0], ['added'], ['desc']);
         this.allAttributeDetails = reponse[0];
         this.allAttributeDetailsCopy = reponse[0];
         this.goToNextStep();
@@ -408,7 +410,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
         let selectedAssetGroup = this.exceptionDetailsForm.assetGroup[0].text;
         if (this.stickyExceptionDetails.groupName === selectedAssetGroup) {
           this.allAttributeDetails = this.stickyExceptionDetails.targetTypes;
-          this.allAttributeDetailsCopy = _.cloneDeep(this.allAttributeDetails);
+          this.allAttributeDetailsCopy = cloneDeep(this.allAttributeDetails);
           this.goToNextStep();
         } else {
           this.collectTargetTypes();
@@ -600,7 +602,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.allAttributeDetails.sort(function (a, b) {
       return b.policies.length - a.policies.length;
     });
-    this.allAttributeDetails = _.orderBy(this.allAttributeDetails, ['added'], ['desc']);
+    this.allAttributeDetails = orderBy(this.allAttributeDetails, ['added'], ['desc']);
   }
 
   getData() {

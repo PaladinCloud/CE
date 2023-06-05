@@ -20,7 +20,6 @@ import { DataCacheService } from '../../../../core/services/data-cache.service';
 import { Subscription } from 'rxjs';
 import { IssueListingService } from '../../../services/issue-listing.service';
 import { IssueFilterService } from '../../../services/issue-filter.service';
-import * as _ from 'lodash';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
