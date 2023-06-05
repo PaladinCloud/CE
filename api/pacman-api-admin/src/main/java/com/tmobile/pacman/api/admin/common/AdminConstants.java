@@ -143,6 +143,9 @@ public final class AdminConstants {
 	public static final String EXPIRE_DATE_FORMAT_EXCEPTION			= 	"ExpireDate format expection";
 	public static final String MISSING_PARAMETERS 			= 	"Missing parameters  !!";
 
+	public static final String ALLOW_NO_INDICES_PARAM = "allow_no_indices=false";
+	public static final String DELIMITER_QUESTION_MARK = "?";
+
 
 }
 
