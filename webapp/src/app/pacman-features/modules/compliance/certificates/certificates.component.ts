@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -19,7 +19,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { IssueListingService } from '../../../services/issue-listing.service';
 import { IssueFilterService } from '../../../services/issue-filter.service';
-import * as _ from 'lodash';
+import find from 'lodash/find';
+import map from 'lodash/map';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
@@ -498,7 +499,7 @@ export class CertificatesComponent implements OnInit, OnDestroy {
                 environment.issueFilter.url,
                 environment.issueFilter.method)
                 .subscribe((response) => {
-                    this.filterTypeLabels = _.map(response[0].response, 'optionName');
+                    this.filterTypeLabels = map(response[0].response, 'optionName');
                     this.filterTypeOptions = response[0].response;
                 });
         } catch (error) {
@@ -509,13 +510,13 @@ export class CertificatesComponent implements OnInit, OnDestroy {
 
     changeFilterType(value) {
         try {
-            this.currentFilterType = _.find(this.filterTypeOptions, {optionName: value.value});
+            this.currentFilterType = find(this.filterTypeOptions, {optionName: value.value});
             this.issueFilterSubscription = this.issueFilterService.getFilters({
                 'ag': this.selectedAssetGroup
             }, environment.base + this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL).url, 'GET').subscribe(
                 (response) => {
                     this.filterTagOptions = response[0].response;
-                    this.filterTagLabels = _.map(response[0].response, 'name');
+                    this.filterTagLabels = map(response[0].response, 'name');
                 });
         } catch (error) {
             this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -526,7 +527,7 @@ export class CertificatesComponent implements OnInit, OnDestroy {
     changeFilterTags(value) {
         try {
             if (this.currentFilterType) {
-                const filterTag = _.find(this.filterTagOptions, {name: value.value});
+                const filterTag = find(this.filterTagOptions, {name: value.value});
                 this.utils.addOrReplaceElement(this.filters, {
                         key: this.currentFilterType.optionName,
                         value: filterTag['id'],

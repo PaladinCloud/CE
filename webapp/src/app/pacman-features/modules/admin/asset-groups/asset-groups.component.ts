@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subscription } from "rxjs";
-import * as _ from "lodash";
+import uniq from "lodash/uniq";
 import { UtilsService } from "../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
@@ -330,7 +330,7 @@ export class AssetGroupsComponent implements OnInit {
             let targetTypeName = getData[row]["Asset Types"].map(
               (target) => target.targetType
             );
-            targetTypeName = _.uniq(targetTypeName);
+            targetTypeName = uniq(targetTypeName);
             cellObj = {
               link: "",
               properties: {
@@ -346,7 +346,7 @@ export class AssetGroupsComponent implements OnInit {
             let targetTypeName = getData[row][getCols[col]].map(
               (target) => target.targetType
             );
-            targetTypeName = _.uniq(targetTypeName);
+            targetTypeName = uniq(targetTypeName);
             cellObj = {
               link: "",
               properties: {

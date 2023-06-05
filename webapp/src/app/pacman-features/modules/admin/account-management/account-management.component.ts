@@ -15,7 +15,7 @@ import { CommonResponseService } from '../../../../shared/services/common-respon
 import { RefactorFieldsService } from '../../../../shared/services/refactor-fields.service';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
-import * as _ from 'lodash';
+import find from 'lodash/find';
 
 @Component({
   selector: 'app-account-management',
@@ -46,7 +46,7 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
   allColumns = [];
   lastPaginator: number;
   currentPointer = 0;
-  
+
   tableData = [];
   headerColName;
   direction;
@@ -216,7 +216,7 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
       let queryParams;
       if(this.filters.length>0){
         queryParams = {
-            page: 0,                                                                      
+            page: 0,
             size: 100,
             filterName: this.filters[0].key.toLowerCase(),
             filterValue: this.filters[0].value
@@ -224,11 +224,11 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
       }
       else{
        queryParams = {
-          page: 0,                                                                      
+          page: 0,
           size: 100,
         };
       }
- 
+
       const payload = {};
       this.errorValue = 0;
       const url = environment.getAccounts.url;
@@ -265,7 +265,7 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
     const columnNamesMap = this.columnNamesMap;
     const newData = [];
     data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);      
+      const KeysTobeChanged = Object.keys(row);
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
@@ -311,7 +311,7 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
       var totalVariablesObj = {};
       var cellObj = {};
       let processedData = [];
-      var getData = data;      
+      var getData = data;
       const keynames = Object.keys(getData[0]);
 
       let cellData;
@@ -444,7 +444,7 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
 
 
   getUpdatedUrl() {
-    let updatedQueryParams = {};    
+    let updatedQueryParams = {};
       this.filterText = this.utils.arrayToObject(
       this.filters,
       "filterkey",
@@ -467,7 +467,7 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
      * api is again called with the updated filter
      */
     this.filterText = this.utils.processFilterObj(this.filterText);
-    
+
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: updatedQueryParams,
@@ -507,13 +507,13 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
       }
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-        
-        let keyValue = _.find(this.filterTypeOptions, {
+
+        let keyValue = find(this.filterTypeOptions, {
           optionValue: formattedFilters[i].name,
         })["optionName"];
-        
+
         this.changeFilterType(keyValue).then(() => {
-            let filterValue = _.find(this.filterTagOptions[keyValue], {
+            let filterValue = find(this.filterTagOptions[keyValue], {
               id: this.filterText[filterObjKeys[i]],
             })["name"];
           const eachObj = {
@@ -563,7 +563,7 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
     return new Promise((resolve) => {
       this.filterErrorMessage = '';
     try {
-      this.currentFilterType = _.find(this.filterTypeOptions, {
+      this.currentFilterType = find(this.filterTypeOptions, {
         optionName: value,
       });
       if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
@@ -592,17 +592,17 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-    }); 
+    });
   }
 
-  changeFilterTags(event) {    
+  changeFilterTags(event) {
     let value = event.filterValue;
-    this.currentFilterType =  _.find(this.filterTypeOptions, {
+    this.currentFilterType =  find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
-      });  
+      });
     try {
       if (this.currentFilterType) {
-        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });   
+        const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
         this.utils.addOrReplaceElement(
           this.filters,
           {
@@ -629,7 +629,7 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
       this.logger.log("error", error);
     }
   }
-  
+
   ngOnDestroy() {
     try {
 

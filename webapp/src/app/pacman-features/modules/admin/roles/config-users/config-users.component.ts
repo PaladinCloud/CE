@@ -17,7 +17,8 @@ import { environment } from './../../../../../../environments/environment';
 
 import {  Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import * as _ from 'lodash';
+import uniq from 'lodash/uniq';
+import cloneDeep from 'lodash/cloneDeep';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
@@ -314,15 +315,15 @@ export class ConfigUsersComponent implements OnInit, OnDestroy {
               }
             }
 
-            const availableItems = _.cloneDeep(this.idDetailsName);
-            const selectedItems = _.cloneDeep(this.emailArray);
+            const availableItems = cloneDeep(this.idDetailsName);
+            const selectedItems = cloneDeep(this.emailArray);
 
-            this.availableItems = _.cloneDeep(availableItems);
-            this.selectedItems = _.cloneDeep(selectedItems);
-            this.availableItemsBackUp = _.cloneDeep(availableItems);
-            this.selectedItemsBackUp = _.cloneDeep(selectedItems);
-            this.availableItemsCopy = _.cloneDeep(availableItems);
-            this.selectedItemsCopy = _.cloneDeep(selectedItems);
+            this.availableItems = cloneDeep(availableItems);
+            this.selectedItems = cloneDeep(selectedItems);
+            this.availableItemsBackUp = cloneDeep(availableItems);
+            this.selectedItemsBackUp = cloneDeep(selectedItems);
+            this.availableItemsCopy = cloneDeep(availableItems);
+            this.selectedItemsCopy = cloneDeep(selectedItems);
             this.searchAvailableUsers();
             this.searchSelectedUsers();
           },
@@ -360,8 +361,8 @@ export class ConfigUsersComponent implements OnInit, OnDestroy {
 
   moveAllItemsToLeft() {
     if (this.searchSelectedUsersTerms.length === 0) {
-      this.availableItems = _.cloneDeep(this.availableItemsBackUp);
-      this.availableItemsCopy = _.cloneDeep(this.availableItemsBackUp);
+      this.availableItems = cloneDeep(this.availableItemsBackUp);
+      this.availableItemsCopy = cloneDeep(this.availableItemsBackUp);
       this.selectedItems = [];
       this.selectedItemsCopy = [];
       this.selectChoosedItems = {};
@@ -383,8 +384,8 @@ export class ConfigUsersComponent implements OnInit, OnDestroy {
 
   moveAllItemsToRight() {
     if (this.searchAvailableUsersTerms.length === 0) {
-      this.selectedItems = _.cloneDeep(this.availableItemsBackUp);
-      this.selectedItemsCopy = _.cloneDeep(this.availableItemsBackUp);
+      this.selectedItems = cloneDeep(this.availableItemsBackUp);
+      this.selectedItemsCopy = cloneDeep(this.availableItemsBackUp);
       this.availableItemsCopy = [];
       this.availableItems = [];
       this.availChoosedItems = {};
@@ -599,7 +600,7 @@ export class ConfigUsersComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, {roleId: this.roleId}).subscribe(userRoleReponse => {
       if (!this.isCreate) {
         const userNames = userRoleReponse[0].users.map(user => user.userId);
-        this.allAllocatedUsers = _.uniq(userNames);
+        this.allAllocatedUsers = uniq(userNames);
         this.getUsers();
         this.highlightName = userRoleReponse[0].roleName;
         this.roles.roleName = userRoleReponse[0].roleName;

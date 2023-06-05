@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -17,7 +17,7 @@ import { DOMAIN_MAPPING } from '../../../config/domain-mapping';
 import { COMPLIANCE_ROUTES, TOOLS_ROUTES, ADMIN_ROUTES, OMNISEARCH_ROUTES } from '../../shared/constants/routes';
 import { ASSETS_ROUTES } from '../../shared/constants/routes';
 import { DataCacheService } from './data-cache.service';
-import * as _ from 'lodash';
+import difference from 'lodash/difference';
 import { Router } from '@angular/router';
 import { CONFIGURATIONS } from '../../../config/configurations';
 
@@ -140,7 +140,7 @@ export class DomainMappingService {
             if (eachLink.data && eachLink.data.roles && eachLink.data.roles.length) {
                 const linkRoles = eachLink.data.roles;
                 /* If all link roles are available in userRoles, that means, user has access to that link */
-                const hasAccess = !(_.difference(linkRoles, userRoles).length);
+                const hasAccess = !(difference(linkRoles, userRoles).length);
                 return hasAccess;
             } else {
                 return true;

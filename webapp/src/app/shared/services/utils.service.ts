@@ -13,7 +13,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import * as _ from 'lodash';
+import each from 'lodash/each';
+import findIndex from 'lodash/findIndex';
+import map from 'lodash/map';
 import * as moment from 'moment';
 import { QUARTER } from './../constants/quarter';
 import { LoggerService } from './logger.service';
@@ -74,7 +76,7 @@ export class UtilsService {
   }
 
   objectToArray(object, keyLabel = 'key', valueLabel = 'value') {
-    return _.map(object, (element, key, array) => {
+    return map(object, (element, key, array) => {
       const arrayElement: any = {};
       arrayElement[keyLabel] = key;
       arrayElement[valueLabel] = element;
@@ -120,7 +122,7 @@ export class UtilsService {
   }
 
   addOrReplaceElement(array, toAddElement, comparator) {
-    const i = _.findIndex(array, (element, index, _array) => {
+    const i = findIndex(array, (element, index, _array) => {
       return comparator(element, index, _array);
     });
 
@@ -137,7 +139,7 @@ export class UtilsService {
     const params = {};
     if(split.length>1){
       const inputParams = split[1].split('&');
-      _.each(inputParams, arg => {
+      each(inputParams, arg => {
         const key = arg.substring(0, arg.indexOf('='));
         const value = arg.substring(arg.indexOf('=') + 1, arg.length);
         params[key] = value;
@@ -152,7 +154,7 @@ export class UtilsService {
 
   arrayToObject(array, keyLabel = 'key', valueLabel = 'value') {
     const object = {};
-    _.each(array, (element, index, list) => {
+    each(array, (element, index, list) => {
       object[element[keyLabel]] = element[valueLabel];
     });
     return object;
@@ -169,7 +171,7 @@ export class UtilsService {
 
     if (data.filter !== '' && data.filter !== undefined  ) {
       const eachFilterObj = data.filter.split('*');
-      _.each(eachFilterObj, (element, index) => {
+      each(eachFilterObj, (element, index) => {
         const eachFilterParam = element.split('=');
         const key = eachFilterParam[0];
         const value = eachFilterParam[1];
@@ -196,7 +198,7 @@ export class UtilsService {
         return object;
       } else {
         const localObjKeys = Object.keys(data);
-        _.each(localObjKeys, (element, index) => {
+        each(localObjKeys, (element, index) => {
           if (typeof data[element] !== 'undefined') {
             const localValue = data[element].toString();
             const localKeys = element.toString();

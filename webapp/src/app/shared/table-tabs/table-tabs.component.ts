@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -13,7 +13,7 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import * as _ from 'lodash';
+import findIndex from 'lodash/findIndex';
 
 @Component({
   selector: 'app-table-tabs',
@@ -36,7 +36,7 @@ export class TableTabsComponent implements OnInit {
     }
     let direction;
     const prevIndex = !!this.selected
-      ? _.findIndex(this.tabsData, tabData => {
+      ? findIndex(this.tabsData, tabData => {
           return (
             tabData[this.displayProperty] ===
             this.selected[this.displayProperty]
