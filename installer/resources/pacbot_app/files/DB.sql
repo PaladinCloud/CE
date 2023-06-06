@@ -2867,3 +2867,9 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Created By','createdBy','/admin/accounts/filter/attribute?attribute=createdBy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Platform','platform','/admin/accounts/filter/attribute?attribute=platform');
 
+
+
+update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=asset" where filterId=12 and optionName ="Assets";
+
+update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=status" where filterId=12 and optionName ="Status";
+
