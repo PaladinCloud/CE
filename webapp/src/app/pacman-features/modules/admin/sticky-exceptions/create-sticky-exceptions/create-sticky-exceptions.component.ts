@@ -186,7 +186,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
   private readonly shortDateFormat = 'dd/MM/yyyy';
-  private readonly expiryDateFormat = 'yyyy-MM-dd';
+  private readonly exceptionDetailsExpiryDateFormat = 'yyyy-MM-dd';
 
   constructor(
     private router: Router,
@@ -351,7 +351,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       this.exceptionDetailsForm = {
         name: reponse[0].exceptionName,
         reason: reponse[0].exceptionReason,
-        expiry: this.datePipe.transform(reponse[0].expiryDate, this.expiryDateFormat),
+        expiry: this.datePipe.transform(reponse[0].expiryDate, this.exceptionDetailsExpiryDateFormat),
         assetGroup: [{ text: reponse[0].groupName, id: reponse[0].groupName }]
       }
       this.selectedAssetGroup = reponse[0].groupName;
