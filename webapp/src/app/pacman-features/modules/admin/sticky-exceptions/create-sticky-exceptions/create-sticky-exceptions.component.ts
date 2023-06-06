@@ -185,6 +185,8 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  private readonly shortDateFormat = 'dd/MM/yyyy';
+  private readonly expiryDateFormat = 'yyyy-MM-dd';
 
   constructor(
     private router: Router,
@@ -214,7 +216,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
-    this.expiryDate = this.datePipe.transform(new Date(), 'dd/MM/yyyy');
+    this.expiryDate = this.datePipe.transform(new Date(), this.shortDateFormat);
   }
 
   state: string = 'closed';
@@ -349,7 +351,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       this.exceptionDetailsForm = {
         name: reponse[0].exceptionName,
         reason: reponse[0].exceptionReason,
-        expiry: this.datePipe.transform(reponse[0].expiryDate, 'yyyy-MM-dd'),
+        expiry: this.datePipe.transform(reponse[0].expiryDate, this.expiryDateFormat),
         assetGroup: [{ text: reponse[0].groupName, id: reponse[0].groupName }]
       }
       this.selectedAssetGroup = reponse[0].groupName;
@@ -434,7 +436,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   expiryDate: any;
   getDateData(date: any): any {
-    this.expiryDate = this.datePipe.transform(date, 'dd/MM/yyyy');
+    this.expiryDate = this.datePipe.transform(date, this.shortDateFormat);
   }
 
   closeAssetErrorMessage() {

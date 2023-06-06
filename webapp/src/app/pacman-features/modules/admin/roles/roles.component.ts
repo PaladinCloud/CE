@@ -80,6 +80,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  private readonly shortDateFormat = 'dd/MM/yyyy';
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -336,14 +337,14 @@ export class RolesComponent implements OnInit, OnDestroy {
           ) {
             const dateValue = this.datePipe.transform(
                 getData[row][getCols[col]],
-                'dd/MM/yyyy',
+                this.shortDateFormat,
             );
             cellObj = {
               link: "",
               properties: {
                 color: "",
               },
-              colName: this.datePipe.transform(getCols[col], 'dd/MM/yyyy'),
+              colName: this.datePipe.transform(getCols[col], this.shortDateFormat),
               hasPreImg: false,
               imgLink: "",
               text:  dateValue,

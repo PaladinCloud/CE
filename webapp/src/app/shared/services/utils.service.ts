@@ -22,6 +22,7 @@ import { DatePipe } from '@angular/common';
 
 @Injectable()
 export class UtilsService {
+  private readonly utcDateFormat = 'yyyy-MM-dd';
   constructor(
               private datePipe: DatePipe,
               private logger: LoggerService,
@@ -388,8 +389,6 @@ export class UtilsService {
     }
 
     getUTCDate(date) {
-      // get UTC Date in YYYY-MM-DD format
-      return this.datePipe.transform(new Date(date).toUTCString(), 'yyyy-MM-dd');
-  }
-
+      return this.datePipe.transform(new Date(date).toUTCString(), this.utcDateFormat);
+    }
 }
