@@ -13,10 +13,10 @@
  */
 
 .policy-knowledgebase-wrapper {
+    padding: 18px 24px;
     height: 100%;
     justify-content: flex-start;
     overflow-y: scroll;
-    padding: 24px;
     background-color: var(--background-grey);
 }
 
@@ -29,16 +29,6 @@
     background-color: var(--background-white);
     border-radius: var(--border-radius);
     border: 1px solid var(--border-100);
-}
-
-.policy-header {
-    padding-bottom: 24px;
-}
-
-.policy-header .title {
-    font-size: 2em;
-    font-family: var(--text-font-family);
-    font-weight: 500;
 }
 
 .policy-categories-container {

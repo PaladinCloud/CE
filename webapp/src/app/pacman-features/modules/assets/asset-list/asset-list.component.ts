@@ -31,7 +31,7 @@ import { AssetTypeMapService } from "src/app/core/services/asset-type-map.servic
   ],
 })
 export class AssetListComponent implements OnInit, OnDestroy {
-  pageTitle = "Asset List";
+  readonly pageTitle = "Asset List";
   assetListData: any;
   selectedAssetGroup: string;
   breadcrumbArray: any = [];

@@ -1,8 +1,6 @@
 <div class="container-wrapper">
     <div class="asset-dashboard-wrapper flex flex-col">
-        <div class="asset-dashboard-header">
-            <app-text classNames="page-title" text="Asset Summary"></app-text>
-        </div>
+        <app-page-title [title]="pageTitle"></app-page-title>
         <div class="type-count-container flex flex-row">
             <app-overview-tile
                 class="asset-summary-card"

@@ -1,8 +1,9 @@
-.notifications-wrapper{
+.notifications-wrapper {
+    padding: 18px 24px;
     height: 100%;
 }
 
-.table-wrapper{
-    max-height: 75vh;
+.table-wrapper {
+    max-height: 80vh;
     height: 100%;
 }

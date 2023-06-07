@@ -1,9 +1,11 @@
 <div class="user-management-page-wrapper">
     <div class="page-header">
-        <h6>{{pageTitle}}</h6>
-        <app-custom-button buttonType="flat" [label]="'Add User'"
-        (click)="createEditUser(false)">
-    </app-custom-button>
+        <app-page-title [title]="pageTitle"></app-page-title>
+        <app-custom-button
+            buttonType="flat"
+            [label]="'Add User'"
+            (click)="createEditUser(false)"
+        ></app-custom-button>
     </div>
     <div class="data-table-container">
         <section>
