@@ -67,7 +67,7 @@ export class TableFilterChipComponent implements OnInit {
     }
 
     filterOptionsByQuery() {
-        return this.options.filter((f) =>
+        return this.options?.filter((f) =>
             f.toLowerCase().includes(this.optionFilterQuery.toLowerCase()),
         );
     }
