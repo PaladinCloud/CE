@@ -553,9 +553,9 @@ public class PolicyExecutor {
         NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getBulkUploadBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
         NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
 
-        Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation);
-        metrics.put("dangling-issues-closed", danglisngIssues);
-        metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
+        //Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation);
+        //metrics.put("dangling-issues-closed", danglisngIssues);
+        //metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
         AuditUtils.postAuditTrail(annotationPublisher.getBulkUploadBucket(), PacmanSdkConstants.STATUS_OPEN);
         AuditUtils.postAuditTrail(closedIssues, PacmanSdkConstants.STATUS_CLOSE);
         return metrics;
