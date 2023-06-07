@@ -35,8 +35,7 @@
               "node_modules/ag-grid-community/styles/ag-theme-material-no-font.min.css"
             ],
             "scripts": [
-              "node_modules/offline-js/offline.js",
-              "node_modules/ag-grid-community/dist/ag-grid-community.min.noStyle.js"
+              "node_modules/offline-js/offline.js"
             ]
           },
           "configurations": {
@@ -99,7 +98,6 @@
             "tsConfig": "tsconfig.spec.json",
             "scripts": [
               "node_modules/offline-js/offline.js",
-              "node_modules/ag-grid-community/dist/ag-grid-community.min.noStyle.js",
               "node_modules/apexcharts/dist/apexcharts.min.js"
             ],
             "styles": [
