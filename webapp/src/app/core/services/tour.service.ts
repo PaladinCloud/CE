@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ShepherdService } from 'angular-shepherd';
+import { of, Subject } from 'rxjs';
+import { catchError, delay, first, timeout } from 'rxjs/operators';
 import Step from 'shepherd.js/src/types/step';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TourService {
+    private readonly componentReadyTimeout = 2000;
     private isInitialized = false;
+    private isWaitingForComponent = false;
+    private componentReady$ = new Subject<void>();
 
     private builtInButtons: { [key in 'cancel' | 'next' | 'done']: Step.StepOptionsButton } = {
         cancel: {
@@ -63,6 +68,10 @@ export class TourService {
         this.shepherd.complete();
     }
 
+    setComponentReady() {
+        this.componentReady$.next();
+    }
+
     private buildSteps(): Step.StepOptions[] {
         return [
             {
@@ -79,9 +88,8 @@ export class TourService {
                                 ['/pl', { outlets: { modal: ['change-default-asset-group'] } }],
                                 { queryParamsHandling: 'merge' },
                             );
-                            setTimeout(() => {
-                                this.shepherd.next();
-                            }, 100);
+
+                            this.waitForComponentReady();
                         },
                     },
                 ],
@@ -123,7 +131,7 @@ export class TourService {
                                 },
                             );
 
-                            setTimeout(() => this.shepherd.next(), 500);
+                            this.waitForComponentReady();
                         },
                     },
                 ],
@@ -158,7 +166,7 @@ export class TourService {
                                 queryParamsHandling: 'merge',
                             });
 
-                            setTimeout(() => this.shepherd.next(), 700);
+                            this.waitForComponentReady();
                         },
                     },
                 ],
@@ -193,5 +201,23 @@ export class TourService {
                 text: 'Use the page-level filter and tagging system to show only what you want to see',
             },
         ];
+    }
+
+    private waitForComponentReady() {
+        if (this.isWaitingForComponent) {
+            return;
+        }
+        this.isWaitingForComponent = true;
+        this.componentReady$
+            .pipe(
+                first(),
+                delay(50),
+                timeout(this.componentReadyTimeout),
+                catchError(() => of(null)),
+            )
+            .subscribe(() => {
+                this.isWaitingForComponent = false;
+                this.shepherd.next();
+            });
     }
 }
