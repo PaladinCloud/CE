@@ -520,6 +520,8 @@ public class PolicyExecutor {
                     annotation.put(PacmanSdkConstants.CREATED_DATE, evalDate);
                 }
                 annotation.put(PacmanSdkConstants.MODIFIED_DATE, evalDate);
+                annotation.put(PacmanSdkConstants.POLICY_SEVERITY,  policyParam.get(PacmanSdkConstants.POLICY_SEVERITY));
+                annotation.put(PacmanSdkConstants.POLICY_CATEGORY,  policyParam.get(PacmanSdkConstants.POLICY_CATEGORY));
                 // annotationPublisher.publishAnnotationToEs(annotation);
                 annotationPublisher.submitToPublish(annotation);
                 issueFoundCounter++;
