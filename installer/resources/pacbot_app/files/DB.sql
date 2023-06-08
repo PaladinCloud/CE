@@ -2783,7 +2783,7 @@ DELIMITER ;
 
 CALL update_filter_for_tag(@MANDATORY_TAGS);
 
-update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category';
+update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category' and filterId not in (select filterId from pac_v2_ui_filters where filterName ="policyComplianceFilter") ;
 
 update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
 
