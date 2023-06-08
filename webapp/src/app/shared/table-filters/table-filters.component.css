@@ -2,6 +2,10 @@
     display: flex;
 }
 
+.table-filters-container {
+    min-height: 32px;
+}
+
 .filters-menu-btn {
     padding: 3px 8px;
     border: 1px dashed #cbcbcb;
