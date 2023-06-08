@@ -55,7 +55,7 @@ export class TourService {
         this.shepherd.modal = true;
         this.shepherd.confirmCancel = false;
         this.shepherd.addSteps(this.buildSteps());
-        // TODO: hack due typing are available only since v15
+        // TODO: hack due typings are available only since v15
         this.shepherd.tourObject['options']['keyboardNavigation'] = false;
         this.isInitialized = true;
     }
@@ -162,7 +162,21 @@ export class TourService {
                                 },
                             );
 
-                            await this.router.navigate(['pl/compliance/policy-knowledgebase'], {
+                            const policyKnowledgeBaseRoute = 'pl/compliance/policy-knowledgebase';
+
+                            if (
+                                this.router.isActive(policyKnowledgeBaseRoute, {
+                                    fragment: 'ignored',
+                                    matrixParams: 'ignored',
+                                    paths: 'exact',
+                                    queryParams: 'ignored',
+                                })
+                            ) {
+                                this.shepherd.next();
+                                return;
+                            }
+
+                            await this.router.navigate([policyKnowledgeBaseRoute], {
                                 queryParamsHandling: 'merge',
                             });
 
@@ -177,7 +191,7 @@ export class TourService {
                 attachTo: {
                     element:
                         '.policy-knowledgebase-content .table-container tbody > tr > .mat-column-Policy > div',
-                    on: 'right',
+                    on: 'bottom',
                 },
                 buttons: [
                     this.builtInButtons.cancel,
