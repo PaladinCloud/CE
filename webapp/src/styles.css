@@ -2156,3 +2156,7 @@ g.arc .bubble-text {
     padding: 4px 18px;
     font-weight: 600;
 }
+
+.shepherd-paladincloud-theme .cancel-button {
+    background: transparent;
+}

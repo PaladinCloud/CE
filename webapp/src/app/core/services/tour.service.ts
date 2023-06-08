@@ -35,6 +35,9 @@ export class TourService {
         },
         arrow: true,
         canClickTarget: false,
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 12] } }],
+        },
     };
 
     constructor(private router: Router, private shepherd: ShepherdService) {}
