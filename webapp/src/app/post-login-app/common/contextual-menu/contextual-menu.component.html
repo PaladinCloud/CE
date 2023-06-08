@@ -113,11 +113,7 @@
             <!--./CHILD NODE -->
         </cdk-tree>
     </nav>
-    <div
-        class="know-your-app-wrapper"
-        [queryParams]="agAndDomain"
-        [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]"
-    >
+    <div class="know-your-app-wrapper" (click)="showTour()">
         <div class="icon icon-wrapper">
             <img class="node-img" src="/assets/images/getStarted.svg" alt="" />
         </div>
