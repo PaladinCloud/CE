@@ -2875,3 +2875,12 @@ update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribu
 
 update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=status" where filterId=12 and optionName ="Status";
 
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (13,'policyComplianceFilter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Severity','severity','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Policy','name','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Compliance','compliance_percent','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Violations','failed','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Category','policyCategory','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Source','provider','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Asset Type','resourcetType','');
