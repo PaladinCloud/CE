@@ -30,6 +30,7 @@ import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.servic
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { ThemeObservableService } from 'src/app/core/services/theme-observable.service';
+import { TourService } from 'src/app/core/services/tour.service';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
@@ -71,7 +72,9 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnChanges
         private logger: LoggerService,
         private router: Router,
         private themeObservableService: ThemeObservableService,
+        private tourService: TourService,
     ) {
+        this.tourService.init();
         this.assetTypeMapService.fetchAssetTypes();
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {
@@ -224,6 +227,10 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnChanges
                 this.agAndDomain['domain'] = domain;
                 this.getProvider();
             });
+    }
+
+    showTour() {
+        this.tourService.start();
     }
 
     ngOnDestroy() {
