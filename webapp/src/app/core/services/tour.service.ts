@@ -50,6 +50,8 @@ export class TourService {
         this.shepherd.modal = true;
         this.shepherd.confirmCancel = false;
         this.shepherd.addSteps(this.buildSteps());
+        // TODO: hack due typing are available only since v15
+        this.shepherd.tourObject['options']['keyboardNavigation'] = false;
         this.isInitialized = true;
     }
 
