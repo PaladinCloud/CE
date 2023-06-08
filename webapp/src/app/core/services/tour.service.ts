@@ -29,7 +29,6 @@ export class TourService {
 
     private defaultStepOptions: Step.StepOptions = {
         classes: 'shepherd-theme-arrows shepherd-paladincloud-theme',
-        scrollTo: true,
         cancelIcon: {
             enabled: true,
         },
@@ -90,8 +89,8 @@ export class TourService {
             },
             {
                 attachTo: {
-                    element: '.side-btn-wrap',
-                    on: 'left-start',
+                    element: '.side-btn-wrap .app-button',
+                    on: 'bottom',
                 },
                 buttons: [
                     this.builtInButtons.cancel,
@@ -122,7 +121,7 @@ export class TourService {
                                 },
                             );
 
-                            setTimeout(() => this.shepherd.next(), 100);
+                            setTimeout(() => this.shepherd.next(), 500);
                         },
                     },
                 ],
@@ -131,7 +130,7 @@ export class TourService {
             },
             {
                 attachTo: {
-                    element: '.multiline-brush-zoom-container > svg .brush',
+                    element: '.multiline-brush-zoom-container svg .context',
                     on: 'bottom',
                 },
                 buttons: [
@@ -157,7 +156,7 @@ export class TourService {
                                 queryParamsHandling: 'merge',
                             });
 
-                            setTimeout(() => this.shepherd.next(), 200);
+                            setTimeout(() => this.shepherd.next(), 700);
                         },
                     },
                 ],
