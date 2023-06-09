@@ -26,16 +26,16 @@
         >
             <img src="/assets/icons/Path.svg" />
         </button>
-        <mat-sidenav-container autosize [hasBackdrop]="false">
+        <mat-sidenav-container [hasBackdrop]="false" #matSidenavContainer autosize>
             <mat-sidenav
                 #sidenav
-                [class.expanded-sidenav]="isExpanded"
                 [class.collapsed-sidenav]="!isExpanded"
+                [class.expanded-sidenav]="isExpanded"
                 [mode]="mode"
-                opened="true"
                 (mouseenter)="mouseenter()"
                 (mouseleave)="mouseleave()"
                 disableClose
+                opened
             >
                 <div class="contextual-menu-container">
                     <app-contextual-menu
@@ -46,7 +46,11 @@
                 </div>
             </mat-sidenav>
             <mat-sidenav-content>
-                <div class="contextual-content-container" [appScrollTracker]="'main-sidenav'">
+                <div
+                    class="contextual-content-container"
+                    [style.paddingLeft.px]="containerModeOverOffset"
+                    [appScrollTracker]="'main-sidenav'"
+                >
                     <router-outlet></router-outlet>
                 </div>
             </mat-sidenav-content>
