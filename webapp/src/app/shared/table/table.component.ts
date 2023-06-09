@@ -17,8 +17,6 @@ import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
-import find from 'lodash/find';
-import findIndex from 'lodash/findIndex';
 import { Subject } from 'rxjs';
 import { skip, takeUntil } from 'rxjs/operators';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
@@ -348,9 +346,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             };
 
             if (!this.doLocalFilter) {
-                const key = find(this.filterTypeOptions, {
-                    optionName: event.category,
-                }).optionValue;
+                const key = this.filterTypeOptions.find(
+                    (f) => f.optionName === event.category,
+                ).optionValue;
 
                 filterItem = {
                     ...filterItem,
@@ -386,9 +384,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             return;
         }
 
-        const filterIndex = findIndex(this.filteredArray, (el, j) => {
-            return el['keyDisplayValue'] === this.filteredArray[i].keyDisplayValue && i != j;
-        });
+        const filterIndex = this.filteredArray.findIndex(
+            (el, j) => el.keyDisplayValue === this.filteredArray[i].keyDisplayValue && i !== j,
+        );
+
         let currIdx = i;
 
         if (filterIndex >= 0 && filterIndex != i) {
@@ -421,9 +420,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.filteredArray[i].value = undefined;
 
         if (!this.doLocalFilter) {
-            const key = find(this.filterTypeOptions, {
-                optionName: e,
-            })['optionValue'];
+            const key = this.filterTypeOptions.find((f) => f.optionName === e).optionValue;
             this.filteredArray[i].compareKey = key.toLowerCase().trim();
             this.filteredArray[i].filterkey = key.trim();
             this.filteredArray[i].filterValue = undefined;
