@@ -305,11 +305,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         if (this.filteredArray.some((i) => i.keyDisplayValue === category)) {
             return;
         }
-        this.selectedFiltersList = [...this.selectedFiltersList, category];
-        this.filteredArray = [
-            ...this.filteredArray,
-            { keyDisplayValue: category, filterValue: undefined },
-        ];
+        this.selectedFiltersList.push(category);
+        this.filteredArray.push({
+            keyDisplayValue: category,
+            filterValue: undefined,
+        });
         this.onSelectFilterType(category, this.filteredArray.length - 1);
     }
 
