@@ -2473,6 +2473,9 @@ INSERT IGNORE INTO `cf_PolicyParams` VALUES (1,'ACMCertificate_Expiry_For_X_Days
 (1843,'Set_notify_alerts_severity_to_high','description','Set notify email alerts severity to high in MS defender','','false','false','false','',''),
 (1844,'Set_notify_alerts_severity_to_high','SUCCESS','In MS defender email settings, notify alerts severity is set to high','','false','false','false','',''),
 (1845,'Set_notify_alerts_severity_to_high','violationReason','In MS defender email settings, notify alerts severity is not set to high','','false','false','false','',''),
-(1846,'Set_notify_alerts_severity_to_high','policyName','Set notify alerts severity to high in MS defender','','false','false','false','','');
+(1846,'Set_notify_alerts_severity_to_high','policyName','Set notify alerts severity to high in MS defender','','false','false','false','',''),
+(1847,'Ec2PublicAccessPortWithS5Vulnerability_version-1_Ec2PublicAccessPortWithS5Vulnerability_ec2','severityVulnValue','S5','','false','false','false','',''),;
 
 update cf_PolicyParams set encrypt ='false' where policyParamsID in (539,540,572,573,575,576,577,585,586,595,596,597,605,606,607,625,626,627,635,636,637,1256,1311,1312,1313,1393,1705,1816);
+update cf_PolicyParams set paramValue ='icmp:00' where policyParamsID =1743 and paramKey='port';
+update cf_PolicyParams set paramValue ='tcp:3389,tcp:0-65535' where policyParamsID =1778 and paramKey='port';

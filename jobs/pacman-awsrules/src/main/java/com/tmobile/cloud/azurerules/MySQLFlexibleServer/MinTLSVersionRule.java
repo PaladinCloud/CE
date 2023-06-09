@@ -32,7 +32,7 @@ public class MinTLSVersionRule extends BasePolicy {
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-        String tlsVersion=ruleParam.get(PacmanRuleConstants.TLS_VERSION);
+        String tlsVersion=ruleParam.get(PacmanRuleConstants.SUPPORTED_TLS_VERSIONS);
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
