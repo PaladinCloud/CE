@@ -414,7 +414,9 @@ public class RulesElasticSearchRepositoryUtil {
                 requestBody.put("size", "0");
                 requestBody.put("aggs", buildAggs(aggsFilter, size));
             }
-
+            else{
+                requestBody.put("size","10000");
+            }
         } else {
             requestBody.put(PacmanRuleConstants.QUERY, matchFilters);
         }
