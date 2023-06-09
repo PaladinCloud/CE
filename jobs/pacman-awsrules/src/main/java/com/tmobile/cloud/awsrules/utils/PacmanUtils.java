@@ -1224,7 +1224,7 @@ public class PacmanUtils {
      * @return
      * @throws Exception
      */
-    public static List<String> getDefaultSecurityGroupsByName(String esUrl, String securityGroupName) throws Exception {
+    public static List<String> getDefaultSecurityGroupsByName(String esUrl, String securityGroupName, String resourceId) throws Exception {
     	
         List<String> list = new ArrayList<>();
         Map<String, Object> mustFilter = new HashMap<>();
@@ -1233,7 +1233,8 @@ public class PacmanUtils {
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         
         mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_NAME), securityGroupName);
-        
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
+
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null,null);
         
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
@@ -1997,7 +1998,7 @@ public class PacmanUtils {
 	 * @throws Exception
 	 */
 	public static List<String> getUnrestrictedSecurityGroupsById(Set<String> securityGroupsSet,
-			String esSgRulesURL, String cidrIpv6, String cidrIp) throws Exception {
+			String esSgRulesURL, String cidrIpv6, String cidrIp, String resourceId) throws Exception {
 		
 		List<String> list = new ArrayList<>();
 		Map<String, Object> mustFilter = new HashMap<>();
@@ -2006,7 +2007,8 @@ public class PacmanUtils {
 		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
 		
 		mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.TYPE), PacmanRuleConstants.INBOUND);
-		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_ID), securityGroupsSet);
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_ID), resourceId);
+        mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_ID), securityGroupsSet);
 		shouldFilter.put(convertAttributetoKeyword(PacmanRuleConstants.CIDRIP), cidrIp);
 		shouldFilter.put(convertAttributetoKeyword(PacmanRuleConstants.CIDRIPV6), cidrIpv6);
 		

@@ -44,15 +44,15 @@ public class PublicAccessForDefaultSecurityGroupTest {
         
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         
-        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString())).thenReturn(getListSecurityGroupId());
-        when(PacmanUtils.getUnrestrictedSecurityGroupsById(anySetOf(String.class),anyString(),anyString(),anyString())).thenReturn(getListSecurityGroupId());
+        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString(),anyString())).thenReturn(getListSecurityGroupId());
+        when(PacmanUtils.getUnrestrictedSecurityGroupsById(anySetOf(String.class),anyString(),anyString(),anyString(),anyString())).thenReturn(getListSecurityGroupId());
         assertThat(publicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString())).thenReturn(getListSecurityGroupId());
-        when(PacmanUtils.getUnrestrictedSecurityGroupsById(anySetOf(String.class),anyString(),anyString(),anyString())).thenReturn(new ArrayList<>());
+        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString(),anyString())).thenReturn(getListSecurityGroupId());
+        when(PacmanUtils.getUnrestrictedSecurityGroupsById(anySetOf(String.class),anyString(),anyString(),anyString(),anyString())).thenReturn(new ArrayList<>());
         assertThat(publicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString())).thenThrow(new Exception());
+        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString(),anyString())).thenThrow(new Exception());
         assertThatThrownBy( 
                 () -> publicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
         
