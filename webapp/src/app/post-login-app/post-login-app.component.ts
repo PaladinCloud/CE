@@ -12,21 +12,22 @@
  * limitations under the License.
  */
 
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { AssetGroupObservableService } from "../core/services/asset-group-observable.service";
-import { Subscription } from "rxjs";
-import { LoggerService } from "../shared/services/logger.service";
-import { DataCacheService } from "../core/services/data-cache.service";
-import { DownloadService } from "../shared/services/download.service";
-import { DomainTypeObservableService } from "../core/services/domain-type-observable.service";
-import { ThemeObservableService } from "../core/services/theme-observable.service";
-import { WorkflowService } from "../core/services/workflow.service";
-import { PermissionGuardService } from "../core/services/permission-guard.service";
-import { WindowExpansionService } from "../core/services/window-expansion.service";
-import { SnackbarComponent } from "../shared/components/molecules/snackbar/snackbar.component";
-import { NotificationObservableService } from "../shared/services/notification-observable.service";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { MatDrawerMode, MatSidenavContainer } from "@angular/material/sidenav";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { ActivatedRoute, Router } from "@angular/router";
+import { Subscription } from "rxjs";
+import { AssetGroupObservableService } from "../core/services/asset-group-observable.service";
+import { DataCacheService } from "../core/services/data-cache.service";
+import { DomainTypeObservableService } from "../core/services/domain-type-observable.service";
+import { PermissionGuardService } from "../core/services/permission-guard.service";
+import { ThemeObservableService } from "../core/services/theme-observable.service";
+import { WindowExpansionService } from "../core/services/window-expansion.service";
+import { WorkflowService } from "../core/services/workflow.service";
+import { SnackbarComponent } from "../shared/components/molecules/snackbar/snackbar.component";
+import { DownloadService } from "../shared/services/download.service";
+import { LoggerService } from "../shared/services/logger.service";
+import { NotificationObservableService } from "../shared/services/notification-observable.service";
 
 declare var Offline: any;
 
@@ -36,6 +37,7 @@ declare var Offline: any;
   styleUrls: ["./post-login-app.component.css"],
 })
 export class PostLoginAppComponent implements OnInit, OnDestroy {
+  @ViewChild('matSidenavContainer') sidenavContainer: MatSidenavContainer;
   navigationDetails: any;
   domainList: string;
   queryParameters: any = {};
@@ -52,9 +54,10 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   private reloadTimeout;
   isOffline = false;
   isExpanded = true;
-  mode = 'side';
+  mode: MatDrawerMode = 'side';
   sidenavExpanderLeft = 250;
   rotationVar = 'rotate(180deg)';
+  containerModeOverOffset = 0;
 
   sidenavExpanderClicked() {
     this.isExpanded = !this.isExpanded;
@@ -75,6 +78,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       this.sidenavExpanderLeft = 250;
       this.rotationVar = 'rotate(180deg)';
       this.mode = "over";
+      this.containerModeOverOffset = this.sidenavContainer._contentMargins.left;
       this.windowExpansionService.setExpansionStatus(this.isExpanded);
     }
   }
@@ -85,6 +89,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       this.sidenavExpanderLeft = 70;
       this.rotationVar = 'rotate(0)';
       this.mode = "side";
+      this.containerModeOverOffset = 0;
       this.windowExpansionService.setExpansionStatus(this.isExpanded);
     }
   }
