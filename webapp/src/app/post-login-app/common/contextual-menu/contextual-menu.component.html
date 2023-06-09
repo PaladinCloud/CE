@@ -27,7 +27,6 @@
                         !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
                     "
                     class="tree-item flex flex-align-center"
-                    [class.collapsed]="!expanded"
                     [routerLink]="
                         !node.children
                             ? node.overlay
@@ -36,7 +35,7 @@
                             : null
                     "
                     [queryParams]="agAndDomain"
-                    routerLinkActive="node-wrapper-active"
+                    routerLinkActive="active"
                 >
                     <img
                         *ngIf="node.image"
@@ -44,7 +43,7 @@
                         src="/assets/icons/{{ node.image }}.svg"
                         alt=""
                     />
-                    <span>
+                    <span *ngIf="expanded">
                         {{ node.name }}
                     </span>
                 </div>
@@ -59,7 +58,6 @@
                         !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
                     "
                     class="tree-item flex flex flex-align-center"
-                    [class.collapsed]="!expanded"
                     cdkTreeNodeToggle
                 >
                     <img
@@ -68,10 +66,10 @@
                         src="/assets/icons/{{ node.image }}.svg"
                         alt=""
                     />
-                    <span>
+                    <span *ngIf="expanded">
                         {{ node.name }}
                     </span>
-                    <mat-icon class="tree-expand-icon">
+                    <mat-icon *ngIf="expanded" class="tree-expand-icon">
                         {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
                     </mat-icon>
                 </div>
@@ -101,7 +99,7 @@
                                     : [node.route]
                                 : null
                         "
-                        routerLinkActive="node-wrapper-active"
+                        routerLinkActive="active"
                         [queryParams]="agAndDomain"
                     >
                         <span>
@@ -114,19 +112,15 @@
         </cdk-tree>
     </nav>
     <div
-        class="know-your-app-wrapper"
+        class="know-your-app-wrapper flex flex-align-center"
         [queryParams]="agAndDomain"
         [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]"
     >
-        <div class="icon icon-wrapper">
-            <img class="node-img" src="/assets/images/getStarted.svg" alt="" />
-        </div>
-        <div class="app-wrapper" [class.is-collapsed]="!expanded">
-            <div class="know-your-app-content">Getting Started</div>
-        </div>
+        <img class="node-img" src="/assets/images/getStarted.svg" alt="" />
+        <div class="know-your-app-content">Getting Started</div>
     </div>
-    <div class="version-wrapper" [class.collapsed]="!expanded">
-        <span class="version-text" [class.collapsed]="!expanded">Version</span>
+    <div class="version-wrapper flex">
+        <span class="version-text" *ngIf="expanded">Version</span>
         <span class="version-number">{{ current_version }}</span>
     </div>
 </div>
