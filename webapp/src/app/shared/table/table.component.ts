@@ -11,11 +11,11 @@ import {
     Output,
     SimpleChanges,
     ViewChild,
-    ViewChildren,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
+import { Sort, SortDirection } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
 import { skip, takeUntil } from 'rxjs/operators';
@@ -31,8 +31,6 @@ export interface FilterItem {
     compareKey?: string;
     filterkey?: string;
 }
-
-type SortDirection = 'asc' | 'desc';
 
 @Component({
     selector: 'app-table',
@@ -69,7 +67,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Input() tableScrollTop: number;
     @Input() tableTitle: string;
     @Input() totalRows = 0;
-    @Input() whiteListColumns = [];
+    @Input() whiteListColumns: string[] = [];
     @Input() filteredArray: FilterItem[] = [];
     @Input() filterTypeOptions: {
         optionName: string;
@@ -102,14 +100,14 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         filterKeyDisplayValue: string;
     }>();
     @Output() selectedFilterType = new EventEmitter<string>();
-    @Output() whitelistColumnsChanged = new EventEmitter<any>();
+    @Output() whitelistColumnsChanged = new EventEmitter<string[]>();
 
     @ViewChild('select') select: MatSelect;
-    @ViewChild('tableContainer') tableContainer: ElementRef;
-    @ViewChildren('customTable') customTable: any;
+    @ViewChild('tableContainer') tableContainer: ElementRef<HTMLDivElement>;
+    @ViewChild('customTable') customTable: ElementRef<HTMLDivElement>;
 
-    mainDataSource;
-    dataSource;
+    mainDataSource: MatTableDataSource<unknown>;
+    dataSource: MatTableDataSource<unknown>;
 
     displayedColumns: string[];
     searchInColumns = new FormControl();
@@ -158,12 +156,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     ngOnChanges(changes: SimpleChanges): void {
         if (this.customTable) {
             if (changes.tableScrollTop && changes.tableScrollTop.currentValue != undefined) {
-                this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
+                this.customTable.nativeElement.scrollTop = this.tableScrollTop;
             }
             if (!this.tableDataLoaded) {
                 this.tableScrollTop = 0;
-                // this.data = []; in a race condition, this may empty data after data is loaded
-                this.customTable.first.nativeElement.scrollTop = 0;
+                this.customTable.nativeElement.scrollTop = 0;
                 this.mainDataSource = new MatTableDataSource([]);
                 this.dataSource = new MatTableDataSource([]);
             }
@@ -203,7 +200,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     ngAfterViewInit(): void {
-        this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
+        this.customTable.nativeElement.scrollTop = this.tableScrollTop;
         this.waitAndResizeTable();
     }
 
@@ -263,15 +260,15 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.whitelistColumnsChanged.emit(this.whiteListColumns);
     }
 
-    handleClick(row, col, i: number) {
+    handleClick(row, col: string, i: number) {
         if (row[col].isMenuBtn) {
             return;
         }
         const event = {
-            tableScrollTop: this.customTable.first.nativeElement.scrollTop,
+            tableScrollTop: this.customTable.nativeElement.scrollTop,
             rowSelected: row,
             data: this.data,
-            col: col,
+            col,
             filters: this.filteredArray,
             searchTxt: this.searchQuery,
             selectedRowIndex: i,
@@ -279,7 +276,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.rowSelectEventEmitter.emit(event);
     }
 
-    handleAction(element, action, i: number) {
+    handleAction(element, action: string, i: number) {
         const event = {
             action: action,
             rowSelected: element,
@@ -305,17 +302,15 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     selectFilterCategory(category: string) {
-        const filteredArrayKeys = this.filteredArray.map((item) => item.keyDisplayValue);
-
-        if (!filteredArrayKeys.includes(category)) {
-            // add to filteredArray
-            this.selectedFiltersList.push(category);
-            this.filteredArray.push({
-                keyDisplayValue: category,
-                filterValue: undefined,
-            });
-            this.onSelectFilterType(category, this.filteredArray.length - 1);
+        if (this.filteredArray.some((i) => i.keyDisplayValue === category)) {
+            return;
         }
+        this.selectedFiltersList = [...this.selectedFiltersList, category];
+        this.filteredArray = [
+            ...this.filteredArray,
+            { keyDisplayValue: category, filterValue: undefined },
+        ];
+        this.onSelectFilterType(category, this.filteredArray.length - 1);
     }
 
     removeOnlyFilterValue(index: number) {
@@ -531,11 +526,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
     }
 
-    handleSearch(event) {
-        const searchTxt = event.target.value.toLowerCase();
+    handleSearch(event: KeyboardEvent) {
+        const searchTxt = (event.target as HTMLInputElement).value.toLowerCase();
         this.searchQuery = searchTxt;
 
-        if (event.keyCode === 13 || searchTxt == '') {
+        if (event.key === 'Enter' || searchTxt == '') {
             this.tableErrorMessage = '';
             if (this.doLocalSearch) {
                 this.filterAndSort();
@@ -555,7 +550,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
     }
 
-    announceSortChange(sort: { active: string; direction: SortDirection }) {
+    announceSortChange(sort: Sort) {
         if (this.doNotSort) {
             return;
         }
@@ -612,11 +607,12 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         });
     }
 
-    onScroll(event: any) {
+    onScroll(event: Event) {
         // visible height + pixel scrolled >= total height
-        if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 10) {
+        const target = event.target as HTMLDivElement;
+        if (target.offsetHeight + target.scrollTop >= target.scrollHeight - 10) {
             if (this.data.length < this.totalRows && !this.isDataLoading && this.data.length > 0) {
-                this.tableScrollTop = event.target.scrollTop;
+                this.tableScrollTop = target.scrollTop;
                 this.nextPageCalled.emit(this.tableScrollTop);
                 this.isDataLoading = true;
             }
@@ -624,10 +620,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     download() {
-        const event = {
+        this.downloadClicked.emit({
             searchTxt: this.searchQuery,
             filters: this.filteredArray,
-        };
-        this.downloadClicked.emit(event);
+        });
     }
 }

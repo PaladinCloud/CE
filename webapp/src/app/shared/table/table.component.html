@@ -16,7 +16,7 @@
                         <img
                             class="padding-12 pointer"
                             src="/assets/icons/x-circle.svg"
-                            *ngIf="searchQuery || chips?.length"
+                            *ngIf="searchQuery"
                             (click)="clearSearchTextAndFilters()"
                             matPrefix
                             alt="Clear search and filters"
@@ -88,7 +88,7 @@
                         mat-header-cell
                         *matHeaderCellDef
                         [mat-sort-header]="
-                            column !== 'Actions' && column !== 'DetailsBtn' ? column : false
+                            column !== 'Actions' && column !== 'DetailsBtn' ? column : ''
                         "
                     >
                         <span>
@@ -146,8 +146,6 @@
                                     [title]="element[column].titleText"
                                 >
                                     <app-chip
-                                        [variant]="element[column].chipVariant"
-                                        [maxChips]="maxChips"
                                         [backgroundColor]="element[column].chipBackgroundColor"
                                         [color]="element[column].chipTextColor"
                                         [chipsList]="element[column].chipList"
@@ -210,12 +208,12 @@
                                         >
                                             {{ element[column].text }}
                                         </span>
-                                        <span *ngIf="element[column].isDate">{{
-                                            element[column].text | date : 'medium'
-                                        }}</span>
-                                        <span *ngIf="element[column].isNumber">{{
-                                            element[column].text | number
-                                        }}</span>
+                                        <span *ngIf="element[column].isDate">
+                                            {{ element[column].text | date : 'medium' }}
+                                        </span>
+                                        <span *ngIf="element[column].isNumber">
+                                            {{ element[column].text | number }}
+                                        </span>
                                         <div
                                             *ngIf="element[column].symbol"
                                             class="symbol"
