@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { environment } from './../../../../../environments/environment';
 import { WorkflowService } from '../../../../core/services/workflow.service';
-import { FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators, NgForm } from '@angular/forms';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { DataCacheService } from '../../../../core/services/data-cache.service';
 import { FilterManagementService } from '../../../../shared/services/filter-management.service';
@@ -35,7 +35,7 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
     breadcrumbPresent: 'Details',
   };
   // Reactive-forms
-  private accountManagementForm: FormGroup;
+  private accountManagementForm: UntypedFormGroup;
   public formErrors;
 
   backButtonRequired: boolean;
@@ -102,16 +102,16 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
   }
 
   buildForm() {
-    this.accountManagementForm = new FormGroup({
-      'accountNumber': new FormControl('', Validators.compose([
+    this.accountManagementForm = new UntypedFormGroup({
+      'accountNumber': new UntypedFormControl('', Validators.compose([
         Validators.required,
         Validators.pattern('[0-9]*')
       ])),
-      'accountName': new FormControl('', Validators.compose([
+      'accountName': new UntypedFormControl('', Validators.compose([
         Validators.required,
         Validators.pattern('[0-9A-Za-z]+')
       ])),
-      'accountDescription': new FormControl('')
+      'accountDescription': new UntypedFormControl('')
     });
 
     this.formErrors = {

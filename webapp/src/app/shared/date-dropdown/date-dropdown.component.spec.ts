@@ -13,7 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -43,7 +43,7 @@ describe('DateDropdownComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DateDropdownComponent);
     component = fixture.componentInstance;
-    component.dataForm = new FormGroup({});
+    component.dataForm = new UntypedFormGroup({});
     fixture.detectChanges();
   });
 

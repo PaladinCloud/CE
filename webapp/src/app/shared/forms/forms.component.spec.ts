@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 import { FormsComponent } from './forms.component';
 
@@ -17,7 +17,7 @@ describe('FormsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FormsComponent);
     component = fixture.componentInstance;
-    component.parentForm = new FormGroup({});
+    component.parentForm = new UntypedFormGroup({});
     fixture.detectChanges();
   });
 

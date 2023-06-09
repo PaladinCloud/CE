@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-date-dropdown',
@@ -23,14 +23,14 @@ import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 
 export class DateDropdownComponent implements OnInit {
 
-  @Input() dataForm: FormGroup;
+  @Input() dataForm: UntypedFormGroup;
   date = new Date();
   today = new Date();
   @Input() dateToday = this.date.getFullYear() + '-' + (this.date.getMonth() + 1) + '-' + this.date.getDate();
   @Output() dataSent = new EventEmitter();
-  user: FormGroup;
+  user: UntypedFormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: UntypedFormBuilder) {
   }
 
   ngOnInit() {
@@ -38,8 +38,8 @@ export class DateDropdownComponent implements OnInit {
       this.user = this.formBuilder.group({
         dateValue: ''
       });
-      this.user = new FormGroup({
-        dateValue: new FormControl('')
+      this.user = new UntypedFormGroup({
+        dateValue: new UntypedFormControl('')
       });
     }
 

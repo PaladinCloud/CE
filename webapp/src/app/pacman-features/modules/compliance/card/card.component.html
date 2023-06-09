@@ -2,7 +2,7 @@
     <mat-card-header>
         {{ card.header }}
         <div class="graph-dropdown-container" (blur)="test()" *ngIf="card.id === 3">
-            <div class="graph-dropdown-wrapper">
+            <div class="graph-dropdown-wrapper flex">
                 <div
                     class="date-selection-trigger"
                     #menuTrigger="matMenuTrigger"
@@ -16,11 +16,9 @@
                     (selected)="handleGraphIntervalSelection($event)"
                 ></app-dropdown>
                 <mat-menu #menu="matMenu" xPosition="before">
-                    <div class="date-selection-modal">
-                        <app-date-selection
-                            (datesSelected)="dateIntervalSelected($event.from, $event.to)"
-                        ></app-date-selection>
-                    </div>
+                    <app-date-selection
+                        (datesSelected)="dateIntervalSelected($event.from, $event.to)"
+                    ></app-date-selection>
                 </mat-menu>
             </div>
         </div>

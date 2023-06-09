@@ -13,7 +13,7 @@ import {AssetGroupObservableService} from '../../../../core/services/asset-group
 import {DomainTypeObservableService} from '../../../../core/services/domain-type-observable.service';
 import {UtilsService} from '../../../../shared/services/utils.service';
 import {RouterUtilityService} from '../../../../shared/services/router-utility.service';
-import { FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators, NgForm } from '@angular/forms';
 import {RefactorFieldsService} from '../../../../shared/services/refactor-fields.service';
 
 @Component({
@@ -45,7 +45,7 @@ export class PluginManagementDetailsComponent implements OnInit, OnDestroy {
   filterArray = []; /* Stores the page applied filter array */
 
   // Reactive-forms
-  private pluginManagementForm: FormGroup;
+  private pluginManagementForm: UntypedFormGroup;
   public formErrors = {};
   public formGroup = {};
   private FetchedPlugin;
@@ -158,7 +158,7 @@ export class PluginManagementDetailsComponent implements OnInit, OnDestroy {
       formControlDisplayName: 'Plugin Name'
     };
 
-    this.formGroup['pluginName'] = new FormControl(pluginName, Validators.required);
+    this.formGroup['pluginName'] = new UntypedFormControl(pluginName, Validators.required);
     this.formErrors['pluginName'] = '';
     this.formData.push(pluginNameFieldObj);
 
@@ -171,11 +171,11 @@ export class PluginManagementDetailsComponent implements OnInit, OnDestroy {
         ) || pluginDetails[i].key
       };
       this.formData.push(individualPluginField);
-      this.formGroup[pluginDetails[i].key] = new FormControl(pluginDetails[i].value, Validators.required);
+      this.formGroup[pluginDetails[i].key] = new UntypedFormControl(pluginDetails[i].value, Validators.required);
       this.formErrors[pluginDetails[i].key] = '';
     }
 
-    this.pluginManagementForm = new FormGroup(this.formGroup);
+    this.pluginManagementForm = new UntypedFormGroup(this.formGroup);
 
     this.pluginManagementForm.valueChanges.subscribe((data) => {
       this.formErrors = this.formService.validateForm(this.pluginManagementForm, this.formErrors, true);

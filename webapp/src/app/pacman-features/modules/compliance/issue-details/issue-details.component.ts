@@ -17,7 +17,7 @@ import {AssetGroupObservableService} from '../../../../core/services/asset-group
 import {ActivatedRoute, Router} from '@angular/router';
 import {ICONS} from './../../../../shared/constants/icons-mapping';
 import {DataCacheService} from '../../../../core/services/data-cache.service';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {AutorefreshService} from '../../../services/autorefresh.service';
 import {CommonResponseService} from '../../../../shared/services/common-response.service';
 import {IssueAuditService} from '../../../services/issue-audit.service';
@@ -64,9 +64,9 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
     @ViewChild('query') vc: ElementRef;
 
-    dataForm: FormGroup;
-    user: FormGroup;
-    userEmail: FormGroup;
+    dataForm: UntypedFormGroup;
+    user: UntypedFormGroup;
+    userEmail: UntypedFormGroup;
 
     /*variables for breadcrumb data*/
 
@@ -208,7 +208,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private assetGroupObservableService: AssetGroupObservableService,
         private dataStore: DataCacheService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private issueAuditService: IssueAuditService,
         private commonResponseService: CommonResponseService,
         private router: Router,
@@ -274,19 +274,19 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 date: ''
             });
 
-            this.user = new FormGroup({
-                name: new FormControl('', [
+            this.user = new UntypedFormGroup({
+                name: new UntypedFormControl('', [
                     Validators.required,
                     Validators.minLength(5)
                 ])
             });
 
-            this.userEmail = new FormGroup({
-                ename: new FormControl('', [
+            this.userEmail = new UntypedFormGroup({
+                ename: new UntypedFormControl('', [
                     Validators.required,
                     Validators.minLength(6)
                 ]),
-                fname: new FormControl('', [Validators.required, Validators.minLength(6)])
+                fname: new UntypedFormControl('', [Validators.required, Validators.minLength(6)])
             });
 
             const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];

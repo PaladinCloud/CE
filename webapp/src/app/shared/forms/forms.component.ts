@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, forwardRef, Output, EventEmitter, } from '@angular/core';
-import { FormGroup , FormControl, Validators, NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
+import { FormGroup , UntypedFormControl, Validators, NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -28,7 +28,7 @@ export class FormsComponent implements OnInit, ControlValueAccessor  {
 
   @Input() inputLabel;
   // current form control input. helpful in validating and accessing form control
-  @Input() formControlName = new FormControl();
+  @Input() formControlName = new UntypedFormControl();
 
   // Form errors will be passed here
   @Input() formErrors;

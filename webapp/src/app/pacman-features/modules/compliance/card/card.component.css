@@ -115,13 +115,3 @@ mat-card-actions img {
     margin-left: auto;
 }
 
-.date-selection-modal {
-    background-color: var(--background-white);
-    position: absolute;
-    right: 20px;
-    z-index: 99;
-}
-
-.date-selection-trigger {
-    margin-right: 150px;
-}

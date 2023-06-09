@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0px;
+  padding: 0;
   box-sizing: border-box;
   background: var(--background-white);
   border: 1px solid var(--border-100);
@@ -37,7 +37,7 @@ mat-card-actions button {
 }
 
 ::ng-deep .mat-card-header-text {
-  margin: 0px !important;
+  margin: 0 !important;
 }
 
 mat-card-header {
@@ -51,7 +51,7 @@ mat-card-header {
   margin: 0;
   background: var(--background-white);
   border-bottom: 2px solid var(--border-100);
-  border-radius: var(--border-radius) var(--border-radius) 0px 0px;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
   font: var(--text-body-2);
   color: var(--text-high-emphasis);
 }
@@ -78,7 +78,7 @@ mat-card-content {
 .chart-wrapper {
     height: 100%;
     width: 100%;
-    background-color: white;
+    background-color: var(--background-white);
 }
 
 .date-dropdown-container{
@@ -96,8 +96,4 @@ mat-card-content {
 
 .date-dropdown-container ::ng-deep .mat-form-field-infix{
   width: 150px;
-}
-
-.date-selection-trigger {
-    margin-right: 150px;
 }
