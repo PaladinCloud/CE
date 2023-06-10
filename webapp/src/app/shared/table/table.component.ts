@@ -107,7 +107,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Output() whitelistColumnsChanged = new EventEmitter<string[]>();
 
     @ViewChild('select') select: MatSelect;
-    @ViewChild('tableContainer') tableContainer: ElementRef<HTMLDivElement>;
     @ViewChild('customTable') customTable: ElementRef<HTMLDivElement>;
 
     mainDataSource: MatTableDataSource<unknown>;
