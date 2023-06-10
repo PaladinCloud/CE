@@ -3,7 +3,6 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    HostListener,
     Input,
     OnChanges,
     OnDestroy,
@@ -20,7 +19,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
 import { skip, takeUntil } from 'rxjs/operators';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
-import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { OptionChange } from '../table-filters/table-filters.component';
 
 export interface FilterItem {
@@ -40,7 +38,13 @@ export interface FilterItem {
 export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @Input() centeredColumns: { [key: string]: boolean } = {};
     @Input() columnsSortFunctionMap;
-    @Input() columnWidths: { [key: string]: number };
+    @Input() set columnWidths(value: { [key: string]: number }) {
+        this._columnWidths = value;
+        this.denominator = Object.keys(value).reduce((acc, next) => acc + value[next], 0);
+    }
+    get columnWidths() {
+        return this._columnWidths;
+    }
     @Input() data = [];
     @Input() direction: SortDirection;
     @Input() doLocalFilter = false;
@@ -113,25 +117,17 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     searchInColumns = new FormControl();
 
     allSelected = true;
-    screenWidth: number;
-    denominator: number;
-    screenWidthFactor: number;
+
+    denominator = 1;
+
     isWindowExpanded = true;
     isDataLoading = false;
     selectedFiltersList: string[] = [];
     destroy$ = new Subject<void>();
 
-    constructor(
-        private assetGroupChangeService: AssetGroupObservableService,
-        private windowExpansionService: WindowExpansionService,
-    ) {
-        this.windowExpansionService
-            .getExpansionStatus()
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
-                this.waitAndResizeTable();
-            });
-    }
+    private _columnWidths: { [key: string]: number } = {};
+
+    constructor(private assetGroupChangeService: AssetGroupObservableService) {}
 
     ngOnInit(): void {
         if (this.onScrollDataLoader) {
@@ -188,8 +184,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             if (changes.data) {
                 this.mainDataSource = new MatTableDataSource(this.data);
                 this.dataSource = new MatTableDataSource(this.data);
-
-                this.waitAndResizeTable();
             }
 
             this.selectedFiltersList = this.filteredArray.map((item) => item.keyDisplayValue);
@@ -201,7 +195,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     ngAfterViewInit(): void {
         this.customTable.nativeElement.scrollTop = this.tableScrollTop;
-        this.waitAndResizeTable();
     }
 
     ngOnDestroy(): void {
@@ -218,39 +211,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
     }
 
-    waitAndResizeTable() {
-        setTimeout(() => {
-            this.screenWidth = parseInt(
-                window
-                    .getComputedStyle(this.tableContainer.nativeElement, null)
-                    .getPropertyValue('width'),
-                10,
-            );
-            this.getWidthFactor();
-        }, 1000);
-    }
-
     openColumnSelectorModal() {
         this.select.open();
     }
 
-    getWidthFactor() {
-        this.denominator = 0;
-        for (const i in this.whiteListColumns) {
-            const col = this.whiteListColumns[i];
-            this.denominator += this.columnWidths[col];
-        }
-        this.getScreenWidthFactor();
-    }
-
-    getScreenWidthFactor() {
-        this.screenWidthFactor = (this.screenWidth - 30) / this.denominator;
-    }
-
-    @HostListener('window:resize', ['$event'])
-    onWindowResize() {
-        this.waitAndResizeTable();
-    }
+    getWidthFactor() {}
 
     handleSearchInColumnsChange() {
         this.searchInColumnsChanged.emit(this.searchInColumns.value);
@@ -289,8 +254,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.whiteListColumns = Object.keys(this.columnWidths).filter((c) =>
             selectedColumns.includes(c),
         );
-        this.getWidthFactor();
-        this.waitAndResizeTable();
         this.whiteListColumnsChanged();
     }
 

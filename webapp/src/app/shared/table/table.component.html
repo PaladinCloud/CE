@@ -74,13 +74,7 @@
             >
                 <ng-container *ngFor="let column of whiteListColumns" [matColumnDef]="column">
                     <th
-                        [style.width]="
-                            columnWidths[column] * screenWidthFactor < 100
-                                ? centeredColumns[column]
-                                    ? '80px'
-                                    : '100px'
-                                : columnWidths[column] * screenWidthFactor + 'px'
-                        "
+                        [style.width.%]="(100 / denominator) * columnWidths[column]"
                         class="capitalize"
                         [ngClass]="{
                             centered: centeredColumns[column]
