@@ -15,13 +15,13 @@ export class TableFilterChipComponent implements OnInit {
     @Input() category: string;
     @Input() options: string[] = [];
     @Input() set appliedFiltersDict(values: { [key: string]: boolean }) {
-        this._appliedFilters = Object.entries(values)
+        this._appliedFilters = Object.entries(values || {})
             .filter(([, value]) => value)
             .map(([name, value]) => ({
                 name,
                 value,
             }));
-        this._appliedFiltersDict = values;
+        this._appliedFiltersDict = values || {};
     }
     get appliedFiltersDict() {
         return this._appliedFiltersDict;
