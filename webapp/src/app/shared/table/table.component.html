@@ -44,6 +44,7 @@
                         Results
                     </div>
                     <app-table-options
+                        *ngIf="showDownloadBtn || showAddRemoveCol"
                         [isDownloadEnabled]="showDownloadBtn"
                         [isColumnsEnabled]="showAddRemoveCol"
                         [availableColumns]="displayedColumns"
