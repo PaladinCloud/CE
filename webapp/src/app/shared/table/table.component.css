@@ -252,3 +252,10 @@ tr.mat-header-row {
 .table-filters {
     flex: 1;
 }
+
+.cell-img {
+    vertical-align: text-bottom;
+    height: 16px;
+    width: 24px;
+    padding-right: 8px;
+}

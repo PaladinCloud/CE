@@ -98,7 +98,7 @@
                     >
                         <div
                             *ngIf="element[column] && element[column].isMenuBtn; else clickable"
-                            style="text-align: center"
+                            class="center"
                         >
                             <img
                                 class="pointer menu-btn"
@@ -132,9 +132,7 @@
                                 <div
                                     class="chip-wrapper"
                                     *ngIf="
-                                        element[column] &&
-                                            element[column].valueText &&
-                                            element[column].isChip;
+                                        element[column]?.valueText && element[column]?.isChip;
                                         else checkbox
                                     "
                                     [title]="element[column].titleText"
@@ -147,12 +145,7 @@
                                     </app-chip>
                                 </div>
                                 <ng-template #checkbox>
-                                    <div
-                                        *ngIf="
-                                            element[column] && element[column].isCheckbox;
-                                            else textImageData
-                                        "
-                                    >
+                                    <div *ngIf="element[column]?.isCheckbox; else textImageData">
                                         <app-check-box-btn
                                             (checkBoxClickEvent)="
                                                 element[column].valueText = $event
@@ -166,9 +159,8 @@
                                 <ng-template #textImageData>
                                     <div
                                         *ngIf="
-                                            element[column] &&
-                                                (element[column].valueText ||
-                                                    element[column].valueText === 0);
+                                            element[column]?.valueText ||
+                                                element[column]?.valueText === 0;
                                             else noData
                                         "
                                         [class.row-title]="element[column].isLink"
@@ -183,17 +175,12 @@
                                         <img
                                             *ngIf="element[column].imgSrc"
                                             [class.noImg]="element[column].imgSrc === 'noImg'"
-                                            style="
-                                                vertical-align: text-bottom;
-                                                height: 16px;
-                                                width: 24px;
-                                                padding-right: 8px;
-                                            "
+                                            class="cell-img"
                                             src="/assets/icons/{{ element[column].imgSrc }}.svg"
-                                            title="{{
+                                            [title]="
                                                 element[column].imageTitleText ??
-                                                    element[column].titleText
-                                            }}"
+                                                element[column].titleText
+                                            "
                                         />
                                         <span
                                             *ngIf="
