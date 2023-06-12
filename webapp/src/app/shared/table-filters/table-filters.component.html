@@ -51,7 +51,7 @@
                     [title]="option"
                 >
                     <mat-checkbox
-                        [checked]="appliedFiltersDict[selectedCategory][option]"
+                        [checked]="appliedFiltersDict[selectedCategory!][option]"
                         (change)="applyFilter(option, $event)"
                     >
                         {{ option | slice : 0 : maxOptionChars }}
