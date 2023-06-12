@@ -30,6 +30,7 @@ import { environment } from "./../../../../environments/environment";
 import { AutorefreshService } from "../../services/autorefresh.service";
 import { DomainTypeObservableService } from "../../../core/services/domain-type-observable.service";
 import { ActivatedRoute, Router } from "@angular/router";
+import { TourService } from "src/app/core/services/tour.service";
 
 enum ComplianceType {
     COST = 'cost',
@@ -103,7 +104,8 @@ export class ComplianceOverviewTrendComponent
     private selectComplianceDropdown: SelectComplianceDropdown,
     private autorefreshService: AutorefreshService,
     private logger: LoggerService,
-    private domainObservableService: DomainTypeObservableService
+    private domainObservableService: DomainTypeObservableService,
+    private tourService: TourService,
   ) {
     // Get latest asset group selected and re-plot the graph
     this.assetGroupSubscription = this.assetGroupObservableService
@@ -234,9 +236,11 @@ export class ComplianceOverviewTrendComponent
             } catch (error) {
               this.setError("jsError");
             }
+            this.tourService.setComponentReady();
           },
           (error) => {
             this.setError("apiResponseError");
+            this.tourService.setComponentReady();
           }
         );
     } catch (error) {
