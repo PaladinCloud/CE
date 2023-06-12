@@ -42,6 +42,11 @@ public class AnnotationPublisher {
     /** The Constant BULK_INDEX_REQUEST_TEMPLATE. */
     private static final String BULK_INDEX_REQUEST_TEMPLATE = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\", \"_id\" : \"%s\" } }%n";
 
+    /** The Constant BULK_UPDATE_REQUEST_TEMPLATE. */
+    private static final String BULK_UPDATE_REQUEST_TEMPLATE = "{ \"update\" : { \"_index\" : \"%s\", \"routing\" : \"%s\", \"_id\" : \"%s\" } }%n";
+    
+    private static final String BULK_UPDATE_REQUEST_BODY_PREFIX = "{ \"doc\" : ";
+    private static final String BULK_UPDATE_REQUEST_BODY_SUFFIX = " }";
     /** The Constant BULK_WITH_REFRESH_TRUE. */
     public static final String BULK_WITH_REFRESH_TRUE = "/_bulk?refresh=true";
 
@@ -322,7 +327,7 @@ public class AnnotationPublisher {
         String _type = null;
         String _index = null;
         StringBuffer bulkRequestBody = new StringBuffer();
-        String bulkIndexRequestTemplate = BULK_INDEX_REQUEST_TEMPLATE;
+        String bulkUpdateRequestTemplate = BULK_UPDATE_REQUEST_TEMPLATE;
         String bulkPostUrl = esUrl + BULK_WITH_REFRESH_TRUE;
         Gson serializer = new GsonBuilder().create();
         String response = "";
@@ -336,6 +341,7 @@ public class AnnotationPublisher {
 
                 _index = ESUtils.buildIndexNameFromAnnotation(annotation);
                 _type = ESUtils.getIssueTypeFromAnnotation(annotation);
+                Map<String, String> issueToClose = new HashMap<>();
 
                 // removing _routing as this is a ES internal attribute , cannot
                 // be specified while indexing
@@ -352,9 +358,14 @@ public class AnnotationPublisher {
                                                                                 // close
                                                                                 // from
                                                                                 // annotation
-                bulkRequestBody.append(String.format(bulkIndexRequestTemplate, _index,
-                        issue.get(PacmanSdkConstants.DOC_ID), _type, _id));
-                bulkRequestBody.append(serializer.toJson(issue));
+                issueToClose.put(PacmanSdkConstants.ISSUE_STATUS_KEY, PacmanSdkConstants.STATUS_CLOSE);
+                issueToClose.put(PacmanSdkConstants.ISSUE_CLOSED_DATE, CommonUtils.getCurrentDateStringWithFormat(
+                                       PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
+                issueToClose.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY,
+                                       annotation.get(PacmanSdkConstants.REASON_TO_CLOSE_KEY));
+                bulkRequestBody.append(String.format(bulkUpdateRequestTemplate, _index,
+                        issue.get(PacmanSdkConstants.DOC_ID),  _id));
+                bulkRequestBody.append(BULK_UPDATE_REQUEST_BODY_PREFIX + serializer.toJson(issueToClose) + BULK_UPDATE_REQUEST_BODY_SUFFIX);
                 bulkRequestBody.append("\n");
                 totalClosed++;
                 annotation.putAll(issue); // copy all the attributes to
@@ -398,7 +409,7 @@ public class AnnotationPublisher {
     private int closeDanglingIssues(String _index, String _type) throws Exception {
         String esUrl = ESUtils.getEsUrl();
         StringBuffer bulkRequestBody = new StringBuffer();
-        String bulkIndexRequestTemplate = BULK_INDEX_REQUEST_TEMPLATE;
+        String bulkIndexRequestTemplate = BULK_UPDATE_REQUEST_TEMPLATE;
         String bulkPostUrl = esUrl + BULK_WITH_REFRESH_TRUE;
         Gson serializer = new GsonBuilder().create();
         Integer totalClosed = 0;
@@ -412,6 +423,7 @@ public class AnnotationPublisher {
         for (Map.Entry<String, Map<String, String>> issueWithId : getExistingIssuesMapWithAnnotationIdAsKey()
                 .entrySet()) {
             issue = issueWithId.getValue();
+            Map<String, String> issueToClose = new HashMap<>();
             if (PacmanSdkConstants.STATUS_CLOSE.equals(issue.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
                 continue;
             }
@@ -423,10 +435,16 @@ public class AnnotationPublisher {
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
             issue.put(PacmanSdkConstants.MODIFIED_DATE, CommonUtils
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
-            issue.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
+            issueToClose.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
+            issueToClose.put(PacmanSdkConstants.ISSUE_STATUS_KEY, PacmanSdkConstants.STATUS_CLOSE);
+            issueToClose.put(PacmanSdkConstants.ISSUE_CLOSED_DATE, CommonUtils
+                    .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
+            issueToClose.put(PacmanSdkConstants.MODIFIED_DATE, CommonUtils
+                    .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
+            issueToClose.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
             bulkRequestBody.append(String.format(bulkIndexRequestTemplate, _index, issue.get(PacmanSdkConstants.DOC_ID),
-                    _type, issueWithId.getKey()));
-            bulkRequestBody.append(serializer.toJson(issue));
+                     issueWithId.getKey()));
+            bulkRequestBody.append( BULK_UPDATE_REQUEST_BODY_PREFIX +serializer.toJson(issueToClose)+BULK_UPDATE_REQUEST_BODY_SUFFIX );
             bulkRequestBody.append("\n");
             totalClosed++;
             if (bulkRequestBody.toString().getBytes().length

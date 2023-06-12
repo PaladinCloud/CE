@@ -25,7 +25,8 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import {RefactorFieldsService} from '../../../../shared/services/refactor-fields.service';
 import { FilterManagementService } from '../../../../shared/services/filter-management.service';
 import {DomainTypeObservableService} from '../../../../core/services/domain-type-observable.service';
-import * as _ from 'lodash';
+import orderBy from 'lodash/orderBy';
+import some from 'lodash/some';
 @Component({
   selector: 'app-recommendations',
   templateUrl: './recommendations.component.html',
@@ -33,6 +34,7 @@ import * as _ from 'lodash';
   providers: [CommonResponseService, LoggerService, ErrorHandlingService]
 })
 export class RecommendationsComponent implements OnInit, OnChanges, OnDestroy {
+  readonly pageTitle = 'Recommendations';
   selectedAssetGroup: string;
   selectedDomain: string;
   subscriptionToAssetGroup: Subscription;
@@ -486,7 +488,7 @@ export class RecommendationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   sortData(data, key, sortType) {
-    return _.orderBy(data, [key], [sortType]);
+    return orderBy(data, [key], [sortType]);
   }
 
   getmonthlySavings(event) {
@@ -536,7 +538,7 @@ export class RecommendationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   checkSelectedCategoryAvailable(category) {
-    return _.some(this.tabName, {'category': category });
+    return some(this.tabName, {'category': category });
   }
 
   showHelpContent(event) {

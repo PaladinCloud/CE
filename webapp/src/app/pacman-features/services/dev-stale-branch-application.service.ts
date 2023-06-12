@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -17,7 +17,8 @@ import { Observable } from 'rxjs';
 
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
-import * as _ from 'lodash';
+import forOwn from 'lodash/forOwn';
+import orderBy from 'lodash/orderBy';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -43,13 +44,13 @@ export class DevStaleBranchApplicationService {
     }
 
     massageData(data) {
-        data.response = _.forOwn(data.response , function(value, key) {
+        data.response = forOwn(data.response , function(value, key) {
             if (value) {
                 value.staleBranchPercentage = parseFloat(value.staleBranchPercentage);
             }
           });
         // sort data as per scope
-        data.response = _.orderBy(data.response, ['totalStaleBranches'], ['desc']);
+        data.response = orderBy(data.response, ['totalStaleBranches'], ['desc']);
         return data;
     }
 }

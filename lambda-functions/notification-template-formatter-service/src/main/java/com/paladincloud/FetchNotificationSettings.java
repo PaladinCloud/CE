@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 import static com.paladincloud.Constants.*;
 
 public class FetchNotificationSettings {
+
+    private static final String CONFIG_DETAILS = "configDetails";
     public String handleRequest(Map<String,Object> event, Context context)
     {
         Gson gsonObj = new Gson();
@@ -46,7 +48,7 @@ public class FetchNotificationSettings {
         try {
             Map<String,String> configDetailsMap = HttpUtil.getConfigDetailsForChannels();
             String notificationSettingsJson="";
-            if(messageContentMap.containsKey("configDetails")){
+            if(messageContentMap.containsKey(CONFIG_DETAILS)){
                 Map<String, Object> configMap = (Map<String,Object>)messageContentMap.get("configDetails");
                 notificationSettingsJson = gsonObj.toJson(configMap);
             }

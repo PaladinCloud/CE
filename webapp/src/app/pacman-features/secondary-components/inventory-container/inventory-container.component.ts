@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -20,7 +20,8 @@ import { SelectComplianceDropdown } from '../../services/select-compliance-dropd
 import { MultilineChartService } from '../../services/multilinechart.service';
 import { environment } from './../../../../environments/environment';
 import { IssueFilterService } from './../../services/issue-filter.service';
-import * as _ from 'lodash';
+import find from 'lodash/find';
+import map from 'lodash/map';
 import { UtilsService } from '../../../shared/services/utils.service';
 import { DomainTypeObservableService } from '../../../core/services/domain-type-observable.service';
 
@@ -229,7 +230,7 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
         const issueFilterMethod = environment.issueFilter.method;
         this.applicationSubscription = this.issueFilterService.getFilters(queryParams, issueFilterUrl, issueFilterMethod).subscribe(
             (response) => {
-                this.filterTypeLabels = _.map(response[0].response, 'optionName');
+                this.filterTypeLabels = map(response[0].response, 'optionName');
                 this.filterTypeOptions = response[0].response;
             });
     }
@@ -243,7 +244,7 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
             'GET')
             .subscribe((response) => {
                 this.filterTagOptions = response[0].response;
-                this.filterTagLabels = _.map(response[0].response, 'name');
+                this.filterTagLabels = map(response[0].response, 'name');
             });
     }
 
@@ -266,14 +267,14 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
     }
 
     changedDropdown(val) {
-        let option = _.find(this.filterTypeOptions, { optionName: val.id });
+        let option = find(this.filterTypeOptions, { optionName: val.id });
 
         if (option) {
 
             this.changeFilterType(option);
 
         } else {
-            option = _.find(this.filterTagOptions, { name: val.id });
+            option = find(this.filterTagOptions, { name: val.id });
             this.changeFilterTag(option);
         }
     }

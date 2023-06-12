@@ -26,6 +26,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
+import { TourService } from 'src/app/core/services/tour.service';
 
 @Component({
   selector: 'app-asset-groups',
@@ -45,6 +46,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
               private errorHandlingService: ErrorHandlingService,
               private logger: LoggerService,
               private tableStateService: TableStateService,
+              private tourService: TourService,
               private utils: UtilsService,
               private workflowService: WorkflowService) {
               this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
@@ -123,15 +125,18 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
                 this.assetTiles = response[0];
                 this.dataStore.setListOfAssetGroups(JSON.stringify(this.assetTiles));
                 this.processData();
+                this.tourService.setComponentReady();
             },
             error => {
                 this.loaded = true;
                 this.showError = true;
                 this.logger.log('error', error);
+                this.tourService.setComponentReady();
             });
     } else {
         this.assetTiles = JSON.parse(assetGroupList);
         this.processData();
+        this.tourService.setComponentReady();
     }
   }
 

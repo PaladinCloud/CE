@@ -12,7 +12,7 @@
         <appender-ref ref="STDOUT"/>
     </root>
 
-    <logger name="com.tmobile" level="DEBUG" additivity="false">
+    <logger name="com.tmobile" level="${log.level:-DEBUG}" additivity="false">
         <!-- <appender-ref ref="ELASTIC"/> -->
         <appender-ref ref="STDOUT"/>
     </logger>

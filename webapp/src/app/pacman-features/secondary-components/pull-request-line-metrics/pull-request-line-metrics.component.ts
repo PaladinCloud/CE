@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -34,7 +34,7 @@ import * as d3Shape from 'd3-shape';
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
-import * as _ from 'lodash';
+import pick from 'lodash/pick';
 
 @Component({
   selector: 'app-pull-request-line-metrics',
@@ -622,7 +622,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
     // filtering necessary fields from the obj
     const filter = 'open, merged, declined, created';
 
-    const result = _.pick(data, filter.split(', '));
+    const result = pick(data, filter.split(', '));
 
     const formatted_obj = [];
     const barColor = ['#00B946', '#26BA9D', '#F75C03', '#F2425F', '#D40325'];

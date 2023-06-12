@@ -12,6 +12,10 @@
  * limitations under the License.
  */
 
+.floating-widgets-section-full {
+    padding: 18px 24px;
+}
+
 .system-container {
   border: 1px solid lightgrey;
   width: 100%;
@@ -23,7 +27,6 @@
 .container {
   width: 100%;
   flex-grow: 1;
-  padding: 0 1.25em 2em 1.25em;
 }
 .align-start {
   align-self: flex-start;

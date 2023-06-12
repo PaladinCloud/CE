@@ -5,7 +5,8 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Subject, Subscription } from "rxjs";
 import { IssueFilterService } from "../../../services/issue-filter.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
-import * as _ from "lodash";
+import find from 'lodash/find';
+import map from 'lodash/map';
 import { UtilsService } from "../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
@@ -248,7 +249,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }else{
       let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
       if(!apiColName){
-        apiColName =  _.find(this.filterTypeOptions, {
+        apiColName =  find(this.filterTypeOptions, {
           optionName: this.headerColName,
         })["optionValue"];
       }
@@ -389,7 +390,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       const dataArray = [];
       for (let i = 0; i < filterObjKeys.length; i++) {
         let obj = {};
-        const keyDisplayValue = _.find(this.filterTypeOptions, {
+        const keyDisplayValue = find(this.filterTypeOptions, {
           optionValue: filterObjKeys[i],
         })["optionName"];
         obj = {
@@ -419,13 +420,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
         let keyDisplayValue = formattedFilters[i].keyDisplayValue;
         if(!keyDisplayValue){
-          keyDisplayValue = _.find(this.filterTypeOptions, {
+          keyDisplayValue = find(this.filterTypeOptions, {
             optionValue: formattedFilters[i].filterKey,
           })["optionName"];
         }
 
         this.changeFilterType(keyDisplayValue).then(() => {
-          let filterValueObj = _.find(this.filterTagOptions[keyDisplayValue], {
+          let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
             id: this.filterText[formattedFilters[i].filterkey],
           });
 
@@ -469,7 +470,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           environment.issueFilter.method
         )
         .subscribe((response) => {
-          this.filterTypeLabels = _.map(response[0].response, "optionName");
+          this.filterTypeLabels = map(response[0].response, "optionName");
           resolve(true);
           this.filterTypeOptions = response[0].response;
 
@@ -496,7 +497,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     return new Promise((resolve) => {
       this.filterErrorMessage = '';
     try {
-      this.currentFilterType = _.find(this.filterTypeOptions, {
+      this.currentFilterType = find(this.filterTypeOptions, {
         optionName: value,
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
@@ -519,13 +520,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTagLabels = {
               ...this.filterTagLabels,
               ...{
-                  [value]: _.map(response[0].response, 'name').sort((a, b) =>
+                  [value]: map(response[0].response, 'name').sort((a, b) =>
                       a.localeCompare(b),
                   ),
               },
           };
           if(value.toLowerCase()=="age"){
-            const filterValues = this.filterTagLabels[value].splice(1);            
+            const filterValues = this.filterTagLabels[value].splice(1);
             filterValues.sort((a, b) => a-b);
             this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
           }
@@ -547,13 +548,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     if(!value){
       return;
     }
-    this.currentFilterType =  _.find(this.filterTypeOptions, {
+    this.currentFilterType =  find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
       });
 
     try {
       if (this.currentFilterType) {
-        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+        const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
         this.utils.addOrReplaceElement(
           this.filters,
           {

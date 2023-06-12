@@ -3,8 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import * as _ from 'lodash';
-
 import { WorkflowService } from './../../../../core/services/workflow.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { DownloadService } from '../../../../shared/services/download.service';

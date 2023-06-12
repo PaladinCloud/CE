@@ -8,8 +8,8 @@
                 [breadcrumbPresent]="pageTitle"
             ></app-breadcrumb>
         </div>
-        <div class="flex">
-            <h2 class="page-header-text">{{ pageTitle }}</h2>
+        <div class="flex flex-align-baseline">
+            <app-page-title [title]="pageTitle"></app-page-title>
             <h3 class="page-header-subtext">
                 ({{ totalAssetTypes | number }} Asset Types | {{ totalAssetCount | number }} Assets)
             </h3>

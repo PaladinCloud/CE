@@ -13,11 +13,8 @@
  -->
 
  <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
-    <div class="padding-top"></div>
-    <div class="floating-widgets-header flex flex-between">
-        <div>
-            <h6 class="title-text">{{pageTitle}}</h6>
-        </div>
+    <div class="flex flex-between">
+        <app-page-title [title]="pageTitle"></app-page-title>
         <div class="flex relative z-index textarea-button">
 
             <button class="submit-btn uppercase" type="button" (click)='goToCreateJobExecutionManager()'><i class="fa fa-plus"></i> Schedule Job</button>

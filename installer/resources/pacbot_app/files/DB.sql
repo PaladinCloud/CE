@@ -2783,7 +2783,7 @@ DELIMITER ;
 
 CALL update_filter_for_tag(@MANDATORY_TAGS);
 
-update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category';
+update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category' and filterId not in (select filterId from pac_v2_ui_filters where filterName ="policyComplianceFilter") ;
 
 update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
 
@@ -2843,6 +2843,8 @@ CALL update_displayFields_for_azure_gcp(@MANDATORY_TAGS);
 
 update pac_v2_ui_options set optionURL="/compliance/v1/filters/eventname" where optionId=34;
 
+DELETE from pac_v2_ui_options where filterId=12;
+
 DELIMITER $$
 DROP PROCEDURE IF EXISTS create_composite_key_if_not_exists $$
 CREATE PROCEDURE create_composite_key_if_not_exists()
@@ -2858,7 +2860,7 @@ CALL create_composite_key_if_not_exists();
 
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (12,'plugins');
 
-DELETE from pac_v2_ui_options where filterId=12;
+
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account ID','accountId','/admin/accounts/filter/attribute?attribute=accountId');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account Name','accountName','/admin/accounts/filter/attribute?attribute=accountName');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Assets','assets','/admin/accounts/filter/attribute?attribute=assets');
@@ -2867,3 +2869,18 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Created By','createdBy','/admin/accounts/filter/attribute?attribute=createdBy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Platform','platform','/admin/accounts/filter/attribute?attribute=platform');
 
+
+
+update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=asset" where filterId=12 and optionName ="Assets";
+
+update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=status" where filterId=12 and optionName ="Status";
+
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (13,'policyComplianceFilter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Severity','severity','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Policy','name','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Compliance','compliance_percent','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Violations','failed','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Category','policyCategory','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Source','provider','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Asset Type','resourcetType','');

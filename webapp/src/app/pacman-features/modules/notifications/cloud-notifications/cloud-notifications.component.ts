@@ -15,7 +15,8 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as _ from 'lodash';
+import find from 'lodash/find';
+import map from 'lodash/map';
 import { Subject, Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
@@ -270,7 +271,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             const dataArray = [];
             for (let i = 0; i < filterObjKeys.length; i++) {
                 let obj = {};
-                const keyDisplayValue = _.find(this.filterTypeOptions, {
+                const keyDisplayValue = find(this.filterTypeOptions, {
                     optionValue: filterObjKeys[i],
                 })['optionName'];
                 obj = {
@@ -299,13 +300,13 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             for (let i = 0; i < formattedFilters.length; i++) {
                 let keyDisplayValue = formattedFilters[i].keyDisplayValue;
                 if (!keyDisplayValue) {
-                    keyDisplayValue = _.find(this.filterTypeOptions, {
+                    keyDisplayValue = find(this.filterTypeOptions, {
                         optionValue: formattedFilters[i].filterKey,
                     })['optionName'];
                 }
 
                 this.changeFilterType(keyDisplayValue).then(() => {
-                    const filterValueObj = _.find(this.filterTagOptions[keyDisplayValue], {
+                    const filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
                         id: this.filterText[formattedFilters[i].filterkey],
                     });
 
@@ -344,7 +345,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     environment.issueFilter.method,
                 )
                 .subscribe((response) => {
-                    this.filterTypeLabels = _.map(response[0].response, 'optionName');
+                    this.filterTypeLabels = map(response[0].response, 'optionName');
                     this.filterTypeOptions = response[0].response;
                     this.filterTypeLabels.sort();
 
@@ -362,7 +363,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     changeFilterType(value) {
         return new Promise((resolve) => {
             try {
-                this.currentFilterType = _.find(this.filterTypeOptions, {
+                this.currentFilterType = find(this.filterTypeOptions, {
                     optionName: value,
                 });
                 const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
@@ -381,7 +382,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                             this.filterTagLabels = {
                                 ...this.filterTagLabels,
                                 ...{
-                                    [value]: _.map(response[0].response, 'name').sort((a, b) =>
+                                    [value]: map(response[0].response, 'name').sort((a, b) =>
                                         a.localeCompare(b),
                                     ),
                                 },
@@ -400,12 +401,12 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
     changeFilterTags(event) {
         const value = event.filterValue;
-        this.currentFilterType = _.find(this.filterTypeOptions, {
+        this.currentFilterType = find(this.filterTypeOptions, {
             optionName: event.filterKeyDisplayValue,
         });
         try {
             if (this.currentFilterType) {
-                const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], {
+                const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], {
                     name: value,
                 });
                 this.utils.addOrReplaceElement(

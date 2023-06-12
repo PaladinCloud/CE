@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -17,7 +17,6 @@ import { environment } from "./../../../../../../environments/environment";
 
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subscription } from "rxjs";
-import * as _ from "lodash";
 import { UtilsService } from "../../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../../shared/services/error-handling.service";
@@ -98,8 +97,8 @@ export class DeleteAssetGroupsComponent implements OnInit {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -109,12 +108,12 @@ export class DeleteAssetGroupsComponent implements OnInit {
       this.pageLevel
     );
   }
-  
+
   deleteAssetGroup() {
     this.hideContent = true;
     this.assetGroupLoader = true;
-    let url = environment.deleteAssetGroups.url; 
-    let method = environment.deleteAssetGroups.method; 
+    let url = environment.deleteAssetGroups.url;
+    let method = environment.deleteAssetGroups.method;
     this.adminService.executeHttpAction(url, method, {groupId: this.groupId}, {}).subscribe(reponse => {
       this.assetGroupLoader = false;
       this.isAssetGroupDeletionSuccess = true;
@@ -130,7 +129,7 @@ export class DeleteAssetGroupsComponent implements OnInit {
     this.hideContent = false;
   }
   /*
-    * This function gets the urlparameter and queryObj 
+    * This function gets the urlparameter and queryObj
     *based on that different apis are being hit with different queryparams
     */
   routerParam() {

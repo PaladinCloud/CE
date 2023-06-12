@@ -25,7 +25,8 @@ import { Subscription } from 'rxjs';
 import { environment } from './../../../../../environments/environment';
 import { Router } from '@angular/router';
 import { IssueFilterService } from './../../../services/issue-filter.service';
-import * as _ from 'lodash';
+import find from 'lodash/find';
+import map from 'lodash/map';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
@@ -109,13 +110,13 @@ export class VulnerabilitiesComplianceComponent implements OnInit, OnDestroy {
     this.filterTypesSubscription = this.issueFilterService
       .getFilters(queryParams, issueFilterUrl, issueFilterMethod)
       .subscribe(response => {
-        this.filterTypeLabels = _.map(response[0].response, 'optionName');
+        this.filterTypeLabels = map(response[0].response, 'optionName');
         this.filterTypeOptions = response[0].response;
       });
   }
 
   changeFilterType(value) {
-    this.currentFilterType = _.find(this.filterTypeOptions, {
+    this.currentFilterType = find(this.filterTypeOptions, {
       optionName: value.id
     });
     this.filterTypesSubscription = this.issueFilterService
@@ -130,13 +131,13 @@ export class VulnerabilitiesComplianceComponent implements OnInit, OnDestroy {
       )
       .subscribe(response => {
         this.filterTagOptions = response[0].response;
-        this.filterTagLabels = _.map(response[0].response, 'name');
+        this.filterTagLabels = map(response[0].response, 'name');
       });
   }
 
   changeFilterTags(value) {
     if (this.currentFilterType) {
-      const filterTag = _.find(this.filterTagOptions, { name: value.id });
+      const filterTag = find(this.filterTagOptions, { name: value.id });
       this.utils.addOrReplaceElement(
         this.filters,
         {

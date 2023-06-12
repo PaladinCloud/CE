@@ -31,7 +31,6 @@ import { RouterUtilityService } from "../../shared/services/router-utility.servi
 import { Subscription } from "rxjs";
 import { WorkflowService } from "../../core/services/workflow.service";
 import { FetchResourcesService } from "../../pacman-features/services/fetch-resources.service";
-import { result } from "lodash";
 import { AwsResourceTypeSelectionService } from "src/app/pacman-features/services/aws-resource-type-selection.service";
 
 @Component({

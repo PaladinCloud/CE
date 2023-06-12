@@ -25,7 +25,7 @@ import { OverviewTile } from 'src/app/shared/components/molecules/overview-tile/
 export class AssetDashboardComponent implements OnInit, OnDestroy {
     @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
 
-    pageTitle = 'Asset Summary';
+    readonly pageTitle = 'Asset Summary';
     showNotif = false;
     beepCount = 0;
     errorMessage: string;

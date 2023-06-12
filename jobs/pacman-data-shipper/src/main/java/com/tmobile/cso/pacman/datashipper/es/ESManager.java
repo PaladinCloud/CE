@@ -820,15 +820,15 @@ public class ESManager implements Constants {
      * @param field the field
      * @param value the value
      */
-    public static void deleteOldDocuments(String index, String type, String field, String value) {
-        String deleteJson = "{\"query\": {\"bool\": {\"must_not\": [{ \"match\": {\"" + field + "\":\"" + value
-                + "\"}}]}}}";
-        try {
-            invokeAPI("POST", index + "/" + "_delete_by_query", deleteJson);
-        } catch (IOException e) {
-            LOGGER.error("Error deleteOldDocuments ", e);
-        }
-    }
+	public static void deleteOldDocuments(String index, String type, String field, String value) {
+		String deleteJson = "{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\""+field+"\":\""+value+"\"}}],"
+				+ "\"must\":[{\"match\":{\"docType.keyword\":\""+type+"\"}}]}}}";
+		try {
+			invokeAPI("POST", index + "/" + "_delete_by_query", deleteJson);
+		} catch (IOException e) {
+			LOGGER.error("Error deleteOldDocuments ", e);
+		}
+	}
     
     /**
      * Update load date.

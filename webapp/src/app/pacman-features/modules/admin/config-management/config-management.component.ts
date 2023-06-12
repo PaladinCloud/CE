@@ -10,7 +10,7 @@ import { FormService } from '../../../../shared/services/form.service';
 import { HttpHeaders } from '@angular/common/http';
 import {WorkflowService} from '../../../../core/services/workflow.service';
 import { ToastObservableService } from '../../../../post-login-app/common/services/toast-observable.service';
-import * as _ from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
@@ -269,7 +269,7 @@ pageLevel = 0;
         } else {
           this.firstLevelData = data;
           // remove duplicates from properties
-          this.firstLevelData['properties'] = _.uniqBy(this.firstLevelData['properties'], 'key');
+          this.firstLevelData['properties'] = uniqBy(this.firstLevelData['properties'], 'key');
           this.applicationBreadcrumb.push(this.firstLevelData['name']);
         }
     } catch (error) {
@@ -301,7 +301,7 @@ pageLevel = 0;
       } else {
         this.secondaryLevelData = data;
         // remove duplicates from properties
-        this.secondaryLevelData['properties'] = _.uniqBy(this.secondaryLevelData['properties'], 'key');
+        this.secondaryLevelData['properties'] = uniqBy(this.secondaryLevelData['properties'], 'key');
         this.applicationBreadcrumb.push(
           this.firstLevelData['name'],
           this.secondaryLevelData['name']
@@ -330,7 +330,7 @@ pageLevel = 0;
       this.thirdLevelIndex = index;
       this.tertiaryLevelData = data;
       // remove duplicates from properties
-      this.tertiaryLevelData['properties'] = _.uniqBy(this.tertiaryLevelData['properties'], 'key');
+      this.tertiaryLevelData['properties'] = uniqBy(this.tertiaryLevelData['properties'], 'key');
       this.applicationBreadcrumb = [];
       this.applicationBreadcrumb.push(
         this.firstLevelData['name'],

@@ -14,16 +14,9 @@
 
 <!-- <div class="flex flex-between"> -->
 <div
-  class="floating-widgets-section-full flex flex-col compliance-dashboard-wrapper"
+  class="floating-widgets-section-full flex flex-col"
 >
-  <div class="padding-top"></div>
-  <div
-    class="floating-widgets-header flex flex-between align-start w-100 no-shrink"
-  >
-    <div>
-      <h6 class="title-text">{{ pageTitle }}</h6>
-    </div>
-  </div>
+  <app-page-title [title]="pageTitle"></app-page-title>
   <div class="container no-shrink">
     <div class="system-container flex-center flex flex-col flex-align-center">
       <div class="loader" *ngIf="showPageLoader == 1"></div>

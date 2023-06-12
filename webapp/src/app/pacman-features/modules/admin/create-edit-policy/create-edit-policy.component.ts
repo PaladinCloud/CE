@@ -32,7 +32,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
-import { reject } from 'lodash';
 
 @Component({
   selector: 'app-admin-create-edit-policy',
@@ -172,7 +171,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       name: "Autofix"
     }
   ]
-  warningNotification = false;                                                                                                                                                                                                                                                        
+  warningNotification = false;
   isAutofixAvailable = false;
   attributeList : string[] = ["A","V"];
   selectedAttributes: string[];
@@ -315,7 +314,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.policyDisplayName = this.policyDisplayName;
     PolicyModel.policyId = this.policyId;
     PolicyModel.policyName = this.policyName;
-  
+
     PolicyModel.targetType = this.selectedAssetType;
     PolicyModel.severity = this.selectedSeverity;
     PolicyModel.status = this.status?"ENABLED": "DISABLED";
@@ -386,7 +385,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   toggleSilentNotification(event:any){
     this.warningNotification = event.checked;
   }
-  
+
   onSelectCategory(selectedCategory) {
     this.selectedCategory = selectedCategory;
   }
@@ -531,14 +530,14 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
           this.waitingTime = this.policyDetails.waitingTime;
           this.maxEmailNotification = this.policyDetails.maxEmailNotification;
           this.warningMessage = this.policyDetails.warningMessage;
-          this.warningMailSubject = this.policyDetails.warningMailSubject; 
+          this.warningMailSubject = this.policyDetails.warningMailSubject;
           this.elapsedTime = this.policyDetails.elapsedTime;
           this.fixType = this.policyDetails.fixType;
           this.warningNotification = this.fixType == "silent";
         }
       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
       this.paramsList = [];
-      
+
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
         if (this.allPolicyParams[i]["isEdit"]) {
           this.hasEditableParams++;
@@ -554,7 +553,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
               "displayName": this.allPolicyParams[i]["displayName"]?this.allPolicyParams[i]["displayName"]:this.allPolicyParams[i]["key"],
               "isEdit": this.allPolicyParams[i]["isEdit"] ? this.allPolicyParams[i]["isEdit"] : false,
               "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false,
-              "description": this.allPolicyParams[i]["description"] 
+              "description": this.allPolicyParams[i]["description"]
             }
           )
         }
@@ -625,7 +624,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       width: '500px',
       data: { title: title,
             yesButtonLabel: yesButtonLabel,
-          } 
+          }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -670,17 +669,17 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   enableDisableRuleOrJob(action:string) {
     return new Promise((resolve,reject)=>{
-    try {      
+    try {
         const url = environment.enableDisableRuleOrJob.url;
         const method = environment.enableDisableRuleOrJob.method;
         const params = {};
         params['policyId'] = this.policyId;
-        
+
         params['action'] = action;
-  
+
         this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
             resolve("sucess");
-      }, 
+      },
           error => {
             reject("error");
           });
