@@ -84,12 +84,37 @@ const CLOUD_PROVIDER_SERVICE_ICONS: { [key in CloudProvider]: { [service: string
         test: 'test',
     },
     [CloudProvider.GCP]: {
-        test: 'test',
+        apikeys: gcpIcon('api.svg'),
+        bigquerydataset: gcpIcon('bigquery'),
+        bigquerytable: gcpIcon('bigquery'),
+        clouddns: gcpIcon('cloud_dns'),
+        cloudfunction: gcpIcon('cloud_functions'),
+        cloudfunctiongen1: gcpIcon('cloud_functions'),
+        cloudsql: gcpIcon('cloud_sql'),
+        cloudsql_mysqlserver: gcpIcon('cloud_sql'),
+        cloudsql_postgres: gcpIcon('cloud_sql'),
+        cloudsql_sqlserver: gcpIcon('cloud_sql'),
+        cloudstorage: gcpIcon('cloud_storage'),
+        dataproc: gcpIcon('dataproc'),
+        gcploadbalancer: gcpIcon('cloud_load_balancing'),
+        gkecluster: gcpIcon('gke'),
+        iamusers: gcpIcon('identity_and_access_management'),
+        kmskey: gcpIcon('key_management_service'),
+        networks: gcpIcon('cloud_network'),
+        project: gcpIcon('project'),
+        pubsub: gcpIcon('pubsub'),
+        serviceaccounts: gcpIcon('identity_and_access_management'),
+        vminstance: gcpIcon('compute_engine'),
+        vpcfirewall: gcpIcon('cloud_firewall_rules'),
     },
 };
 
 function awsIcon(path: string) {
     return `assets/icons/cloudproviders/aws/${path}.svg`;
+}
+
+function gcpIcon(path: string) {
+    return `assets/icons/cloudproviders/gcp/${path}.svg`;
 }
 
 export const ICONS = {
