@@ -62,9 +62,8 @@
             [selectedValue]="tableErrorMessage"
         ></app-error-message>
         <div class="table-wrapper">
-            <table
+            <mat-table
                 *ngIf="!tableErrorMessage && data.length > 0"
-                mat-table
                 [dataSource]="dataSource"
                 [matSortActive]="headerColName"
                 [matSortDirection]="direction"
@@ -73,13 +72,12 @@
                 (matSortChange)="announceSortChange($event)"
             >
                 <ng-container *ngFor="let column of whiteListColumns" [matColumnDef]="column">
-                    <th
-                        [style.width.%]="(100 / denominator) * columnWidths[column]"
+                    <mat-header-cell
+                        [style.flex-basis.%]="(100 / denominator) * columnWidths[column]"
                         class="capitalize"
                         [ngClass]="{
                             centered: centeredColumns[column]
                         }"
-                        mat-header-cell
                         *matHeaderCellDef
                         [mat-sort-header]="
                             column !== 'Actions' && column !== 'DetailsBtn' ? column : ''
@@ -88,11 +86,11 @@
                         <span>
                             {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
                         </span>
-                    </th>
-                    <td
+                    </mat-header-cell>
+                    <mat-cell
                         (click)="handleClick(element, column, i)"
                         class="capitalize table-cell"
-                        mat-cell
+                        [style.flex-basis.%]="(100 / denominator) * columnWidths[column]"
                         *matCellDef="let element; let i = index"
                         [class.center]="centeredColumns[column]"
                     >
@@ -228,19 +226,18 @@
                                 </div>
                             </div>
                         </ng-template>
-                    </td>
+                    </mat-cell>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>
-                <tr
+                <mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></mat-header-row>
+                <mat-row
                     [class.row-hover]="rowClickable"
                     [class.row-selected]="i === selectedRowIndex"
                     [class.md]="rowSize === 'MD'"
                     [class.sm]="rowSize === 'SM'"
                     [class.lg]="rowSize === 'LG'"
-                    mat-row
                     *matRowDef="let row; columns: whiteListColumns; let i = index"
-                ></tr>
-            </table>
+                ></mat-row>
+            </mat-table>
         </div>
     </div>
 </div>
