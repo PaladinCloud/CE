@@ -193,6 +193,7 @@
     font: var(--text-body-2);
     color: var(--text-low-emphasis);
     border: 1px solid var(--border-100);
+    border-top: none;
     background-color: #f8f8f8;
 }
 
