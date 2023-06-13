@@ -25,7 +25,9 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.config.Util;
 import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.publisher.impl.ElasticSearchDataReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -55,6 +57,11 @@ public class ESUtils {
     
     /** The Constant QUERY. */
     private static final String QUERY = "query";
+
+    private static final String APPLICATION_JSON = "application/json";
+
+    /** The Constant CONTENT_TYPE. */
+    private static final String CONTENT_TYPE = "Content-Type";
     
     /** The Constant logger. */
     private static final Logger logger = LoggerFactory.getLogger(ESUtils.class);
@@ -200,23 +207,32 @@ public class ESUtils {
     public static boolean isParentChildRelationExists(final String url, String indexName, String parent, String child) throws IOException {
         // Get the mapping for the index
         String mappingUrl = url + "/" + indexName + "/_mapping";
-        String mappingResponse = CommonUtils.doHttpGet(mappingUrl);
-        JSONObject mappingObject = new JSONObject(mappingResponse);
+        //CommonUtils.doHttpGet(mappingUrl);
+        Map<String, Object> httpGet=new HashMap<>();
+        httpGet.put(CONTENT_TYPE, APPLICATION_JSON);
+        String mappingResponse = null;
+        try {
+            mappingResponse = Util.httpGetMethodWithHeaders(mappingUrl, httpGet);
+            JSONObject mappingObject = new JSONObject(mappingResponse);
 
-        // Get the relations for the index
-        JSONObject indexObject = mappingObject.getJSONObject(indexName);
-        JSONObject relationsObject = indexObject.getJSONObject("relations");
+            // Get the relations for the index
+            JSONObject indexObject = mappingObject.getJSONObject(indexName);
+            JSONObject relationsObject = indexObject.getJSONObject("mappings").getJSONObject("properties").getJSONObject(parent+"_relations").getJSONObject("relations");
 
-        // Check if a relation exists between the parent and child entities
-        if (relationsObject.has(parent)) {
-            JSONArray childArray = relationsObject.getJSONArray(parent);
-            for (int i = 0; i < childArray.length(); i++) {
-                String relation = childArray.getString(i);
-                if (relation.equals(child)) {
-                    return true;
+            // Check if a relation exists between the parent and child entities
+            if (relationsObject.has(parent)) {
+                JSONArray childArray = relationsObject.getJSONArray(parent);
+                for (int i = 0; i < childArray.length(); i++) {
+                    String relation = childArray.getString(i);
+                    if (relation.equals(child)) {
+                        return true;
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("Exception in getHttpGet: {}" ,e);
         }
+
 
         return false;
     }
@@ -449,6 +465,7 @@ public class ESUtils {
         Map<String, Object> matchFilters = Maps.newHashMap();
         if (entityType != null) {
             if (mustFilter == null) {
+                mustFilter=new HashMap<>();
                 Map<String, String> typeFilter = new HashMap<String, String>();
                 typeFilter.put(PacmanSdkConstants.DOC_TYPE, entityType);
                 mustFilter.put("match", typeFilter);
@@ -456,6 +473,8 @@ public class ESUtils {
                 mustFilter.put(PacmanSdkConstants.DOC_TYPE, entityType);
                 matchFilters.putAll(mustFilter);
             }
+        }else{
+            matchFilters.putAll(mustFilter);
         }
 
         Map<String, Object> requestBody = new HashMap<>();
