@@ -115,7 +115,7 @@ public class EntityManager implements Constants {
 	                prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type);
 	                Map<String,Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName,type,loaddate,errorList,true);
 	                Map<String, Object> uploadInfo = ESManager.uploadData(indexName, type, entities, loaddate);
-                    ESManager.removeViolationForDeletedAssets(entities, indexName);
+                    //ESManager.removeViolationForDeletedAssets(entities, indexName);
                     stats.putAll(uploadInfo);
 	                stats.put("errorUpdates", errUpdateInfo);
 	                errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type)) ;
