@@ -16,11 +16,7 @@
 package com.tmobile.pacman.publisher.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.google.gson.JsonObject;
 import org.apache.http.HttpHost;
@@ -283,8 +279,13 @@ public class ElasticSearchDataPublisher {
         indexRequest.routing(parentId);
         // indexRequest.parent(parentId);
         try {
-            client.index(indexRequest, RequestOptions.DEFAULT);
+            CommonUtils.doHttpPut(ESUtils.getEsUrl()+"/"+getIndexName(ruleParam)+"/_doc/"+ UUID.randomUUID()+"?routing="+parentId,addRelationsToPlan(plan, planTypeName, parentType, parentId));
+          //  client.index(indexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
+            logger.error("error indexing autofix plan", e);
+            return false;
+        }
+        catch(Exception e){
             logger.error("error indexing autofix plan", e);
             return false;
         }

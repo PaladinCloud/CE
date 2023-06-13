@@ -37,7 +37,7 @@ import com.tmobile.pacman.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import software.amazon.awssdk.services.opensearch.OpenSearchClient;
+//import software.amazon.awssdk.services.opensearch.OpenSearchClient;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -283,6 +283,7 @@ public interface IAutofixManger {
                                     annotation.get(PacmanSdkConstants.DOC_ID), targetType, NextStepManager.getMaxNotifications(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION)),
                                     NextStepManager.getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME)));
                             autoFixPlanManager.publishPlan(policyParam, autoFixPlan);
+                            issueList.add(annotationId);
                             autoFixPlanCreatedCounter++;
                             logger.debug("auto fix plan published with id {} ", autoFixPlan.getPlanId());
                             autoFixTrans.add(new AutoFixTransaction(AutoFixAction.CREATE_AUTO_FIX_PLAN, resourceId, policyId, executionId,
@@ -376,7 +377,6 @@ public interface IAutofixManger {
                     continue;
                 } else {
                     if (AutoFixAction.AUTOFIX_ACTION_FIX == autoFixAction) {
-                        issueList.add(annotationId);
                         try {
                             try {
                                 backupMethod.invoke(fixObject, resourceId, targetType, clientMap, policyParam, annotation);

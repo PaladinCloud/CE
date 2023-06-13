@@ -285,8 +285,11 @@ public class ESUtils {
         // Get existing children
         Map<String, Object> existingChildren = null;
         try {
-            existingChildren = getChildRelations(index, parent);
+            existingChildren = getChildRelations(esUrl,index, parent);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -326,16 +329,16 @@ public class ESUtils {
             throw new RuntimeException(e);
         }
         try {
-            return CommonUtils.doHttpPut(endPoint, payLoad);
+            return CommonUtils.doHttpPut(esUrl+"/"+endPoint, payLoad);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     // Helper function to retrieve existing child relations
-    private static Map<String, Object> getChildRelations(String index, String parent) throws IOException {
-        String endPoint = index + "/_mapping";
-        String response = CommonUtils.doHttpGet(endPoint);
+    private static Map<String, Object> getChildRelations(String esUrl, String index, String parent) throws Exception {
+        String endPoint = esUrl + "/"+ index + "/_mapping";
+        String response = CommonUtils.eshttpGet(endPoint,new HashMap<>());
         JsonNode node = new ObjectMapper().readTree(response);
         JsonNode properties = node.at("/" + index + "/mappings/properties");
         JsonNode relations = properties.get(parent + "_relations").get("relations");
