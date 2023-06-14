@@ -2504,6 +2504,6 @@ UPDATE cf_PolicyParams SET encrypt ='false' WHERE policyID IN (
 'UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb',
 'VpcFlowLogsEnabled_version-1_VpcFlowLogsEnabled_vpc'
 );
-UPDATE cf_PolicyParams SET paramValue ='icmp:00' WHERE policyID ='VPC_firewall_ICMP_port_should_not_be_publicly_accessible' AND paramKey='port';
-UPDATE cf_PolicyParams SET paramValue ='tcp:3389,tcp:0-65535' WHERE policyID ='VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible' AND paramKey='port';
+UPDATE cf_PolicyParams SET paramValue ='icmp' WHERE policyID ='VPC_firewall_ICMP_port_should_not_be_publicly_accessible' AND paramKey='port';
+UPDATE cf_PolicyParams SET paramValue ='3389' WHERE policyID ='VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible' AND paramKey='port';
 UPDATE cf_PolicyParams SET paramValue = 'Qch7DwouX1' WHERE policyID = 'LowUtilizationAmazonEC2InstancesRule_version-1_LowUtilizationAmazonEC2InstancesRule_ec2' AND paramKey = 'checkId';
