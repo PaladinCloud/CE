@@ -46,7 +46,7 @@ const CLOUD_PROVIDER_SERVICE_ICONS: { [key in CloudProvider]: { [service: string
         dms: awsIcon('architecture_services/database_migration_service'),
         documentdb: awsIcon('architecture_services/documentdb'),
         dynamodb: awsIcon('architecture_services/dynamodb'),
-        ec2: awsIcon('architecture_services/ec2.svg'),
+        ec2: awsIcon('architecture_services/ec2'),
         ecr: awsIcon('architecture_services/elastic_container_registry'),
         ecscluster: awsIcon('containers/registry'),
         ecstaskdefinition: awsIcon('containers/task'),
@@ -84,7 +84,7 @@ const CLOUD_PROVIDER_SERVICE_ICONS: { [key in CloudProvider]: { [service: string
         test: 'test',
     },
     [CloudProvider.GCP]: {
-        apikeys: gcpIcon('api.svg'),
+        apikeys: gcpIcon('api'),
         bigquerydataset: gcpIcon('bigquery'),
         bigquerytable: gcpIcon('bigquery'),
         clouddns: gcpIcon('cloud_dns'),
