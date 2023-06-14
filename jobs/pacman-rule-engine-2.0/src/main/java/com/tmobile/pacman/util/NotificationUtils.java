@@ -40,11 +40,9 @@ public class NotificationUtils {
 
                 if (isOpen && null == issueAttributes && PacmanSdkConstants.STATUS_OPEN.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
                     notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, true, CREATE_VIOLATION_EVENT_NAME));
-                } else if (!isOpen) {
-                    if (!(!existingIssuesMap.containsKey(annotationId)
-                            || PacmanSdkConstants.STATUS_CLOSE.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY)))) {
+                } else if (!isOpen && existingIssuesMap.containsKey(annotationId)
+                        && PacmanSdkConstants.STATUS_CLOSE.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
                         notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, false, CLOSE_VIOLATION_EVENT_NAME));
-                    }
                 }
             }
             if (!notificationDetailsList.isEmpty()) {
