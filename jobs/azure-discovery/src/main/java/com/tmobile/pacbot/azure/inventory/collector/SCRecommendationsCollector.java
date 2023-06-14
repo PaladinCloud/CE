@@ -59,6 +59,7 @@ public class SCRecommendationsCollector {
 			JsonObject recommendObject = recElmnt.getAsJsonObject();
 			JsonObject properties = recommendObject.getAsJsonObject("properties");
 			String id = recommendObject.get("id").getAsString();
+			String region=id.substring(id.indexOf("locations/")+new String("locations/").length()+1,id.indexOf("/tasks"));
 			if("Active".equals(properties.get("state").getAsString())){
 				JsonObject secTaskParameters = properties.getAsJsonObject("securityTaskParameters");
 				//String baseLineName = secTaskParameters.get("baselineName")!=null?secTaskParameters.get("baselineName").getAsString():null;
@@ -78,6 +79,7 @@ public class SCRecommendationsCollector {
 						recommendationMap.put("resourceId",Util.removeFirstSlash(resourceId.toString()));
 						recommendationMap.put("_resourceIdLower",Util.removeFirstSlash(resourceId.toString()).toLowerCase());
 						recommendation.setId(id);
+						recommendation.setRegion(region);
 						recommendation.setRecommendation(recommendationMap);
 						recommendations.add(recommendation);
 					}
