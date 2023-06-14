@@ -246,11 +246,11 @@
 }
 
 .copy-icon {
-    display: none;
+    opacity: 0;
 }
 
 .table-cell:hover .copy-icon {
-    display: block;
+    opacity: 1;
 }
 
 .table-filters {

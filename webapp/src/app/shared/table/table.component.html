@@ -75,9 +75,7 @@
                     <mat-header-cell
                         [style.flex-basis.%]="(100 / denominator) * columnWidths[column]"
                         class="capitalize"
-                        [ngClass]="{
-                            centered: centeredColumns[column]
-                        }"
+                        [class.flex-center]="centeredColumns[column]"
                         *matHeaderCellDef
                         [mat-sort-header]="
                             column !== 'Actions' && column !== 'DetailsBtn' ? column : ''
@@ -87,12 +85,13 @@
                             {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
                         </span>
                     </mat-header-cell>
+
                     <mat-cell
                         (click)="handleClick(element, column, i)"
                         class="capitalize table-cell"
                         [style.flex-basis.%]="(100 / denominator) * columnWidths[column]"
                         *matCellDef="let element; let i = index"
-                        [class.center]="centeredColumns[column]"
+                        [class.flex-center]="centeredColumns[column]"
                     >
                         <div
                             *ngIf="element[column] && element[column].isMenuBtn; else clickable"
