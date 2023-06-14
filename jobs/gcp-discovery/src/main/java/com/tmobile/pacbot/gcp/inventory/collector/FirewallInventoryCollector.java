@@ -57,6 +57,8 @@ public class FirewallInventoryCollector {
             fireWallVH.setId(String.valueOf(firewall.getId()));
             fireWallVH.setProjectName(project.getProjectName());
             fireWallVH.setProjectId(project.getProjectId());
+            String networkRegion=firewall.getNetwork().substring(firewall.getNetwork().indexOf(project.getProjectId()+"/")+project.getProjectId().length()+1,firewall.getNetwork().indexOf("/networks"));
+            fireWallVH.setRegion(networkRegion);
             fireWallList.add(fireWallVH);
 
             logger.info("Firewall  exit {}", fireWallVH);

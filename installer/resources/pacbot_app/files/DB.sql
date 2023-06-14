@@ -2885,4 +2885,26 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Source','provider','');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Asset Type','resourcetType','');
 
+
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'Autofix Scheduled','isAutofixPlanned.keyword','/compliance/v1/filters/attribute');
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_pac_v2_ui_options_table $$
+CREATE PROCEDURE alter_pac_v2_ui_options_table()
+BEGIN
+IF NOT EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'pac_v2_ui_options'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'optionType')  THEN
+ALTER TABLE `pac_v2_ui_options`
+ADD COLUMN `optionType` varchar(25);
+END IF;
+END $$
+DELIMITER ;
+CALL alter_pac_v2_ui_options_table();
+
+update pac_v2_ui_options set optionType = "String" where filterId=13;
+update pac_v2_ui_options set optionType = "Double" where optionName="Compliance" and filterId=13;
+update pac_v2_ui_options set optionType = "Long" where optionName="Violations" and filterId=13;
+

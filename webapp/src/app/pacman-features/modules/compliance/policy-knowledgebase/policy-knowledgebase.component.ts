@@ -5,6 +5,7 @@ import { AssetGroupObservableService } from 'src/app/core/services/asset-group-o
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
+import { TourService } from 'src/app/core/services/tour.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
@@ -148,7 +149,9 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService,
     private downloadService: DownloadService,
-    private assetTypeMapService: AssetTypeMapService) {
+    private assetTypeMapService: AssetTypeMapService,
+    private tourService: TourService,
+    ) {
 
       this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
         this.selectedAssetGroup = assetGroupName;
@@ -307,6 +310,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.getTilesData(this.tableData);
       this.tableDataLoaded = true;
       this.clearState();
+      this.tourService.setComponentReady();
     }else{
       this.tableDataLoaded = false;
       this.getData();
@@ -499,10 +503,12 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             this.tableDataLoaded = true;
             this.errorMessage = 'noDataAvailable';
           }
+          this.tourService.setComponentReady();
         },
         error => {
           this.tableDataLoaded = true;
           this.errorMessage = 'apiResponseError';
+          this.tourService.setComponentReady();
         });
   }
 
@@ -547,11 +553,11 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     } catch (error) { }
   }
 
-  handleFilterSelection(){    
+  handleFilterSelection(){
     this.storeState();
   }
 
-  handleFilterTypeSelection(){    
+  handleFilterTypeSelection(){
     this.storeState();
   }
 

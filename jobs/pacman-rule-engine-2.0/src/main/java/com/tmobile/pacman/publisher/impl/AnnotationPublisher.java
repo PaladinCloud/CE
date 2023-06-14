@@ -86,6 +86,8 @@ public class AnnotationPublisher {
     
     /** The policy param. */
     private ImmutableMap<String, String> policyParam;
+    
+    private static final String PREFIX_ISSUE = "issue_";
 
     /**
      * Instantiates a new annotation publisher.
@@ -144,6 +146,7 @@ public class AnnotationPublisher {
         String esUrl = ESUtils.getEsUrl();
         String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
         String indexName = CommonUtils.getIndexNameFromRuleParam(ruleParam);
+        String type = PREFIX_ISSUE+""+ruleParam.get(PacmanSdkConstants.TARGET_TYPE);
         Map<String, Object> mustFilter = new HashMap<>();
         String attributeToQuery = ESUtils.convertAttributeToKeyword(PacmanSdkConstants.POLICY_ID); //actual attribute will be  tokenized hence querying on keyword
         mustFilter.put(attributeToQuery, ruleId);
@@ -153,10 +156,10 @@ public class AnnotationPublisher {
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         shouldFilter.put("type.keyword", "recommendation");
         shouldFilter.put("type.keyword", "issue");
-        Long totalDocs = ESUtils.getTotalDocumentCountForIndexAndType(esUrl, indexName, null, mustFilter, mustNotFilter,
+        Long totalDocs = ESUtils.getTotalDocumentCountForIndexAndType(esUrl, indexName, type, mustFilter, mustNotFilter,
                 shouldFilter);
         // get all the issues for this ruleId
-        List<Map<String, String>> existingIssues = ESUtils.getDataFromES(esUrl, indexName.toLowerCase(), null,
+        List<Map<String, String>> existingIssues = ESUtils.getDataFromES(esUrl, indexName.toLowerCase(), type,
                 mustFilter, mustNotFilter, shouldFilter, fields, 0, totalDocs, "_docid");
         existingIssues.stream().forEach(obj -> {
             existingIssuesMapWithAnnotationIdAsKey.put(obj.get(PacmanSdkConstants.ES_DOC_ID_KEY), obj);

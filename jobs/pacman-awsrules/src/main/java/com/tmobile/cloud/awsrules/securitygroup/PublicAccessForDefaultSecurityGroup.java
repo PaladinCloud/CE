@@ -95,28 +95,31 @@ public class PublicAccessForDefaultSecurityGroup extends BasePolicy {
 		}
 
 		try {
-			List<String> listSecurityGroupID = PacmanUtils.getDefaultSecurityGroupsByName(esSgURL, securityGroupName);
-			securityGroupsSet.addAll(listSecurityGroupID);
-			List<String> listUnrestrictedSecGroup = PacmanUtils.getUnrestrictedSecurityGroupsById(securityGroupsSet, esSgRulesURL, cidrIpv6, cidrIp);
-			unrestrictedSecurityGroupsSet.addAll(listUnrestrictedSecGroup);
+			List<String> listSecurityGroupID = PacmanUtils.getDefaultSecurityGroupsByName(esSgURL, securityGroupName,ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+			if(listSecurityGroupID!=null && !listSecurityGroupID.isEmpty()){
+				securityGroupsSet.addAll(listSecurityGroupID);
+				List<String> listUnrestrictedSecGroup = PacmanUtils.getUnrestrictedSecurityGroupsById(securityGroupsSet, esSgRulesURL, cidrIpv6, cidrIp,ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+				unrestrictedSecurityGroupsSet.addAll(listUnrestrictedSecGroup);
 
-			if (!unrestrictedSecurityGroupsSet.isEmpty()) {
-				annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-				annotation.put(PacmanSdkConstants.DESCRIPTION, "Default security group with public access found!!");
-				annotation.put(PacmanRuleConstants.SEVERITY, severity);
-				annotation.put(PacmanRuleConstants.CATEGORY, category);
-				annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
-				issue.put(PacmanRuleConstants.VIOLATION_REASON, "Default security group with public access found!!");
-				issueList.add(issue);
-				annotation.put("issueDetails", issueList.toString());
-				logger.debug("========PublicAccessForDefaultSecurityGroup ended with an annotation {} : =========", annotation);
-				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				if (!unrestrictedSecurityGroupsSet.isEmpty()) {
+					annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+					annotation.put(PacmanSdkConstants.DESCRIPTION, "Default security group with public access found!!");
+					annotation.put(PacmanRuleConstants.SEVERITY, severity);
+					annotation.put(PacmanRuleConstants.CATEGORY, category);
+					annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+					issue.put(PacmanRuleConstants.VIOLATION_REASON, "Default security group with public access found!!");
+					issueList.add(issue);
+					annotation.put("issueDetails", issueList.toString());
+					logger.debug("========PublicAccessForDefaultSecurityGroup ended with an annotation {} : =========", annotation);
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				}
 			}
-
-		} catch (Exception exception) {
+			}
+		catch (Exception exception) {
 			logger.error("error: ", exception);
 			throw new RuleExecutionFailedExeption(exception.getMessage());
 		}
+
 		logger.debug("========PublicAccessForDefaultSecurityGroup ended=========");
 		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}

@@ -22,10 +22,10 @@ export interface OptionChange {
     styleUrls: ['./table-filters.component.css'],
 })
 export class TableFiltersComponent implements OnInit {
-    @Input() set appliedFilters(filters) {
-        this._appliedFilters = filters;
-        const optionDict = filters.reduce((prev, next) => {
-            if (!next.filterValue) {
+    @Input() set appliedFilters(filters: FilterItem[] | undefined) {
+        this._appliedFilters = filters || [];
+        const optionDict = this._appliedFilters.reduce((prev, next) => {
+            if (!next.filterValue || !next.key) {
                 return prev;
             }
             prev = merge({}, prev, {
@@ -51,12 +51,12 @@ export class TableFiltersComponent implements OnInit {
         return this._appliedFilters;
     }
 
-    @Input() set categories(values) {
-        this._categories = values;
+    @Input() set categories(values: string[] | undefined) {
+        this._categories = values || [];
         this.appliedFiltersDict = merge(
             {},
             this.appliedFiltersDict,
-            values.reduce(
+            this._categories.reduce(
                 (acc, next) => ({
                     ...acc,
                     [next]: {},
@@ -80,7 +80,7 @@ export class TableFiltersComponent implements OnInit {
 
     appliedFiltersDict: AppliedFilter = {};
 
-    selectedCategory: string = null;
+    selectedCategory: string | null = null;
 
     isCategoryMenuOpen = false;
     isCategoryOptionsMenuOpen = false;
@@ -107,6 +107,9 @@ export class TableFiltersComponent implements OnInit {
     }
 
     applyFilter(filterOption: string, event: MatCheckboxChange) {
+        if (!this.selectedCategory) {
+            return;
+        }
         this.updateFilter({
             category: this.selectedCategory,
             filterName: filterOption,
@@ -163,12 +166,17 @@ export class TableFiltersComponent implements OnInit {
     }
 
     filterCategoriesByQuery() {
-        return this.categories.filter((c) =>
-            c.toLowerCase().includes(this.categoryFilterQuery.toLowerCase()),
+        return (
+            this.categories?.filter((c) =>
+                c.toLowerCase().includes(this.categoryFilterQuery.toLowerCase()),
+            ) || []
         );
     }
 
     filterSelectedCategoryOptionsByQuery() {
+        if (!this.selectedCategory) {
+            return [];
+        }
         return (
             this.categoryOptions[this.selectedCategory]?.filter((c) =>
                 c?.toLowerCase().includes(this.categoryOptionFilterQuery.toLowerCase()),

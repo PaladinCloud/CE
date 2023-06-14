@@ -32,7 +32,8 @@ public class LoadBalancerCollector {
            loadBalancerVH.setId(String.valueOf(u.getId()));
            loadBalancerVH.setProjectId(project.getProjectId());
            loadBalancerVH.setProjectName(project.getProjectName());
-           loadBalancerVH.setRegion(u.getRegion());
+           String region=u.getSelfLink().substring(u.getSelfLink().indexOf(project.getProjectId()+"/")+project.getProjectId().length()+1,u.getSelfLink().indexOf("/urlMaps"));
+           loadBalancerVH.setRegion(region);
            Iterable<TargetHttpsProxy> httpsProxies = gcpCredentialsProvider.getTargetHttpsProxiesClient(project.getProjectId()).list(project.getProjectId()).iterateAll();
            List<String> targetHttpsProxyVH = new ArrayList<>();
            List<String> sslPolicyList=new ArrayList<>();
