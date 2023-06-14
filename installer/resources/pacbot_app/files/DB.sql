@@ -2884,3 +2884,9 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Category','policyCategory','');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Source','provider','');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Asset Type','resourcetType','');
+
+
+ALTER TABLE pac_v2_ui_options ADD optionType varchar(25);
+update pac_v2_ui_options set optionType = "String" where filterId=13;
+update pac_v2_ui_options set optionType = "Double" where optionName="Compliance" and filterId=13;
+update pac_v2_ui_options set optionType = "Long" where optionName="Violations" and filterId=13;
