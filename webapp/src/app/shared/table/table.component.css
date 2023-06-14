@@ -143,6 +143,7 @@
 
 .mat-row,
 .mat-footer-row {
+    border: none;
     align-items: center;
     font: var(--text-body-2);
     color: var(--text-high-emphasis);
@@ -161,7 +162,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 100px;
-    border: none;
+    border-bottom: 1px solid var(--border-100);
+}
+
+.mat-header-cell {
+    background-color: #f8f8f8;
 }
 
 .mat-row.lg {
@@ -193,8 +198,6 @@
     font: var(--text-body-2);
     color: var(--text-low-emphasis);
     border: 1px solid var(--border-100);
-    border-top: none;
-    background-color: #f8f8f8;
 }
 
 .filter-chips-wrapper {
