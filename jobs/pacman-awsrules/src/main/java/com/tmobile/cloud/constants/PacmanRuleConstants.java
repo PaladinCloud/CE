@@ -558,7 +558,13 @@ public class PacmanRuleConstants {
     public static final String INGRESS = "INGRESS";
     public static final String PORTS = "ports";
     public static final String ICMP = "icmp";
+    public static final String ALL = "all";
+    public static final String DELIMITER_COLON = ":";
+    public static final String DELIMITER_MINUS = "-";
+    public static final String DELIMITER_COMA = ",";
     public static final String SOURCERANGE = "0.0.0.0/0";
+    public static final String SOURCE_RANGE_IPV6 = "::/0";
+    public static final String SOURCE_RANGE_REGEX = "^\"|\"$";
     public static final String ACL = "acl";
     public static final String KMS_KEY_NAME = "kmsKeyName";
     public static final String DESTINATIONRANGE = "destinationRanges";
