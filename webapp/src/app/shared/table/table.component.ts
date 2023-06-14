@@ -214,8 +214,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.select.open();
     }
 
-    getWidthFactor() {}
-
     handleSearchInColumnsChange() {
         this.searchInColumnsChanged.emit(this.searchInColumns.value);
     }
