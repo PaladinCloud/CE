@@ -1,2 +1,8 @@
-
-<a (click)="CopyTextToClipboard(CopyElement, $event)"><i class="fa fa-clone icon-color" [style.fontSize]="iconSize" aria-hidden="true"></i></a>
+<a (click)="copyTextToClipboard($event)">
+    <i
+        class="fa fa-clone icon-color"
+        [style.fontSize]="iconSize"
+        [class.no-padding]="hidePadding"
+        aria-hidden="true"
+    ></i>
+</a>

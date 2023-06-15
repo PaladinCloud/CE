@@ -248,7 +248,13 @@
     display: none;
 }
 
+.clickable {
+    position: relative;
+}
+
 .copy-icon {
+    position: absolute;
+    right: -11px;
     opacity: 0;
 }
 
