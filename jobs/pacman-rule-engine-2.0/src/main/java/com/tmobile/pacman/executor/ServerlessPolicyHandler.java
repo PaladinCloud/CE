@@ -98,6 +98,7 @@ public class ServerlessPolicyHandler implements PolicyHandler {
             	 if(responseMap.containsKey(PacmanSdkConstants.STATUS_KEY) && 
             			 PacmanSdkConstants.STATUS_SUCCESS.equals(responseMap.get(PacmanSdkConstants.STATUS_KEY))){
             		 result = new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, SUCCESS_MESSAGE);
+            		 result.setResource(resource);
                      
             	 } else  if(responseMap.containsKey(PacmanSdkConstants.STATUS_KEY) && 
             			 RESPONSE_STATUS_FAILED.equals(responseMap.get(PacmanSdkConstants.STATUS_KEY))){
@@ -107,6 +108,7 @@ public class ServerlessPolicyHandler implements PolicyHandler {
  					annotation.put(CATEGORY, policyParams.get(CATEGORY));
  					 result = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, FAILURE_MESSAGE,
  		                    annotation);
+ 					result.setResource(resource);
  		            
             	 } else {
             		 Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
@@ -114,11 +116,12 @@ public class ServerlessPolicyHandler implements PolicyHandler {
  					annotation.put(CATEGORY, policyParams.get(CATEGORY));
  					 result = new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
  		                    annotation);
+ 					result.setResource(resource);
             	 }
             			 
             }
             
-            result.setResource(resource);// overwrite the resource as sent in
+            // overwrite the resource as sent in
                                          // case it was overwritten
             return result;
         }  catch (Exception e) {
