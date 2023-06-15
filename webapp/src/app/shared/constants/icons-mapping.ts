@@ -81,7 +81,36 @@ const CLOUD_PROVIDER_SERVICE_ICONS: { [key in CloudProvider]: { [service: string
         vpngateway: awsIcon('networking_content_delivery/vpn_gateway'),
     },
     [CloudProvider.AZURE]: {
-        test: 'test',
+        batchaccounts: azureIcon('compute/batch_accounts'),
+        blobcontainer: azureIcon('storage/blob_page'),
+        blobservice: azureIcon('storage/blob_block'),
+        databricks: azureIcon('analytics/databricks'),
+        defender: azureIcon('governance/defender_easm'),
+        disk: azureIcon('compute/disks'),
+        functionapp: azureIcon('compute/function_apps'),
+        kubernetes: azureIcon('governance/kubernetes_services'),
+        loadbalancer: azureIcon('networking/load_balancers'),
+        mysqlflexible: azureIcon('databases/mysql_server'),
+        mysqlserver: azureIcon('databases/mysql_server'),
+        namespaces: '',
+        networkinterface: azureIcon('networking/network_interfaces'),
+        nsg: azureIcon('networking/network_security_groups'),
+        postgresql: azureIcon('databases/postgresql_server'),
+        rediscache: azureIcon('databases/cache_redis'),
+        resourcegroup: azureIcon('general/resource_groups'),
+        securitycenter: azureIcon('security/security_center'),
+        securitypricings: azureIcon('general/billing'),
+        sqldatabase: azureIcon('databases/sql_server'),
+        sqlserver: azureIcon('databases/sql_server'),
+        storageaccount: azureIcon('storage/storage_accounts'),
+        subnets: azureIcon('networking/subnet'),
+        subscription: azureIcon('general/subscriptions'),
+        vaults: azureIcon('security/vaults'),
+        vaultsrbac: azureIcon('security/backup_vaults'),
+        virtualmachine: azureIcon('compute/virtual_machine'),
+        vnet: azureIcon('networking/virtual_networks'),
+        webapp: azureIcon('compute/app_services'),
+        workflows: azureIcon('iot/logic_apps'),
     },
     [CloudProvider.GCP]: {
         apikeys: gcpIcon('api'),
@@ -115,6 +144,10 @@ function awsIcon(path: string) {
 
 function gcpIcon(path: string) {
     return `assets/icons/cloudproviders/gcp/${path}.svg`;
+}
+
+function azureIcon(path: string) {
+    return `assets/icons/cloudproviders/azure/${path}.svg`;
 }
 
 export const ICONS = {
