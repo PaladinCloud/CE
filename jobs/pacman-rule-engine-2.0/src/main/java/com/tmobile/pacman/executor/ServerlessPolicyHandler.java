@@ -53,6 +53,12 @@ public class ServerlessPolicyHandler implements PolicyHandler {
 
     /** The http client. */
     HttpClient httpClient;
+    
+    private static final String RESPONSE_STATUS_FAILED = "failed";
+    public static final String SUCCESS_MESSAGE = "Policy evaluation sucessfull";
+    public static final String SEVERITY = "severity";
+    public static final String CATEGORY = "policyCategory";
+    public static final String FAILURE_MESSAGE = "Error in policy evaluation";
 
     /**
      * Instantiates a new serverless policy handler.
@@ -85,22 +91,37 @@ public class ServerlessPolicyHandler implements PolicyHandler {
             headers.put(PacmanSdkConstants.X_API_KEY, policyParams.get(PacmanSdkConstants.X_API_KEY));
         }
         try {
-            doHttpPost(policyUri, requestBody.toString(), headers);
-            PolicyResult result = new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, "this check is just passed".intern());
+            String response = doHttpPost(policyUri, requestBody.toString(), headers);
+            PolicyResult result = null;
+            if(response != null && !"".equals(response)) {
+            	Map<String, String> responseMap = gson.fromJson(response, Map.class);
+            	 if(responseMap.containsKey(PacmanSdkConstants.STATUS_KEY) && 
+            			 PacmanSdkConstants.STATUS_SUCCESS.equals(responseMap.get(PacmanSdkConstants.STATUS_KEY))){
+            		 result = new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, SUCCESS_MESSAGE);
+                     
+            	 } else  if(responseMap.containsKey(PacmanSdkConstants.STATUS_KEY) && 
+            			 RESPONSE_STATUS_FAILED.equals(responseMap.get(PacmanSdkConstants.STATUS_KEY))){
+            		 Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
+            		 annotation.put(PacmanSdkConstants.DESCRIPTION, responseMap.get(PacmanSdkConstants.DESCRIPTION));
+ 					annotation.put(SEVERITY, policyParams.get(SEVERITY));
+ 					annotation.put(CATEGORY, policyParams.get(CATEGORY));
+ 					 result = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, FAILURE_MESSAGE,
+ 		                    annotation);
+ 		            
+            	 } else {
+            		 Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
+ 					annotation.put(SEVERITY, policyParams.get(SEVERITY));
+ 					annotation.put(CATEGORY, policyParams.get(CATEGORY));
+ 					 result = new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
+ 		                    annotation);
+            	 }
+            			 
+            }
+            
             result.setResource(resource);// overwrite the resource as sent in
                                          // case it was overwritten
             return result;
-        } catch (ServerlessPolicyFailedException e) {
-            Map<String, String> responseMap = gson.fromJson(e.getAnnotation(), Map.class);
-            Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
-            annotation.putAll(responseMap);
-            PolicyResult result = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, "this check failed".intern(),
-                    annotation);
-            result.setResource(resource);// overwrite the resource as sent in
-                                         // case it was overwritten
-            return result;
-
-        } catch (Exception e) {
+        }  catch (Exception e) {
             Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
             annotation.put("reason".intern(), "policy was unable to evaluvate");
             annotation.put("errorMessage".intern(), e.getMessage());
@@ -119,8 +140,7 @@ public class ServerlessPolicyHandler implements PolicyHandler {
      * @return the integer
      * @throws ServerlessPolicyFailedException the serverless rule failed exception
      */
-    private Integer doHttpPost(String url, String requestBody, Map<String, String> headers)
-            throws ServerlessPolicyFailedException {
+    private String doHttpPost(String url, String requestBody, Map<String, String> headers) {
 
         PostMethod httppost = null;
         Gson gson = new GsonBuilder().create();
@@ -153,10 +173,8 @@ public class ServerlessPolicyHandler implements PolicyHandler {
             // issue about not able to send the appropriate http response code
 
             if (HttpStatus.SC_OK == responsecode) {
-                httppost.releaseConnection();
-                return responsecode;
-            } else
-                throw new ServerlessPolicyFailedException(httppost.getResponseBodyAsString(), responsecode);
+                return httppost.getResponseBodyAsString();
+            } 
         } catch (org.apache.http.ParseException parseException) {
             logger.error("ParseException : " + parseException.getMessage());
         } catch (IOException ioException) {
