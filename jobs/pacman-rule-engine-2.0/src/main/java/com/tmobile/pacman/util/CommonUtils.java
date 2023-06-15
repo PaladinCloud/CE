@@ -49,6 +49,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.tmobile.cloud.constants.PacmanRuleConstants;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
@@ -278,7 +279,7 @@ public class CommonUtils {
 
             httpPut.setEntity(jsonEntity);
             HttpResponse httpresponse = client.execute(httpPut);
-            if (httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            if (httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                 return EntityUtils.toString(httpresponse.getEntity());
             } else {
                 if (AuthManager.getToken() != null) {
@@ -1218,6 +1219,31 @@ public class CommonUtils {
             LOGGER.error("Error getting getHttpClient ", e);
         }
         return httpClient;
+    }
+
+    public static String eshttpGet(final String url, Map<String, String> headers) throws Exception {
+        try {
+
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.setHeader(PacmanRuleConstants.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+            Set<Map.Entry<String, String>> entrySet = headers.entrySet();
+            for (Map.Entry<String, String> entry : entrySet) {
+                httpGet.setHeader(entry.getKey(), entry.getValue());
+            }
+            HttpResponse httpresponse = client.execute(httpGet);
+            int statusCode = httpresponse.getStatusLine().getStatusCode();
+            if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_CREATED) {
+                return EntityUtils.toString(httpresponse.getEntity());
+            } else {
+                throw new Exception("unable to execute post request because "
+                        + httpresponse.getStatusLine().getReasonPhrase());
+            }
+        } catch (ParseException parseException) {
+            throw parseException;
+        } catch (Exception exception) {
+            throw exception;
+        }
     }
 
 

@@ -1,6 +1,7 @@
 package com.tmobile.pacman.commons.autofix.manager;
 
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.opensearch.AmazonOpenSearch;
 import com.amazonaws.util.CollectionUtils;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -13,6 +14,7 @@ import com.microsoft.azure.management.resources.Subscription;
 import com.tmobile.pacman.common.AutoFixAction;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.AWSService;
+import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
 import com.tmobile.pacman.commons.autofix.AutoFixPlan;
 import com.tmobile.pacman.commons.autofix.FixResult;
 import com.tmobile.pacman.commons.autofix.Status;
@@ -26,6 +28,7 @@ import com.tmobile.pacman.dto.AutoFixTransaction;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.dto.ResourceOwner;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
+import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
 import com.tmobile.pacman.publisher.impl.ElasticSearchDataPublisher;
 import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
@@ -34,7 +37,9 @@ import com.tmobile.pacman.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+//import software.amazon.awssdk.services.opensearch.OpenSearchClient;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -47,7 +52,8 @@ public interface IAutofixManger {
     GCPCredentialsProvider gcpCredentialsProvider=new GCPCredentialsProvider();
 
     static final Logger logger = LoggerFactory.getLogger(AutoFixManager.class);
-
+    static final String BULK_UPDATE_TEMPLATE = "{ \"update\" : { \"_index\" : \"%s\", \"_id\" : \"%s\"} }%n";
+    static final String UPDATE_FLAG_TEMPLATE = "{\"script\":{\"source\":\"if (!ctx._source.containsKey('isAutofixPlanned')) { ctx._source.isAutofixPlanned = params.isAutofixPlanned } else {ctx._source.isAutofixPlanned=true }\",\"params\":{\"isAutofixPlanned\":true}}}";
 
     Map<String, String> targetTypeAlias = new HashMap<>();
 
@@ -149,6 +155,7 @@ public interface IAutofixManger {
         int count = 0;
         AutoFixPlanManager autoFixPlanManager = new AutoFixPlanManager();
         AutoFixPlan autoFixPlan = null;
+        List<String> issueList=new ArrayList<>();
         for (Map<String, String> annotation : existingIssues) {
             List<AutoFixTransaction> addDetailsToLogTrans = new ArrayList<>();
             logger.debug("display issue count {}", count++);
@@ -170,7 +177,6 @@ public interface IAutofixManger {
             // resource
             //targetType =  getTargetTypeAlias(targetType);
             // commenting this , as alias is only used to create client, so using the function directly below
-
 
             serviceType = AWSService.valueOf(getTargetTypeAlias(targetType).toUpperCase());
 
@@ -277,6 +283,7 @@ public interface IAutofixManger {
                                     annotation.get(PacmanSdkConstants.DOC_ID), targetType, NextStepManager.getMaxNotifications(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION)),
                                     NextStepManager.getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME)));
                             autoFixPlanManager.publishPlan(policyParam, autoFixPlan);
+                            issueList.add(annotationId);
                             autoFixPlanCreatedCounter++;
                             logger.debug("auto fix plan published with id {} ", autoFixPlan.getPlanId());
                             autoFixTrans.add(new AutoFixTransaction(AutoFixAction.CREATE_AUTO_FIX_PLAN, resourceId, policyId, executionId,
@@ -433,9 +440,9 @@ public interface IAutofixManger {
                     }
                 }
             } // if issue open
-
         }// for
-
+        //bulk update autofixFlag for all violation
+        updateAutofixPlannedFlag(policyParam,issueList);
         autoFixPlanManager.releaseResourfes();
         //Silent fix send Digest email
         if (!silentautoFixTrans.isEmpty() && nextStepManager.isSilentFixEnabledForRule(policyId)) {
@@ -815,7 +822,7 @@ public interface IAutofixManger {
                 ruleParam.get(PacmanSdkConstants.POLICY_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
         Map<String, IssueException> individuallyExcemptedIssues = exceptionManager
                 .getIndividualExceptions(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-        AutoFixManager autoFixManager = new AutoFixManager();
+        IAutofixManger autoFixManager = AutoFixManagerFactory.getAutofixManager("aws");
         autoFixManager.performAutoFixs(ruleParam, excemptedResourcesForRule, individuallyExcemptedIssues);
 
     }
@@ -843,4 +850,36 @@ public interface IAutofixManger {
     }
 
     public abstract void initializeConfigs();
+
+    public static void updateAutofixPlannedFlag(Map<String, String> ruleParam,List<String> annotationIdList) {
+        logger.debug("Updating autofix planned flag for violation of policy: {}",ruleParam.get(PacmanSdkConstants.POLICY_ID));
+        if(annotationIdList!=null && !annotationIdList.isEmpty()) {
+            String elasticSearchUrl = ESUtils.getEsUrl();
+            String index = ElasticSearchDataPublisher.getIndexName(ruleParam);
+            String bulkPostUrl = elasticSearchUrl + AnnotationPublisher.BULK_WITH_REFRESH_TRUE;
+            StringBuffer bulkRequest = new StringBuffer();
+            for (String annotationId : annotationIdList) {
+                try {
+                    bulkRequest.append(String.format(BULK_UPDATE_TEMPLATE, index, annotationId));
+                    bulkRequest.append(UPDATE_FLAG_TEMPLATE);
+                    bulkRequest.append("\n");
+                    if (bulkRequest.toString().getBytes().length
+                            / (1024 * 1024) >= PacmanSdkConstants.ES_MAX_BULK_POST_SIZE) {
+                        String response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequest.toString(), new HashMap());
+                        logger.debug("Bulk update response: {}", response);
+                        bulkRequest.setLength(0);
+                    }
+                } catch (Exception e) {
+                    logger.error("error occurred while indexing auto fix document", e);
+                }
+            }
+            if (bulkRequest.length() > 0) {
+                String response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequest.toString(), new HashMap<>());
+                logger.debug("Bulk update response: {}", response);
+            }
+        }else {
+            logger.info("Annotation list to update is null or empty");
+        }
+    }
+
 }
