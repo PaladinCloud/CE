@@ -137,7 +137,7 @@ public class PacmanRuleConstants {
     public static final String HTTP_METHOD_TYPE = "httpMethodType";
     public static final String REST_API_ID = "restApiId";
     public static final String HIGH = "high";
-    public static final String FAILURE_MESSAGE = "Error in rule evaluation";
+    public static final String FAILURE_MESSAGE = "Error in policy evaluation";
     public static final String IS_API_REQUIRED = "isApiRequired";
     public static final String FULL_CONTROL = "FULL_CONTROL";
     public static final String PORT = "port";
