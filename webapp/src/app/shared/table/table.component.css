@@ -132,8 +132,8 @@
     color: var(--primary-400);
 }
 
-.row-selected,
-.row-hover:hover {
+.row-selected > .mat-cell,
+.row-hover:hover > .mat-cell {
     background-color: var(--background-grey);
 }
 
@@ -264,5 +264,4 @@
     vertical-align: text-bottom;
     height: 16px;
     width: 24px;
-    padding-right: 8px;
 }
