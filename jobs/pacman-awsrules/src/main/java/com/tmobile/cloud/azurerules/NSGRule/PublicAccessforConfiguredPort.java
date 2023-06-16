@@ -1,10 +1,7 @@
 package com.tmobile.cloud.azurerules.NSGRule;
 
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
+
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -73,7 +70,7 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
                 LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION, violationReason +"Ports :"+ port);
+                annotation.put(PacmanSdkConstants.DESCRIPTION, violationReason +"Ports :"+ Arrays.toString(port));
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 annotation.put(PacmanRuleConstants.NAME,resourceAttributes.get(PacmanRuleConstants.NAME));
