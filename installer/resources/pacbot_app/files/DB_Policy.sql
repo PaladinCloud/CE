@@ -793,6 +793,18 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to SSH Port 22
 UPDATE cf_PolicyTable SET policyDisplayName = 'Restrict Core Networking Privileges to Non-Allow listed IAM Users' WHERE policyId = 'core-networking-iam-user-with-unapproved-access_version-1_core-networking-iam-user-with-unapproved-access_iamuser';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Rotate Key Management Service Encryption Keys every 90 Days' WHERE policyId = 'kms_keys_rotation_period_within_90_days';
 
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Qualys EC2 Vulnerability Scan' WHERE policyId = 'Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Tenable EC2 Vulnerability Scan' WHERE policyId = 'AWSVMScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Aqua ECR Vulnerability Scan' WHERE policyId = 'ImagesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found Critical Vulnerabilities On EC2 Instance' WHERE policyId = 'CriticalVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found High Vulnerabilities On EC2 Instance' WHERE policyId = 'HighVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found Medium Vulnerabilities On EC2 Instance' WHERE policyId = 'MediumVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found  S5 Vulnerabilities on EC2 Instance' WHERE policyId = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS5Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found S4 Vulnerabilities on EC2 Instance' WHERE policyId = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS4Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found  S3 Vulnerabilities on EC2 Instance' WHERE policyId = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS3Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Critical ECR Vulnerabilities' WHERE policyId = 'CriticalImageVulnerabilitiesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High ECR Vulnerabilities' WHERE policyId = 'HighImageVulnerabilitiesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium ECR Vulnerabilities' WHERE policyId = 'MediumImageVulnerabilitiesScannedByAqua';
 
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/Azure-Policy#enable-azure-defender-for-sql-database' WHERE policyId = 'Enable Azure Defender for SQL Database';
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/Azure-Policy#enable-azure-defender-for-storage-account' WHERE policyId = 'Enable Azure Defender for Storage Account';
