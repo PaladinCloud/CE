@@ -2434,23 +2434,19 @@ public class InventoryUtil {
 								DescribeKeyResult result = awskms.describeKey(new DescribeKeyRequest().withKeyId(key.getKeyId()));
 								kmsKey.setKey(result.getKeyMetadata());
 								kmsKey.setTags(awskms.listResourceTags(new ListResourceTagsRequest().withKeyId(key.getKeyId())).getTags());
-							} catch (Exception e) {
-								log.debug(e.getMessage());
-							}
-							try {
 								kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
-							} catch (Exception e) {
-								log.debug(e.getMessage());
-							}
-							if(!regionKeyAliases.isEmpty() ) {
-								for(AliasListEntry alias: regionKeyAliases) {
-									if(key.getKeyId().equals(alias.getTargetKeyId())) {
-										kmsKey.setAlias(alias);
-										break;
+								if(!regionKeyAliases.isEmpty() ) {
+									for(AliasListEntry alias: regionKeyAliases) {
+										if(key.getKeyId().equals(alias.getTargetKeyId())) {
+											kmsKey.setAlias(alias);
+											break;
+										}
 									}
 								}
+								kmsKeysList.add(kmsKey);
+							} catch (Exception e) {
+								log.debug(e.getMessage());
 							}
-							kmsKeysList.add(kmsKey);
 						}
 						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : KMSKey "+region.getName() + " >> "+kmsKeysList.size());
 						kmsKeys.put(accountId+delimiter+accountName+delimiter+region.getName(),kmsKeysList);
