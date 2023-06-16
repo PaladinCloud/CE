@@ -300,7 +300,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-cloudwatchlogs-metric.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-cloudwatchalarm.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ecr.data",InventoryConstants.OPEN_ARRAY, false);
-
+		FileGenerator.writeToFile("aws-vpc-cidrblock-association.data",InventoryConstants.OPEN_ARRAY, false);
 
 	}
 
@@ -471,6 +471,8 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-cloudwatchlogs-metric.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-cloudwatchalarm.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ecr.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-vpc-cidrblock-association.data",InventoryConstants.CLOSE_ARRAY, true);
+
 
 	}
 
@@ -1261,8 +1263,8 @@ public class FileManager {
 
 		String fieldNames;
 		String keys;
-		fieldNames = "vpc.vpcId`vpc.cidrBlock`vpc.dhcpOptionsId`vpc.instanceTenancy`vpc.isDefault`vpc.state`vpc.cidrBlockAssociationSet.cidrBlock`vpc.cidrBlockAssociationSet.cidrBlockState.state`vpc.cidrBlockAssociationSet.cidrBlockState.statusMessage`vpc.cidrBlockAssociationSet.associationId";
-		keys = "discoverydate`accountid`accountname`region`vpcid`cidrblock`dhcpoptionsid`instancetenancy`isdefault`state`cidrblockset`cidrblockstate`cidrblockstatusmessage`cidrblockassociationid";
+		fieldNames = "vpc.vpcId`vpc.cidrBlock`vpc.dhcpOptionsId`vpc.instanceTenancy`vpc.isDefault";
+		keys = "discoverydate`accountid`accountname`region`vpcid`cidrblock`dhcpoptionsid`instancetenancy`isdefault";
 		FileGenerator.generateJson(vpcMap, fieldNames, "aws-vpc.data",keys);
 		fieldNames = "vpc.vpcId`vpc.tags.key`vpc.tags.value";
 		keys = "discoverydate`accountid`accountname`region`vpcid`key`value";
@@ -1270,6 +1272,9 @@ public class FileManager {
 		fieldNames = "vpcEndPoints.vpcId`vpcEndPoints.vpcEndpointId`vpcEndPoints.serviceName`vpcEndPoints.state`vpcEndPoints.creationTimestamp`vpcEndPoints.publicAccess`vpcEndPoints.policyDocument`vpcEndPoints.routeTableIds";
 		keys = "discoverydate`accountid`accountname`region`vpcid`vpcendpointid`servicename`state`creationtimestamp`publicaccess`policydocument`routetableids";
 		FileGenerator.generateJson(vpcMap, fieldNames, "aws-vpc-endpoints.data",keys);
+		fieldNames= "vpc.vpcId`vpc.cidrBlockAssociationSet.cidrBlockState.state`vpc.cidrBlockAssociationSet.cidrBlockState.statusMessage`vpc.cidrBlockAssociationSet.associationId";
+		keys="discoverydate`accountid`accountname`region`vpcid`state`cidrblockset`cidrblockstate`cidrblockstatusmessage`cidrblockassociationid";
+		FileGenerator.generateJson(vpcMap, fieldNames, "aws-vpc-cidrblock-association.data",keys);
 	}
 
 	/**
