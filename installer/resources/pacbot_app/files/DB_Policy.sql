@@ -103,10 +103,10 @@ CREATE TABLE IF NOT EXISTS `cf_PolicyExemption` (
 insert ignore into cf_NotificationChannels values ('6a7e6590-bd06-11ed-afa1-0242ac120002','email','admin@paladincloud.io',current_timestamp());
 
 
- insert ignore into cf_NotificationTypes values ('42ffd1d8-bd07-11ed-afa1-0242ac120002','violations','admin@paladincloud.io',current_timestamp());
+ insert ignore into cf_NotificationTypes values ('42ffd1d8-bd07-11ed-afa1-0242ac120002','violation','admin@paladincloud.io',current_timestamp());
  insert ignore into cf_NotificationTypes values ('5bf94e30-bd07-11ed-afa1-0242ac120002','autofix','admin@paladincloud.io',current_timestamp());
- insert ignore into cf_NotificationTypes values ('63a2d98a-bd07-11ed-afa1-0242ac120002','exemptions','admin@paladincloud.io',current_timestamp());
- INSERT IGNORE INTO cf_NotificationTypes VALUES ('73a2d98a-bd07-11ed-afa1-0242ac120002', 'policyaction', 'admin@paladincloud.io', current_timestamp());
+ insert ignore into cf_NotificationTypes values ('63a2d98a-bd07-11ed-afa1-0242ac120002','exemption','admin@paladincloud.io',current_timestamp());
+ INSERT IGNORE INTO cf_NotificationTypes VALUES ('73a2d98a-bd07-11ed-afa1-0242ac120002', 'policy', 'admin@paladincloud.io', current_timestamp());
 
  insert ignore into cf_NotificationTypeChannelMapping values ('467710fe-be2b-11ed-afa1-0242ac120002','42ffd1d8-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());
  insert ignore into cf_NotificationTypeChannelMapping values ('5bf94e30-bd07-11ed-afa1-0242ac120002','5bf94e30-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());
@@ -2520,3 +2520,6 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Critical ECR Vulnerabi
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High ECR Vulnerabilities' WHERE policyId = 'HighImageVulnerabilitiesScannedByAqua';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium ECR Vulnerabilities' WHERE policyId = 'MediumImageVulnerabilitiesScannedByAqua';
 
+UPDATE cf_NotificationTypes SET `notificationType` = 'policy' WHERE `notificationTypeId` = '73a2d98a-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'policyaction';
+UPDATE cf_NotificationTypes SET `notificationType` = 'violation' WHERE `notificationTypeId` = '42ffd1d8-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'violations';
+UPDATE cf_NotificationTypes SET `notificationType` = 'exemption' WHERE `notificationTypeId` = '63a2d98a-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'exemptions';

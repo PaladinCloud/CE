@@ -61,9 +61,9 @@ public class NotificationUtils {
 
     private static NotificationBaseRequest getNotificationBaseRequest(Annotation annotation, String hostName, boolean isOpen, String violationEventName) {
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
-        notificationBaseRequest.setEventCategory(Constants.NotificationTypes.VIOLATIONS);
+        notificationBaseRequest.setEventCategory(Constants.NotificationTypes.VIOLATION);
         notificationBaseRequest.setSubject(isOpen?OPEN_VIOLATIONS_SUBJECT:CLOSE_VIOLATIONS_SUBJECT);
-        notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.VIOLATIONS.getValue());
+        notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.VIOLATION.getValue());
         notificationBaseRequest.setEventName(String.format(String.format(violationEventName,annotation.get(POLICY_NAME))));
         notificationBaseRequest.setEventDescription(String.format(String.format(violationEventName,annotation.get(POLICY_NAME))));
 
