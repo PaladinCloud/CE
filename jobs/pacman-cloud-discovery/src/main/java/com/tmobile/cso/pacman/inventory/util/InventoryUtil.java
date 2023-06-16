@@ -2433,7 +2433,11 @@ public class InventoryUtil {
 							try {
 								DescribeKeyResult result = awskms.describeKey(new DescribeKeyRequest().withKeyId(key.getKeyId()));
 								kmsKey.setKey(result.getKeyMetadata());
-								kmsKey.setTags(awskms.listResourceTags(new ListResourceTagsRequest().withKeyId(key.getKeyId())).getTags());
+								try{
+									kmsKey.setTags(awskms.listResourceTags(new ListResourceTagsRequest().withKeyId(key.getKeyId())).getTags());
+								}catch(Exception e){
+									log.debug(e.getMessage());
+								}
 								try{
 									kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
 								}catch(Exception e){
