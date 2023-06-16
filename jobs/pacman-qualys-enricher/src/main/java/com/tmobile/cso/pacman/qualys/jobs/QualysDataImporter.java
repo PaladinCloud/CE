@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +138,9 @@ public abstract class QualysDataImporter {
             LOGGER.debug("GET API call URL:{}", uri);
             HttpResponse httpResponse = httpClient.execute(httpGet);
             LOGGER.debug("Response code:{}",httpResponse.getStatusLine().getStatusCode());
-            return EntityUtils.toString(httpResponse.getEntity());
+            String response = getResponseString(httpResponse.getEntity());
+            LOGGER.debug("Response created size: {}", response.length());
+            return response;
         } else if ("POST".equals(httpMethod)) {
 
             HttpPost post = new HttpPost(uri);
@@ -162,6 +164,34 @@ public abstract class QualysDataImporter {
         } else {
             throw new UnsupportedOperationException();
         }
+    }
+
+    private static String getResponseString(HttpEntity entity){
+        LOGGER.debug("Processing response from response entity");
+        StringBuilder responseBuilder = new StringBuilder();
+        if (entity != null) {
+            LOGGER.debug("Entity not null, getting input stream.");
+            try (InputStream inputStream = entity.getContent();
+                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                LOGGER.debug("Reading response line by line");
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    responseBuilder.append(line);
+                    LOGGER.debug("Response lines processed:{}",responseBuilder.length());
+                }
+            } catch (IOException e) {
+                LOGGER.error("Error in processing response",e);
+            }
+        }
+
+        String responseString = responseBuilder.toString();
+        try {
+            EntityUtils.consume(entity);
+        } catch (IOException e) {
+            LOGGER.error("Error in processing response",e);
+        }
+        return responseString;
     }
 
     /**
