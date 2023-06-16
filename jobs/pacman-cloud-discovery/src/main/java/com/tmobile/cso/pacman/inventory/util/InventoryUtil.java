@@ -2434,7 +2434,11 @@ public class InventoryUtil {
 								DescribeKeyResult result = awskms.describeKey(new DescribeKeyRequest().withKeyId(key.getKeyId()));
 								kmsKey.setKey(result.getKeyMetadata());
 								kmsKey.setTags(awskms.listResourceTags(new ListResourceTagsRequest().withKeyId(key.getKeyId())).getTags());
-								kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
+								try{
+									kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
+								}catch(Exception e){
+									log.debug(e.getMessage());
+								}
 								if(!regionKeyAliases.isEmpty() ) {
 									for(AliasListEntry alias: regionKeyAliases) {
 										if(key.getKeyId().equals(alias.getTargetKeyId())) {
