@@ -2507,3 +2507,16 @@ UPDATE cf_PolicyParams SET encrypt ='false' WHERE policyID IN (
 UPDATE cf_PolicyParams SET paramValue ='icmp' WHERE policyID ='VPC_firewall_ICMP_port_should_not_be_publicly_accessible' AND paramKey='port';
 UPDATE cf_PolicyParams SET paramValue ='3389' WHERE policyID ='VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible' AND paramKey='port';
 UPDATE cf_PolicyParams SET paramValue = 'Qch7DwouX1' WHERE policyID = 'LowUtilizationAmazonEC2InstancesRule_version-1_LowUtilizationAmazonEC2InstancesRule_ec2' AND paramKey = 'checkId';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Qualys EC2 Vulnerability Scan' WHERE policyId = 'Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Tenable EC2 Vulnerability Scan' WHERE policyId = 'AWSVMScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Aqua ECR Vulnerability Scan' WHERE policyId = 'ImagesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found Critical Vulnerabilities On EC2 Instance' WHERE policyId = 'CriticalVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found High Vulnerabilities On EC2 Instance' WHERE policyId = 'HighVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found Medium Vulnerabilities On EC2 Instance' WHERE policyId = 'MediumVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found  S5 Vulnerabilities on EC2 Instance' WHERE policyId = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS5Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found S4 Vulnerabilities on EC2 Instance' WHERE policyId = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS4Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found  S3 Vulnerabilities on EC2 Instance' WHERE policyId = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS3Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Critical ECR Vulnerabilities' WHERE policyId = 'CriticalImageVulnerabilitiesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High ECR Vulnerabilities' WHERE policyId = 'HighImageVulnerabilitiesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium ECR Vulnerabilities' WHERE policyId = 'MediumImageVulnerabilitiesScannedByAqua';
+
