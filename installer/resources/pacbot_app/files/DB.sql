@@ -2887,7 +2887,7 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 
 
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'Autofix Scheduled','isAutofixPlanned.keyword','/compliance/v1/filters/attribute');
-UPDATE pac_v2_ui_options set optionURL='/compliance/v1/filters/attribute=isAutofixPlanned' where filterId=1 and optionValue='isAutofixPlanned.keyword';
+UPDATE pac_v2_ui_options set optionURL='/compliance/v1/filters/attribute?attribute=isAutofixPlanned' where filterId=1 and optionValue='isAutofixPlanned.keyword';
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_pac_v2_ui_options_table $$
