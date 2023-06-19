@@ -118,13 +118,25 @@ public class FetchNotificationSettings {
                     //if sendNotification is 1, email will be published. Else, no.
                     if(Integer.valueOf(1).equals(sendNotification) && !toEmailIdList.isEmpty()){
                         AmazonSNS client = AmazonSNSClientBuilder.standard().build();
+                        String notificationDetailsStr="";
+                        if(jira.equalsIgnoreCase(channel) && violation.equalsIgnoreCase(notificationType)){
+                            if("create".equalsIgnoreCase(action)) {
+                                //change the subject for jira notification.
+                                subject = String.format(jiraViolationMessage, messageContentMap.get("issueId"));
+                            }
+                            else
+                                continue;
+                        }
+
                         ClassLoader classLoader = getClass().getClassLoader();
                         logger.log("key - "+channel+" action- "+action+" notificationtype- "+notificationType+" exemptionType- "+exemptionType);
-                        File file = new File(classLoader.getResource(CommonUtils.getTemplateName("email", action, notificationType, exemptionType)).getFile());
+                        File file = new File(classLoader.getResource(CommonUtils.getTemplateName(channel, action, notificationType, exemptionType)).getFile());
                         String messageContent = buildPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
 
-                        String notificationDetailsStr = gsonObj.toJson(getMsgDetailsMap(messageContent,toEmailIdList, subject));
+                        notificationDetailsStr = gsonObj.toJson(getMsgDetailsMap(messageContent,toEmailIdList, subject));
                         logger.log("notification message for channel '"+channel+"' is - "+messageContent);
+
+
                         if(configDetailsMap.containsKey("email")){
                             PublishRequest request = new PublishRequest(configDetailsMap.get("email"),notificationDetailsStr);
                             PublishResult result = client.publish(request);

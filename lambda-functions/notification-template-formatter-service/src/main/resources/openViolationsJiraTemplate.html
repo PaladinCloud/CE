@@ -3,52 +3,65 @@
 <head>
     <style>
 
-.heading {
+.rowkey {
   font-family: Courier, Arial;
+  font-weight: bold;
+  width: 250px;
 }
 
-.content {
+.summary {
   font-family: Calibri, Verdana;
   font-size: 15px;
 }
 
-a {
-text-decoration : none;
-color : blue;
+td {
+  border: none;
+  border-collapse: collapse;
+  padding-top :10px;
+  padding-bottom : 10px;
+  padding-left : 10px;
 }
 
+table {
+  border: none;
+  width: 500px;
+}
 
+a {
+text-decoration : none;
+}
 </style>
 </head>
 <body>
 
-<h2>Policy Violation</h2>
-
-
-<div class="heading">Summary</div>
-<div class="content">Policy ID <a href="${policyNameLink}">${policyName}</a> got violated.</div>
-
 <br>
 
-<div class="heading">Description</div>
-<div class="content">${description}</div>
+<div class="summary">Additional Details.</div>
 
-<br>
+<br><br>
 
-<div class="heading">Resource ID</div>
-<div class="content"><a href="${resourceIdLink}">${resourceId}</a></div>
+<table style="width:800px">
+    <tr>
+        <td class="rowkey">Policy ID</td>
+        <td><a href="${policyNameLink}">${policyName}</a></td>
+    </tr>
+    <tr>
+        <td class="rowkey">Resource ID</td>
+        <td><a href="${resourceIdLink}">${resourceId}</a></td>
+    </tr>
+    <tr>
+        <td class="rowkey">Issue ID</td>
+        <td><a href="${issueIdLink}">${issueId}</a></td>
+    </tr>
+    <tr>
+        <td class="rowkey">Scan Time</td>
+        <td>${scanTime}</td>
+    </tr>
+    <tr>
+        <td class="rowkey">Source</td>
+        <td>${source}</td>
+    </tr>
+</table>
 
-<br>
-
-<div class="heading">Issue ID</div>
-<div class="content"><a href="${issueIdLink}">${issueId}</a></div>
-
-<br>
-
-<div class="heading">Scan Time</div>
-<div class="content">${scanTime}</div>
-
-<br>
 </body>
 </html>
-
