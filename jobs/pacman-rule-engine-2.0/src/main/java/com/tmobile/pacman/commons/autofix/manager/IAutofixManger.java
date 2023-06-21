@@ -6,6 +6,7 @@ import com.amazonaws.util.CollectionUtils;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.microsoft.azure.PagedList;
@@ -42,6 +43,8 @@ import org.slf4j.MDC;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -456,6 +459,23 @@ public interface IAutofixManger {
             dataPublisher.publishAutoFixTransactions(autoFixTrans, policyParam);
             dataPublisher.close();
         }
+
+        Map<String, Object> activityLogDetails = Maps.newHashMap();
+        String loggingTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(Calendar.getInstance().getTime());
+        activityLogDetails.put("updateTime", loggingTime);
+        activityLogDetails.put("updateTimeStr", loggingTime.replaceAll("T"," "));
+        activityLogDetails.put("user", "autofix");
+        activityLogDetails.put("object", "Policy");
+        activityLogDetails.put("objectId", policyParam.get(PacmanSdkConstants.POLICY_ID));
+        activityLogDetails.put("oldState",0);
+        activityLogDetails.put("newState",autoFixCounter);
+        activityLogDetails.put("action","autofix");
+        UUID uuid = UUID.randomUUID();
+        String strUUID = uuid.toString();
+        activityLogDetails.put("_docid",strUUID);
+        activityLogDetails.put(PacmanSdkConstants.EXECUTION_ID,strUUID);
+
+        ESUtils.doESPublish(activityLogDetails, "activitylog", null);
 
         autoFixStats.put("autoFixCounter", autoFixCounter);
         autoFixStats.put("resourcesTaggedCounter", resourcesTaggedCounter);
