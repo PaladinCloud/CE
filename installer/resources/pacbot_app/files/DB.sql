@@ -2909,3 +2909,7 @@ update pac_v2_ui_options set optionType = "String" where filterId=13;
 update pac_v2_ui_options set optionType = "Double" where optionName="Compliance" and filterId=13;
 update pac_v2_ui_options set optionType = "Long" where optionName="Violations" and filterId=13;
 
+
+update cf_Target set targetConfig='{\"key\":\"accountid,region,targetgrouparn\",\"id\":\"targetgroupname\"}' where targetName='targetgroup';
+update cf_Target set targetConfig='{\"key\":\"accountid,region,clustername\",\"id\":\"arn\"}' where targetName='elasticache';
+
