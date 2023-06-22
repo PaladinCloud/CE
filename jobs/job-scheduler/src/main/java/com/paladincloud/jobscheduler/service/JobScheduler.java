@@ -34,6 +34,7 @@ public class JobScheduler {
     private static final String EVENT_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event";
     public static final String AZURE_ENABLED = "azure.enabled";
     public static final String GCP_ENABLED = "gcp.enabled";
+    public static final String AWS_ENABLED = "aws.enabled";
 
     @Autowired
     CredentialProvider credentialProvider;
@@ -49,6 +50,8 @@ public class JobScheduler {
 
     private boolean azureEnabled;
     private boolean gcpEnabled;
+
+    private boolean awsEnabled;
 
     @Value("${scheduler.total.batches}")
     private String noOfBatches;
@@ -73,10 +76,13 @@ public class JobScheduler {
 
         try {
             ConfigUtil.setConfigProperties();
-            addCollectorEvent(putEventsRequestEntries, awsBusDetails);
+
             azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
             gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
-
+            awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
+            if (awsEnabled) {
+                addCollectorEvent(putEventsRequestEntries, awsBusDetails);
+            }
             if (azureEnabled) {
                 addCollectorEvent(putEventsRequestEntries, azureBusDetails);
             }
@@ -116,10 +122,13 @@ public class JobScheduler {
         List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
 
         try {
-            addShipperEvent(putEventsRequestEntries, awsBusDetails);
             ConfigUtil.setConfigProperties();
             azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
             gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
+            awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
+            if (awsEnabled) {
+                addShipperEvent(putEventsRequestEntries, awsBusDetails);
+            }
             if (gcpEnabled) {
                 addShipperEvent(putEventsRequestEntries, gcpBusDetails);
             }
@@ -167,11 +176,14 @@ public class JobScheduler {
             ConfigUtil.setConfigProperties();
             azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
             gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
+            awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
 
             for (int i = 0; i < totBatches; i++) {
                 List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
                 // add event for aws rules
-                putRuleEventIntoRequestEntry(i, awsBusDetails, putEventsRequestEntries);
+                if(awsEnabled) {
+                    putRuleEventIntoRequestEntry(i, awsBusDetails, putEventsRequestEntries);
+                }
 
                 // add event for azure rules
                 if (azureEnabled) {

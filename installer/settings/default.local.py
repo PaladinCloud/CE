@@ -133,6 +133,9 @@ MANDATORY_TAGS = "Application,Environment"
 # Add your first ACCOUNT_ID,ACCOUNT_NAME and ACCOUNT_PLATFORM here
 ACCOUNT_ID = ""
 ACCOUNT_NAME = ""
+
+# Flag to turn on/off aws by default
+AWS_ENABLED = "true"
 ACCOUNT_PLATFORM = ""
 
 #BATCH CONFIGURATION 
