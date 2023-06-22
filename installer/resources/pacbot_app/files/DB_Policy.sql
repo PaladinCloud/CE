@@ -2519,7 +2519,9 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found  S3 Vulnerabilities 
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Critical ECR Vulnerabilities' WHERE policyId = 'CriticalImageVulnerabilitiesScannedByAqua';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High ECR Vulnerabilities' WHERE policyId = 'HighImageVulnerabilitiesScannedByAqua';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium ECR Vulnerabilities' WHERE policyId = 'MediumImageVulnerabilitiesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable IAM Password Policy' WHERE policyId ='IamPasswordPolicy_version-1_IamPasswordPolicy_account';
 
 UPDATE cf_NotificationTypes SET `notificationType` = 'policy' WHERE `notificationTypeId` = '73a2d98a-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'policyaction';
 UPDATE cf_NotificationTypes SET `notificationType` = 'violation' WHERE `notificationTypeId` = '42ffd1d8-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'violations';
 UPDATE cf_NotificationTypes SET `notificationType` = 'exemption' WHERE `notificationTypeId` = '63a2d98a-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'exemptions';
+
