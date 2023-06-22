@@ -393,7 +393,7 @@ public class ESManager implements Constants {
      */
     public static void configureIndexAndTypes(String ds, List<Map<String, String>> errorList) {
 
-        String _payLoad = "{\"settings\" : { \"number_of_shards\" : 3,\"number_of_replicas\" : 1 },\"mappings\": {";
+        String _payLoad = "{\"settings\" : { \"number_of_shards\" : 3,\"number_of_replicas\" : 1 , \"index.mapping.ignore_malformed\" : true,  \"index.mapping.total_fields.limit\": 2000 },\"mappings\": {";
 
         Set<String> types = ConfigManager.getTypes(ds);
         Iterator<String> it = types.iterator();
