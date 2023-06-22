@@ -102,8 +102,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     private static NotificationBaseRequest getNotificationBaseRequestObj( String eventName, String subject){
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
-        notificationBaseRequest.setEventCategory(NotificationTypes.EXEMPTIONS);
-        notificationBaseRequest.setEventCategoryName(NotificationTypes.EXEMPTIONS.getValue());
+        notificationBaseRequest.setEventCategory(NotificationTypes.EXEMPTION);
+        notificationBaseRequest.setEventCategoryName(NotificationTypes.EXEMPTION.getValue());
         notificationBaseRequest.setEventName(eventName);
         notificationBaseRequest.setEventDescription(eventName);
         notificationBaseRequest.setSubject(subject);

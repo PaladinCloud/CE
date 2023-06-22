@@ -372,12 +372,12 @@ public interface Constants {
     String TENABLE = "tenable";
 
   enum NotificationTypes {
-        @SerializedName("exemptions")
-        EXEMPTIONS("Exemptions"),
-        @SerializedName("violations")
-        VIOLATIONS("Violations"),
+        @SerializedName("exemption")
+        EXEMPTION("exemption"),
+        @SerializedName("violation")
+        VIOLATION("violation"),
         @SerializedName("autofix")
-        AUTOFIX("Autofix");
+        AUTOFIX("autofix");
 
         String value;
 

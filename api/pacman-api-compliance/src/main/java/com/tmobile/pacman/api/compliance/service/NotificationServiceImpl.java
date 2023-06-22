@@ -71,8 +71,8 @@ public class NotificationServiceImpl implements NotificationService{
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         if(issueDetail.get(POLICYID)!=null && policyIdPolicyNameMap.get(issueDetail.get(POLICYID))!=null) {
             NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
-            notificationBaseRequest.setEventCategory(NotificationTypes.EXEMPTIONS);
-            notificationBaseRequest.setEventCategoryName(NotificationTypes.EXEMPTIONS.getValue());
+            notificationBaseRequest.setEventCategory(NotificationTypes.EXEMPTION);
+            notificationBaseRequest.setEventCategoryName(NotificationTypes.EXEMPTION.getValue());
             notificationBaseRequest.setEventName(String.format(eventName, issueDetail.get(RESOURCEID)));
             notificationBaseRequest.setEventDescription(String.format(eventName, issueDetail.get(RESOURCEID)));
             notificationBaseRequest.setSubject(subject);

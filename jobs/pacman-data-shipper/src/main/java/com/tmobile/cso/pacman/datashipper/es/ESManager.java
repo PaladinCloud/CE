@@ -570,7 +570,7 @@ public class ESManager implements Constants {
                     "          }" +
                     "        }," +
                     "        {" +
-                    "          \"match\": { \"date\": \"" + date + "\"}" +
+                    "          \"match\": { \"date\": \"" + date + "\"}}" +
                     "      ]" +
                     "    }" +
                     "  }" +

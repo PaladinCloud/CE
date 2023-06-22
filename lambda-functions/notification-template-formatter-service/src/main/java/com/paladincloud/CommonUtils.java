@@ -91,13 +91,13 @@ public class CommonUtils {
     public static String getTemplateName(String channelName, String action, String notificationType, String exemptionType){
 
         switch(notificationType){
-            case "violations":
+            case "violation":
                 return getViolationTemplateName(channelName,action);
-            case "exemptions":
+            case "exemption":
                 return getExemptionTemplateName(channelName,action,exemptionType);
             case "autofix":
                 return getAutofixTemplateName(channelName,action);
-            case "policyaction":
+            case "policy":
                 return "policyActionEmailTemplate.html";
         }
         return null;
