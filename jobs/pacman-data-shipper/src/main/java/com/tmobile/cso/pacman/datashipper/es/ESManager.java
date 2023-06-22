@@ -395,20 +395,14 @@ public class ESManager implements Constants {
 
         // new code as per the latest ES version changes.
         Set<String> types = ConfigManager.getTypes(ds);
-        Iterator<String> it = types.iterator();
-        while (it.hasNext()) {
-            String _type = it.next();
+        for (String _type : types) {
             String indexName = ds + "_" + _type;
             if (!indexExists(indexName)) {
-                String _payLoad = "{\"settings\" : { \"number_of_shards\" : 1,\"number_of_replicas\" : 1 },\"mappings\": {";
+                String _payLoad = "{\"settings\" : { \"number_of_shards\" : 1,\"number_of_replicas\" : 1 , \"index.mapping.ignore_malformed\" : true,  \"index.mapping.total_fields.limit\": 2000 },\"mappings\": {";
 
                 StringBuilder payLoad = new StringBuilder(_payLoad);
                 payLoad.append("\"dynamic\": true,");
                 payLoad.append("\"properties\": {");
-//                payLoad.append("\"docType\": {");
-//                payLoad.append("\"type\": \"keyword\",");
-//                payLoad.append("\"index\": true");
-//                payLoad.append("},");
                 payLoad.append("\"" + _type + "_relations" + "\": {");
                 payLoad.append("\"type\": \"join\",");
                 payLoad.append("\"relations\": {");
