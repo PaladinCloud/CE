@@ -10,6 +10,9 @@ public class Constants {
     public static final String REVOKE_EXEMPTION_REQUEST = "revoke_exemption_request";
     public static final String CANCEL_EXEMPTION_REQUEST = "cancel_exemption_request";
     public static final String APPROVE_EXEMPTION_REQUEST = "approve_exemption_request";
+    public static final String jira = "jira";
+    public static final String violation = "violation";
+    public static final String jiraViolationMessage = "Violation for issue - %s";
     public enum AutoFixAction {
         AUTOFIX_ACTION_EMAIL,
         /** The autofix action fix. */

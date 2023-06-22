@@ -26,6 +26,9 @@ public class CommonUtils {
         }
         else{
             switch(channelName){
+                case "jira":
+                    templateName= "closeViolationsJiraTemplate.html";
+                    break;
                 default:
                     templateName= "closeViolationsEmailTemplate.html";
                     break;

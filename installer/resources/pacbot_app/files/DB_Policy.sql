@@ -100,19 +100,15 @@ CREATE TABLE IF NOT EXISTS `cf_PolicyExemption` (
   PRIMARY KEY (`id`));
 
 
-insert ignore into cf_NotificationChannels values ('6a7e6590-bd06-11ed-afa1-0242ac120002','email','admin@paladincloud.io',current_timestamp());
+insert ignore into cf_NotificationChannels (notificationChannelId,channelName,createdBy,creationDate) values ('6a7e6590-bd06-11ed-afa1-0242ac120002','email','admin@paladincloud.io',current_timestamp());
 
 
- insert ignore into cf_NotificationTypes values ('42ffd1d8-bd07-11ed-afa1-0242ac120002','violation','admin@paladincloud.io',current_timestamp());
- insert ignore into cf_NotificationTypes values ('5bf94e30-bd07-11ed-afa1-0242ac120002','autofix','admin@paladincloud.io',current_timestamp());
- insert ignore into cf_NotificationTypes values ('63a2d98a-bd07-11ed-afa1-0242ac120002','exemption','admin@paladincloud.io',current_timestamp());
- INSERT IGNORE INTO cf_NotificationTypes VALUES ('73a2d98a-bd07-11ed-afa1-0242ac120002', 'policy', 'admin@paladincloud.io', current_timestamp());
+ insert ignore into cf_NotificationTypes (notificationTypeId,notificationType,createdBy,creationDate) values ('42ffd1d8-bd07-11ed-afa1-0242ac120002','violations','admin@paladincloud.io',current_timestamp());
+ insert ignore into cf_NotificationTypes (notificationTypeId,notificationType,createdBy,creationDate) values ('5bf94e30-bd07-11ed-afa1-0242ac120002','autofix','admin@paladincloud.io',current_timestamp());
+ insert ignore into cf_NotificationTypes (notificationTypeId,notificationType,createdBy,creationDate) values ('63a2d98a-bd07-11ed-afa1-0242ac120002','exemptions','admin@paladincloud.io',current_timestamp());
+ INSERT IGNORE INTO cf_NotificationTypes (notificationTypeId,notificationType,createdBy,creationDate) VALUES ('73a2d98a-bd07-11ed-afa1-0242ac120002', 'policyaction', 'admin@paladincloud.io', current_timestamp());
 
- insert ignore into cf_NotificationTypeChannelMapping values ('467710fe-be2b-11ed-afa1-0242ac120002','42ffd1d8-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());
- insert ignore into cf_NotificationTypeChannelMapping values ('5bf94e30-bd07-11ed-afa1-0242ac120002','5bf94e30-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());
- insert ignore into cf_NotificationTypeChannelMapping values ('63a2d98a-bd07-11ed-afa1-0242ac120002','63a2d98a-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());
- INSERT IGNORE INTO cf_NotificationTypeChannelMapping VALUES ('73a2d98a-bd07-11ed-afa1-0242ac120002', '73a2d98a-bd07-11ed-afa1-0242ac120002', '6a7e6590-bd06-11ed-afa1-0242ac120002', 'admin@paladincloud.io', current_timestamp());
-
+ TRUNCATE TABLE cf_NotificationTypeChannelMapping;
 /* RUle Category Weightage */
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('cost','Infra & Platforms',20);
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('operations','Infra & Platforms',20);
@@ -2521,7 +2517,28 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High ECR Vulnerabiliti
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium ECR Vulnerabilities' WHERE policyId = 'MediumImageVulnerabilitiesScannedByAqua';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Enable IAM Password Policy' WHERE policyId ='IamPasswordPolicy_version-1_IamPasswordPolicy_account';
 
+
 UPDATE cf_NotificationTypes SET `notificationType` = 'policy' WHERE `notificationTypeId` = '73a2d98a-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'policyaction';
 UPDATE cf_NotificationTypes SET `notificationType` = 'violation' WHERE `notificationTypeId` = '42ffd1d8-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'violations';
 UPDATE cf_NotificationTypes SET `notificationType` = 'exemption' WHERE `notificationTypeId` = '63a2d98a-bd07-11ed-afa1-0242ac120002' AND `notificationType` = 'exemptions';
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_notification_channel_add_channel_name $$
+CREATE PROCEDURE alter_notification_channel_add_channel_name()
+BEGIN
+IF NOT EXISTS( SELECT 1
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_NotificationChannels'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'channelDisplayName')  THEN
+ALTER TABLE `cf_NotificationChannels`
+ADD COLUMN `channelDisplayName` varchar(200) DEFAULT NULL;
+ALTER TABLE `cf_NotificationChannels` ADD CONSTRAINT channelDisplayName_unique_key UNIQUE (`channelDisplayName`);
+END IF;
+END $$
+DELIMITER ;
+CALL alter_notification_channel_add_channel_name();
+
+UPDATE cf_NotificationChannels SET channelDisplayName='Email' WHERE notificationChannelId='6a7e6590-bd06-11ed-afa1-0242ac120002';
+UPDATE cf_NotificationChannels SET channelDisplayName='Slack via Email' WHERE notificationChannelId='1a580d18-bd07-11ed-afa1-0242ac120002';
+UPDATE cf_NotificationChannels SET channelDisplayName='Jira via Email' WHERE notificationChannelId='380a5398-bd07-11ed-afa1-0242ac120002';
