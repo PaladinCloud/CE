@@ -2519,4 +2519,4 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found  S3 Vulnerabilities 
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Critical ECR Vulnerabilities' WHERE policyId = 'CriticalImageVulnerabilitiesScannedByAqua';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High ECR Vulnerabilities' WHERE policyId = 'HighImageVulnerabilitiesScannedByAqua';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium ECR Vulnerabilities' WHERE policyId = 'MediumImageVulnerabilitiesScannedByAqua';
-
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable IAM Password Policy' WHERE policyId ='IamPasswordPolicy_version-1_IamPasswordPolicy_account';
