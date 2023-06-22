@@ -86,7 +86,7 @@ public interface IAutofixManger {
         ResourceOwnerService ownerService = new ResourceOwnerService();
         NextStepManager nextStepManager = new NextStepManager();
         ResourceTaggingManager taggingManager = new ResourceTaggingManager();
-        AutoFixAction autoFixAction;
+        AutoFixAction autoFixAction = null;
         List<FixResult> fixResults = new ArrayList<>();
         AWSService serviceType = null;
         ResourceOwner resourceOwner = null;
@@ -468,7 +468,7 @@ public interface IAutofixManger {
         activityLogDetails.put("object", "Policy");
         activityLogDetails.put("objectId", policyParam.get(PacmanSdkConstants.POLICY_ID));
         activityLogDetails.put("oldState",0);
-        activityLogDetails.put("newState",autoFixCounter);
+        activityLogDetails.put("newState",autoFixAction);
         activityLogDetails.put("action","autofix");
         UUID uuid = UUID.randomUUID();
         String strUUID = uuid.toString();
