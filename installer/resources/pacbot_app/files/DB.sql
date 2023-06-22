@@ -104,6 +104,7 @@ SET @COGNITO_INFO='$COGNITO_INFO';
 SET @ACCOUNT_ID='$ACCOUNT_ID';
 SET @ACCOUNT_NAME='$ACCOUNT_NAME';
 SET @ACCOUNT_PLATFORM='$ACCOUNT_PLATFORM';
+SET @AWS_ENABLED='$AWS_ENABLED';
 SET @AQUA_API_URL='$AQUA_API_URL';
 SET @AQUA_CLIENT_DOMAIN_URL='$AQUA_CLIENT_DOMAIN_URL';
 SET @AQUA_USERNAME='$AQUA_USERNAME';
@@ -2072,6 +2073,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.total.batches',concat(@JOB_SCHEDULER_NUMBER_OF_BATCHES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.enabled',concat(@AZURE_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.enabled',concat(@GCP_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.enabled',concat(@AWS_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('base.account',concat(@BASE_ACCOUNT,''),'job-scheduler','prd','latest',null,null,null,null);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('base.region',concat(@BASE_REGION,''),'job-scheduler','prd','latest',null,null,null,null);
 

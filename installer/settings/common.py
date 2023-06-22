@@ -159,6 +159,9 @@ ACCOUNT_ID = ""
 ACCOUNT_NAME = ""
 ACCOUNT_PLATFORM = ""
 CUSTOMER_NAME = "system"
+
+# Flag to turn on/off aws by default
+AWS_ENABLED = "true"
 # These settings are for the enabling and using Aqua Vulnerability feature and service
 ENABLE_AQUA_VULNERABILITY_FEATURE = False
 AQUA_API_URL="" # Aqua API Url without trailing slash
