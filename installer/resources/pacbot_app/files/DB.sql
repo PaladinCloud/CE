@@ -2913,3 +2913,14 @@ update pac_v2_ui_options set optionType = "Long" where optionName="Violations" a
 update cf_Target set targetConfig='{\"key\":\"accountid,region,targetgrouparn\",\"id\":\"targetgroupname\"}' where targetName='targetgroup';
 update cf_Target set targetConfig='{\"key\":\"accountid,region,clustername\",\"id\":\"arn\"}' where targetName='elasticache';
 
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (14,'assetlistFilter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Asset Id','_resourceid.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Asset Type','_entitytype.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'AccountId','accountid.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Account Name','accountname.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Region','region.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Environment','tags.Environment.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Owner','tags.Owner.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Product','tags.Product.keyword','/compliance/v1/filters/attribute',"String");
+
