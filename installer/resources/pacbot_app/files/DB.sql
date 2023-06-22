@@ -2879,13 +2879,13 @@ update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribu
 
 
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (13,'policyComplianceFilter');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Severity','severity','');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Policy','name','');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Compliance','compliance_percent','');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Violations','failed','');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Category','policyCategory','');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Source','provider','');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Asset Type','resourcetType','');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Severity','severity','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Policy','name','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Compliance','compliance_percent','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Violations','failed','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Category','policyCategory','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Source','provider','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (13,'Asset Type','resourcetType','/compliance/v1/filters/policyCompliance');
 
 
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'Autofix Scheduled','isAutofixPlanned.keyword','/compliance/v1/filters/attribute');
@@ -2914,4 +2914,6 @@ update pac_v2_ui_options set optionType = "Long" where optionName="Violations" a
 
 update cf_Target set targetConfig='{\"key\":\"accountid,region,targetgrouparn\",\"id\":\"targetgroupname\"}' where targetName='targetgroup';
 update cf_Target set targetConfig='{\"key\":\"accountid,region,clustername\",\"id\":\"arn\"}' where targetName='elasticache';
+
+update pac_v2_ui_options set optionURL="/compliance/v1/filters/policyCompliance" where filterId=13;
 
