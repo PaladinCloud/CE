@@ -2923,4 +2923,6 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Environment','tags.Environment.keyword','/compliance/v1/filters/attribute',"String");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Owner','tags.Owner.keyword','/compliance/v1/filters/attribute',"String");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Product','tags.Product.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Exempted','exempted','/asset/v1/getAssetFilterValue/exempted',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Tagged','tagged','/asset/v1/getAssetFilterValue/tagged',"String");
 
