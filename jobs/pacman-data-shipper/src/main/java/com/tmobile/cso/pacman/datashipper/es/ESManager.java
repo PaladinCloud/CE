@@ -845,6 +845,10 @@ public class ESManager implements Constants {
     		updateJson.append(",{\"match\":{\"region.keyword\":\"");
     		updateJson.append(region);
     		updateJson.append("\"}}");
+    	}if(!Strings.isNullOrEmpty(type)) {
+    		updateJson.append(",{\"match\":{\"docType.keyword\":\"");
+    		updateJson.append(type);
+    		updateJson.append("\"}}");
     	}
     	if(checkLatest){
     		updateJson.append(",{\"match\":{\"latest\":true }}");
