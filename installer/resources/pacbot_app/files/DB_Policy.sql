@@ -2542,3 +2542,5 @@ CALL alter_notification_channel_add_channel_name();
 UPDATE cf_NotificationChannels SET channelDisplayName='Email' WHERE notificationChannelId='6a7e6590-bd06-11ed-afa1-0242ac120002';
 UPDATE cf_NotificationChannels SET channelDisplayName='Slack via Email' WHERE notificationChannelId='1a580d18-bd07-11ed-afa1-0242ac120002';
 UPDATE cf_NotificationChannels SET channelDisplayName='Jira via Email' WHERE notificationChannelId='380a5398-bd07-11ed-afa1-0242ac120002';
+
+UPDATE cf_PolicyTable SET policyDesc ='Denying public access to SQL Server port 1434 in Azure is vital for security. It prevents unauthorized users from connecting to your SQL Server and reduces the risk of attacks. By restricting access, you safeguard sensitive data and comply with industry regulations. It aligns with network security best practices and helps create a more secure architecture. Additional measures like virtual network service endpoints, Azure Private Link, and firewall rules enhance security. Regular updates, strong authentication, and following security best practices are essential for overall protection.' WHERE policyId ='Enable_Network_Security_for_SQLSERVER';
