@@ -195,7 +195,7 @@ public class ElasticSearchManager {
      * @param indexName the index name
      * @return true, if successful
      */
-    private static boolean indexExists(String indexName) {
+    public static boolean indexExists(String indexName) {
 
         try {
             Response response = invokeAPI("HEAD", indexName, null);
