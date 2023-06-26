@@ -18,6 +18,12 @@ public class Event implements Serializable {
     @JsonProperty("isCollector")
     private Boolean isCollector = null;
 
+    @JsonProperty("isCustomPlugin")
+    private Boolean isCustomPlugin = null;
+
+    @JsonProperty("pluginType")
+    private String pluginType = null;
+
     @JsonProperty("isRule")
     private Boolean isRule = null;
 
@@ -102,6 +108,30 @@ public class Event implements Serializable {
         return this;
     }
 
+    public Boolean isIsCustomPlugin() {
+        return isCustomPlugin;
+    }
+
+    public void setIsCustomPlugin(Boolean isCustomPlugin) {
+        this.isCustomPlugin = isCustomPlugin;
+    }
+
+    public Event isCustomPlugin(Boolean isCustomPlugin) {
+        this.isCustomPlugin = isCustomPlugin;
+        return this;
+    }
+
+    public String getPluginType() {
+        return pluginType;
+    }
+
+    public void setPluginType(String pluginType) {
+        this.pluginType = pluginType;
+    }
+    public Event pluginType(String pluginType) {
+        this.pluginType = pluginType;
+        return this;
+    }
 
     public Boolean isIsShipper() {
         return isShipper;
@@ -120,12 +150,12 @@ public class Event implements Serializable {
             return false;
         }
         Event event = (Event) o;
-        return Objects.equals(this.batchNo, event.batchNo) && Objects.equals(this.cloudName, event.cloudName) && Objects.equals(this.isCollector, event.isCollector) && Objects.equals(this.isRule, event.isRule) && Objects.equals(this.submitJob, event.submitJob) && Objects.equals(this.isShipper, event.isShipper);
+        return Objects.equals(this.batchNo, event.batchNo) && Objects.equals(this.cloudName, event.cloudName) && Objects.equals(this.pluginType, event.pluginType) && Objects.equals(this.isCollector, event.isCollector) && Objects.equals(this.isRule, event.isRule) && Objects.equals(this.isCustomPlugin, event.isCustomPlugin) && Objects.equals(this.submitJob, event.submitJob) && Objects.equals(this.isShipper, event.isShipper);
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(batchNo, cloudName, isCollector, isRule, submitJob, isShipper);
+        return java.util.Objects.hash(batchNo, cloudName, isCollector,isCustomPlugin, pluginType,isRule, submitJob, isShipper);
     }
 
 
@@ -139,6 +169,8 @@ public class Event implements Serializable {
         sb.append("    isCollector: ").append(toIndentedString(isCollector)).append("\n");
         sb.append("    isRule: ").append(toIndentedString(isRule)).append("\n");
         sb.append("    submitJob: ").append(toIndentedString(submitJob)).append("\n");
+        sb.append("    isCustomPlugin: ").append(toIndentedString(isCustomPlugin)).append("\n");
+        sb.append("    pluginType: ").append(toIndentedString(pluginType)).append("\n");
         sb.append("    isShipper: ").append(toIndentedString(isShipper)).append("\n");
         sb.append("}");
         return sb.toString();
