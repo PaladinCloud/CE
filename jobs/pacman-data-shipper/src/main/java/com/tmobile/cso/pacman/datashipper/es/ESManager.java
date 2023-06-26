@@ -108,7 +108,7 @@ public class ESManager implements Constants {
             int i = 0;
             for (Map<String, Object> doc : docs) {
 
-                String id = Util.concatenate(doc, _keys, "_");
+                String id = (String)doc.get("_docid");
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
                 _doc.deleteCharAt(_doc.length() - 1);
                 _doc.append(",\"latest\":true,\"_loaddate\":\"" + loaddate + "\" }");
@@ -745,7 +745,7 @@ public class ESManager implements Constants {
      * @param docs the docs
      * @param parentKey the parent key
      */
-    public static void uploadData(String index, String type, List<Map<String, Object>> docs, String[] parentKey) {
+    public static void uploadData(String index, String parentType, String type, List<Map<String, Object>> docs, String[] key, String dataSource) {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"routing\" : \"%s\" } }"; // added
                                                                                                                        // _parent
                                                                                                                        // node
@@ -758,7 +758,12 @@ public class ESManager implements Constants {
             for (Map<String, Object> doc : docs) {
 
                 String _doc = new Gson().toJson(doc);
-                String parent = Util.concatenate(doc, parentKey, "_");
+                String parent = Util.concatenate(doc, key, "_");
+                if("aws".equalsIgnoreCase(dataSource)) {
+                	if(Arrays.asList(key).contains("accountid")) {
+                		parent = dataSource+"_"+parentType+"_"+parent;
+                	}
+                }
                 bulkRequest.append(String.format(actionTemplate, index, parent)).append("\n");
                 bulkRequest.append(_doc).append("\n");
                 i++;
