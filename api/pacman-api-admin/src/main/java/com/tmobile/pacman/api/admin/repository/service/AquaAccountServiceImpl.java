@@ -88,11 +88,11 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("Failed to validate the aqua account ",e);
             validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Aqua validation successful");
+            validateResponse.setMessage("Aqua validation failed");
         } catch (IOException e) {
             LOGGER.error("Failed to validate the aqua account "+e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Aqua validation successful: "+e.getMessage());
+            validateResponse.setMessage("Aqua validation failed: "+e.getMessage());
 
         }
     }
@@ -171,7 +171,7 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
         String secretId=secretManagerPrefix+"/aqua";
-        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId);
+        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
         LOGGER.info("Delete secret response: {} ",deleteResponse);
 
@@ -187,7 +187,7 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
     }
 
     private String getAquaSecret(CreateAccountRequest accountRequest){
-        String template="{\"aquaApiUrl\":\"%s\"\"aquaClientDomainUrl\":\"%s\"\"apiusername\":\"%s\",\"apipassword\":\"%s\"}";
+        String template="{\"aquaApiUrl\":\"%s\",\"aquaClientDomainUrl\":\"%s\",\"apiusername\":\"%s\",\"apipassword\":\"%s\"}";
         return String.format(template,accountRequest.getAquaApiUrl(),accountRequest.getAquaClientDomainUrl(),accountRequest.getAquaApiUser()
                 ,accountRequest.getAquaApiPassword());
 

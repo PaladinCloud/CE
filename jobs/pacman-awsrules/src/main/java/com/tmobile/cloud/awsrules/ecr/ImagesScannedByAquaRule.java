@@ -83,7 +83,6 @@ public class ImagesScannedByAquaRule extends BasePolicy {
             annotation.put(PacmanRuleConstants.CATEGORY, category);
             LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
             issue.put(PacmanRuleConstants.VIOLATION_REASON, "" + entityType + " image not scanned by aqua found");
-            issue.put(PacmanRuleConstants.SOURCE_VERIFIED, "_resourceid," + PacmanRuleConstants.AQUA_LAST_VULN_SCAN);
             issueList.add(issue);
             annotation.put("issueDetails", issueList.toString());
             logger.debug("========ResourceScannedByAquaRule ended with annotation {} : =========", annotation);
