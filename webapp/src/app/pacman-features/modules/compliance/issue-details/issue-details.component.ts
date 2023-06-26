@@ -15,7 +15,7 @@
 import {Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AssetGroupObservableService} from '../../../../core/services/asset-group-observable.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ICONS, getCloudServiceIcon } from './../../../../shared/constants/icons-mapping';
+import { getCloudServiceIcon } from 'src/app/shared/constants/icons-mapping';
 import {DataCacheService} from '../../../../core/services/data-cache.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {AutorefreshService} from '../../../services/autorefresh.service';
@@ -1070,20 +1070,14 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             }
 
             if (this.issueBlocks.resourceType !== undefined) {
-                const iconKeys = Object.keys(ICONS.awsResources);
-                if (iconKeys.indexOf(this.issueBlocks.resourceType) > -1) {
-                    obj = {
-                        header: 'Asset Type',
-                        footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
-                        img: ICONS.awsResources[this.issueBlocks.resourceType]
-                    };
-                } else {
-                    obj = {
-                        header: 'Asset Type',
-                        footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
-                        img: ICONS.awsResources[`unknown`]
-                    };
-                }
+                obj = {
+                    header: 'Asset Type',
+                    footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
+                    img: getCloudServiceIcon(
+                        this.issueBlocks.assetGroup,
+                        this.issueBlocks.resourceType,
+                    ),
+                };
                 this.issueTopblocks.push(obj);
             }
 

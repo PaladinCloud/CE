@@ -26,7 +26,7 @@ function isValidCloudProvider(provider: string): provider is CloudProvider {
 
 const UNKNOWN_SERVICE_ICON = 'assets/icons/question.svg';
 
-const CLOUD_PROVIDER_SERVICE_ICONS: { [key in CloudProvider]: { [service: string]: string } } = {
+const CLOUD_PROVIDER_SERVICE_ICONS = {
     [CloudProvider.AWS]: {
         accessanalyzer: awsIcon('security_identify_compliance/access_analyzer'),
         account: awsIcon('management_governance/organizations_acccount'),
@@ -209,7 +209,14 @@ export const ICONS = {
     path: '/assets/aws-icons/',
 };
 
-export function getCloudServiceIcon(provider: string, service: string) {
+type AwsService = keyof (typeof CLOUD_PROVIDER_SERVICE_ICONS)[CloudProvider.AWS];
+type GcpService = keyof (typeof CLOUD_PROVIDER_SERVICE_ICONS)[CloudProvider.GCP];
+type AzureService = keyof (typeof CLOUD_PROVIDER_SERVICE_ICONS)[CloudProvider.AZURE];
+
+export function getCloudServiceIcon(
+    provider: CloudProvider,
+    service: AwsService | GcpService | AzureService,
+) {
     const providerKey = provider.toLowerCase();
     const serviceKey = service.toLowerCase();
     let icon = UNKNOWN_SERVICE_ICON;
