@@ -112,7 +112,7 @@ public class EntityManager implements Constants {
                     String idColumn = ConfigManager.getIdForType(datasource, type);
 	                String[] keysArray = keys.split(",");
 	                
-	                prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type);
+	                prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type,datasource);
 	                Map<String,Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName,type,loaddate,errorList,true);
 	                Map<String, Object> uploadInfo = ESManager.uploadData(indexName, type, entities, loaddate);
                     //ESManager.removeViolationForDeletedAssets(entities, indexName);
@@ -181,14 +181,21 @@ public class EntityManager implements Constants {
      */
     private  void prepareDocs(Map<String, Map<String, String>> currentInfo, List<Map<String, Object>> entities,
             List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
-            Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type) {
+            Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource) {
         entities.parallelStream().forEach(entityInfo -> {
             String id = entityInfo.get(idColumn).toString();
             String docId = Util.concatenate(entityInfo, _keys, "_");
             entityInfo.put("_resourceid", id);
+            if("aws".equalsIgnoreCase(dataSource)) {
+            	if(Arrays.asList(_keys).contains("accountid")) {
+            		docId = dataSource+"_"+_type+"_"+docId;
+            	}
+            }
             entityInfo.put("_docid", docId);
             entityInfo.put("_entity", "true");
             entityInfo.put("_entitytype", _type);
+            
+            
 
             if(entityInfo.containsKey("subscriptionName")){
                 entityInfo.put("accountname",entityInfo.get("subscriptionName"));

@@ -37,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,16 +109,22 @@ public class EntityAssociationManager implements Constants {
 
                             obj.put("_loaddate", loaddate);
                             obj.put(Constants.DOC_TYPE, childTypeES);
+                            String parentID = Util.concatenate(obj, key.split(","), "_");
+                            if("aws".equalsIgnoreCase(dataSource)) {
+                            	if(Arrays.asList(key.split(",")).contains("accountid")) {
+                            		parentID = dataSource+"_"+type+"_"+parentID;
+                            	}
+                            }
                             Map<String, Object> relMap = new HashMap<>();
                             relMap.put("name", childTypeES);
-                            relMap.put("parent", Util.concatenate(obj, key.split(","), "_"));
+                            relMap.put("parent", parentID);
                             obj.put(type + "_relations", relMap);
                         });
 
                         LOGGER.info("Collected :  {}", entities.size());
                         if (!entities.isEmpty()) {
                             ErrorManager.getInstance(dataSource).handleError(indexName, childTypeES, loaddate, errorList, false);
-                            ESManager.uploadData(indexName, childTypeES, entities, key.split(","));
+                            ESManager.uploadData(indexName,type, childTypeES, entities, key.split(","), dataSource);
                             ESManager.deleteOldDocuments(indexName, childTypeES, "_loaddate.keyword",
                                     loaddate);
                         }
