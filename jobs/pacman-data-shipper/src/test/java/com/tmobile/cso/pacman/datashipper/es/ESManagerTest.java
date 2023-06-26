@@ -184,7 +184,8 @@ public class ESManagerTest {
         when(response.getStatusLine()).thenReturn(sl);
         
         String parent = "parent";
-        esManager.uploadData("index", "type", docs,parent.split(","));
+        String dataSource = "aws";
+        esManager.uploadData("index", "parent_type","type", docs,parent.split(","), dataSource);
     }
     
     @SuppressWarnings({ "unchecked", "static-access" })
