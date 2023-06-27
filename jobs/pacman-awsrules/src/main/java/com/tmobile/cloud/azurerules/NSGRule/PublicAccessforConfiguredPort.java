@@ -122,6 +122,7 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
                                 .get(PacmanRuleConstants.PROTOCOL).getAsString();
                         JsonArray destinationPortRanges=nBoundarySecurityDataItem.getAsJsonObject()
                                 .get(PacmanRuleConstants.DESTINATIONPORTRANGES).getAsJsonArray();
+                        String access = nBoundarySecurityDataItem.getAsJsonObject().get("access").getAsString();
 
                         if (sourceAddressPrefixes != null && (protocol.equalsIgnoreCase(validateProtocol)||protocol.equalsIgnoreCase(PacmanRuleConstants.PORT_ANY)
                                 && checkDestinationPort(destinationPortRanges,validatePort))) {
@@ -133,9 +134,10 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
                                         || sourceAddressPrefixes.get(srcAdsIndex).getAsString()
                                         .equals(PacmanRuleConstants.INTERNET)) {
                                     logger.info("Port: {} has unrestricted Access", ((Object[]) validatePort));
-                                    validationResult = false;
-                                    break;
-
+                                    if(access.equalsIgnoreCase("allow")){
+                                        validationResult = false;
+                                        break;
+                                    }
                                 }
                             }
 
