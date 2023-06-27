@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-enum CloudProvider {
+export enum CloudProvider {
     AWS = 'aws',
     GCP = 'gcp',
     AZURE = 'azure',
@@ -213,9 +213,13 @@ type AwsService = keyof (typeof CLOUD_PROVIDER_SERVICE_ICONS)[CloudProvider.AWS]
 type GcpService = keyof (typeof CLOUD_PROVIDER_SERVICE_ICONS)[CloudProvider.GCP];
 type AzureService = keyof (typeof CLOUD_PROVIDER_SERVICE_ICONS)[CloudProvider.AZURE];
 
-export function getCloudServiceIcon(
-    provider: CloudProvider,
-    service: AwsService | GcpService | AzureService,
+export function getCloudServiceIcon<T extends CloudProvider>(
+    provider: T,
+    service: T extends CloudProvider.AWS
+        ? AwsService
+        : T extends CloudProvider.GCP
+        ? GcpService
+        : AzureService,
 ) {
     const providerKey = provider.toLowerCase();
     const serviceKey = service.toLowerCase();
