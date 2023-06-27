@@ -10,7 +10,7 @@ import java.util.Map;
 public abstract class TenableDataImporter {
 
 
-  abstract public Map<String, Object> execute();
+  abstract public Map<String, Object> execute(int days);
 
   Map<String, String> apiMap = null;
 
