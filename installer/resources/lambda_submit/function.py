@@ -419,6 +419,7 @@ class TenableVMVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTarget
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
             {'encrypt': False, 'key': "job_hint", 'value': "tenable_vm_vulnerability"},
+            {'encrypt': False, 'key': "days", 'value': "7"}
         ]
     })
 
