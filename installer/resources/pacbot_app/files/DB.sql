@@ -2740,53 +2740,6 @@ update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,t
 
 UPDATE `pacmandata`.`pac_config_properties` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
 
-/* Procedure to update metadata based on the mandatory tags configured */
-DELIMITER $$
-
-DROP PROCEDURE IF EXISTS `update_filter_for_tag` $$
-CREATE PROCEDURE `update_filter_for_tag`(mandatoryTags MEDIUMTEXT)
-BEGIN
-
-DECLARE tag TEXT DEFAULT NULL;
-DECLARE tagLength INT DEFAULT NULL;
-DECLARE _value TEXT DEFAULT NULL;
-
--- delete the existing configured filters for mandatory tags
-delete from pac_v2_ui_options where optionValue like '%tags%';
-delete from pac_v2_ui_options where filterId=8 and optionName in ('Application','Environment');
-
-iterator:
-LOOP
-
-  IF CHAR_LENGTH(TRIM(mandatoryTags)) = 0 OR mandatoryTags IS NULL THEN
-    LEAVE iterator;
-  END IF;
-
-  -- fetch the next value from the mandatoryTags list
-  SET tag = SUBSTRING_INDEX(mandatoryTags,',',1);
-  SET tagLength = CHAR_LENGTH(tag);
-
-  -- trim the value of leading and trailing spaces
-  SET _value = TRIM(tag);
-
-  -- insert the filters metadata for mandatory tags  compliance/v1/filters/tag?ag=aws&tag=tags.Environment.keyword
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&type=issue&tag=tags.',_value,'.keyword'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&type=issue&tag=tags.',_value,'.keyword'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (3,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (9,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
-
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/attribute'),'String');
-
-  SET mandatoryTags = INSERT(mandatoryTags,1,tagLength + 1,'');
-END LOOP;
-
-END $$
-
-DELIMITER ;
-
-CALL update_filter_for_tag(@MANDATORY_TAGS);
-
 update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category' and filterId not in (select filterId from pac_v2_ui_filters where filterName ="policyComplianceFilter") ;
 
 update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
@@ -2950,3 +2903,49 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 
 
 
+/* Procedure to update metadata based on the mandatory tags configured */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `update_filter_for_tag` $$
+CREATE PROCEDURE `update_filter_for_tag`(mandatoryTags MEDIUMTEXT)
+BEGIN
+
+DECLARE tag TEXT DEFAULT NULL;
+DECLARE tagLength INT DEFAULT NULL;
+DECLARE _value TEXT DEFAULT NULL;
+
+-- delete the existing configured filters for mandatory tags
+delete from pac_v2_ui_options where optionValue like '%tags%';
+delete from pac_v2_ui_options where filterId=8 and optionName in ('Application','Environment');
+
+iterator:
+LOOP
+
+  IF CHAR_LENGTH(TRIM(mandatoryTags)) = 0 OR mandatoryTags IS NULL THEN
+    LEAVE iterator;
+  END IF;
+
+  -- fetch the next value from the mandatoryTags list
+  SET tag = SUBSTRING_INDEX(mandatoryTags,',',1);
+  SET tagLength = CHAR_LENGTH(tag);
+
+  -- trim the value of leading and trailing spaces
+  SET _value = TRIM(tag);
+
+  -- insert the filters metadata for mandatory tags  compliance/v1/filters/tag?ag=aws&tag=tags.Environment.keyword
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&type=issue&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&type=issue&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (3,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (9,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
+
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/attribute'),'String');
+
+  SET mandatoryTags = INSERT(mandatoryTags,1,tagLength + 1,'');
+END LOOP;
+
+END $$
+
+DELIMITER ;
+
+CALL update_filter_for_tag(@MANDATORY_TAGS);
