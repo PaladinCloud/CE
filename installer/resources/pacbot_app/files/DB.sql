@@ -2934,3 +2934,56 @@ UPDATE cf_Target set targetConfig = '{\"key\":\"topicarn\",\"id\":\"topicarn"}' 
 UPDATE cf_Target set targetConfig = '{\"key\":\"targetgrouparn\",\"id\":\"targetgrouparn\"}' where targetName = 'targetgroup';
 
 
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (14,'assetlistFilter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Asset Id','_resourceid.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Asset Type','_entitytype.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'AccountId','accountid.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Account Name','accountname.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Region','region.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Exempted','exempted','/asset/v1/getAssetFilterValue/exempted',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Tagged','tagged','/asset/v1/getAssetFilterValue/tagged',"String");
+
+SET @MANDATORY_TAGS='$MANDATORY_TAGS';
+/* Procedure to update metadata based on the mandatory tags configured */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `update_asset_filter_for_tag` $$
+CREATE PROCEDURE `update_asset_filter_for_tag`(mandatoryTags MEDIUMTEXT)
+BEGIN
+
+DECLARE tag TEXT DEFAULT NULL;
+DECLARE tagLength INT DEFAULT NULL;
+DECLARE _value TEXT DEFAULT NULL;
+
+
+iterator:
+LOOP
+
+  IF CHAR_LENGTH(TRIM(mandatoryTags)) = 0 OR mandatoryTags IS NULL THEN
+    LEAVE iterator;
+  END IF;
+
+  -- fetch the next value from the mandatoryTags list
+  SET tag = SUBSTRING_INDEX(mandatoryTags,',',1);
+  SET tagLength = CHAR_LENGTH(tag);
+
+  -- trim the value of leading and trailing spaces
+  SET _value = TRIM(tag);
+
+  -- insert the filters metadata for mandatory tags  compliance/v1/filters/tag?ag=aws&tag=tags.Environment.keyword
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/attribute'),'String');
+
+  SET mandatoryTags = INSERT(mandatoryTags,1,tagLength + 1,'');
+END LOOP;
+
+END $$
+
+DELIMITER ;
+
+CALL update_asset_filter_for_tag(@MANDATORY_TAGS);
+
+
+
+
