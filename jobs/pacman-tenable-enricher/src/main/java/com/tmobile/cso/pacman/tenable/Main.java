@@ -60,10 +60,10 @@ public class Main {
 		}
         
         String jobHint = params.get("job_hint");
-        TenableVMVulnerabilityDataImporter.days = Integer.parseInt(params.get("days"));
+        int days = Integer.parseInt(params.get("days"));
         switch (jobHint) {
         case "tenable_vm_vulnerability":
-            errorInfo =  new TenableVMVulnerabilityDataImporter().execute();
+            errorInfo =  new TenableVMVulnerabilityDataImporter().execute(days);
             break;
         default:
             log.info("Job hint is not supplied!!!!!!!!!!!!!");
