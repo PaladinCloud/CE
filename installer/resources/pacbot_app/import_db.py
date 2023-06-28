@@ -162,7 +162,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_AWS_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "aws" + ":" + str(number_of_aws_rules()),
                         'ENV_AZURE_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "azure" + ":" + str(number_of_azure_rules()),
                         'ENV_GCP_EVENTBRIDGE_BUS_DETAILS'  : Settings.RESOURCE_NAME_PREFIX + "-" + "gcp" + ":" + str(number_of_gcp_rules()),
-                        'ENV_PLUGIN_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "plugin-allcloud" + ":" + str(number_of_plugin_rules()),
+                        'ENV_PLUGIN_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "vulnerability-plugins" + ":" + str(number_of_plugin_rules()),
                         'ENV_AZURE_ENABLED' : str(need_to_enable_azure()).lower(),
                         'ENV_GCP_ENABLED' : str(need_to_enable_gcp()).lower(),
                         'ENV_JOB_SCHEDULER_NUMBER_OF_BATCHES' : str(Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES),

@@ -13,4 +13,4 @@ class CloudWatchEventBusgcp(CloudWatchEventBusResource):
     # PROCESS = need_to_enable_gcp()
 
 class CloudWatchEventBusPlugin(CloudWatchEventBusResource):
-    name = "plugin-allcloud"
+    name = "vulnerability-plugins"
