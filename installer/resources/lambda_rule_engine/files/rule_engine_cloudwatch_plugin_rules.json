@@ -1,0 +1,15 @@
+[
+    "qualys_aws_ec2_qualys_scanned_rule",
+	"qualys_aws_ec2_vuln_severity_rule",
+	"qualys_aws_ec2_vuln_s4_rule",
+	"qualys_aws_ec2_vuln_s5_rule",
+	"qualys_aws_ec2_pub_vuln_s5_rule",
+    "tenable_aws_vm_medium_vulnerabilities_tenable_scanned_rule",
+	"tenable_aws_vm_critical_vulnerabilities_tenable_scanned_rule",
+	"tenable_aws_vm_high_vulnerabilities_tenable_scanned_rule",
+	"tenable_aws_vm_tenable_scanned_rule",
+    "aqua_aws_image_medium_vulnerabilities_aqua_scanned_rule-job",
+	"aqua_aws_image_high_vulnerabilities_aqua_scanned_rule-job",
+	"aqua_aws_image_critical_vulnerabilities_aqua_scanned_rule-job",
+	"aqua_aws_image_aqua_scanned_rule-job"
+]
