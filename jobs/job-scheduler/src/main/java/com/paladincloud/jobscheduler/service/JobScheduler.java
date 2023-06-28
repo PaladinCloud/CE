@@ -22,6 +22,7 @@ import software.amazon.awssdk.services.eventbridge.model.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -38,6 +39,11 @@ public class JobScheduler {
     public static final String QUALYS_ENABLED = "qualys.enabled";
     public static final String AQUA_ENABLED = "aqua.enabled";
     public static final String TENABLE_ENABLED = "tenable.enabled";
+    public static final String PLUGIN_TYPE_TENABLE = "tenable";
+    public static final String PLUGIN_TYPE_QUALYS = "qualys";
+    public static final String PLUGIN_TYPE_AQUA = "aqua";
+    public static final String REQUEST_ENTRY = "Request entry: {} ";
+    public static final List<String> ALL_CLOUDS_LIST = Arrays.asList("aws","azure","gcp");
 
     @Autowired
     CredentialProvider credentialProvider;
@@ -51,14 +57,9 @@ public class JobScheduler {
     @Value("${azure.eventbridge.bus.details}")
     private String azureBusDetails;
 
-    @Value("${qualys.eventbridge.bus.details}")
-    private String qualysBusDetails;
+    @Value("${plugin.eventbridge.bus.details}")
+    private String pluginBusDetails;
 
-    @Value("${aqua.eventbridge.bus.details}")
-    private String aquaBusDetails;
-
-    @Value("${tenable.eventbridge.bus.details}")
-    private String tenableBusDetails;
 
     private boolean azureEnabled;
     private boolean gcpEnabled;
@@ -186,7 +187,7 @@ public class JobScheduler {
         // busdetails e.g- aws.eventbridge.bus.details=paladincloud-aws:aws:289
         // azure.eventbridge.bus.details=paladincloud-azure:azure:102
         // gcp.eventbridge.bus.details=paladincloud-gcp:gcp:30
-        //For custom plugins like qualys, aqua, tenable- "custom-qualys-saasdev-aws:145",
+        //For custom plugins like qualys, aqua, tenable- "plugin-saasdev-all-clouds:145",
 
         try {
             int totBatches = Integer.parseInt(this.noOfBatches);
@@ -218,16 +219,16 @@ public class JobScheduler {
                 }
                 // add event for qualys policies
                 if (qualysEnabled) {
-                    putRuleEventIntoRequestEntry(i, qualysBusDetails, putEventsRequestEntries);
+                    putPluginRuleRequestEntries(i, pluginBusDetails,putEventsRequestEntries,PLUGIN_TYPE_QUALYS);
                 }
 
                 // add event for aqua policies
                 if (aquaEnabled) {
-                    putRuleEventIntoRequestEntry(i, aquaBusDetails, putEventsRequestEntries);
+                    putPluginRuleRequestEntries(i, pluginBusDetails,putEventsRequestEntries,PLUGIN_TYPE_AQUA);
                 }
                 // add event for tenable policies
                 if (tenableEnabled) {
-                    putRuleEventIntoRequestEntry(i, tenableBusDetails, putEventsRequestEntries);
+                    putPluginRuleRequestEntries(i, pluginBusDetails,putEventsRequestEntries,PLUGIN_TYPE_TENABLE);
                 }
                 PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
                 PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
@@ -255,8 +256,25 @@ public class JobScheduler {
         eventBrClient.close();
     }
 
-    @Scheduled(initialDelayString = "${scheduler.plugin.initial.delay}", fixedDelayString = "${scheduler.plugin.interval}")
-    public void scheduleCustomPluginJobs() {
+    private void putPluginRuleRequestEntries(int batchNo, String busDetails, List<PutEventsRequestEntry> reqEntryList, String pluginType) {
+        String detailString = null;
+        //plugin-saasdev-all-clouds:2
+        //Generate event for all clouds for plugin
+        for(String cloudType:ALL_CLOUDS_LIST) {
+            String cloudName = pluginType+"-"+cloudType;
+            Event event = populateEventForRule(cloudName, batchNo);
+            detailString = getMarshalledEvent(detailString, event);
+            PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(busDetails.split(":")[0]).build();
+            // print the request entry
+            logger.info(REQUEST_ENTRY, reqEntry);
+
+            // Add the PutEventsRequestEntry to a putEventsRequestEntries
+            reqEntryList.add(reqEntry);
+        }
+    }
+
+    @Scheduled(initialDelayString = "${plugin.collector.initial.delay}", fixedDelayString = "${plugin.interval}")
+    public void schedulePluginCollectorJobs() {
         // print the current milliseconds
         logger.info("Current milliseconds: {} ", System.currentTimeMillis());
         logger.info("Job Scheduler for custom plugin is running...");
@@ -271,15 +289,51 @@ public class JobScheduler {
             aquaEnabled=Boolean.parseBoolean(System.getProperty(AQUA_ENABLED));
             tenableEnabled=Boolean.parseBoolean(System.getProperty(TENABLE_ENABLED));
             if (qualysEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, qualysBusDetails);
+                addPluginCollectorEvent(putEventsRequestEntries, pluginBusDetails,PLUGIN_TYPE_QUALYS);
             }
             if (aquaEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, aquaBusDetails);
+                addPluginCollectorEvent(putEventsRequestEntries, pluginBusDetails,PLUGIN_TYPE_AQUA);
             }
             if (tenableEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, tenableBusDetails);
+                addPluginCollectorEvent(putEventsRequestEntries, pluginBusDetails,PLUGIN_TYPE_TENABLE);
             }
 
+            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+
+            PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+
+            for (PutEventsResultEntry resultEntry : result.entries()) {
+                if (resultEntry.eventId() != null) {
+                    logger.info("Event Id: {} ", resultEntry.eventId());
+                } else {
+                    logger.info("Injection failed with Error Code: {} ", resultEntry.errorCode());
+                }
+            }
+
+        } catch (EventBridgeException e) {
+            logger.error(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            System.exit(1);
+        }
+        eventBrClient.close();
+    }
+    @Scheduled(initialDelayString =  "${plugin.shipper.initial.delay}", fixedDelayString = "${plugin.interval}")
+    public void schedulePluginShipperJobs() {
+        // print the current milliseconds
+        logger.info("Current milliseconds: {}", System.currentTimeMillis());
+        logger.info("Job Scheduler for plugin shipper is running...");
+
+        EventBridgeClient eventBrClient = getEventBridgeClient();
+        List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
+
+        try {
+            ConfigUtil.setConfigProperties();
+            qualysEnabled=Boolean.parseBoolean(System.getProperty(QUALYS_ENABLED));
+            if (qualysEnabled) {
+                addPluginShipperEvent(putEventsRequestEntries, awsBusDetails,PLUGIN_TYPE_QUALYS);
+            }
             PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
 
             PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
@@ -304,8 +358,7 @@ public class JobScheduler {
     private void putRuleEventIntoRequestEntry(int batchNo, String busDetails, List<PutEventsRequestEntry> reqEntryList) {
 
         String detailString = null;
-        String customBusDetail = busDetails.split(":")[0];
-        String cloudName = customBusDetail.substring(customBusDetail.lastIndexOf('-') + 1);
+        String cloudName = busDetails.split(":")[0].split("-")[1];
         Event event = populateEventForRule(cloudName, batchNo);
         detailString = getMarshalledEvent(detailString, event);
         PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(busDetails.split(":")[0]).build();
@@ -332,7 +385,7 @@ public class JobScheduler {
             putEventsRequestEntries.add(reqEntry);
 
             // print the request entry
-            logger.info("Request entry: {} ", reqEntry);
+            logger.info(REQUEST_ENTRY, reqEntry);
 
         }
     }
@@ -352,28 +405,51 @@ public class JobScheduler {
             putEventsRequestEntries.add(reqEntry);
 
             // print the request entry
-            logger.info("Request entry: {} ", reqEntry);
+            logger.info(REQUEST_ENTRY, reqEntry);
         }
     }
 
-    private void addPluginCollectorEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails) {
+    private void addPluginCollectorEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails, String pluginType) {
         String detailString = null;
-        //For custom plugins like qualys, aqua, tenable- "qualys-saasdev-aws:145"
+        //For custom plugins like qualys, aqua, tenable- "aqua-saasdev-aws_gcp_azure:145"
         // populate events for each event bus
         String[] busDetailsArray = busDetails.split(",");
         for (String busDetail : busDetailsArray) {
             String customBusDetail = busDetail.split(":")[0];
-            String cloudName = customBusDetail.substring(customBusDetail.lastIndexOf('-') + 1);
-            String pluginType=customBusDetail.split("-")[0];
-            Event event = populateEventForPluginCollector(cloudName,pluginType);
-            detailString = getMarshalledEvent(detailString, event);
-            PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(customBusDetail).build();
+            for(String cloudType:ALL_CLOUDS_LIST){
+                String cloudName = pluginType+"-"+cloudType;
+                Event event = populateEventForCollector(cloudName);
+                detailString = getMarshalledEvent(detailString, event);
+                PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(customBusDetail).build();
 
-            // Add the PutEventsRequestEntry to a putEventsRequestEntries
-            putEventsRequestEntries.add(reqEntry);
+                // Add the PutEventsRequestEntry to a putEventsRequestEntries
+                putEventsRequestEntries.add(reqEntry);
 
-            // print the request entry
-            logger.info("Request entry: {} ", reqEntry);
+                // print the request entry
+                logger.info(REQUEST_ENTRY, reqEntry);
+            }
+        }
+    }
+    private void addPluginShipperEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails, String pluginType) {
+        String detailString = null;
+
+        // populate events for each event bus
+        String[] busDetailsArray = busDetails.split(",");
+        for (String busDetail : busDetailsArray) {
+            String customBusDetail = busDetail.split(":")[0];
+            for(String cloudType:ALL_CLOUDS_LIST) {
+                String cloudName = pluginType+"-"+cloudType;
+                Event event = populateEventForShipper(cloudName);
+
+                detailString = getMarshalledEvent(detailString, event);
+                PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(customBusDetail).build();
+
+                // Add the PutEventsRequestEntry to a putEventsRequestEntries
+                putEventsRequestEntries.add(reqEntry);
+
+                // print the request entry
+                logger.info(REQUEST_ENTRY, reqEntry);
+            }
         }
     }
 
@@ -439,18 +515,6 @@ public class JobScheduler {
         event.setIsCollector(false);
         event.setIsShipper(false);
 
-        return event;
-    }
-    private Event populateEventForPluginCollector(String cloudType, String pluginType) {
-        Event event = new Event();
-        event.setBatchNo(BigDecimal.valueOf(1));
-        event.setCloudName(cloudType);
-        event.setSubmitJob(true);
-        event.setIsCustomPlugin(true);
-        event.setPluginType(pluginType);
-        event.setIsRule(false);
-        event.setIsCollector(false);
-        event.setIsShipper(false);
         return event;
     }
 }
