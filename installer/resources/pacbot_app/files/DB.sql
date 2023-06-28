@@ -93,6 +93,7 @@ SET @JOB_SCHEDULE_INITIALDELAY_RULES='$JOB_SCHEDULE_INITIALDELAY_RULES';
 SET @AZURE_EVENTBRIDGE_BUS_DETAILS='$AZURE_EVENTBRIDGE_BUS_DETAILS';
 SET @GCP_EVENTBRIDGE_BUS_DETAILS='$GCP_EVENTBRIDGE_BUS_DETAILS';
 SET @AWS_EVENTBRIDGE_BUS_DETAILS='$AWS_EVENTBRIDGE_BUS_DETAILS';
+SET @PLUGIN_EVENTBRIDGE_BUS_DETAILS='$PLUGIN_EVENTBRIDGE_BUS_DETAILS';
 SET @AZURE_ENABLED='$AZURE_ENABLED';
 SET @GCP_ENABLED='$GCP_ENABLED';
 SET @JOB_SCHEDULER_NUMBER_OF_BATCHES='$JOB_SCHEDULER_NUMBER_OF_BATCHES';
@@ -116,6 +117,12 @@ SET @TOPIC_ARN='$TOPIC_ARN';
 SET @EMAIL_TOPIC_ARN='$EMAIL_TOPIC_ARN';
 SET @NOTIFICATION_EMAIL_ID='$NOTIFICATION_EMAIL_ID';
 SET @CUSTOMER_NAME='$CUSTOMER_NAME';
+SET @QUALYS_ENABLED='$QUALYS_ENABLED';
+SET @AQUA_ENABLED='$AQUA_ENABLED';
+SET @TENABLE_ENABLED='$TENABLE_ENABLED';     
+SET @PLUGIN_SCHEDULE_INTERVAL='$PLUGIN_SCHEDULE_INTERVAL';
+SET @PLUGIN_SCHEDULE_COLLECTOR_INITIAL_DELAY='$PLUGIN_SCHEDULE_COLLECTOR_INITIAL_DELAY';
+SET @PLUGIN_SCHEDULE_SHIPPER_INITIAL_DELAY='$PLUGIN_SCHEDULE_SHIPPER_INITIAL_DELAY';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -2060,20 +2067,27 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.properties.mail.smtp.starttls.enable',concat(@MAIL_SMTP_SSL_ENABLE,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.test-connection',concat(@MAIL_SMTP_SSL_TEST_CONNECTION,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 
-DELETE IGNORE FROM pac_config_properties where cfKey in ('scheduler.interval','gcp.eventbridge.bus.details','aws.eventbridge.bus.details','scheduler.rules.initial.delay','scheduler.total.batches','scheduler.shipper.initial.delay','scheduler.collector.initial.delay');
+DELETE IGNORE FROM pac_config_properties where cfKey in ('scheduler.interval','gcp.eventbridge.bus.details','aws.eventbridge.bus.details','scheduler.rules.initial.delay','scheduler.total.batches','scheduler.shipper.initial.delay','scheduler.collector.initial.delay','plugin.eventbridge.bus.details','plugin.interval','plugin.collector.initial.delay','plugin.shipper.initial.delay');
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.interval',concat(@JOB_SCHEDULE_INTERVAL,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.rules.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY_RULES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.shipper.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY_SHIPPER,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('plugin.interval',concat(@PLUGIN_SCHEDULE_INTERVAL,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('plugin.collector.initial.delay',concat(@PLUGIN_SCHEDULE_COLLECTOR_INITIAL_DELAY,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('plugin.shipper.initial.delay',concat(@PLUGIN_SCHEDULE_SHIPPER_INITIAL_DELAY,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.role',concat(@PAC_ROLE,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.collector.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.eventbridge.bus.details',concat(@GCP_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.eventbridge.bus.details',concat(@AZURE_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.eventbridge.bus.details',concat(@AWS_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('plugin.eventbridge.bus.details',concat(@PLUGIN_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.total.batches',concat(@JOB_SCHEDULER_NUMBER_OF_BATCHES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.enabled',concat(@AZURE_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.enabled',concat(@GCP_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.enabled',concat(@AWS_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('qualys.enabled',concat(@QUALYS_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua.enabled',concat(@AQUA_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('tenable.enabled',concat(@TENABLE_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('base.account',concat(@BASE_ACCOUNT,''),'job-scheduler','prd','latest',null,null,null,null);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('base.region',concat(@BASE_REGION,''),'job-scheduler','prd','latest',null,null,null,null);
 
