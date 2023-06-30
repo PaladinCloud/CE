@@ -2955,3 +2955,5 @@ END $$
 DELIMITER ;
 
 CALL update_filter_for_tag(@MANDATORY_TAGS);
+
+delete from pac_v2_ui_options where optionName in ('Application','Environment','Product','Owner') and filterId in (1,8);
