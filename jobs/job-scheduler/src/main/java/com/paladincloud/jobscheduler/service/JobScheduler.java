@@ -43,7 +43,10 @@ public class JobScheduler {
     public static final String PLUGIN_TYPE_QUALYS = "qualys";
     public static final String PLUGIN_TYPE_AQUA = "aqua";
     public static final String REQUEST_ENTRY = "Request entry: {} ";
-    public static final List<String> ALL_CLOUDS_LIST = Arrays.asList("aws","azure","gcp");
+    protected static final List<String> ALL_CLOUDS_LIST = Arrays.asList("aws","azure","gcp");
+    public static final String FAILED_WITH_ERROR_CODE = "Injection failed with Error Code: {} ";
+    public static final String EVENT_ID = "Event Id: {} ";
+    public static final String CURRENT_MILLISECONDS = "Current milliseconds: {}";
 
     @Autowired
     CredentialProvider credentialProvider;
@@ -57,8 +60,8 @@ public class JobScheduler {
     @Value("${azure.eventbridge.bus.details}")
     private String azureBusDetails;
 
-    @Value("${plugin.eventbridge.bus.details}")
-    private String pluginBusDetails;
+    @Value("${vulnerability.eventbridge.bus.details}")
+    private String vulnerabilityBusDetails;
 
 
     private boolean azureEnabled;
@@ -114,9 +117,9 @@ public class JobScheduler {
 
             for (PutEventsResultEntry resultEntry : result.entries()) {
                 if (resultEntry.eventId() != null) {
-                    logger.info("Event Id: {} ", resultEntry.eventId());
+                    logger.info(EVENT_ID, resultEntry.eventId());
                 } else {
-                    logger.info("Injection failed with Error Code: {} ", resultEntry.errorCode());
+                    logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
                 }
             }
 
@@ -133,7 +136,7 @@ public class JobScheduler {
     @Scheduled(initialDelayString = "${scheduler.shipper.initial.delay}", fixedDelayString = "${scheduler.interval}")
     public void scheduleShipperJobs() {
         // print the current milliseconds
-        logger.info("Current milliseconds: {}", System.currentTimeMillis());
+        logger.info(CURRENT_MILLISECONDS, System.currentTimeMillis());
         logger.info("Job Scheduler for shipper is running...");
 
         EventBridgeClient eventBrClient = getEventBridgeClient();
@@ -160,9 +163,9 @@ public class JobScheduler {
 
             for (PutEventsResultEntry resultEntry : result.entries()) {
                 if (resultEntry.eventId() != null) {
-                    logger.info("Event Id: {} ", resultEntry.eventId());
+                    logger.info(EVENT_ID, resultEntry.eventId());
                 } else {
-                    logger.info("Injection failed with Error Code: {} ", resultEntry.errorCode());
+                    logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
                 }
             }
 
@@ -179,7 +182,7 @@ public class JobScheduler {
     @Scheduled(initialDelayString = "${scheduler.rules.initial.delay}", fixedDelayString = "${scheduler.interval}")
     public void scheduleRules() {
         // print the current milliseconds
-        logger.info("Current milliseconds: {}", System.currentTimeMillis());
+        logger.info(CURRENT_MILLISECONDS, System.currentTimeMillis());
         logger.info("Job Scheduler for rules is running...");
 
         EventBridgeClient eventBrClient = getEventBridgeClient();
@@ -219,23 +222,23 @@ public class JobScheduler {
                 }
                 // add event for qualys policies
                 if (qualysEnabled) {
-                    putPluginRuleRequestEntries(i, pluginBusDetails,putEventsRequestEntries,PLUGIN_TYPE_QUALYS);
+                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails,putEventsRequestEntries,PLUGIN_TYPE_QUALYS);
                 }
 
                 // add event for aqua policies
                 if (aquaEnabled) {
-                    putPluginRuleRequestEntries(i, pluginBusDetails,putEventsRequestEntries,PLUGIN_TYPE_AQUA);
+                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails,putEventsRequestEntries,PLUGIN_TYPE_AQUA);
                 }
                 // add event for tenable policies
                 if (tenableEnabled) {
-                    putPluginRuleRequestEntries(i, pluginBusDetails,putEventsRequestEntries,PLUGIN_TYPE_TENABLE);
+                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails,putEventsRequestEntries,PLUGIN_TYPE_TENABLE);
                 }
                 PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
                 PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
                 for (PutEventsResultEntry resultEntry : result.entries()) {
                     if (resultEntry.eventId() != null) {
-                        logger.info("Event Id: {} ", resultEntry.eventId());
+                        logger.info(EVENT_ID, resultEntry.eventId());
                     } else {
                         logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
                     }
@@ -273,7 +276,7 @@ public class JobScheduler {
         }
     }
 
-    @Scheduled(initialDelayString = "${plugin.collector.initial.delay}", fixedDelayString = "${plugin.interval}")
+    @Scheduled(initialDelayString = "${vulnerability.collector.initial.delay}", fixedDelayString = "${vulnerability.interval}")
     public void schedulePluginCollectorJobs() {
         // print the current milliseconds
         logger.info("Current milliseconds: {} ", System.currentTimeMillis());
@@ -289,13 +292,13 @@ public class JobScheduler {
             aquaEnabled=Boolean.parseBoolean(System.getProperty(AQUA_ENABLED));
             tenableEnabled=Boolean.parseBoolean(System.getProperty(TENABLE_ENABLED));
             if (qualysEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, pluginBusDetails,PLUGIN_TYPE_QUALYS);
+                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails,PLUGIN_TYPE_QUALYS);
             }
             if (aquaEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, pluginBusDetails,PLUGIN_TYPE_AQUA);
+                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails,PLUGIN_TYPE_AQUA);
             }
             if (tenableEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, pluginBusDetails,PLUGIN_TYPE_TENABLE);
+                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails,PLUGIN_TYPE_TENABLE);
             }
 
             PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
@@ -304,9 +307,9 @@ public class JobScheduler {
 
             for (PutEventsResultEntry resultEntry : result.entries()) {
                 if (resultEntry.eventId() != null) {
-                    logger.info("Event Id: {} ", resultEntry.eventId());
+                    logger.info(EVENT_ID, resultEntry.eventId());
                 } else {
-                    logger.info("Injection failed with Error Code: {} ", resultEntry.errorCode());
+                    logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
                 }
             }
 
@@ -319,10 +322,10 @@ public class JobScheduler {
         }
         eventBrClient.close();
     }
-    @Scheduled(initialDelayString =  "${plugin.shipper.initial.delay}", fixedDelayString = "${plugin.interval}")
+    @Scheduled(initialDelayString =  "${vulnerability.shipper.initial.delay}", fixedDelayString = "${vulnerability.interval}")
     public void schedulePluginShipperJobs() {
         // print the current milliseconds
-        logger.info("Current milliseconds: {}", System.currentTimeMillis());
+        logger.info(CURRENT_MILLISECONDS, System.currentTimeMillis());
         logger.info("Job Scheduler for plugin shipper is running...");
 
         EventBridgeClient eventBrClient = getEventBridgeClient();
@@ -340,9 +343,9 @@ public class JobScheduler {
 
             for (PutEventsResultEntry resultEntry : result.entries()) {
                 if (resultEntry.eventId() != null) {
-                    logger.info("Event Id: {} ", resultEntry.eventId());
+                    logger.info(EVENT_ID, resultEntry.eventId());
                 } else {
-                    logger.info("Injection failed with Error Code: {} ", resultEntry.errorCode());
+                    logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
                 }
             }
 
