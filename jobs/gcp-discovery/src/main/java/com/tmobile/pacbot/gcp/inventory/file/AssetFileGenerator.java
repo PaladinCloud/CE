@@ -210,16 +210,16 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			executor.execute(() -> {
-				if (!(isTypeInScope("gkecluster"))) {
-					return;
-				}
-				try {
-					FileManager.generateGKEClusterFiles(gkeClusterInventoryCollector.fetchGKEClusterInventory(project));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
+//			executor.execute(() -> {
+//				if (!(isTypeInScope("gkecluster"))) {
+//					return;
+//				}
+//				try {
+//					FileManager.generateGKEClusterFiles(gkeClusterInventoryCollector.fetchGKEClusterInventory(project));
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			});
 			executor.execute(() -> {
 				if (!(isTypeInScope("clouddns"))) {
 					return;

@@ -7,6 +7,8 @@ import com.tmobile.pacbot.gcp.inventory.file.AssetFileGenerator;
 import com.tmobile.pacbot.gcp.inventory.file.S3Uploader;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import com.tmobile.pacman.commons.database.RDSDBManager;
+import io.grpc.LoadBalancerRegistry;
+import io.grpc.internal.PickFirstLoadBalancerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +68,9 @@ public class GCPFetchOrchestrator {
                 return ErrorManageUtil.formErrorCode();
             }
 
+            // register PickFirstLoadBalancerProvider
+            LoadBalancerRegistry.getDefaultRegistry().register(new PickFirstLoadBalancerProvider());
+
             log.info("Start : FIle Generation");
             fileGenerator.generateFiles(allProjects, filePath);
             log.info("End : FIle Generation");
@@ -99,7 +104,9 @@ public class GCPFetchOrchestrator {
                 CloudResourceManager.Projects.Get project = resource.projects().get(projectId);
                 Project p = project.execute();
                 log.info("Project Id: {}, Project Name: {}, Project number: {}"
-                        ,p.getProjectId(),p.getName(),p.getProjectNumber());
+                        ,p.getProjectId(),p.getName()
+                        , p.getProjectNumber()
+                );
                 ProjectVH projectVH=new ProjectVH();
                 projectVH.setProjectId(p.getProjectId());
                 projectVH.setProjectName(p.getName());
