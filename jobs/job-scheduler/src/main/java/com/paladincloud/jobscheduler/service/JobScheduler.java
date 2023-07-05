@@ -111,18 +111,19 @@ public class JobScheduler {
                 addCollectorEvent(putEventsRequestEntries, gcpBusDetails);
             }
 
-            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+            if (!putEventsRequestEntries.isEmpty()) {
+                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
 
-            PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
-            for (PutEventsResultEntry resultEntry : result.entries()) {
-                if (resultEntry.eventId() != null) {
-                    logger.info(EVENT_ID, resultEntry.eventId());
-                } else {
-                    logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                for (PutEventsResultEntry resultEntry : result.entries()) {
+                    if (resultEntry.eventId() != null) {
+                        logger.info(EVENT_ID, resultEntry.eventId());
+                    } else {
+                        logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                    }
                 }
             }
-
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
             System.exit(1);
@@ -157,18 +158,19 @@ public class JobScheduler {
                 addShipperEvent(putEventsRequestEntries, azureBusDetails);
             }
 
-            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+            if (!putEventsRequestEntries.isEmpty()) {
+                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
 
-            PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
-            for (PutEventsResultEntry resultEntry : result.entries()) {
-                if (resultEntry.eventId() != null) {
-                    logger.info(EVENT_ID, resultEntry.eventId());
-                } else {
-                    logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                for (PutEventsResultEntry resultEntry : result.entries()) {
+                    if (resultEntry.eventId() != null) {
+                        logger.info(EVENT_ID, resultEntry.eventId());
+                    } else {
+                        logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                    }
                 }
             }
-
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
             System.exit(1);
@@ -207,7 +209,7 @@ public class JobScheduler {
             for (int i = 0; i < totBatches; i++) {
                 List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
                 // add event for aws rules
-                if(awsEnabled) {
+                if (awsEnabled) {
                     putRuleEventIntoRequestEntry(i, awsBusDetails, putEventsRequestEntries);
                 }
 
@@ -222,29 +224,31 @@ public class JobScheduler {
                 }
                 // add event for qualys policies
                 if (qualysEnabled) {
-                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails,putEventsRequestEntries,PLUGIN_TYPE_QUALYS);
+                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails, putEventsRequestEntries, PLUGIN_TYPE_QUALYS);
                 }
 
                 // add event for aqua policies
                 if (aquaEnabled) {
-                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails,putEventsRequestEntries,PLUGIN_TYPE_AQUA);
+                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails, putEventsRequestEntries, PLUGIN_TYPE_AQUA);
                 }
                 // add event for tenable policies
                 if (tenableEnabled) {
-                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails,putEventsRequestEntries,PLUGIN_TYPE_TENABLE);
+                    putPluginRuleRequestEntries(i, vulnerabilityBusDetails, putEventsRequestEntries, PLUGIN_TYPE_TENABLE);
                 }
-                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
-                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+                if (!putEventsRequestEntries.isEmpty()) {
+                    PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+                    PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
-                for (PutEventsResultEntry resultEntry : result.entries()) {
-                    if (resultEntry.eventId() != null) {
-                        logger.info(EVENT_ID, resultEntry.eventId());
-                    } else {
-                        logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
+                    for (PutEventsResultEntry resultEntry : result.entries()) {
+                        if (resultEntry.eventId() != null) {
+                            logger.info(EVENT_ID, resultEntry.eventId());
+                        } else {
+                            logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
+                        }
                     }
+                    //Delay of 1 min between each batch
+                    Thread.sleep(1000 * 60);
                 }
-                //Delay of 1 min between each batch
-                Thread.sleep(1000 * 60);
             }
 
         } catch (EventBridgeException e) {
@@ -292,27 +296,28 @@ public class JobScheduler {
             aquaEnabled=Boolean.parseBoolean(System.getProperty(AQUA_ENABLED));
             tenableEnabled=Boolean.parseBoolean(System.getProperty(TENABLE_ENABLED));
             if (qualysEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails,PLUGIN_TYPE_QUALYS);
+                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_QUALYS);
             }
             if (aquaEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails,PLUGIN_TYPE_AQUA);
+                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_AQUA);
             }
             if (tenableEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails,PLUGIN_TYPE_TENABLE);
+                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_TENABLE);
             }
 
-            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+            // check if events to put is > 0
+            if (!putEventsRequestEntries.isEmpty()) {
+                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
-            PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
-
-            for (PutEventsResultEntry resultEntry : result.entries()) {
-                if (resultEntry.eventId() != null) {
-                    logger.info(EVENT_ID, resultEntry.eventId());
-                } else {
-                    logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                for (PutEventsResultEntry resultEntry : result.entries()) {
+                    if (resultEntry.eventId() != null) {
+                        logger.info(EVENT_ID, resultEntry.eventId());
+                    } else {
+                        logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                    }
                 }
             }
-
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
             System.exit(1);
@@ -333,22 +338,23 @@ public class JobScheduler {
 
         try {
             ConfigUtil.setConfigProperties();
-            qualysEnabled=Boolean.parseBoolean(System.getProperty(QUALYS_ENABLED));
+            qualysEnabled = Boolean.parseBoolean(System.getProperty(QUALYS_ENABLED));
             if (qualysEnabled) {
-                addPluginShipperEvent(putEventsRequestEntries, awsBusDetails,PLUGIN_TYPE_QUALYS);
+                addPluginShipperEvent(putEventsRequestEntries, awsBusDetails, PLUGIN_TYPE_QUALYS);
             }
-            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+            if (!putEventsRequestEntries.isEmpty()) {
+                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
 
-            PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
-            for (PutEventsResultEntry resultEntry : result.entries()) {
-                if (resultEntry.eventId() != null) {
-                    logger.info(EVENT_ID, resultEntry.eventId());
-                } else {
-                    logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                for (PutEventsResultEntry resultEntry : result.entries()) {
+                    if (resultEntry.eventId() != null) {
+                        logger.info(EVENT_ID, resultEntry.eventId());
+                    } else {
+                        logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                    }
                 }
             }
-
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
             System.exit(1);
