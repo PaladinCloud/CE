@@ -246,7 +246,7 @@ public class AutoFixManager {
             String issueStatus = annotation.get("issueStatus");
 
             // find resource owner
-            resourceOwner = ownerService.findResourceOwnerByIdAndType(resourceId, serviceType);
+            //resourceOwner = ownerService.findResourceOwnerByIdAndType(resourceId, serviceType);
             // the following method will also trigger a auto fix plan creation if no action is taken on resource yet
             autoFixAction = nextStepManager.getNextStep(policyParam,normalizeResourceId(resourceId, serviceType,annotation),resourceId, clientMap, serviceType);
             if(AutoFixAction.UNABLE_TO_DETERMINE==autoFixAction){

@@ -108,7 +108,7 @@ public class UnusedElasticIPAutofix extends BaseFix {
 			Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
 		int hours = AUTOFIX_DEFAULT_INTERVAL;// Default
 		try {
-			hours = Integer.parseInt(ruleParams.get(PacmanSdkConstants.AUTOFIX_POLICY_ELAPSED_TIME));
+			hours = Integer.parseInt(ruleParams.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
 		} catch (Exception e) {
 			LOGGER.error("Exception retrieving autofix configuration[{}]", e.getMessage());
 		}

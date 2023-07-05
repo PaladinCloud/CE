@@ -26,6 +26,7 @@ package com.tmobile.pacman.commons.policy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 import com.tmobile.pacman.commons.dao.RDSDBManager;
@@ -74,8 +75,12 @@ public class Annotation extends HashMap<String, String> {
 		//annotation.put(PacmanSdkConstants.POLICY_NAME,annotation.getPolicyName(ruleParam.get(PacmanSdkConstants.POLICY_ID)));
 		annotation.put(PacmanSdkConstants.POLICY_NAME, ruleParam.get(PacmanSdkConstants.POLICY_DISPLAY_NAME));
 		annotation.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
-		annotation.put(PacmanSdkConstants.POLICY_VERSION, ruleParam.get(PacmanSdkConstants.POLICY_VERSION));
-		annotation.put(PacmanSdkConstants.RESOURCE_ID, ruleParam.get(PacmanSdkConstants.RESOURCE_ID));
+		if (!Objects.isNull(ruleParam.get(PacmanSdkConstants.POLICY_VERSION))) {
+			annotation.put(PacmanSdkConstants.POLICY_VERSION, ruleParam.get(PacmanSdkConstants.POLICY_VERSION));
+		}
+		if (!Objects.isNull(ruleParam.get(PacmanSdkConstants.RESOURCE_ID))) {
+			annotation.put(PacmanSdkConstants.RESOURCE_ID, ruleParam.get(PacmanSdkConstants.RESOURCE_ID));
+		}
 		annotation.put(PacmanSdkConstants.TYPE, type.value());
 		return annotation;
 	}

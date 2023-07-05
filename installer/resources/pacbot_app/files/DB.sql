@@ -2099,7 +2099,7 @@ INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `pr
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.host',concat(@PACMAN_HOST_NAME,''),'rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.mail.cc.to','mail@paladincloud.io','rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.orphan.resource.owner','mail@paladincloud.io','rule','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.role.name',concat('role/',@EVENT_BRIDGE_PREFIX),'rule','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.role.name',concat('role/','PaladinCloudIntegrationRole'),'rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.integrations.slack.webhook.url','','rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.target.type.alias','account=iam,volume=ec2,snapshot=ec2,rdsdb=rds,dynamodb=dyndb,appelb=elb_app,classicelb=elb_classic,sg=ec2,elasticip=ec2,iamuser=iam,iamrole=iam','rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('autofix.allowlist.accounts.S3GlobalAccess_version-1_S3BucketShouldnotpubliclyaccessble_s3','','rule','prd','latest',NULL,NULL,NULL,NULL);
@@ -2971,3 +2971,5 @@ DELIMITER ;
 CALL update_filter_for_tag(@MANDATORY_TAGS);
 
 delete from pac_v2_ui_options where optionValue like 'tags.%';
+
+update pac_config_properties set value = 'role/PaladinCloudIntegrationRole' where cfkey = 'pacman.auto.fix.role.name';
