@@ -14,7 +14,7 @@
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -312,6 +312,7 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         AuthGuardService,
         CommonResponseService,
         CopytoClipboardService,
+        DatePipe,
         ErrorHandlingService,
         ExceptionManagementService,
         FilterManagementService,

@@ -16,15 +16,18 @@ import { Injectable } from '@angular/core';
 import each from 'lodash/each';
 import findIndex from 'lodash/findIndex';
 import map from 'lodash/map';
-import * as moment from 'moment';
 import { QUARTER } from './../constants/quarter';
 import { LoggerService } from './logger.service';
 import { RefactorFieldsService } from './refactor-fields.service';
 import { DATA_MAPPING } from '../constants/data-mapping';
+import { DatePipe } from '@angular/common';
 
 @Injectable()
 export class UtilsService {
-  constructor(private logger: LoggerService,
+  private readonly utcDateFormat = 'yyyy-MM-dd';
+  constructor(
+              private datePipe: DatePipe,
+              private logger: LoggerService,
               private refactorFieldsService: RefactorFieldsService) {}
 
   setTimeoutPromise(milliseconds) {
@@ -263,25 +266,29 @@ export class UtilsService {
       return monthValue + ' ' + day + ',' + ' ' + year + ' ';
     }
 
-    getNumberOfWeeks = function(year, quarter) {
-      const currentQuarter =  QUARTER.quarterObj[quarter];
-      const fromDate = moment(year + '-' + currentQuarter.fromMonth + '-' + currentQuarter.fromDay);
+    getNumberOfWeeks = (year, quarter) => {
+      const currentQuarter = QUARTER.quarterObj[quarter];
+      const fromDate = new Date(`${year}-${currentQuarter.fromMonth}-${currentQuarter.fromDay}`);
       let weeks = 14;
-      if (+quarter === 1 ) {
+      if (+quarter === 1) {
         // if year is leap year and first quarter starts with Sunday.
-        if (moment([year]).isLeapYear() && fromDate.weekday() === 0) {
+        if (this.isLeapYear(fromDate.getFullYear()) && fromDate.getDay() === 0) {
           weeks = 13;
         // if first quarter starts with Sunday or Monday.
-        } else if (fromDate.weekday() === 0 || fromDate.weekday() === 1) {
+        } else if (fromDate.getDay() === 0 || fromDate.getDay() === 1) {
           weeks = 13;
         }
       // if second quarter starts with Sunday.
-      } else if (+quarter === 2 && fromDate.weekday() === 0) {
+      } else if (+quarter === 2 && fromDate.getDay() === 0) {
         weeks = 13;
       }
 
       return weeks;
     };
+
+    private isLeapYear(year: number) {
+        return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+    }
 
     checkIfAPIReturnedDataIsEmpty(data) {
     // There can be multiple scenarios:
@@ -384,9 +391,6 @@ export class UtilsService {
     }
 
     getUTCDate(date) {
-      // get UTC Date in YYYY-MM-DD format
-      const utcDate = moment.utc(date).format('YYYY-MM-DD');
-      return utcDate;
-  }
-
+      return this.datePipe.transform(new Date(date).toUTCString(), this.utcDateFormat);
+    }
 }

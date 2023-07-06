@@ -47,7 +47,6 @@
         "graphql": "^16.0.0",
         "html2canvas": "^1.2",
         "lodash": "^4.17.21",
-        "moment": "^2.24.0",
         "ng-apexcharts": "^1.7.1",
         "ngx-google-analytics": "^13.0.1",
         "ngx-infinite-scroll": "^0.8.3",

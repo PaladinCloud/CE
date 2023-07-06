@@ -28,7 +28,6 @@ import { AuthService } from '../../core/services/auth.service';
 import { CONFIGURATIONS } from './../../../config/configurations';
 import { AdalService } from '../../core/services/adal.service';
 import { AwsCognitoService } from '../../core/services/aws-cognito.service';
-import * as moment from 'moment';
 import { HttpService } from 'src/app/shared/services/http-response.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 
