@@ -22,6 +22,17 @@ export class FormService {
       required: 'This field is required',
       email: 'This email address is invalid',
       pattern: 'This character is not allowed',
+      digit: 'This field must contain only digits',
+      exactDigits: 'This field must contain exact 12 digits',
+      invalidJson: 'Invalid Json format',
+      invalidProjectIdLength: 'This field must be between 6 and 30 characters long',
+      invalidClientSecretLength: 'This field must be 40 characters long',
+      alphanumeric: 'This field must contain only letters and digits',
+      alphanumericHyphen: 'This field must contain only letters, digits and hyphen',
+      endsWithHyphen: 'This field must not end with a hyphen',
+      startsWithLetter: 'This field must start with a letter',
+      invalidField: 'This field contains invalid characters',
+      invalidURL: 'Please enter a valid Url',
       invalid_characters: (matches: any[]) => {
 
         let matchedCharacters = matches;

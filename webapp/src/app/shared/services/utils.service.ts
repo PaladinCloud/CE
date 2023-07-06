@@ -78,6 +78,14 @@ export class UtilsService {
     }, 10);
   }
 
+  uppercasefirst(value: string | null) {
+    if (value === null) {
+        return 'Not assigned';
+    }
+    value = value.toLocaleLowerCase();
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
   objectToArray(object, keyLabel = 'key', valueLabel = 'value') {
     return map(object, (element, key, array) => {
       const arrayElement: any = {};
@@ -95,11 +103,11 @@ export class UtilsService {
     return str;
   }
 
-  massageTableData(data, columnNamesMap?) {
+  massageTableData(data, columnNamesMap={}) {
     /*
-       * added by Trinanjan 14/02/2017
-       * the funciton replaces keys of the table header data to a readable format
-     */
+      * added by Trinanjan 14/02/2017
+      * the funciton replaces keys of the table header data to a readable format
+    */
     const refactoredService = this.refactorFieldsService;
     const newData = [];
     data.map(function(row) {
@@ -124,6 +132,62 @@ export class UtilsService {
     return newData;
   }
 
+  processTableData(data,tableImageDataMap={},dataMap={}) {
+    try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;
+      const keynames = Object.keys(getData[0]);
+
+      let cellData;
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellData = getData[row][col];
+          cellObj = {
+            text: tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
+            titleText: cellData, // text to show on hover
+            valueText: cellData,
+            hasPostImage: false,
+            imgSrc: tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            isLink: false,
+            imageTitleText: ""
+          }
+          if(this.isDateStringValid(cellData)){
+            cellObj = {
+              ...cellObj,
+              isDate: true
+            };
+          }
+          if(dataMap[cellData]){
+            cellObj = {
+              ...cellObj,
+              text: dataMap[cellData],
+              titleText: dataMap[cellData],
+              valueText: dataMap[cellData]
+            };
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
+      }
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
+      return processedData;
+    } catch (error) {
+      this.logger.log("error", error);
+    }
+  }
+
   addOrReplaceElement(array, toAddElement, comparator) {
     const i = findIndex(array, (element, index, _array) => {
       return comparator(element, index, _array);
@@ -137,6 +201,9 @@ export class UtilsService {
   }
 
   getParamsFromUrlSnippet(urlSnippet) {
+    if(urlSnippet===undefined){
+      return;
+    }
     const split = urlSnippet.split('?');
     const url = split[0];
     const params = {};
@@ -164,10 +231,10 @@ export class UtilsService {
   }
 
   /**
-   * Funciton added by trinanjan on 30.01.2018
-   * This function process the queryparams from router snapshot and
-   * passes the required formate obj for filter parameter
-   */
+  * Funciton added by trinanjan on 30.01.2018
+  * This function process the queryparams from router snapshot and
+  * passes the required formate obj for filter parameter
+  */
 
   processFilterObj(data) {
     let object = {};
@@ -187,11 +254,11 @@ export class UtilsService {
   }
 
   /**
-   * Funciton added by trinanjan on 31.01.2018
-   * This function process filter parameter to be passes to required format
-   * Example Input --> {'tagged':'true','targetType':'ec2'}
-   * Example Output --> {'filter': 'tagged=true*targetType=ec2'}
-   */
+  * Funciton added by trinanjan on 31.01.2018
+  * This function process filter parameter to be passes to required format
+  * Example Input --> {'tagged':'true','targetType':'ec2'}
+  * Example Output --> {'filter': 'tagged=true*targetType=ec2'}
+  */
 
   makeFilterObj(data) {
     try {
@@ -215,6 +282,12 @@ export class UtilsService {
     } catch (error) {
       this.logger.log('error', 'js error - ' + error);
     }
+  }
+
+  isDateStringValid(dateString) {
+    const datePattern1 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}\+\d{4}$/;
+    const datePattern2 = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+    return datePattern1.test(dateString) || datePattern2.test(dateString);
   }
 
   calculateDate(_JSDate) {
@@ -262,7 +335,7 @@ export class UtilsService {
         }
       if (requiredTime) {
         return monthValue + ' ' + day + ',' + ' ' + year + ' '+ hrs + ':' + mins + ' ' + ampm;
-       }
+      }
       return monthValue + ' ' + day + ',' + ' ' + year + ' ';
     }
 
@@ -293,10 +366,10 @@ export class UtilsService {
     checkIfAPIReturnedDataIsEmpty(data) {
     // There can be multiple scenarios:
     /*
-     - data can be an empty object
-     - data can be an empty array
-     - data can be undefined
-     */
+    - data can be an empty object
+    - data can be an empty array
+    - data can be undefined
+    */
 
     let isEmpty = false;
 
@@ -392,5 +465,21 @@ export class UtilsService {
 
     getUTCDate(date) {
       return this.datePipe.transform(new Date(date).toUTCString(), this.utcDateFormat);
+    }
+
+    generateIntervals(minimum, maximum, numIntervals) {
+      const range = maximum - minimum;
+      const intervalSize = range / numIntervals;
+    
+      const intervals = [];
+      let lowerBound = minimum;
+    
+      for (let i = 0; i < numIntervals; i++) {
+        const upperBound = Math.min(lowerBound + intervalSize, maximum);
+        intervals.push({ lowerBound, upperBound });
+        lowerBound = upperBound;
+      }
+    
+      return intervals;
     }
 }

@@ -1,23 +1,26 @@
 <div class="account-management-page-wrapper">
     <div class="page-header">
-        <h6>{{pageTitle}}</h6>
+        <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
        <button class="button btn"
-        (click)="createAccount()">Add Account</button>
+        (click)="createAccount()">Add Plugin</button>
     </div>
     <div class="data-table-container">
         <section>
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
+                        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths" (rowSelectEventEmitter)="handleRowClick($event)"
                             [headerColName]="headerColName" [direction]="direction" (actionSelected)="goToDetails($event)"
-                            [doLocalSearch]="true" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
+                            [doLocalSearch]="false" [doLocalSort]="true" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
                             [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true" [showAddRemoveCol]="true"
                             [showDownloadBtn]="false" [showFilterBtn]="true" (selectedFilterType)='changeFilterType($event)'
                             (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
                              [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
-                             [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="true" [tableErrorMessage]="errorMessage"
-                            [rowClickable]="false" [rowSize]="'SM'" (headerColNameSelected)="handleHeaderColNameSelection($event)">
+                            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [tableErrorMessage]="errorMessage"
+                            [rowClickable]="true" [rowSize]="'SM'" [centeredColumns]="centeredColumns" (headerColNameSelected)="handleHeaderColNameSelection($event)"
+                            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                            [selectedRowIndex]="selectedRowIndex" [onScrollDataLoader]="onScrollDataLoader"
+                            (nextPageCalled)="nextPg($event)">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>

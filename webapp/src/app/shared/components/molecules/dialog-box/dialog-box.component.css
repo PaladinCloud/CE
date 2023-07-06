@@ -1,5 +1,6 @@
 ::ng-deep .mat-dialog-container{
     padding: 0px !important;
+    border-radius: 8px;
 }
 
 ::ng-deep .mat-dialog-title{
@@ -13,6 +14,7 @@
 ::ng-deep .mat-dialog-content{
     padding: 24px;
     margin: 0px !important;
+    max-height: 75vh;
     border-bottom: 1px solid var(--border-200);
     border-top: 1px solid var(--border-200);
 }
@@ -24,10 +26,12 @@
     flex-direction: row-reverse;
 }
 
-img{
-    height: 14px;
-}
-
 .hide{
     display: none !important;
+}
+
+.dialog-body ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label
+{
+    margin-left: 12px !important;
+    display: block !important;
 }

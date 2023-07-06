@@ -90,7 +90,6 @@
     padding-top: 24px;  
     border-top: 1px solid var(--border-100);
     overflow: auto;
-    height: calc(100% - 80px);
 }
 
 .step-wrapper{
@@ -167,9 +166,6 @@
     background-color: var(--background-white);
 }
 
-.form-wrapper{
-    height: calc(100% - 80px);
-}
 
 .tile{
     padding: 16px;
@@ -207,7 +203,7 @@
     flex-direction: column;
 }
 
-.details-wrapper{
+.form-wrapper{
     padding-top: 24px;
     padding-right: 24px;
     display: flex;
@@ -227,7 +223,6 @@
 .copy-icon{
     padding: 13px;
     background-color: #EDF2FA;
-    cursor: pointer;
 }
 
 .script-text{
@@ -258,6 +253,7 @@
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
+    padding: 0;
   }
 
   .validation-sub-text
@@ -348,6 +344,18 @@
 .value-wrapper{
     font: var(--text-body-1);
     color: var(--text-high-emphasis);
+    word-break: break-all;
+}
+
+.btnDisabled{
+    opacity: 40%;
+    pointer-events: none;
+}
+
+.select-account{
+    height: calc(100% - 36px);
+    padding: 40px;
+    background: white;
 }
 
 .details-header, .configure-header{
@@ -360,6 +368,7 @@
     flex-direction: column;
     gap: 12px;
     padding-top: 24px;
+    border-top: 1px solid var(--border-200);
 }
 
 .account-details-wrapper{
@@ -368,5 +377,28 @@
     gap: 12px;
     padding-top: 24px;
     padding-bottom: 32px;
-    border-bottom: 1px solid;
 }
+
+.info-text{
+   font: var(--text-headline-6);
+   color: var(--text-high-emphasis);
+}
+
+.supporting-info-text{
+    font: var(--text-body-2);
+    color: var(--text-low-emphasis);
+}
+
+.close-icon{
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+}
+
+.info-wrapper{
+    padding-top: 16px;
+}
+
+.supporting-info-text a {
+    color: #003DA1;
+  }
