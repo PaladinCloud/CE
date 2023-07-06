@@ -187,6 +187,7 @@ public abstract class QualysDataImporter {
                         LOGGER.debug("Response bytes processed: {}", responseBuilder.length());
                     }
                 }
+
                 long endTimeBeforeChunksProcessing = System.currentTimeMillis();
                 LOGGER.debug("Printing EndTime after reading  response in chunks: {}",endTimeBeforeChunksProcessing);
                 long totalTimeTakingForChunkProcessingInSeconds = (endTimeBeforeChunksProcessing - startTimeBeforeChunksProcessing)/1000;
