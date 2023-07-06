@@ -30,6 +30,10 @@
     border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
+.table-right-items {
+    margin-left: auto;
+}
+
 .table-right-items > *:not(:last-child) {
     padding: 0 16px;
     border-right: 1px solid #a8b9cc;
