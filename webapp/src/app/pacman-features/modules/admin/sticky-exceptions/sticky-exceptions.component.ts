@@ -33,7 +33,7 @@ import { DatePipe } from "@angular/common";
   providers: [LoggerService, ErrorHandlingService, AdminService],
 })
 export class StickyExceptionsComponent implements OnInit, OnDestroy {
-  pageTitle: String = "Sticky Exceptions";
+  pageTitle: String = "Exemptions";
   allPolicies: any = [];
   breadcrumbArray: any = ["Admin"];
   breadcrumbLinks: any = ["policies"];
@@ -108,7 +108,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
-    this.breadcrumbPresent = "Sticky Exceptions";
+    this.breadcrumbPresent = "Exemptions";
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
@@ -207,9 +207,9 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   /*
-   * This function gets the urlparameter and queryObj
-   *based on that different apis are being hit with different queryparams
-   */
+  * This function gets the urlparameter and queryObj
+  *based on that different apis are being hit with different queryparams
+  */
   routerParam() {
     try {
       // this.filterText saves the queryparam
@@ -226,10 +226,10 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
         delete this.queryParamsWithoutFilter["filter"];
 
         /**
-         * The below code is added to get URLparameter and queryparameter
-         * when the page loads ,only then this function runs and hits the api with the
-         * filterText obj processed through processFilterObj function
-         */
+        * The below code is added to get URLparameter and queryparameter
+        * when the page loads ,only then this function runs and hits the api with the
+        * filterText obj processed through processFilterObj function
+        */
         this.filterText = this.utils.processFilterObj(this.FullQueryParams);
 
         this.urlID = this.FullQueryParams.TypeAsset;
@@ -245,9 +245,9 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This function get calls the keyword service before initializing
-   * the filter array ,so that filter keynames are changed
-   */
+  * This function get calls the keyword service before initializing
+  * the filter array ,so that filter keynames are changed
+  */
 
   updateComponent() {
     this.outerArr = [];
@@ -341,11 +341,12 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
               properties: {
                 color: "",
               },
-              colName: this.datePipe.transform(getCols[col], this.shortDateFormat),
+              colName:dateValue,
               hasPreImg: false,
               imgLink: "",
-              text: dateValue,
-              valText: dateValue,
+              text:dateValue,
+              valText:dateValue,
+              isDate: true
             };
           } else {
             cellObj = {

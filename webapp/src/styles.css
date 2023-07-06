@@ -174,27 +174,22 @@ td.hide.table-cells {
 
 h1 {
   font: var(--text-headline-1);
-  color: var(--text-high-emphasis);
 }
 
 h2 {
   font: var(--text-headline-2);
-  color: var(--text-high-emphasis);
 }
 
 h3 {
   font: var(--text-headline-3);
-  color: var(--text-high-emphasis);
 }
 
 .subtitle-2{
   font: var(--text-subtitle-2);
-  color: var(--text-medium-emphasis);
 }
 
 .subtitle-1{
   font: var(--text-subtitle-1);
-  color: var(--text-medium-emphasis);
 }
 
 .primary-400{
@@ -203,12 +198,10 @@ h3 {
 
 h4 {
   font: var(--text-headline-4);
-  color: var(--text-high-emphasis);
 }
 
 h5 {
   font: var(--text-headline-5);
-  color: var(--text-medium-emphasis);
 }
 
 h6{
@@ -227,12 +220,10 @@ h6{
 
 .body-1{
   font: var(--text-body-1);
-  color: var(--text-medium-emphasis);
 }
 
 .body-2{
   font: var(--text-body-2);
-  color: var(--text-medium-emphasis);
 }
 
 .high-emphasis{
@@ -255,6 +246,10 @@ h6{
   flex-direction: column;
 }
 
+.copy-icon{
+    cursor: pointer;
+}
+
 b {
   font-family: var(--text-medium-font-family);
   font-family: ex2-medium;
@@ -272,7 +267,7 @@ b {
 }
 
 .focus .axis.axis--x .tick text {
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 12px;
 }
 
@@ -287,6 +282,11 @@ text.axis-title {
 }
 
 .overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.landingToolTipOverlay{
   fill: none;
   pointer-events: all;
 }
@@ -372,7 +372,7 @@ text.axis-title {
 }
 
 .context .axis .tick text {
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 10px;
   fill: #999;
   dy: 1.2em;
@@ -618,7 +618,7 @@ text.axis-title {
 }
 
 .uppercase {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .italics {
@@ -670,6 +670,11 @@ text.axis-title {
   color: var(--primary-400);
 }
 
+.isDisabled{
+  pointer-events: none;
+  opacity: 70%; 
+}
+
 /* ::selection {
     background: transparent;
 } */
@@ -679,7 +684,7 @@ text.axis-title {
 .mat-focused .mat-form-field-placeholder,
 .mat-form-field-placeholder {
   color: #777777;
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .mat-form-field.mat-focused.mat-primary .mat-select-arrow {
@@ -743,7 +748,7 @@ text.axis-title {
   left: 50%;
   transform: translate(-50%, -50%);
   color: var(--primary-400);
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 1.3em;
 }
 
@@ -811,6 +816,11 @@ input:-webkit-autofill {
 
 .floating-widgets-filter-wrapper {
   padding: 0em 1.5em 1.5em;
+}
+
+.disabled-button{
+  opacity: 0.6;
+  cursor: not-allowed !important;
 }
 
 /* Left side section */
@@ -1301,6 +1311,10 @@ body {
   gap: 16px;
 }
 
+.gap-20{
+  gap: 20px;
+}
+
 .gap-24{
   gap: 24px;
 }
@@ -1335,6 +1349,30 @@ body {
 
 .padding-28{
   padding: 28px;
+}
+
+.border-100{
+  border: 1px solid var(--border-100);
+}
+
+.border-200{
+  border: 1px solid var(--border-200);
+}
+
+.dialog-body-header{
+  font: var(--text-headline-6);
+  color: var(--text-high-emphasis);
+}
+
+.dialog-body-content{
+ font: var(--text-body-2);
+ color: var(--text-medium-emphasis);
+}
+
+.dialog-body{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 ::-webkit-scrollbar {
@@ -2038,6 +2076,12 @@ g.arc .bubble-text {
 .mat-flat-button.mat-primary{
   background-color: var(--primary-400);
   pointer-events: all;
+}
+
+.mat-flat-button.mat-danger{
+  background-color: #C53434;
+  pointer-events: all;
+  color: white;
 }
 
 .mat-stroked-button.mat-primary{

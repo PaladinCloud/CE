@@ -1,12 +1,12 @@
 <div class="dialog-box">
   <div mat-dialog-title [class.hide]="data.title == null">
     <app-text classNames="body-2 high-emphasis" [text]="data.title"></app-text>
-      <img src="../assets/icons/x-icon.svg" (click)=onNoClick()>
+      <img class="x-icon" src="../assets/icons/x-icon.svg" (click)=onNoClick()>
   </div>
   <div mat-dialog-content class="content">
   <ng-container [ngTemplateOutlet]="data.template"></ng-container>
   </div>
-  <div mat-dialog-actions>
+  <div mat-dialog-actions *ngIf="data.yesButtonLabel || data.noButtonLabel">
     <app-custom-button *ngIf="data.yesButtonLabel" buttonType="flat" [label]="data.yesButtonLabel"
     (click)="onYesClick()" [mat-dialog-close]="" cdkFocusInitial></app-custom-button>
     <app-custom-button *ngIf="data.noButtonLabel" buttonType="stroked"

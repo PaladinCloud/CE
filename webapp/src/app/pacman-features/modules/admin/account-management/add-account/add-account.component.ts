@@ -5,7 +5,12 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { environment } from 'src/environments/environment';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
-import { NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { CONFIGURATIONS } from 'src/config/configurations';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { CustomValidators } from 'src/app/shared/custom-validators';
+import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({
@@ -16,19 +21,23 @@ import { NgForm } from '@angular/forms';
 export class AddAccountComponent implements OnInit,AfterViewInit {
 
   private pageLevel = 0;
-  pageTitle: string = "Add Account";
+  pageTitle: string = "Add Plugin";
   currentStepperIndex = 0;
   backButtonRequired;
   breadcrumbPresent: string;
   urlToRedirect: string;
   breadcrumbArray: any;
   breadcrumbLinks: any;
-  selectedAccount: string = "Azure";
+  selectedAccount: string = "";
   accountId : string;
-  accountName: string;
+  accountName: string = "";
+  qualysApiUrl: string;
+  qualysApiUser: string;
+  qualysApiPassword: string;
   projectId: string;
   tenantId: string;
   tenantName : string;
+  tenantSecret: string;
   tenantSecretData: string;
   projectName: string;
   subscriptionName: string;
@@ -40,7 +49,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   gcpProjectId = "";
   location = "";
   gcpProjectNumber = "";
-  downloadUrl = "https://account-configure.s3.amazonaws.com/aws-account-configure.template";
+  CloudformationTemplateUrl = "";
   workloadIdentityPoolId;validateSubscription: any;
   roleName: any;
   baseAccountSubscription: any;
@@ -49,24 +58,56 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   secondGcpCommand = "";
   thirdGcpCommand = "";
   errorList = [];
+  pluginSelected: string = "";
   @ViewChild("selectAccountRef") selectAccountRef: TemplateRef<any>;
   @ViewChild("configureAccountRef") configureAccountRef: TemplateRef<any>;
   @ViewChild("addDetailsRef") addDetailsRef: TemplateRef<any>;
   @ViewChild("reviewRef") reviewRef: TemplateRef<any>;
   currentTemplateRef : TemplateRef<ElementRef>;
   @ViewChild('accountForm', {static: false}) accountForm: NgForm;
+  @ViewChild('supportInfoRef') supportInfoRef: TemplateRef<any>;
+
+
+  private currentPluginForm: FormGroup;
+  private awsPluginForm: FormGroup;
+  private azurePluginForm: FormGroup;
+  private gcpPluginForm: FormGroup;
+  private qualysPluginForm: FormGroup;
+  private aquaPluginForm: FormGroup;
+
+  
+  public awsFormErrors = {
+    accountId: ''
+  }
+  public azureFormErrors ={
+    applicationId: '',
+    directoryId: '',
+    secretValue: '',
+  }
+  public gcpFormErrors ={
+    projectId: '',
+    serviceAccount: '',
+  }
+  public aquaFormErrors ={
+    aquaApiUser: '',
+    aquaApiUrl: '',
+    aquaClientDomainUrl: '',
+    aquaApiPassword : ''
+  }
+  public qualysFormErrors ={
+    qualysApiUrl: '',
+    qualysApiPassword: '',
+    qualysApiUser: '',
+  }
+
   stepperData = [
-    {
-      id: 0,
-      name: "Select Account"
-    },
     {
       id: 1,
       name: "Add Details"
     },
     {
       id: 2,
-      name: "Configure Screen"
+      name: "Configure Access"
     },
     {
       id: 3,
@@ -89,24 +130,71 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     img: "gcp",
     FullName: "Google Cloud Services"
     },
+    {
+      name: "Qualys",
+      img: "qualys",
+      FullName: "Vulnerability Management"
+    },
+    {
+      name: "Aqua",
+      img: "aqua",
+      FullName: "Vulnerability Management"
+    },
+    {
+      name: "Red Hat",
+      img: "redhat",
+      FullName: "Advanced Cluster Security"
+    },
+    {
+      name: "Tenable",
+      img: "tenable",
+      FullName: "Vulnerability Management"
+    }
   ]
 
   configureSteps = [];
   roleArn: string;
+  aquaClientDomainUrl: string = "";
+  aquaApiUser: any;
+  aquaApiUrl: any;
+  aquaApiPassword: any;
+  createdBy: any;
+  buttonClicked: boolean = false;
+  dialogRef: any;
+  selectedAccountName: any;
   
   constructor(private workflowService: WorkflowService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private clipboard: Clipboard,
     private commonResponseService: CommonResponseService,
-    private notificationObservableService: NotificationObservableService
-    ) { }
+    private notificationObservableService: NotificationObservableService,
+    private dataCacheService: DataCacheService,
+    public dialog: MatDialog,
+    public form: FormBuilder,
+    ) {
+      this.activatedRoute.queryParams.subscribe(params => {
+        const selectedAcc = params["selectedAccount"];
+        this.breadcrumbPresent = selectedAcc??"Add Plugin";
+        this.pluginSelected = selectedAcc?.toLowerCase();
+        if(this.pluginSelected){
+          this.currentStepperIndex = 0;
+          this.selectAccount({name: selectedAcc});
+        }
+        this.selectedAccount = selectedAcc??"";
+      })
+    }
 
   ngAfterViewInit(): void {
+    setTimeout(()=>{
+    this.aquaClientDomainUrl = "https://573ecbdbc1.cloud.aquasec.com";
     this.displayTemplate();
+    },0)
   }
 
   ngOnInit(): void {
+    this.buildForm();
+    this.CloudformationTemplateUrl = CONFIGURATIONS.optional.auth.cognitoConfig.CloudformationTemplateUrl;
     this.urlToRedirect = this.router.routerState.snapshot.url;
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
 
@@ -119,29 +207,32 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     );
 
     this.getRoleName();
-    this.breadcrumbPresent = 'Add Account';
+    if(!this.pluginSelected) this.breadcrumbPresent = 'Add Plugin';
+  }
+
+  getImageName(){
+    const imageName = this.selectedAccount.replace(/\s/g, '').toLowerCase();
+    return imageName;
   }
 
   displayTemplate(){
+    const currentAccount = this.selectedAccount.toLowerCase();
     switch (this.currentStepperIndex) {
-      case 1:
-        if(this.selectedAccount.toLowerCase()=="azure")
+      case 0:
+        if(currentAccount=="azure" || currentAccount == "aqua" || currentAccount == "qualys" || currentAccount == "gcp")
         this.currentTemplateRef = this.configureAccountRef;
         else
         this.currentTemplateRef = this.addDetailsRef;
         break;
-      case 2:
-        if(this.selectedAccount.toLowerCase()!="azure")
+      case 1:
+        if(currentAccount=="aws")
             this.currentTemplateRef = this.configureAccountRef;
         else
-        this.currentTemplateRef = this.addDetailsRef;
+            this.currentTemplateRef = this.addDetailsRef;
         break;
-      case 3:
+      case 2:
           this.currentTemplateRef = this.reviewRef;
           break;
-      default:
-        this.currentTemplateRef = this.selectAccountRef;
-        break;
     }
   }
   
@@ -150,40 +241,202 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   }
 
   pageCounter(clickedButton: string){
-    if(this.currentStepperIndex == 1 && this.selectedAccount.toLowerCase() == "gcp"){
+    if(this.currentStepperIndex == 0 && this.selectedAccount.toLowerCase() == "gcp"){
         this.createCommand();
     }
     if (clickedButton == 'back') {
+      if(this.currentStepperIndex == 0){
+        this.selectedAccount = "";
+      }
+      else
       this.currentStepperIndex--;
-    } else
+    } else{
       this.currentStepperIndex++;
-
+    }
     this.displayTemplate();
   }
 
+    // build the user edit form
+    public buildForm() {
+      this.awsPluginForm = this.form.group({
+        accountId: ['', [Validators.required,
+                         CustomValidators.exactDigits]
+                   ],
+        accountName : ['']
+      });
+
+      this.azurePluginForm = this.form.group({
+        applicationId: ['', [Validators.required,CustomValidators.alphanumericHyphenValidator]],
+        directoryId: ['', [Validators.required,CustomValidators.alphanumericHyphenValidator]],
+        secretValue: ['', [Validators.required,CustomValidators.clientSecretVlidator]]
+      })
+
+      this.gcpPluginForm = this.form.group({
+        projectId: ['', [Validators.required,CustomValidators.alphanumericHyphenValidator,CustomValidators.validateProjectId]],
+        serviceAccount: ['', [Validators.required,CustomValidators.validateJson]]
+      })
+
+      this.aquaPluginForm = this.form.group({
+        aquaApiUser: ['', [Validators.required,CustomValidators.alphanumericValidator]],
+        aquaApiUrl: ['', [Validators.required,CustomValidators.urlValidator]],
+        aquaClientDomainUrl: [''],
+        aquaApiPassword : ['', [Validators.required]]
+      })
+
+      this.qualysPluginForm = this.form.group({
+        qualysApiUrl: ['', [Validators.required,CustomValidators.urlValidator]],
+        qualysApiPassword: ['', [Validators.required]],
+        qualysApiUser: ['', [Validators.required,CustomValidators.alphanumericValidator]]
+      })
+    }
+
+    openSupportInfoDialog(accountName): void {
+      this.selectedAccountName = accountName;
+      this.dialogRef = this.dialog.open(DialogBoxComponent, {
+        width: '500px',
+        data: { 
+              template: this.supportInfoRef,
+            } 
+      });
+    }
+
+    closeDialog(): void {
+      this.dialogRef.close();
+    }
+
   selectAccount(account:any){
+    if(account.name.toLowerCase() == "red hat" || account.name.toLowerCase() == "tenable"){
+          this.openSupportInfoDialog(account.name);
+          return;
+    }
     this.selectedAccount = account.name;
     this.configureSteps = [];
-    if(this.selectedAccount.toLowerCase() == "aws"){
-      this.configureSteps = [
-        "Download the cloudformation template file",
-        "Go to AWS console and navigate to cloudformation",
-        "Click on stacks and create stacks > with new resources",
-        'Under specify template choose "Upload a template file" and upload the downloaded template file',
-        "Provide name to the stack and click on next",
-        "Click on submit. This will create the necessary resources and permissions"
-      ]
-    } else if(this.selectedAccount.toLowerCase() == "azure"){
-      this.configureSteps = [
-        "Go to Azure active directory",
-        "Navigate to App registration and register new application",
-        "Once registered click on Client credentials and create a new client secret",
-        "Get the client secret value, clientId and tenantId"
-      ]
-    } else if(this.selectedAccount.toLowerCase() == "gcp"){
-      this.configureSteps = ["Go to gshell cloud and run following commands"];
+
+    this.router.navigate([], {
+      queryParams: {
+        selectedAccount: account.name,
+      },
+      queryParamsHandling: "merge",
+      replaceUrl: false
+    });
+    this.workflowService.addRouterSnapshotToLevel(
+      this.router.routerState.snapshot.root, 0, "Add Plugin",
+    );
+    switch (this.selectedAccount.toLowerCase()) {
+      case "aws":
+        this.configureSteps = [
+          "Download the cloudformation template file",
+          "Go to AWS console and navigate to cloudformation",
+          "Click on stacks and create stacks > with new resources",
+          'Under specify template choose "Upload a template file" and upload the downloaded template file',
+          "Provide name to the stack and click on next",
+          "Click on submit. This will create the necessary resources and permissions"
+        ];
+        this.stepperData = [
+          {
+            id: 1,
+            name: "Add Details"
+          },
+          {
+            id: 2,
+            name: "Configure Access"
+          },
+          {
+            id: 3,
+            name: "Review"
+          }
+        ]
+        this.currentPluginForm = this.awsPluginForm;
+        break;
+      case "azure":
+        this.configureSteps = [
+          "Go to Azure active directory",
+          "Navigate to App registration and register new application",
+          "Once registered click on Client credentials and create a new client secret",
+          "Get the Application ID, Directory ID and Client Secret Value",
+          "Configure the registered App to allow access to the Azure Subscriptions, for which data needs to be collected"
+        ];
+        this.currentPluginForm = this.azurePluginForm;
+        this.stepperData = [
+          {
+            id: 1,
+            name: "Configure Access"
+          },
+          {
+            id: 2,
+            name: "Add Details"
+          },
+          {
+            id: 3,
+            name: "Review"
+          }
+        ]
+        break;
+      case "gcp": 
+          this.stepperData = [
+            {
+              id: 1,
+              name: "Configure Access"
+            },
+            {
+              id: 2,
+              name: "Add Details"
+            },
+            {
+              id: 3,
+              name: "Review"
+            }
+          ]
+        this.currentPluginForm = this.gcpPluginForm;
+          this.configureSteps = [
+            "Go to GCP IAM, navigate to service account",
+            "Grant this service account owner access to the project",
+            "Create key for the service account in JSON format",
+            "Copy the conetents of JSON key file, it will be used in next step"
+         ];
+          break;
+      case "qualys": 
+          this.configureSteps = [
+          "To scan the resources and generate Qualys vulnerability data, you would need to install Qualys agent. Follow the guide to setup Qualys agent. Click here to get the guide for Qualys configuration",
+          "Once done please make sure you have Qualys API Access to retrieve host scanned data"
+          ];
+          this.currentPluginForm = this.qualysPluginForm;
+          this.stepperData = [
+            {
+              id: 1,
+              name: "Configure Access"
+            },
+            {
+              id: 2,
+              name: "Add Details"
+            },
+            {
+              id: 3,
+              name: "Review"
+            }
+          ]
+          break;
+      case "aqua":
+        this.stepperData = [
+          {
+            id: 1,
+            name: "Configure Access"
+          },
+          {
+            id: 2,
+            name: "Add Details"
+          },
+          {
+            id: 3,
+            name: "Review"
+          }
+        ]
+        this.currentPluginForm = this.aquaPluginForm;
+        this.configureSteps = [
+          "To scan the resources and generate aqua vulnerability data, you would need to have account with aqua before you add the details here. Click here to get the guide for Aqua configuration"
+          ];
+          break;
     }
-    this.currentStepperIndex++;
     this.displayTemplate();
   }
 
@@ -214,22 +467,34 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       case "gcp":
         payload = {
           "projectId": this.projectId,
-          "projectName": this.projectName,
           "platform": provider,
-          "projectNumber": this.gcpProjectNumber,
-          "location": this.location,
-          "getWorkloadIdentityPoolId": this.workloadIdentityPoolId,
-          "workloadIdentityProviderId": this.providerId,
-          "serviceAccountEmail": this.serviceAccount
+          "secretData": this.serviceAccount
         }
       break;
       case "azure":
-        payload = {
+      this.tenantSecretData = 'tenant:'+this.tenantId+',clientId:'+this.clientId+',secretId:'+this.tenantSecret;
+         payload = {
           "tenantId": this.tenantId,
           "platform": provider,
           "tenantSecretData": this.tenantSecretData
         }
         break;
+      case "qualys": payload = {
+        "qualysApiUrl": this.qualysApiUrl,
+        "qualysApiUser": this.qualysApiUser,
+        "qualysApiPassword": this.qualysApiPassword,
+        "platform": this.selectedAccount.toLowerCase()
+        }
+        break;
+      case "aqua":
+        payload = {
+          "aquaClientDomainUrl": this.aquaClientDomainUrl,
+          "aquaApiUrl": this.aquaApiUrl,
+          "aquaApiUser": this.aquaApiUser,
+          "aquaApiPassword": this.aquaApiPassword,
+          "platform": this.selectedAccount.toLowerCase()
+        }
+
     }
     this.isValidating = true;
     const url = environment.validateAccount.url;
@@ -239,11 +504,11 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       try{
         const data = response.data;
         this.isValid = data.validationStatus.toLowerCase() != "failure";
-        if(!this.isValid){
-          this.errorList = data.errorDetails.split(",");
-        }
         this.isValidating = false;
         this.isValidated = true;
+        if(!this.isValid){
+          this.errorList = data.errorDetails?.split(",");
+        }
       }
       catch(error){
         console.log(error,"error js");
@@ -263,6 +528,7 @@ goToConfigure(){
 }
 
 onSubmit(){
+  this.buttonClicked = true;
    const provider = this.selectedAccount.toLowerCase();
    let accountid = "";
    let payload = {};
@@ -270,7 +536,7 @@ onSubmit(){
       case "aws":
         payload = {
           "accountId": this.accountId,
-          "accountName": this.accountName,
+          "accountName": this.accountName.length?this.accountName:this.accountId,
           "platform": provider
           }
         accountid = this.accountId;
@@ -278,42 +544,65 @@ onSubmit(){
       case "gcp":
         payload = {
           "projectId": this.projectId,
-          "projectName": this.projectName,
           "platform": provider,
-          "projectNumber": this.gcpProjectNumber,
-          "location": this.location,
-          "getWorkloadIdentityPoolId": this.workloadIdentityPoolId,
-          "workloadIdentityProviderId": this.providerId,
-          "serviceAccountEmail": this.serviceAccount
+          "secretData": this.serviceAccount
           }
         accountid = this.projectId;
       break;
       case "azure":
+      this.tenantSecretData = 'tenant:'+this.tenantId+',clientId:'+this.clientId+',secretId:'+this.tenantSecret;
       payload = {
         "tenantId": this.tenantId,
-        "tenantName": this.tenantName,
         "platform": provider,
         "tenantSecretData": this.tenantSecretData
         }
       accountid = this.tenantId;
       break;
+      case "qualys": payload = {
+          "qualysApiUrl": this.qualysApiUrl,
+          "qualysApiUser": this.qualysApiUser,
+          "qualysApiPassword": this.qualysApiPassword,
+          "platform": this.selectedAccount.toLowerCase()
+        };
+      break;
+      case "aqua":
+        payload = {
+          "aquaClientDomainUrl": this.aquaClientDomainUrl,
+          "aquaApiUrl": this.aquaApiUrl,
+          "aquaApiUser": this.aquaApiUser,
+          "aquaApiPassword": this.aquaApiPassword,
+          "platform": this.selectedAccount.toLowerCase()
+        }
     }
-  
+   const userDetails = this.dataCacheService.getUserDetailsValue();
+   let userId = userDetails.getEmail(); 
+   payload['createdBy'] = userId;
    const url = environment.createAccount.url;
    const method = environment.createAccount.method;
    let notificationMessage = "";
    this.commonResponseService.getData(url,method,payload,{})
    .subscribe(response=>{
      try{
-      notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" has been created successfully";
-      this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
-      this.redirectTo();
+       const data = response.data;
+       if(data){
+           if(data.validationStatus.toLowerCase() !== "failure"){
+            notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" has been created successfully";
+            this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
+           } else{
+            notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" creation has been failed";
+            this.notificationObservableService.postMessage(notificationMessage,3000,"error","Error");
+           }
+           this.redirectTo();
+       }
        }
       catch(error){
         console.log(error,"error js");
       }
    })
+}
 
+isSelectedAccount(account:string){
+    return this.selectedAccount.toLowerCase() == account;
 }
 
 redirectTo(){

@@ -1,27 +1,24 @@
 /*
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
+*Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+* this file except in compliance with the License. A copy of the License is located at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* or in the "license" file accompanying this file. This file is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+* implied. See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-import {fadeInOut} from './../common/animations/animations';
-import {OnPremAuthenticationService} from '../../core/services/onprem-authentication.service';
-import {Router} from '@angular/router';
-import {Subscription} from 'rxjs';
-import {environment} from '../../../environments/environment';
-import {UtilsService} from '../../shared/services/utils.service';
-import { AssetTilesService } from '../../core/services/asset-tiles.service';
-import { DataCacheService } from '../../core/services/data-cache.service';
-import {DomainTypeObservableService} from '../../core/services/domain-type-observable.service';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { fadeInOut } from './../common/animations/animations';
+import { OnPremAuthenticationService } from '../../core/services/onprem-authentication.service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { UtilsService } from '../../shared/services/utils.service';
 import { CONTENT } from './../../../config/static-content';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -30,6 +27,7 @@ import { AdalService } from '../../core/services/adal.service';
 import { AwsCognitoService } from '../../core/services/aws-cognito.service';
 import { HttpService } from 'src/app/shared/services/http-response.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 @Component({
     selector: 'app-login',
@@ -51,13 +49,16 @@ export class LoginComponent implements OnInit {
 
 
     constructor(private authenticationService: OnPremAuthenticationService,
-                private authService: AuthService,
-                private router: Router,
-                private utilityService: UtilsService,
-                private adalService: AdalService,
-                private onPremAuthentication: OnPremAuthenticationService,
-                private cognitoService: AwsCognitoService,
-                private dataCacheService: DataCacheService) {
+        private authService: AuthService,
+        private logger: LoggerService,
+        private router: Router,
+        private utilityService: UtilsService,
+        private adalService: AdalService,
+        private onPremAuthentication: OnPremAuthenticationService,
+        private cognitoService: AwsCognitoService,
+        private httpService: HttpService,
+        private dataCacheService:DataCacheService,
+        ) {
 
         console.log('Auth type:', CONFIGURATIONS.optional.auth.AUTH_TYPE)
         if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso') {
