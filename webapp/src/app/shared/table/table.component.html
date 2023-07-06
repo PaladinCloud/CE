@@ -1,4 +1,4 @@
-<div #tableContainer class="table-container flex flex-col">
+<div class="table-container flex flex-col">
     <div class="flex" [style.flex-direction]="tableTitle ? 'column-reverse' : 'column'">
         <div class="table-header">
             <div class="table-column-modifier flex flex-row">
@@ -16,7 +16,7 @@
                         <img
                             class="padding-12 pointer"
                             src="/assets/icons/x-circle.svg"
-                            *ngIf="searchQuery || chips?.length"
+                            *ngIf="searchQuery"
                             (click)="clearSearchTextAndFilters()"
                             matPrefix
                             alt="Clear search and filters"
@@ -63,9 +63,8 @@
             [selectedValue]="tableErrorMessage"
         ></app-error-message>
         <div class="table-wrapper">
-            <table
+            <mat-table
                 *ngIf="!tableErrorMessage && data.length > 0"
-                mat-table
                 [dataSource]="dataSource"
                 [matSortActive]="headerColName"
                 [matSortDirection]="direction"
@@ -73,196 +72,189 @@
                 matSort
                 (matSortChange)="announceSortChange($event)"
             >
-                <ng-container *ngFor="let column of whiteListColumns" [matColumnDef]="column">
-                    <th
-                        [style.width]="
-                            columnWidths[column] * screenWidthFactor < 100
-                                ? centeredColumns[column]
-                                    ? '80px'
-                                    : '100px'
-                                : columnWidths[column] * screenWidthFactor + 'px'
-                        "
-                        class="capitalize"
-                        [ngClass]="{
-                            centered: centeredColumns[column]
-                        }"
-                        mat-header-cell
-                        *matHeaderCellDef
-                        [mat-sort-header]="
-                            column !== 'Actions' && column !== 'DetailsBtn' ? column : false
-                        "
-                    >
-                        <span>
-                            {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
-                        </span>
-                    </th>
-                    <td
-                        (click)="handleClick(element, column, i)"
-                        class="capitalize table-cell"
-                        mat-cell
-                        *matCellDef="let element; let i = index"
-                        [class.center]="centeredColumns[column]"
-                    >
-                        <div
-                            *ngIf="element[column] && element[column].isMenuBtn; else clickable"
-                            style="text-align: center"
+                <ng-container
+                    *ngFor="let column of whiteListColumns"
+                    [ngTemplateOutlet]="cellDefinition"
+                    [ngTemplateOutletContext]="{
+                        column,
+                        columnWidth: denominator | tableColumnWidth : columnWidths[column]
+                    }"
+                    [matColumnDef]="column"
+                >
+                    <ng-template #cellDefinition let-column="column" let-columnWidth="columnWidth">
+                        <mat-header-cell
+                            [style.flex-basis.%]="columnWidth"
+                            class="capitalize"
+                            [class.flex-center]="centeredColumns[column]"
+                            *matHeaderCellDef
+                            [mat-sort-header]="
+                                column !== 'Actions' && column !== 'DetailsBtn' ? column : ''
+                            "
                         >
-                            <img
-                                class="pointer menu-btn"
-                                *ngIf="element[column].menuItems.length > 0"
-                                mat-button
-                                [matMenuTriggerFor]="actionMenu"
-                                src="/assets/icons/three-dots.svg"
-                                alt=""
-                            />
-                            <mat-menu #actionMenu="matMenu">
-                                <button
-                                    (click)="handleAction(element, action, i)"
-                                    style="min-width: 156px"
-                                    *ngFor="let action of element[column].menuItems"
-                                    mat-menu-item
-                                >
-                                    <span>{{ action }}</span>
-                                </button>
-                            </mat-menu>
-                        </div>
-                        <ng-template #clickable>
+                            <span>
+                                {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
+                            </span>
+                        </mat-header-cell>
+
+                        <mat-cell
+                            (click)="handleClick(element, column, i)"
+                            class="capitalize table-cell"
+                            [style.flex-basis.%]="columnWidth"
+                            *matCellDef="let element; let i = index"
+                            [class.flex-center]="centeredColumns[column]"
+                        >
                             <div
-                                class="clickable"
-                                [ngClass]="{
-                                    flex: showCopyButton || element[column]?.haveCopyElement,
-                                    'flex-align-center':
-                                        showCopyButton || element[column]?.haveCopyElement
-                                }"
-                                style="min-width: 0"
+                                *ngIf="element[column] && element[column].isMenuBtn; else clickable"
+                                class="center"
                             >
+                                <img
+                                    class="pointer menu-btn"
+                                    *ngIf="element[column].menuItems.length > 0"
+                                    mat-button
+                                    [matMenuTriggerFor]="actionMenu"
+                                    src="/assets/icons/three-dots.svg"
+                                    alt=""
+                                />
+                                <mat-menu #actionMenu="matMenu">
+                                    <button
+                                        (click)="handleAction(element, action, i)"
+                                        style="min-width: 156px"
+                                        *ngFor="let action of element[column].menuItems"
+                                        mat-menu-item
+                                    >
+                                        <span>{{ action }}</span>
+                                    </button>
+                                </mat-menu>
+                            </div>
+                            <ng-template #clickable>
                                 <div
-                                    class="chip-wrapper"
-                                    *ngIf="
-                                        element[column] &&
-                                            element[column].valueText &&
-                                            element[column].isChip;
-                                        else checkbox
-                                    "
-                                    [title]="element[column].titleText"
+                                    class="clickable"
+                                    [ngClass]="{
+                                        flex: showCopyButton || element[column]?.haveCopyElement,
+                                        'flex-align-center':
+                                            showCopyButton || element[column]?.haveCopyElement
+                                    }"
+                                    style="min-width: 0"
                                 >
-                                    <app-chip
-                                        [variant]="element[column].chipVariant"
-                                        [maxChips]="maxChips"
-                                        [backgroundColor]="element[column].chipBackgroundColor"
-                                        [color]="element[column].chipTextColor"
-                                        [chipsList]="element[column].chipList"
-                                    >
-                                    </app-chip>
-                                </div>
-                                <ng-template #checkbox>
                                     <div
+                                        class="chip-wrapper"
                                         *ngIf="
-                                            element[column] && element[column].isCheckbox;
-                                            else textImageData
+                                            element[column]?.valueText && element[column]?.isChip;
+                                            else checkbox
                                         "
+                                        [title]="element[column].titleText"
                                     >
-                                        <app-check-box-btn
-                                            (checkBoxClickEvent)="
-                                                element[column].valueText = $event
-                                                    ? 'checked'
-                                                    : 'unchecked'
-                                            "
-                                            [isChecked]="element[column].valueText === 'checked'"
-                                        ></app-check-box-btn>
+                                        <app-chip
+                                            [backgroundColor]="element[column].chipBackgroundColor"
+                                            [color]="element[column].chipTextColor"
+                                            [chipsList]="element[column].chipList"
+                                        >
+                                        </app-chip>
                                     </div>
-                                </ng-template>
-                                <ng-template #textImageData>
-                                    <div
-                                        *ngIf="
-                                            element[column] &&
-                                                (element[column].valueText ||
-                                                    element[column].valueText === 0);
-                                            else noData
-                                        "
-                                        [class.row-title]="element[column].isLink"
-                                        class="nowrap-ellipsis"
-                                        [class.pointer]="element[column].link"
-                                        [title]="
-                                            element[column].isDate
-                                                ? (element[column].text | date : 'medium')
-                                                : element[column].text
-                                        "
-                                    >
-                                        <img
-                                            *ngIf="element[column].imgSrc"
-                                            [class.noImg]="element[column].imgSrc === 'noImg'"
-                                            style="
-                                                vertical-align: text-bottom;
-                                                height: 16px;
-                                                width: 24px;
-                                                padding-right: 8px;
-                                            "
-                                            src="/assets/icons/{{ element[column].imgSrc }}.svg"
-                                            title="{{
-                                                element[column].imageTitleText ??
-                                                    element[column].titleText
-                                            }}"
-                                        />
-                                        <span
+                                    <ng-template #checkbox>
+                                        <div
+                                            *ngIf="element[column]?.isCheckbox; else textImageData"
+                                        >
+                                            <app-check-box-btn
+                                                (checkBoxClickEvent)="
+                                                    element[column].valueText = $event
+                                                        ? 'checked'
+                                                        : 'unchecked'
+                                                "
+                                                [isChecked]="
+                                                    element[column].valueText === 'checked'
+                                                "
+                                            ></app-check-box-btn>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #textImageData>
+                                        <div
                                             *ngIf="
-                                                !element[column].isDate && !element[column].isNumber
+                                                element[column]?.valueText ||
+                                                    element[column]?.valueText === 0;
+                                                else noData
+                                            "
+                                            [class.row-title]="element[column].isLink"
+                                            class="nowrap-ellipsis"
+                                            [class.pointer]="element[column].link"
+                                            [title]="
+                                                element[column].isDate
+                                                    ? (element[column].text | date : 'medium')
+                                                    : element[column].text
                                             "
                                         >
-                                            {{ element[column].text }}
-                                        </span>
-                                        <span *ngIf="element[column].isDate">{{
-                                            element[column].text | date : 'medium'
-                                        }}</span>
-                                        <span *ngIf="element[column].isNumber">{{
-                                            element[column].text | number
-                                        }}</span>
-                                        <div
-                                            *ngIf="element[column].symbol"
-                                            class="symbol"
-                                            [class]="element[column].symbol.type"
-                                            [style.background-color]="
-                                                element[column].symbol.type !== 'triangle'
-                                                    ? element[column].symbol.color
-                                                    : ''
-                                            "
-                                            [style.border-bottom-color]="
-                                                element[column].symbol.type === 'triangle'
-                                                    ? element[column].symbol.color
-                                                    : ''
-                                            "
-                                        ></div>
+                                            <img
+                                                *ngIf="element[column].imgSrc"
+                                                [class.noImg]="element[column].imgSrc === 'noImg'"
+                                                class="cell-img"
+                                                src="/assets/icons/{{ element[column].imgSrc }}.svg"
+                                                [title]="
+                                                    element[column].imageTitleText ??
+                                                    element[column].titleText
+                                                "
+                                            />
+                                            <span
+                                                *ngIf="
+                                                    !element[column].isDate &&
+                                                    !element[column].isNumber
+                                                "
+                                            >
+                                                {{ element[column].text }}
+                                            </span>
+                                            <span *ngIf="element[column].isDate">
+                                                {{ element[column].text | date : 'medium' }}
+                                            </span>
+                                            <span *ngIf="element[column].isNumber">
+                                                {{ element[column].text | number }}
+                                            </span>
+                                            <div
+                                                *ngIf="element[column].symbol"
+                                                class="symbol"
+                                                [class]="element[column].symbol.type"
+                                                [style.background-color]="
+                                                    element[column].symbol.type !== 'triangle'
+                                                        ? element[column].symbol.color
+                                                        : ''
+                                                "
+                                                [style.border-bottom-color]="
+                                                    element[column].symbol.type === 'triangle'
+                                                        ? element[column].symbol.color
+                                                        : ''
+                                                "
+                                            ></div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #noData>
+                                        <div class="nowrap-ellipsis">
+                                            <span>No Data</span>
+                                        </div>
+                                    </ng-template>
+                                    <div
+                                        class="copy-icon"
+                                        *ngIf="showCopyButton || element[column]?.haveCopyElement"
+                                    >
+                                        <app-copy-element
+                                            [CopyElement]="element[column]?.valueText"
+                                            [iconSize]="'10px'"
+                                            [hidePadding]="true"
+                                        ></app-copy-element>
                                     </div>
-                                </ng-template>
-                                <ng-template #noData>
-                                    <div class="nowrap-ellipsis">
-                                        <span>No Data</span>
-                                    </div>
-                                </ng-template>
-                                <div
-                                    class="copy-icon"
-                                    *ngIf="showCopyButton || element[column]?.haveCopyElement"
-                                >
-                                    <app-copy-element
-                                        [CopyElement]="element[column]?.valueText"
-                                        [iconSize]="'10px'"
-                                    ></app-copy-element>
                                 </div>
-                            </div>
-                        </ng-template>
-                    </td>
+                            </ng-template>
+                        </mat-cell>
+                    </ng-template>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>
-                <tr
+
+                <mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></mat-header-row>
+                <mat-row
                     [class.row-hover]="rowClickable"
                     [class.row-selected]="i === selectedRowIndex"
                     [class.md]="rowSize === 'MD'"
                     [class.sm]="rowSize === 'SM'"
                     [class.lg]="rowSize === 'LG'"
-                    mat-row
                     *matRowDef="let row; columns: whiteListColumns; let i = index"
-                ></tr>
-            </table>
+                ></mat-row>
+            </mat-table>
         </div>
     </div>
 </div>

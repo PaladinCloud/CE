@@ -117,12 +117,13 @@ import { TableFilterChipComponent } from './table-filters/table-filter-chip/tabl
 import { TableFilterSearchComponent } from './table-filters/table-filter-search/table-filter-search.component';
 import { TableFiltersComponent } from './table-filters/table-filters.component';
 import { TableListComponent } from './table-list/table-list.component';
+import { TableOptionsComponent } from './table-options/table-options.component';
 import { TableTabsComponent } from './table-tabs/table-tabs.component';
+import { TableColumnWidthPipe } from './table/table-column-width.pipe';
 import { TableComponent } from './table/table.component';
 import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.component';
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
-import { TableOptionsComponent } from './table-options/table-options.component';
 
 @NgModule({
     imports: [
@@ -215,18 +216,19 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         SnackbarComponent,
         StepperComponent,
         SubFooterComponent,
+        TableColumnWidthPipe,
         TableComponent,
         TableFilterChipComponent,
         TableFiltersComponent,
         TableFilterSearchComponent,
         TableListComponent,
+        TableOptionsComponent,
         TableTabsComponent,
         TextComponent,
         TextWithIconComponent,
         TitleBurgerHeadComponent,
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
-        TableOptionsComponent,
     ],
     exports: [
         AgGridTableComponent,

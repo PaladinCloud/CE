@@ -124,12 +124,11 @@
     display: none;
 }
 
-table {
+.mat-table {
     width: 100%;
-    table-layout: fixed;
 }
 
-th.mat-sort-header-sorted {
+.mat-sort-header-sorted {
     color: black;
 }
 
@@ -137,8 +136,8 @@ th.mat-sort-header-sorted {
     color: var(--primary-400);
 }
 
-.row-selected,
-.row-hover:hover {
+.row-selected > .mat-cell,
+.row-hover:hover > .mat-cell {
     background-color: var(--background-grey);
 }
 
@@ -146,55 +145,63 @@ th.mat-sort-header-sorted {
     cursor: pointer;
 }
 
-tr.mat-row,
-tr.mat-footer-row {
+.mat-row,
+.mat-footer-row {
+    border: none;
     align-items: center;
     font: var(--text-body-2);
     color: var(--text-high-emphasis);
 }
 
-tr.mat-footer-row {
+.mat-footer-row {
     height: 62px;
 }
 
-tr.mat-row.lg {
-    height: 62px;
-}
 
-tr.mat-row.md {
-    height: 48px;
-}
-
-tr.mat-row.sm {
-    height: 36px;
-}
-
-tr.mat-row.md > td {
-    font-size: 93%;
-}
-
-tr.mat-row.sm > td {
-    font-size: 86%;
-}
-
-th.mat-header-cell,
-td.mat-cell,
-td.mat-footer-cell {
+.mat-header-cell,
+.mat-cell,
+.mat-footer-cell {
     padding: 0 12px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 100px;
-    border: none;
+    border-bottom: 1px solid var(--border-100);
 }
 
-tr.mat-header-row {
+.mat-header-cell {
+    background-color: #f8f8f8;
+}
+
+.mat-row.lg {
+    height: 62px;
+    min-height: 62px;
+}
+
+.mat-row.md {
+    height: 48px;
+    min-height: 48px;
+}
+
+.mat-row.sm {
+    height: 36px;
+    min-height: 36px;
+}
+
+.mat-row.md > .mat-cell {
+    font-size: 93%;
+}
+
+.mat-row.sm > .mat-cell {
+    font-size: 86%;
+}
+
+.mat-header-row {
     height: 40px;
-    padding: 16px 0;
+    min-height: 40px;
     font: var(--text-body-2);
     color: var(--text-low-emphasis);
     border: 1px solid var(--border-100);
-    background-color: #f8f8f8;
 }
 
 .filter-chips-wrapper {
@@ -245,14 +252,26 @@ tr.mat-header-row {
     display: none;
 }
 
+.clickable {
+    position: relative;
+}
+
 .copy-icon {
-    display: none;
+    position: absolute;
+    right: -11px;
+    opacity: 0;
 }
 
 .table-cell:hover .copy-icon {
-    display: block;
+    opacity: 1;
 }
 
 .table-filters {
     flex: 1;
+}
+
+.cell-img {
+    vertical-align: text-bottom;
+    height: 16px;
+    width: 24px;
 }
