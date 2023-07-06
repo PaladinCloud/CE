@@ -27,7 +27,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
