@@ -15,15 +15,17 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
-import com.tmobile.pacman.api.commons.exception.ServiceException;
-import com.tmobile.pacman.api.compliance.domain.*;
-import org.springframework.http.ResponseEntity;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
-// TODO: Auto-generated Javadoc
+import com.tmobile.pacman.api.compliance.domain.*;
+import org.springframework.http.ResponseEntity;
 
+import com.tmobile.pacman.api.commons.exception.ServiceException;
+
+// TODO: Auto-generated Javadoc
 /**
  * The Interface ComplianceService.
  */
@@ -36,30 +38,29 @@ public interface ComplianceService {
      * @return ResponseWithOrder
      * @throws ServiceException the service exception
      */
-    ResponseWithOrder getIssues(Request request) throws ServiceException;
+    public ResponseWithOrder getIssues(APIRequest request) throws ServiceException;
 
     /**
      * Gets Issue count based on name of the asset group/policyId/domain passed.
      *
      * @param assetGroup the asset group
-     * @param policyId   the policy id
-     * @param domain     the domain
-     * @param accountId  the account id
+     * @param policyId the policy id
+     * @param domain the domain
      * @return long
      * @throws ServiceException the service exception
      */
-    long getIssuesCount(String assetGroup, String policyId, String domain, String accountId) throws ServiceException;
+    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId) throws ServiceException;
 
     /**
      * Gets Compliance distribution by policy category and severity.
      *
      * @param assetGroup the asset group
-     * @param domain     the domain
-     * @param accountId  the account id
+     * @param domain the domain
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
-    Map<String, Object> getDistribution(String assetGroup, String domain, String accountId) throws ServiceException;
+    public Map<String, Object> getDistribution(String assetGroup, String domain, String accountId) throws ServiceException;
+
 
     /**
      * Gets Compliance Average age distribution by  severity.
@@ -68,7 +69,8 @@ public interface ComplianceService {
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
-    Map<String, Object> getDistributionBySeverity(String assetGroup, String domain) throws ServiceException;
+
+    public Map<String, Object> getDistributionBySeverity(String assetGroup, String domain) throws ServiceException;
 
     /**
      * Gets Tagging compliance details based on name of name of the asset group/tagettype passed.
@@ -78,30 +80,31 @@ public interface ComplianceService {
      * @return Map<String, Long>
      * @throws ServiceException the service exception
      */
-    Map<String, Long> getTagging(String assetGroup, String targetType) throws ServiceException;
+
+    public Map<String, Long> getTagging(String assetGroup, String targetType) throws ServiceException;
 
     /**
      * Gets the count of expiredCertificates with in 60days and
-     * totalCertificates for given assetGroup.
+     *              totalCertificates for given assetGroup.
      *
      * @param assetGroup the asset group
      * @return Map<String, Long>
      * @throws ServiceException the service exception
      */
-    Map<String, Long> getCertificates(String assetGroup) throws ServiceException;
+    public Map<String, Long> getCertificates(String assetGroup) throws ServiceException;
 
     /**
      * Gets the patching.
      *
-     * @param assetGroup  name of the asset group
-     * @param targetType  the target type
+     * @param assetGroup            name of the asset group
+     * @param targetType            the target type
      * @param application the application
      * @return Method description: asssetGroup is mandatory. Method returns
-     * count of totalPached/toalUnpatched/TotalInstances for given
-     * assetGroup.
-     * @throws ServiceException the service exception
+     *         count of totalPached/toalUnpatched/TotalInstances for given
+     *         assetGroup.
+     * @throws ServiceException             the service exception
      */
-    Map<String, Long> getPatching(String assetGroup, String targetType, String application) throws ServiceException;
+    public Map<String, Long> getPatching(String assetGroup, String targetType, String application) throws ServiceException;
 
     /**
      * If method receives
@@ -114,44 +117,44 @@ public interface ComplianceService {
      *
      * @param assetGroup the asset group
      * @param targetType the target type
-     * @return List<Map < String, Object>>
+     * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    List<Map<String, Object>> getRecommendations(String assetGroup, String targetType) throws ServiceException;
+    public List<Map<String, Object>> getRecommendations(String assetGroup, String targetType) throws ServiceException;
 
     /**
      * Gets list of issue audit log details for the size you have given.
      *
      * @param annotationId the annotation id
-     * @param targetType   the target type
-     * @param from         the from
-     * @param size         the size
-     * @param searchText   the search text
+     * @param targetType the target type
+     * @param from the from
+     * @param size the size
+     * @param searchText the search text
      * @return ResponseWithOrder
      * @throws ServiceException the service exception
      */
-    ResponseWithOrder getIssueAuditLog(String datasource, String annotationId, String targetType, int from, int size,
-                                              String searchText) throws ServiceException;
+    public ResponseWithOrder getIssueAuditLog(String datasource,String annotationId, String targetType, int from, int size,
+            String searchText) throws ServiceException;
 
     /**
      * Gets the resource details.
      *
      * @param assetGroup the asset group
      * @param resourceId the resource id
-     * @return List<Map < String, Object>>
+     * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    List<Map<String, Object>> getResourceDetails(String assetGroup, String resourceId) throws ServiceException;
+    public List<Map<String, Object>> getResourceDetails(String assetGroup, String resourceId) throws ServiceException;
 
     /**
-     * Returns true if its successfully closes all the issues in ES
-     * for that policyId else false.
+     *  Returns true if its successfully closes all the issues in ES
+     *         for that policyId else false.
      *
      * @param policyDetails the policy details
      * @return Map<String, Object>
      */
 
-    Map<String, Object> closeIssuesByPolicy(PolicyDetails policyDetails);
+    public Map<String, Object> closeIssuesByPolicy(PolicyDetails policyDetails);
 
     /**
      * Gets the list of all the policies compliance mapped to that domain.
@@ -160,34 +163,34 @@ public interface ComplianceService {
      * @return ResponseWithOrder
      * @throws ServiceException the service exception
      */
-    ResponseWithOrder getPolicyCompliance(Request request) throws ServiceException;
+    public ResponseWithOrder getPolicycompliance(Request request) throws ServiceException;
 
     /**
      * Gets the policy details by application.SearchText is used to match any text
-     * you are looking for.
+     *         you are looking for.
      *
      * @param assetGroup the asset group
-     * @param policyId   the policy id
+     * @param policyId the policy id
      * @param searchText the search text
-     * @return List<Map < String, Object>>
+     * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    List<Map<String, Object>> getPolicyDetailsByApplication(String assetGroup, String policyId, String searchText)
+    public List<Map<String, Object>> getPolicyDetailsbyApplication(String assetGroup, String policyId, String searchText)
             throws ServiceException;
 
     /**
      * Gets the policy details by environment.SearchText is used to match any
-     * text you are looking for.
+     *         text you are looking for.
      *
-     * @param assetGroup  the asset group
-     * @param policyId    the policy id
+     * @param assetGroup the asset group
+     * @param policyId the policy id
      * @param application the application
-     * @param searchText  the search text
-     * @return List<Map < String, Object>>
+     * @param searchText the search text
+     * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    List<Map<String, Object>> getPolicyDetailsByEnvironment(String assetGroup, String policyId, String application,
-                                                                   String searchText) throws ServiceException;
+    public List<Map<String, Object>> getPolicyDetailsbyEnvironment(String assetGroup, String policyId, String application,
+            String searchText) throws ServiceException;
 
     /**
      * Gets the policy description and other details.
@@ -196,7 +199,7 @@ public interface ComplianceService {
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
-    Map<String, Object> getPolicyDescription(String policyId) throws ServiceException;
+    public Map<String, Object> getPolicyDescription(String policyId) throws ServiceException;
 
     /**
      * Gets the kernel version of an instance id from DB where the kernel version updated by web service.
@@ -205,56 +208,56 @@ public interface ComplianceService {
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
-    Map<String, Object> getKernelComplianceByInstanceIdFromDb(String instanceId) throws ServiceException;
+    public Map<String, Object> getKernelComplianceByInstanceIdFromDb(String instanceId) throws ServiceException;
 
     /**
      * Returns true if it updates the
-     * kernel version for the given instanceId successfully.
+     *         kernel version for the given instanceId successfully.
      *
      * @param kernelVersion the kernel version
      * @return Map<String, Object>
      */
-    Map<String, Object> updateKernelVersion(final KernelVersion kernelVersion);
+    public Map<String, Object> updateKernelVersion(final KernelVersion kernelVersion);
 
     /**
      * Gets the overall compliance by domain.Over all compliance is calculated by its severity and policy category weightages.
      *
      * @param assetGroup the asset group
-     * @param domain     the domain
+     * @param domain the domain
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
-    Map<String, Object> getOverallComplianceByDomain(String assetGroup, String domain) throws ServiceException;
+    public Map<String, Object> getOverallComplianceByDomain(String assetGroup, String domain) throws ServiceException;
 
     /**
      * Gets the list of targetTypes for given asset group and domain
-     * based on project target types configurations.
+     *         based on project target types configurations.
      *
-     * @param assetGroup the assetGroup
-     * @param domain     the domain
+     * @param assetgroup the assetgroup
+     * @param domain the domain
      * @return List<String>
      * @throws ServiceException the service exception
      */
-    List<String> getResourceType(String assetGroup, String domain) throws ServiceException;
+    public List<String> getResourceType(String assetgroup, String domain)throws ServiceException;
 
     /**
      * Gets the policy severity and category details.
      *
      * @param policyDetails the policy details
-     * @return List<Map < String, Object>>
+     * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    List<Map<String, Object>> getPoliciesCatDetails(List<Map<String, Object>> policyDetails) throws ServiceException;
+    public List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails) throws ServiceException;
 
     /**
      * Gets the policy violation details by issue id.
      *
-     * @param assetGroup the assetGroup
-     * @param issueId    the issue id
+     * @param assetgroup the assetgroup
+     * @param issueId the issue id
      * @return PolicyViolationDetails
      * @throws ServiceException the service exception
      */
-    PolicyViolationDetails getPolicyViolationDetailsByIssueId(String assetGroup, String issueId)
+    public PolicyViolationDetails getPolicyViolationDetailsByIssueId(String assetgroup, String issueId)
             throws ServiceException;
 
     /**
@@ -264,7 +267,7 @@ public interface ComplianceService {
      * @return Boolean
      * @throws ServiceException the service exception
      */
-    Boolean addIssueException(IssueResponse issueException) throws ServiceException;
+    public Boolean addIssueException(IssueResponse issueException) throws ServiceException;
 
     /**
      * Revoke issue exception.
@@ -273,7 +276,7 @@ public interface ComplianceService {
      * @return boolean
      * @throws ServiceException the service exception
      */
-    Boolean revokeIssueException(String issueId) throws ServiceException;
+    public Boolean revokeIssueException(String issueId) throws ServiceException;
 
     /**
      * Generic method to throw the service exception.
@@ -281,33 +284,34 @@ public interface ComplianceService {
      * @param e the e
      * @return ResponseEntity<Object>
      */
-    ResponseEntity<Object> formatException(ServiceException e);
+    public ResponseEntity<Object> formatException(ServiceException e);
 
     /**
      * method to get current kernel versions.
      *
      * @return Map<String, String>
      */
-    Map<String, String> getCurrentKernelVersions();
+	public Map<String, String> getCurrentKernelVersions();
 
     /**
      * Adds the multiple issue exception.
-     *
-     * @param assetGroup      the asset group
+     * @param assetGroup the asset group
      * @param issuesException the issues exception
      * @return the issue exception response
      * @throws ServiceException the service exception
      */
-    IssueExceptionResponse addMultipleIssueException(String assetGroup, IssuesException issuesException) throws ServiceException;
+    public IssueExceptionResponse addMultipleIssueException(String assetGroup,IssuesException issuesException) throws ServiceException;
 
-    /**
-     * Revoke multiple issue exception.
-     *
-     * @param assetGroup the asset group
-     * @param issueIds   the issue ids
-     * @param revokedBy
-     * @return the issue exception response
-     * @throws ServiceException the service exception
-     */
+    public List<Map<String, Object>> getCategoryCompDetails(String assetGroup) throws Exception;
+
+    public List<Map<String, Object>> getComplianceByCategoryOfTargetType(
+            ComplianceByAssetTypeRequest request) throws ServiceException;
+
+    public ResponseWithOrder getPolicyComplianceOverviewAsList(Request request) throws Exception;
+
     IssueExceptionResponse revokeMultipleIssueException(String assetGroup, List<String> issueIds, String revokedBy) throws ServiceException;
+
+    ResponseEntity<Object> validateIssuesExemptionRequest(ExemptionRequest exemptionRequest) throws ParseException;
+
+    ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest) throws ServiceException;
 }

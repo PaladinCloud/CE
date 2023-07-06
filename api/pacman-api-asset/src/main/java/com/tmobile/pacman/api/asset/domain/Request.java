@@ -15,10 +15,10 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.domain;
 
+import com.google.common.base.Joiner;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.base.Joiner;
 
 /**
  * The Class Request.
@@ -32,6 +32,8 @@ public class Request {
     private int size;
     
     private Map<String, String> filter;
+
+    private Map<String, Object> reqFilter;
 
     private Map<String, Object> sortFilter;
     
@@ -154,5 +156,13 @@ public class Request {
     public String toString() {
         return "ClassPojo [searchtext = " + searchtext + ", from = " + from + ", filter = " + filter + ", size = "
                 + size + "]";
+    }
+
+    public Map<String, Object> getReqFilter() {
+        return reqFilter;
+    }
+
+    public void setReqFilter(Map<String, Object> reqFilter) {
+        this.reqFilter = reqFilter;
     }
 }

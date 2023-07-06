@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.repository.service;
 
+import static com.tmobile.pacman.api.admin.common.AdminConstants.ALIAS_NOT_FOUND_ERR_MSG;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_ALIAS_DELETION_FAILED;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_CREATION_SUCCESS;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_DELETE_FAILED;
@@ -29,20 +30,22 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.google.gson.*;
-import com.tmobile.pacman.api.commons.exception.DataException;
-import com.tmobile.pacman.api.commons.exception.ServiceException;
-import org.apache.commons.lang.StringUtils;
-
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.*;
+import com.tmobile.pacman.api.admin.repository.*;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupCriteriaDetails;
 import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.commons.exception.DataException;
+import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
+import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -50,21 +53,14 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
-import com.tmobile.pacman.api.admin.repository.AssetGroupRepository;
-import com.tmobile.pacman.api.admin.repository.AssetGroupTargetDetailsRepository;
-import com.tmobile.pacman.api.admin.repository.AssetGroupCriteriaDetailsRepository;
-import com.tmobile.pacman.api.admin.repository.TargetTypesRepository;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
 import com.tmobile.pacman.api.admin.service.CommonService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
-import org.springframework.util.CollectionUtils;
 
 /**
  * AssetGroup Service Implementations
@@ -91,13 +87,17 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	private ObjectMapper mapper;
 
 	@Autowired
-	private AssetGroupTargetDetailsService assetGroupTargetDetailsService;
+	private AssetGroupTargetDetailsRepository assetGroupTargetDetailsRepository;
 
 	@Autowired
-	private AssetGroupCriteriaDetailsRepository assetGroupCriteriaDetailsRepository;
+	private AssetGroupTargetDetailsService assetGroupTargetDetailsService;
+	@Autowired
+	private DatasourceRepository datasourceRepository;
 
 	@Autowired
 	ElasticSearchRepository esRepository;
+	@Autowired
+	private AssetGroupCriteriaDetailsRepository assetGroupCriteriaDetailsRepository;
 
 	@Autowired
 	private CreateAssetGroupService createAssetGroupService;
@@ -137,6 +137,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				assetGroupView.setCriteriaDetails(assetGroup.getCriteriaDetails());
 				assetGroupView.setType(assetGroup.getGroupType());
 				assetGroupView.setGroupName(assetGroup.getGroupName());
+				assetGroupView.setDisplayName(assetGroup.getDisplayName());
 				assetGroupView.setCreatedBy(assetGroup.getCreatedBy());
 				assetGroupView.setType(assetGroup.getGroupType());
 				allAssetGroupList.add(assetGroupView);
@@ -156,6 +157,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 					.stream().map(x -> Long.valueOf(x.toString())).collect(Collectors.summingLong(Long::longValue));
 			assetGroupView.setAssetCount(sum);
 			assetGroupView.setGroupId(assetGroup.getGroupId());
+			assetGroupView.setCreatedBy(assetGroup.getCreatedBy());
+			assetGroupView.setDisplayName(assetGroup.getDisplayName());
 			assetGroupView.setCriteriaDetails(assetGroup.getCriteriaDetails());
 			assetGroupView.setType(assetGroup.getGroupType());
 			assetGroupView.setGroupName(assetGroup.getGroupName());
@@ -188,7 +191,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	public List<Map<String, Object>> getAssetCountByAssetGroup(String assetGroup, String type, String domain,
 															   String application, String provider) {
 		log.debug("Fetch counts from elastic search");
-
 		// ES query may possibly return other types as well.
 		Map<String, Long> countMap = esRepository.getAssetCountByAssetGroup(assetGroup, type, application);
 		List<String> validTypes = Lists.newArrayList();
@@ -234,9 +236,20 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public String updateAssetGroupDetails(final CreateAssetGroup updateAssetGroupDetails, final String userId) throws PacManException {
-		AssetGroupDetails isAssetGroupExits = assetGroupRepository.findByGroupName(updateAssetGroupDetails.getGroupName());
+		AssetGroupDetails isAssetGroupExits = assetGroupRepository.findByGroupId(updateAssetGroupDetails.getGroupId());
 		if (isAssetGroupExits != null) {
-			boolean isDeletedSuccess = deleteAssetGroupAliasFromUpdation(updateAssetGroupDetails);
+			updateAssetGroupDetails.setDisplayName(isAssetGroupExits.getDisplayName());
+			String grpName = updateAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ","-");
+			if(!isAssetGroupExits.getGroupName().equals(grpName)){
+				String aliasName = updateAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ","-");
+				AssetGroupDetails ifAssetPresentWithUpdatedGrpName = assetGroupRepository.findByGroupName(aliasName);
+				if(ifAssetPresentWithUpdatedGrpName != null){
+					throw new PacManException(AdminConstants.ASSET_GROUP_ALREADY_EXISTS);
+				}
+				updateAssetGroupDetails.setDisplayName(updateAssetGroupDetails.getGroupName());
+				updateAssetGroupDetails.setGroupName(aliasName);
+			}
+			boolean isDeletedSuccess = deleteAssetGroupAliasFromUpdation(isAssetGroupExits);
 			if(isDeletedSuccess) {
 				try {
 					CreateAssetGroup createAssetGroup = createAssetGroupService.createAliasForAssetGroup(updateAssetGroupDetails);
@@ -256,6 +269,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			throw new PacManException(ASSET_GROUP_NOT_EXITS);
 		}
 	}
+
 
 	@Override
 	public String createAssetGroupDetails(final CreateAssetGroup createAssetGroupDetails, final String userId) throws PacManException{
@@ -319,14 +333,141 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	}
 
 	@Override
+	public String updateAssetGroupStatus (final String assetGroupName, final boolean status, final String userId) throws PacManException {
+
+		AssetGroupDetails assetGroupObj = assetGroupRepository.findByGroupName(assetGroupName);
+		if( assetGroupObj != null ){
+			if( status != assetGroupObj.getVisible()) {
+				assetGroupObj.setVisible(status);
+				assetGroupObj.setModifiedDate(new Date().toString());
+				assetGroupObj.setModifiedUser(userId);
+				assetGroupRepository.saveAndFlush(assetGroupObj);
+			}
+
+			if(status) {
+				return AdminConstants.ASSET_GROUP_ENABLED;
+			}
+			return AdminConstants.ASSET_GROUP_DISABLED;
+
+		} else {
+			log.error("Asset  group does not exists");
+			throw new PacManException(AdminConstants.ASSET_GROUP_NOT_EXITS);
+		}
+
+	}
+
+
+	@Override
 	public String deleteAssetGroup(final DeleteAssetGroupRequest assetGroupDetails, final String userId) throws PacManException {
 		return deleteAssetGroupDetails(assetGroupDetails);
 	}
 
+	@Override
+	public List<Map<String, Object>> getCloudTypeObject() throws Exception {
+
+		String isGcpEnabled=assetGroupTargetDetailsService.getGcpFlagValueFromDB();
+		String isAzureEnabled=assetGroupTargetDetailsService.getAzureFlagValueFromDB();
+		List<String>cloudTypes=new ArrayList<>(Arrays.asList(cloudProvider.split(",")));
+
+		if(isGcpEnabled.equalsIgnoreCase("true")){
+			cloudTypes.add("gcp");
+		}
+
+		if(isAzureEnabled.equalsIgnoreCase("true")){
+			cloudTypes.add("azure");
+		}
+
+		List<Map<String ,Object>> cloudProviderObjList=new ArrayList<>();
+
+		String aggsStrByTag = "\"%s\":{\"terms\":{\"field\":\"%s\",\"size\":10000}}";
+		Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
+		List<String> aggsForTagsList = new ArrayList<>();
+		tagsSet.forEach(str -> aggsForTagsList.add(String.format(aggsStrByTag, "tags."+str, "tags." + str + ".keyword")));
+
+		log.info("aggsForTagsList {}",aggsForTagsList);
+
+			String responseDetails;
+			for (String cloudType : cloudTypes) {
+				Map<String, Object> cloudTypeObject = new HashMap<>();
+				cloudTypeObject.put("CloudType",cloudType);
+				log.info(cloudType);
+				if(esCommonService.isDataStreamOrIndexOrAliasExists(cloudType)){
+					try {
+						responseDetails = esRepository.getRequiredObject(cloudType, aggsForTagsList);
+					} catch (DataException e) {
+						throw new ServiceException(e);
+					}
+					JsonParser parser = new JsonParser();
+					JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
+					JsonObject aggs = (JsonObject) responseJson.get("aggregations");
+
+					List<String> targetTypes = new ArrayList<>();
+					JsonObject targetTypeObj = (JsonObject) aggs.get("TargetType");
+					JsonArray targetTypeBuckets = targetTypeObj.get(BUCKETS).getAsJsonArray();
+					for (JsonElement bucket : targetTypeBuckets) {
+						targetTypes.add(bucket.getAsJsonObject().get(KEY).getAsString());
+					}
+					cloudTypeObject.put("TargetType", targetTypes);
+
+
+					List<String> regions = new ArrayList<>();
+					JsonObject regionObj = (JsonObject) aggs.get("Region");
+					JsonArray regionBuckets = regionObj.get(BUCKETS).getAsJsonArray();
+					for (JsonElement bucket : regionBuckets) {
+						regions.add(bucket.getAsJsonObject().get(KEY).getAsString());
+					}
+					cloudTypeObject.put("Region", regions);
+
+					List<String> ids = new ArrayList<>();
+					JsonObject idObj = (JsonObject) aggs.get("Id");
+					JsonArray idBuckets = idObj.get(BUCKETS).getAsJsonArray();
+					for (JsonElement bucket : idBuckets) {
+						ids.add(bucket.getAsJsonObject().get(KEY).getAsString());
+					}
+
+					cloudTypeObject.put("Id", ids);
+
+					List<String> tagsPool = new ArrayList<>();
+
+					for (String agg : aggsForTagsList) {
+						String[] parts = agg.split(":");
+						String valueBeforeColon = parts[0];
+						tagsPool.add(valueBeforeColon);
+					}
+
+					for (String tag : tagsPool) {
+						log.info(tag);
+						tag = tag.substring(1, tag.length() - 1);
+						List<String> tagList = new ArrayList<>();
+						JsonObject tagObj = (JsonObject) aggs.get(tag);
+
+						JsonArray tagBuckets = tagObj.get(BUCKETS).getAsJsonArray();
+						for (JsonElement bucket : tagBuckets) {
+							tagList.add(bucket.getAsJsonObject().get(KEY).getAsString());
+						}
+						cloudTypeObject.put(tag, tagList);
+					}
+					boolean allValuesEmpty=true;
+					for(Object value:cloudTypeObject.values()){
+						if(value!= null){
+							allValuesEmpty=false;
+							break;
+						}
+					}
+
+					if(!allValuesEmpty){
+					cloudProviderObjList.add(cloudTypeObject);}
+				}
+			}
+		return cloudProviderObjList ;
+	}
+
 	private String processUpdateAssetGroupDetails(final CreateAssetGroup updateAssetGroupDetails, final Map<String, Object> assetGroupAlias, String userId) throws PacManException {
 		try {
-			AssetGroupDetails existingAssetGroupDetails = assetGroupRepository.findByGroupName(updateAssetGroupDetails.getGroupName());
-			existingAssetGroupDetails.setDisplayName(updateAssetGroupDetails.getGroupName());
+			AssetGroupDetails existingAssetGroupDetails = assetGroupRepository.findByGroupId(updateAssetGroupDetails.getGroupId());
+			String aliasName = updateAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ","-");
+			existingAssetGroupDetails.setDisplayName(updateAssetGroupDetails.getDisplayName());
+			existingAssetGroupDetails.setGroupName(aliasName);
 			if(!org.apache.commons.lang.StringUtils.isEmpty(updateAssetGroupDetails.getType()))
 				existingAssetGroupDetails.setGroupType(updateAssetGroupDetails.getType());
 			if(!org.apache.commons.lang.StringUtils.isEmpty(updateAssetGroupDetails.getDescription()))
@@ -348,8 +489,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		}
 	}
 
-	private boolean deleteAssetGroupAliasFromUpdation(CreateAssetGroup updateAssetGroupDetails) throws PacManException {
-		AssetGroupDetails assetGroupDetails = assetGroupRepository.findByGroupName(updateAssetGroupDetails.getGroupName());
+	private boolean deleteAssetGroupAliasFromUpdation(AssetGroupDetails updateAssetGroupDetails) throws PacManException {
+		AssetGroupDetails assetGroupDetails = assetGroupRepository.findByGroupId(updateAssetGroupDetails.getGroupId());
 		boolean isDeleted = deleteAssetGroupAlias(assetGroupDetails);
 		if(isDeleted) {
 			Set<AssetGroupCriteriaDetails> allDeletedCriteria = assetGroupDetails.getCriteriaDetails();
@@ -486,9 +627,19 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			Map<String, Object> alias = Maps.newHashMap();
 			List<Object> action = Lists.newArrayList();
 			final String aliasName = assetGroupDetails.getGroupName().toLowerCase().trim().replace(" ", "-");
+			if (!esCommonService.isDataStreamOrIndexOrAliasExists(aliasName)) {
+				/*Alias doesn't exist or already deleted*/
+				log.error(UNEXPECTED_ERROR_OCCURRED + String.format(ALIAS_NOT_FOUND_ERR_MSG, aliasName));
+				return true;
+			}
 			JSONArray jsonArray = new JSONObject(assetGroupDetails.getAliasQuery()).getJSONArray(AdminConstants.ACTIONS);
 			for (int i=0; i < jsonArray.length(); i++) {
 				String index = jsonArray.getJSONObject(i).getJSONObject("add").getString(AdminConstants.INDEX);
+				if (!esCommonService.isDataStreamOrIndexOrAliasExists(index)) {
+					/*Alias doesn't exist, we need to continue alias creation for rest of the indexes*/
+					log.error(UNEXPECTED_ERROR_OCCURRED + String.format(ALIAS_NOT_FOUND_ERR_MSG, aliasName));
+					continue;
+				}
 				Map<String, Object> addObj = Maps.newHashMap();
 				addObj.put(AdminConstants.INDEX, index);
 				addObj.put("alias", aliasName);
@@ -594,7 +745,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				}
 				Map<String, Object> shouldObj = Maps.newHashMap();
 				shouldObj.put("should", shouldArray);
-				shouldObj.put("minimum_should_match", 1);
+				shouldObj.put("minimum_should_match", "1");
 				Map<String, Object> innerboolObj = Maps.newHashMap();
 				innerboolObj.put("bool", shouldObj);
 				mustArray.add(innerboolObj);
@@ -627,16 +778,16 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	}
 
 	private String deleteAssetGroupDetails(final DeleteAssetGroupRequest deleteAssetGroupRequest) throws PacManException {
-		log.info("To delete the provided asset group");
+		log.info("To delete the provided asset group ");
 		if(assetGroupRepository.existsById(deleteAssetGroupRequest.getGroupId())) {
 			AssetGroupDetails assetGroupDetails = assetGroupRepository.findById(deleteAssetGroupRequest.getGroupId()).get();
 			log.info("Provided asset group exits in database ");
 			boolean isDeleted = deleteAssetGroupAlias(assetGroupDetails);
-			log.info("Provided asset group deleted from es");
+			log.info("Provided asset group deleted from es ");
 			if(isDeleted) {
 				try {
 					assetGroupRepository.delete(assetGroupDetails);
-					log.info("Provided asset group deleted from es and db");
+					log.info("Provided asset group deleted from es and db ");
 					return ASSET_GROUP_DELETE_SUCCESS;
 				} catch(Exception exception) {
 					commonService.invokeAPI("POST", ALIASES, assetGroupDetails.getAliasQuery());
@@ -646,12 +797,12 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				return ASSET_GROUP_DELETE_FAILED;
 			}
 		} else {
-			log.info("Provided asset group does not exits in database");
+			log.info("Provided asset group does not exits in database ");
 			throw new PacManException(ASSET_GROUP_NOT_EXITS);
 		}
 	}
 	public List<String> getFilterKeyValues(String key) throws  PacManException{
-		log.info("Inside method to fetch filterkeyvalues for input");
+		log.info("Inside method to fetch filterkeyvalues for input ");
 		if(StringUtils.isEmpty(key))
 			return new ArrayList<>();
 		if(key.toLowerCase().equalsIgnoreCase("type"))
@@ -660,105 +811,5 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			return assetGroupRepository.getDistinctCreatedBy();
 		else
 			return new ArrayList<>();
-	}
-
-	@Override
-	public List<Map<String, Object>> getCloudTypeObject() throws Exception {
-
-		String isGcpEnabled=assetGroupTargetDetailsService.getGcpFlagValueFromDB();
-		String isAzureEnabled=assetGroupTargetDetailsService.getAzureFlagValueFromDB();
-		List<String>cloudTypes=new ArrayList<>(Arrays.asList(cloudProvider.split(",")));
-
-		if(isGcpEnabled.equalsIgnoreCase("true")){
-			cloudTypes.add("gcp");
-		}
-
-		if(isAzureEnabled.equalsIgnoreCase("true")){
-			cloudTypes.add("azure");
-		}
-
-		List<Map<String ,Object>> cloudProviderObjList=new ArrayList<>();
-
-		String aggsStrByTag = "\"%s\":{\"terms\":{\"field\":\"%s\",\"size\":10000}}";
-		Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
-		List<String> aggsForTagsList = new ArrayList<>();
-		tagsSet.forEach(str -> aggsForTagsList.add(String.format(aggsStrByTag, "tags."+str, "tags." + str + ".keyword")));
-
-		log.info("aggsForTagsList {}",aggsForTagsList);
-
-		String responseDetails;
-		for (String cloudType : cloudTypes) {
-			Map<String, Object> cloudTypeObject = new HashMap<>();
-			cloudTypeObject.put("CloudType",cloudType);
-			log.info(cloudType);
-			if(esCommonService.isDataStreamOrIndexOrAliasExists(cloudType)) {
-				try {
-					responseDetails = esRepository.getRequiredObject(cloudType, aggsForTagsList);
-				} catch (DataException e) {
-					throw new ServiceException(e);
-				}
-				JsonParser parser = new JsonParser();
-				JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
-				JsonObject aggs = (JsonObject) responseJson.get("aggregations");
-
-				List<String> targetTypes = new ArrayList<>();
-				JsonObject targetTypeObj = (JsonObject) aggs.get("TargetType");
-				JsonArray targetTypeBuckets = targetTypeObj.get(BUCKETS).getAsJsonArray();
-				for (JsonElement bucket : targetTypeBuckets) {
-					targetTypes.add(bucket.getAsJsonObject().get(KEY).getAsString());
-				}
-				cloudTypeObject.put("TargetType", targetTypes);
-
-
-				List<String> regions = new ArrayList<>();
-				JsonObject regionObj = (JsonObject) aggs.get("Region");
-				JsonArray regionBuckets = regionObj.get(BUCKETS).getAsJsonArray();
-				for (JsonElement bucket : regionBuckets) {
-					regions.add(bucket.getAsJsonObject().get(KEY).getAsString());
-				}
-				cloudTypeObject.put("Region", regions);
-
-				List<String> ids = new ArrayList<>();
-				JsonObject idObj = (JsonObject) aggs.get("Id");
-				JsonArray idBuckets = idObj.get(BUCKETS).getAsJsonArray();
-				for (JsonElement bucket : idBuckets) {
-					ids.add(bucket.getAsJsonObject().get(KEY).getAsString());
-				}
-
-				cloudTypeObject.put("Id", ids);
-
-				List<String> tagsPool = new ArrayList<>();
-
-				for (String agg : aggsForTagsList) {
-					String[] parts = agg.split(":");
-					String valueBeforeColon = parts[0];
-					tagsPool.add(valueBeforeColon);
-				}
-
-				for (String tag : tagsPool) {
-					log.info(tag);
-					tag = tag.substring(1, tag.length() - 1);
-					List<String> tagList = new ArrayList<>();
-					JsonObject tagObj = (JsonObject) aggs.get(tag);
-
-					JsonArray tagBuckets = tagObj.get(BUCKETS).getAsJsonArray();
-					for (JsonElement bucket : tagBuckets) {
-						tagList.add(bucket.getAsJsonObject().get(KEY).getAsString());
-					}
-					cloudTypeObject.put(tag, tagList);
-				}
-				boolean allValuesEmpty=true;
-				for(Object value:cloudTypeObject.values()){
-					if(value!= null){
-						allValuesEmpty=false;
-						break;
-					}
-				}
-
-				if(!allValuesEmpty){
-					cloudProviderObjList.add(cloudTypeObject);}
-			}
-		}
-		return cloudProviderObjList ;
 	}
 }

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- *
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -37,66 +37,50 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-
 /**
  * The Class IssueTrendServiceImpl.
  */
 @Service
 public class IssueTrendServiceImpl implements IssueTrendService, Constants {
 
-    /**
-     * The logger.
-     */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    /**
-     * The es host.
-     */
+    /** The es host. */
     @Value("${elastic-search.host}")
     private String esHost;
-    /**
-     * The es port.
-     */
+    
+    /** The es port. */
     @Value("${elastic-search.port}")
     private int esPort;
-    /**
-     * The es cluster name.
-     */
+    
+    /** The es cluster name. */
     @Value("${elastic-search.clusterName}")
     private String esClusterName;
-    /**
-     * The date format.
-     */
+    
+    /** The date format. */
     @Value("${formats.date}")
     private String dateFormat;
 
+    /** The logger. */
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /** The statistics client. */
-    /**
-     * The auth client.
-     */
+
+    /** The auth client. */
     @Autowired
     private AuthServiceClient authClient;
 
-    /**
-     * The repository.
-     */
+    /** The repository. */
     @Autowired
     private TrendRepository repository;
 
-    /**
-     * The compliance service.
-     */
+    /** The compliance service. */
     @Autowired
     private ComplianceService complianceService;
 
-    /**
-     * The elastic search repository.
-     */
+    /** The elastic search repository. */
     @Autowired
     private ElasticSearchRepository elasticSearchRepository;
-
-    /**
-     * The compliance repository.
-     */
+    
+    /** The compliance repository. */
     @Autowired
     private ComplianceRepository complianceRepository;
 
@@ -113,8 +97,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
      */
     @Override
     public Map<String, Long> getTrendForIssues(String assetGroup,
-                                               String fromDate, String toDate, String severity,
-                                               String policyId, String app, String env) throws ServiceException {
+            String fromDate, String toDate, String severity,
+            String policyId, String app, String env) throws ServiceException {
         Assert.hasLength(assetGroup, "assetGroup cannot be null or empty");
 
         RangeGenerator generator = new RangeGenerator();
@@ -136,7 +120,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             mustFilter.put("tags.Environment.keyword", env);
         }
 
-        List<String> hosts = Arrays.asList(esHost, "");
+        List<String> hosts = Arrays.asList(esHost,
+                "");
         // this has to move to config, this is just an additional end point,
         // even if not provided default end point from config will work
 
@@ -146,8 +131,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                     "createdDate", "modifiedDate", mustNotFilter, mustFilter,
                     "yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         } catch (DataException e) {
-
-            throw new ServiceException(e);
+          
+          throw new ServiceException(e);
         }
 
     }
@@ -157,85 +142,77 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
      */
     @Override
     public Map<String, Object> getComplianceTrendProgress(String assetGroup,
-                                                          LocalDate fromDate, String domain) throws ServiceException {
+            LocalDate fromDate, LocalDate toDate, String domain) throws ServiceException {
         Map<String, Object> parentMap = new HashMap<>();
         parentMap.put("ag", assetGroup);
         // get list of targetypes mapped
         String ttypes = complianceRepository.getTargetTypeForAG(assetGroup,
                 domain);
+        logger.info("ttypes {} "+ttypes);
         List<Map<String, Object>> ruleDetails = null;
         List<Map<String, Object>> inputList;
         List<Map<String, Object>> complianceInfoList;
-
+        
         if (!Strings.isNullOrEmpty(ttypes)) {
             try {
                 ruleDetails = complianceRepository
                         .getPolicyIdWithDisplayNameQuery(ttypes);
             } catch (DataException e) {
-                throw new ServiceException(e);
+              throw new ServiceException(e);
             }
         }
         // Make map of rule severity,category
         Set<String> ruleCat = new HashSet<>();
         List<Map<String, Object>> ruleSevCatDetails;
-
-        ruleSevCatDetails = complianceService
-                .getPoliciesCatDetails(ruleDetails);
-
+    
+            ruleSevCatDetails = complianceService
+                    .getPoliciesevCatDetails(ruleDetails);
+       
+        
+        
         Map<String, Object> ruleCatDetails = ruleSevCatDetails.parallelStream()
                 .collect(
                         Collectors.toMap(c -> c.get(POLICYID).toString(),
                                 c -> c.get(POLICY_CATEGORY),
-                                (oldValue, newValue) -> newValue));
+                                (oldvalue, newValue) -> newValue));
         ruleCatDetails.entrySet().parallelStream()
                 .forEach(entry -> ruleCat.add(entry.getValue().toString()));
         complianceInfoList = new ArrayList<>();
 
-        try {
+         try {
             inputList = repository
-                    .getComplianceTrendProgress(assetGroup, fromDate, domain,
+                    .getComplianceTrendProgress(assetGroup, fromDate, toDate, domain,
                             ruleCat);
-        } catch (DataException e) {
-            throw new ServiceException(e);
-        }
+         } catch (DataException e) {
+             throw new ServiceException(e);
+           }
+       
+        if (!inputList.isEmpty()) {
+            // Sort the list by the date in ascending order
+            Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
+                    m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
+                    .compareTo(
+                            LocalDate.parse(m2.get("date").toString(),
+                                    DateTimeFormatter.ISO_DATE));
 
-        try {
-            Map<String, Object> policyCatWeightageUnsortedMap = complianceRepository.getPolicyCategoryWeightagefromDB(domain);
-            if (!inputList.isEmpty()) {
-                // Sort the list by the date in ascending order
-                Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
-                                m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
-                        .compareTo(
-                                LocalDate.parse(m2.get("date").toString(),
-                                        DateTimeFormatter.ISO_DATE));
+            Collections.sort(inputList, comp);
+            useRealTimeDataForLatestDate(inputList, assetGroup,
+                    COMPLIANCE_PERCENTAGE, null, domain);
+            inputList.forEach(inputMap -> {
+                Map<String, Object> outputMap = new HashMap<>();
+                inputMap.forEach((key, value) -> {
+                    // Other than the specified keys, ignore all other kv pairs
+                    if ((!Strings.isNullOrEmpty(key))
+                            && !("_id".equalsIgnoreCase(key))) {
 
-                Collections.sort(inputList, comp);
-                useRealTimeDataForLatestDate(inputList, assetGroup,
-                        COMPLIANCE_PERCENTAGE, null, domain);
-                inputList.forEach(inputMap -> {
-                    Map<String, Object> outputMap = new HashMap<>();
-                    inputMap.forEach((key, value) -> {
-                        // Other than the specified keys, ignore all other kv pairs
-                        if ((!Strings.isNullOrEmpty(key))
-                                && !("_id".equalsIgnoreCase(key))) {
-
-                            outputMap.put(key, value);
-                        }
-                    });
-                    if (!outputMap.containsKey("overall")) {
-                        Double weightedAvgSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.containsKey(str)).map(catStr -> (Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString()))).reduce(0d, (a, b) -> a + b);
-                        Double weightedSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.containsKey(str)).map(catStr -> Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString())).reduce(0d, (a, b) -> a + b);
-                        if (weightedSum.doubleValue() != 0) {
-                            outputMap.put("overall", weightedAvgSum / weightedSum);
-                        }
+                        outputMap.put(key, value);
                     }
-                    complianceInfoList.add(outputMap);
                 });
-                Collections.sort(complianceInfoList, comp);
 
-            }
-        } catch (DataException e) {
-            throw new ServiceException(e);
+                complianceInfoList.add(outputMap);
+            });
+
+            Collections.sort(complianceInfoList, comp);
         }
         parentMap.put("compliance_info", complianceInfoList);
         return parentMap;
@@ -246,21 +223,21 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
      */
     @Override
     public Map<String, Object> getTrendProgress(String assetGroup,
-                                                String ruleId, LocalDate startDate, LocalDate endDate,
-                                                String trendCategory) throws ServiceException {
+            String ruleId, LocalDate startDate, LocalDate endDate,
+            String trendCategory) throws ServiceException {
 
         List<Map<String, Object>> trendList;
-        try {
-            trendList = repository.getTrendProgress(
-                    assetGroup, ruleId, startDate, endDate, trendCategory);
-        } catch (DataException e) {
+        try{
+        trendList  = repository.getTrendProgress(
+                assetGroup, ruleId, startDate, endDate, trendCategory);
+        }catch(DataException e){
             throw new ServiceException(e);
         }
         if (!trendList.isEmpty()) {
 
             // Sort the list by the date in ascending order
             Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
-                            m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
+                    m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
                     .compareTo(
                             LocalDate.parse(m2.get("date").toString(),
                                     DateTimeFormatter.ISO_DATE));
@@ -307,98 +284,98 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         LocalDate today;
         try {
             switch (trendCategory) {
-                case "tagcompliance":
-                    baseApiReturnMap = complianceService.getTagging(ag, null);
-                    compliantQuantity = baseApiReturnMap.get("tagged");
-                    noncompliantQuantity = baseApiReturnMap.get("untagged");
-                    total = baseApiReturnMap.get("assets");
-                    compliance = baseApiReturnMap.get(COMPLIANCE_PERCENTAGE);
+            case "tagcompliance":
+                baseApiReturnMap = complianceService.getTagging(ag, null);
+                compliantQuantity = baseApiReturnMap.get("tagged");
+                noncompliantQuantity = baseApiReturnMap.get("untagged");
+                total = baseApiReturnMap.get("assets");
+                compliance = baseApiReturnMap.get(COMPLIANCE_PERCENTAGE);
 
-                    latestDaysTrendData.put(COMPLAINT, compliantQuantity);
-                    latestDaysTrendData.put(NON_COMPLIANT, noncompliantQuantity);
-                    latestDaysTrendData.put(TOTAL, total);
-                    latestDaysTrendData.put(COMPLIANCE_PERCENT, compliance);
-                    break;
+                latestDaysTrendData.put(COMPLAINT, compliantQuantity);
+                latestDaysTrendData.put(NON_COMPLIANT, noncompliantQuantity);
+                latestDaysTrendData.put(TOTAL, total);
+                latestDaysTrendData.put(COMPLIANCE_PERCENT, compliance);
+                break;
 
-                case "certcompliance":
+            case "certcompliance":
 
-                    baseApiReturnMap = complianceService.getCertificates(ag);
-                    total = baseApiReturnMap.get("certificates");
-                    noncompliantQuantity = baseApiReturnMap
-                            .get("certificates_expiring");
-                    compliantQuantity = total - noncompliantQuantity;
+                baseApiReturnMap = complianceService.getCertificates(ag);
+                total = baseApiReturnMap.get("certificates");
+                noncompliantQuantity = baseApiReturnMap
+                        .get("certificates_expiring");
+                compliantQuantity = total - noncompliantQuantity;
 
-                    latestDaysTrendData.put(COMPLAINT, compliantQuantity);
-                    latestDaysTrendData.put(NON_COMPLIANT, noncompliantQuantity);
-                    latestDaysTrendData.put(TOTAL, total);
-                    if (total > 0) {
-                        compliance = Math
-                                .floor(compliantQuantity * HUNDRED / total);
-                    } else {
-                        compliance = INT_HUNDRED;
+                latestDaysTrendData.put(COMPLAINT, compliantQuantity);
+                latestDaysTrendData.put(NON_COMPLIANT, noncompliantQuantity);
+                latestDaysTrendData.put(TOTAL, total);
+                if (total > 0) {
+                    compliance = Math
+                            .floor(compliantQuantity * HUNDRED / total);
+                } else {
+                    compliance = INT_HUNDRED;
+                }
+                latestDaysTrendData.put(COMPLIANCE_PERCENT, compliance);
+                break;
+
+            case "issuecompliance":
+                Request request = new Request();
+                request.setAg(ag);
+                Map<String, String> filters = new HashMap<>();
+                filters.put("policyId.keyword", ruleId);
+                filters.put("domain", domain);
+                request.setFilter(filters);
+                ResponseWithOrder responseWithOrder = complianceService
+                        .getPolicycompliance(request);
+                latestDaysTrendData.put(COMPLAINT, responseWithOrder
+                        .getResponse().get(0).get("passed"));
+                latestDaysTrendData.put(NON_COMPLIANT, responseWithOrder
+                        .getResponse().get(0).get("failed"));
+                latestDaysTrendData.put(TOTAL, responseWithOrder.getResponse()
+                        .get(0).get("assetsScanned"));
+                latestDaysTrendData.put(COMPLIANCE_PERCENT, responseWithOrder
+                        .getResponse().get(0).get(COMPLIANCE_PERCENT));
+
+                break;
+
+            case "patching":
+                baseApiReturnMap = complianceService.getPatching(ag, null,null);
+                compliantQuantity = baseApiReturnMap.get("patched_instances");
+                noncompliantQuantity = baseApiReturnMap
+                        .get("unpatched_instances");
+                total = baseApiReturnMap.get("total_instances");
+                compliance = baseApiReturnMap.get("patching_percentage");
+                latestDaysTrendData.put("patched_instances", compliantQuantity);
+                latestDaysTrendData.put("unpatched_instances",
+                        noncompliantQuantity);
+                latestDaysTrendData.put("total_instances", total);
+                latestDaysTrendData.put("patching_percentage", compliance);
+                break;
+
+            case COMPLIANCE_PERCENTAGE:
+                overallCompliance  = complianceService
+                        .getOverallComplianceByDomain(ag, domain);
+                if(!overallCompliance.isEmpty()){
+                    for (Map.Entry<String,Object> entry : overallCompliance.entrySet()) {
+                        latestDaysTrendData.put(entry.getKey(),entry.getValue());
                     }
-                    latestDaysTrendData.put(COMPLIANCE_PERCENT, compliance);
-                    break;
+                }
+                break;
 
-                case "issuecompliance":
-                    Request request = new Request();
-                    request.setAg(ag);
-                    Map<String, String> filters = new HashMap<>();
-                    filters.put("policyId.keyword", ruleId);
-                    filters.put("domain", domain);
-                    request.setFilter(filters);
-                    ResponseWithOrder responseWithOrder = complianceService
-                            .getPolicyCompliance(request);
-                    latestDaysTrendData.put(COMPLAINT, responseWithOrder
-                            .getResponse().get(0).get("passed"));
-                    latestDaysTrendData.put(NON_COMPLIANT, responseWithOrder
-                            .getResponse().get(0).get("failed"));
-                    latestDaysTrendData.put(TOTAL, responseWithOrder.getResponse()
-                            .get(0).get("assetsScanned"));
-                    latestDaysTrendData.put(COMPLIANCE_PERCENT, responseWithOrder
-                            .getResponse().get(0).get(COMPLIANCE_PERCENT));
+            case "issues":
+                Map<String, Object> distroMap =  complianceService
+                        .getDistribution(ag, domain,null);
+                Map<String, Object> distroBySev = (Map<String, Object>) distroMap
+                        .get("distribution_by_severity");
+                latestDaysTrendData.put(TOTAL, distroMap.get("total_issues"));
 
-                    break;
-
-                case "patching":
-                    baseApiReturnMap = complianceService.getPatching(ag, null, null);
-                    compliantQuantity = baseApiReturnMap.get("patched_instances");
-                    noncompliantQuantity = baseApiReturnMap
-                            .get("unpatched_instances");
-                    total = baseApiReturnMap.get("total_instances");
-                    compliance = baseApiReturnMap.get("patching_percentage");
-                    latestDaysTrendData.put("patched_instances", compliantQuantity);
-                    latestDaysTrendData.put("unpatched_instances",
-                            noncompliantQuantity);
-                    latestDaysTrendData.put("total_instances", total);
-                    latestDaysTrendData.put("patching_percentage", compliance);
-                    break;
-
-                case COMPLIANCE_PERCENTAGE:
-                    overallCompliance = complianceService
-                            .getOverallComplianceByDomain(ag, domain);
-                    if (!overallCompliance.isEmpty()) {
-                        for (Map.Entry<String, Object> entry : overallCompliance.entrySet()) {
-                            latestDaysTrendData.put(entry.getKey(), entry.getValue());
-                        }
-                    }
-                    break;
-
-                case "issues":
-                    Map<String, Object> distroMap = complianceService
-                            .getDistribution(ag, domain, null);
-                    Map<String, Object> distroBySev = (Map<String, Object>) distroMap
-                            .get("distribution_by_severity");
-                    latestDaysTrendData.put(TOTAL, distroMap.get("total_issues"));
-
-                    for (Map.Entry<String, Object> severity : distroBySev
-                            .entrySet()) {
-                        latestDaysTrendData.put(severity.getKey(),
-                                severity.getValue());
-                    }
-                    break;
-                default:
-                    //nothings
+                for (Map.Entry<String, Object> severity : distroBySev
+                        .entrySet()) {
+                    latestDaysTrendData.put(severity.getKey(),
+                            severity.getValue());
+                }
+                break;
+            default:
+                //nothings
             }
 
             // Check if the trend already has todays data (Compare dates)
@@ -422,7 +399,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             }
 
         } catch (ServiceException e) {
-            logger.error("Call to Base API to get todays data failed", e);
+            logger.error("Call to Base API to get todays data failed" , e);
+            return;
         }
 
     }
@@ -437,10 +415,10 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         trendList.parallelStream().forEach(
                 trend -> {
                     if (trend.get(COMPLIANCE_PERCENT) == null) {
-                        double total = Double.parseDouble(trend.get(TOTAL)
-                                .toString());
-                        double compliant = Double.parseDouble(trend.get(COMPLAINT)
-                                .toString());
+                        double total = trend.get(TOTAL) != null ? Double.parseDouble(trend.get(TOTAL)
+                                .toString()) : 0.0;
+                        double compliant = trend.get(COMPLAINT) != null ? Double.parseDouble(trend.get(COMPLAINT)
+                                .toString()) : 0.0;
                         double compliancePercent = HUNDRED;
                         if (total > 0) {
                             compliancePercent = Math.floor(compliant * HUNDRED
@@ -455,8 +433,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
      * Fill no data dates with previous.
      *
      * @param trendList the trend list
-     * @param firstDay  the first day
-     * @param lastDay   the last day
+     * @param firstDay the first day
+     * @param lastDay the last day
      */
     private void fillNoDataDatesWithPrevious(
             List<Map<String, Object>> trendList, LocalDate firstDay,
@@ -515,7 +493,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
      * Gets the trend data for date.
      *
      * @param trendList the trend list
-     * @param date      the date
+     * @param date the date
      * @return the trend data for date
      */
     private Map<String, Object> getTrendDataForDate(
@@ -538,15 +516,15 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
     /**
      * Segregate trend progress by week.
      *
-     * @param assetGroup        the asset group
+     * @param assetGroup the asset group
      * @param trendProgressList the trend progress list
-     * @param startDate         the start date
-     * @param endDate           the end date
+     * @param startDate the start date
+     * @param endDate the end date
      * @return the map
      */
     private Map<String, Object> segregateTrendProgressByWeek(String assetGroup,
-                                                             List<Map<String, Object>> trendProgressList, LocalDate startDate,
-                                                             LocalDate endDate) {
+            List<Map<String, Object>> trendProgressList, LocalDate startDate,
+            LocalDate endDate) {
 
         long maxInstancesForTheCompleteDateRange = 0;
 
@@ -591,8 +569,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                                     .isAfter(startingDayOfWeekLocalCopy
                                             .minusDays(1))
                                     && (dateInThisIteration
-                                    .isBefore(endingDayOfWeekLocalCopy
-                                            .plusDays(1)))) {
+                                            .isBefore(endingDayOfWeekLocalCopy
+                                                    .plusDays(1)))) {
                                 // If the date matches, lets pick the map which
                                 // represents this date's patching data and add
                                 // it to
@@ -621,8 +599,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             mapForTheWeek.put(COMPLIANCE_PERCENTAGE, complianceRunningValue);
             trendListForTheWeek.forEach(ruleTrendProgressMap -> {
                 // We don't need _id in the response
-                ruleTrendProgressMap.remove("_id");
-            });
+                    ruleTrendProgressMap.remove("_id");
+                });
 
             // Store a 'copy' of the weeks array list instead of the original,
             // as we will clear the original and reuse it for the next
@@ -681,7 +659,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
     /**
      * Gets the latest days numeric data from A weekly data list.
      *
-     * @param dataKeyName                     the data key name
+     * @param dataKeyName the data key name
      * @param ruleTrendProgressListForTheWeek the rule trend progress list for the week
      * @return the latest days numeric data from A weekly data list
      */
@@ -707,7 +685,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
     /**
      * Gets the max value numeric data from A weekly data list.
      *
-     * @param dataKeyName                 the data key name
+     * @param dataKeyName the data key name
      * @param trendProgressListForTheWeek the trend progress list for the week
      * @return the max value numeric data from A weekly data list
      */
@@ -759,8 +737,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
      */
     @Override
     public Map<String, Object> getTrendIssues(String assetGroup,
-                                              LocalDate from, LocalDate to, Map<String, String> filter,
-                                              String domain) throws ServiceException {
+            LocalDate from, LocalDate to, Map<String, String> filter,
+            String domain) throws ServiceException {
 
         Map<String, Object> parentMap = new HashMap<>();
         parentMap.put("ag", assetGroup);
@@ -769,19 +747,19 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                 filter.get(DOMAIN));
         List<Map<String, Object>> ruleDetails = null;
         if (!Strings.isNullOrEmpty(ttypes)) {
-            try {
-                ruleDetails = complianceRepository
-                        .getPolicyIdWithDisplayNameQuery(ttypes);
-            } catch (DataException e) {
+            try{
+            ruleDetails = complianceRepository
+                    .getPolicyIdWithDisplayNameQuery(ttypes);
+            }catch(DataException e){
                 throw new ServiceException(e);
             }
         }
 
         Set<String> ruleSev = new HashSet<>();
         List<Map<String, Object>> ruleSevCatDetails;
-        ruleSevCatDetails = complianceService
-                .getPoliciesCatDetails(ruleDetails);
-
+            ruleSevCatDetails = complianceService
+                    .getPoliciesevCatDetails(ruleDetails);
+        
         Map<String, Object> ruleSevDetails = ruleSevCatDetails.parallelStream()
                 .collect(
                         Collectors.toMap(r -> r.get(POLICYID).toString(),
@@ -801,8 +779,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             issueInfoList.parallelStream().forEach(
                     issuemap -> {
                         issuemap.remove("_id");
-                        double total = Double.parseDouble(issuemap.get(TOTAL)
-                                .toString());
+                        double total = issuemap.get(TOTAL) != null ? Double.parseDouble(issuemap.get(TOTAL)
+                                .toString()) : 0.0;
                         if (total == 0) {
                             for (Map.Entry<String, Object> issue : issuemap
                                     .entrySet()) {
@@ -819,10 +797,15 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                             }
                         }
 
+                        ruleSev.stream().forEach(sev -> {
+                            if(!issuemap.containsKey(sev)){
+                                issuemap.put(sev,0);
+                            }
+                        });
                     });
             // Sort the list by the date in ascending order
             Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
-                            m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
+                    m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
                     .compareTo(
                             LocalDate.parse(m2.get("date").toString(),
                                     DateTimeFormatter.ISO_DATE));

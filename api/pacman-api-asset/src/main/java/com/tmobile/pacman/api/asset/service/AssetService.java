@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.api.asset.domain.FilterRequest;
 import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
 import com.tmobile.pacman.api.commons.exception.DataException;
@@ -35,7 +36,7 @@ public interface AssetService {
      * type is passed, all the assets of valid target type for the asset group
      * is considered.
      *
-     * @param assetGroup name of the asset group
+     * @param aseetGroupName name of the asset group
      * @param type target type
      * @param domain the domain of asset group
      * 
@@ -186,7 +187,7 @@ public interface AssetService {
      * 
      * @return list of assets and its some details.
      */
-    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
+    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
             String searchText, Map<String, Object> sortFilter);
 
     /**
@@ -195,7 +196,9 @@ public interface AssetService {
      * @param assetGroup  name of the asset group
      * @param filter application,environment,resourceType as optional filters
      * @param searchText searchText is used to match any text you are looking for
-     * 
+     * @param from for pagination
+     * @param size for pagination
+     *
      * @return list of assets and its some details.
      */
     public long getAssetCount(String assetGroup, Map<String, String> filter, String searchText);
@@ -511,7 +514,7 @@ public interface AssetService {
      * type is passed, all the assets of valid target type for the asset group
      * is considered.,
      *
-     * @param assetGroup name of the asset group
+     * @param aseetGroupName name of the asset group
      * @param type target type
      * @param domain the domain of asset group
      * 
@@ -523,7 +526,7 @@ public interface AssetService {
 	/**
      * Fetches the provider info for the given asset group.
      *
-     * @param assetGroup
+     * @param Asset Group
      * 
      * @return  list of provider info
      * @throws ServiceException
@@ -537,5 +540,7 @@ public interface AssetService {
     public List<Map<String, Object>> getValuesByTag(String aseetGroupName, String tag,String type) throws DataException;
 
     public Set<String> getSupportedFilters(String filterName);
+
+    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
 
 }

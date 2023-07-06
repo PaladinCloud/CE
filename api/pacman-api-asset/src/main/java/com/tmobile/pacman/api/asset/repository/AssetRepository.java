@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.api.asset.domain.FilterRequest;
 import org.springframework.stereotype.Repository;
 
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
@@ -114,6 +115,8 @@ public interface AssetRepository {
      */
     public Map<String, Object> getAssetGroupInfo(String assetGroup);
 
+    public int getAccountCountByAssetGroup(String aseetGroupName);
+
     /**
      * Fetches the total asset count for each application for the given target
      * type and asset group.
@@ -205,7 +208,7 @@ public interface AssetRepository {
      * 
      * @return list of assets and its some details.
      */
-    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
+    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
             String searchText, Map<String, Object> sortFilter);
 
     /**
@@ -500,11 +503,11 @@ public interface AssetRepository {
     /**
      * Fetches the domains for the given asset group.
      *
-     * @param aseetGroupName name of the asset group
+     * @param targetTypesParam all targetTypes joined with coma
      * 
      * @return created date as string 
      */
-    List<Map<String, Object>> getDomainsByAssetGroup(String aseetGroupName);
+    List<Map<String, Object>> getDomainsByTargetTypes(String targetTypesParam);
 
     /**
      * Fetches the updatable fields info maintained in RDS for the given targettype.
@@ -582,5 +585,11 @@ public interface AssetRepository {
     public Set<String> getMandatoryTagsNames(String serviceName);
 
     List<String> getValuesListForTag(String aseetGroupName, String tagName,String type) throws DataException;
+
+    public long getAutoFixPlanCountForAg(String ag);
     public Set<String> getSupportedFilters(String serviceName);
+    List<Map<String, Object>> getChildResourceDetailByDocId(String ag, String resourceType, String documentId)
+            throws DataException;
+
+    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
 }

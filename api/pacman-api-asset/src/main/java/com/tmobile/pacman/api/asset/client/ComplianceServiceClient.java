@@ -15,13 +15,15 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.client;
 
+import com.tmobile.pacman.api.asset.domain.PolicyParamResponse;
+import com.tmobile.pacman.api.asset.domain.Request;
+import com.tmobile.pacman.api.asset.domain.ResponseWithTotal;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.tmobile.pacman.api.asset.domain.PolicyViolationApi;
+
+import java.util.Map;
 
 /**
  * The Interface ComplianceServiceClient.
@@ -41,13 +43,29 @@ public interface ComplianceServiceClient {
     /**
      * Gets the policy violation summary.
      *
-     * @param resourceId the resource id
-     * @param dataSource the data source
+     * @param resourceId   the resource id
+     * @param dataSource   the data source
      * @param resourceType the resource type
      * @return the policy violation summary
      */
     @RequestMapping(method = RequestMethod.GET, value = "/v1/policyviolations/summary/{dataSource}/{resourceType}/{resourceId}")
     PolicyViolationApi getPolicyViolationSummary(@PathVariable("resourceId") String resourceId,
-            @PathVariable("dataSource") String dataSource, @PathVariable("resourceType") String resourceType);
+                                                 @PathVariable("dataSource") String dataSource, @PathVariable("resourceType") String resourceType);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/getPolicyCountByAssetGroup")
+    Integer getPolicyCountByAssetGroup(@RequestParam("ag") String assetGroup);
+
+    /**
+     * Gets the non-compliance policy.
+     *
+     * @param request the pay load
+     * @return the open issues
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/v1/noncompliancepolicy", consumes = "application/json")
+    ResponseWithTotal getNonCompliancePolicies(@RequestBody Request request);
+
+    @GetMapping(path = "/policyparams/param")
+    PolicyParamResponse getPolicyParam(@RequestParam("policyId") String policyId,
+                                       @RequestParam("policyParamKey") String policyParamkey);
 
 }

@@ -28,5 +28,6 @@ public class CreateAccountRequest {
     private String tenableAPIUrl;
     private String tenableAccessKey;
     private String tenableSecretKey;
+    private String createdBy;
 
 }

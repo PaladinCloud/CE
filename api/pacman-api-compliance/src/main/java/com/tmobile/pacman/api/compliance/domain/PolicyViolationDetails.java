@@ -66,10 +66,13 @@ public class PolicyViolationDetails {
     /** The policy id. */
     String policyId;
 
+    boolean isOutOfSla;
     /** The violation details. */
     List<Map<String, Object>> violationDetails;
 
     List<Map<String,Object>> vulnerabilityDetails;
+
+    private ExemptionDTO exemption;
 
     /**
      * Instantiates a new policy violation details.
@@ -90,12 +93,13 @@ public class PolicyViolationDetails {
      * @param violationDetails the violation details
      */
     public PolicyViolationDetails(String resourceType, String status,
-            String severity, String ruleCategory, String resouceViolatedPolicy,
-            String policyViolated, String policyDescription,
-            String violationReason, String violationCreatedDate,
-            String violationModifiedDate, String ruleId,
-            String assetGroup,
-            List<Map<String, Object>> violationDetails, List<Map<String, Object>> vulnerabilityDetails) {
+                                  String severity, String ruleCategory, String resouceViolatedPolicy,
+                                  String policyViolated, String policyDescription,
+                                  String violationReason, String violationCreatedDate,
+                                  String violationModifiedDate, String ruleId,
+                                  String assetGroup,
+                                  List<Map<String, Object>> violationDetails,List<Map<String, Object>> vulnerabilityDetails,
+                                  boolean isOutOfSla, ExemptionDTO exemption) {
         super();
         this.resourceType = resourceType;
         this.status = status;
@@ -109,11 +113,21 @@ public class PolicyViolationDetails {
         this.violationModifiedDate = violationModifiedDate;
         this.policyId = ruleId;
         this.violationDetails = violationDetails;
-        this.vulnerabilityDetails = vulnerabilityDetails;
+        this.vulnerabilityDetails = vulnerabilityDetails ;
         this.assetGroup = assetGroup;
+        this.isOutOfSla=isOutOfSla;
+        this.exemption = exemption;
     }
 
-      /**
+    public boolean isIsOutOfSla() {
+        return this.isOutOfSla;
+    }
+
+    public void setIsOutOfSla(boolean isOutOfSla) {
+        this.isOutOfSla = isOutOfSla;
+    }
+
+    /**
      * Gets the asset Group
      *
      * @return the asset Group
@@ -361,5 +375,13 @@ public class PolicyViolationDetails {
 
     public void setVulnerabilityDetails(List<Map<String, Object>> vulnerabilityDetails) {
         this.vulnerabilityDetails = vulnerabilityDetails;
+    }
+
+    public ExemptionDTO getExemption() {
+        return exemption;
+    }
+
+    public void setExemption(ExemptionDTO exemption) {
+        this.exemption = exemption;
     }
 }

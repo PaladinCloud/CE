@@ -3,6 +3,12 @@ package com.tmobile.pacman.api.admin.repository.service;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.cloudresourcemanager.CloudResourceManager;
+import com.google.api.services.cloudresourcemanager.model.Project;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -14,11 +20,13 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.*;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.compute.v1.*;
 import com.google.common.collect.Lists;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +38,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -42,6 +52,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
     public static final String GCP_CREDENTIAL = "gcp-credential-";
     public static final String JSON = ".json";
     public static final String ERROR_WHILE_CREATING_CREDENTIAL_FILE = "Error while creating credential file";
+    public static final String GCP_ENABLED = "gcp.enabled";
 
     @Value("${credential.file.path}")
     private String credentialFilePath;
@@ -121,41 +132,66 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
     @Override
     public AccountValidationResponse addAccount(CreateAccountRequest accountData) {
         LOGGER.info("Inside addAccount method of GcpAccountServiceImpl");
-        AccountValidationResponse validateResponse=validateRequest(accountData);
-        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
+        AccountValidationResponse validateResponse = validateRequest(accountData);
+        if (validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)) {
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
-
         String projectId = accountData.getProjectId();
-        String projectName=accountData.getProjectName();
-        validateResponse=createAccountInDb(projectId,projectName, Constants.GCP);
-        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
+        String credJson = accountData.getSecretData();
+        try {
+            GoogleCredentials gcpCredentials = GoogleCredentials.fromStream(new ByteArrayInputStream(credJson.getBytes()))
+                    .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+                  LOGGER.info("Credentials created: {}", gcpCredentials);
+            HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+            CloudResourceManager cloudResourceManager = new CloudResourceManager.Builder(httpTransport,
+                  jsonFactory, new HttpCredentialsAdapter(gcpCredentials)).build();
+            CloudResourceManager.Projects.Get project = cloudResourceManager.projects().get(projectId);
+
+            Project  p = project.execute();
+            if (p == null) {
+                LOGGER.error("Project not found: {}", projectId);
+                validateResponse.setValidationStatus(FAILURE);
+                validateResponse.setMessage("Project not found");
+                validateResponse.setErrorDetails("Project not found");
+                return validateResponse;
+            }
+            String projectName = p.getName();
+            validateResponse = createAccountInDb(projectId, projectName, Constants.GCP, accountData.getCreatedBy());
+
+         if (validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)) {
             LOGGER.info("Account already exists");
             return validateResponse;
         }
-        try {
-            BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
-            String region = System.getenv("REGION");
-            String roleName= System.getenv(PALADINCLOUD_RO);
-            AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
-                    .standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                    .withRegion(region).build();
 
-            CreateSecretRequest createRequest = new CreateSecretRequest()
-                    .withName(secretManagerPrefix+"/"+roleName+ "/gcp/" + projectId).withSecretString(accountData.getSecretData());
+        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+        String region = System.getenv("REGION");
+        String roleName = System.getenv(PALADINCLOUD_RO);
+        AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(region).build();
 
-            CreateSecretResult createResponse = secretClient.createSecret(createRequest);
-            LOGGER.info("Create secret response: {}", createResponse);
-            //update azure enable flag for scheduler job
-            String key="gcp.enabled";
-            String value = "true";
-            String application = "job-scheduler";
-            updateConfigProperty(key, value, application);
-            validateResponse.setValidationStatus(SUCCESS);
-            validateResponse.setMessage("Account added successfully. Project id: "+projectId);
+        CreateSecretRequest createRequest = new CreateSecretRequest()
+                .withName(secretManagerPrefix + "/" + roleName + "/gcp/" + projectId).withSecretString(accountData.getSecretData());
 
+        CreateSecretResult createResponse = secretClient.createSecret(createRequest);
+        LOGGER.info("Create secret response: {}", createResponse);
+        //update azure enable flag for scheduler job
+        updateConfigProperty(GCP_ENABLED, TRUE, JOB_SCHEDULER);
+        validateResponse.setValidationStatus(SUCCESS);
+        validateResponse.setMessage("Account added successfully. Project id: " + projectId);
+        validateResponse.setAccountName(projectName);
+
+        }catch (IOException e) {
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage("Error obtaining application default credentials");
+            validateResponse.setErrorDetails(e.getMessage()!=null?e.getMessage(): "Error obtaining application default credentials");
+        } catch (GeneralSecurityException e) {
+             validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage("Error creating HTTP transport");
+            validateResponse.setErrorDetails(e.getMessage()!=null?e.getMessage(): "Error creating HTTP transport");
         }catch (ResourceExistsException e){
             LOGGER.error(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
             validateResponse.setValidationStatus(FAILURE);
@@ -178,14 +214,10 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         AccountValidationResponse response=new AccountValidationResponse();
         StringBuilder validationErrorDetails=new StringBuilder();
         String projectId=accountData.getProjectId();
-        String projectName=accountData.getProjectName();
         String secretData=accountData.getSecretData();
 
         if(StringUtils.isEmpty(projectId)){
             validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" Project Id\n");
-        }
-        if(StringUtils.isEmpty(projectName)){
-            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" Project name\n");
         }
         if(StringUtils.isEmpty(secretData)){
             validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" Secret Data\n");
@@ -199,7 +231,6 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             response.setValidationStatus(SUCCESS);
         }
         return response;
-
     }
 
     @Override
@@ -228,6 +259,12 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             //delete entry from db
             response=deleteAccountFromDB(projectId);
             response.setType(Constants.GCP);
+            List<AccountDetails> onlineAccounts=findOnlineAccounts(STATUS_CONFIGURED,Constants.GCP);
+            if(onlineAccounts==null || onlineAccounts.isEmpty()){
+                LOGGER.debug("Last account for GCP is deleted, disabling gcp enable flag");
+                updateConfigProperty(GCP_ENABLED,FALSE,JOB_SCHEDULER);
+            }
+
 
         } catch (SdkClientException e) {
             LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());

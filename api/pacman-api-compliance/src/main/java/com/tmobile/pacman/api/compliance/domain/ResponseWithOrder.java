@@ -36,6 +36,8 @@ public class ResponseWithOrder {
     /** The total. */
     long total;
 
+
+
     /**
      * Instantiates a new response with order.
      */

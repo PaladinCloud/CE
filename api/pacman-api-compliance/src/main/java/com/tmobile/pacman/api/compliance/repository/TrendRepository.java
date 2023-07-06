@@ -15,12 +15,12 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.repository;
 
+import com.tmobile.pacman.api.commons.exception.DataException;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.tmobile.pacman.api.commons.exception.DataException;
 
 /**
  * The Interface TrendRepository.
@@ -38,7 +38,7 @@ public interface TrendRepository {
      * @throws DataException the data exception
      */
     List<Map<String, Object>> getComplianceTrendProgress(String assetGroup,
-            LocalDate fromDate, String domain, Set<String> ruleSev)
+            LocalDate fromDate, LocalDate toDate, String domain, Set<String> ruleSev)
             throws DataException;
 
     /**

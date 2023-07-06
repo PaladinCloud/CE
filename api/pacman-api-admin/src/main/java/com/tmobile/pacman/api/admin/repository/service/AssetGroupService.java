@@ -107,8 +107,20 @@ public interface AssetGroupService {
      */
 	public String deleteAssetGroup(final DeleteAssetGroupRequest assetGroupDetails, final String userId) throws PacManException;
 
+	public List<Map<String,Object>> getCloudTypeObject() throws Exception;
+
 	public List<String> getFilterKeyValues(String key) throws  PacManException;
 
-	public List<Map<String,Object>> getCloudTypeObject() throws Exception;
+	/**
+     * Service to change the status of  asset group
+     *
+     * @author Arun
+     * @param assetGroupName - Asset Group Name for changing the status existing assetGroup
+     * @param status - Enable or Disable the Asset Group
+     * @param userId - userId who performs the action
+     * @return Success or failure message
+     * @throws PacManException
+     */
+	public String updateAssetGroupStatus (final String assetGroupName, final boolean status, final String userId) throws PacManException;
 
 }

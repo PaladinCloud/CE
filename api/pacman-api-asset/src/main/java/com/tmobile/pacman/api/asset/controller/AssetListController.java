@@ -17,14 +17,12 @@ package com.tmobile.pacman.api.asset.controller;
 
 import com.google.common.base.Strings;
 import com.tmobile.pacman.api.asset.AssetConstants;
-import com.tmobile.pacman.api.asset.domain.Request;
-import com.tmobile.pacman.api.asset.domain.ResponseWithCount;
-import com.tmobile.pacman.api.asset.domain.ResponseWithEditableFields;
-import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
+import com.tmobile.pacman.api.asset.domain.*;
 import com.tmobile.pacman.api.asset.service.AssetService;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
+import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -83,6 +81,13 @@ public class AssetListController {
         if (filter == null) {
             filter = new HashMap<>();
         }
+        Map<String, Object> reqFilter = request.getReqFilter();
+        if(reqFilter == null){
+            reqFilter = new HashMap<>();
+            for(Map.Entry<String,String> entry : filter.entrySet()){
+                reqFilter.put(entry.getKey(), entry.getValue());
+            }
+        }
 
         List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_DOMAIN));
         acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
@@ -96,10 +101,11 @@ public class AssetListController {
 
         ResponseWithCount response;
         try {
-            long count = assetService.getAssetCount(assetGroup, filter, searchText);
-            List<Map<String, Object>> masterDetailList = assetService.getListAssets(assetGroup, filter, from, size,
+            //long count = assetService.getAssetCount(assetGroup, filter, searchText);
+            List<Map<String, Object>> masterDetailList = assetService.getListAssets(assetGroup, reqFilter, from, size,
                     searchText, request.getSortFilter());
-            response = new ResponseWithCount(masterDetailList, count);
+            response = new ResponseWithCount(masterDetailList, ThreadLocalUtil.count.get());
+            ThreadLocalUtil.count.remove();
 
         } catch (Exception e) {
             LOGGER.error("Error in listAssets ",e);
@@ -112,9 +118,7 @@ public class AssetListController {
        * Fetches the exempted assets for the given assetgroup.If exempted filter is false it returns the unexempted assets
        * and if tagged is true returns the exempted assets.
        *
-       * @param assetGroup  name of the asset group
-       * @param filter exempted(true/false)
-       * 
+       * @param request  name of the asset group
        * @return list of assets exempted/unexempted.
        */
       @ApiOperation(httpMethod = "POST", value = "Get the list of exempted assets in an asset group. ")
@@ -209,7 +213,6 @@ public class AssetListController {
         List<Map<String, Object>> masterList;
         try {
             masterList = assetService.getListAssetsTaggable(assetGroup, filter);
-            LOGGER.info("masterList {} "+ masterList.size());
         } catch (Exception e) {
             LOGGER.error("Error in listTaggableAssets ",e);
             return ResponseUtils.buildFailureResponse(e);
@@ -554,5 +557,13 @@ public class AssetListController {
     private boolean isEC2OrOnPremServer(Map<String, String> filter) {
         return Constants.EC2.equals(filter.get(AssetConstants.FILTER_RES_TYPE))
                 || Constants.ONPREMSERVER.equals(filter.get(AssetConstants.FILTER_RES_TYPE));
+    }
+
+    @RequestMapping(path = "/v1/getAssetFilterValue/{attribute}", method = RequestMethod.POST)
+    public ResponseEntity<Object> getExemptFilterValue(@PathVariable String attribute, @RequestBody FilterRequest request) {
+        if (request == null || Strings.isNullOrEmpty(request.getAg())) {
+            return ResponseUtils.buildFailureResponse(new Exception("Asset group is Mandatory"));
+        }
+        return ResponseUtils.buildSucessResponse(assetService.getAssetExemptedFilterValue(request, attribute));
     }
 }

@@ -15,31 +15,6 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.controller;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
-import org.apache.commons.collections.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.google.common.base.Strings;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
@@ -49,10 +24,24 @@ import com.tmobile.pacman.api.commons.utils.ResponseUtils;
 import com.tmobile.pacman.api.compliance.domain.CompliantTrendRequest;
 import com.tmobile.pacman.api.compliance.domain.PolicyTrendRequest;
 import com.tmobile.pacman.api.compliance.service.IssueTrendService;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.commons.collections.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 /**
  * The Class TrendController.
@@ -203,6 +192,13 @@ public class TrendController implements Constants {
         String assetGroup = request.getAg();
 
         Date input = request.getFrom();
+        Date to = request.getTo();
+        LocalDate toDate=LocalDate.now();
+        if(to!=null){
+            Instant instant_to = to.toInstant();
+            ZonedDateTime zdt_to = instant_to.atZone(ZoneId.systemDefault());
+            toDate = zdt_to.toLocalDate();
+        }
 
         if (input == null) {
             Calendar cal = Calendar.getInstance();
@@ -222,7 +218,7 @@ public class TrendController implements Constants {
 
         String domain = filter.get(DOMAIN);
         try {
-            Map<String, Object> trendData = trendService.getComplianceTrendProgress(assetGroup, fromDate, domain);
+            Map<String, Object> trendData = trendService.getComplianceTrendProgress(assetGroup, fromDate, toDate, domain);
             response.put(RESPONSE, trendData);
         } catch (ServiceException e) {
             LOGGER.error("Exception in getCompliantTrend()" ,e.getMessage());
@@ -400,6 +396,12 @@ public class TrendController implements Constants {
         ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
         LocalDate fromDate = zdt.toLocalDate();
         LocalDate toDate = LocalDate.now();
+        Date to = request.getTo();
+        if(to!=null){
+            Instant instant_to = to.toInstant();
+            ZonedDateTime zdt_to = instant_to.atZone(ZoneId.systemDefault());
+            toDate = zdt_to.toLocalDate();
+        }
 
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));

@@ -22,10 +22,10 @@
  **/
 package com.tmobile.pacman.api.compliance.domain;
 
+import com.google.common.base.Joiner;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.base.Joiner;
 
 
 /**
@@ -45,11 +45,16 @@ public class Request {
     /** The filter. */
     private Map<String, String> filter;
 
+    private Map<String, Object> reqFilter;
+
     /** The ag. */
     private String ag;
 
     /** The sort Filters. */
     private Map<String, Object> sortFilter;
+
+    /** The includeDisabled. */
+    private boolean includeDisabled = false;
 
     /**
      * Instantiates a new request.
@@ -218,6 +223,32 @@ public class Request {
      */
     public void setFilter(Map<String, String> filter) {
         this.filter = filter;
+    }
+
+    /**
+     * Gets include param
+     *
+     * @return boolean
+     */
+    public boolean isIncludeDisabled() {
+        return includeDisabled;
+    }
+
+    /**
+     * sets include param
+     *
+     * @param includeDisabled includeDisabled
+     */
+    public void setIncludeDisabled(boolean includeDisabled) {
+        this.includeDisabled = includeDisabled;
+    }
+
+    public Map<String, Object> getReqFilter() {
+        return reqFilter;
+    }
+
+    public void setReqFilter(Map<String, Object> reqFilter) {
+        this.reqFilter = reqFilter;
     }
 
     /* (non-Javadoc)

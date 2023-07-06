@@ -38,7 +38,11 @@ public class PolicyScanInfo {
     
     /** The scan history. */
     private List<ScanResult> scanHistory;
+    
 
+    
+    /** The policy id. */
+    private String policyId;
     /** Policy category **/
     private String category;
 
@@ -49,9 +53,6 @@ public class PolicyScanInfo {
     public void setCategory(String category) {
         this.category = category;
     }
-    
-    /** The policy id. */
-    private String policyId;
 
     /**
      * Gets the policy name.

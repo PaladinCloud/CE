@@ -32,4 +32,6 @@ public interface UserPreferencesService {
      * @throws PacManExceptio
      */
 	public UserPreferences getUserPreferencesByNtId(final String ntId) throws PacManException;
+
+	public Integer updateDefaultAssetGroup(final String assetGroup) ;
 }

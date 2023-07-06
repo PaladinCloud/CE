@@ -15,22 +15,21 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.Calendar;
-import java.util.Date;
-
+import com.google.gson.*;
+import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.tmobile.pacman.api.commons.Constants;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The Class CommonUtil.
@@ -44,6 +43,10 @@ public class CommonUtil implements Constants {
     private final static Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 
     private static final String KERNEL_CRITERIA_KEY = "pacman.kernel.compliance.map";
+
+    private static final String POLICY_PARAM_JSON = "{\"policyId\": \"%s\", \"params\": [%s]}";
+
+    public static final String DATE_FORMAT_ERR_MSG = "Unable to parse date object for date %s and format %s";
 
 	/**
      * Decode aws cron exp.
@@ -168,4 +171,20 @@ public class CommonUtil implements Constants {
 				.concat(String.valueOf(year)).concat(".q")
 				.concat(String.valueOf(currentQuarter));
 	}
+
+    public static String generatePolicyParamJson(String policyId, List<PolicyParams> policyParams) {
+        String policyParamString = policyParams.stream().map(PolicyParams::paramsToJsonString)
+                .collect(Collectors.joining(DELIMITER_COMMA));
+        return String.format(POLICY_PARAM_JSON, policyId, policyParamString);
+    }
+
+    public static String getStringDate(final String format, final Date date) {
+        try {
+            DateFormat df = new SimpleDateFormat(format);
+            return df.format(date);
+        } catch (Exception ex) {
+            logger.error(String.format(DATE_FORMAT_ERR_MSG, date.toString(), format));
+            return date.toString().substring(0, 10);
+        }
+    }
 }

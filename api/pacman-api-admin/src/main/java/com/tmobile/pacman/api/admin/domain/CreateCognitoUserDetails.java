@@ -1,11 +1,15 @@
 package com.tmobile.pacman.api.admin.domain;
 
+import java.util.Map;
+
 public class CreateCognitoUserDetails {
 
     private String username;
     private String firstName;
     private String lastName;
     private String email;
+
+    private Map<String,Object> userAttributes;
 
     public String getUsername() {
         return username;
@@ -37,5 +41,13 @@ public class CreateCognitoUserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Map<String, Object> getUserAttributes() {
+        return userAttributes;
+    }
+
+    public void setUserAttributes(Map<String, Object> userAttributes) {
+        this.userAttributes = userAttributes;
     }
 }

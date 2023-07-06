@@ -15,12 +15,12 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
+import com.tmobile.pacman.api.commons.exception.ServiceException;
+import com.tmobile.pacman.api.compliance.domain.Medal;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
-import com.tmobile.pacman.api.commons.exception.ServiceException;
-import com.tmobile.pacman.api.compliance.domain.Medal;
 
 /**
  * Service layer for all patching related calls.

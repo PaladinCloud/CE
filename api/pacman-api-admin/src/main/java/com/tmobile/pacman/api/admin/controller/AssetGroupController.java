@@ -64,7 +64,7 @@ public class AssetGroupController {
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get all asset group names", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
 	
-	@RequestMapping(path = "/list-names", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/list-names", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAllAssetGroupNames() {
 		try {
 			return ResponseUtils.buildSucessResponse(assetGroupService.getAllAssetGroupNames());
@@ -83,7 +83,7 @@ public class AssetGroupController {
      * @return Success or failure message
      */
 	@ApiOperation(httpMethod = "POST", value = "API to update new asset group", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> updateAssetGroupDetails(@AuthenticationPrincipal Principal user,
 			@RequestBody CreateAssetGroup assetGroupDetails) {
 		log.info("Inside controller AssetGroupController.updateAssetGroupDetails with request");
@@ -105,7 +105,7 @@ public class AssetGroupController {
      * @return Success or failure message
      */
 	@ApiOperation(httpMethod = "POST", value = "API to create asset group", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createAssetGroupDetails(@AuthenticationPrincipal Principal user,
 			@RequestBody CreateUpdateAssetGroupDetails assetGroupDetails) {
 		try {
@@ -155,7 +155,7 @@ public class AssetGroupController {
 	}
 
 	@ApiOperation(httpMethod = "POST", value = "API to filte asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@PostMapping(path = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/list",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAllAssetGroupDetailsFilter(
 			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
@@ -219,7 +219,7 @@ public class AssetGroupController {
      * @return Success or failure message
      */
 	@ApiOperation(httpMethod = "POST", value = "API to delete asset group", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> deleteAssetGroup(@AuthenticationPrincipal Principal user,
 			@RequestBody DeleteAssetGroupRequest assetGroupDetails) {
 		try {
@@ -234,23 +234,21 @@ public class AssetGroupController {
 		}
 	}
 
-
-	@GetMapping(value = "/getFilterKeyValues", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getFilterKeyValues(@AuthenticationPrincipal Principal user,
-													 @RequestParam(defaultValue = "", name = "key", required = true) String key) {
-		try {
-			return ResponseUtils.buildSucessResponse(assetGroupService.getFilterKeyValues(key));
-		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
-		}
-	}
-
 	@ApiOperation(httpMethod = "GET", value = "API to get Drop Down Key-Value pair from all CloudProviders", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(path = "/cloud-type-object", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createObjectForCloudType() {
 		try {
 			return ResponseUtils.buildSucessResponse(assetGroupService.getCloudTypeObject());
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+	@GetMapping(value = "/getFilterKeyValues", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getFilterKeyValues(@AuthenticationPrincipal Principal user,
+													 @RequestParam(defaultValue = "", name = "key", required = true) String key) {
+		try {
+			return ResponseUtils.buildSucessResponse(assetGroupService.getFilterKeyValues(key));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());

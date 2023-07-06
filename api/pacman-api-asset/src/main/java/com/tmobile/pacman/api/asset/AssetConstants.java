@@ -59,6 +59,9 @@ public final class AssetConstants {
     public static final String STOPPED = "stopped";
     public static final String STOPPING = "stopping";
     public static final String UNDERSCORE_TYPE = "_type";
+
+    public static final String DOC_TYPE = "docType";
+    public static final String DOC_TYPE_KEYWORD = "docType.keyword";
     public static final String UNDERSCORE_SOURCE = "_source";
     public static final String RECENTLY_VIEWED_AG = "recentlyViewedAg";
     public static final String UNDERSCORE_LOADDATE = "_loaddate";
@@ -77,6 +80,9 @@ public final class AssetConstants {
     public static final String QUERY = "query";
     public static final String POLICY_VIOLATIONS = "Policy Violations";
     public static final String VULNERABILITIES = "Vulnerabilities";
+    public static final String TOTAL = "total";
+    public static final String HITS = "hits";
+    public static final String VALUE = "value";
     public static final String PUBLIC_IP_ADDRESS = "publicipaddress";
     public static final String PRIVATE_IP_ADDRESS = "privateipaddress";
     public static final String RELATED_ASSETS = "RELATED ASSETS";
@@ -98,6 +104,7 @@ public final class AssetConstants {
     public static final String ESQUERY_CLOSE = "\"}}]}}}";
     public static final String ESQUERY_BULK = "/_bulk?refresh=true";
     public static final String RESPONSE_ERROR = "\"errors\":true";
+    public static final String TRUE = "true";
     public static final String FILTER_CATEGORY = "category";
     public static final String FILTER_GENERAL = "general";
     public static final String FILTER_RECOMMENDATION_ID = "recommendationId";
@@ -106,11 +113,16 @@ public final class AssetConstants {
     public static final String TYPE = "type";
     public static final String ISSUE_STATUS = "issueStatus";
 
+    public static final String POLICYID_KEYWORD = "policyId.keyword";
+
     public static final String ASSETLISTING = "AssetListing";
     public static final String TYPE_KEYWORD = "type.keyword";
     public static final String EVENTCATEGORY = "eventCategoryName";
     public static final String EVENTSOURCE = "eventSourceName";
     public static final String EVENTNAME = "eventName";
-    
+    public static final String UNKNOWN = "unknown";
+    public static final String FILTER_UNTAGGED = "untagged";
+
+
 }
 

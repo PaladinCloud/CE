@@ -55,7 +55,7 @@ public class ResourceTypeResponse {
      *
      * @return the resource type
      */
-    public java.util.List<String> getResourceType() {
+    public List<String> getResourceType() {
         return resourceType;
     }
 
@@ -64,7 +64,7 @@ public class ResourceTypeResponse {
      *
      * @param resourceType the new resource type
      */
-    public void setResourceType(java.util.List<String> resourceType) {
+    public void setResourceType(List<String> resourceType) {
         this.resourceType = resourceType;
     }
 

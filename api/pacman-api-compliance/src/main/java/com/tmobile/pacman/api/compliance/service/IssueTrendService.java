@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
+import com.tmobile.pacman.api.commons.exception.ServiceException;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
-import com.tmobile.pacman.api.commons.exception.ServiceException;
 /**
  * The Interface IssueTrendService.
  */
@@ -52,7 +52,7 @@ public interface IssueTrendService {
      * @throws ServiceException the service exception
      */
     public Map<String, Object> getComplianceTrendProgress(String assetGroup,
-            LocalDate fromDate, String domain) throws ServiceException;
+            LocalDate fromDate, LocalDate toDate, String domain) throws ServiceException;
 
     /**
      * Gets the trend progress.

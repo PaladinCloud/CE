@@ -22,10 +22,10 @@
  **/
 package com.tmobile.pacman.api.compliance.domain;
 
+import com.tmobile.pacman.api.commons.Constants;
+
 import java.util.Comparator;
 import java.util.Map;
-
-import com.tmobile.pacman.api.commons.Constants;
 /**
  * The Class Compare.
  */

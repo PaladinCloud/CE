@@ -16,6 +16,7 @@
 package com.tmobile.pacman.api.asset.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
@@ -24,6 +25,9 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.tmobile.pacman.api.asset.AssetConstants;
+import com.tmobile.pacman.api.asset.client.ComplianceServiceClient;
+import com.tmobile.pacman.api.asset.domain.FilterRequest;
+import com.tmobile.pacman.api.asset.domain.PolicyParamResponse;
 import com.tmobile.pacman.api.asset.domain.ResourceResponse;
 import com.tmobile.pacman.api.asset.domain.ResourceResponse.Source;
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
@@ -46,6 +50,8 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
@@ -60,6 +66,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.tmobile.pacman.api.commons.Constants.*;
+import static com.tmobile.pacman.api.commons.Constants.ES_PAGE_SIZE;
+import static com.tmobile.pacman.api.commons.Constants.EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS;
+
 /**
  * Implemented class for AssetRepository and all its method
  */
@@ -69,12 +79,10 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     public static final String ASSET = "asset";
     private Map<String, String> events;
-
-    private static final String NOTSET="notSet";
-
+    @Autowired
+    private ObjectMapper mapper;
     @Value("${tagging.mandatoryTags}")
     private String mandatoryTags;
-
     @Value("${elastic-search.host}")
     private String esHost;
     @Value("${elastic-search.port}")
@@ -89,6 +97,29 @@ public class AssetRepositoryImpl implements AssetRepository {
     private int heimdallEsPort;
 
     private static final String PROTOCOL = "http";
+    private static final String GET_DOMAIN_BY_TARGET_TYPES = "SELECT DISTINCT domain FROM cf_Target WHERE targetName in (%s)";
+    private static final String GET_COUNT_BY_GROUP_NAME = "SELECT count(*) FROM cf_AssetGroupDetails WHERE groupName = ?";
+    private static final String ACCOUNT_COUNT_ES_QUERY = "{\"size\":0,\"query\": {\n" +
+            "    \"bool\": {\n" +
+            "      \"filter\": [\n" +
+            "        {\n" +
+            "          \"term\": {\n" +
+            "            \"latest\": \"true\"\n" +
+            "          }\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"term\": {\n" +
+            "            \"_entity\": \"true\"\n" +
+            "          }\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  },\"aggs\"" +
+            ":{\"aws\":{\"terms\":{\"field\":\"accountid.keyword\",\"size\":"+ES_PAGE_SIZE+"}},\"azure\":{\"terms\":" +
+            "{\"field\":\"subscription.keyword\",\"size\":"+ES_PAGE_SIZE+"}},\"gcp\":{\"terms\":{\"field\":" +
+            "\"projectId.keyword\",\"size\":"+ES_PAGE_SIZE+"}}}}";
+    private static final String ACCOUNT_COUNT_ES_FILTER_PATH = "&filter_path=aggregations.aws.buckets.key," +
+            "aggregations.azure.buckets.key,aggregations.gcp.buckets.key";
     private String esUrl;
     private String heimdallEsesUrl;
 
@@ -96,7 +127,7 @@ public class AssetRepositoryImpl implements AssetRepository {
     private String vulnTypes;
     
     @Value("${patching.types:ec2,virtualmachine,onpremserver}")
-	private String patchingTypes;
+    private String patchingTypes;
     
     @Value("${features.vulnerability.enabled:false}")
     private boolean qualysEnabled;
@@ -111,6 +142,9 @@ public class AssetRepositoryImpl implements AssetRepository {
     @Autowired
     PacmanRedshiftRepository redshiftRepository;
 
+    @Autowired
+    ComplianceServiceClient complianceServiceClient;
+
     @PostConstruct
     void init() {
         esUrl = PROTOCOL + "://" + esHost + ":" + esPort;
@@ -118,69 +152,95 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
     
     private static final String SIZE = "size";
-	private static final String AGGS = "aggs";
-	private static final String QUERY = "query";
-	private static final String ERROR_RETRIEVING_INVENTORY_FROM_ES = "error retrieving inventory from ES";
+    private static final String AGGS = "aggs";
+    private static final String QUERY = "query";
+    private static final String ERROR_RETRIEVING_INVENTORY_FROM_ES = "error retrieving inventory from ES";
+
 
     @Override
-	public Map<String, Long> getAssetCountByAssetGroup(String aseetGroupName, String type, String application) {
+    public Map<String, Long> getAssetCountByAssetGroup(String aseetGroupName, String type, String application) {
 
-		Map<String, Object> filter = new HashMap<>();
-		filter.put(Constants.LATEST, Constants.TRUE);
-		filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
-		if (application != null) {
-			filter.put(Constants.TAGS_APPS, application);
-		}
-		
-		Map<String, Long> countMap = new HashMap<>();
-		try {
-			if (AssetConstants.ALL.equals(type)) {
-				try {
-					countMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
-							null, AssetConstants.UNDERSCORE_TYPE, Constants.THOUSAND, null);
-				} catch (Exception e) {
-					LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
-				}
-			} else {
-				long count = esRepository.getTotalDocumentCountForIndexAndType(aseetGroupName, type, filter, null,
-						null, null, null);
-				countMap.put(type, count);
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
-		}
+        Map<String, Object> filter = new HashMap<>();
+        if(!StringUtils.isEmpty(type) && !AssetConstants.ALL.equals(type))
+            filter.put(Constants.DOC_TYPE_KEYWORD, type);
+        filter.put(Constants.LATEST, Constants.TRUE);
+        filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
+        if (application != null) {
+            filter.put(Constants.TAGS_APPS, application);
+        }
 
-		return countMap;
-	}
+        Map<String, Long> countMap = new HashMap<>();
+        try {
+            if (AssetConstants.ALL.equals(type)) {
+                try {
+                    countMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
+                            null, AssetConstants.DOC_TYPE_KEYWORD, Constants.THOUSAND, null);
+                } catch (Exception e) {
+                    LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
+                }
+            } else {
+                long count = esRepository.getTotalDocumentCountForIndexAndType(aseetGroupName, "", filter, null,
+                        null, null, null);
+                countMap.put(type, count);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
+        }
+
+        return countMap;
+    }
 
     @Override
-	public List<Map<String, Object>> getTargetTypesByAssetGroup(String aseetGroupName, String domain, String provider) {
+    public List<Map<String, Object>> getTargetTypesByAssetGroup(String assetGroupName, String domain, String provider) {
 
-		String query = "select distinct targetType as type, c.displayName as displayName ,c.category as category,c.domain as domain, dataSourceName as "
-		+ Constants.PROVIDER + " from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b ,cf_Target c "
-				+ " where a.groupId = b.groupId and a.targetType = c.targetName and b.groupName ='"
-				+ aseetGroupName.trim() + "'  and (c.status = 'active' or c.status = 'enabled') ";
-		if (!StringUtils.isEmpty(domain)) {
-			query = query + " and lower(c.domain) = '" + domain.toLowerCase().trim() + "'";
-		}
-		if (!StringUtils.isEmpty(provider)) {
-			query = query + " and lower(c.dataSourceName) = '" + provider.toLowerCase().trim() + "'";
-		}
-		return rdsRepository.getDataFromPacman(query);
-	}
+        //Query from ES alias for the asset group to get all the target associated with it
+        String urlToQuery = esUrl+ "/_alias/"+assetGroupName;
+        List<String> targetTypes = new ArrayList<>();
+        String responseDetails = null;
+        try {
+            responseDetails = PacHttpUtils.getHttpGet(urlToQuery, new HashMap<>());
+            JSONObject jsonResponse = new JSONObject(responseDetails);
+            JSONArray indices = jsonResponse.names();
+            for (int i = 0; i < indices.length(); i++) {
+                String indexName = indices.getString(i);
+                int underscoreIndex = indexName.indexOf("_");
+                if (underscoreIndex != -1 && underscoreIndex < indexName.length() - 1) {
+                    targetTypes.add(indexName.substring(underscoreIndex + 1));
+                } else {
+                    targetTypes.add(indexName);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception in getAssetTargetTypes in fetching target types for es :", e);
+            return new ArrayList<>();
+        }
+        String result = targetTypes.stream().collect(Collectors.joining("','", "'", "'"));
+        String query = "select distinct targetName as type, displayName as displayName ,category as category," +
+                "domain as domain, dataSourceName as provider from cf_Target "
+                + " where  (status = 'active' or status = 'enabled') and targetName in ("+result+") ";
+        if (!StringUtils.isEmpty(domain)) {
+            query = query + " and lower(domain) = '" + domain.toLowerCase().trim() + "'";
+        }
+        if (!StringUtils.isEmpty(provider)) {
+            query = query + " and lower(dataSourceName) = '" + provider.toLowerCase().trim() + "'";
+        }
+        query = query+" and dataSourceName in (select distinct platform from cf_Accounts where accountStatus='configured') ";
+        return rdsRepository.getDataFromPacman(query);
+    }
 
-	@Override
-	public List<Map<String, Object>> getAllTargetTypes(String datasource) {
+    @Override
+    public List<Map<String, Object>> getAllTargetTypes(String datasource) {
 
-		String query = "select distinct targetName as type,displayName as displayName, category, dataSourceName as " + Constants.PROVIDER + " from cf_Target ";
-		if(datasource!=null) {
-			query = query + " where lower(dataSourceName) = '"+datasource.toLowerCase()+"' and (status = 'active' or status = 'enabled')";
-		}else {
-			query = query + " where status = 'active' or status = 'enabled'";
-		}
-		return rdsRepository.getDataFromPacman(query);
+        String query = "select distinct targetName as type,displayName as displayName, category, dataSourceName as " + Constants.PROVIDER + " from cf_Target ";
+        if(datasource!=null) {
+            query = query + " where lower(dataSourceName) = '"+datasource.toLowerCase()+"' and (status = 'active' or status = 'enabled')";
+        }else {
+            query = query + " where status = 'active' or status = 'enabled'";
+        }
+        query = query+" and dataSourceName in (select distinct platform from cf_Accounts where accountStatus='configured') ";
+        return rdsRepository.getDataFromPacman(query);
 
-	}
+    }
 
     @Override
     public List<String> getApplicationByAssetGroup(String aseetGroupName) throws DataException {
@@ -200,154 +260,154 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
-	public List<String> getApplicationByAssetGroup(String assetGroupName, String domain) throws DataException {
-		Map<String, Long> applicationMap = getApplicationAssetCountByAssetGroup(assetGroupName, domain, null);
-		return new ArrayList<>(applicationMap.keySet());
-	}
+    public List<String> getApplicationByAssetGroup(String assetGroupName, String domain) throws DataException {
+        Map<String, Long> applicationMap = getApplicationAssetCountByAssetGroup(assetGroupName, domain, null);
+        return new ArrayList<>(applicationMap.keySet());
+    }
 
-	@Override
-	public Map<String, Long> getApplicationAssetCountByAssetGroup(String assetGroupName, String domain, String provider)
-			throws DataException {
+    @Override
+    public Map<String, Long> getApplicationAssetCountByAssetGroup(String assetGroupName, String domain, String provider)
+            throws DataException {
 
-		Map<String, Long> applicationMap = new HashMap<>();
-		try {
-			Map<String, Object> applicationAssetData = getApplicationAssetCountByAssetGroupWithProvider(assetGroupName, domain, provider);
-			applicationMap = (Map<String, Long>) applicationAssetData.get(Constants.APPLICATION_COUNT);
-		} catch (Exception e) {
-			LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
-			throw new DataException(e);
-		}
+        Map<String, Long> applicationMap = new HashMap<>();
+        try {
+            Map<String, Object> applicationAssetData = getApplicationAssetCountByAssetGroupWithProvider(assetGroupName, domain, provider);
+            applicationMap = (Map<String, Long>) applicationAssetData.get(Constants.APPLICATION_COUNT);
+        } catch (Exception e) {
+            LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
+            throw new DataException(e);
+        }
 
-		return applicationMap;
-	}
-	
-	@Override
-	public Map<String, Object> getApplicationAssetCountByAssetGroupWithProvider (String assetGroupName, String domain, String provider)
-			throws DataException {
+        return applicationMap;
+    }
 
-		List<String> targetTypes = getTargetTypesByAssetGroup(assetGroupName, domain, provider).stream()
-				.map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
-		Map<String, Object> filter = new HashMap<>();
-		filter.put(Constants.LATEST, Constants.TRUE);
-		filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
-		Map<String, Object> mustTermsFilter = new HashMap<>();
-		mustTermsFilter.put(AssetConstants.UNDERSCORE_TYPE, targetTypes);
-		Map<String, Object> applicationMap = new HashMap<>();
+    @Override
+    public Map<String, Object> getApplicationAssetCountByAssetGroupWithProvider (String assetGroupName, String domain, String provider)
+            throws DataException {
 
-		try {
-			applicationMap = getTotalDistributionForIndexAndTypeWithProviders(assetGroupName, null, filter, null, null,
-					Constants.TAGS_APPS, Constants.TEN_THOUSAND, mustTermsFilter);
-		} catch (Exception e) {
-			LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
-			throw new DataException(e);
-		}
+        List<String> targetTypes = getTargetTypesByAssetGroup(assetGroupName, domain, provider).stream()
+                .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
+        Map<String, Object> filter = new HashMap<>();
+        filter.put(Constants.LATEST, Constants.TRUE);
+        filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustTermsFilter.put(AssetConstants.UNDERSCORE_TYPE, targetTypes);
+        Map<String, Object> applicationMap = new HashMap<>();
 
-		return applicationMap;
-	}
-	
-	/**
-	 * 
-	 * @param index
-	 * @param type
-	 * @param mustFilter
-	 * @param mustNotFilter
-	 * @param shouldFilter
-	 * @param aggsFilter
-	 * @param size
-	 * @param mustTermsFilter
-	 * @return
-	 * @throws Exception
-	 */
-	private Map<String, Object> getTotalDistributionForIndexAndTypeWithProviders(String index, String type,
-			Map<String, Object> mustFilter, Map<String, Object> mustNotFilter,
-			HashMultimap<String, Object> shouldFilter, String aggsFilter, int size, Map<String, Object> mustTermsFilter)
-			throws Exception {
-		Map<String, Object> distributionDataList = new HashMap<String, Object>();
-		Map<String, Long> distributionCount = new HashMap<String, Long>();
-		Map<String, List<Map<String, Object>>> distributionProviders = new HashMap<String, List<Map<String, Object>>>();
-		try {
-			Map<String, Object> nestedaggs = esRepository.buildAggs(Constants.CLOUD_TYPE_KEYWORD, size, Constants.AGGS_NAME_PROVIDERS, null);
-			Map<String, Object> response = getDistributionDataFromES (index, type, mustFilter, mustNotFilter, shouldFilter, aggsFilter, size, null, nestedaggs, mustTermsFilter);
-			Map<String, Object> aggregations = (Map<String, Object>) response.get(Constants.AGGREGATIONS);
-			Map<String, Object> name = (Map<String, Object>) aggregations.get(Constants.NAME);
-			List<Map<String, Object>> buckets = (List<Map<String, Object>>) name.get(Constants.BUCKETS);
+        try {
+            applicationMap = getTotalDistributionForIndexAndTypeWithProviders(assetGroupName, null, filter, null, null,
+                    Constants.TAGS_APPS, Constants.TEN_THOUSAND, mustTermsFilter);
+        } catch (Exception e) {
+            LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
+            throw new DataException(e);
+        }
 
-			for (int i = 0; i < buckets.size(); i++) {
-				Map<String, Object> bucket = buckets.get(i);
-				distributionCount.put(bucket.get("key").toString(), ((Double) bucket.get("doc_count")).longValue());
-				Map<String, Object> esProviders = (Map<String, Object>) bucket.get(Constants.AGGS_NAME_PROVIDERS);
-				List<Map<String, Object>> providerbuckets = (List<Map<String, Object>>) esProviders.get(Constants.BUCKETS);
-				List<Map<String, Object>> providers = new ArrayList<Map<String, Object>>();
-				
-				for (Map<String, Object> esProvider : providerbuckets) {
-					Map<String, Object> provider = new HashMap<String, Object>();
-					provider.put(Constants.PROVIDER, esProvider.get("key").toString());
-					provider.put(Constants.TYPE_COUNT, ((Double) esProvider.get("doc_count")).longValue());
-					providers.add(provider);
-				}
-				distributionProviders.put(bucket.get("key").toString(), providers);
-			}
-			
-			distributionDataList.put(Constants.APPLICATION_COUNT, distributionCount);
-			distributionDataList.put(Constants.APPLICATION_PROVIDERS, distributionProviders);
+        return applicationMap;
+    }
 
-		} catch (Exception e) {
-			LOGGER.error(ERROR_RETRIEVING_INVENTORY_FROM_ES, e);
-			throw e;
-		}
-		return distributionDataList;
-	}
-	
-	/**
-	 * Function for getting the distribution data from ES
-	 * @param index
-	 * @param type
-	 * @param mustFilter
-	 * @param mustNotFilter
-	 * @param shouldFilter
-	 * @param aggsFilter
-	 * @param size
-	 * @param mustTermsFilter
-	 * @return
-	 * @throws Exception
-	 */
-	private Map<String, Object> getDistributionDataFromES(String index, String type, Map<String, Object> mustFilter,
-			Map<String, Object> mustNotFilter, HashMultimap<String, Object> shouldFilter, String aggsFilter, int size,
-			String aggsName, Map<String, Object> nestedaggs, Map<String, Object> mustTermsFilter) throws Exception {
-		
-		String urlToQuery = esRepository.buildAggsURL(esUrl, index, type);
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-		Map<String, Object> matchFilters = Maps.newHashMap();
-		Map<String, Object> distributionData = new HashMap<String, Object>();
-		if (mustFilter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
-		} else {
-			matchFilters.putAll(mustFilter);
-		}
-		if (null != mustFilter) {
-			requestBody.put(QUERY, esRepository.buildQuery(matchFilters, mustNotFilter, shouldFilter, null, mustTermsFilter,null));
-			requestBody.put(AGGS, esRepository.buildAggs(aggsFilter, size, aggsName, nestedaggs));
+    /**
+     *
+     * @param index
+     * @param type
+     * @param mustFilter
+     * @param mustNotFilter
+     * @param shouldFilter
+     * @param aggsFilter
+     * @param size
+     * @param mustTermsFilter
+     * @return
+     * @throws Exception
+     */
+    private Map<String, Object> getTotalDistributionForIndexAndTypeWithProviders(String index, String type,
+                                                                                 Map<String, Object> mustFilter, Map<String, Object> mustNotFilter,
+                                                                                 HashMultimap<String, Object> shouldFilter, String aggsFilter, int size, Map<String, Object> mustTermsFilter)
+            throws Exception {
+        Map<String, Object> distributionDataList = new HashMap<String, Object>();
+        Map<String, Long> distributionCount = new HashMap<String, Long>();
+        Map<String, List<Map<String, Object>>> distributionProviders = new HashMap<String, List<Map<String, Object>>>();
+        try {
+            Map<String, Object> nestedaggs = esRepository.buildAggs(Constants.CLOUD_TYPE_KEYWORD, size, Constants.AGGS_NAME_PROVIDERS, null);
+            Map<String, Object> response = getDistributionDataFromES (index, type, mustFilter, mustNotFilter, shouldFilter, aggsFilter, size, null, nestedaggs, mustTermsFilter);
+            Map<String, Object> aggregations = (Map<String, Object>) response.get(Constants.AGGREGATIONS);
+            Map<String, Object> name = (Map<String, Object>) aggregations.get(Constants.NAME);
+            List<Map<String, Object>> buckets = (List<Map<String, Object>>) name.get(Constants.BUCKETS);
 
-			if (!Strings.isNullOrEmpty(aggsFilter)) {
-				requestBody.put(SIZE, "0");
-			}
+            for (int i = 0; i < buckets.size(); i++) {
+                Map<String, Object> bucket = buckets.get(i);
+                distributionCount.put(bucket.get("key").toString(), ((Double) bucket.get("doc_count")).longValue());
+                Map<String, Object> esProviders = (Map<String, Object>) bucket.get(Constants.AGGS_NAME_PROVIDERS);
+                List<Map<String, Object>> providerbuckets = (List<Map<String, Object>>) esProviders.get(Constants.BUCKETS);
+                List<Map<String, Object>> providers = new ArrayList<Map<String, Object>>();
 
-		} else {
-			requestBody.put(QUERY, matchFilters);
-		}
-		String responseDetails = null;
-		Gson gson = new GsonBuilder().create();
+                for (Map<String, Object> esProvider : providerbuckets) {
+                    Map<String, Object> provider = new HashMap<String, Object>();
+                    provider.put(Constants.PROVIDER, esProvider.get("key").toString());
+                    provider.put(Constants.TYPE_COUNT, ((Double) esProvider.get("doc_count")).longValue());
+                    providers.add(provider);
+                }
+                distributionProviders.put(bucket.get("key").toString(), providers);
+            }
 
-		try {
-			String requestJson = gson.toJson(requestBody, Object.class);
-			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, requestJson);
-			distributionData = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
-		} catch (Exception e) {
-			LOGGER.error(ERROR_RETRIEVING_INVENTORY_FROM_ES, e);
-			throw e;
-		}
-		return distributionData;
-	}
+            distributionDataList.put(Constants.APPLICATION_COUNT, distributionCount);
+            distributionDataList.put(Constants.APPLICATION_PROVIDERS, distributionProviders);
+
+        } catch (Exception e) {
+            LOGGER.error(ERROR_RETRIEVING_INVENTORY_FROM_ES, e);
+            throw e;
+        }
+        return distributionDataList;
+    }
+
+    /**
+     * Function for getting the distribution data from ES
+     * @param index
+     * @param type
+     * @param mustFilter
+     * @param mustNotFilter
+     * @param shouldFilter
+     * @param aggsFilter
+     * @param size
+     * @param mustTermsFilter
+     * @return
+     * @throws Exception
+     */
+    private Map<String, Object> getDistributionDataFromES(String index, String type, Map<String, Object> mustFilter,
+                                                          Map<String, Object> mustNotFilter, HashMultimap<String, Object> shouldFilter, String aggsFilter, int size,
+                                                          String aggsName, Map<String, Object> nestedaggs, Map<String, Object> mustTermsFilter) throws Exception {
+
+        String urlToQuery = esRepository.buildAggsURL(esUrl, index, type);
+        Map<String, Object> requestBody = new HashMap<String, Object>();
+        Map<String, Object> matchFilters = Maps.newHashMap();
+        Map<String, Object> distributionData = new HashMap<String, Object>();
+        if (mustFilter == null) {
+            matchFilters.put("match_all", new HashMap<String, String>());
+        } else {
+            matchFilters.putAll(mustFilter);
+        }
+        if (null != mustFilter) {
+            requestBody.put(QUERY, esRepository.buildQuery(matchFilters, mustNotFilter, shouldFilter, null, mustTermsFilter,null));
+            requestBody.put(AGGS, esRepository.buildAggs(aggsFilter, size, aggsName, nestedaggs));
+
+            if (!Strings.isNullOrEmpty(aggsFilter)) {
+                requestBody.put(SIZE, "0");
+            }
+
+        } else {
+            requestBody.put(QUERY, matchFilters);
+        }
+        String responseDetails = null;
+        Gson gson = new GsonBuilder().create();
+
+        try {
+            String requestJson = gson.toJson(requestBody, Object.class);
+            responseDetails = PacHttpUtils.doHttpPost(urlToQuery, requestJson);
+            distributionData = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
+        } catch (Exception e) {
+            LOGGER.error(ERROR_RETRIEVING_INVENTORY_FROM_ES, e);
+            throw e;
+        }
+        return distributionData;
+    }
 
     @Override
     public List<String> getEnvironmentsByAssetGroup(String assetGroup, String application, String domain) {
@@ -398,10 +458,47 @@ public class AssetRepositoryImpl implements AssetRepository {
         }
     }
 
+    public int getAccountCountByAssetGroup(String assetGroup) {
+        String responseDetails;
+        Set<String> accountNamesSet;
+        try {
+            responseDetails = PacHttpUtils.doHttpPost(esRepository.buildAggsURL(esUrl, assetGroup, null)
+                    + ACCOUNT_COUNT_ES_FILTER_PATH, ACCOUNT_COUNT_ES_QUERY);
+            accountNamesSet = getCountOfKeyFromAggregations(responseDetails);
+            return accountNamesSet.size();
+        } catch (Exception e) {
+            LOGGER.error("Exception in getTargetTypesByAssetGroup in fetching target types for es :", e);
+        }
+        return 0;
+    }
+
+    private Set<String> getCountOfKeyFromAggregations(String responseDetails) {
+        List<String> tags = Arrays.asList(Constants.AWS, Constants.AZURE, Constants.GCP);
+        Set<String> tagKeys = new HashSet<>();
+        try {
+            JsonNode parentNode = mapper.readTree(responseDetails);
+            tags.forEach(tag -> {
+                if (parentNode.has(Constants.NODE_AGGREGATIONS) && parentNode.get(Constants.NODE_AGGREGATIONS).has(tag)
+                        && parentNode.get(Constants.NODE_AGGREGATIONS).get(tag).has(Constants.NODE_BUCKETS)) {
+                    JsonNode tagNode = parentNode.get(Constants.NODE_AGGREGATIONS).get(tag).get(Constants.NODE_BUCKETS);
+                    tagNode.elements().forEachRemaining(valueNode -> {
+                        if (valueNode.has(Constants.NODE_KEY)) {
+                            tagKeys.add(valueNode.get(Constants.NODE_KEY).asText());
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            LOGGER.error(EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS, e);
+        }
+        return tagKeys;
+    }
+
     @Override
     public Map<String, Long> getAssetCountByApplication(String assetGroup, String type) throws DataException {
         Map<String, Object> filter = new HashMap<>();
         filter.put(Constants.LATEST, Constants.TRUE);
+        filter.put(DOC_TYPE_KEYWORD, type);
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         if (Constants.EC2.equals(type)) {
             shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
@@ -409,7 +506,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPING);
         }
         try {
-            return esRepository.getTotalDistributionForIndexAndType(assetGroup, type, filter, null, shouldFilter,
+            return esRepository.getTotalDistributionForIndexAndType(assetGroup, "", filter, null, shouldFilter,
                     Constants.TAGS_APPS, Constants.THOUSAND, null);
         } catch (Exception e) {
             LOGGER.error("Exception in getAssetCountByApplication ", e);
@@ -424,7 +521,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         try {
 
             StringBuilder request = new StringBuilder(
-                    "{\"size\": 10000, \"_source\": [\"min\",\"max\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
+                    "{\"size\": 10000, \"_source\": [\"min\",\"max\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"docType.keyword\": \"count_type\"}} ,{ \"match\": {\"ag.keyword\": ");
             request.append("\"" + assetGroup + "\"}} ,{ \"match\": {\"type.keyword\": " + "\"" + type + "\"}}");
             String gte = null;
             String lte = null;
@@ -459,7 +556,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         String responseJson = "";
         try {
             responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort
-                    + "/assetgroup_stats/count_type/_search", rqstBody);
+                    + "/assetgroup_stats/_search", rqstBody);
         } catch (Exception e) {
             LOGGER.error("Exception in getAssetStats " , e);
         }
@@ -536,7 +633,7 @@ public class AssetRepositoryImpl implements AssetRepository {
     @Override
     public List<Map<String, Object>> getAssetCountByEnvironment(String assetGroup, String application, String type) {
         StringBuilder request = new StringBuilder(
-                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}}"); // Common
+                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"docType.keyword\":\"" + type + "\"}},{\"match\":{\"latest\":\"true\"}}"); // Common
                                                                                                  // part
                                                                                                  // where
                                                                                                  // we
@@ -563,12 +660,14 @@ public class AssetRepositoryImpl implements AssetRepository {
             request.append("]}}");
             request.append(",\"aggs\":{\"apps\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":1000},\"aggs\":{\"envs\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}}}"); // Aggs
         } else {
-        	request.append("]}}}"); // part
+
+            request.append("]}},\"aggs\":{\"apps\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":1000},\"aggs\":{\"envs\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}}}"); // part
+
         }
 
         String responseJson = "";
         try {
-            responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort + "/" + assetGroup + "/" + type
+            responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort  + "/" + assetGroup
                     + "/_search", request.toString());
         } catch (Exception e) {
             LOGGER.error("Error in getAssetCountByEnvironment " , e);
@@ -604,199 +703,257 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public List<Map<String, Object>> saveAndAppendAssetGroup(String userId, String assetGroup) throws DataException {
-		String lowerCaseUserId = userId.toLowerCase();
-		String recentView = null;
-		boolean isDuplicate = false;
-		boolean isGreaterThanTen = false;
-		boolean isValidAssetGroup = false;
-		String assetGroupUpdateWithListQuery = null;
-		List<String> recentViewList = new ArrayList<>();
-		List<Map<String, Object>> assets = getAllAssetGroups();
-		List<Map<String, Object>> recentlyViewed = new ArrayList<>();
-		Map<String, Object> recentViewMap = new HashMap<>();
-		for (Map<String, Object> ag : assets) {
-			if (assetGroup.equals(ag.get("name"))) {
-				isValidAssetGroup = true;
-				String userCountQuery = "SELECT COUNT(userId) FROM pac_v2_userpreferences WHERE userId=\""
-						+ lowerCaseUserId + "\"";
-				String recentlyViewedAgQuery = "SELECT recentlyViewedAG FROM pac_v2_userpreferences WHERE userId=\""
-						+ lowerCaseUserId + "\"";
-				String assetGroupUpdateQuery = "UPDATE pac_v2_userpreferences SET recentlyViewedAG='" + assetGroup
-						+ "' WHERE userId='" + lowerCaseUserId + "'";
-				String assetGroupUpdateAndAppendQuery = "UPDATE pac_v2_userpreferences SET recentlyViewedAG = concat(recentlyViewedAG,'"
-						+ "," + assetGroup + "') WHERE userId='" + lowerCaseUserId + "'";
-				String assetGroupInsertQuery = "INSERT INTO pac_v2_userpreferences (userId, recentlyViewedAG) VALUES (?, ?)";
-				int userCount = rdsRepository.count(userCountQuery);
-				List<Map<String, Object>> recentlyViewedAgMap = rdsRepository.getDataFromPacman(recentlyViewedAgQuery);
-				for (Map<String, Object> recentlyViewedAg : recentlyViewedAgMap) {
-					if (recentlyViewedAg.get(AssetConstants.RECENTLY_VIEWED_AG) != null) {
-						recentView = recentlyViewedAg.get(AssetConstants.RECENTLY_VIEWED_AG).toString();
-						recentViewList = new CopyOnWriteArrayList(Arrays.asList(recentView.split(",")));
-					}
-				}
+    @Override
+    public List<Map<String, Object>> saveAndAppendAssetGroup(String userId, String assetGroup) throws DataException {
+        String lowerCaseUserId = userId.toLowerCase();
+        String recentView = null;
+        boolean isDuplicate = false;
+        boolean isGreaterThanTen = false;
+        boolean isValidAssetGroup = false;
+        String assetGroupUpdateWithListQuery = null;
+        List<String> recentViewList = new ArrayList<>();
+        List<Map<String, Object>> assets = getAllAssetGroups();
+        List<Map<String, Object>> recentlyViewed = new ArrayList<>();
+        Map<String, Object> recentViewMap = new HashMap<>();
+        for (Map<String, Object> ag : assets) {
+            if (assetGroup.equals(ag.get("name"))) {
+                isValidAssetGroup = true;
+                String userCountQuery = "SELECT COUNT(userId) FROM pac_v2_userpreferences WHERE userId=\""
+                        + lowerCaseUserId + "\"";
+                String recentlyViewedAgQuery = "SELECT recentlyViewedAG FROM pac_v2_userpreferences WHERE userId=\""
+                        + lowerCaseUserId + "\"";
+                String assetGroupUpdateQuery = "UPDATE pac_v2_userpreferences SET recentlyViewedAG='" + assetGroup
+                        + "' WHERE userId='" + lowerCaseUserId + "'";
+                String assetGroupUpdateAndAppendQuery = "UPDATE pac_v2_userpreferences SET recentlyViewedAG = concat(recentlyViewedAG,'"
+                        + "," + assetGroup + "') WHERE userId='" + lowerCaseUserId + "'";
+                String assetGroupInsertQuery = "INSERT INTO pac_v2_userpreferences (userId, recentlyViewedAG) VALUES (?, ?)";
+                int userCount = rdsRepository.count(userCountQuery);
+                List<Map<String, Object>> recentlyViewedAgMap = rdsRepository.getDataFromPacman(recentlyViewedAgQuery);
+                for (Map<String, Object> recentlyViewedAg : recentlyViewedAgMap) {
+                    if (recentlyViewedAg.get(AssetConstants.RECENTLY_VIEWED_AG) != null) {
+                        recentView = recentlyViewedAg.get(AssetConstants.RECENTLY_VIEWED_AG).toString();
+                        recentViewList = new CopyOnWriteArrayList(Arrays.asList(recentView.split(",")));
+                    }
+                }
+                if (!recentViewList.isEmpty()) {
+                    recentViewList.removeIf(groupName -> StringUtils.isEmpty(groupName) ||
+                            !rdsRepository.isExists(GET_COUNT_BY_GROUP_NAME, groupName));
+                }
 
-				if (userCount > 0) {
-					if (!StringUtils.isEmpty(recentView)) {
-						if (recentViewList.size() <= AssetConstants.NINE) {
-							if (recentViewList.contains(assetGroup)) {
-								recentViewList.remove(assetGroup);
-								isDuplicate = true;
-							}
-						} else {
-							if (recentViewList.contains(assetGroup)) {
-								recentViewList.remove(assetGroup);
-								isDuplicate = true;
-							} else {
-								recentViewList.remove(0);
-								isGreaterThanTen = true;
-							}
-						}
-						if (isDuplicate || isGreaterThanTen) {
-							recentViewList.add(assetGroup);
-							String assetGroups = String.join(",", recentViewList);
-							assetGroupUpdateWithListQuery = "UPDATE pac_v2_userpreferences SET recentlyViewedAG='"
-									+ assetGroups + "' WHERE userId='" + lowerCaseUserId + "'";
-							rdsRepository.update(assetGroupUpdateWithListQuery);
-							recentViewMap.put(AssetConstants.RECENTLY_VIEWED_AG,
-									buildRecentViewDetails(recentViewList));
-							recentlyViewed.add(recentViewMap);
-							return recentlyViewed;
+                if (userCount > 0) {
+                    if (!StringUtils.isEmpty(recentView)) {
+                        if (recentViewList.size() <= AssetConstants.NINE) {
+                            if (recentViewList.contains(assetGroup)) {
+                                recentViewList.remove(assetGroup);
+                                isDuplicate = true;
+                            }
+                        } else {
+                            if (recentViewList.contains(assetGroup)) {
+                                recentViewList.remove(assetGroup);
+                                isDuplicate = true;
+                            } else {
+                                recentViewList.remove(0);
+                                isGreaterThanTen = true;
+                            }
+                        }
+                        if (isDuplicate || isGreaterThanTen) {
+                            recentViewList.add(assetGroup);
+                            String assetGroups = String.join(",", recentViewList);
+                            assetGroupUpdateWithListQuery = "UPDATE pac_v2_userpreferences SET recentlyViewedAG='"
+                                    + assetGroups + "' WHERE userId='" + lowerCaseUserId + "'";
+                            rdsRepository.update(assetGroupUpdateWithListQuery);
+                            recentViewMap.put(AssetConstants.RECENTLY_VIEWED_AG,
+                                    buildRecentViewDetails(recentViewList));
+                            recentlyViewed.add(recentViewMap);
+                            return recentlyViewed;
 
-						} else {
-							rdsRepository.update(assetGroupUpdateAndAppendQuery);
-							recentViewList.add(assetGroup);
-							recentViewMap.put(AssetConstants.RECENTLY_VIEWED_AG,
-									buildRecentViewDetails(recentViewList));
-							recentlyViewed.add(recentViewMap);
-							return recentlyViewed;
-						}
-					} else {
-						rdsRepository.update(assetGroupUpdateQuery);
-						recentViewList.add(assetGroup);
-						recentViewMap.put(AssetConstants.RECENTLY_VIEWED_AG, buildRecentViewDetails(recentViewList));
-						recentlyViewed.add(recentViewMap);
-						return recentlyViewed;
-					}
-				} else {
-					rdsRepository.update(assetGroupInsertQuery, lowerCaseUserId, assetGroup);
-					recentViewList.add(assetGroup);
-					recentViewMap.put(AssetConstants.RECENTLY_VIEWED_AG, buildRecentViewDetails(recentViewList));
-					recentlyViewed.add(recentViewMap);
-					return recentlyViewed;
-				}
-			}
-		}
-		if (!isValidAssetGroup) {
-			throw new DataException("Not A Valid Asset Group");
-		}
-		return recentlyViewed;
-	}
+                        } else {
+                            rdsRepository.update(assetGroupUpdateAndAppendQuery);
+                            recentViewList.add(assetGroup);
+                            recentViewMap.put(AssetConstants.RECENTLY_VIEWED_AG,
+                                    buildRecentViewDetails(recentViewList));
+                            recentlyViewed.add(recentViewMap);
+                            return recentlyViewed;
+                        }
+                    } else {
+                        rdsRepository.update(assetGroupUpdateQuery);
+                        recentViewList.add(assetGroup);
+                        recentViewMap.put(AssetConstants.RECENTLY_VIEWED_AG, buildRecentViewDetails(recentViewList));
+                        recentlyViewed.add(recentViewMap);
+                        return recentlyViewed;
+                    }
+                } else {
+                    rdsRepository.update(assetGroupInsertQuery, lowerCaseUserId, assetGroup);
+                    recentViewList.add(assetGroup);
+                    recentViewMap.put(AssetConstants.RECENTLY_VIEWED_AG, buildRecentViewDetails(recentViewList));
+                    recentlyViewed.add(recentViewMap);
+                    return recentlyViewed;
+                }
+            }
+        }
+        if (!isValidAssetGroup) {
+            throw new DataException("Not A Valid Asset Group");
+        }
+        return recentlyViewed;
+    }
 
-	private List<Map<String, Object>> buildRecentViewDetails(List<String> recentViewList) {
-		List<Map<String, Object>> recentlyViewedAgMapList = Lists.newArrayList();
-		if (recentViewList.size() > 0) {
-			ListIterator<String> iterator = recentViewList.listIterator(recentViewList.size());
-			while (iterator.hasPrevious()) {
-				String ag = iterator.previous();
-				String query = "SELECT displayName FROM cf_AssetGroupDetails WHERE groupName = '" + ag + "'";
-				String displayName = rdsRepository.queryForString(query);
-				if (displayName != null) {
-					Map<String, Object> details = Maps.newHashMap();
-					details.put("ag", ag);
-					details.put("displayName", displayName);
-					details.put(Constants.PROVIDERS, providersDetailForAssetGroup(ag));
-					recentlyViewedAgMapList.add(details);
-				}
-			}
-		}
-		return recentlyViewedAgMapList;
-	}
+    private List<Map<String, Object>> buildRecentViewDetails(List<String> recentViewList) {
+        List<Map<String, Object>> recentlyViewedAgMapList = Lists.newArrayList();
+        if (recentViewList.size() > 0) {
+            ListIterator<String> iterator = recentViewList.listIterator(recentViewList.size());
+            while (iterator.hasPrevious()) {
+                String ag = iterator.previous();
+                String query = "SELECT displayName FROM cf_AssetGroupDetails WHERE groupName = '" + ag + "'";
+                String displayName = rdsRepository.queryForString(query);
+                if (displayName != null) {
+                    Map<String, Object> details = Maps.newHashMap();
+                    details.put("ag", ag);
+                    details.put("displayName", displayName);
+                    details.put(Constants.PROVIDERS, providersDetailForAssetGroup(ag));
+                    recentlyViewedAgMapList.add(details);
+                }
+            }
+        }
+        return recentlyViewedAgMapList;
+    }
 
-	/**
-	 * To get the provider details for an asset group
-	 * @param assetGroup
-	 * @return
-	 */
-	private List<Map<String, Object>> providersDetailForAssetGroup ( String assetGroup) {
-		
-		Map<String, Long> countMap =  getAssetCountByAssetGroup(assetGroup, "all", null);
-		List<Map<String, Object>> targetTypes = getTargetTypesByAssetGroup(assetGroup, "Infra & Platforms", null);
-		List<String> validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
-				.collect(Collectors.toList());
-		List<String> countTypes = new ArrayList<>(countMap.keySet());
-		for (String _type : countTypes) {
-			if (!validTypes.contains(_type)) {
-				countMap.remove(_type);
-			}
-		}
-		List<Map<String, Object>> datasourceForAssettypes = getDataSourceForTargetTypes(validTypes);
-		Map<String,Long> providerMap = datasourceForAssettypes.stream().filter(typeInfo-> countTypes.contains(typeInfo.get(Constants.TYPE))).collect(Collectors.groupingBy(typeInfo->typeInfo.get(Constants.PROVIDER).toString(),Collectors.counting()));
-					
-		List<Map<String, Object>> providersDetails = new ArrayList<Map<String, Object>>();
-		providerMap.forEach((k,v)-> {
-			Map<String, Object> newProvider = new HashMap<String, Object>();
-			newProvider.put(Constants.PROVIDER,k);
-			newProvider.put(Constants.TYPE_COUNT, v);
-			providersDetails.add(newProvider);
-		});
-		return providersDetails;
-	}
+    /**
+     * To get the provider details for an asset group
+     * @param assetGroup
+     * @return
+     */
+    private List<Map<String, Object>> providersDetailForAssetGroup ( String assetGroup) {
+
+        Map<String, Long> countMap =  getAssetCountByAssetGroup(assetGroup, "all", null);
+        List<Map<String, Object>> targetTypes = getTargetTypesByAssetGroup(assetGroup, "Infra & Platforms", null);
+        List<String> validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
+                .collect(Collectors.toList());
+        List<String> countTypes = new ArrayList<>(countMap.keySet());
+        for (String _type : countTypes) {
+            if (!validTypes.contains(_type)) {
+                countMap.remove(_type);
+            }
+        }
+        List<Map<String, Object>> datasourceForAssettypes = getDataSourceForTargetTypes(validTypes);
+        Map<String,Long> providerMap = datasourceForAssettypes.stream().filter(typeInfo-> countTypes.contains(typeInfo.get(Constants.TYPE))).collect(Collectors.groupingBy(typeInfo->typeInfo.get(Constants.PROVIDER).toString(),Collectors.counting()));
+
+        List<Map<String, Object>> providersDetails = new ArrayList<Map<String, Object>>();
+        providerMap.forEach((k,v)-> {
+            Map<String, Object> newProvider = new HashMap<String, Object>();
+            newProvider.put(Constants.PROVIDER,k);
+            newProvider.put(Constants.TYPE_COUNT, v);
+            providersDetails.add(newProvider);
+        });
+        return providersDetails;
+    }
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
+    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
             String searchText, Map<String, Object> sortFilter) {
         LOGGER.info("Inside getListAssets");
         List<Map<String, Object>> assetDetails = new ArrayList<>();
         List<String> fieldNames = new ArrayList<>();
         String targetType = "";
-        String domain = filter.get(Constants.DOMAIN);
+        String domain = filter.get(Constants.DOMAIN) == null ? "" : (String) filter.get(Constants.DOMAIN);
         Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+
+        Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
+        ArrayList<String> tagList=tagsSet.stream().map(tag->"tags."+tag).collect(Collectors.toCollection(ArrayList::new));
 
         Iterator it = filter.entrySet().iterator();
         Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
+        List<String> exemptedResourceIds=new ArrayList<>();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
-            addTagToFilter(mustFilter, mandatoryTagValues, entry);
-            if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
-                targetType = entry.getValue().toString();
+            if(entry.getValue() instanceof String){
+                addTagToFilter(mustFilter, mandatoryTagValues, entry);
             }else{
-                if(!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
-                    mustFilter.put((String) entry.getKey(), entry.getValue());
+                addTagToFilter(mustTermsFilter, mandatoryTagValues, entry);
+            }
+            if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
+                try{
+                    List<String> targetList = (List<String>) entry.getValue();
+                    targetType = targetList.get(0);
+                }catch(Exception e){
+                    targetType = entry.getValue().toString();
+                }
+            }else{
+                if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED)){
+                    String filterTagged = "";
+                    if(entry.getValue() instanceof String){
+                        filterTagged = entry.getValue().toString();
+                    }
+                    else{
+                        filterTagged = ((List<String>) entry.getValue()).get(0);
+                    }
+                    if(filterTagged.equalsIgnoreCase(AssetConstants.FALSE)){
+                        mustFilter.put(AssetConstants.FILTER_UNTAGGED, tagList);
+                    }
+                    else if (filterTagged.equalsIgnoreCase(AssetConstants.TRUE)){
+                        mustFilter.put(AssetConstants.FILTER_TAGGED, tagList);
+                    }
+                }
+                else if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
+                    List<Map<String, Object>> masterList;
+                    try {
+                        masterList = getAssetsExempted(assetGroup);
+                        for(Map<String,Object>asset:masterList){
+                            if(asset.containsKey(RESOURCEID)){
+                                Object resourceId=asset.get(RESOURCEID);
+                                exemptedResourceIds.add((String) resourceId);
+                            }
+                        }
+                        if(entry.getValue() instanceof String){
+                            if(((String) entry.getValue()).equalsIgnoreCase(TRUE)){
+                                mustFilter.put((String) entry.getKey(),exemptedResourceIds);
+                            } else{
+                                mustNotFilter.put((String) entry.getKey(),exemptedResourceIds);
+                            }
+                        }
+                        else{
+                            List<String> exemptInp = (List<String>) entry.getValue();
+                            if(exemptInp != null && exemptInp.size() == 1){
+                                if(exemptInp.get(0).equalsIgnoreCase(TRUE)){
+                                    mustFilter.put((String) entry.getKey(),exemptedResourceIds);
+                                } else{
+                                    mustNotFilter.put((String) entry.getKey(),exemptedResourceIds);
+                                }
+                            }
+                        }
+
+                    } catch (Exception e){
+                        LOGGER.error("Error in listAssets ",e);
+                    }
+                }
+                else if(!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
+                    if(entry.getValue() instanceof String){
+                        mustFilter.put((String) entry.getKey(), entry.getValue());
+                    }else{
+                        mustTermsFilter.put((String) entry.getKey(), entry.getValue());
+                    }
                 }
             }
+        }
+
+        try {
+            fieldNames = getDisplayFieldsForTargetType("all_list");
+        } catch (Exception e) {
+            LOGGER.error("Error while fetching field names for all targetType in getListAssets" , e);
         }
 
         try {
             if (StringUtils.isEmpty(targetType)) {
                 List<String> validTypes = getTargetTypesByAssetGroup(assetGroup, domain, null).stream()
                         .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
-                if (validTypes.size() > 1) {
-                    try {
-                        fieldNames = getDisplayFieldsForTargetType("all_list");
-                    } catch (Exception e) {
-                        LOGGER.error("Error while fetching field names for all targetType in getListAssets" , e);
-                    }
-                } else {
-                    try {
-                        fieldNames = getDisplayFieldsForTargetType(validTypes.get(0));
-                    } catch (Exception e) {
-                        LOGGER.error("Error while fetching field names for " + validTypes.get(0) + " in getListAssets"
-                                , e);
-                    }
-                }
+
                 assetDetails = getAssetsByAssetGroupBySize(assetGroup, AssetConstants.ALL, mustFilter, validTypes,
-                        fieldNames, from, size, searchText, sortFilter);
+                        fieldNames, from, size, searchText, sortFilter,mustNotFilter,mustTermsFilter);
             } else {
-                try {
-                    fieldNames = getDisplayFieldsForTargetType(targetType);
-                } catch (Exception e) {
-                    LOGGER.error("Error while fetching field names for " + targetType + " in getListAssets" , e);
-                }
                 assetDetails = getAssetsByAssetGroupBySize(assetGroup, targetType, mustFilter, null, fieldNames, from,
-                        size, searchText, sortFilter);
+                        size, searchText, sortFilter,mustNotFilter, mustTermsFilter);
             }
 
         } catch (Exception e) {
@@ -806,8 +963,129 @@ public class AssetRepositoryImpl implements AssetRepository {
         List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, Constants.DOCID, AssetConstants.UNDERSCORE_ENTITY,
                 Constants._ID, AssetConstants.UNDERSCORE_LOADDATE, Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
                 AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST, AssetConstants.CREATION_DATE);
+        for(Map<String, Object> map : assetDetails){
+            if(!map.containsKey("accountname")){
+                if(map.containsKey("subscriptionName")){
+                    map.put("accountname",map.get("subscriptionName"));
+                }
+                else if(map.containsKey("projectName")){
+                    map.put("accountname",map.get("projectName"));
+                }
+            }
+            if(!map.containsKey("accountid")){
+                if(map.containsKey("subscription")){
+                    map.put("accountid",map.get("subscription"));
+                }
+                else if(map.containsKey("projectId")){
+                    map.put("accountid",map.get("projectId"));
+                }
+            }
+
+        }
         LOGGER.info("Exiting getListAssets");
         return formGetListResponse(fieldNames,assetDetails,fieldsToBeSkipped);
+    }
+
+    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest request, String attribute){
+        int totalCount = getListAssetsCount(request.getAg(), request.getFilter());
+        Map<String, Object> response = new HashMap<>();
+        List<String> resList = new ArrayList<>();
+        if(request.getFilter() == null){
+            request.setFilter(new HashMap<String, Object>());
+        }
+        if(attribute.equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
+            request.getFilter().put(AssetConstants.FILTER_EXEMPTED, AssetConstants.TRUE);
+            int exemptAssetCount = getListAssetsCount(request.getAg(), request.getFilter());
+            if(exemptAssetCount > 0){
+                resList.add(AssetConstants.TRUE);
+            }
+            if(totalCount -exemptAssetCount > 0){
+                resList.add(AssetConstants.FALSE);
+            }
+        }
+        else{
+            request.getFilter().put(AssetConstants.FILTER_TAGGED, AssetConstants.TRUE);
+            int taggedAssetCount = getListAssetsCount(request.getAg(), request.getFilter());
+            if(taggedAssetCount > 0){
+                resList.add(AssetConstants.TRUE);
+            }
+            if(totalCount - taggedAssetCount > 0){
+                resList.add(AssetConstants.FALSE);
+            }
+        }
+        response.put(attribute, resList);
+        return response;
+    }
+
+    public int getListAssetsCount(String assetGroup, Map<String, Object> filter) {
+        LOGGER.info("Inside getListAssets");
+        List<Map<String, Object>> assetDetails = new ArrayList<>();
+        String targetType = "";
+        String domain = (String) filter.get(Constants.DOMAIN);
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+
+        Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
+        ArrayList<String> tagList=tagsSet.stream().map(tag->"tags."+tag).collect(Collectors.toCollection(ArrayList::new));
+
+        Iterator it = filter.entrySet().iterator();
+        Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
+        List<String> exemptedResourceIds=new ArrayList<>();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            addTagToFilter(mustFilter, mandatoryTagValues, entry);
+            if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
+                targetType = entry.getValue().toString();
+            }else{
+                if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED) &&
+                        ((String) entry.getValue()).equalsIgnoreCase(AssetConstants.FALSE) ){
+                    mustFilter.put(AssetConstants.FILTER_UNTAGGED, tagList);
+                }
+                else if (((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED) &&
+                        ((String) entry.getValue()).equalsIgnoreCase(TRUE)){
+                    mustFilter.put(AssetConstants.FILTER_TAGGED, tagList);
+                }
+                else if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
+                    List<Map<String, Object>> masterList;
+                    try {
+                        masterList = getAssetsExempted(assetGroup);
+                        for(Map<String,Object>asset:masterList){
+                            if(asset.containsKey(RESOURCEID)){
+                                Object resourceId=asset.get(RESOURCEID);
+                                exemptedResourceIds.add((String) resourceId);
+                            }
+                        }
+                        if(((String) entry.getValue()).equalsIgnoreCase(TRUE)){
+                            mustTermsFilter.put(RESOURCEID_KEYWORD,exemptedResourceIds);
+                        } else{
+                            mustNotFilter.put(RESOURCEID_KEYWORD,exemptedResourceIds);
+                        }
+                    } catch (Exception e){
+                        LOGGER.error("Error in listAssets ",e);
+                    }
+                }
+                else if(!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
+                    mustTermsFilter.put((String) entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        int assetCount = 0;
+        try {
+            if (StringUtils.isEmpty(targetType)) {
+                List<String> validTypes = getTargetTypesByAssetGroup(assetGroup, domain, null).stream()
+                        .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
+                mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, validTypes);
+                assetCount = getAssetsCountByAssetGroupBySize(assetGroup, AssetConstants.ALL, mustFilter, mustTermsFilter,
+                        mustNotFilter);
+            } else {
+                assetCount = getAssetsCountByAssetGroupBySize(assetGroup, targetType, mustFilter, mustTermsFilter, mustNotFilter);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error in getListAssets", e);
+        }
+        LOGGER.info("Exiting getListAssets");
+        return assetCount;
     }
 
     private static void addTagToFilter(Map<String, Object> mustFilter, Set<String> mandatoryTags,Entry<String,String> entry) {
@@ -820,11 +1098,18 @@ public class AssetRepositoryImpl implements AssetRepository {
     public long getAssetCount(String assetGroup, Map<String, String> filter, String searchText) {
 
         Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
         mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, true);
         mustFilter.put(Constants.LATEST, true);
         String domain = filter.get(Constants.DOMAIN);
         Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
         String targetType = "";
+        List<String> exemptedResourceIds=new ArrayList<>();
+
+        Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
+        ArrayList<String> tagList=tagsSet.stream().map(tag->"tags."+tag).collect(Collectors.toCollection(ArrayList::new));
+        LOGGER.info("Tags {} "+ tagList);
+
         if (filter != null) {
             Iterator<Entry<String, String>> it = filter.entrySet().iterator();
             while (it.hasNext()) {
@@ -832,6 +1117,37 @@ public class AssetRepositoryImpl implements AssetRepository {
                 addTagToFilter(mustFilter, mandatoryTagValues, entry);
                 if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
                     targetType = entry.getValue();
+                }else{
+                    if((entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED) &&
+                            (entry.getValue()).equalsIgnoreCase(AssetConstants.FALSE) ){
+                        mustFilter.put(AssetConstants.FILTER_UNTAGGED, tagList);
+                    }
+                    else if ((entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED) &&
+                            (entry.getValue()).equalsIgnoreCase("True")){
+                        mustFilter.put(AssetConstants.FILTER_TAGGED, tagList);
+                    }
+                    else if((entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
+                        List<Map<String, Object>> masterList;
+                        try {
+                            masterList = getListAssetsExempted(assetGroup, filter);
+                            for(Map<String,Object>asset:masterList){
+                                if(asset.containsKey(RESOURCEID)){
+                                    Object resourceId=asset.get(RESOURCEID);
+                                    exemptedResourceIds.add((String) resourceId);
+                                }
+                            }
+                            if((entry.getValue()).equalsIgnoreCase(TRUE)){
+                                mustFilter.put(entry.getKey(),exemptedResourceIds);
+                            } else{
+                                mustNotFilter.put(entry.getKey(),exemptedResourceIds);
+                            }
+                        } catch (Exception e){
+                            LOGGER.error("Error in listAssets ",e);
+                        }
+                    }
+                    else if(!((entry.getKey()).equalsIgnoreCase(Constants.DOMAIN))) {
+                        mustFilter.put(entry.getKey(),entry.getValue());
+                    }
                 }
             }
         }
@@ -846,7 +1162,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             } else {
                 mustFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetType);
             }
-            return esRepository.getTotalDocumentCountForIndexAndType(assetGroup, null, mustFilter, null, null,
+            return esRepository.getTotalDocumentCountForIndexAndType(assetGroup, null, mustFilter, mustNotFilter, null,
                     searchText, mustTermFilter);
         } catch (Exception e) {
             LOGGER.error("Error retrieving inventory from ES in getAssetCount ", e);
@@ -861,7 +1177,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         mustFilter.put(AssetConstants.ISSUE_STATUS, "exempted");
         try {
             ExemptedCountMap = esRepository.getTotalDistributionForIndexAndType(assetGroup, null, mustFilter, null,
-                    null, AssetConstants.UNDERSCORE_TYPE, Constants.THOUSAND, null);
+                    null, DOC_TYPE_KEYWORD, Constants.THOUSAND, null);
             return ExemptedCountMap;
         } catch (Exception e) {
             LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
@@ -952,7 +1268,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             Integer from, Integer size, String searchText) throws DataException {
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AssetConstants.AWS_EC2)
                 .append("/").append(Constants.QUALYS_INFO).append("/").append(Constants.SEARCH).append("?")
-                .append("size").append("=").append(Constants.ES_PAGE_SIZE);
+                .append("size").append("=").append(ES_PAGE_SIZE);
         Map<String, Object> softwareDet = null;
         List<Map<String, Object>> softwareList = new ArrayList<>();
         StringBuilder requestBodyCpu = null;
@@ -964,7 +1280,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             } else {
                 requestBodyCpu = new StringBuilder(
                         "{\"_source\":[\"software\",\"instanceid\"],\"query\":{\"bool\":{\"must\":[{\"term\":{\"instanceid.keyword\":{\"value\":\""
-                                + instanceId + "\"}}},{\"match_phrase_prefix\":{\"_all\":\"" + searchText + AssetConstants.ESQUERY_CLOSE);
+                                + instanceId + "\"}}},{\"query_string\":{\"query\":\"" + searchText + AssetConstants.ESQUERY_CLOSE);
             }
 
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBodyCpu.toString());
@@ -1054,77 +1370,98 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
-	public List<Map<String, Object>> getListAssetsPatchable(String assetGroup, Map<String, String> filter) {
+    public List<Map<String, Object>> getListAssetsPatchable(String assetGroup, Map<String, String> filter) {
 
-		LOGGER.info("Inside getListAssetsPatchable");
-		List<Map<String, Object>> assetList = new ArrayList<>();
-		List<Map<String, Object>> assetDetails = new ArrayList<>();
-		List<String> sourceFields = null;
-		String resourceType = null;
-		if (filter.containsKey(AssetConstants.FILTER_RES_TYPE)) {
-			resourceType = filter.get(AssetConstants.FILTER_RES_TYPE);
-			if (Constants.ONPREMSERVER.equals(resourceType)) {
-				sourceFields = getDisplayFieldsForTargetType(resourceType);
-				assetDetails.addAll(getListAssetsPathachableForOnPrem(assetGroup, filter, sourceFields));
-			} else if (Constants.EC2.equals(resourceType) || Constants.VIRTUALMACHINE.equals(resourceType)) {
-				assetDetails.addAll(getListAssetsPathachableForEC2(assetGroup, filter, sourceFields));
-				
-			}
-		} else {
-			
-			List<String>  validPatchingTypes= Arrays.asList(patchingTypes.split(","));
-			List<String> validTargetTypes  = new ArrayList<>(getAssetCountByAssetGroup(assetGroup,AssetConstants.ALL,filter.get(AssetConstants.FILTER_APPLICATION)).keySet());
-			List<String>  agPatchingTypes =validTargetTypes.stream().filter(validPatchingTypes::contains).collect(Collectors.toList());
-			
-			if (agPatchingTypes.size()>1) {
-				// source common fields for onprem & cloud
-				sourceFields = getDisplayFieldsForTargetType("all_patchable");
-			}
-			for(String type: agPatchingTypes) {
-				if(type.equals(Constants.ONPREMSERVER)) {
-					if(agPatchingTypes.size()==1) {
-						sourceFields = getDisplayFieldsForTargetType(Constants.ONPREMSERVER);
-					}
-					assetDetails.addAll(getListAssetsPathachableForOnPrem(assetGroup, filter, sourceFields));
-				}else {
-					filter.put(AssetConstants.FILTER_RES_TYPE,type);
-					assetDetails.addAll(getListAssetsPathachableForEC2(assetGroup, filter, sourceFields));
-				}
-			} 
-		}
+        LOGGER.info("Inside getListAssetsPatchable");
+        List<Map<String, Object>> assetList = new ArrayList<>();
+        List<Map<String, Object>> assetDetails = new ArrayList<>();
+        List<String> sourceFields = null;
+        String resourceType = null;
+        if (filter.containsKey(AssetConstants.FILTER_RES_TYPE)) {
+            resourceType = filter.get(AssetConstants.FILTER_RES_TYPE);
+            if (Constants.ONPREMSERVER.equals(resourceType)) {
+                sourceFields = getDisplayFieldsForTargetType(resourceType);
+                assetDetails.addAll(getListAssetsPathachableForOnPrem(assetGroup, filter, sourceFields));
+            } else if (Constants.EC2.equals(resourceType) || Constants.VIRTUALMACHINE.equals(resourceType)) {
+                assetDetails.addAll(getListAssetsPathachableForEC2(assetGroup, filter, sourceFields));
 
-		try {
-			final List<String> executiveapps;
-			if (filter.containsKey(AssetConstants.FILTER_EXEC_SPONSOR)) {
-				executiveapps = fetchExecDirectorApps(filter.get(AssetConstants.FILTER_EXEC_SPONSOR),
-						"executiveSponsor");
-			}else if (filter.containsKey(AssetConstants.FILTER_DIRECTOR)) {
-				executiveapps = fetchExecDirectorApps(filter.get(AssetConstants.FILTER_DIRECTOR), "director");
-			}else {
-				executiveapps = new ArrayList<>();
-			}
-			List<String> fieldsToBeSkipped = Arrays.asList(Constants.DOCID,
-					AssetConstants.UNDERSCORE_ENTITY, Constants._ID, AssetConstants.UNDERSCORE_LOADDATE,
-					Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
-					AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST,
-					AssetConstants.CREATION_DATE);
-			assetList.addAll(formGetListResponse(sourceFields, assetDetails, fieldsToBeSkipped));
-			if (filter.containsKey(AssetConstants.FILTER_EXEC_SPONSOR)
-					|| filter.containsKey(AssetConstants.FILTER_DIRECTOR)) {
-				
-				return assetList.parallelStream().filter(asset-> executiveapps.contains(asset.get(Constants.TAGS_APPLICATION))).collect(Collectors.toList());
-				
-			}else {
-				return assetList;
-			}
-			
-		} catch (Exception e) {
-			LOGGER.error("Error in getListAssetsPatchable", e);
-		}
+            }
+        } else {
 
-		LOGGER.info("Exiting getListAssetsPatchable");
-		return assetList;
-	}
+            List<String>  validPatchingTypes= Arrays.asList(patchingTypes.split(","));
+            List<String> validTargetTypes  = new ArrayList<>(getAssetCountByAssetGroup(assetGroup,AssetConstants.ALL,filter.get(AssetConstants.FILTER_APPLICATION)).keySet());
+            List<String>  agPatchingTypes =validTargetTypes.stream().filter(validPatchingTypes::contains).collect(Collectors.toList());
+
+            if (agPatchingTypes.size()>1) {
+                // source common fields for onprem & cloud
+                sourceFields = getDisplayFieldsForTargetType("all_patchable");
+            }
+            for(String type: agPatchingTypes) {
+                if(type.equals(Constants.ONPREMSERVER)) {
+                    if(agPatchingTypes.size()==1) {
+                        sourceFields = getDisplayFieldsForTargetType(Constants.ONPREMSERVER);
+                    }
+                    assetDetails.addAll(getListAssetsPathachableForOnPrem(assetGroup, filter, sourceFields));
+                }else {
+                    filter.put(AssetConstants.FILTER_RES_TYPE,type);
+                    assetDetails.addAll(getListAssetsPathachableForEC2(assetGroup, filter, sourceFields));
+                }
+            }
+        }
+
+        try {
+            final List<String> executiveapps;
+            if (filter.containsKey(AssetConstants.FILTER_EXEC_SPONSOR)) {
+                executiveapps = fetchExecDirectorApps(filter.get(AssetConstants.FILTER_EXEC_SPONSOR),
+                        "executiveSponsor");
+            }else if (filter.containsKey(AssetConstants.FILTER_DIRECTOR)) {
+                executiveapps = fetchExecDirectorApps(filter.get(AssetConstants.FILTER_DIRECTOR), "director");
+            }else {
+                executiveapps = new ArrayList<>();
+            }
+            List<String> fieldsToBeSkipped = Arrays.asList(Constants.DOCID,
+                    AssetConstants.UNDERSCORE_ENTITY, Constants._ID, AssetConstants.UNDERSCORE_LOADDATE,
+                    Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
+                    AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST,
+                    AssetConstants.CREATION_DATE);
+            assetList.addAll(formGetListResponse(sourceFields, assetDetails, fieldsToBeSkipped));
+            if (filter.containsKey(AssetConstants.FILTER_EXEC_SPONSOR)
+                    || filter.containsKey(AssetConstants.FILTER_DIRECTOR)) {
+
+                return assetList.parallelStream().filter(asset-> executiveapps.contains(asset.get(Constants.TAGS_APPLICATION))).collect(Collectors.toList());
+
+            }else {
+                return assetList;
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error in getListAssetsPatchable", e);
+        }
+
+        LOGGER.info("Exiting getListAssetsPatchable");
+        return assetList;
+    }
+
+
+    private List<Map<String, Object>> getAssetsExempted(String assetGroup)
+    {
+        LOGGER.info("Inside getListAssetsExempted");
+        List<Map<String, Object>> assetList = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.EXEMPTED);
+        try {
+            assetList = esRepository.getDataFromES(assetGroup, null,
+                    mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
+            return assetList;
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+        }
+        return assetList;
+    }
 
     @Override
     public List<Map<String, Object>> getListAssetsExempted(String assetGroup, Map<String, String> filter) 
@@ -1167,9 +1504,11 @@ public class AssetRepositoryImpl implements AssetRepository {
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
 
         String[] tags = mandatoryTags.split(",");
+        LOGGER.info("tags {} "+ tags);
         for (String tag : tags) {
             shouldFilter.put(CommonUtils.convertAttributetoKeyword(tag.replaceAll("\\s", "")), AssetConstants.TAG_NOT_FOUND);
         }
+
         List<Map<String, Object>> untaggedAssets;
         List<Map<String, Object>> totalAssets;
         StringBuilder sb;
@@ -1183,12 +1522,10 @@ public class AssetRepositoryImpl implements AssetRepository {
         String ruleIdWithTargetTypeQuery = null;
 
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
-        // @ToDo need to work on tagging policy
-       // mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.TAGGING_POLICY);
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICY_CATEGORY),"tagging");
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
 
         Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
+        LOGGER.info("mandatoryTagValues {} "+ mandatoryTagValues);
         filter.entrySet()
                 .stream()
                 .forEach(
@@ -1246,18 +1583,21 @@ public class AssetRepositoryImpl implements AssetRepository {
                     LOGGER.error("Error in getListAssetsTaggable", e);
                 }
             }else{
-            	 assetDetails = getAssetsByAssetGroup(assetGroup, targetType, new HashMap(), null, fieldNames);
+                assetDetails = getAssetsByAssetGroup(assetGroup, targetType, new HashMap(), null, fieldNames);
             }
         } else {
-
-            ruleIdWithTargetTypeQuery = "SELECT DISTINCT p.targetType FROM  cf_PolicyTable p WHERE  p.status = 'ENABLED' AND p.category = 'tagging'";
-
+            ruleIdWithTargetTypeQuery = "SELECT  p.targetType FROM  cf_PolicyTable p WHERE  p.status = 'ENABLED' AND p.category = 'tagging'";
             ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
+            LOGGER.info("ruleIdwithTargetType {} "+ ruleIdwithTargetType);
+
             List<String> validTypes = ruleIdwithTargetType.stream()
                     .map(obj -> obj.get(Constants.TARGET_TYPE).toString()).collect(Collectors.toList());
+
+            LOGGER.info("validTypes {} "+ validTypes);
             if (validTypes.size() > 1) {
                 try {
                     fieldNames = getDisplayFieldsForTargetType("all_taggable");
+                    LOGGER.info("fieldNames {} "+ fieldNames);
                 } catch (Exception e) {
                     LOGGER.error(AssetConstants.ERROR_FETCHING_FIELDNAMES , e);
                 }
@@ -1275,8 +1615,10 @@ public class AssetRepositoryImpl implements AssetRepository {
                     shouldFilter = null;
                 }
                 if (filter.containsKey(AssetConstants.FILTER_TAGGED)) {
+                    LOGGER.info("Inside Tagged");
                     untaggedAssets = esRepository.getDataFromES(assetGroup, null, mustFilter, null, shouldFilter,
                             fieldNames, null);
+                    LOGGER.info("untaggedAssets {} "+ untaggedAssets);
                     List<String> untaggedResourceIds = untaggedAssets
                             .parallelStream()
                             .map(obj -> obj.get(Constants.RESOURCEID).toString()
@@ -1323,6 +1665,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     assetList.add(asset);
                 }
             });
+            LOGGER.info("Kushagra Jain");
             LOGGER.info("Exiting getListAssetsTaggable");
             return assetList;
         } else {
@@ -1349,91 +1692,92 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
-	public List<Map<String, Object>> getListAssetsVulnerable(String assetGroup, Map<String, String> filter) {
+    public List<Map<String, Object>> getListAssetsVulnerable(String assetGroup, Map<String, String> filter) {
 
-		LOGGER.info("Inside getListAssetsVulnerable");
-		List<Map<String, Object>> assetList = new ArrayList<>();
-		List<Map<String, Object>> assetDetails = new ArrayList<>();
+        LOGGER.info("Inside getListAssetsVulnerable");
+        List<Map<String, Object>> assetList = new ArrayList<>();
+        List<Map<String, Object>> assetDetails = new ArrayList<>();
 
-		List<String> validTargetTypes  = new ArrayList<>(getAssetCountByAssetGroup(assetGroup,AssetConstants.ALL,filter.get(AssetConstants.FILTER_APPLICATION)).keySet());
-		String[] vulnTypesArray = vulnTypes.split(",");
-		List<String> vulnTargetTypes = new ArrayList<>();
+        List<String> validTargetTypes  = new ArrayList<>(getAssetCountByAssetGroup(assetGroup,AssetConstants.ALL,filter.get(AssetConstants.FILTER_APPLICATION)).keySet());
+        String[] vulnTypesArray = vulnTypes.split(",");
+        List<String> vulnTargetTypes = new ArrayList<>();
 
-		for (String vulnType : vulnTypesArray) {
-			if (validTargetTypes.contains(vulnType.trim())) {
-				vulnTargetTypes.add(vulnType);
-			}
-		}
-		
-		List<String> fieldNames = null;
-		try {
-			if (vulnTargetTypes.size()>1) {
-				fieldNames = getDisplayFieldsForTargetType("all_vulnerable");
-			}
-		} catch (Exception e) {
-			LOGGER.error(AssetConstants.ERROR_FETCHING_FIELDNAMES, e);
-		}
-		if (!vulnTargetTypes.isEmpty()) {
-			for (String parentType : vulnTargetTypes) {
-				StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup);
-				urlToQueryBuffer.append("/").append(parentType);
-				urlToQueryBuffer.append("/").append(Constants.SEARCH).append("?scroll=")
-						.append(Constants.ES_PAGE_SCROLL_TTL);
+        for (String vulnType : vulnTypesArray) {
+            if (validTargetTypes.contains(vulnType.trim())) {
+                vulnTargetTypes.add(vulnType);
+            }
+        }
 
-				String urlToQuery = urlToQueryBuffer.toString();
-				String urlToScroll = new StringBuilder(esUrl).append("/").append(Constants.SEARCH).append("/scroll")
-						.toString();
+        List<String> fieldNames = null;
+        try {
+            if (vulnTargetTypes.size()>1) {
+                fieldNames = getDisplayFieldsForTargetType("all_vulnerable");
+            }
+        } catch (Exception e) {
+            LOGGER.error(AssetConstants.ERROR_FETCHING_FIELDNAMES, e);
+        }
+        if (!vulnTargetTypes.isEmpty()) {
+            for (String parentType : vulnTargetTypes) {
+                StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup);
+                urlToQueryBuffer.append("/").append(parentType);
+                urlToQueryBuffer.append("/").append(Constants.SEARCH).append("?scroll=")
+                        .append(Constants.ES_PAGE_SCROLL_TTL);
 
-				StringBuilder requestBody = new StringBuilder(
-						"{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"has_child\":{\"type\":\"vulninfo\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"term\":{\"qid\":");
-				requestBody.append(filter.get("qid"));
-				requestBody.append("}}]}}}},{\"term\":{\"latest\":true}}");
-				if (filter.containsKey(AssetConstants.FILTER_APPLICATION)) {
-					requestBody.append(",{\"term\":{\"tags.Application.keyword\":\"");
-					requestBody.append(filter.get(AssetConstants.FILTER_APPLICATION));
-					requestBody.append("\"}}");
-				}
-				if (filter.containsKey(AssetConstants.FILTER_ENVIRONMENT)) {
-					requestBody.append(",{\"term\":{\"tags.Environment.keyword\":\"");
-					requestBody.append(filter.get(AssetConstants.FILTER_ENVIRONMENT));
-					requestBody.append("\"}}");
-				}
-				if (filter.containsKey(AssetConstants.FILTER_RES_TYPE)) {
-					requestBody.append(",{\"term\":{\"_entitytype.keyword\":\"");
-					requestBody.append(filter.get(AssetConstants.FILTER_RES_TYPE));
-					requestBody.append("\"}}");
-				}
-				requestBody.append("]}}}");
-				Long totalDocs = getTotalDocCount(assetGroup, parentType, "{" + requestBody.toString().substring(14));
-				String request = requestBody.toString();
-				String scrollId = null;
-				if (totalDocs > 0) {
-					for (int index = 0; index <= (totalDocs / Constants.ES_PAGE_SIZE); index++) {
-						String responseDetails = null;
-						try {
-							if (!Strings.isNullOrEmpty(scrollId)) {
-								request = esRepository.buildScrollRequest(scrollId, Constants.ES_PAGE_SCROLL_TTL);
-								urlToQuery = urlToScroll;
-							}
-							responseDetails = PacHttpUtils.doHttpPost(urlToQuery, request);
-							scrollId = esRepository.processResponseAndSendTheScrollBack(responseDetails, assetDetails);
-						} catch (Exception e) {
-							LOGGER.error("Error in getListAssetsVulnerable", e);
-						}
-					}
-				}
-			}
+                String urlToQuery = urlToQueryBuffer.toString();
+                String urlToScroll = new StringBuilder(esUrl).append("/").append(Constants.SEARCH).append("/scroll")
+                        .toString();
 
-			List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, Constants.DOCID,
-					AssetConstants.UNDERSCORE_ENTITY, Constants._ID, AssetConstants.UNDERSCORE_LOADDATE,
-					Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
-					AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST,
-					AssetConstants.CREATION_DATE);
-			LOGGER.info("Exiting getListAssetsVulnerable");
-			assetList.addAll(formGetListResponse(fieldNames, assetDetails, fieldsToBeSkipped));
-		}
-		return assetList;
-	}
+                StringBuilder requestBody = new StringBuilder(
+                        "{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"has_child\":{\"type\":\"vulninfo\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}}," +
+                                "{\"match\":{\"docType.keyword\":\""+parentType+"\"}},{\"term\":{\"qid\":");
+                requestBody.append(filter.get("qid"));
+                requestBody.append("}}]}}}},{\"term\":{\"latest\":true}}");
+                if (filter.containsKey(AssetConstants.FILTER_APPLICATION)) {
+                    requestBody.append(",{\"term\":{\"tags.Application.keyword\":\"");
+                    requestBody.append(filter.get(AssetConstants.FILTER_APPLICATION));
+                    requestBody.append("\"}}");
+                }
+                if (filter.containsKey(AssetConstants.FILTER_ENVIRONMENT)) {
+                    requestBody.append(",{\"term\":{\"tags.Environment.keyword\":\"");
+                    requestBody.append(filter.get(AssetConstants.FILTER_ENVIRONMENT));
+                    requestBody.append("\"}}");
+                }
+                if (filter.containsKey(AssetConstants.FILTER_RES_TYPE)) {
+                    requestBody.append(",{\"term\":{\"_entitytype.keyword\":\"");
+                    requestBody.append(filter.get(AssetConstants.FILTER_RES_TYPE));
+                    requestBody.append("\"}}");
+                }
+                requestBody.append("]}}}");
+                Long totalDocs = getTotalDocCount(assetGroup, "{" + requestBody.toString().substring(14));
+                String request = requestBody.toString();
+                String scrollId = null;
+                if (totalDocs > 0) {
+                    for (int index = 0; index <= (totalDocs / ES_PAGE_SIZE); index++) {
+                        String responseDetails = null;
+                        try {
+                            if (!Strings.isNullOrEmpty(scrollId)) {
+                                request = esRepository.buildScrollRequest(scrollId, Constants.ES_PAGE_SCROLL_TTL);
+                                urlToQuery = urlToScroll;
+                            }
+                            responseDetails = PacHttpUtils.doHttpPost(urlToQuery, request);
+                            scrollId = esRepository.processResponseAndSendTheScrollBack(responseDetails, assetDetails);
+                        } catch (Exception e) {
+                            LOGGER.error("Error in getListAssetsVulnerable", e);
+                        }
+                    }
+                }
+            }
+
+            List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, Constants.DOCID,
+                    AssetConstants.UNDERSCORE_ENTITY, Constants._ID, AssetConstants.UNDERSCORE_LOADDATE,
+                    Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
+                    AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST,
+                    AssetConstants.CREATION_DATE);
+            LOGGER.info("Exiting getListAssetsVulnerable");
+            assetList.addAll(formGetListResponse(fieldNames, assetDetails, fieldsToBeSkipped));
+        }
+        return assetList;
+    }
 
     @Override
     public List<Map<String, Object>> getListAssetsScanned(String assetGroup, Map<String, String> filter) {
@@ -1543,8 +1887,9 @@ public class AssetRepositoryImpl implements AssetRepository {
         String indexName = ag;
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put("_resourceid.keyword", resourceId);
+        mustFilter.put(DOC_TYPE_KEYWORD, resourceType);
         try {
-            return esRepository.getDataFromES(indexName, resourceType, mustFilter, null, null, null, null);
+            return esRepository.getDataFromES(indexName, "", mustFilter, null, null, null, null);
         } catch (Exception e) {
             LOGGER.error("Exception in getResourceDetail ",e);
             throw new DataException(e);
@@ -1561,7 +1906,10 @@ public class AssetRepositoryImpl implements AssetRepository {
         if (Constants.EC2.equals(type) || AssetConstants.ALL.equals(type)) {
             if(mustFilter.containsKey(AssetConstants.FILTER_POLICYID) && 
                     ((mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.CLOUD_QUALYS_RULE) && qualysEnabled) || mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.SSM_AGENT_RULE))) {
-                return getLongRunningInstances(assetGroupName, type, fieldNames);
+                String policyId= (String) mustFilter.get(AssetConstants.FILTER_POLICYID);
+                PolicyParamResponse discoveredDayRangeParam = complianceServiceClient.getPolicyParam(policyId,DISCOVERED_DAYS_RANGE);
+                String discoverDayRange=discoveredDayRangeParam.getData().getValue();
+                return getLongRunningInstances(assetGroupName, type, fieldNames, discoverDayRange);
             } else {
                 shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
                 shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPED);
@@ -1596,7 +1944,8 @@ public class AssetRepositoryImpl implements AssetRepository {
                 if (Constants.ONPREMSERVER.equalsIgnoreCase(type)) {
                     fieldNames = getDisplayFieldsForTargetType(type);
                 }
-                assets = esRepository.getDataFromES(assetGroupName, type, mustFilter, null, shouldFilter, fieldNames,
+                mustFilter.put(DOC_TYPE_KEYWORD, type);
+                assets = esRepository.getDataFromES(assetGroupName, "", mustFilter, null, shouldFilter, fieldNames,
                         null);
             }
         } catch (Exception e) {
@@ -1606,29 +1955,28 @@ public class AssetRepositoryImpl implements AssetRepository {
         return assets;
     }
     
-    private List<Map<String,Object>> getLongRunningInstances(String assetGroup, String type, List<String> fieldNames) {
+    private List<Map<String,Object>> getLongRunningInstances(String assetGroup, String type, List<String> fieldNames, String discoverDayRange) {
         
         List<Map<String,Object>> assetDetails = new ArrayList<>();
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup);
-        urlToQueryBuffer.append("/").append(type);
         urlToQueryBuffer.append("/").append(Constants.SEARCH).append("?scroll=")
                 .append(Constants.ES_PAGE_SCROLL_TTL);
 
         String urlToQuery = urlToQueryBuffer.toString();
         String urlToScroll = new StringBuilder(esUrl).append("/").append(Constants.SEARCH).append("/scroll")
                 .toString();
-        StringBuilder requestCount = new StringBuilder("{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"statename\":\"running\"}}],"
+        StringBuilder requestCount = new StringBuilder("{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"docType.keyword\":\""+type+"\"}},{\"match\":{\"statename\":\"running\"}}],"
                 + "\"should\":[{\"script\":{\"script\":\"LocalDate.parse(doc['firstdiscoveredon.keyword'].value.substring(0,10))"
-                + ".isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays(7))\"}},"
-                + "{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":1}}}");
+                + ".isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays("+discoverDayRange+"))\"}},"
+                + "{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":\"1\"}}}");
         
-        Long totalDocs = getTotalDocCount(assetGroup, type, requestCount.toString());
+        Long totalDocs = getTotalDocCount(assetGroup, requestCount.toString());
         StringBuilder requestBody = new StringBuilder("{\"_source\":").append(new Gson().toJson(fieldNames)).append(",").append("\"size\":10000,").
                 append(requestCount.toString().substring(1, requestCount.length()));
         String request = requestBody.toString();
         String scrollId = null;
         if(totalDocs>0){
-            for (int index = 0; index <= (totalDocs / Constants.ES_PAGE_SIZE); index++) {
+            for (int index = 0; index <= (totalDocs / ES_PAGE_SIZE); index++) {
                 String responseDetails = null;
                 try {
                     if (!Strings.isNullOrEmpty(scrollId)) {
@@ -1647,7 +1995,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     private List<Map<String, Object>> getAssetsByAssetGroupBySize(String assetGroupName, String type,
             Map<String, Object> mustFilter, List<String> targetTypes, List<String> fieldNames, int from, int size,
-            String searchText, Map<String, Object> sortFilter) {
+            String searchText, Map<String, Object> sortFilter, Map<String, Object> mustNotFilter, Map<String, Object> mustTermsFilter) {
         mustFilter.put(Constants.LATEST, Constants.TRUE);
         mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
@@ -1656,15 +2004,17 @@ public class AssetRepositoryImpl implements AssetRepository {
             shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPED);
             shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPING);
         }
-        
+        List<Map<String,Object>> sortList=new ArrayList<>();
+        sortList.add(sortFilter);
         List<Map<String, Object>> assets = new ArrayList<>();
         try {
             if (AssetConstants.ALL.equals(type)) {
                 try {
-                    Map<String, Object> mustTermsFilter = new HashMap<>();
-                    mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetTypes);
-                    assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, null, null, fieldNames,
-                            from, size, searchText, mustTermsFilter, sortFilter);
+                    if(!mustTermsFilter.containsKey(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD)){
+                        mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetTypes);
+                    }
+                    assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, mustNotFilter, null, fieldNames,
+                            from, size, searchText, mustTermsFilter, sortList);
                 } catch (Exception e) {
                     LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
                 }
@@ -1673,8 +2023,8 @@ public class AssetRepositoryImpl implements AssetRepository {
                 if (Constants.ONPREMSERVER.equalsIgnoreCase(type)) {
                     fieldNames = getDisplayFieldsForTargetType(type);
                 }
-                assets = esRepository.getSortedDataFromESBySize(assetGroupName, type, mustFilter, null, shouldFilter,
-                        fieldNames, from, size, searchText, null, sortFilter);
+                assets = esRepository.getSortedDataFromESBySize(assetGroupName, type, mustFilter, mustNotFilter, shouldFilter,
+                        fieldNames, from, size, searchText, null, sortList);
             }
         } catch (Exception e) {
             LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
@@ -1682,10 +2032,42 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         return assets;
     }
-    
+
+    private int getAssetsCountByAssetGroupBySize(String assetGroupName, String type, Map<String, Object> mustFilter, Map<String, Object> mustTermsFilter,
+                                                 Map<String, Object> mustNotFilter) {
+        mustFilter.put(Constants.LATEST, Constants.TRUE);
+        mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        if (Constants.EC2.equals(type)) {
+            shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
+            shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPED);
+            shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPING);
+        }
+        int totalDocumentCount = 0;
+        try {
+            if (AssetConstants.ALL.equals(type)) {
+                try {
+                    totalDocumentCount = (int) esRepository.getTotalDocumentCountForIndexAndType(assetGroupName, null, mustFilter, mustNotFilter, null,
+                            "", mustTermsFilter);
+                } catch (Exception e) {
+                    LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
+                }
+
+            } else {
+                totalDocumentCount = (int) esRepository.getTotalDocumentCountForIndexAndType(assetGroupName, type, mustFilter, mustNotFilter, null,
+                        "", null);
+            }
+        } catch (Exception e) {
+            LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
+        }
+
+        return totalDocumentCount;
+    }
+
+
     @SuppressWarnings("unchecked")
-    private long getTotalDocCount(String index, String type, String requestBody) {
-        StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
+    private long getTotalDocCount(String index,String requestBody) {
+        StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index)
                 .append("/").append("_count");
         String responseDetails = null;
         Gson gson = new GsonBuilder().create();
@@ -1721,7 +2103,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             String searchText) throws DataException {
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AssetConstants.AWS_EC2)
                 .append("/").append(Constants.QUALYS_INFO).append("/").append(Constants.SEARCH).append("?")
-                .append("size").append("=").append(Constants.ES_PAGE_SIZE);
+                .append("size").append("=").append(ES_PAGE_SIZE);
         Map<String, Object> openPortDet = null;
         List<Map<String, Object>> openPortList = new ArrayList<>();
         StringBuilder requestBodyCpu = null;
@@ -1733,7 +2115,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             } else {
                 requestBodyCpu = new StringBuilder(
                         "{\"_source\":[\"openPort\",\"instanceid\"],\"query\":{\"bool\":{\"must\":[{\"term\":{\"instanceid.keyword\":{\"value\":\""
-                                + instanceId + "\"}}},{\"match_phrase_prefix\":{\"_all\":\"" + searchText + AssetConstants.ESQUERY_CLOSE);
+                                + instanceId + "\"}}},{\"query_string\":{\"query\":\"" + searchText + AssetConstants.ESQUERY_CLOSE);
             }
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBodyCpu.toString());
             JsonParser parser = new JsonParser();
@@ -1797,156 +2179,156 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
-	public Map<String, Object> getResourceCreateInfo(String resourceId) throws DataException {
-		Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
-				Pattern.CASE_INSENSITIVE);
+        public Map<String, Object> getResourceCreateInfo(String resourceId) throws DataException {
+            Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+                    Pattern.CASE_INSENSITIVE);
 
-		String url = heimdallEsesUrl + "/pacman-resource-claim/_search";
-		String request = "{\"query\": {\"match\": {\"resourceid.keyword\": \"" + resourceId + "\"}}}";
-		String responseDetails;
-		try {
-			responseDetails = PacHttpUtils.doHttpPost(url, request);
-		} catch (Exception e) {
-			LOGGER.error("Exception in getResourceCreateInfo ", e);
-			throw new DataException(e);
-		}
+            String url = heimdallEsesUrl + "/_search";
+            String request = "{\"query\": {\"bool\":{\"must\":[{\"term\":{\"_resourceid.keyword\": \""+resourceId+"\"}},{\"term\": {\"docType.keyword\": \"pacman-resource-claim\"}}]}}}";
+            String responseDetails;
+            try {
+                responseDetails = PacHttpUtils.doHttpPost(url, request);
+            } catch (Exception e) {
+                LOGGER.error("Exception in getResourceCreateInfo ", e);
+                throw new DataException(e);
+            }
 
-		JsonObject responseDetailsjson = new JsonParser().parse(responseDetails).getAsJsonObject();
-		JsonArray hits = responseDetailsjson.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-		Map<String, Object> map = new HashMap<>();
+            JsonObject responseDetailsjson = new JsonParser().parse(responseDetails).getAsJsonObject();
+            JsonArray hits = responseDetailsjson.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+            Map<String, Object> map = new HashMap<>();
 
-		if (hits.size() > 0) {
-			JsonObject createInfoObj = hits.get(0).getAsJsonObject().get(AssetConstants.UNDERSCORE_SOURCE)
-					.getAsJsonObject(); // Exp
-			Gson gson = new Gson();
-			map = (Map<String, Object>) gson.fromJson(createInfoObj, map.getClass());
+            if (hits.size() > 0) {
+                JsonObject createInfoObj = hits.get(0).getAsJsonObject().get(AssetConstants.UNDERSCORE_SOURCE)
+                        .getAsJsonObject(); // Exp
+                Gson gson = new Gson();
+                map = (Map<String, Object>) gson.fromJson(createInfoObj, map.getClass());
 
-			// User better key names for createdBy and creationDate
-			Object obj = map.remove("user");
-			map.put("createdBy", obj);
+                // User better key names for createdBy and creationDate
+                Object obj = map.remove("user");
+                map.put("createdBy", obj);
 
-			obj = map.remove("time");
-			map.put(AssetConstants.CREATION_DATE, obj);
+                obj = map.remove("time");
+                map.put(AssetConstants.CREATION_DATE, obj);
 
-			convertNullToBlankStr(map);
+                convertNullToBlankStr(map);
 
-			if (map.get("createdBy").toString().indexOf("/") != -1) {
-				String userIdStr = map.get("createdBy").toString()
-						.substring(map.get("createdBy").toString().indexOf("/") + 1);
-				try {
-					Map<String, Object> slashUserNameMustFilter = new HashMap<>();
-					slashUserNameMustFilter.put("_resourceid.keyword", userIdStr);
-					List<Map<String, Object>> adUserReturn = esRepository.getDataFromES("aws_aduser", null,
-							slashUserNameMustFilter, null, null, Arrays.asList("mail"), null);
-					map.put("email", getValueFromList(adUserReturn, "mail"));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			convertNullToBlankStr(map);
+                if (map.get("createdBy").toString().indexOf("/") != -1) {
+                    String userIdStr = map.get("createdBy").toString()
+                            .substring(map.get("createdBy").toString().indexOf("/") + 1);
+                    try {
+                        Map<String, Object> slashUserNameMustFilter = new HashMap<>();
+                        slashUserNameMustFilter.put("_resourceid.keyword", userIdStr);
+                        List<Map<String, Object>> adUserReturn = esRepository.getDataFromES("aws_aduser", null,
+                                slashUserNameMustFilter, null, null, Arrays.asList("mail"), null);
+                        map.put("email", getValueFromList(adUserReturn, "mail"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                convertNullToBlankStr(map);
 
-			String userName = retrieveOu(map);
-			String appId = "";
-			if (userName != null && userName.length() >= 4 && userName.substring(0, 4).endsWith("_")) {
-				appId = userName.substring(0, 3);
-			} else if (userName != null) {
-				try {
-					Map<String, Object> userNameMustFilter = new HashMap<>();
-					userNameMustFilter.put("_resourceid.keyword", userName);
-					List<Map<String, Object>> adUserReturn = esRepository.getDataFromES("aws_aduser", null,
-							userNameMustFilter, null, null, Arrays.asList("mail"), null);
-					if (!adUserReturn.isEmpty()) {
-						map.put("email", getValueFromList(adUserReturn, "mail"));
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+                String userName = retrieveOu(map);
+                String appId = "";
+                if (userName != null && userName.length() >= 4 && userName.substring(0, 4).endsWith("_")) {
+                    appId = userName.substring(0, 3);
+                } else if (userName != null) {
+                    try {
+                        Map<String, Object> userNameMustFilter = new HashMap<>();
+                        userNameMustFilter.put("_resourceid.keyword", userName);
+                        List<Map<String, Object>> adUserReturn = esRepository.getDataFromES("aws_aduser", null,
+                                userNameMustFilter, null, null, Arrays.asList("mail"), null);
+                        if (!adUserReturn.isEmpty()) {
+                            map.put("email", getValueFromList(adUserReturn, "mail"));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 
-			Map<String, Object> plOuMustFilter = new HashMap<>();
-			plOuMustFilter.put(CommonUtils.convertAttributetoKeyword("appID"), appId);
-			try {
-				List<Map<String, Object>> plOuEmail = esRepository.getDataFromES("aws_apps", null, plOuMustFilter, null,
-						null, Arrays.asList("projectLead"), null);
-				if (!plOuEmail.isEmpty()) {
-					map.put("projectLead", getValueFromList(plOuEmail, "projectLead"));
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+                Map<String, Object> plOuMustFilter = new HashMap<>();
+                plOuMustFilter.put(CommonUtils.convertAttributetoKeyword("appID"), appId);
+                try {
+                    List<Map<String, Object>> plOuEmail = esRepository.getDataFromES("aws_apps", null, plOuMustFilter, null,
+                            null, Arrays.asList("projectLead"), null);
+                    if (!plOuEmail.isEmpty()) {
+                        map.put("projectLead", getValueFromList(plOuEmail, "projectLead"));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-			convertNullToBlankStr(map);
+                convertNullToBlankStr(map);
 
-		}
+            }
 
-		try {
-			Map<String, Object> plResMustFilter = new HashMap<>();
-			plResMustFilter.put(CommonUtils.convertAttributetoKeyword("_resourceid"), resourceId);
-			List<Map<String, Object>> tagsInput = esRepository.getDataFromES(Constants.MASTER_ALIAS, null, plResMustFilter, null, null,
-					Arrays.asList("tags.Owner", "tags.Application"), null);
+            try {
+                Map<String, Object> plResMustFilter = new HashMap<>();
+                plResMustFilter.put(CommonUtils.convertAttributetoKeyword("_resourceid"), resourceId);
+                List<Map<String, Object>> tagsInput = esRepository.getDataFromES(Constants.MASTER_ALIAS, null, plResMustFilter, null, null,
+                        Arrays.asList("tags.Owner", "tags.Application"), null);
 
-			map.put("ownerEmail", getValueFromList(tagsInput, "tags.Owner"));
+                map.put("ownerEmail", getValueFromList(tagsInput, "tags.Owner"));
 
-			Map<String, Object> appTagMustFilter = new HashMap<>();
-			appTagMustFilter.put(CommonUtils.convertAttributetoKeyword("appTag"),
-					getValueFromList(tagsInput, "tags.Application"));
-			List<Map<String, Object>> plFromAppTag = esRepository.getDataFromES("aws_apps", null, appTagMustFilter,
-					null, null, Arrays.asList("projectLead"), null);
-			if (!plFromAppTag.isEmpty() && (map.get("projectLead") == null || map.get("projectLead").equals(""))) {
-				map.put("projectLead", getValueFromList(plFromAppTag, "projectLead"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		convertNullToBlankStr(map);
+                Map<String, Object> appTagMustFilter = new HashMap<>();
+                appTagMustFilter.put(CommonUtils.convertAttributetoKeyword("appTag"),
+                        getValueFromList(tagsInput, "tags.Application"));
+                List<Map<String, Object>> plFromAppTag = esRepository.getDataFromES("aws_apps", null, appTagMustFilter,
+                        null, null, Arrays.asList("projectLead"), null);
+                if (!plFromAppTag.isEmpty() && (map.get("projectLead") == null || map.get("projectLead").equals(""))) {
+                    map.put("projectLead", getValueFromList(plFromAppTag, "projectLead"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            convertNullToBlankStr(map);
 
-		return map;
-	}
+            return map;
+        }
     
     private void convertNullToBlankStr(Map<String, Object> map) {
-		if (map.get("email") == null || "null".equals(map.get("email").toString())) {
-			map.put("email", "");
-		}
-		if (map.get("projectLead") == null || "null".equals(map.get("projectLead").toString())) {
-			map.put("projectLead", "");
-		}
-		if (map.get(AssetConstants.CREATION_DATE) == null
-				|| "null".equals(map.get(AssetConstants.CREATION_DATE).toString())) {
-			map.put(AssetConstants.CREATION_DATE, "");
-		}
-		if (map.get("createdBy") == null || "null".equals(map.get("createdBy").toString())) {
-			map.put("createdBy", "");
-		}
-	}
+        if (map.get("email") == null || "null".equals(map.get("email").toString())) {
+            map.put("email", "");
+        }
+        if (map.get("projectLead") == null || "null".equals(map.get("projectLead").toString())) {
+            map.put("projectLead", "");
+        }
+        if (map.get(AssetConstants.CREATION_DATE) == null
+                || "null".equals(map.get(AssetConstants.CREATION_DATE).toString())) {
+            map.put(AssetConstants.CREATION_DATE, "");
+        }
+        if (map.get("createdBy") == null || "null".equals(map.get("createdBy").toString())) {
+            map.put("createdBy", "");
+        }
+    }
 
-	private String retrieveOu(Map<String, Object> map) {
-		map = (Map<String, Object>) ((Map<String, Object>) map.get("detail")).get("userIdentity");
+    private String retrieveOu(Map<String, Object> map) {
+        map = (Map<String, Object>) ((Map<String, Object>) map.get("detail")).get("userIdentity");
 
-		String userName = null;
-		if ("Root".equalsIgnoreCase(map.get("type").toString())
-				|| "IAMUser".equalsIgnoreCase(map.get("type").toString())) {
-			userName = map.get("userName").toString();
-		} else if ("AssumedRole".equalsIgnoreCase(map.get("type").toString())) {
-			Map<String, Object> sessionContext = (Map<String, Object>) (map.get("sessionContext"));
-			Map<String, Object> sessionIssuer = (Map<String, Object>) sessionContext.get("sessionIssuer");
-			userName = sessionIssuer.get("userName").toString();
-		}
-		return userName;
-	}
+        String userName = null;
+        if ("Root".equalsIgnoreCase(map.get("type").toString())
+                || "IAMUser".equalsIgnoreCase(map.get("type").toString())) {
+            userName = map.get("userName").toString();
+        } else if ("AssumedRole".equalsIgnoreCase(map.get("type").toString())) {
+            Map<String, Object> sessionContext = (Map<String, Object>) (map.get("sessionContext"));
+            Map<String, Object> sessionIssuer = (Map<String, Object>) sessionContext.get("sessionIssuer");
+            userName = sessionIssuer.get("userName").toString();
+        }
+        return userName;
+    }
 
-	private Object getValueFromList(List<Map<String, Object>> input, String str) {
-		Iterator<Map<String, Object>> inputListIterator = input.iterator();
+    private Object getValueFromList(List<Map<String, Object>> input, String str) {
+        Iterator<Map<String, Object>> inputListIterator = input.iterator();
 
-		while (inputListIterator.hasNext()) {
+        while (inputListIterator.hasNext()) {
 
-			Map<String, Object> inputMap = inputListIterator.next();
-			if (inputMap.get(str) != null) {
-				return inputMap.get(str).toString();
-			}
+            Map<String, Object> inputMap = inputListIterator.next();
+            if (inputMap.get(str) != null) {
+                return inputMap.get(str).toString();
+            }
 
-		}
-		return "";
-	}
+        }
+        return "";
+    }
 
     @Override
     public Map<String, Long> getNotificationSummary(String instanceId) throws DataException {
@@ -2003,7 +2385,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         try {
             return esRepository.getDataFromESBySize("aws_phd", "phd", mustFilter, null, null, null, 0,
-                    Constants.ES_PAGE_SIZE, searchText, null);
+                    ES_PAGE_SIZE, searchText, null);
         } catch (Exception e) {
             LOGGER.error("Exception in getNotificationDetails ",e);
             throw new DataException(e);
@@ -2316,123 +2698,120 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     private List<Map<String, Object>> getListAssetsPathachableForEC2(String assetGroup, Map<String, String> filter,
-			List<String> source) {
+                                                                     List<String> source) {
 
-		String resourceType = filter.get(AssetConstants.FILTER_RES_TYPE);
-		
-		List<Map<String, Object>> assetDetails = new ArrayList<>();
+        String resourceType = filter.get(AssetConstants.FILTER_RES_TYPE);
 
-		Map<String, Object> mustFilter = new HashMap<>();
-		Map<String, Object> mustFilterAsset = new HashMap<>();
-		Map<String, Object> mustNotFilterAsset = new HashMap<>();
+        List<Map<String, Object>> assetDetails = new ArrayList<>();
 
-		List<Map<String, Object>> unpatchedInstances;
-		List<Map<String, Object>> totalInstances;
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustFilterAsset = new HashMap<>();
+        Map<String, Object> mustNotFilterAsset = new HashMap<>();
 
-		String targetAssetGroup;
-		mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
-		mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
+        List<Map<String, Object>> unpatchedInstances;
+        List<Map<String, Object>> totalInstances;
 
-		Map<String, Object> parentBool = new HashMap<>();
-		List<Map<String, Object>> mustList = new ArrayList<>();
-		Map<String, Object> matchMap = new HashMap<>();
-		Map<String, String> match = new HashMap<>();
+        String targetAssetGroup;
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
 
-		//@ToDo need to working on policyid
-		//mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.CLOUD_KERNEL_COMPLIANCE_POLICY);
+        Map<String, Object> parentBool = new HashMap<>();
+        List<Map<String, Object>> mustList = new ArrayList<>();
+        Map<String, Object> matchMap = new HashMap<>();
+        Map<String, String> match = new HashMap<>();
 
-		// Changes to include only latest resources
+        // Changes to include only latest resources
 
-		match.put(Constants.LATEST, Constants.TRUE);
+        match.put(Constants.LATEST, Constants.TRUE);
 
-		matchMap.put(Constants.MATCH, match);
-		mustList.add(matchMap);
+        matchMap.put(Constants.MATCH, match);
+        mustList.add(matchMap);
 
-		match = new HashMap<>();
-		if(Constants.EC2.equals(resourceType)) {
-			match.put(Constants.STATE_NAME, Constants.RUNNING);
-		}
-		if(Constants.VIRTUALMACHINE.equals(resourceType)) {
-			match.put(Constants.STATUS,  Constants.RUNNING);
-		}
-		
-		matchMap = new HashMap<>();
-		matchMap.put(Constants.MATCH, match);
-		mustList.add(matchMap);
+        match = new HashMap<>();
+        if(Constants.EC2.equals(resourceType)) {
+            match.put(Constants.STATE_NAME, Constants.RUNNING);
+        }
+        if(Constants.VIRTUALMACHINE.equals(resourceType)) {
+            match.put(Constants.STATUS,  Constants.RUNNING);
+        }
 
-		parentBool.put("must", mustList);
+        matchMap = new HashMap<>();
+        matchMap.put(Constants.MATCH, match);
+        mustList.add(matchMap);
 
-		match = new HashMap<>();
-		if(Constants.EC2.equals(resourceType)) {
-			match.put("platform", Constants.WINDOWS);
-		}
-		if(Constants.VIRTUALMACHINE.equals(resourceType)) {
-			match.put("osType",Constants.AZURE_WINDOWS);
-		}
-		matchMap = new HashMap<>();
-		matchMap.put(Constants.MATCH, match);
+        parentBool.put("must", mustList);
 
-		parentBool.put("must_not", matchMap);
+        match = new HashMap<>();
+        if(Constants.EC2.equals(resourceType)) {
+            match.put("platform", Constants.WINDOWS);
+        }
+        if(Constants.VIRTUALMACHINE.equals(resourceType)) {
+            match.put("osType",Constants.AZURE_WINDOWS);
+        }
+        matchMap = new HashMap<>();
+        matchMap.put(Constants.MATCH, match);
 
-		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("bool", parentBool);
+        parentBool.put("must_not", matchMap);
 
-		Map<String, Object> parentEntryMap = new LinkedHashMap<>();
-		parentEntryMap.put(Constants.TYPE, resourceType);
-		parentEntryMap.put(AssetConstants.QUERY, queryMap);
-		mustFilter.put("has_parent", parentEntryMap);
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put("bool", parentBool);
+
+        Map<String, Object> parentEntryMap = new LinkedHashMap<>();
+        parentEntryMap.put(Constants.TYPE, resourceType);
+        parentEntryMap.put(AssetConstants.QUERY, queryMap);
+        mustFilter.put("has_parent", parentEntryMap);
 
         Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
 
-		filter.entrySet().stream().forEach(entry -> {
-			if (!(entry.getKey().equals(AssetConstants.FILTER_PATCHED)
-					|| entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)
-					|| entry.getKey().equals(AssetConstants.FILTER_EXEC_SPONSOR)
-					|| entry.getKey().equals(AssetConstants.FILTER_DIRECTOR))
+        filter.entrySet().stream().forEach(entry -> {
+            if (!(entry.getKey().equals(AssetConstants.FILTER_PATCHED)
+                    || entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)
+                    || entry.getKey().equals(AssetConstants.FILTER_EXEC_SPONSOR)
+                    || entry.getKey().equals(AssetConstants.FILTER_DIRECTOR))
                     && mandatoryTagValues.contains(entry.getKey())) {
                 mustFilter.put(entry.getKey(), entry.getValue());
                 mustFilterAsset.put(entry.getKey(), entry.getValue());
 
             }
-		});
+        });
 
-		mustFilterAsset.put(Constants.LATEST, true);
-		if(Constants.EC2.equals(resourceType)) {
-			mustFilterAsset.put(CommonUtils.convertAttributetoKeyword(Constants.STATE_NAME), Constants.RUNNING);
-			mustNotFilterAsset.put(CommonUtils.convertAttributetoKeyword(Constants.PLATFORM), Constants.WINDOWS);
-		}
-		if(Constants.VIRTUALMACHINE.equals(resourceType)) {
-			mustFilterAsset.put(CommonUtils.convertAttributetoKeyword(Constants.STATUS), Constants.RUNNING);
-			mustNotFilterAsset.put(CommonUtils.convertAttributetoKeyword("osType"), Constants.AZURE_WINDOWS); 
-		}
-			targetAssetGroup = assetGroup + "/" + resourceType;
+        mustFilterAsset.put(Constants.LATEST, true);
+        if(Constants.EC2.equals(resourceType)) {
+            mustFilterAsset.put(CommonUtils.convertAttributetoKeyword(Constants.STATE_NAME), Constants.RUNNING);
+            mustNotFilterAsset.put(CommonUtils.convertAttributetoKeyword(Constants.PLATFORM), Constants.WINDOWS);
+        }
+        if(Constants.VIRTUALMACHINE.equals(resourceType)) {
+            mustFilterAsset.put(CommonUtils.convertAttributetoKeyword(Constants.STATUS), Constants.RUNNING);
+            mustNotFilterAsset.put(CommonUtils.convertAttributetoKeyword("osType"), Constants.AZURE_WINDOWS);
+        }
+        targetAssetGroup = assetGroup + "/" + resourceType;
 
-		try {
-			if (filter.containsKey(AssetConstants.FILTER_PATCHED)) {
+        try {
+            if (filter.containsKey(AssetConstants.FILTER_PATCHED)) {
 
-				unpatchedInstances = esRepository.getDataFromES(assetGroup, null, mustFilter, null, null, null, null);
-				List<String> unPatchedResourceIds = unpatchedInstances.parallelStream()
-						.map(obj -> obj.get(Constants.RESOURCEID).toString()).collect(Collectors.toList());
-				totalInstances = esRepository.getDataFromES(targetAssetGroup, null, mustFilterAsset, mustNotFilterAsset,
-						null, null, null);
-				if (filter.get(AssetConstants.FILTER_PATCHED).equals(AssetConstants.FALSE)) {
-					assetDetails = totalInstances.parallelStream()
-							.filter(asset -> unPatchedResourceIds.contains(asset.get(Constants.RESOURCEID)))
-							.collect(Collectors.toList());
-				} else if (filter.get(AssetConstants.FILTER_PATCHED).equals(Constants.TRUE)) {
-					assetDetails = totalInstances.parallelStream()
-							.filter(asset -> !unPatchedResourceIds.contains(asset.get(Constants.RESOURCEID)))
-							.collect(Collectors.toList());
-				}
-			} else {
-				assetDetails = esRepository.getDataFromES(targetAssetGroup, null, mustFilterAsset, mustNotFilterAsset,
-						null, source, null);
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error in getListAssetsPatchable", e);
-		}
-		return assetDetails;
-	}
+                unpatchedInstances = esRepository.getDataFromES(assetGroup, null, mustFilter, null, null, null, null);
+                List<String> unPatchedResourceIds = unpatchedInstances.parallelStream()
+                        .map(obj -> obj.get(Constants.RESOURCEID).toString()).collect(Collectors.toList());
+                totalInstances = esRepository.getDataFromES(targetAssetGroup, null, mustFilterAsset, mustNotFilterAsset,
+                        null, null, null);
+                if (filter.get(AssetConstants.FILTER_PATCHED).equals(AssetConstants.FALSE)) {
+                    assetDetails = totalInstances.parallelStream()
+                            .filter(asset -> unPatchedResourceIds.contains(asset.get(Constants.RESOURCEID)))
+                            .collect(Collectors.toList());
+                } else if (filter.get(AssetConstants.FILTER_PATCHED).equals(Constants.TRUE)) {
+                    assetDetails = totalInstances.parallelStream()
+                            .filter(asset -> !unPatchedResourceIds.contains(asset.get(Constants.RESOURCEID)))
+                            .collect(Collectors.toList());
+                }
+            } else {
+                assetDetails = esRepository.getDataFromES(targetAssetGroup, null, mustFilterAsset, mustNotFilterAsset,
+                        null, source, null);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error in getListAssetsPatchable", e);
+        }
+        return assetDetails;
+    }
 
     private List<Map<String, Object>> getListAssetsPathachableForOnPrem(String assetGroup, Map<String, String> filter,
             List<String> source) {
@@ -2515,13 +2894,14 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         String query = "select displayfields from cf_pac_updatable_fields where resourceType = '" + targetType.trim()
                 + "'";
-        return Arrays.asList(rdsRepository.queryForString(query).split("\\s*,\\s*"));
+        String result=rdsRepository.getDataFromPacman(query).get(0).get("displayfields").toString();
+        return Arrays.asList(result.split("\\s*,\\s*"));
     }
 
     public long getTotalCountForListingAsset(String index, String type) {
         StringBuilder requestBody = new StringBuilder(
-                "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}}]}}}");
-        return getTotalDocCount(index, type, requestBody.toString());
+                "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"docType.keyword\":\""+type+"\"}}]}}}");
+        return getTotalDocCount(index, requestBody.toString());
     }
 
     @Override
@@ -2578,15 +2958,8 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
-    public List<Map<String, Object>> getDomainsByAssetGroup(String aseetGroupName) {
-        String query = "select distinct c.domain from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b, cf_Target c where a.groupId = b.groupId  and a.targetType = c.targetName and b.groupName ='"
-                + aseetGroupName.trim() + "'";
-        return rdsRepository.getDataFromPacman(query);
-    }
-
-    @Override
-    public List<Map<String, Object>> getAssetGroupAndDomains() {
-        String query = "select distinct b.groupName as name, c.domain from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b, cf_Target c where a.groupId = b.groupId  and a.targetType = c.targetName";
+    public List<Map<String, Object>> getDomainsByTargetTypes(String allTargetTypes) {
+        String query = String.format(GET_DOMAIN_BY_TARGET_TYPES, allTargetTypes);
         return rdsRepository.getDataFromPacman(query);
     }
 
@@ -2606,6 +2979,12 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
+    public List<Map<String, Object>> getAssetGroupAndDomains() {
+        String query = "select distinct b.groupName as name, c.domain from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b, cf_Target c where a.groupId = b.groupId  and a.targetType = c.targetName";
+        return rdsRepository.getDataFromPacman(query);
+    }
+
+    @Override
     public List<Map<String, Object>> getAdGroupDetails() throws DataException {
         try {
             return esRepository.getDataFromES("adinfo", null, null, null, null, Arrays.asList("managedBy", "name"), null);
@@ -2620,7 +2999,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         List<Map<String, Object>> assetList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(fieldNames)) {
             final List<String> fieldNamesCopy = fieldNames;
-            assetDetails.parallelStream().forEach(assetDetail -> {
+            assetDetails.stream().forEach(assetDetail -> {
                 Map<String, Object> asset = new LinkedHashMap<>();
                 for (String fieldName : fieldNamesCopy) {
                     if (!assetDetail.containsKey(fieldName)) {
@@ -2629,13 +3008,11 @@ public class AssetRepositoryImpl implements AssetRepository {
                         asset.put(fieldName, assetDetail.get(fieldName));
                     }
                 }
-                synchronized (assetList) {
-                    assetList.add(asset);
-                }
+                assetList.add(asset);
             });
             return assetList;
         } else {
-            assetDetails.parallelStream().forEach(
+            assetDetails.stream().forEach(
                     assetDetail -> {
                         Map<String, Object> asset = new LinkedHashMap<>();
                         asset.put(Constants.RESOURCEID, assetDetail.get(Constants.RESOURCEID));
@@ -2644,9 +3021,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                                 asset.put(key, value);
                             }
                         });
-                        synchronized (assetList) {
-                            assetList.add(asset);
-                        }
+                        assetList.add(asset);
                     });
             return assetList;
         }
@@ -2666,74 +3041,74 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
     
     @Override
-	public Map<String, Object> getAssetCountAndEnvDistributionByAssetGroup(String aseetGroupName, String type, String application,String accountId) {
+    public Map<String, Object> getAssetCountAndEnvDistributionByAssetGroup(String aseetGroupName, String type, String application,String accountId) {
 
-		Map<String, Object> filter = new HashMap<>();
-		filter.put(Constants.LATEST, Constants.TRUE);
-		filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
-
-        if(aseetGroupName.equals("azure") && !accountId.equals(NOTSET))
+        Map<String, Object> filter = new HashMap<>();
+        filter.put(Constants.LATEST, Constants.TRUE);
+        filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
+        if(aseetGroupName.equals("azure") && !accountId.equals("notSet"))
         {
             filter.put("subscription.keyword",accountId);
         }
-        if(aseetGroupName.equals("gcp") && !accountId.equals(NOTSET))
+        if(aseetGroupName.equals("gcp") && !accountId.equals("notSet"))
         {
             filter.put("projectId.keyword",accountId);
         }
-        if(aseetGroupName.equals("aws") && !accountId.equals(NOTSET))
+        if(aseetGroupName.equals("aws") && !accountId.equals("notSet"))
         {
             filter.put("accountid.keyword",accountId);
         }
-		if (application != null) {
-			filter.put(Constants.TAGS_APPS, application);
-		}
-		
-		Map<String, Object> countMap = new HashMap<>();
-		try {
-			if (AssetConstants.ALL.equals(type)) {
-				try {
-					Map<String, Object> nestedaggs = esRepository.buildAggs(Constants.TAGS_ENV, Constants.THOUSAND, Constants.ENVIRONMENTS, null);
-					
-					countMap = esRepository.getEnvAndTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
-							null, AssetConstants.UNDERSCORE_TYPE, nestedaggs, Constants.THOUSAND, null);
-				} catch (Exception e) {
-					LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
-				}
-			} 
-			else {
-				long count = esRepository.getTotalDocumentCountForIndexAndType(aseetGroupName, type, filter, null, null,
-						null, null);
-				Map<String, Long> envMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, type, filter, null, null,
-							Constants.TAGS_ENV, Constants.THOUSAND, null);
-				
-				Map<String, Object> countDetails = new HashMap<>();
-				countDetails.put(type, count);
-				Map<String, Object> envDetails = new HashMap<>(); 
-				envDetails.put(type, envMap);
-				countMap.put(Constants.ASSET_COUNT, countDetails);
-				countMap.put(Constants.ENV_COUNT, envDetails);
-				
-			}
-				 
-		} catch (Exception e) {
-			LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
-		}
 
-		return countMap;
-	}
+        if (application != null) {
+            filter.put(Constants.TAGS_APPS, application);
+        }
 
-	@Override
-	public List<String> getProvidersForAssetGroup(String assetGroup) throws DataException {
-		List<String> providerList = new ArrayList<String>();
-		String query = "select distinct dataSourceName as " + Constants.PROVIDER + " from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b ,cf_Target c where a.groupId = b.groupId and a.targetType = c.targetName and b.groupName ='"
-				+ assetGroup.trim() + "'";
-		
-		List<Map<String, Object>> providers= rdsRepository.getDataFromPacman(query);
-		providers.forEach(providerMap -> {
-			providerList.add(providerMap.get(Constants.PROVIDER).toString());
-			});
-		return providerList;
-	}
+            Map<String, Object> countMap = new HashMap<>();
+            try {
+                if (AssetConstants.ALL.equals(type)) {
+                    try {
+                        Map<String, Object> nestedaggs = esRepository.buildAggs(Constants.TAGS_ENV, Constants.THOUSAND, Constants.ENVIRONMENTS, null);
+
+                        countMap = esRepository.getEnvAndTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
+                                null,Constants.DOC_TYPE+".keyword", nestedaggs, Constants.THOUSAND, null);
+                    } catch (Exception e) {
+                        LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
+                    }
+                } else {
+                    long count = esRepository.getTotalDocumentCountForIndexAndType(aseetGroupName, type, filter, null, null,
+                            null, null);
+                    Map<String, Long> envMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, type, filter, null, null,
+                            Constants.TAGS_ENV, Constants.THOUSAND, null);
+
+                    Map<String, Object> countDetails = new HashMap<>();
+                    countDetails.put(type, count);
+                    Map<String, Object> envDetails = new HashMap<>();
+                    envDetails.put(type, envMap);
+                    countMap.put(Constants.ASSET_COUNT, countDetails);
+                    countMap.put(Constants.ENV_COUNT, envDetails);
+
+                }
+
+            } catch (Exception e) {
+                LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
+            }
+
+            return countMap;
+        }
+
+        @Override
+        public List<String> getProvidersForAssetGroup(String assetGroup) throws DataException {
+            List<String> providerList = new ArrayList<String>();
+            String query = "select distinct dataSourceName as " + Constants.PROVIDER + " from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b ,cf_Target c where a.groupId = b.groupId and a.targetType = c.targetName and b.groupName ='"
+                    + assetGroup.trim() + "'";
+
+            List<Map<String, Object>> providers= rdsRepository.getDataFromPacman(query);
+            providers.forEach(providerMap -> {
+                providerList.add(providerMap.get(Constants.PROVIDER).toString());
+            });
+            return providerList;
+        }
+
 
 
     @Override
@@ -2744,7 +3119,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
             StringBuilder request = new StringBuilder(
                    // "{\"size\": 10000, \"_source\": [\"count\",\"ag\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
-                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
+                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [ {\"term\":{\"docType.keyword\":\"count_asset\"}}, { \"match\": {\"ag.keyword\": ");
             request.append("\"" + assetGroup + "\"}}");
             if(type!=null){
                 //request.append(",{ \"match\": {\"type.keyword\": " + "\"" + type + "\"}}");
@@ -2782,7 +3157,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         String responseJson = "";
         try {
             responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort
-                    + "/assetgroup_stats/count_asset/_search", rqstBody);
+                    + "/assetgroup_stats/_search", rqstBody);
         } catch (Exception e) {
             LOGGER.error("Exception in getAssetCountStat " , e);
         }
@@ -2824,6 +3199,21 @@ public class AssetRepositoryImpl implements AssetRepository {
 
 
     @Override
+    public long getAutoFixPlanCountForAg(String ag){
+        Map<String, Object> mustFilter = new HashMap<>();
+        mustFilter.put("_type", "autofixplan");
+        long count = 0L;
+        try{
+            count = esRepository.getTotalDocumentCountForIndexAndType(ag, "", mustFilter,
+                    null, null, "",null);
+        }catch(Exception e){
+            return 0L;
+        }
+        return count;
+    }
+
+
+    @Override
     public List<String> getValuesListForTag(String aseetGroupName, String tagName, String type) throws DataException {
 
         Map<String, Object> filter = new HashMap<>();
@@ -2839,7 +3229,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         try {
             //tagName should be in format tags.TAGNAME.keyword
             applicationMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null, null,
-                    tagName, 0, null);
+                    tagName, 10000, null);
         } catch (Exception e) {
             LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
             throw new DataException(e);
@@ -2850,9 +3240,73 @@ public class AssetRepositoryImpl implements AssetRepository {
     public Set<String> getSupportedFilters(String filterName) {
         String query = "select opt.optionName as optionName,opt.optionValue as optionValue\n" +
                 "from pac_v2_ui_options opt join pac_v2_ui_filters fil on opt.filterId= fil.filterId " +
-                "and fil.filterName='"+filterName+"';";
-        return rdsRepository.getDataFromPacman(query).stream().map(item->((String) item.get("optionValue")).trim())
+                "and fil.filterName='" + filterName + "';";
+        return rdsRepository.getDataFromPacman(query).stream().map(item -> ((String) item.get("optionValue")).trim())
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public List<Map<String, Object>> getChildResourceDetailByDocId(String ag, String resourceType, String documentId)
+            throws DataException {
+
+        String indexName = ag;
+        Map<String, Object> queryDetailsMap = new HashMap<>();
+        Map<String, Object> boolFilter = new HashMap<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustFilter1 = new HashMap<>();
+        Map<String, Object> mustFilter2 = new HashMap<>();
+        queryDetailsMap.put("size", ES_PAGE_SIZE);
+        queryDetailsMap.put("query", boolFilter);
+        List<Object> mustFilterList = new ArrayList<>();
+        mustFilterList.add(mustFilter1);
+        mustFilterList.add(mustFilter2);
+        Map<String, Object> innerCriteria4 = new HashMap<>();
+        mustFilter2.put("term",innerCriteria4);
+        innerCriteria4.put(DOC_TYPE_KEYWORD,"sg_rules");
+        mustFilter.put("must",mustFilterList);
+        boolFilter.put("bool",mustFilter);
+        Map<String, Object> innerCriteria1 = new HashMap<>();
+        Map<String, Object> innerCriteria2 = new HashMap<>();
+        Map<String, Object> innerCriteria3 = new HashMap<>();
+
+        mustFilter1.put("has_parent", innerCriteria1);
+        innerCriteria1.put("parent_type", "sg");
+        innerCriteria1.put("query", innerCriteria2);
+        innerCriteria2.put("term", innerCriteria3);
+        innerCriteria3.put("_docid.keyword", documentId);
+
+        //sample payload as below
+
+        /*{
+            "size": 10000,
+            "query": {
+            "bool": {
+                "must": [
+                {
+                    "term": {
+                    "docType": "sg_rules"
+                }
+                },
+                {
+                    "has_parent": {
+                    "parent_type": "sg",
+                            "query": {
+                        "term": {
+                            "_docid.keyword": "500559730414_us-west-1_sg-06b4302f019210aff"
+                        }
+                    }
+                }
+                }
+                ]
+            }
+        }
+        }*/
+
+        try {
+            return esRepository.getDataFromES(indexName, resourceType, queryDetailsMap);
+        } catch (Exception e) {
+            LOGGER.error("Exception in getResourceDetailByRouting ", e);
+            throw new DataException(e);
+        }
+    }
 }

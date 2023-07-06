@@ -27,9 +27,12 @@ import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
 import com.tmobile.pacman.api.compliance.client.AuthServiceClient;
 import com.tmobile.pacman.api.compliance.domain.*;
+import com.tmobile.pacman.api.compliance.enums.PolicyComplianceFilter;
 import com.tmobile.pacman.api.compliance.repository.ComplianceRepository;
 import com.tmobile.pacman.api.compliance.repository.FilterRepository;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyParams;
 import com.tmobile.pacman.api.compliance.util.CommonUtil;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +41,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
@@ -47,83 +53,87 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+
 /**
  * The Class ComplianceServiceImpl.
  */
 @Service
 public class ComplianceServiceImpl implements ComplianceService, Constants {
 
-    /**
-     * The Constant PROTOCOL
-     */
-    static final String PROTOCOL = "http";
-    /**
-     * The logger
-     */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String ACTION_REQUIRED_MSG = "Action is required";
+    private static final String ASSET_GROUP_REQUIRED_MSG = "Asset group is required";
+    private static final String CREATED_BY_REQUIRED_MSG = "Created by is required";
+    private static final String APPROVED_BY_REQUIRED_MSG = "Approved by is required";
+    private static final String ISSUE_ID_REQUIRED_MSG = "At least one issue Id is required";
+    private static final String GRANTED_DATE_REQUIRED_MSG = "Exemption Granted Date is mandatory";
+    private static final String GRANTED_DATE_VALIDATION_MSG = "Exception Granted Date cannot be earlier date than today";
+    private static final String END_DATE_VALIDATION_MSG = "Exception End Date cannot be earlier date than today";
+    private static final String END_DATE_REQUIRED_MSG = "Exception End Date is mandatory";
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String UTC = "UTC";
 
-    /** The statistics client */
-    // @Autowired
-    /**
-     * The mandatory tags
-     */
+    /** The mandatory tags. */
     @Value("${tagging.mandatoryTags}")
     private String mandatoryTags;
-    /**
-     * The auth client
-     */
+
+    /** The logger. */
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /** The statistics client. */
+    // @Autowired
+
+    /** The auth client. */
     @Autowired
     private AuthServiceClient authClient;
-    /**
-     * The repository
-     */
+
+    /** The repository. */
     @Autowired
     private ComplianceRepository repository;
-    /**
-     * The proj eligibletypes
-     */
+
+    /** The proj eligibletypes. */
     @Autowired
     @Value("${projections.targetTypes}")
     private String projEligibletypes;
-    /**
-     * The elastic search repository
-     */
+
+    /** The elastic search repository. */
     @Autowired
     private ElasticSearchRepository elasticSearchRepository;
-    /**
-     * The filter repository
-     */
+
+    /** The filter repository. */
     @Autowired
     private FilterRepository filterRepository;
-    /**
-     * The system configuration service
-     */
+
+    /** The system configuration service. */
     @Autowired
     private SystemConfigurationService systemConfigurationService;
+
+    @Autowired
+    private PolicyParamService policyParamService;
+
     @Value("${features.vulnerability.enabled:false}")
     private boolean qualysEnabled;
-    /**
-     * The es host
-     */
+
+    /** The es host. */
     @Value("${elastic-search.host}")
     private String esHost;
-    /**
-     * The es port
-     */
+
+    /** The es port. */
     @Value("${elastic-search.port}")
     private int esPort;
-    /**
-     * The critical issue default time interval for calculating delta
-     */
+
+    /** The critical issue default time interval for calculating delta. */
     // @Value("${critical.issues.defaulttime}")
-    private final String defaultTime = "24hrs";
-    /**
-     * The es url
-     */
+    private String defaultTime = "24hrs";
+
+    /** The Constant PROTOCOL. */
+    static final String PROTOCOL = "http";
+
+    /** The es url. */
     private String esUrl;
 
     /**
-     * Inits the
+     * Inits the.
      */
     @PostConstruct
     void init() {
@@ -134,11 +144,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * {@inheritDoc}
      */
     @Override
-    public long getIssuesCount(String assetGroup, String policyId, String domain, String accountId) throws ServiceException {
+    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId) throws ServiceException {
         Assert.notNull(assetGroup, "asset group cannot be empty or blank");
         // transform the data here
         try {
-            return repository.getIssuesCount(assetGroup, policyId, domain, accountId);
+            return repository.getIssuesCount(assetGroup, policyId, domain,accountId);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -148,60 +158,55 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * {@inheritDoc}
      */
     @Override
-    public ResponseWithOrder getIssues(Request request) throws ServiceException {
+    public ResponseWithOrder getIssues(APIRequest request) throws ServiceException {
         try {
             return repository.getIssuesFromES(request);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Object> getDistribution(String assetGroup, String domain, String accountId) throws ServiceException {
+    public Map<String, Object> getDistribution(String assetGroup, String domain,String accountId) throws ServiceException {
         try {
             Map<String, Object> distribution = new HashMap<>();
-
             // get Policies mapped to targetType
             String targetTypes = repository.getTargetTypeForAG(assetGroup, domain);
             logger.info("Compliance API >> Fetched target types from repository: {}", targetTypes);
-
             List<Object> policies = repository.getPolicyIds(targetTypes);
             logger.info("Compliance API >> Fetched policies from repository: {}", policies);
-
             // get issue count
-            Long totalIssues = getIssuesCount(assetGroup, null, domain, accountId);
+            Long totalIssues = getIssuesCount(assetGroup, null, domain,accountId);
             logger.info("Compliance API >> Fetched total issues count from repository: {}", totalIssues);
-
             // get severity distribution
-            Map<String, Long> policiesSeverityDistribution = repository.getPoliciesDistribution(assetGroup, domain, policies, SEVERITY);
-            logger.info("Compliance API >> Fetched policiesSeverityDistribution from repository: {}", policiesSeverityDistribution);
-
+            Map<String, Long> policieseverityDistribution = repository.getPoliciesDistribution(assetGroup, domain, policies,
+                    SEVERITY);
+            logger.info("Compliance API >> Fetched policieseverityDistribution from repository: {}", policieseverityDistribution);
             // get category distribution
             Map<String, Long> policyCategoryDistribution = repository.getPoliciesDistribution(assetGroup, domain, policies,
                     POLICY_CATEGORY);
             logger.info("Compliance API >> Fetched policyCategoryDistribution from repository: {}", policyCategoryDistribution);
-
             // get policy category distribution
-            Map<String, Object> policyCategoryPercentage = repository.getPolicyCategoryPercentage(policyCategoryDistribution, totalIssues);
+            Map<String, Object> policyCategoryPercentage = repository.getPolicyCategoryPercentage(policyCategoryDistribution,
+                    totalIssues);
             logger.info("Compliance API >> Fetched policyCategoryPercentage from repository: {}", policyCategoryPercentage);
-
-            distribution.put("distribution_by_severity", policiesSeverityDistribution);
+            distribution.put("distribution_by_severity", policieseverityDistribution);
             distribution.put("distribution_policyCategory", policyCategoryDistribution);
             distribution.put("policyCategory_percentage", policyCategoryPercentage);
             distribution.put("total_issues", totalIssues);
-
             return distribution;
         } catch (DataException e) {
-            logger.error("Compliance API >> getDistribution >> DataException in getting distribution:{}", e.getStackTrace());
-            logger.error("Compliance API >> getDistribution >> DataException in getting distribution", e);
+            logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());
+            logger.error("Compliance API >> DataException in getting distribution",e);
             throw new ServiceException(e);
         }
     }
 
-    private Map mergeMaps(List<Map<String, Object>> listOfMaps) {
+    private  Map mergeMaps(List<Map<String, Object>> listOfMaps) {
         Optional<Map<String, Object>> mergedMap = listOfMaps.stream().reduce((map1, map2) -> {
             return Stream.concat(map1.entrySet().stream(), map2.entrySet().stream())
                     .collect(Collectors.toMap(
@@ -213,11 +218,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                                 return resultMap;
                             }));
         });
-
-        if (mergedMap.isPresent()) {
+        if(mergedMap.isPresent()){
             return mergedMap.get();
         }
-
         return new HashMap<String, Object>();
     }
 
@@ -225,11 +228,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     public Map<String, Object> getDistributionBySeverity(String assetGroup, String domain) throws ServiceException {
         try {
             Map<String, Object> distribution = new HashMap<>();
-
             // get Policies mapped to targetType
             String targetTypes = repository.getTargetTypeForAG(assetGroup, domain);
             logger.info("Compliance API >> Fetched target types from repository: {}", targetTypes);
-
             List<Object> policies = repository.getPolicyIds(targetTypes);
             logger.info("Compliance API >> Fetched policies from repository: {}", policies);
 
@@ -243,13 +244,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             Map<String, Object> policyDistributionBySeverity = repository.getPolicyCountBySeverity(assetGroup, policies);
             logger.info("Compliance API >> Fetched policyDistributionBySeverity from repository: {}", policyDistributionBySeverity);
 
-            Map distributionBySeverity = this.mergeMaps(Arrays.asList(avgAgeDistribution, policyDistributionBySeverity, assetDistributionBySeverity));
+            Map distributionBySeverity = this.mergeMaps(Arrays.asList(new Map[]{avgAgeDistribution, policyDistributionBySeverity, assetDistributionBySeverity}));
             distribution.put("distributionBySeverity", distributionBySeverity);
-
             return distribution;
         } catch (DataException e) {
-            logger.error("Compliance API >> getDistributionBySeverity >> DataException in getting distribution:{}", e.getStackTrace());
-            logger.error("Compliance API >> getDistributionBySeverity >> DataException in getting distribution", e);
+            logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());
+            logger.error("Compliance API >> DataException in getting distribution",e);
             throw new ServiceException(e);
         }
     }
@@ -282,26 +282,23 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Long> getPatching(String assetGroup, String targetType, String application) throws ServiceException {
+    public Map<String, Long> getPatching(String assetGroup, String targetType, String application)
+            throws ServiceException {
         logger.info("input value for getPatching are {} {} {}", assetGroup, targetType, application);
-
-        double patchingPercentage;
         Long totalPatched;
-        Long totalUnpatched = 0L;
-        Long totalAssets = 0L;
-
+        Long totalUnpatched = 0l;
+        Long totalAssets = 0l;
+        double patchingPercentage;
         Map<String, Long> patching = new HashMap<>();
         AssetCountDTO[] targetTypes;
-
         try {
             if (StringUtils.isEmpty(targetType)) {
                 targetTypes = filterRepository.getListOfTargetTypes(assetGroup, null);
             } else {
                 AssetCountDTO apiName = new AssetCountDTO();
                 apiName.setType(targetType);
-                targetTypes = new AssetCountDTO[]{apiName};
+                targetTypes = new AssetCountDTO[] { apiName };
             }
-
             for (AssetCountDTO targettype : targetTypes) {
                 String type = targettype.getType();
                 if (EC2.equalsIgnoreCase(type) || VIRTUALMACHINE.equalsIgnoreCase(type)) {
@@ -314,28 +311,24 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             logger.error("Error @ getPatching ", e);
             throw new ServiceException(e);
         }
-
         if (totalUnpatched > totalAssets) {
             totalUnpatched = totalAssets;
         }
-        totalPatched = totalAssets - totalUnpatched;
 
+        totalPatched = totalAssets - totalUnpatched;
         if (totalAssets > 0) {
             patchingPercentage = (totalPatched * HUNDRED) / totalAssets;
             patchingPercentage = Math.floor(patchingPercentage);
         } else {
             patchingPercentage = HUNDRED;
         }
-
-        patching.put(UNPATCHED_INSTANCES, totalUnpatched);
-        patching.put(TOTAL_INSTANCES, totalAssets);
-        patching.put(PATCHED_INSTANCES, totalPatched);
-        patching.put(PATCHING_PERCENTAGE, (long) patchingPercentage);
-
+        patching.put("unpatched_instances", totalUnpatched);
+        patching.put("total_instances", totalAssets);
+        patching.put("patched_instances", totalPatched);
+        patching.put("patching_percentage", (long) patchingPercentage);
         if (patching.isEmpty()) {
             throw new ServiceException(NO_DATA_FOUND);
         }
-
         return patching;
     }
 
@@ -353,17 +346,23 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     /**
      * {@inheritDoc}
      */
-    public ResponseWithOrder getIssueAuditLog(String dataSource, String annotationId, String targetType, int from, int size, String searchText) throws ServiceException {
-        List<LinkedHashMap<String, Object>> issueAuditLogList;
+    public ResponseWithOrder getIssueAuditLog(String dataSource,String annotationId, String targetType, int from, int size,
+                                              String searchText) throws ServiceException {
 
+        List<LinkedHashMap<String, Object>> issueAuditLogList;
         try {
             long issueAuditCount = repository.getIssueAuditLogCount(annotationId, targetType);
-            issueAuditLogList = repository.getIssueAuditLog(dataSource, annotationId, targetType, from, size, searchText);
+            issueAuditLogList = repository.getIssueAuditLog(dataSource,annotationId, targetType, from, size, searchText);
+
+            for(Map<String,Object> auditMap:issueAuditLogList){
+                if(auditMap.get(STATUS).equals("open") || auditMap.get(STATUS).equals("closed") ){
+                    auditMap.put(CREATED_BY,"system");
+                }
+            }
 
             if (issueAuditLogList.isEmpty()) {
                 throw new ServiceException(NO_DATA_FOUND);
             }
-
             return new ResponseWithOrder(issueAuditLogList, issueAuditCount);
         } catch (DataException e) {
             throw new ServiceException(e);
@@ -401,30 +400,26 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * (com.tmobile.pacman.api.compliance.domain.Request)
      */
     @SuppressWarnings("rawtypes")
-    public ResponseWithOrder getPolicyCompliance(Request request) throws ServiceException {
+    public ResponseWithOrder getPolicycompliance(Request request) throws ServiceException {
         // Ignoring input as we need to return all.
-        // logger.debug("getPolicyCompliance invoked with {}", request);
+        // logger.debug("getPolicycompliance invoked with {}", request);
         int size = 0;
         int from = 0;
-
         String assetGroup = request.getAg();
         String searchText = request.getSearchtext();
         Map<String, String> filters = request.getFilter();
         String policyCategory = "";
-
         if (null != filters.get(CommonUtils.convertAttributetoKeyword(POLICY_CATEGORY))) {
             policyCategory = filters.get(CommonUtils.convertAttributetoKeyword(POLICY_CATEGORY));
         }
-
-        ResponseWithOrder response = null;
         List<LinkedHashMap<String, Object>> openIssuesByPolicyList = new ArrayList<>();
         List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal;
-
+        ResponseWithOrder response = null;
         String policy = null;
         String ttypes = "";
         String resourceTypeFilter = null;
-
-        if (filters.containsKey(Constants.RESOURCE_TYPE) && StringUtils.isNotBlank(filters.get(Constants.RESOURCE_TYPE))) {
+        if (filters.containsKey(Constants.RESOURCE_TYPE)
+                && StringUtils.isNotBlank(filters.get(Constants.RESOURCE_TYPE))) {
             ttypes = "'" + filters.get(Constants.RESOURCE_TYPE).trim() + "'";
             resourceTypeFilter = filters.get(Constants.RESOURCE_TYPE).trim();
         } else if (!Strings.isNullOrEmpty(filters.get(CommonUtils.convertAttributetoKeyword(TARGET_TYPE)))) {
@@ -433,189 +428,212 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         } else {
             ttypes = repository.getTargetTypeForAG(assetGroup, filters.get(DOMAIN));
         }
-
-        logger.debug("getPolicyCompliance >> Types in scope for invocation {}", ttypes);
-        final List<Map<String, String>> dataSourceTargetType = repository.getDataSourceForTargetTypeForAG(assetGroup, filters.get(DOMAIN), resourceTypeFilter);
+        logger.debug("Types in scope for invocation {}", ttypes);
+        final List<Map<String, String>> dataSourceTargetType = repository.getDataSourceForTargetTypeForAG(assetGroup,
+                filters.get(DOMAIN), resourceTypeFilter);
         String application;
-
         if (filters.containsKey(Constants.APPS)) {
             application = filters.get(Constants.APPS);
         } else {
             application = null;
         }
-
         if (!Strings.isNullOrEmpty(ttypes)) {
             try {
-                List<Map<String, Object>> policies = new ArrayList<>();
+                List<Map<String, Object>> policies;
 
                 /*--For filters we need to take policy Id's which match the filter condition--*/
                 if (!Strings.isNullOrEmpty(filters.get(POLICYID_KEYWORD))) {
-                    policy = policy + "," + "'" + filters.get(POLICYID_KEYWORD) + "'";
-                    policies = repository.getPolicyIdDetails(policy);
 
-                    if (!policies.isEmpty()) {
+                    policy = policy + "," + "'" + filters.get(POLICYID_KEYWORD) + "'";
+                    policies = repository.getPolicyIdDetails(policy, request.isIncludeDisabled());
+                    if (!policies.isEmpty())
                         resourceTypeFilter = policies.get(0).get(TARGET_TYPE).toString();
-                    }
                 } else {
-                    policies = repository.getPolicyIdWithDisplayNameWithPolicyCategoryQuery(ttypes, policyCategory);
+                    policies = repository.getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
+                            ttypes, policyCategory, request.isIncludeDisabled());
                 }
 
-                logger.debug("getPolicyCompliance >> Policies in scope {}", policies);
+                logger.debug("Policies in scope {}", policies);
 
                 if (!policies.isEmpty()) {
-                    // Make map of policy severity, category
-                    List<Map<String, Object>> policiesCatDetails = getPoliciesCatDetails(policies);
-                    Map<String, Object> policyCatDetails = policiesCatDetails.parallelStream().collect(
-                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(POLICY_CATEGORY), (oldValue, newValue) -> newValue));
+                    // Make map of policy severity,category
 
-                    Map<String, Object> policiesDetails = policiesCatDetails.parallelStream().collect(
-                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(SEVERITY), (oldValue, newValue) -> newValue));
+                    List<Map<String, Object>> policiesevCatDetails = getPoliciesevCatDetails(policies);
+                    Map<String, Object> policyCatDetails = policiesevCatDetails.parallelStream().
+                            filter(c -> c.get(POLICYID) != null && c.get(POLICY_CATEGORY) != null).
+                            collect(Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(POLICY_CATEGORY), (oldvalue,
+                                                                                                                    newValue) -> newValue));
 
-                    Map<String, Object> policyAutoFixDetails = policiesCatDetails.parallelStream().collect(
+
+                    Map<String, Object> policiesevDetails = policiesevCatDetails.parallelStream().
+                            filter(c -> c.get(POLICYID) != null && c.get(SEVERITY) != null).
+                            collect(Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(SEVERITY),
+                                    (oldvalue, newValue) -> newValue));
+
+
+
+                    Map<String, Object> policyAutoFixDetails = policiesevCatDetails.parallelStream().collect(
                             Collectors.toMap(c -> c.get(POLICYID).toString(), c -> Boolean.parseBoolean(c.get(AUTOFIX).toString()), (oldValue, newValue) -> newValue));
 
-                    Map<String, Object> policyAutoFixAvailableDetails = policiesCatDetails.parallelStream().collect(
+                    Map<String, Object> policyAutoFixAvailableDetails = policiesevCatDetails.parallelStream().collect(
                             Collectors.toMap(c -> c.get(POLICYID).toString(), c -> Boolean.parseBoolean(c.get(AUTOFIX_AVAILABLE).toString()), (oldValue, newValue) -> newValue));
 
                     ExecutorService executor = Executors.newCachedThreadPool();
-                    Map<String, Long> totalAssetCount = new HashMap<>();
-                    // Can't execute in thread as security context is not passed in feign.
-                    totalAssetCount.putAll(repository.getTotalAssetCount(assetGroup, filters.get(DOMAIN), application, resourceTypeFilter));
 
-                    List<Map<String, Object>> policyIdWithScanDate = new ArrayList<>();
+                    Map<String, Long> totalassetCount = new HashMap<>();
+
+                    totalassetCount.putAll(repository.getTotalAssetCount(assetGroup, filters.get(DOMAIN), application,
+                            resourceTypeFilter)); // Can't execute in thread as security context is not passed in feign.
+
+                    List<Map<String, Object>> policyIdwithsScanDate = new ArrayList<>();
                     executor.execute(() -> {
                         try {
-                            policyIdWithScanDate.addAll(repository.getPoliciesLastScanDate());
+                            policyIdwithsScanDate.addAll(repository.getPoliciesLastScanDate());
                         } catch (DataException e) {
-                            logger.error("getPolicyCompliance >> Error fetching policy Last scan date", e);
+                            logger.error("Error fetching policy Last scan date", e);
                         }
+
                     });
 
                     Map<String, Integer> exemptedAssetsCount = new HashMap<>();
+                    // executor.execute(()->{
                     try {
-                        // Currently exempted info is only used when
-                        if (filters.containsKey(Constants.RESOURCE_TYPE)) {
-                            // resourceType is passed. Temporary perf fix
-                            exemptedAssetsCount.putAll(repository.getExemptedAssetsCountByPolicy(assetGroup, application, filters.get(Constants.RESOURCE_TYPE)));
+                        if (filters.containsKey(Constants.RESOURCE_TYPE)) {// Currently exempted info is only used when
+                            // resorucetype is passed. Temporary perf fix
+                            exemptedAssetsCount.putAll(repository.getExemptedAssetsCountByPolicy(assetGroup, application,
+                                    filters.get(Constants.RESOURCE_TYPE)));
                         }
                     } catch (DataException e) {
-                        logger.error("getPolicyCompliance >> Error fetching exempted asset count", e);
+                        logger.error("Error fetching exempted asset count", e);
                     }
 
+                    // });
+
                     Map<String, Object> untagMap = new HashMap<>();
+
                     List<Map<String, Object>> policiesTemp = policies;
                     String ttypesTemp = ttypes;
-
                     executor.execute(() -> {
-                        boolean taggingPolicyExists = policiesTemp.stream()
-                                .filter(policyObj -> policyObj.get(POLICYID).toString().contains(CATEGORY_TAGGING)).findAny().isPresent();
 
-                        if (taggingPolicyExists)
+                        boolean tagginPolicyExists = policiesTemp.stream()
+                                .filter(policyObj -> policyObj.get(POLICYID).toString().contains(CATEGORY_TAGGING)).findAny()
+                                .isPresent();
+
+                        if (tagginPolicyExists)
                             try {
                                 untagMap.putAll(repository.getTaggingByAG(assetGroup, ttypesTemp, application));
                             } catch (DataException e) {
-                                logger.error("getPolicyCompliance >> Error fetching tagging information ", e);
+                                logger.error("Error fetching tagging information ", e);
                             }
                     });
-
                     final Map<String, Long> openIssuesByPolicyByAG = new HashMap<>();
                     executor.execute(() -> {
                         try {
                             openIssuesByPolicyByAG.putAll(repository.getNonCompliancePolicyByEsWithAssetGroup(
                                     assetGroup, null, filters, from, size, ttypesTemp));
                         } catch (DataException e) {
-                            logger.error("getPolicyCompliance >> Error fetching policy issue aggregations ", e);
+                            logger.error("Error fetching policy issue aggregations ", e);
+
                         }
+
                     });
 
                     executor.shutdown();
 
-                    //try {
-                    //    executor.awaitTermination(30, TimeUnit.SECONDS);
-                    //} catch (InterruptedException e) {
-                    //    logger.error("Error @ getPolicyCompliance terminating executor", e);
+                    while (!executor.isTerminated()) {
 
-                    while (!executor.isTerminated()) { }
+                    }
 
                     policies.forEach(policyIdDetails -> {
                         Map<String, String> policyIdwithsScanDateMap = new HashMap<>();
                         LinkedHashMap<String, Object> openIssuesByPolicy = new LinkedHashMap<>();
-
-                        Long assetCount = 0L;
-                        Long issuecountPerPolicyAG = 0L;
-
+                        Long assetCount = 0l;
+                        Long issuecountPerPolicyAG = 0l;
                         double compliancePercentage;
                         double contributionPercentage = 0;
-
                         String resourceType = null;
                         String policyId = null;
 
-                        if (!policyIdWithScanDate.isEmpty()) {
-                            policyIdwithsScanDateMap = policyIdWithScanDate.stream().collect(
+                        if (!policyIdwithsScanDate.isEmpty()) {
+                            policyIdwithsScanDateMap = policyIdwithsScanDate.stream().collect(
                                     Collectors.toMap(s -> (String) s.get(POLICYID),
                                             s -> (String) s.get(MODIFIED_DATE)));
                         }
-
                         policyId = policyIdDetails.get(POLICYID).toString();
                         resourceType = policyIdDetails.get(TARGET_TYPE).toString();
-                        assetCount = (null != totalAssetCount.get(resourceType)) ? totalAssetCount.get(resourceType) : 0L;
+                        assetCount = (null != totalassetCount.get(resourceType)) ? totalassetCount
+                                .get(resourceType) : 0l;
                         if (null != openIssuesByPolicyByAG.get(policyId)) {
-                            issuecountPerPolicyAG = (null != openIssuesByPolicyByAG.get(policyId)) ? openIssuesByPolicyByAG.get(policyId) : 0L;
-                        }
+                            issuecountPerPolicyAG = (null != openIssuesByPolicyByAG.get(policyId)) ? openIssuesByPolicyByAG
+                                    .get(policyId) : 0l;
 
-                        if (policyId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY) || policyId.equalsIgnoreCase(ONPREM_KERNEL_COMPLIANCE_RULE)) {
+                        }
+                        if (policyId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY)
+                                || policyId.equalsIgnoreCase(ONPREM_KERNEL_COMPLIANCE_RULE)) {
+
                             try {
-                                assetCount = repository.getPatchabeAssetsCount(assetGroup, resourceType, application, null, null);
-                                issuecountPerPolicyAG = repository.getUnpatchedAssetsCount(assetGroup, resourceType, application);
+                                assetCount = repository.getPatchabeAssetsCount(assetGroup, resourceType, application,
+                                        null, null);
+                                issuecountPerPolicyAG = repository.getUnpatchedAssetsCount(assetGroup, resourceType,
+                                        application);
                             } catch (DataException e) {
-                                logger.error("getPolicyCompliance >> Error fetching patching info", e);
+                                logger.error("Error fetching patching info", e);
                             }
+
                         } else if (policyId.contains(CATEGORY_TAGGING)) {
-                            issuecountPerPolicyAG = 0L;
+                            issuecountPerPolicyAG = 0l;
                             if (untagMap.get(resourceType) != null) {
-                                String totalUntaggedStr = untagMap.get(resourceType).toString().substring(0, untagMap.get(resourceType).toString().length() - TWO);
-                                issuecountPerPolicyAG = Long.parseLong(totalUntaggedStr);
+                                String totaluntaggedStr = untagMap.get(resourceType).toString()
+                                        .substring(0, untagMap.get(resourceType).toString().length() - TWO);
+                                issuecountPerPolicyAG = Long.parseLong(totaluntaggedStr);
                             }
                         } else {
-                            if ((policyId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled) || policyId.equalsIgnoreCase(SSM_AGENT_RULE)) {
-                                // Qualys coverage require only running instances
-                                logger.info("Qualys coverage require only running instances {}", policyId);
+                            if ((policyId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled)
+                                    || policyId.equalsIgnoreCase(SSM_AGENT_RULE)) {
+                                // qualys coverage require only running instances
+                                PolicyParams discoveredDayRangeParam = policyParamService.getPolicyParamsByPolicyIdAndKey(policyId,DISCOVERED_DAYS_RANGE);
+                                String discoverDayRange=discoveredDayRangeParam.getValue();
+                                logger.info("qualys coverage require only running instances {}", policyId);
                                 try {
                                     if (StringUtils.isNotBlank(filters.get(Constants.APPS))) {
-                                        assetCount = repository.getInstanceCountForQualys(assetGroup, NON_COMPLIANCE_POLICY, filters.get(Constants.APPS), "", resourceType);
+                                        assetCount = repository.getInstanceCountForQualys(assetGroup,
+                                                "noncompliancepolicy", filters.get(Constants.APPS), "", resourceType,discoverDayRange);
                                     } else {
-                                        assetCount = repository.getInstanceCountForQualys(assetGroup, NON_COMPLIANCE_POLICY, "", "", resourceType);
+                                        assetCount = repository.getInstanceCountForQualys(assetGroup,
+                                                "noncompliancepolicy", "", "", resourceType,discoverDayRange);
                                     }
+
                                 } catch (DataException e) {
-                                    logger.error("getPolicyCompliance >> Error fetching qualys data", e);
+                                    logger.error("Error fetching qualys data", e);
                                 }
                             }
-                        }
 
+                        }
                         if (issuecountPerPolicyAG > assetCount) {
                             issuecountPerPolicyAG = assetCount;
                         }
-
                         Long passed = assetCount - issuecountPerPolicyAG;
-                        compliancePercentage = Math.floor(((assetCount - issuecountPerPolicyAG) * HUNDRED) / assetCount);
+                        compliancePercentage = Math
+                                .floor(((assetCount - issuecountPerPolicyAG) * HUNDRED) / assetCount);
                         if (assetCount == 0) {
                             compliancePercentage = 100;
-                            issuecountPerPolicyAG = 0L;
-                            passed = 0L;
+                            issuecountPerPolicyAG = 0l;
+                            passed = 0l;
                             contributionPercentage = 0.0;
                         }
-
-                        openIssuesByPolicy.put(SEVERITY, policiesDetails.get(policyId));
+                        openIssuesByPolicy.put(SEVERITY, policiesevDetails.get(policyId));
                         openIssuesByPolicy.put(NAME, policyIdDetails.get(DISPLAY_NAME).toString());
+                        if (request.isIncludeDisabled() && !Objects.isNull(policyIdDetails.get(STATUS)) &&
+                                !Objects.isNull(policyIdDetails.get(STATUS).toString())) {
+                            openIssuesByPolicy.put(STATUS, policyIdDetails.get(STATUS).toString());
+                        }
                         openIssuesByPolicy.put(COMPLIANCE_PERCENT, compliancePercentage);
-
                         String lastScanDate = repository.getScanDate(policyId, policyIdwithsScanDateMap);
                         if (lastScanDate != null) {
                             openIssuesByPolicy.put(LAST_SCAN, lastScanDate);
                         } else {
                             openIssuesByPolicy.put(LAST_SCAN, "");
                         }
-
                         final String resourceTypeFinal = resourceType;
                         openIssuesByPolicy.put(POLICY_CATEGORY, policyCatDetails.get(policyId));
                         openIssuesByPolicy.put(RESOURCE_TYPE, resourceType);
@@ -626,46 +644,192 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                         openIssuesByPolicy.put(ASSETS_SCANNED, assetCount);
                         openIssuesByPolicy.put(PASSED, passed);
                         openIssuesByPolicy.put(FAILED, issuecountPerPolicyAG);
-                        openIssuesByPolicy.put(CONTRIBUTION_PERCENT, contributionPercentage);
-                        openIssuesByPolicy.put(AUTOFIX_ENABLED, policyAutoFixDetails.get(policyId));
-                        openIssuesByPolicy.put(AUTOFIX_AVAILABLE, policyAutoFixAvailableDetails.get(policyId));
-
+                        openIssuesByPolicy.put("contribution_percent", contributionPercentage);
+                        openIssuesByPolicy.put("autoFixEnabled", policyAutoFixDetails.get(policyId));
+                        openIssuesByPolicy.put("autoFixAvailable",policyAutoFixAvailableDetails.get(policyId));
                         if (exemptedAssetsCount.containsKey(policyId)) {
-                            openIssuesByPolicy.put(EXEMPTED, exemptedAssetsCount.get(policyId));
-                            openIssuesByPolicy.put(IS_ASSETS_EXEMPTED, exemptedAssetsCount.get(policyId).intValue() > 0);
+                            openIssuesByPolicy.put("exempted", exemptedAssetsCount.get(policyId));
+                            openIssuesByPolicy.put("isAssetsExempted",
+                                    exemptedAssetsCount.get(policyId).intValue() > 0 ? true : false);
                         } else {
-                            openIssuesByPolicy.put(EXEMPTED, 0);
-                            openIssuesByPolicy.put(IS_ASSETS_EXEMPTED, false);
+                            openIssuesByPolicy.put("exempted", 0);
+                            openIssuesByPolicy.put("isAssetsExempted", false);
                         }
 
                         if (!Strings.isNullOrEmpty(searchText)) {
                             for (Map.Entry<String, Object> issueByPolicy : openIssuesByPolicy.entrySet()) {
-                                if (null != issueByPolicy.getValue() && issueByPolicy.getValue().toString().toLowerCase().contains(searchText.toLowerCase())) {
+                                if (null != issueByPolicy.getValue() && issueByPolicy.getValue().toString().toLowerCase()
+                                        .contains(searchText.toLowerCase())) {
                                     openIssuesByPolicyList.add(openIssuesByPolicy);
                                     break;
                                 }
+
                             }
                         } else {
                             openIssuesByPolicyList.add(openIssuesByPolicy);
+
                         }
+
                     });
                 }
                 openIssuesByPolicyListFinal = openIssuesByPolicyList;
+                // sorting by #Violation in desencing order
 
-                // Sorting by #Violation in descending order
                 Collections.sort(openIssuesByPolicyListFinal, Collections.reverseOrder(new Compare()));
+
                 if (openIssuesByPolicyList.isEmpty()) {
                     throw new DataException(NO_DATA_FOUND);
                 } else {
+                    //adding filter and sorting
+                    openIssuesByPolicyListFinal = filterPolicyComplianceData(openIssuesByPolicyListFinal, request);
+                    int to = (int) (request.getFrom() + request.getSize() == 0 ? openIssuesByPolicyListFinal.size() : request.getSize());
+                    if (to > openIssuesByPolicyListFinal.size()) {
+                        to = openIssuesByPolicyListFinal.size();
+                    }
+                    openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.subList((int) request.getFrom(), to);
                     response = new ResponseWithOrder(openIssuesByPolicyListFinal, openIssuesByPolicyListFinal.size());
                 }
             } catch (DataException e) {
-                logger.error("Error @ getPolicyCompliance while getting the data from ES", e);
+                logger.error("Error @ getPolicycompliance while getting the data from ES", e);
                 throw new ServiceException(e);
             }
         }
-
         return response;
+    }
+
+    private List<LinkedHashMap<String, Object>> filterPolicyComplianceData(List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal, Request request){
+        Map<String, Object> filter = request.getReqFilter();
+        Map<String, Object> sortFilter = request.getSortFilter() == null ? new HashMap<>() : request.getSortFilter();
+        String sortAttribute = sortFilter.get(FIELD) == null ? PolicyComplianceFilter.POLICY_NAME.name() :(String) sortFilter.get(FIELD);
+        String sortOrder = sortFilter.get(ORDER) == null ? ASC :(String) sortFilter.get(ORDER);
+        if(MapUtils.isNotEmpty(filter)){
+            List<String> policyName = filter.containsKey(PolicyComplianceFilter.POLICY_NAME.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.POLICY_NAME.filter) : new ArrayList<>();
+            List<String> severity = filter.containsKey(PolicyComplianceFilter.SEVERITY.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.SEVERITY.filter) : new ArrayList<>();
+            List<String> category = filter.containsKey(PolicyComplianceFilter.CATEGORY.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.CATEGORY.filter) : new ArrayList<>();
+            List<String> assetType = filter.containsKey(PolicyComplianceFilter.ASSET_TYPE.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.ASSET_TYPE.filter) : new ArrayList<>();
+            List<Map<String, String>> violations = filter.containsKey(PolicyComplianceFilter.VIOLATIONS.filter) ?
+                    (List<Map<String, String>>) filter.get(PolicyComplianceFilter.VIOLATIONS.filter) : new ArrayList<>();
+            List<Map<String, Double>> compliance = filter.containsKey(PolicyComplianceFilter.COMPLIANCE.filter) ?
+                    (List<Map<String, Double>>) filter.get(PolicyComplianceFilter.COMPLIANCE.filter) : new ArrayList<>();
+
+            openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.stream()
+                    .filter(x -> policyName.size() == 0 || policyName.contains(x.get(PolicyComplianceFilter.POLICY_NAME.filter)))
+                    .filter(x -> severity.size() ==0 || severity.contains(x.get(PolicyComplianceFilter.SEVERITY.filter)))
+                    .filter(x -> category.size() ==0 || category.contains(x.get(PolicyComplianceFilter.CATEGORY.filter)))
+                    .filter(x -> compliance.size() ==0 || isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance))
+                    .filter(x -> violations.size() ==0 || isViolationsInRange(Long.valueOf(x.get(PolicyComplianceFilter.VIOLATIONS.filter).toString()), violations))
+                    .filter(x -> assetType.size() ==0 || assetType.contains(x.get(PolicyComplianceFilter.ASSET_TYPE.filter)))
+                    .collect(Collectors.toList());
+        }
+        if(!CollectionUtils.isEmpty(openIssuesByPolicyListFinal)){
+            openIssuesByPolicyListFinal = sortPolicyComplianceData(openIssuesByPolicyListFinal, sortFilter);
+        }
+        return openIssuesByPolicyListFinal;
+    }
+
+    private boolean isViolationsInRange(long percent, List<Map<String, String>> rangeList){
+        for(Map<String, String> map: rangeList){
+            long min = Long.parseLong(map.get(Constants.MIN));
+            long max = Long.parseLong(map.get(Constants.MAX));
+            if(percent >= min && percent <= max){
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isComplianceInRange(double percent, List<Map<String, Double>> rangeList){
+        for(Map<String, Double> map: rangeList){
+            double min = map.get(Constants.MIN);
+            double max = map.get(Constants.MAX);
+            if(percent >= min && percent <= max){
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private List<LinkedHashMap<String, Object>> sortPolicyComplianceData(List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal, Map<String, Object> sortFilter){
+        sortFilter = sortFilter == null ? new HashMap<>() : sortFilter;
+        String sortAttribute = sortFilter.get(FIELD) == null ? PolicyComplianceFilter.POLICY_NAME.filter :(String) sortFilter.get(FIELD);
+        String sortOrder = sortFilter.get(ORDER) == null ? ASC :(String) sortFilter.get(ORDER);
+        boolean isSortDouble = false;
+        boolean isSortLong = false;
+        try{
+            Double n = (Double) openIssuesByPolicyListFinal.get(0).get(sortAttribute);
+            isSortDouble = true;
+        }catch(Exception e){
+            try {
+                Long nl = (Long) openIssuesByPolicyListFinal.get(0).get(sortAttribute);
+                isSortLong = true;
+            }catch(Exception e1){
+                isSortDouble = false;
+            }
+        }
+        if(isSortDouble){
+            openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.stream()
+                    .sorted(Comparator.comparing(a -> ((Double) a.get(sortAttribute))))
+                    .collect(Collectors.toList());
+        } else if (isSortLong) {
+            openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.stream()
+                    .sorted(Comparator.comparing(a -> ((Long) a.get(sortAttribute))))
+                    .collect(Collectors.toList());
+        } else{
+            openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.stream()
+                    .sorted(Comparator.comparing(a -> ((String) a.get(sortAttribute))))
+                    .collect(Collectors.toList());
+        }
+        if(sortOrder.equalsIgnoreCase(DESC)){
+            Collections.reverse(openIssuesByPolicyListFinal);
+        }
+        return openIssuesByPolicyListFinal;
+    }
+
+    private Map<String, Object> getRangeMapFromPolicyComplianceData(Map<String, Object> obj, List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal){
+        Map<String, Object> rangeMap = new HashMap<>();
+        if(obj.get(Constants.OPTION_TYPE).equals("Double")){
+            double min = openIssuesByPolicyListFinal.stream()
+                    .mapToDouble(map-> (double) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Double.MIN_VALUE))
+                    .min()
+                    .orElse(0);
+            double max =  openIssuesByPolicyListFinal.stream()
+                    .mapToDouble(map-> (double) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Double.MIN_VALUE))
+                    .max()
+                    .orElse(0);
+            rangeMap.put("min", min);
+            rangeMap.put("max", max);
+        }
+        if(obj.get(Constants.OPTION_TYPE).equals("Long")){
+            long min = openIssuesByPolicyListFinal.stream()
+                    .mapToLong(map-> (long) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Long.MIN_VALUE))
+                    .min()
+                    .orElse(0);
+            long max = openIssuesByPolicyListFinal.stream()
+                    .mapToLong(map-> (long) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Long.MAX_VALUE))
+                    .max()
+                    .orElse(min);
+            rangeMap.put("min", min);
+            rangeMap.put("max", max);
+        }
+        if(obj.get(Constants.OPTION_TYPE).equals("Integer")){
+            int min = openIssuesByPolicyListFinal.stream()
+                    .mapToInt(map-> (int) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Integer.MIN_VALUE))
+                    .min()
+                    .orElse(0);
+            int max = openIssuesByPolicyListFinal.stream()
+                    .mapToInt(map-> (int) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Integer.MAX_VALUE))
+                    .max()
+                    .orElse(min);
+            rangeMap.put("min", min);
+            rangeMap.put("max", max);
+        }
+        return rangeMap;
     }
 
     /**
@@ -678,13 +842,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         if (isAllClosed) {
             response.put(STATUS, TWO_HUNDRED);
             response.put("message", "Successfully Closed all Issues!!!");
-
             return response;
         } else {
             response.put(STATUS, FOUR_NOT_THREE);
             response.put("message", "Failed in Issues Closure!!!");
         }
-
         return response;
     }
 
@@ -729,7 +891,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                 }
                 requestBody.setLength(requestBody.length() - 1);
                 requestBody.append("]");
-                requestBody.append(",\"minimum_should_match\":1");
+                requestBody.append(",\"minimum_should_match\":\"1\"");
             }
         }
         requestBody
@@ -750,31 +912,37 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * (non-Javadoc)
      *
      * @see com.tmobile.pacman.api.compliance.service.ComplianceService#
-     * getPolicyDetailsByEnvironment(java.lang.String, java.lang.String,
+     * getPolicyDetailsbyEnvironment(java.lang.String, java.lang.String,
      * java.lang.String, java.lang.String)
      */
-    public List<Map<String, Object>> getPolicyDetailsByEnvironment(String assetGroup, String policyId, String application, String searchText) throws ServiceException {
+    public List<Map<String, Object>> getPolicyDetailsbyEnvironment(String assetGroup, String policyId, String application,
+                                                                   String searchText) throws ServiceException {
         List<Map<String, Object>> environmentList = new ArrayList<>();
         String targetType = getTargetTypeByPolicyId(policyId);
+
         JsonArray buckets;
         try {
-            buckets = repository.getPolicyDetailsByEnvironmentFromES(assetGroup, policyId, application, searchText, targetType);
+            buckets = repository.getPolicyDetailsByEnvironmentFromES(assetGroup, policyId, application, searchText,
+                    targetType);
+
         } catch (DataException e) {
-            logger.error("Error @ getPolicyDetailsByEnvironment while getting the env by policy and application from ES", e);
+            logger.error("Error @ getPolicyDetailsbyEnvironment while getting the env by policy and application from ES",
+                    e);
             throw new ServiceException(e);
         }
-
         Gson googleJson = new Gson();
         List<Map<String, Object>> issuesForApplcationByEnvList = googleJson.fromJson(buckets, ArrayList.class);
         Map<String, Long> issuesByApplcationListMap = issuesForApplcationByEnvList.parallelStream().collect(
-                Collectors.toMap(issue -> issue.get(KEY).toString(), issue -> (long) Double.parseDouble(issue.get(DOC_COUNT).toString())));
+                Collectors.toMap(issue -> issue.get(KEY).toString(),
+                        issue -> (long) Double.parseDouble(issue.get(DOC_COUNT).toString())));
 
-        Map<String, Long> assetCountByEnv = repository.getTotalAssetCountByEnvironment(assetGroup, application, targetType);
+        Map<String, Long> assetCountByEnv = repository.getTotalAssetCountByEnvironment(assetGroup, application,
+                targetType);
 
-        formComplianceDetailsForApplicationByEnvironment(
-                policyId, assetCountByEnv, issuesByApplcationListMap, assetGroup, application, environmentList, targetType, searchText);
-
+        formComplianceDetailsForApplicationByEnvironment(policyId, assetCountByEnv, issuesByApplcationListMap, assetGroup,
+                application, environmentList, targetType, searchText);
         return environmentList;
+
     }
 
     /**
@@ -795,6 +963,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         }
 
         return policydetails;
+
     }
 
     /**
@@ -817,6 +986,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      */
     @Override
     public Map<String, Object> getKernelComplianceByInstanceIdFromDb(String instanceId) throws ServiceException {
+
         Map<String, Object> map = new HashMap<>();
         List<Map<String, Object>> kernelMap;
         try {
@@ -824,17 +994,14 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         } catch (DataException e) {
             throw new ServiceException(e);
         }
-
         for (Map<String, Object> kv : kernelMap) {
             if (null != kv.get(KERNEL_VERSION)) {
                 map.put(KERNEL_VERSION, kv.get(KERNEL_VERSION));
             }
         }
-
         if (map.isEmpty()) {
             throw new ServiceException(NO_DATA_FOUND);
         }
-
         return map;
     }
 
@@ -861,15 +1028,15 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         double numerator = 0;
         double denominator = 0;
         double overallcompliance = 0;
-
-        // get all the targetTypes mapped to domain
+        // get all the targettypes mapped to domain
         // get all policies mapped to these targetTypes
         List<Object> policies = getPolicies(repository.getTargetTypeForAG(assetGroup, domain));
-        List<LinkedHashMap<String, Object>> complainceByPolicies = getComplianceByPolicies(domain, assetGroup, policies);
-        Map<String, Map<String, Double>> policiesComplianceByCategory = getPoliciesComplianceByCategory(complainceByPolicies, assetGroup);
-
+        List<LinkedHashMap<String, Object>> complainceByPolicies = getComplainceByPolicies(domain, assetGroup, policies);
+        Map<String, Map<String, Double>> policiesComplianceByCategory = getPoliciesComplianceByCategory(complainceByPolicies,
+                assetGroup);
         int totalCategories = policiesComplianceByCategory.entrySet().size();
-        LinkedHashMap<String, Object> policyCatWeightage = getPolicyCategoryBWeightage(domain, totalCategories, policiesComplianceByCategory);
+        LinkedHashMap<String, Object> policyCatWeightage = getPolicyCategoryBWeightage(domain, totalCategories,
+                policiesComplianceByCategory);
 
         int policyCategoryWeightage = 1;
         int totalWeightage = 0;
@@ -878,6 +1045,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             for (Map.Entry<String, Map<String, Double>> categoryDistribution : policiesComplianceByCategory.entrySet()) {
                 // calculate compliance By Category
                 if (entry.getKey().equals(categoryDistribution.getKey())) {
+
                     policyCategoryWeightage = (null != policyCatWeightage.get(categoryDistribution.getKey())) ? Integer
                             .valueOf(policyCatWeightage.get(categoryDistribution.getKey()).toString()) : 1;
                     totalWeightage += policyCategoryWeightage;
@@ -891,19 +1059,17 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     if (totalCategories == 1) {
                         overallcompliance = overallcompliance / totalWeightage;
                         overallcompliance = Math.floor(overallcompliance);
-                        policyCatDistributionWithOverall.put(OVERALL, overallcompliance);
+                        policyCatDistributionWithOverall.put("overall", overallcompliance);
                     }
-
                     // Calculate Overall Compliance
                     totalCategories -= 1;
+
                 }
             }
         }
-
         if (policyCatDistributionWithOverall.isEmpty()) {
             throw new ServiceException(NO_DATA_FOUND);
         }
-
         return policyCatDistributionWithOverall;
     }
 
@@ -911,20 +1077,20 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * {@inheritDoc}
      */
     @Override
-    public List<String> getResourceType(String assetGroup, String domain) throws ServiceException {
+    public List<String> getResourceType(String assetgroup, String domain) throws ServiceException {
         List<String> targetTypes = new ArrayList<>();
+
         if (!StringUtils.isEmpty(projEligibletypes)) {
             String[] projectionTargetTypes = projEligibletypes.split(",");
-            String ttypes = repository.getTargetTypeForAG(assetGroup, domain);
+            String ttypes = repository.getTargetTypeForAG(assetgroup, domain);
             for (String projTargetType : projectionTargetTypes) {
                 if (ttypes.contains(projTargetType)) {
                     targetTypes.add(projTargetType);
                 }
             }
         } else {
-            throw new ServiceException("getResourceType >> Please configure the projection targetTypes");
+            throw new ServiceException("Please configure the projection targettypes");
         }
-
         return targetTypes;
     }
 
@@ -933,28 +1099,31 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      */
     @SuppressWarnings("serial")
     @Override
-    public List<Map<String, Object>> getPoliciesCatDetails(List<Map<String, Object>> policyDetails) {
-        List<Map<String, Object>> policiesCatDetails = new ArrayList<>();
+    public List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails)
+            throws ServiceException {
+        List<Map<String, Object>> policiesevCatDetails = new ArrayList<>();
         for (Map<String, Object> policyDetail : policyDetails) {
-            logger.debug("getPoliciesCatDetails >> Fetching details for policy: {}", policyDetail);
-            Map<String, Object> policyCatDetail = new HashMap<>();
-            policyCatDetail.put(POLICYID, policyDetail.get(POLICYID));
-            policyCatDetail.put(TARGET_TYPE, policyDetail.get(TARGET_TYPE));
-            policyCatDetail.put(DISPLAY_NAME, policyDetail.get(DISPLAY_NAME));
-            policyCatDetail.put(POLICY_CATEGORY, policyDetail.get(CATEGORY));
-            policyCatDetail.put(SEVERITY, policyDetail.get(SEVERITY));
-            policyCatDetail.put(AUTOFIX, policyDetail.get(AUTOFIX_ENABLED));
-            policyCatDetail.put(AUTOFIX_AVAILABLE, policyDetail.get(AUTOFIX_AVAILABLE));
-            policiesCatDetails.add(policyCatDetail);
-        }
+            logger.debug("Fetching details for policy: {}", policyDetail);
+            Map<String, Object> policiesevCatDetail = new HashMap<>();
+            policiesevCatDetail.put(POLICYID, policyDetail.get(POLICYID));
+            policiesevCatDetail.put(AUTOFIX, policyDetail.get(AUTOFIX_ENABLED));
+            policiesevCatDetail.put(TARGET_TYPE, policyDetail.get(TARGET_TYPE));
+            policiesevCatDetail.put(DISPLAY_NAME, policyDetail.get(DISPLAY_NAME));
+            policiesevCatDetail.put(POLICY_CATEGORY, policyDetail.get(CATEGORY));
+            policiesevCatDetail.put(SEVERITY, policyDetail.get(SEVERITY));
+            policiesevCatDetail.put(AUTOFIX_AVAILABLE, policyDetail.get(AUTOFIX_AVAILABLE));
+            policiesevCatDetails.add(policiesevCatDetail);
 
-        return policiesCatDetails;
+        }
+        return policiesevCatDetails;
     }
 
     /**
      * {@inheritDoc}
      */
-    public PolicyViolationDetails getPolicyViolationDetailsByIssueId(String assetGroup, String issueId) throws ServiceException {
+    public PolicyViolationDetails getPolicyViolationDetailsByIssueId(String assetGroup, String issueId)
+            throws ServiceException {
+
         String policyViolated = null;
         String policyDescription = null;
         String resourceId = null;
@@ -971,20 +1140,20 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         } catch (DataException e) {
             throw new ServiceException(e);
         }
-
         if (!policyViolationByIssueId.isEmpty()) {
             policyId = policyViolationByIssueId.get(POLICYID).toString();
             resourceId = policyViolationByIssueId.get(RESOURCEID).toString();
             pac_ds = policyViolationByIssueId.get(PAC_DS).toString();
-
             // get policy description from DB
-            policyDescription = (null != getPolicyDescription(policyId).get(RULE_DESC)) ? getPolicyDescription(policyId).get(RULE_DESC).toString() : "";
+            policyDescription = (null != getPolicyDescription(policyId).get(RULE_DESC)) ? getPolicyDescription(policyId).get(
+                    RULE_DESC).toString() : "";
             // get policy title from DB
-            policyViolated = (null != getPolicyDescription(policyId).get(DISPLAY_NAME)) ? getPolicyDescription(policyId).get(DISPLAY_NAME).toString() : "";
+            policyViolated = (null != getPolicyDescription(policyId).get(DISPLAY_NAME)) ? getPolicyDescription(policyId).get(
+                    DISPLAY_NAME).toString() : "";
             vulnerabilityDetails = (null != policyViolationByIssueId.get(VULNERABILITY_DETAILS)) ? policyViolationByIssueId.get(
                     VULNERABILITY_DETAILS).toString() : null;
-            // get issues details from DB
-            issueDetails = (null != policyViolationByIssueId.get(ISSUE_DETAILS)) ? policyViolationByIssueId.get(ISSUE_DETAILS).toString() : null;
+            issueDetails = (null != policyViolationByIssueId.get(ISSUE_DETAILS)) ? policyViolationByIssueId.get(
+                    ISSUE_DETAILS).toString() : null;
             if(vulnerabilityDetails!=null){
                 JsonParser jsonParser = new JsonParser();
                 try {
@@ -998,42 +1167,66 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     throw new ServiceException(ERROR_READING_VULNERABILITY);
                 }
             }
-            if (null != policyViolationByIssueId.get(QUALYS_ISSUE_DETAILS)) {
-                String violationTitle = policyViolationByIssueId.get(QUALYS_ISSUE_DETAILS).toString();
-                violation = new HashMap<>();
-                violation.put(QUALYS_VIOLATION_DETAILS, violationTitle);
-                violationList.add(violation);
-            } else if (null != issueDetails) {
+            if (null != issueDetails) {
+
                 issueDetails = issueDetails.substring(TWO, issueDetails.length() - TWO);
-                violation = Arrays.stream(issueDetails.trim().split(", "))
-                        .map(s -> s.split("="))
-                        .collect(Collectors.toMap(a -> a[0],    // key
-                                a -> a[1]                       // value
+                violation = Arrays.stream(issueDetails.trim().split(", ")).map(s -> s.split("="))
+                        .collect(Collectors.toMap(a -> a[0], // key
+                                a -> a[1] // value
                         ));
-
-                violation.remove(VIOLATION_REASON);
+                violation.remove("violationReason");
                 violationList.add(violation);
-            }
 
-            return new PolicyViolationDetails(
-                    policyViolationByIssueId.get(TARGET_TYPE).toString(),
-                    policyViolationByIssueId.get(ISSUE_STATUS).toString(),
-                    policyViolationByIssueId.get(SEVERITY).toString(),
-                    policyViolationByIssueId.get(POLICY_CATEGORY).toString(),
-                    policyViolationByIssueId.get(ISSUE_REASON).toString(),
-                    policyViolationByIssueId.get(CREATED_DATE).toString(),
-                    policyViolationByIssueId.get(MODIFIED_DATE).toString(),
-                    resourceId,
-                    policyViolated,
-                    policyDescription,
-                    policyId,
-                    pac_ds,
-                    violationList,
-                    vulnerabilityList
-            );
+            }
+            ExemptionDTO exemption = ExemptionDTO.builder()
+                    .reasonToExempt(Objects.isNull(policyViolationByIssueId.get(REASON_TO_EXEMPT_KEY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId.get(REASON_TO_EXEMPT_KEY)))
+                    .status(Objects.isNull(policyViolationByIssueId.get(STATUS)) ? StringUtils.EMPTY :
+                            String.valueOf(policyViolationByIssueId.get(STATUS)))
+                    .exemptionExpiringOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_EXPIRING_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId.get(EXEMPTION_EXPIRING_ON)))
+                    .exemptionRaisedExpiringOn(Objects.isNull(policyViolationByIssueId
+                            .get(EXEMPTION_RAISED_EXPIRING_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_RAISED_EXPIRING_ON)))
+                    .exemptionRaisedBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_RAISED_BY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId.get(EXEMPTION_RAISED_BY)))
+                    .exemptionRaisedOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_RAISED_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId.get(EXEMPTION_RAISED_ON)))
+                    .exemptionRevokedOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_REVOKED_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_REVOKED_ON)))
+                    .exemptionRevokedBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_REVOKED_BY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_REVOKED_BY)))
+                    .exemptionCancelledOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_CANCELLED_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_CANCELLED_ON)))
+                    .exemptionCancelledBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_CANCELLED_BY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_CANCELLED_BY)))
+                    .exemptionApprovedOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_APPROVED_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_APPROVED_ON)))
+                    .exemptionApprovedBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_APPROVED_BY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_APPROVED_BY)))
+                    .build();
+            return new PolicyViolationDetails(policyViolationByIssueId.get(TARGET_TYPE).toString(),
+                    policyViolationByIssueId.get(ISSUE_STATUS).toString(), policyViolationByIssueId.get(SEVERITY)
+                    .toString(),
+                    policyViolationByIssueId.get(POLICY_CATEGORY).toString(), resourceId,
+                    policyViolated, policyDescription, policyViolationByIssueId.get(ISSUE_REASON).toString(),
+                    policyViolationByIssueId.get(CREATED_DATE).toString(), policyViolationByIssueId.get(MODIFIED_DATE)
+                    .toString(), policyId, pac_ds, violationList, vulnerabilityList,
+                    policyViolationByIssueId.get(IS_OUT_OF_SLA) != null ?
+                            (Boolean) policyViolationByIssueId.get(IS_OUT_OF_SLA) :
+                            Boolean.valueOf(false), exemption);
+
         } else {
             throw new ServiceException(NO_DATA_FOUND);
         }
+
     }
 
     /**
@@ -1043,73 +1236,93 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         if (e.getMessage().contains(NO_DATA_FOUND)) {
             List<Map<String, Object>> emptylist = new ArrayList<>();
             ResponseData res = new ResponseData(emptylist);
-
             return ResponseUtils.buildSucessResponse(res);
         } else {
             return ResponseUtils.buildFailureResponse(e);
         }
     }
 
-    private Map<String, Object> getPolicyDescriptionDetails(List<Map<String, Object>> description, Map<String, Object> policyDetails) {
+    private Map<String, Object> getPolicyDescriptionDetails(List<Map<String, Object>> description,
+                                                            Map<String, Object> policydetails) {
+        String policyParams = null;
+        JsonParser jsonParser = new JsonParser();
+        JsonArray jsonArray = null;
+        JsonObject firstObject;
+        JsonObject resultJson;
+        String value = null;
+        String key = null;
         List<String> resolution = new ArrayList<>();
         for (Map<String, Object> policy : description) {
-            policyDetails.put(POLICY_DESC, policy.get(POLICY_DESC));
-            policyDetails.put(DISPLAY_NAME, policy.get(DISPLAY_NAME));
-            policyDetails.put(RESOLUTION_URL, policy.get(RESOLUTION_URL));
-            policyDetails.put(POLICY_CATEGORY, policy.get(CATEGORY));
-            policyDetails.put(SEVERITY, policy.get(SEVERITY));
-
+            policydetails.put(POLICY_DESC, policy.get(POLICY_DESC));
+            policydetails.put(DISPLAY_NAME, policy.get(DISPLAY_NAME));
+            policydetails.put(RESOLUTION_URL, policy.get(RESOLUTION_URL));
             if (null != policy.get(RESOLUTION)) {
                 resolution = Arrays.asList(policy.get(RESOLUTION).toString().split(","));
-                policyDetails.put(RESOLUTION, resolution);
+                policydetails.put(RESOLUTION, resolution);
             } else {
-                policyDetails.put(RESOLUTION, resolution);
+                policydetails.put(RESOLUTION, resolution);
+            }
+
+            try {
+                policyParams = policy.get(POLICY_PARAMS).toString();
+
+                resultJson = (JsonObject) jsonParser.parse(policyParams);
+                jsonArray = resultJson.getAsJsonObject().get(PARAMS).getAsJsonArray();
+                if (jsonArray.size() > 0) {
+
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        firstObject = (JsonObject) jsonArray.get(i);
+
+                        value = firstObject.get(VALUE).getAsString();
+                        key = firstObject.get(KEY).getAsString();
+                        if (key.equals(POLICY_CATEGORY) || key.equals(SEVERITY)) {
+                            policydetails.put(key, value);
+                        }
+                    }
+                }
+            }
+            catch (NullPointerException e){
+                throw new NullPointerException(e.getMessage());
             }
         }
-
-        return policyDetails;
+        return policydetails;
     }
 
     private List<Map<String, Object>> formComplianceDetailsByApplication(List<Map<String, Object>> applicationList,
-                                                                         Map<String, Long> assetCountByApplications,
-                                                                         Map<String, Long> issuesByApplcationListMap) {
+                                                                         Map<String, Long> assetcountbyAplications, Map<String, Long> issuesByApplcationListMap) {
         Map<String, Object> application;
-        String applicationFromAsset;
-        double compliancePercentage;
-
         Long assetCount;
         long issueCount = 0;
         long complaintAssets;
-
-
+        String applicationFromAsset;
+        double compliancePercentage;
         // Form Compliance Details by Application
-        for (Map.Entry<String, Long> assetCountByApplication : assetCountByApplications.entrySet()) {
+        for (Map.Entry<String, Long> assetcountbyAplication : assetcountbyAplications.entrySet()) {
             application = new HashMap<>();
-            assetCount = assetCountByApplication.getValue();
-            applicationFromAsset = assetCountByApplication.getKey();
+            assetCount = assetcountbyAplication.getValue();
+            applicationFromAsset = assetcountbyAplication.getKey();
 
-            issueCount = (null == issuesByApplcationListMap.get(applicationFromAsset)) ? 0L : issuesByApplcationListMap.get(applicationFromAsset);
-            if (issueCount <= 0) {
-                complaintAssets = assetCount;
-                compliancePercentage = HUNDRED;
-            } else {
+            issueCount = (null != issuesByApplcationListMap.get(applicationFromAsset)) ? issuesByApplcationListMap
+                    .get(applicationFromAsset) : 0l;
+            if (issueCount > 0) {
                 if (issueCount > assetCount) {
                     issueCount = assetCount;
                 }
-
                 complaintAssets = assetCount - issueCount;
                 compliancePercentage = (complaintAssets * HUNDRED / assetCount);
                 compliancePercentage = Math.floor(compliancePercentage);
+            } else {
+                complaintAssets = assetCount;
+                compliancePercentage = HUNDRED;
             }
 
             application.put(TOTAL, assetCount);
-            application.put(APPS, assetCountByApplication.getKey());
-            application.put(COMPLAINT, complaintAssets);
-            application.put(NON_COMPLIANT_KEY, issueCount);
+            application.put("application", assetcountbyAplication.getKey());
+            application.put("compliant", complaintAssets);
+            application.put("non-compliant", issueCount);
             application.put(COMPLIANTPERCENTAGE, compliancePercentage);
             applicationList.add(application);
         }
-
         return applicationList;
     }
 
@@ -1122,27 +1335,33 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         }
 
         // Get targetType By Application
+
         for (Map<String, Object> policy : targetTypeByPolicyId) {
             if (policy.get(TARGET_TYPE) != null) {
                 return policy.get(TARGET_TYPE).toString();
             }
         }
-
         return null;
     }
 
     private int getSeverityWeightage(String severity) {
+        int severityWeightage = 1;
         switch (severity) {
-            case CRITICAL:
-                return TEN;
-            case HIGH:
-                return FIVE;
-            case MEDIUM:
-                return THREE;
-            case LOW:
+            case "critical":
+                severityWeightage = TEN;
+                break;
+            case "high":
+                severityWeightage = FIVE;
+                break;
+            case "medium":
+                severityWeightage = THREE;
+                break;
+            case "low":
+                severityWeightage = ONE;
+                break;
             default:
-                return ONE;
         }
+        return severityWeightage;
     }
 
     private LinkedHashMap<String, Object> getPolicyCategoryBWeightage(String domain, int totalCategories,
@@ -1161,8 +1380,8 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         List<Entry<String, Object>> list = null;
         if (null != policyCatWeightageUnsortedMap && !policyCatWeightageUnsortedMap.isEmpty()) {
             Set<Entry<String, Object>> set = policyCatWeightageUnsortedMap.entrySet();
-            list = new ArrayList<>(set);
 
+            list = new ArrayList<>(set);
             Collections.sort(list, new Comparator<Map.Entry<String, Object>>() {
                 public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
                     return (o2.getValue().toString()).compareTo(o1.getValue().toString());
@@ -1184,54 +1403,52 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         return policyCatWeightage;
     }
 
-    private Map<String, Map<String, Double>> getPoliciesComplianceByCategory(List<LinkedHashMap<String,
-            Object>> complianceByPolicies, String assetGroup) throws ServiceException {
-        String severity;
-        int severityWeightage = 1;
+    private Map<String, Map<String, Double>> getPoliciesComplianceByCategory(
+            List<LinkedHashMap<String, Object>> complainceByPolicies, String assetGroup) throws ServiceException {
         boolean isTaggingPresent = false;
+        int severityWeightage = 1;
+        String severity;
         double numerator = 0;
         double denominator = 0;
         double compliance = 0;
-
         Map<String, Map<String, Double>> policiesComplianceByCategory = new HashMap<>();
-        for (Map<String, Object> complianceByPolicy : complianceByPolicies) {
-            if (CATEGORY_TAGGING.equals(complianceByPolicy.get(POLICY_CATEGORY).toString())) {
+        for (Map<String, Object> complainceByPolicy : complainceByPolicies) {
+            if ("tagging".equals(complainceByPolicy.get(POLICY_CATEGORY).toString())) {
                 isTaggingPresent = true;
                 continue;
             }
-
-            Map<String, Double> compliancePercentageByPolicy = new HashMap<>();
-            compliance = Double.valueOf(complianceByPolicy.get(COMPLIANCE_PERCENT).toString());
-            severity = complianceByPolicy.get(SEVERITY).toString();
+            Map<String, Double> compliancePercentageBypolicy = new HashMap<>();
+            compliance = Double.valueOf(complainceByPolicy.get(COMPLIANCE_PERCENT).toString());
+            severity = complainceByPolicy.get(SEVERITY).toString();
             severityWeightage = getSeverityWeightage(severity);
+
             denominator = severityWeightage;
             numerator = (compliance * severityWeightage);
-
-            if (!policiesComplianceByCategory.isEmpty() && (null != policiesComplianceByCategory.get(complianceByPolicy.get(POLICY_CATEGORY).toString()))) {
-                Map<String, Double> existingCompliancePercentageByPolicy = policiesComplianceByCategory.get(complianceByPolicy.get(POLICY_CATEGORY));
-                denominator += (existingCompliancePercentageByPolicy.get(DENOMINATOR));
-                numerator += (existingCompliancePercentageByPolicy.get(NUMERATOR));
+            if (!policiesComplianceByCategory.isEmpty()
+                    && (null != policiesComplianceByCategory.get(complainceByPolicy.get(POLICY_CATEGORY).toString()))) {
+                Map<String, Double> exisitngCompliancePercentageBypolicy = policiesComplianceByCategory.get(complainceByPolicy
+                        .get(POLICY_CATEGORY));
+                denominator += (exisitngCompliancePercentageBypolicy.get(DENOMINATOR));
+                numerator += (exisitngCompliancePercentageBypolicy.get(NUMERATOR));
             }
-
-            compliancePercentageByPolicy.put(DENOMINATOR, denominator);
-            compliancePercentageByPolicy.put(NUMERATOR, numerator);
-            policiesComplianceByCategory.put(complianceByPolicy.get(POLICY_CATEGORY).toString(), compliancePercentageByPolicy);
+            compliancePercentageBypolicy.put(DENOMINATOR, denominator);
+            compliancePercentageBypolicy.put(NUMERATOR, numerator);
+            policiesComplianceByCategory.put(complainceByPolicy.get(POLICY_CATEGORY).toString(), compliancePercentageBypolicy);
         }
 
         if (isTaggingPresent) {
             Map<String, Long> taggingInfo = getTagging(assetGroup, null);
-            Map<String, Double> compliancePercentageByPolicy = new HashMap<>();
-            compliancePercentageByPolicy.put(DENOMINATOR, taggingInfo.get(ASSETS).doubleValue());
-            compliancePercentageByPolicy.put(NUMERATOR, taggingInfo.get(TAGGED).doubleValue() * HUNDRED);
-            policiesComplianceByCategory.put(CATEGORY_TAGGING, compliancePercentageByPolicy);
+            Map<String, Double> compliancePercentageBypolicy = new HashMap<>();
+            compliancePercentageBypolicy.put(DENOMINATOR, taggingInfo.get("assets").doubleValue());
+            compliancePercentageBypolicy.put(NUMERATOR, taggingInfo.get("tagged").doubleValue() * HUNDRED);
+            policiesComplianceByCategory.put("tagging", compliancePercentageBypolicy);
         }
-
         return policiesComplianceByCategory;
     }
 
     private double calculateIssueCompliance(double numerator, double denominator) {
         if (denominator > 0) {
-            return Math.floor(numerator / denominator);
+            return Math.floor(numerator * 1.0 / denominator);
         } else {
             return HUNDRED;
         }
@@ -1245,22 +1462,20 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         } catch (DataException e) {
             throw new ServiceException(e);
         }
-
         return policies;
     }
 
-    private List<LinkedHashMap<String, Object>> getComplianceByPolicies(String domain, String assetGroup, List<Object> policies) throws ServiceException {
+    private List<LinkedHashMap<String, Object>> getComplainceByPolicies(String domain, String assetGroup,
+                                                                        List<Object> policies) throws ServiceException {
         List<LinkedHashMap<String, Object>> complainceByPolicies = null;
         Map<String, String> filter = new HashMap<>();
-
         filter.put(DOMAIN, domain);
         Request request = new Request("", 0, policies.size(), filter, assetGroup);
-        ResponseWithOrder response = getPolicyCompliance(request);
+        ResponseWithOrder response = getPolicycompliance(request);
 
         if (null != response) {
             complainceByPolicies = response.getResponse();
         }
-
         return complainceByPolicies;
     }
 
@@ -1275,28 +1490,24 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             String kernelSriteriaString = systemConfigurationService.getConfigValue(compCriteriaMap);
             StringTokenizer st = new StringTokenizer(kernelSriteriaString, "|");
             StringTokenizer keyValue;
-
             logger.debug("criteria string {}", kernelSriteriaString);
-
             while (st.hasMoreTokens()) {
                 keyValue = new StringTokenizer(st.nextToken(), "#");
                 kernelCriteriaMap.put(keyValue.nextToken(), keyValue.nextToken());
             }
             logger.debug("criteria map {} ", kernelCriteriaMap);
-
             return kernelCriteriaMap;
         } catch (Exception e) {
             // create a empty map
-            logger.error("buildCriteriaMap >> error parsing pacman.kernel.compliance.map from system configuration", e.getMessage());
-
+            logger.error("error parsing pacman.kernel.compliance.map from system configuration", e.getMessage());
             return new TreeMap<>();
         }
     }
 
     @Override
-    public IssueExceptionResponse addMultipleIssueException(String assetGroup, IssuesException issuesException) throws ServiceException {
+    public IssueExceptionResponse addMultipleIssueException(String assetGroup,IssuesException issuesException) throws ServiceException {
         try {
-            return repository.exemptAndUpdateMultipleIssueDetails(assetGroup, issuesException);
+            return repository.exemptAndUpdateMultipleIssueDetails(assetGroup,issuesException);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -1312,45 +1523,53 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     }
 
     private List<Map<String, Object>> formComplianceDetailsForApplicationByEnvironment(String policyId,
-                                                                                       Map<String, Long> assetCountByEnvs, Map<String, Long> issuesForApplcationByEnvMap, String assetGroup,
-                                                                                       String application, List<Map<String, Object>> environmentList, String targetType, String searchText) throws ServiceException {
+                                                                                       Map<String, Long> assetCountbyEnvs, Map<String, Long> issuesForApplcationByEnvMap, String assetGroup,
+                                                                                       String application, List<Map<String, Object>> environmentList, String targetType, String searchText)
+            throws ServiceException {
         Map<String, Object> environment;
-        String envFromAsset;
-        double compliancePercentage;
-
         Long assetCount;
         long issueCount = 0;
         long complaintAssets;
-
+        String envFromAsset;
+        double compliancePercentage;
         // Form Compliance Details for Application by Envi
-        for (Map.Entry<String, Long> assetCountByEnv : assetCountByEnvs.entrySet()) {
+        for (Map.Entry<String, Long> assetCountByEnv : assetCountbyEnvs.entrySet()) {
             environment = new HashMap<>();
             assetCount = assetCountByEnv.getValue();
             envFromAsset = assetCountByEnv.getKey();
+
             if ((policyId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled) || policyId.equalsIgnoreCase(SSM_AGENT_RULE)) {
                 try {
-                    assetCount = repository.getInstanceCountForQualys(assetGroup, POLICY_DETAILS_BY_ENVIRONMENT, application, envFromAsset, targetType);
+                    PolicyParams discoveredDayRangeParam = policyParamService.getPolicyParamsByPolicyIdAndKey(policyId,DISCOVERED_DAYS_RANGE);
+                    String discoverDayRange=discoveredDayRangeParam.getValue();
+                    assetCount = repository.getInstanceCountForQualys(assetGroup, "policydetailsbyenvironment",
+                            application, envFromAsset, targetType, discoverDayRange);
                 } catch (DataException e) {
-                    logger.error("Error @ formComplianceDetailsForApplicationByEnvironment while getting the asset count from the qualys or ssm from ES", e);
+                    logger.error(
+                            "Error @ formComplianceDetailsForApplicationByEnvironment while getting the asset count from the qualys or ssm from ES",
+                            e);
                     throw new ServiceException(e);
                 }
             }
 
             if (policyId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY)) {
                 try {
-                    assetCount = repository.getPatchabeAssetsCount(assetGroup, targetType, application, envFromAsset, searchText);
+                    assetCount = repository.getPatchabeAssetsCount(assetGroup, targetType, application, envFromAsset,
+                            searchText);
                 } catch (DataException e) {
-                    logger.error("Error @ formComplianceDetailsForApplicationByEnvironment while getting the asset count from the cloud kernel policy from ES", e);
+                    logger.error(
+                            "Error @ formComplianceDetailsForApplicationByEnvironment while getting the asset count from the cloud kernel policy from ES",
+                            e);
                     throw new ServiceException(e);
                 }
             }
 
-            issueCount = (null != issuesForApplcationByEnvMap.get(envFromAsset)) ? issuesForApplcationByEnvMap.get(envFromAsset) : 0L;
+            issueCount = (null != issuesForApplcationByEnvMap.get(envFromAsset)) ? issuesForApplcationByEnvMap
+                    .get(envFromAsset) : 0l;
             if (issueCount > 0) {
                 if (issueCount > assetCount) {
                     issueCount = assetCount;
                 }
-
                 complaintAssets = assetCount - issueCount;
                 compliancePercentage = (complaintAssets * HUNDRED / assetCount);
                 compliancePercentage = Math.floor(compliancePercentage);
@@ -1361,68 +1580,328 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
 
             environment.put(TOTAL, assetCount);
             environment.put(ENV, envFromAsset);
-            environment.put(COMPLAINT, complaintAssets);
+            environment.put("compliant", complaintAssets);
             environment.put(NON_COMPLIANT, issueCount);
             environment.put(COMPLIANTPERCENTAGE, compliancePercentage);
             environmentList.add(environment);
         }
-
         return environmentList;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> getPolicyDetailsByApplication(String assetGroup, String policyId, String searchText) throws ServiceException {
-        Map<String, Long> assetCountByApplications;
+    public List<Map<String, Object>> getPolicyDetailsbyApplication(String assetGroup, String policyId, String searchText)
+            throws ServiceException {
+        Map<String, Long> assetcountbyAplications;
         List<Map<String, Object>> applicationList = new ArrayList<>();
         String targetType = null;
         JsonArray buckets;
-
         try {
             buckets = repository.getPolicyDetailsByApplicationFromES(assetGroup, policyId, searchText);
         } catch (DataException e) {
-            logger.error("Error @ getPolicyDetailsByApplication while getting the application by policy from ES", e);
+            logger.error("Error @ getPolicyDetailsbyApplication while getting the application by policy from ES", e);
             throw new ServiceException(e);
         }
-
         Gson googleJson = new Gson();
         List<Map<String, Object>> issuesByApplcationList = googleJson.fromJson(buckets, ArrayList.class);
         Map<String, Long> issuesByApplcationListMap = issuesByApplcationList.parallelStream().collect(
-                Collectors.toMap(issue -> issue.get(KEY).toString(), issue -> (long) Double.parseDouble(issue.get(DOC_COUNT).toString())));
+                Collectors.toMap(issue -> issue.get(KEY).toString(),
+                        issue -> (long) Double.parseDouble(issue.get(DOC_COUNT).toString())));
         targetType = getTargetTypeByPolicyId(policyId);
-
         if (!Strings.isNullOrEmpty(targetType)) {
             // Get AssetCount By application for Policy TargetType
+
             if (policyId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY)) {
                 try {
-                    assetCountByApplications = repository.getPatchableAssetsByApplication(assetGroup, searchText, targetType);
+                    assetcountbyAplications = repository.getPatchableAssetsByApplication(assetGroup, searchText,
+                            targetType);
                 } catch (DataException e) {
-                    logger.error("Error @ getPolicyDetailsByApplication while getting the instance count for cloud kernel policy from ES", e);
+                    logger.error(
+                            "Error @ getPolicyDetailsbyApplication while getting the instance count for cloud kernel policy from ES",
+                            e);
                     throw new ServiceException(e);
                 }
             } else if ((policyId.equalsIgnoreCase(ONPREM_KERNEL_COMPLIANCE_RULE))) {
                 try {
-                    assetCountByApplications = repository.getPatchableAssetsByApplication(assetGroup, searchText, ONPREMSERVER);
+                    assetcountbyAplications = repository.getPatchableAssetsByApplication(assetGroup, searchText,
+                            ONPREMSERVER);
                 } catch (DataException e) {
-                    logger.error("Error @ getPolicyDetailsByApplication while getting the instance count for onprem kernel policy from ES", e);
+                    logger.error(
+                            "Error @ getPolicyDetailsbyApplication while getting the instance count for onprem kernel policy from ES",
+                            e);
                     throw new ServiceException(e);
                 }
-            } else if ((policyId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled) || policyId.equalsIgnoreCase(SSM_AGENT_RULE)) {
+            } else if ((policyId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled)
+                    || policyId.equalsIgnoreCase(SSM_AGENT_RULE)) {
                 try {
-                    assetCountByApplications = repository.getInstanceCountForQualysByAppsOrEnv(assetGroup, POLICY_DETAILS_BY_APPLICATION, "", "", targetType);
+                    PolicyParams discoveredDayRangeParam = policyParamService.getPolicyParamsByPolicyIdAndKey(policyId,DISCOVERED_DAYS_RANGE);
+                    String discoverDayRange=discoveredDayRangeParam.getValue();
+                    assetcountbyAplications = repository.getInstanceCountForQualysByAppsOrEnv(assetGroup,
+                            "policydetailsbyapplication", "", "", targetType,discoverDayRange);
                 } catch (DataException e) {
-                    logger.error("Error @ getPolicyDetailsByApplication while getting the instance count for qualys from ES", e);
+                    logger.error(
+                            "Error @ getPolicyDetailsbyApplication while getting the instance count for qualys from ES",
+                            e);
                     throw new ServiceException(e);
                 }
             } else {
-                assetCountByApplications = repository.getAllApplicationsAssetCountForTargetType(assetGroup, targetType);
+                assetcountbyAplications = repository.getAllApplicationsAssetCountForTargetType(assetGroup, targetType);
             }
-
             // Form Compliance Details by Application
-            formComplianceDetailsByApplication(applicationList, assetCountByApplications, issuesByApplcationListMap);
+            formComplianceDetailsByApplication(applicationList, assetcountbyAplications,
+                    issuesByApplcationListMap);
         } else {
             throw new ServiceException("No Target Type associated");
         }
-
         return applicationList;
+
+    }
+
+    /**
+     * return object is a list of map objects. Each map object is for a category with other details like number of passed checks and
+     * total checks. Sample return object as below -
+     * [{ category:'security',passed:45,failed:67,assetsScanned:134},
+     *  { category:'cost',passed:21,failed:33,assetsScanned:54},
+     *  { category:'governance',passed:17,failed:20,assetsScanned:37}]
+     *
+     * @param assetGroup
+     * @return
+     */
+
+    @Override
+    public List<Map<String, Object>> getCategoryCompDetails(String assetGroup) throws Exception {
+        List<Object> policies = null;
+        List<LinkedHashMap<String, Object>> complainceByPolicies = null;
+        List<Map<String,Object>> categoryCompDetailsList = new ArrayList();
+        try {
+            policies = getPolicies(repository.getTargetTypeForAG(assetGroup, null));
+            Request request = new Request("", 0, policies.size(), Collections.emptyMap(), assetGroup);
+            ResponseWithOrder response = getPolicycompliance(request);
+            if (null != response) {
+                complainceByPolicies = response.getResponse();
+            }
+            Map<String,List<LinkedHashMap<String, Object>>> categoryCompDetailsMap = complainceByPolicies.stream().collect(Collectors.groupingBy(obj->obj.get("policyCategory")!=null?((String)obj.get("policyCategory")).toLowerCase():"none"));
+            categoryCompDetailsMap.remove("none");
+            categoryCompDetailsMap.entrySet().stream().forEach(obj -> {
+                Map<String,Object> detailsMap = new HashMap();
+                detailsMap.put("category",obj.getKey());
+                detailsMap.put("passed", obj.getValue().stream().map(imap -> (Long)imap.get("passed")).reduce(0l,(a,b)-> a+b));
+                detailsMap.put("failed", obj.getValue().stream().map(imap -> (Long)imap.get("failed")).reduce(0l,(a,b)-> a+b));
+                detailsMap.put("assetsScanned", obj.getValue().stream().map(imap -> (Long)imap.get("assetsScanned")).reduce(0l,(a,b)-> a+b));
+                categoryCompDetailsList.add(detailsMap);
+            });
+        } catch (Exception e) {
+            logger.debug("Exception occurred inside ComplianceServiceImpl.getCategoryCompDetails -  "+e.getMessage());
+            throw new Exception(e);
+        }
+        return categoryCompDetailsList;
+    }
+
+    public List<Map<String, Object>> getComplianceByCategoryOfTargetType(ComplianceByAssetTypeRequest request)
+            throws ServiceException {
+        long assetCount ;
+        long nonComplianceCount ;
+        long complianceCount ;
+        double compliancePercentage;
+        String type;
+
+
+        List<Map<String, Object>> targetTypes;
+        try {
+            targetTypes = repository.getRuleTargetTypesFromDbByPolicyId(request.getCategory());
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        if (targetTypes.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+
+        Map<String, String> filterTags = request.getFilter();
+
+        List<Map<String, Object>> assetList = new ArrayList<>();
+        Map<String, Long> assetCountByTypes = repository.getTotalAssetCount(request.getAg(), null,null,null);
+
+        Map<String, Long> nonComplicanceCountMap = getCategoryWiseTargetTypeIssue(request);
+        Map<String, Long> violationsCountMap = getCategoryWiseTargetTypeViolation(request);
+
+        // process records to format the response
+        for (Map<String, Object> targetType : targetTypes) {
+            type = targetType.get(TARGET_TYPE).toString();
+
+            Map<String, Object> data = new HashMap<>();
+            if (null != filterTags && !filterTags.isEmpty() && !filterTags.get(TARGET_TYPE).isEmpty()
+                    && (!type.equalsIgnoreCase(filterTags.get(TARGET_TYPE)))) {
+                continue;
+            }
+            assetCount = (null != assetCountByTypes.get(type)) ? Long.parseLong(assetCountByTypes.get(type).toString())
+                    : 0l;
+            if (assetCount > 0) {
+                nonComplianceCount = getNonCompliantAsset(nonComplicanceCountMap, type);
+                if (nonComplianceCount > assetCount) {
+                    nonComplianceCount = assetCount;
+                }
+                complianceCount = assetCount - nonComplianceCount;
+                compliancePercentage = (double) (complianceCount * INT_HUNDRED) / assetCount;
+                compliancePercentage = Math.floor(compliancePercentage);
+
+                data.put("name", type);
+                data.put("violations", getNonCompliantAsset(violationsCountMap, type));
+                data.put("compliance",  complianceCount);
+                data.put("nonCompliance", nonComplianceCount);
+                data.put("assetCount", assetCount);
+                data.put(COMP_PERCENTAGE, compliancePercentage);
+                assetList.add(data);
+            }
+        }
+        if (assetList.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        return assetList;
+    }
+
+    private Map<String, Long> getCategoryWiseTargetTypeIssue(ComplianceByAssetTypeRequest request)
+            throws ServiceException {
+        JsonParser parser = new JsonParser();
+        Map<String, Long> untaggedCountMap = new HashMap<>();
+        String responseDetails;
+        try {
+            responseDetails = repository.getCategoryWiseTargetTypeIssue(request);
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
+        JsonObject aggs = (JsonObject) responseJson.get(AGGREGATIONS);
+        JsonObject name = (JsonObject) aggs.get("resources");
+        JsonArray buckets = name.get(BUCKETS).getAsJsonArray();
+        // convert Json Array to Map object
+        for (JsonElement bucket : buckets) {
+            untaggedCountMap.put(bucket.getAsJsonObject().get("key").getAsString(),
+                    bucket.getAsJsonObject().get("unique_resources").getAsJsonObject().get("value").getAsLong());
+        }
+
+        return untaggedCountMap;
+    }
+
+    private Map<String, Long> getCategoryWiseTargetTypeViolation(ComplianceByAssetTypeRequest request)
+            throws ServiceException {
+        JsonParser parser = new JsonParser();
+        Map<String, Long> untaggedCountMap = new HashMap<>();
+        String responseDetails;
+        try {
+            responseDetails = repository.getCategoryWiseTargetTypeIssue(request);
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
+        JsonObject aggs = (JsonObject) responseJson.get(AGGREGATIONS);
+        JsonObject name = (JsonObject) aggs.get("resources");
+        JsonArray buckets = name.get(BUCKETS).getAsJsonArray();
+        // convert Json Array to Map object
+        for (JsonElement bucket : buckets) {
+            untaggedCountMap.put(bucket.getAsJsonObject().get("key").getAsString(),
+                    bucket.getAsJsonObject().get("doc_count").getAsLong());
+        }
+
+        return untaggedCountMap;
+    }
+
+    private long getNonCompliantAsset(Map<String, Long> bucketMap, String type) {
+        if (bucketMap.get(type) != null) {
+            return bucketMap.get(type);
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public ResponseWithOrder getPolicyComplianceOverviewAsList(Request request) throws Exception {
+        String assetGroup = request.getAg();
+        Map<String, String> filterMap = request.getFilter();
+        String domain = filterMap.get(DOMAIN);
+        String searchText = request.getSearchtext() ==null ? "" : request.getSearchtext().toLowerCase();
+        List<Object> rules = getPolicies(repository.getTargetTypeForAG(assetGroup, domain));
+        List<LinkedHashMap<String, Object>> policyDetList = getComplainceByPolicies(domain, assetGroup, rules);
+
+        if(filterMap != null){
+            if(filterMap.containsKey(Constants.NAME)){
+                policyDetList =  policyDetList.stream().filter(x -> x.containsKey(Constants.NAME)).filter(x -> x.get(Constants.NAME).toString().toLowerCase().equals(filterMap.get(Constants.NAME).toLowerCase())).collect(Collectors.toList());
+            }
+            if(filterMap.containsKey(Constants.SEVERITY)){
+                policyDetList =  policyDetList.stream().filter(x -> x.containsKey(Constants.SEVERITY)).filter(x -> x.get(Constants.SEVERITY).toString().toLowerCase().equals(filterMap.get(Constants.SEVERITY).toLowerCase())).collect(Collectors.toList());
+            }
+            if(filterMap.containsKey(Constants.CLOUD)){
+                policyDetList =  policyDetList.stream().filter(x -> x.containsKey(Constants.PROVIDER)).filter(x -> x.get(Constants.PROVIDER).toString().toLowerCase().equals(filterMap.get(Constants.CLOUD).toLowerCase())).collect(Collectors.toList());
+            }
+            if(filterMap.containsKey(Constants.CATEGORY) && filterMap.get(Constants.CATEGORY) != null){
+                List<String> catgoryList = Arrays.asList(filterMap.get(Constants.CATEGORY).split(",")).stream().map(x -> x.trim()).collect(Collectors.toList());
+                policyDetList =  policyDetList.stream().filter(x -> x.containsKey(Constants.POLICY_CATEGORY))
+                        .filter(x -> catgoryList.contains(x.get(Constants.POLICY_CATEGORY).toString().toLowerCase()))
+                        .collect(Collectors.toList());
+            }
+        }
+        if(!StringUtils.isEmpty(searchText)){
+            policyDetList = policyDetList.stream().filter(x -> x.get(Constants.NAME).toString().toLowerCase().contains(searchText) || x.get(Constants.SEVERITY).toString().toLowerCase().contains(searchText)
+                            || x.get(Constants.FAILED).toString().toLowerCase().contains(searchText) || x.get(Constants.POLICY_CATEGORY).toString().toLowerCase().contains(searchText) || x.get(Constants.COMPLIANCE_PERCENT).toString().toLowerCase().contains(searchText))
+                    .collect(Collectors.toList());
+        }
+        Collections.sort(policyDetList, (first, second) -> {
+            String firstValue = (String)first.get(Constants.NAME);
+            String secondValue = (String) second.get(Constants.NAME);
+            return firstValue.compareTo(secondValue);
+        });
+
+        int from = request.getFrom();
+        int size = request.getSize() == 0 ? 1000 : request.getSize();
+        int end = from+size;
+        if(from+size >= policyDetList.size())
+            end = policyDetList.size();
+
+        return new ResponseWithOrder(CollectionUtils.isEmpty(policyDetList) ? policyDetList : policyDetList.subList(from,end), policyDetList.size());
+    }
+
+    public ResponseEntity<Object> validateIssuesExemptionRequest(ExemptionRequest exemptionRequest) throws ParseException
+    {
+        if (Objects.isNull(exemptionRequest.getAction()) ||
+                Strings.isNullOrEmpty(exemptionRequest.getAction().toString())) {
+            return ResponseUtils.buildFailureResponse(new Exception(ACTION_REQUIRED_MSG));
+        }
+        if (Objects.isNull(exemptionRequest.getAssetGroup()) ||
+                Strings.isNullOrEmpty(exemptionRequest.getAssetGroup())) {
+            return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_REQUIRED_MSG));
+        }
+        if (Objects.isNull(exemptionRequest.getCreatedBy()) ||
+                Strings.isNullOrEmpty(exemptionRequest.getCreatedBy())) {
+            return ResponseUtils.buildFailureResponse(new Exception(CREATED_BY_REQUIRED_MSG));
+        }
+        if (Objects.isNull(exemptionRequest.getIssueIds()) || exemptionRequest.getIssueIds().isEmpty()) {
+            return ResponseUtils.buildFailureResponse(new Exception(ISSUE_ID_REQUIRED_MSG));
+        }
+        if (exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST) ||
+                exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST)) {
+            if (exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST) &&
+                    StringUtils.isEmpty(exemptionRequest.getApprovedBy())) {
+                return ResponseUtils.buildFailureResponse(new Exception(APPROVED_BY_REQUIRED_MSG));
+            }
+            if (exemptionRequest.getExceptionEndDate() == null) {
+                return ResponseUtils.buildFailureResponse(new Exception(END_DATE_REQUIRED_MSG));
+            }
+
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeZone(TimeZone.getTimeZone(UTC));
+            if (sdf.parse(sdf.format(exemptionRequest.getExceptionEndDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
+                return ResponseUtils.buildFailureResponse(
+                        new Exception(END_DATE_VALIDATION_MSG));
+            }
+        }
+        return null;
+    }
+
+    public ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest)
+            throws ServiceException {
+        try {
+            return repository.createOrRevokeUserExemptionRequest(exemptionRequest);
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
     }
 }

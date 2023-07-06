@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- *
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -42,47 +42,40 @@ import java.util.stream.Collectors;
 
 /**
  * Stub for unimplemented APIs. Can be removed after all APIs are completed
+ * 
  */
 @Service
 public class PatchingServiceImpl implements PatchingService, Constants {
 
-    /**
-     * The logger.
-     */
-    protected final Log logger = LogFactory.getLog(getClass());
-    /**
-     * The repository.
-     */
+    /** The repository. */
     @Autowired
     private PatchingRepository repository;
-    /**
-     * The issue trend service.
-     */
+
+    /** The issue trend service. */
     @Autowired
     private IssueTrendService issueTrendService;
-    /**
-     * The exec and director info.
-     */
+
+    /** The exec and director info. */
     private List<Map<String, Object>> execAndDirectorInfo;
-    /**
-     * The filter repository.
-     */
+
+    /** The filter repository. */
     @Autowired
     private FilterRepository filterRepository;
-    /**
-     * The asset service client.
-     */
+
+    /** The asset service client. */
     @Autowired
     private AssetServiceClient assetServiceClient;
-    /**
-     * The projection repository.
-     */
+
+    /** The projection repository. */
     @Autowired
     private ProjectionRepository projectionRepository;
 
+    /** The logger. */
+    protected final Log logger = LogFactory.getLog(getClass());
+
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.tmobile.pacman.api.compliance.service.PatchingService#
      * getNonCompliantNumberForAG(java.lang.String)
      */
@@ -95,17 +88,17 @@ public class PatchingServiceImpl implements PatchingService, Constants {
         List<Map<String, Object>> appComplianceList = new ArrayList<>();
 
         // Invoking ES
-        try {
-            AssetCountDTO[] targetTypes = filterRepository.getListOfTargetTypes(
-                    assetGroup, null);
-            for (AssetCountDTO targettype : targetTypes) {
-                if (StringUtils.isNotBlank(targettype.getType())) {
-                    appComplianceMapList.add(repository.getNonCompliantNumberForAgAndResourceType(assetGroup, targettype.getType()));
-                }
+      try{
+        AssetCountDTO[] targetTypes = filterRepository.getListOfTargetTypes(
+                assetGroup, null);
+        for (AssetCountDTO targettype : targetTypes) {
+            if (StringUtils.isNotBlank(targettype.getType())) {
+                appComplianceMapList.add(repository.getNonCompliantNumberForAgAndResourceType(assetGroup, targettype.getType()));
             }
-        } catch (DataException e) {
-            throw new ServiceException(e);
-        }
+            }
+      } catch (DataException e) {
+          throw new ServiceException(e);
+      }
         for (Map<String, Long> appComplianceMap : appComplianceMapList) {
 
             for (Map.Entry<String, Long> entry : appComplianceMap.entrySet()) {
@@ -134,29 +127,29 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.tmobile.pacman.api.compliance.service.PatchingService#
      * getNonCompliantExecsForAG(java.lang.String)
      */
     @Override
     public List<Map<String, Object>> getNonCompliantExecsForAG(String assetGroup)
             throws ServiceException {
-        List<Map<String, Long>> appComplianceMapList = new ArrayList<>();
+        List<Map<String, Long>> appComplianceMapList =new ArrayList<>();
         List<Map<String, Object>> appComplianceList = new ArrayList<>();
 
         // Invoking ES
 
-        try {
+        try{
             AssetCountDTO[] targetTypes = filterRepository.getListOfTargetTypes(
                     assetGroup, null);
             for (AssetCountDTO targettype : targetTypes) {
                 if (StringUtils.isNotBlank(targettype.getType())) {
                     appComplianceMapList.add(repository.getNonCompliantNumberForAgAndResourceType(assetGroup, targettype.getType()));
                 }
-            }
-        } catch (DataException e) {
-            throw new ServiceException(e);
-        }
+                }
+          } catch (DataException e) {
+              throw new ServiceException(e);
+          }
         for (Map<String, Long> appComplianceMap : appComplianceMapList) {
             for (Map.Entry<String, Long> entry : appComplianceMap.entrySet()) {
                 Map<String, Object> createdMap = new HashMap<>();
@@ -215,9 +208,11 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Fetch app exec.
      *
-     * @param app the app
+     * @param app
+     *            the app
      * @return the string
-     * @throws ServiceException the service exception
+     * @throws ServiceException
+     *             the service exception
      */
     private String fetchAppExec(String app) throws ServiceException {
         if (null == execAndDirectorInfo) {
@@ -245,9 +240,11 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Fetch app director.
      *
-     * @param app the app
+     * @param app
+     *            the app
      * @return the object
-     * @throws ServiceException the service exception
+     * @throws ServiceException
+     *             the service exception
      */
     private Object fetchAppDirector(String app) throws ServiceException {
         if (null == execAndDirectorInfo) {
@@ -275,14 +272,14 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.tmobile.pacman.api.compliance.service.PatchingService#getPatchingDetails
      * (java.lang.String, java.util.Map)
      */
     @Override
     public List<Map<String, Object>> getPatchingDetails(String assetGroup,
-                                                        Map<String, String> filter) throws ServiceException {
+            Map<String, String> filter) throws ServiceException {
         List<Map<String, Object>> patchingDetailsList;
         try {
             patchingDetailsList = new ArrayList<>();
@@ -290,26 +287,26 @@ public class PatchingServiceImpl implements PatchingService, Constants {
                     .getListOfTargetTypes(assetGroup, null);
             for (AssetCountDTO targettype : targetTypes) {
                 if (StringUtils.isNotBlank(targettype.getType()) && ("ec2".equals(targettype.getType()))) {
-                    // get apps info
-                    List<Map<String, Object>> cloudAppsList = getCloudAppList(CLOUD);
-                    Map<String, Object> cloudappstodirectorMap = getCloudAppstodirectorMap(
-                            cloudAppsList, DIRECTOR);
-                    Map<String, Object> cloudappstoExecutiveMap = getCloudAppstodirectorMap(
-                            cloudAppsList, EXCUTIVE_SPONSOR);
-                    List<Map<String, Object>> issueInfo = repository
-                            .getIssueInfo(assetGroup);
-                    Map<String, String> instanceIssueStatusLookup = prepareInstanceToIssueStatusLookup(issueInfo);
-                    List<Map<String, Object>> instanceInfo = repository
-                            .getInstanceInfo(assetGroup, filter);
-                    List<Map<String, Object>> closedInfo = repository
-                            .getClosedIssueInfo(assetGroup,
-                                    instanceInfo.size());
-                    Map<String, String> closedInfoLookup = prepareInstanceToClosedIssueStatusLookup(closedInfo);
-                    patchingDetailsListForEc2(patchingDetailsList,
-                            instanceInfo, instanceIssueStatusLookup,
-                            cloudappstodirectorMap,
-                            cloudappstoExecutiveMap, closedInfoLookup,
-                            targettype.getType());
+                        // get apps info
+                        List<Map<String, Object>> cloudAppsList = getCloudAppList(CLOUD);
+                        Map<String, Object> cloudappstodirectorMap = getCloudAppstodirectorMap(
+                                cloudAppsList, DIRECTOR);
+                        Map<String, Object> cloudappstoExecutiveMap = getCloudAppstodirectorMap(
+                                cloudAppsList, EXCUTIVE_SPONSOR);
+                        List<Map<String, Object>> issueInfo = repository
+                                .getIssueInfo(assetGroup);
+                        Map<String, String> instanceIssueStatusLookup = prepareInstanceToIssueStatusLookup(issueInfo);
+                        List<Map<String, Object>> instanceInfo = repository
+                                .getInstanceInfo(assetGroup, filter);
+                        List<Map<String, Object>> closedInfo = repository
+                                .getClosedIssueInfo(assetGroup,
+                                        instanceInfo.size());
+                        Map<String, String> closedInfoLookup = prepareInstanceToClosedIssueStatusLookup(closedInfo);
+                        patchingDetailsListForEc2(patchingDetailsList,
+                                instanceInfo, instanceIssueStatusLookup,
+                                cloudappstodirectorMap, 
+                                cloudappstoExecutiveMap, closedInfoLookup,
+                                targettype.getType());
 
                 }
             }
@@ -321,14 +318,14 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.tmobile.pacman.api.compliance.service.PatchingService#getPatchingProgress
      * (java.lang.String, int, int)
      */
     @Override
     public Map<String, Object> getPatchingProgress(String assetGroup, int year,
-                                                   int quarter) throws ServiceException {
+            int quarter) throws ServiceException {
         List<Map<String, Object>> patchingProgressList;
         try {
             patchingProgressList = repository.getPatchingProgress(assetGroup,
@@ -337,7 +334,7 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
             // Sort the list by the date in ascending order
             Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
-                            m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
+                    m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
                     .compareTo(
                             LocalDate.parse(m2.get("date").toString(),
                                     DateTimeFormatter.ISO_DATE));
@@ -358,7 +355,7 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.tmobile.pacman.api.compliance.service.PatchingService#
      * getQuartersWithPatchingData(java.lang.String)
      */
@@ -409,9 +406,12 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Fill no data dates with previous.
      *
-     * @param patchingProgressList the patching progress list
-     * @param year                 the year
-     * @param quarter              the quarter
+     * @param patchingProgressList
+     *            the patching progress list
+     * @param year
+     *            the year
+     * @param quarter
+     *            the quarter
      */
     private void fillNoDataDatesWithPrevious(
             List<Map<String, Object>> patchingProgressList, int year,
@@ -444,8 +444,8 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
         Map<String, Object> currentData = new LinkedHashMap<>();
         currentData.put(TOTAL_INSTANCES, 0);
-        currentData.put(PATCHED_INSTANCES, 0);
-        currentData.put(UNPATCHED_INSTANCES, 0);
+        currentData.put(PATCHED_INSTANCE, 0);
+        currentData.put(UNPATCHED_INSTANCE, 0);
 
         for (int i = 0; i < listOfAllDates.size(); i++) {
             LocalDate date = listOfAllDates.get(i);
@@ -456,10 +456,10 @@ public class PatchingServiceImpl implements PatchingService, Constants {
                 patchInfo.put("date", date.format(DateTimeFormatter.ISO_DATE));
                 patchInfo
                         .put(TOTAL_INSTANCES, currentData.get(TOTAL_INSTANCES));
-                patchInfo.put(PATCHED_INSTANCES,
-                        currentData.get(PATCHED_INSTANCES));
-                patchInfo.put(UNPATCHED_INSTANCES,
-                        currentData.get(UNPATCHED_INSTANCES));
+                patchInfo.put(PATCHED_INSTANCE,
+                        currentData.get(PATCHED_INSTANCE));
+                patchInfo.put(UNPATCHED_INSTANCE,
+                        currentData.get(UNPATCHED_INSTANCE));
                 patchingProgressList.add(i, patchInfo);
             } else {
                 currentData = patchInfo;
@@ -471,8 +471,10 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Gets the patching data for date.
      *
-     * @param patchingProgressList the patching progress list
-     * @param date                 the date
+     * @param patchingProgressList
+     *            the patching progress list
+     * @param date
+     *            the date
      * @return the patching data for date
      */
     private Map<String, Object> getPatchingDataForDate(
@@ -494,12 +496,17 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Segregate patching progress by week.
      *
-     * @param assetGroup           the asset group
-     * @param patchingProgressList the patching progress list
-     * @param year                 the year
-     * @param quarter              the quarter
+     * @param assetGroup
+     *            the asset group
+     * @param patchingProgressList
+     *            the patching progress list
+     * @param year
+     *            the year
+     * @param quarter
+     *            the quarter
      * @return the map
-     * @throws ServiceException the service exception
+     * @throws ServiceException
+     *             the service exception
      */
     private Map<String, Object> segregatePatchingProgressByWeek(
             String assetGroup, List<Map<String, Object>> patchingProgressList,
@@ -548,8 +555,8 @@ public class PatchingServiceImpl implements PatchingService, Constants {
                                     .isAfter(startingDayOfWeekLocalCopy
                                             .minusDays(1))
                                     && (dateInThisIteration
-                                    .isBefore(endingDayOfWeekLocalCopy
-                                            .plusDays(1)))) {
+                                            .isBefore(endingDayOfWeekLocalCopy
+                                                    .plusDays(1)))) {
                                 // If the date matches, lets pick the map which
                                 // represents this date's patching data and add
                                 // it to
@@ -580,16 +587,16 @@ public class PatchingServiceImpl implements PatchingService, Constants {
             patchingProgressListForTheWeek.forEach(patchingProgressMap -> {
 
                 // We don't need _id in the response
-                patchingProgressMap.remove("_id");
+                    patchingProgressMap.remove("_id");
 
-                /*
-                 * We only need this to see the compliance percentage level
-                 * on the last day of each week and on current day. We have
-                 * calculated this above already. Lets remove it from the
-                 * response, else it will show up on all 'days'
-                 */
-                patchingProgressMap.remove("patching_percentage");
-            });
+                    /*
+                     * We only need this to see the compliance percentage level
+                     * on the last day of each week and on current day. We have
+                     * calculated this above already. Lets remove it from the
+                     * response, else it will show up on all 'days'
+                     */
+                    patchingProgressMap.remove("patching_percentage");
+                });
 
             // Store a 'copy' of the weeks array list instead of the original,
             // as we will clear the original and reuse it for the next
@@ -604,9 +611,9 @@ public class PatchingServiceImpl implements PatchingService, Constants {
                 totalInstancesRunningValue = (long) getLatestDaysNumericDataFromAWeeklyDataList(
                         TOTAL_INSTANCES, patchingProgressListForTheWeek);
                 patchedInstancesRunningValue = (long) getLatestDaysNumericDataFromAWeeklyDataList(
-                        PATCHED_INSTANCES, patchingProgressListForTheWeek);
+                        PATCHED_INSTANCE, patchingProgressListForTheWeek);
                 unpatchedInstancesRunningValue = (long) getLatestDaysNumericDataFromAWeeklyDataList(
-                        UNPATCHED_INSTANCES, patchingProgressListForTheWeek);
+                        UNPATCHED_INSTANCE, patchingProgressListForTheWeek);
 
                 // Maintain a max instance number for the quarter that is being
                 // processed.
@@ -685,9 +692,9 @@ public class PatchingServiceImpl implements PatchingService, Constants {
         quarterlyDataMap.put("max_instances", maxInstancesForTheQuarter);
 
         quarterlyDataMap.put(TOTAL_INSTANCES, totalInstancesRunningValue);
-        quarterlyDataMap.put(PATCHED_INSTANCES, patchedInstancesRunningValue);
+        quarterlyDataMap.put(PATCHED_INSTANCE, patchedInstancesRunningValue);
         quarterlyDataMap
-                .put(UNPATCHED_INSTANCES, unpatchedInstancesRunningValue);
+                .put(UNPATCHED_INSTANCE, unpatchedInstancesRunningValue);
         quarterlyDataMap.put("compliance", complianceRunningValue);
         quarterlyDataMap.put("patching_progress", allWeeksDataList);
 
@@ -702,7 +709,8 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Calculate weekly compliance.
      *
-     * @param patchingProgressListForTheWeek the patching progress list for the week
+     * @param patchingProgressListForTheWeek
+     *            the patching progress list for the week
      * @return the double
      */
     private double calculateWeeklyCompliance(
@@ -725,8 +733,10 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Gets the latest days numeric data from A weekly data list.
      *
-     * @param dataKeyName                    the data key name
-     * @param patchingProgressListForTheWeek the patching progress list for the week
+     * @param dataKeyName
+     *            the data key name
+     * @param patchingProgressListForTheWeek
+     *            the patching progress list for the week
      * @return the latest days numeric data from A weekly data list
      */
     private double getLatestDaysNumericDataFromAWeeklyDataList(
@@ -751,8 +761,10 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Gets the max value numeric data from A weekly data list.
      *
-     * @param dataKeyName                    the data key name
-     * @param patchingProgressListForTheWeek the patching progress list for the week
+     * @param dataKeyName
+     *            the data key name
+     * @param patchingProgressListForTheWeek
+     *            the patching progress list for the week
      * @return the max value numeric data from A weekly data list
      */
     private double getMaxValueNumericDataFromAWeeklyDataList(
@@ -778,7 +790,8 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Prepare instance to issue status lookup.
      *
-     * @param issueInfo the issue info
+     * @param issueInfo
+     *            the issue info
      * @return the map
      */
     private Map<String, String> prepareInstanceToIssueStatusLookup(
@@ -795,7 +808,8 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Prepare instance to closed issue status lookup.
      *
-     * @param closedIssueInfo the closed issue info
+     * @param closedIssueInfo
+     *            the closed issue info
      * @return the map
      */
     private Map<String, String> prepareInstanceToClosedIssueStatusLookup(
@@ -811,7 +825,7 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.tmobile.pacman.api.compliance.service.PatchingService#
      * getFirstDayOfQuarter(int, int)
      */
@@ -824,7 +838,7 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.tmobile.pacman.api.compliance.service.PatchingService#getLastDayOfQuarter
      * (int, int)
@@ -843,7 +857,7 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.tmobile.pacman.api.compliance.service.PatchingService#getOngoingQuarter
      * ()
@@ -856,7 +870,7 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.tmobile.pacman.api.compliance.service.PatchingService#getOngoingYear
      * ()
@@ -869,7 +883,7 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.tmobile.pacman.api.compliance.service.PatchingService#
      * filterMatchingCollectionElements(java.util.List, java.lang.String,
      * boolean)
@@ -885,7 +899,8 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Prepare onprem to issue status lookup.
      *
-     * @param onpremIssueInfo the onprem issue info
+     * @param onpremIssueInfo
+     *            the onprem issue info
      * @return the map
      */
     private Map<String, String> prepareOnpremToIssueStatusLookup(
@@ -902,29 +917,44 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     /**
      * Gets the patching details list.
      *
-     * @param resourceId          the resource id
-     * @param name                the name
-     * @param status              the status
-     * @param kernelVersion       the kernel version
-     * @param source              the source
-     * @param assetType           the asset type
-     * @param ipAddress           the ip address
-     * @param accountName         the account name
-     * @param application         the application
-     * @param environment         the environment
-     * @param vpcid               the vpcid
-     * @param patchingDetailsList the patching details list
-     * @param directors           the directors
-     * @param executiveSponser    the executive sponser
-     * @param targetType          the target type
+     * @param resourceId
+     *            the resource id
+     * @param name
+     *            the name
+     * @param status
+     *            the status
+     * @param kernelVersion
+     *            the kernel version
+     * @param source
+     *            the source
+     * @param assetType
+     *            the asset type
+     * @param ipAddress
+     *            the ip address
+     * @param accountName
+     *            the account name
+     * @param application
+     *            the application
+     * @param environment
+     *            the environment
+     * @param vpcid
+     *            the vpcid
+     * @param patchingDetailsList
+     *            the patching details list
+     * @param directors
+     *            the directors
+     * @param executiveSponser
+     *            the executive sponser
+     * @param targetType
+     *            the target type
      * @return the patching details list
      */
     private List<Map<String, Object>> getPatchingDetailsList(Object resourceId,
-                                                             Object name, String status, String kernelVersion, String source,
-                                                             String assetType, Object ipAddress, Object accountName,
-                                                             Object application, Object environment, Object vpcid,
-                                                             List<Map<String, Object>> patchingDetailsList, Object directors,
-                                                             Object executiveSponser, String targetType) {
+            Object name, String status, String kernelVersion, String source,
+            String assetType, Object ipAddress, Object accountName,
+            Object application, Object environment, Object vpcid,
+            List<Map<String, Object>> patchingDetailsList, Object directors,
+            Object executiveSponser, String targetType) {
         Map<String, Object> patchingDetail = new LinkedHashMap<>();
         patchingDetail.put(RESOURCEID, resourceId);
         patchingDetail.put("name", name);
@@ -946,11 +976,12 @@ public class PatchingServiceImpl implements PatchingService, Constants {
 
     private List<Map<String, Object>> getCloudAppList(String type)
             throws DataException {
-        return projectionRepository.getAppsDetails(type);
+            return projectionRepository.getAppsDetails(type);
     }
 
     private Map<String, Object> getCloudAppstodirectorMap(
-            List<Map<String, Object>> appsList, String type) {
+            List<Map<String, Object>> appsList, String type)
+            {
         return appsList
                 .parallelStream()
                 .filter(apps -> apps.get(type) != null)
@@ -982,29 +1013,29 @@ public class PatchingServiceImpl implements PatchingService, Constants {
             String ipAddress = "";
             String accountName = "";
             String vpcId = "";
-            if (null != issueStatusLookup && !issueStatusLookup.isEmpty()) {
+            if (null != issueStatusLookup && !issueStatusLookup.isEmpty()) { 
                 if (!Strings.isNullOrEmpty(issueStatusLookup.get(instanceInfoMap.get(RESOURCEID)))) {
                     status = returnStatus(issueStatusLookup.get(instanceInfoMap.get(RESOURCEID)));
                 } else {
                     status = "Compliant";
-                    source = getKernelVersionForEc2(closedInfoLookup, instanceInfoMap, targetType).get(SOURCE);
-                    kernelVersion = getKernelVersionForEc2(closedInfoLookup, instanceInfoMap, targetType).get(KERNEL_VERSION);
+                    source = getKernelVersionForEc2(closedInfoLookup, instanceInfoMap,targetType).get(SOURCE);
+                    kernelVersion = getKernelVersionForEc2(closedInfoLookup, instanceInfoMap,targetType).get(KERNEL_VERSION); 
                 }
                 if (EC2.equals(targetType)) {
                     type = "cloud";
-                    name = getAttributesValue("tags.Name", instanceInfoMap);
-                    ipAddress = getAttributesValue("privateipaddress", instanceInfoMap);
-                    accountName = getAttributesValue(ACCOUNT_NAME, instanceInfoMap);
-                    vpcId = getAttributesValue(VPC_ID, instanceInfoMap);
+                    name = getAttributesValue("tags.Name",instanceInfoMap);
+                    ipAddress = getAttributesValue("privateipaddress",instanceInfoMap);
+                    accountName = getAttributesValue(ACCOUNT_NAME,instanceInfoMap);
+                    vpcId = getAttributesValue(VPC_ID,instanceInfoMap);
 
                 }
             }
             if (null != instanceInfoMap.get(TAGS_APPLICATION)) {
                 director = getDirectorsAndExecutiveSponserName(ec2AppstoDirectorMap, instanceInfoMap, TAGS_APPLICATION);
                 executive = getDirectorsAndExecutiveSponserName(ec2AppstoExecutiveMap, instanceInfoMap, TAGS_APPLICATION);
-                application = getAttributesValue(TAGS_APPLICATION, instanceInfoMap);
+                application = getAttributesValue(TAGS_APPLICATION,instanceInfoMap);
             }
-            environment = getAttributesValue(TAGS_ENVIRONMENT, instanceInfoMap);
+            environment = getAttributesValue(TAGS_ENVIRONMENT,instanceInfoMap);
 
             getPatchingDetailsList(instanceInfoMap.get(RESOURCEID), name,
                     status, kernelVersion, source, type, ipAddress,
@@ -1016,14 +1047,13 @@ public class PatchingServiceImpl implements PatchingService, Constants {
     }
 
     private String getAttributesValue(String attribute,
-                                      Map<String, Object> instanceInfoMap) {
+            Map<String, Object> instanceInfoMap) {
         if (instanceInfoMap.containsKey(attribute)) {
             return instanceInfoMap.get(attribute).toString();
         }
         return "";
     }
-
-    private String getDirectorsAndExecutiveSponserName(Map<String, Object> ec2AppstoDirectorOrExecutiveSponsorsMap, Map<String, Object> instanceInfoMap, String attribute) {
+    private String getDirectorsAndExecutiveSponserName(Map<String, Object> ec2AppstoDirectorOrExecutiveSponsorsMap,Map<String, Object> instanceInfoMap,String attribute){
         if (null != ec2AppstoDirectorOrExecutiveSponsorsMap.get(instanceInfoMap
                 .get(attribute))) {
             return ec2AppstoDirectorOrExecutiveSponsorsMap.get(
@@ -1031,134 +1061,136 @@ public class PatchingServiceImpl implements PatchingService, Constants {
         }
         return "";
     }
-
-    private Map<String, String> getKernelVersionForEc2(Map<String, String> closedInfoLookup, Map<String, Object> instanceInfoMap, String targetType) {
+    
+    private Map<String,String> getKernelVersionForEc2(Map<String, String> closedInfoLookup,Map<String, Object> instanceInfoMap,String targetType){
         String value = null;
         String source = null;
         String kernelVersion = null;
-        Map<String, String> kvAndSourceMap = new HashMap<>();
-        if (EC2.equals(targetType) && (null != closedInfoLookup
+        Map<String,String> kvAndSourceMap = new HashMap<>();
+        if (EC2.equals(targetType) && (null != closedInfoLookup 
                 && !closedInfoLookup.isEmpty() && (!Strings.isNullOrEmpty(closedInfoLookup.get(instanceInfoMap
-                .get(RESOURCEID)))))) {
-            value = closedInfoLookup.get(instanceInfoMap
-                    .get(RESOURCEID)).substring(1, closedInfoLookup.get(instanceInfoMap
-                    .get(RESOURCEID)).length() - 1);
-            Map<String, String> resontoclose = null;
-            if (!value.isEmpty()) {
-                resontoclose = Arrays
-                        .stream(value.split(", "))
-                        .map(s -> s.split("="))
-                        .collect(Collectors.toMap(a -> a[0], // key
-                                a -> a[1] // value
-                        ));
-            }
-
-            if (resontoclose != null && null != resontoclose.get("sourceType")) {
-                source = resontoclose.get("sourceType");
-            }
-            if (resontoclose != null && null != resontoclose.get(KERNEL_VERSION)) {
-                kernelVersion = resontoclose
-                        .get(KERNEL_VERSION);
-            }
-        }
+                        .get(RESOURCEID)))))) {
+                value = closedInfoLookup.get(instanceInfoMap
+                        .get(RESOURCEID)).substring(1, closedInfoLookup.get(instanceInfoMap
+                        .get(RESOURCEID)).length() - 1);
+                Map<String, String> resontoclose=null;
+                if(!value.isEmpty()){
+                    resontoclose = Arrays
+                           .stream(value.split(", "))
+                           .map(s -> s.split("="))
+                           .collect(Collectors.toMap(a -> a[0], // key
+                                   a -> a[1] // value
+                                   ));}
+            
+                if (resontoclose!=null&&null != resontoclose.get("sourceType")) {
+                    source = resontoclose.get("sourceType");
+                }
+                if (resontoclose!=null&&null != resontoclose.get(KERNEL_VERSION)) {
+                    kernelVersion = resontoclose
+                            .get(KERNEL_VERSION);
+                }
+    }
         kvAndSourceMap.put(SOURCE, source);
         kvAndSourceMap.put(KERNEL_VERSION, kernelVersion);
         return kvAndSourceMap;
     }
-
-    private String returnStatus(String value) {
+    
+    private String returnStatus(String value){
         if (value.equalsIgnoreCase(EXEMPTED)) {
             return "Exempted";
         } else {
             return "Non Compliant";
         }
     }
+    
+	@Override
+	public Medal getStarRatingForAgPatching(String ag, int quarter, int year) {
+		
+	    LocalDate firstDay =  LocalDate.parse(repository.getAmilAvailDate(year, quarter));
+		LocalDate lastDay = getLastDayOfQuarter(quarter, year);
 
-    @Override
-    public Medal getStarRatingForAgPatching(String ag, int quarter, int year) {
+		boolean incompleteQuarter = false;
 
-        LocalDate firstDay = LocalDate.parse(repository.getAmilAvailDate(year, quarter));
-        LocalDate lastDay = getLastDayOfQuarter(quarter, year);
+		// We don't want data for future weeks. If the quarter being
+		// requested is the ongoing quarter, the max we we are interested
+		// is data up to and including the ongoing day in the ongoing week.
+		if (lastDay.isAfter(LocalDate.now())) {
+			lastDay = LocalDate.now();
+			incompleteQuarter = true;
+		}
 
-        boolean incompleteQuarter = false;
+		List<Map<String, Object>> ratingList = repository.getPatchingPercentForDateRange(ag, firstDay, lastDay);
+		List<Map<String, Object>> filteredRatingList = new ArrayList<Map<String, Object>>();
 
-        // We don't want data for future weeks. If the quarter being
-        // requested is the ongoing quarter, the max we we are interested
-        // is data up to and including the ongoing day in the ongoing week.
-        if (lastDay.isAfter(LocalDate.now())) {
-            lastDay = LocalDate.now();
-            incompleteQuarter = true;
-        }
+		ratingList.forEach(rateMap -> {
+			if (ag.equals(rateMap.get("ag"))) {
+				filteredRatingList.add(rateMap);
+			}
+		});
+		
+		
 
-        List<Map<String, Object>> ratingList = repository.getPatchingPercentForDateRange(ag, firstDay, lastDay);
-        List<Map<String, Object>> filteredRatingList = new ArrayList<Map<String, Object>>();
+      
 
-        ratingList.forEach(rateMap -> {
-            if (ag.equals(rateMap.get("ag"))) {
-                filteredRatingList.add(rateMap);
-            }
-        });
+		// Sort the list by the date in descending order
+		Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate
+				.parse(m2.get("date").toString(), DateTimeFormatter.ISO_DATE)
+				.compareTo(LocalDate.parse(m1.get("date").toString(), DateTimeFormatter.ISO_DATE));
+		Collections.sort(filteredRatingList, comp);
+		
+		List<String> patchingPercentFor45Days = new ArrayList<>(); 
+		filteredRatingList.forEach(rateMap->{
+			LocalDate d = LocalDate.parse(rateMap.get("date").toString(),
+					DateTimeFormatter.ISO_DATE);
+			if((patchingPercentFor45Days.isEmpty()) && (ChronoUnit.DAYS.between(firstDay,d)<45)) {
+				patchingPercentFor45Days.add(rateMap.get("patching_percentage").toString());
+			}
+		});
+		
+		List<String> patchingPercentFor60Days = new ArrayList<>(); 
+		filteredRatingList.forEach(rateMap->{
+			LocalDate d = LocalDate.parse(rateMap.get("date").toString(),
+					DateTimeFormatter.ISO_DATE);
+			if((patchingPercentFor60Days.isEmpty()) && (ChronoUnit.DAYS.between(firstDay,d)<60)) {
+				patchingPercentFor60Days.add(rateMap.get("patching_percentage").toString());
+			}
+		});
 
+		Medal patchingMedal = new Medal();
+		patchingMedal.setMedalType("");
+		patchingMedal.setMedalStatus("");
+		
+		double patchingPercentValueFor45Days = patchingPercentFor45Days.isEmpty()?0:Double.parseDouble(patchingPercentFor45Days.get(0));
+		double patchingPercentValueFor60Days = patchingPercentFor60Days.isEmpty()?0:Double.parseDouble(patchingPercentFor60Days.get(0));
+		double lastDatePatchingPercentValue = filteredRatingList.isEmpty()?0:Double.parseDouble(filteredRatingList.get(0).get("patching_percentage").toString());
+		
+		if(incompleteQuarter) {
+			patchingMedal.setMedalStatus("Pending");
+			if(patchingPercentValueFor45Days>=100) {
+				patchingMedal.setMedalType("GOLD");
+			}else if(patchingPercentValueFor60Days>=100) {
+				patchingMedal.setMedalType("SILVER");
+			}
+		}else {
+			//If we reach here, this means quarter end data is available
+			patchingMedal.setMedalStatus("Confirmed");
+			if(patchingPercentValueFor45Days>=100 && lastDatePatchingPercentValue>=100) {
+				patchingMedal.setMedalType("GOLD");
+			}else if(patchingPercentValueFor45Days>=100 && lastDatePatchingPercentValue>=90) {
+				patchingMedal.setMedalType("SILVER");
+			}else if(patchingPercentValueFor60Days>=100 && lastDatePatchingPercentValue>=100) {
+				patchingMedal.setMedalType("SILVER");
+			}else if(patchingPercentValueFor60Days>=100 && lastDatePatchingPercentValue>=90) {
+				patchingMedal.setMedalType("BRONZE");
+			}else if(lastDatePatchingPercentValue>=100) {
+				patchingMedal.setMedalType("BRONZE");
+			}else {
+				patchingMedal.setMedalStatus("");
+			}
+			
+		}
 
-        // Sort the list by the date in descending order
-        Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate
-                .parse(m2.get("date").toString(), DateTimeFormatter.ISO_DATE)
-                .compareTo(LocalDate.parse(m1.get("date").toString(), DateTimeFormatter.ISO_DATE));
-        Collections.sort(filteredRatingList, comp);
-
-        List<String> patchingPercentFor45Days = new ArrayList<>();
-        filteredRatingList.forEach(rateMap -> {
-            LocalDate d = LocalDate.parse(rateMap.get("date").toString(),
-                    DateTimeFormatter.ISO_DATE);
-            if ((patchingPercentFor45Days.isEmpty()) && (ChronoUnit.DAYS.between(firstDay, d) < 45)) {
-                patchingPercentFor45Days.add(rateMap.get("patching_percentage").toString());
-            }
-        });
-
-        List<String> patchingPercentFor60Days = new ArrayList<>();
-        filteredRatingList.forEach(rateMap -> {
-            LocalDate d = LocalDate.parse(rateMap.get("date").toString(),
-                    DateTimeFormatter.ISO_DATE);
-            if ((patchingPercentFor60Days.isEmpty()) && (ChronoUnit.DAYS.between(firstDay, d) < 60)) {
-                patchingPercentFor60Days.add(rateMap.get("patching_percentage").toString());
-            }
-        });
-
-        Medal patchingMedal = new Medal();
-        patchingMedal.setMedalType("");
-        patchingMedal.setMedalStatus("");
-
-        double patchingPercentValueFor45Days = patchingPercentFor45Days.isEmpty() ? 0 : Double.parseDouble(patchingPercentFor45Days.get(0));
-        double patchingPercentValueFor60Days = patchingPercentFor60Days.isEmpty() ? 0 : Double.parseDouble(patchingPercentFor60Days.get(0));
-        double lastDatePatchingPercentValue = filteredRatingList.isEmpty() ? 0 : Double.parseDouble(filteredRatingList.get(0).get("patching_percentage").toString());
-
-        if (incompleteQuarter) {
-            patchingMedal.setMedalStatus("Pending");
-            if (patchingPercentValueFor45Days >= 100) {
-                patchingMedal.setMedalType("GOLD");
-            } else if (patchingPercentValueFor60Days >= 100) {
-                patchingMedal.setMedalType("SILVER");
-            }
-        } else {
-            //If we reach here, this means quarter end data is available
-            patchingMedal.setMedalStatus("Confirmed");
-            if (patchingPercentValueFor45Days >= 100 && lastDatePatchingPercentValue >= 100) {
-                patchingMedal.setMedalType("GOLD");
-            } else if (patchingPercentValueFor45Days >= 100 && lastDatePatchingPercentValue >= 90) {
-                patchingMedal.setMedalType("SILVER");
-            } else if (patchingPercentValueFor60Days >= 100 && lastDatePatchingPercentValue >= 100) {
-                patchingMedal.setMedalType("SILVER");
-            } else if (patchingPercentValueFor60Days >= 100 && lastDatePatchingPercentValue >= 90) {
-                patchingMedal.setMedalType("BRONZE");
-            } else if (lastDatePatchingPercentValue >= 100) {
-                patchingMedal.setMedalType("BRONZE");
-            } else {
-                patchingMedal.setMedalStatus("");
-            }
-
-        }
-
-        return patchingMedal;
-    }
+		return patchingMedal;
+	}
 
 }

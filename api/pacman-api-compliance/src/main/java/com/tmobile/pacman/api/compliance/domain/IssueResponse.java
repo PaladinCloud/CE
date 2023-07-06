@@ -22,9 +22,9 @@
  **/
 package com.tmobile.pacman.api.compliance.domain;
 
-import java.util.Map;
-
 import com.google.common.collect.Maps;
+
+import java.util.Map;
 
 /**
  * The Class IssueResponse.

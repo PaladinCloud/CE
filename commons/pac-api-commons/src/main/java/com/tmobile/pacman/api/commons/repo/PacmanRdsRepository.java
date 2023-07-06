@@ -36,6 +36,8 @@ package com.tmobile.pacman.api.commons.repo;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -47,6 +49,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PacmanRdsRepository
 {
+
+	private final Logger logger = LoggerFactory.getLogger(PacmanRdsRepository.class);
+
+	private static final String ERROR_QUERYING_DATABASE = "Error in querying database - ";
 
 	@Autowired
 	private JdbcTemplate	jdbcTemplate;
@@ -79,5 +85,21 @@ public class PacmanRdsRepository
 	{
 
 		return jdbcTemplate.batchUpdate(query);
+	}
+
+	/**
+	 * Checks if a row exists using count query
+	 *
+	 * @param query uses count query
+	 * @param param only supports single param queries
+	 * @return boolean
+	 */
+	public boolean isExists(String query, String param) {
+		try {
+			return jdbcTemplate.queryForObject(query, new Object[]{param}, Integer.class) > 0;
+		} catch (Exception e) {
+			logger.error(ERROR_QUERYING_DATABASE, e);
+			return false;
+		}
 	}
 }
