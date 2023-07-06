@@ -177,8 +177,8 @@ public abstract class QualysDataImporter {
             try (InputStream inputStream = entity.getContent();
                  BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)) ){
                 LOGGER.debug("Reading response in chunks");
+                //CORE-895 Optimization fix
                 char[] buffer = new char[5242880];
-
                 int charBytesRead = 0;
                 while(charBytesRead >= 0){
                     charBytesRead = bufferedReader.read(buffer, 0, buffer.length);
