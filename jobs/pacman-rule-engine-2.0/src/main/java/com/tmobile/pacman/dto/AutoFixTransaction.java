@@ -108,7 +108,7 @@ public class AutoFixTransaction {
     /**
      * ruleId.
      */
-    private String ruleId;
+    private String policyId;
 
     /**
      * The account id.
@@ -225,16 +225,16 @@ public class AutoFixTransaction {
      * Instantiates a new auto fix transaction.
      *
      * @param resourceId     the resource id
-     * @param ruleId         the rule id
+     * @param policyId         the rule id
      * @param accountId      the account id
      * @param region         the region
      * @param applicationTag the application tag
      */
     public AutoFixTransaction(String resourceId,
-                              String ruleId, String accountId, String region, String applicationTag, String type, String issueId) {
+                              String policyId, String accountId, String region, String applicationTag, String type, String issueId) {
         super();
         this.resourceId = resourceId;
-        this.ruleId = ruleId;
+        this.policyId = policyId;
         this.accountId = accountId;
         this.region = region;
         this.applicationTag = applicationTag;
@@ -305,7 +305,7 @@ public class AutoFixTransaction {
     /**
      * @param action
      * @param resourceId
-     * @param ruleId
+     * @param policyId
      * @param executionId
      * @param transactionId
      * @param desc
@@ -315,14 +315,14 @@ public class AutoFixTransaction {
      * @param accountId
      * @param region
      */
-    public AutoFixTransaction(AutoFixAction action, String resourceId, String ruleId, String executionId, String transactionId,
+    public AutoFixTransaction(AutoFixAction action, String resourceId, String policyId, String executionId, String transactionId,
                               String desc, String type, String targetType, String issueId, String accountId, String region, String parentDocId) {
         super();
         this.transationTime = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
         this.action = action;
         this.resourceId = resourceId;
-        this.ruleId = ruleId;
+        this.policyId = policyId;
         this.executionId = executionId;
         this.transactionId = transactionId;
         this.desc = desc;
@@ -337,7 +337,7 @@ public class AutoFixTransaction {
     /**
      * @param action
      * @param resourceId
-     * @param ruleId
+     * @param policyId
      * @param executionId
      * @param transactionId
      * @param desc
@@ -345,14 +345,14 @@ public class AutoFixTransaction {
      * @param targetType
      * @param issueId
      */
-    public AutoFixTransaction(AutoFixAction action, String resourceId, String ruleId, String executionId, String transactionId,
+    public AutoFixTransaction(AutoFixAction action, String resourceId, String policyId, String executionId, String transactionId,
                               String desc, String type, String targetType, String issueId) {
         super();
         this.transationTime = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
         this.action = action;
         this.resourceId = resourceId;
-        this.ruleId = ruleId;
+        this.policyId = policyId;
         this.executionId = executionId;
         this.transactionId = transactionId;
         this.desc = desc;
@@ -474,17 +474,17 @@ public class AutoFixTransaction {
      *
      * @return the rule id
      */
-    public String getRuleId() {
-        return ruleId;
+    public String getPolicyId() {
+        return policyId;
     }
 
     /**
      * Sets the rule id.
      *
-     * @param ruleId the new rule id
+     * @param policyId the new rule id
      */
-    public void setRuleId(String ruleId) {
-        this.ruleId = ruleId;
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
 
@@ -492,15 +492,15 @@ public class AutoFixTransaction {
      * Instantiates a new auto fix transaction.
      *
      * @param resourceId the resource id
-     * @param ruleId     the rule id
+     * @param policyId     the rule id
      * @param accountId  the account id
      * @param region     the region
      */
     public AutoFixTransaction(String resourceId,
-                              String ruleId, String accountId, String region) {
+                              String policyId, String accountId, String region) {
         super();
         this.resourceId = resourceId;
-        this.ruleId = ruleId;
+        this.policyId = policyId;
         this.accountId = accountId;
         this.region = region;
     }
@@ -538,7 +538,7 @@ public class AutoFixTransaction {
         }
         for (Map.Entry<String, String> str : transactionParams.entrySet()) {
             if ("ruleId".equals(str.getKey()) && null != str.getValue()) {
-                this.ruleId = str.getValue();
+                this.policyId = str.getValue();
             } else if ("resourceId".equals(str.getKey()) && null != str.getValue()) {
                 this.resourceId = str.getValue();
             } else if ("accountId".equals(str.getKey()) && null != str.getValue()) {

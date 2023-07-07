@@ -16,6 +16,7 @@
 
 package com.tmobile.pacman.autofix.s3;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import com.amazonaws.services.s3.model.Grant;
 import com.amazonaws.services.s3.model.PublicAccessBlockConfiguration;
 import com.amazonaws.services.s3.model.SetPublicAccessBlockRequest;
 import com.amazonaws.util.CollectionUtils;
+import com.amazonaws.util.StringUtils;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tmobile.pacman.common.PacmanSdkConstants;
@@ -39,6 +41,7 @@ import com.tmobile.pacman.common.exception.PolicyEngineRunTimeException;
 import com.tmobile.pacman.commons.autofix.BaseFix;
 import com.tmobile.pacman.commons.autofix.FixResult;
 import com.tmobile.pacman.commons.autofix.PacmanFix;
+import com.tmobile.pacman.dto.AutoFixTransaction;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -165,4 +168,40 @@ public class S3GlobalAccessAutoFix extends BaseFix {
  		
  		awsS3Client.setPublicAccessBlock(setPublicAccessBlockRequest);
     }
+    
+   
+
+	
+	/* * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.tmobile.pacman.commons.autofix.BaseFix#isFixCandidate(java.lang.String
+	 * , java.lang.String, java.util.Map, java.util.Map, java.util.Map)*/
+	 
+	@Override
+	public boolean isFixCandidate(String resourceId, String resourceType, Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
+		return true;
+	}
+	
+	@Override
+	public AutoFixTransaction addDetailsToTransactionLog(Map<String, String> annotation) {
+		LinkedHashMap<String,String> transactionParams = new LinkedHashMap();
+		if (!StringUtils.isNullOrEmpty(annotation.get("_resourceid"))) {
+			transactionParams.put("resourceId", annotation.get("_resourceid"));
+		} else {
+			transactionParams.put("resourceId", "No Data");
+		}
+		if (!StringUtils.isNullOrEmpty(annotation.get("accountid"))) {
+			transactionParams.put("accountId", annotation.get("accountid"));
+		} else {
+			transactionParams.put("accountId", "No Data");
+		}
+		if (!StringUtils.isNullOrEmpty(annotation.get("region"))) {
+			transactionParams.put("region", annotation.get("region"));
+		} else {
+			transactionParams.put("region", "No Data");
+		}
+		
+		return new AutoFixTransaction(null,transactionParams);
+	}
 }
