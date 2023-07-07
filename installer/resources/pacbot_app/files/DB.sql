@@ -2971,3 +2971,5 @@ DELIMITER ;
 CALL update_filter_for_tag(@MANDATORY_TAGS);
 
 delete from pac_v2_ui_options where optionValue like 'tags.%';
+
+UPDATE pac_config_properties SET `value` = CONCAT(@PACMAN_HOST_NAME,'/api/admin/policy/close-expired-exemption?policyUUID=') WHERE cfkey ='api.close-expired-exemptions';
