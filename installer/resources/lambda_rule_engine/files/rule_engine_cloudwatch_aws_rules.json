@@ -78,8 +78,6 @@
 	"aws_appelb_access_logs",
 	"aws_classicelb_access_logs",
 	"aws_ec2_instances_should_not_use_deprecates_instance_types",
-	"aws_ec2_qualys_scanned_rule",
-	"aws_ec2_pub_vuln_s5_rule",
 	"aws_ec2_should_not_be_stopped_state_for_too_long",
 	"aws_ec2_should_not_be_publicly_accessible_on_port1434",
 	"aws_ec2_should_not_be_publicly_accessible_on_port3306",
@@ -88,9 +86,6 @@
 	"aws_ec2_should_not_be_publicly_accessible_on_port8080",
 	"aws_ec2_should_not_be_publicly_accessible_on_port5432",
 	"aws_ec2_should_not_be_publicly_accessible_on_port3389",
-	"aws_ec2_vuln_severity_rule",
-	"aws_ec2_vuln_s4_rule",
-	"aws_ec2_vuln_s5_rule",
 	"aws_eks_sg_inbound_traffic_validation",
 	"aws_elasticsearch_endpoint_should_not_be_publicly_accessible",
 	"aws_application_elb_should_not_be_publicly_accessible",
@@ -188,13 +183,5 @@
 	"aws_elasticip_should_not_be_unused",
 	"aws_account_should_have_vpclogs_enabled",
 	"aws_cloudfront_shouldnothave_unauthorized_html_content",
-	"aws_iamuser_shouldnothave_corenetwork_privileges",
-	"aws_image_aqua_scanned_rule",
-	"aws_image_critical_vulnerabilities_aqua_scanned_rule",
-	"aws_image_high_vulnerabilities_aqua_scanned_rule",
-	"aws_image_medium_vulnerabilities_aqua_scanned_rule",
-	"aws_vm_tenable_scanned_rule",
-	"aws_vm_high_vulnerabilities_tenable_scanned_rule",
-	"aws_vm_critical_vulnerabilities_tenable_scanned_rule",
-	"aws_vm_medium_vulnerabilities_tenable_scanned_rule"
+	"aws_iamuser_shouldnothave_corenetwork_privileges"
 ]
