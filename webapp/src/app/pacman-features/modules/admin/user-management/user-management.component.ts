@@ -15,6 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
+import { CustomValidators } from 'src/app/shared/custom-validators';
 
 
 @Component({
