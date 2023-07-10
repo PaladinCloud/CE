@@ -94,6 +94,20 @@ public class ConfigManager {
         return getTypeConfig(ds).get(type).get("id");
 
     }
+    
+    /**
+     * Gets the resourceName for type.
+     *
+     * @param ds
+     *            the ds
+     * @param type
+     *            the type
+     * @return the id for type
+     */
+    public static String getResourceNameType(String ds, String type) {
+        return getTypeConfig(ds).get(type).get("name");
+
+    }
 
     /**
      * Gets the types.

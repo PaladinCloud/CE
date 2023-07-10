@@ -185,6 +185,13 @@ public class EntityManager implements Constants {
         entities.parallelStream().forEach(entityInfo -> {
             String id = entityInfo.get(idColumn).toString();
             String docId = Util.concatenate(entityInfo, _keys, "_");
+            String resourceName = ConfigManager.getResourceNameType(dataSource, _type);
+            if(entityInfo.containsKey(resourceName)) {
+            	entityInfo.put("_resourcename", entityInfo.get(resourceName).toString());
+            } else {
+            	entityInfo.put("_resourcename", id);
+            }
+            
             entityInfo.put("_resourceid", id);
             if("aws".equalsIgnoreCase(dataSource)) {
             	if(Arrays.asList(_keys).contains("accountid")) {
