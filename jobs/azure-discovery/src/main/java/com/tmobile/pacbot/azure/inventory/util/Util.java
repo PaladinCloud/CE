@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class Util {
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
-
     public static Map<String,String> getJson(String jsonString){
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> dataMap= Collections.emptyMap();

@@ -77,7 +77,7 @@ public class SubnetInventoryCollector {
 			} catch (Exception e) {
 				log.error(" Error fetching subnets for network inventory  {} Cause : {}", network.name(),
 						e.getMessage());
-
+				Util.eCount.getAndIncrement();
 			}
 		}
 		log.info("Target Type : {}  Total: {} ","Subnet",subnetList.size());

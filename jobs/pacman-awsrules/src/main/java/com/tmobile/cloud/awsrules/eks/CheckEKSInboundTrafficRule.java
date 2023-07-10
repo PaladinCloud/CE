@@ -142,10 +142,7 @@ public class CheckEKSInboundTrafficRule extends BasePolicy {
                 }
             }
         } catch (Exception ex) {
-            logger.error("Inbound rules for Eks cluster:" + clusterName + " with security groupId:" + clusterSecurityGroupId
-                    + " for accountId: " + accountId + " not found" + ex.getMessage(), ex);
-            return "Inbound rules for Eks cluster:" + clusterName + " with security groupId:" + clusterSecurityGroupId
-                    + " for accountId: " + accountId + " not found";
+            throw new RuntimeException(ex.getMessage());
         }
         return null;
     }

@@ -52,6 +52,7 @@ public class KmsKeyInventoryCollector {
             }
         } catch (Exception e) {
             logger.error("Exception in fetching kms key data", e);
+            Util.errorCount.getAndIncrement();
         }
 
         logger.info("KMS key data collected list size: {}", kmsKeyList.size());

@@ -115,6 +115,7 @@ public class AssetFileGenerator {
 					FileManager.generateVMFiles(vmInventoryCollector.fetchInstanceInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 
@@ -126,6 +127,7 @@ public class AssetFileGenerator {
 					FileManager.generateFireWallFiles(firewallInventoryCollector.fetchFirewallInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -138,6 +140,7 @@ public class AssetFileGenerator {
 					FileManager.generateBigqueryFiles(bigQueryInventoryCollector.fetchBigqueryInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 
@@ -152,6 +155,7 @@ public class AssetFileGenerator {
 							bigQueryInventoryCollector.fetchBigqueryTableInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -162,6 +166,7 @@ public class AssetFileGenerator {
 					FileManager.generateStorageFiles(storageInventoryCollector.fetchStorageInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -172,6 +177,7 @@ public class AssetFileGenerator {
 					FileManager.generatePubSubFiles(pubSubInventoryCollector.fetchPubSubInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 
@@ -187,6 +193,7 @@ public class AssetFileGenerator {
 					FileManager.generateCloudPostgresFiles(cloudSqlFilter.filterByDatabaseVersion(cloudSqlVHList, DataBaseTypeEnum.POSTGRES));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -197,6 +204,7 @@ public class AssetFileGenerator {
 					FileManager.generateKmsKeyFiles(kmsKeyInventoryCollector.fetchKmsKeysInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 
@@ -208,8 +216,10 @@ public class AssetFileGenerator {
 					FileManager.generateDataProcFiles(dataProcInventoryCollector.fetchDataProcInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
+
 //			executor.execute(() -> {
 //				if (!(isTypeInScope("gkecluster"))) {
 //					return;
@@ -220,6 +230,7 @@ public class AssetFileGenerator {
 //					e.printStackTrace();
 //				}
 //			});
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("clouddns"))) {
 					return;
@@ -228,6 +239,7 @@ public class AssetFileGenerator {
 					FileManager.generateCloudDnsFiles(cloudDNSInventoryCollector.fetchCloudDnsInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -238,6 +250,7 @@ public class AssetFileGenerator {
 					FileManager.generateNetworksFiles(networkInventoryCollector.fetchNetworkInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -248,6 +261,7 @@ public class AssetFileGenerator {
 					FileManager.generateProjectFiles(projectInventoryCollector.fetchProjectMetadataMetadata(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -258,6 +272,7 @@ public class AssetFileGenerator {
 					FileManager.generateServiceAccountFiles(serviceAccountInventoryCollector.fetchServiceAccountDetails(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -269,6 +284,7 @@ public class AssetFileGenerator {
 					FileManager.generateApiKeysFiles(apiKeysInventoryCollector.fetchApiKeys(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 
@@ -280,6 +296,7 @@ public class AssetFileGenerator {
 					FileManager.generateIamUsers(iamUserCollector.fetchIamUsers(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -290,6 +307,7 @@ public class AssetFileGenerator {
 					FileManager.generateLoadBalancerFiles(loadBalancerCollector.fetchLoadBalancerInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
 				}
 			});
 			/*executor.execute(() -> {
@@ -310,6 +328,11 @@ public class AssetFileGenerator {
 			}
 
 			log.debug("Finished Discovery for sub {}", project);
+
+			//Below logger message is used by datadog to create notification in slack
+			if(Util.errorCount.get()>0){
+				log.error("Error occurred in atleast one collector for jobId : GCP-Data-Collector-Job");
+			}
 		}
 
 		try {

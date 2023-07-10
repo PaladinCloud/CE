@@ -75,6 +75,7 @@ public class NamespaceInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collecting namespace",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Namespace",namespaceList.size());

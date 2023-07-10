@@ -73,6 +73,7 @@ public class PostgreSQLInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collectig PostGresDB",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Postgres DB",postgreSQLServerList.size());

@@ -201,6 +201,7 @@ public class AssetFileGenerator {
 					FileManager.generateVMFiles(vmInventoryCollector.fetchVMDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -213,6 +214,7 @@ public class AssetFileGenerator {
 							storageAccountInventoryCollector.fetchStorageAccountDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -224,6 +226,7 @@ public class AssetFileGenerator {
 							sqlDatabaseInventoryCollector.fetchSQLDatabaseDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -235,6 +238,7 @@ public class AssetFileGenerator {
 							networkSecurityInventoryCollector.fetchNetworkSecurityGroupDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -246,6 +250,7 @@ public class AssetFileGenerator {
 							.generateDataDiskFiles(diskInventoryCollector.fetchDataDiskDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -257,6 +262,7 @@ public class AssetFileGenerator {
 							networkInterfaceInventoryCollector.fetchNetworkInterfaceDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -269,6 +275,7 @@ public class AssetFileGenerator {
 							.generateNetworkFiles(networkInventoryCollector.fetchNetworkDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -281,6 +288,7 @@ public class AssetFileGenerator {
 							loadBalancerInventoryCollector.fetchLoadBalancerDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -294,6 +302,7 @@ public class AssetFileGenerator {
 							scRecommendationsCollector.fetchSecurityCenterRecommendations(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -307,6 +316,7 @@ public class AssetFileGenerator {
 							sqlServerInventoryCollector.fetchSQLServerDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -320,6 +330,7 @@ public class AssetFileGenerator {
 							blobContainerInventoryCollector.fetchBlobContainerDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -333,6 +344,7 @@ public class AssetFileGenerator {
 							resourceGroupInventoryCollector.fetchResourceGroupDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -346,6 +358,7 @@ public class AssetFileGenerator {
 							cosmosDBInventoryCollector.fetchCosmosDBDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -357,6 +370,7 @@ public class AssetFileGenerator {
 					FileManager.generateMySqlServerFiles(mySQLInventoryCollector.fetchMySQLServerDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -370,6 +384,7 @@ public class AssetFileGenerator {
 							.generateDatabricksFiles(databricksInventoryCollector.fetchDatabricksDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -382,6 +397,7 @@ public class AssetFileGenerator {
 					FileManager.generateMariaDBFiles(mariaDBInventoryCollector.fetchMariaDBDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -395,6 +411,7 @@ public class AssetFileGenerator {
 							postgreSQLInventoryCollector.fetchPostgreSQLServerDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -408,6 +425,7 @@ public class AssetFileGenerator {
 							snapshotInventoryCollector.fetchSnapshotDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -421,6 +439,7 @@ public class AssetFileGenerator {
 							publicIpAddressInventoryCollector.fetchPublicIpAddressDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -434,6 +453,7 @@ public class AssetFileGenerator {
 							routeTableInventoryCollector.fetchRouteTableDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -447,6 +467,7 @@ public class AssetFileGenerator {
 							securityAlertsInventoryCollector.fetchSecurityAlertsDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -460,6 +481,7 @@ public class AssetFileGenerator {
 							.fetchPolicyStatesDetails(subscription, policyDefinitionList));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -473,6 +495,7 @@ public class AssetFileGenerator {
 							policyDefinitionInventoryCollector.fetchPolicyDefinitionDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -486,6 +509,7 @@ public class AssetFileGenerator {
 							sitesInventoryCollector.fetchSitesDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -500,6 +524,7 @@ public class AssetFileGenerator {
 					FileManager.generateVaultRABCFiles(vaults.get("vaultRBACList"));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -513,6 +538,7 @@ public class AssetFileGenerator {
 							workflowInventoryCollector.fetchWorkflowDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -526,6 +552,7 @@ public class AssetFileGenerator {
 							batchAccountInventoryCollector.fetchBatchAccountDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -539,6 +566,7 @@ public class AssetFileGenerator {
 							namespaceInventoryCollector.fetchNamespaceDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -552,6 +580,7 @@ public class AssetFileGenerator {
 							searchServiceInventoryCollector.fetchSearchServiceDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -565,6 +594,7 @@ public class AssetFileGenerator {
 							subnetInventoryCollector.fetchSubnetDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -578,6 +608,7 @@ public class AssetFileGenerator {
 							redisCacheInventoryCollector.fetchRedisCacheDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -592,6 +623,7 @@ public class AssetFileGenerator {
 							activityLogsCollector.fetchActivityLogAlertDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -605,6 +637,7 @@ public class AssetFileGenerator {
 							securityPricingsInventoryCollector.fetchSecurityPricingsDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -618,6 +651,7 @@ public class AssetFileGenerator {
 							.generateWebAppFiles(webAppInventoryCollector.fetchWebAppDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -633,6 +667,7 @@ public class AssetFileGenerator {
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -646,6 +681,7 @@ public class AssetFileGenerator {
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -660,6 +696,7 @@ public class AssetFileGenerator {
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 			executor.execute(() -> {
@@ -674,6 +711,7 @@ public class AssetFileGenerator {
 					log.info("diagnostic setting data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -689,6 +727,7 @@ public class AssetFileGenerator {
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -702,6 +741,7 @@ public class AssetFileGenerator {
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -715,6 +755,7 @@ public class AssetFileGenerator {
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
+					Util.eCount.getAndIncrement();
 				}
 			});
 
@@ -724,6 +765,11 @@ public class AssetFileGenerator {
 			}
 
 			log.info("Finished Discovery for sub {}", subscription);
+		}
+
+		//Below logger message is used by datadog to create notification in slack
+		if(Util.eCount.get()>0){
+			log.error("Error occurred in atleast one collector for jobId : Azure-Data-Collector-Job");
 		}
 
 		try {

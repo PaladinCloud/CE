@@ -59,6 +59,7 @@ public class SecurityAlertsInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collecting Security Alerts",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Security Alerts",securityAlertsList.size());

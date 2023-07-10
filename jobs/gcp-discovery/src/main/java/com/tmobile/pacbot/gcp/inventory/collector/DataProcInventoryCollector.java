@@ -51,6 +51,7 @@ public class DataProcInventoryCollector {
             }
         } catch (Exception e) {
             logger.debug(e.getMessage());
+            Util.errorCount.getAndIncrement();
         }
 
         return clusterVHList;

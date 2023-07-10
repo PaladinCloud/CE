@@ -66,6 +66,7 @@ public class MySQLInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error Collecting mysqlserver",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","MySQL Server",mySqlServerList.size());

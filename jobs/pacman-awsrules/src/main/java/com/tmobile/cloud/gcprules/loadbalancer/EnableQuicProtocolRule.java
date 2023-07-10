@@ -107,7 +107,7 @@ public class EnableQuicProtocolRule extends BasePolicy {
             }
         }catch (Exception e){
             logger.error("rror occurred in checkQuicNegotiationEnabledForHttpsTargetProxies: {}", hitsJsonArray, e);
-            validationResult = false;
+            throw new RuleExecutionFailedExeption(e.getMessage());
         }
         return validationResult;
     }

@@ -72,7 +72,7 @@ public class BlobContainerInventoryCollector {
 				}
 			} catch (Exception e) {
 				log.error(" Error fetching blobcontainers for storage account {} Cause : {}" ,storageAccount.name(),e.getMessage());
-		
+				Util.eCount.getAndIncrement();
 			}
 		}
 		log.info("Target Type : {}  Total: {} ","Blob Container",blobContainerList.size());

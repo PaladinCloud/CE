@@ -97,6 +97,7 @@ public class PolicyStatesInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collleting Policy States",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Policy States",policyStatesList.size());

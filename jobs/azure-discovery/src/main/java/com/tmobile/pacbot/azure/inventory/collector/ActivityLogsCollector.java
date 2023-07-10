@@ -85,6 +85,7 @@ public final class ActivityLogsCollector {
                         } catch (Exception e) {
                                 logger.error("Error while fetching activity logs for alert: {}",
                                         activityLogAlert.name(), e);
+                                Util.eCount.getAndIncrement();
                         }
                 }
 

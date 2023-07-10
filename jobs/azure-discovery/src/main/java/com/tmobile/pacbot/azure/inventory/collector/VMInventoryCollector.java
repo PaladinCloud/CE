@@ -147,6 +147,7 @@ public class VMInventoryCollector {
 			}catch(Exception e) {
 				e.printStackTrace();
 				log.error("Error Collecting info for {} {} ",virtualMachine.computerName(),e.getMessage());
+				Util.eCount.getAndIncrement();
 			}
 		}
 		log.info("Target Type : {}  Total: {} ", "virtualmachine", vmList.size());

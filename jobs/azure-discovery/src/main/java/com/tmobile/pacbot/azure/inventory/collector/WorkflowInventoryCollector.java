@@ -69,6 +69,7 @@ public class WorkflowInventoryCollector {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","workflow",workflowList.size());

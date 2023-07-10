@@ -59,6 +59,7 @@ public class SecurityContactsCollector {
 
         } catch (Exception e) {
             LOGGER.error("Error fetching Security Contacts", e);
+            Util.eCount.getAndIncrement();
         }
         LOGGER.info("Target Type : {}  Total: {} ", "Batch Account", securityContactsList.size());
         return securityContactsList;

@@ -73,16 +73,13 @@ public class BatchAccountInventoryCollector {
 					if (tags != null) {
 						HashMap<String, Object> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
 						batchAccountVH.setTags(tagsMap);
-						
-						
-						
 					}
-
 					batchAccountList.add(batchAccountVH);
 				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error fetching BatchAccount",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		LOGGER.info("Target Type : {}  Total: {} ","Batch Account",batchAccountList.size());

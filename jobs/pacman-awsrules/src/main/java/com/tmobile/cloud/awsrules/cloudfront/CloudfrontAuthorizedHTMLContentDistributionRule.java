@@ -103,6 +103,7 @@ public class CloudfrontAuthorizedHTMLContentDistributionRule extends BasePolicy 
 					}
 				} catch (Exception e) {
 					logger.error("Exception getting from url  :[{}],[{}] ", url, e.getMessage());
+					throw new RuntimeException(e.getMessage());
 				}
 			}
 		}

@@ -85,6 +85,7 @@ public class KubernetesServicesCollector {
             } catch (Exception e){
                 logger.error("Error while fetching kubernetes Cluster: {}",
                         kubernetesCluster.name(), e);
+                Util.eCount.getAndIncrement();
             }
         }
         return kubernetesClustersVHList;

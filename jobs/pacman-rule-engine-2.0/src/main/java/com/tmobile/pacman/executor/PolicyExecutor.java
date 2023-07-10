@@ -294,6 +294,8 @@ public class PolicyExecutor {
             logger.error(msg, e);
             policyEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
             logger.error("exiting now..", e);
+            //below error message will be used by datadog to create notification in slack.
+            logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
             ProgramExitUtils.exitWithError();
         }
 

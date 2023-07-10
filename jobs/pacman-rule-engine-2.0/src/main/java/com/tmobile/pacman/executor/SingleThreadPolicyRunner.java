@@ -82,6 +82,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                                                                                // loop
                                                                                // below
 
+        int eCount=0;
         for (Map<String, String> resource : resources) {
             try {
                 Map<String, String> localPolicyParam = PolicyExecutionUtils.getLocalPolicyParam(policyParam, resource);
@@ -107,6 +108,11 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                         // in case not able to evaluate the result :
                         // RuleExecutor class will detect this by taking the
                         // delta between resource in and result out
+                        if(eCount==0){
+                            //Below logger message will be used by datadog to create notification in slack.
+                            logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
+                        }
+                        eCount++;
                         logger.error(String.format("unable to evaluvate for this resource %s" , resource), e); // this will be handled as missing evaluation at RuleEcecutor
                     }
                     policyAnnotation = policyClass.getAnnotation(PacmanPolicy.class);
@@ -166,6 +172,11 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
             } catch (Exception e) {
                 logger.debug("rule execution for resource " + resource.get("id") + " failed due to " + e.getMessage(),
                         e);
+                if(eCount==0){
+                    //Below logger message will be used by datadog to create notification in slack.
+                    logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
+                }
+                eCount++;
             }
         }
         logger.info(

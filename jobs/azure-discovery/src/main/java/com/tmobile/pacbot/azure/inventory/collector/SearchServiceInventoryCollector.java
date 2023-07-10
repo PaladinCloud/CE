@@ -69,6 +69,7 @@ public class SearchServiceInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collecting Search Service",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Search Service",searchServiceList.size());
