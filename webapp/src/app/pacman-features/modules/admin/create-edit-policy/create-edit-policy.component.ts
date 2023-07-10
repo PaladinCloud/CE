@@ -360,7 +360,7 @@
        PolicyModel.warningMessage  = this.warningMessage;
        PolicyModel.warningMailSubject = this.warningMailSubject;
        PolicyModel.elapsedTime = this.elapsedTime;
-       PolicyModel.fixType = this.warningNotification?"silent":"non-silent";
+       PolicyModel.fixType = this.warningNotification?"non-silent":"silent";
      }
    this.createOrUpdatepolicy(PolicyModel);
    }
