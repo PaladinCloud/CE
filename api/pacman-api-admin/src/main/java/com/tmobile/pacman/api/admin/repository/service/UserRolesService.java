@@ -23,6 +23,9 @@ import com.tmobile.pacman.api.admin.domain.UserRolesResponse;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.model.UserRoles;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * User Roles Service Functionalities
  */
@@ -70,4 +73,6 @@ public interface UserRolesService {
      * @throws PacManException
      */
 	public UserRoles getUserRoleById(final String roleId) throws PacManException;
+
+	public List<Map<String,Object>> getAllRoles() throws PacManException;
 }

@@ -14,6 +14,24 @@ public class AccountDetails {
     private String violations;
     private String accountStatus;
     private String platform;
+    private String createdBy;
+    private String createdTime;
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
+    }
 
     public String getAccountId() {
         return accountId;
