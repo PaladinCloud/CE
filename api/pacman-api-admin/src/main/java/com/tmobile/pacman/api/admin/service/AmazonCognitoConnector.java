@@ -261,7 +261,7 @@ public class AmazonCognitoConnector {
                 roleDetails.add(responseMap);
             }
         } catch (CognitoIdentityProviderException e){
-            log.error("Error occurred while listing groups", e.getMessage());
+            log.error("Error occurred while listing groups %s", e.getMessage());
         }catch (Exception e){
             log.error(UNEXPECTED_ERROR_OCCURRED, e.getMessage());
         }

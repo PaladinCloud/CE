@@ -180,18 +180,17 @@ public class AssetRepositoryImpl implements AssetRepository {
             return new ArrayList<>();
         }
         String result = targetTypes.stream().collect(Collectors.joining("','", "'", "'"));
-
-		String query = "select distinct targetType as type, c.displayName as displayName ,c.category as category,c.domain as domain, dataSourceName as "
-		+ Constants.PROVIDER + " from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b ,cf_Target c "
-				+ " where a.groupId = b.groupId and a.targetType = c.targetName and b.groupName ='"
-				+ aseetGroupName.trim() + "'  and (c.status = 'active' or c.status = 'enabled') ";
-		if (!StringUtils.isEmpty(domain)) {
-			query = query + " and lower(c.domain) = '" + domain.toLowerCase().trim() + "'";
-		}
-		if (!StringUtils.isEmpty(provider)) {
-			query = query + " and lower(c.dataSourceName) = '" + provider.toLowerCase().trim() + "'";
-		}
-		return rdsRepository.getDataFromPacman(query);
+        String query = "select distinct targetName as type, displayName as displayName ,category as category," +
+                "domain as domain, dataSourceName as provider from cf_Target "
+                + " where  (status = 'active' or status = 'enabled') and targetName in ("+result+") ";
+        if (!StringUtils.isEmpty(domain)) {
+            query = query + " and lower(domain) = '" + domain.toLowerCase().trim() + "'";
+        }
+        if (!StringUtils.isEmpty(provider)) {
+            query = query + " and lower(dataSourceName) = '" + provider.toLowerCase().trim() + "'";
+        }
+        query = query+" and dataSourceName in (select distinct platform from cf_Accounts where accountStatus='configured') ";
+        return rdsRepository.getDataFromPacman(query);
 	}
 
 	@Override
