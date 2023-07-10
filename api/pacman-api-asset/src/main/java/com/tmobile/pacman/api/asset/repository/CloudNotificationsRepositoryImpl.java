@@ -60,6 +60,11 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	private String AUTOFIXTYPE = "autofixplan";
 	final static String protocol = "http";
 	final static String START_TIME = "startTime";
+	final static String CLOUD_NOTIFICATIONS = "cloud_notifications";
+	final static String GLOBAL_NOTIFICATION_COUNT = "globalNotificationsCount";
+	final static String EVENT_ISSUES_COUNT = "evnetIssuesCount";
+	final static String EVENT_SCHEDULED_COUNT = "eventscheduledCount";
+	final static String EVENT_NOTIFICATION_COUNT = "eventNotificationCount";
 	private String esUrl;
 	private static final String _SOURCE = "_source";
 	private static final String _COUNT = "_count";
@@ -159,8 +164,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 				Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
 				AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST,
 				AssetConstants.CREATION_DATE);
-		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
-				.append("/").append(_SEARCH);
+		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index).append("/").append(_SEARCH);
 		String body = "{\"_source\": [\"eventID\",\"eventName\",\"eventCategory\", \"eventCategoryName\", \"eventSource\",\"eventSourceName\",\"eventDescription\",\"_loaddate\",\"payload\"], \"query\":{\"bool\":{\"must\":[{\"term\":{\"eventId.keyword\":\""
 				+ eventId + "\"}},{\"term\":{\"latest\":\"true\"}}]}}}";
 		requestBody = new StringBuilder(body);
@@ -440,7 +444,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 				body = body + ",{\"term\":{\"docType\": \"" + type + "\"}}";
 			}
 			body = body + "]}},\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
-			String urlToQuery = esRepository.buildESURL(esUrl, index, null, size, from);
+			String urlToQuery = esRepository.buildESURL(esUrl, index, null,  from);
 			Gson gson = new GsonBuilder().create();
 			String responseDetails = null;
 			try {
@@ -511,7 +515,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	}
 
 	@SuppressWarnings("unchecked")
-	private long getTotalDocCount(String index, String type, String requestBody) {
+	private long getTotalDocCount(String index, String requestBody) {
 		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index).append("/").append(_SEARCH);
 		String responseDetails = null;
 		Gson gson = new GsonBuilder().create();
@@ -532,16 +536,14 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	 * Gets the type count.
 	 *
 	 * @param indexName the index name
-	 * @param type      the type
 	 * @return the type count
 	 */
-	private int getAutoFixSummary(String indexName, String type) {
+	private int getAutoFixSummary(String indexName, String request) {
 
 		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(indexName).append("/").append(_COUNT).append("?filter_path=count");
-		String requestBody = "{}";
 		String responseDetails = null;
 		try {
-			responseDetails = PacHttpUtils.doHttpPost(urlToQuery.toString(), type);
+			responseDetails = PacHttpUtils.doHttpPost(urlToQuery.toString(), request);
 			JsonParser jsonParser = new JsonParser();
 			JsonObject resultJson = (JsonObject) jsonParser.parse(responseDetails);
 			return resultJson.get("count").getAsInt();
@@ -620,8 +622,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		Map<String, Object> autofixPlanDet = new LinkedHashMap<String, Object>();
 		autoFixQuery = "";
 		try {
-			StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(ag).append("/").append(AUTOFIXTYPE)
-					.append("/").append(_SEARCH);
+			StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(ag).append("/").append(_SEARCH);
 			filter.entrySet().forEach(autofix -> {
 				autoFixQuery = "{\"size\":1,\"_source\":[\"docId\",\"planItems\",\"policyId\",\"issueId\",\"resourceId\",\"resourceType\"],\"query\":{\"match\":{\""
 						+ autofix.getKey() + ".keyword" + "\":\"" + autofix.getValue() + "\"}}}";
@@ -721,13 +722,13 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		try {
 			Map<String, Object> countMap = new HashMap<>();
 			if (globalNotifier && Strings.isNullOrEmpty(resourceId) && Strings.isNullOrEmpty(resourceId)) {
-				countMap.put("globalNotificationsCount", getTotalDocCount("cloud_notifications", "",
+				countMap.put(GLOBAL_NOTIFICATION_COUNT, getTotalDocCount(CLOUD_NOTIFICATIONS,
 						"{\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{ \"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("evnetIssuesCount", getTotalDocCount("cloud_notifications", "",
+				countMap.put(EVENT_ISSUES_COUNT, getTotalDocCount(CLOUD_NOTIFICATIONS,
 						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{ \"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"issue\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("eventscheduledCount", getTotalDocCount("cloud_notifications", "",
+				countMap.put(EVENT_SCHEDULED_COUNT, getTotalDocCount(CLOUD_NOTIFICATIONS,
 						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{ \"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"scheduledChange\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("eventNotificationCount", getTotalDocCount("cloud_notifications", "",
+				countMap.put(EVENT_NOTIFICATION_COUNT, getTotalDocCount(CLOUD_NOTIFICATIONS,
 						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{ \"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"accountNotification\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
 				countMap.put("autofixCount", 0);
 				summaryList.add(countMap);
@@ -757,26 +758,26 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 									String eventType = sources.get("eventtypecategory").toString();
 									switch (eventType) {
 									case "scheduledChange":
-										countMap.put("globalNotificationsCount", 0);
-										countMap.put("evnetIssuesCount", 0);
-										countMap.put("eventscheduledCount", sources.size());
-										countMap.put("eventNotificationCount", 0);
+										countMap.put(GLOBAL_NOTIFICATION_COUNT, 0);
+										countMap.put(EVENT_ISSUES_COUNT, 0);
+										countMap.put(EVENT_SCHEDULED_COUNT, sources.size());
+										countMap.put(EVENT_NOTIFICATION_COUNT, 0);
 										countMap.put("autofixCount", 0);
 										summaryList.add(countMap);
 										break;
 									case "issue":
-										countMap.put("globalNotificationsCount", 0);
-										countMap.put("evnetIssuesCount", sources.size());
-										countMap.put("eventscheduledCount", 0);
-										countMap.put("eventNotificationCount", 0);
+										countMap.put(GLOBAL_NOTIFICATION_COUNT, 0);
+										countMap.put(EVENT_ISSUES_COUNT, sources.size());
+										countMap.put(EVENT_SCHEDULED_COUNT, 0);
+										countMap.put(EVENT_NOTIFICATION_COUNT, 0);
 										countMap.put("autofixCount", 0);
 										summaryList.add(countMap);
 										break;
 									case "accountNotification":
-										countMap.put("globalNotificationsCount", 0);
-										countMap.put("evnetIssuesCount", 0);
-										countMap.put("eventscheduledCount", 0);
-										countMap.put("eventNotificationCount", sources.size());
+										countMap.put(GLOBAL_NOTIFICATION_COUNT, 0);
+										countMap.put(EVENT_ISSUES_COUNT, 0);
+										countMap.put(EVENT_SCHEDULED_COUNT, 0);
+										countMap.put(EVENT_NOTIFICATION_COUNT, sources.size());
 										countMap.put("autofixCount", 0);
 										summaryList.add(countMap);
 										break;
@@ -787,21 +788,20 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 						}
 					}
 				} else if (!Strings.isNullOrEmpty(resourceId) && !Strings.isNullOrEmpty(resourceId) && globalNotifier) {
-					countMap.put("globalNotificationsCount", 0);
-					countMap.put("evnetIssuesCount", 0);
-					countMap.put("eventscheduledCount", 0);
-					countMap.put("eventNotificationCount", 0);
+					countMap.put(GLOBAL_NOTIFICATION_COUNT, 0);
+					countMap.put(EVENT_ISSUES_COUNT, 0);
+					countMap.put(EVENT_SCHEDULED_COUNT, 0);
+					countMap.put(EVENT_NOTIFICATION_COUNT, 0);
 					countMap.put("autofixCount", 0);
 					summaryList.add(countMap);
 				} else {
-					countMap.put("globalNotificationsCount", getTotalDocCount("cloud_notifications",
-							"",
+					countMap.put(GLOBAL_NOTIFICATION_COUNT, getTotalDocCount(CLOUD_NOTIFICATIONS,
 							"{\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-					countMap.put("evnetIssuesCount", getTotalDocCount(assetGroup, "",
+					countMap.put(EVENT_ISSUES_COUNT, getTotalDocCount(assetGroup,
 							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"issue\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-					countMap.put("eventscheduledCount", getTotalDocCount(assetGroup, "",
+					countMap.put(EVENT_SCHEDULED_COUNT, getTotalDocCount(assetGroup,
 							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"scheduledChange\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-					countMap.put("eventNotificationCount", getTotalDocCount(assetGroup, "",
+					countMap.put(EVENT_NOTIFICATION_COUNT, getTotalDocCount(assetGroup,
 							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"accountNotification\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
 					countMap.put("autofixCount", getAutoFixSummary(assetGroup, "{  \"query\": {\"bool\": {\"must\": [ { \"term\": { \"docType\": \"autofixplan\" } } ] } } }"));
 					summaryList.add(countMap);

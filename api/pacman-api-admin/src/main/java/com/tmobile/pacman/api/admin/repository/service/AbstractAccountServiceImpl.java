@@ -94,7 +94,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
                 case AdminConstants.STATUS:  return accountsRepository.findDistinctAccountStatus();
                 case AdminConstants.CREATED_BY: return accountsRepository.findDistinctCreatedBy();
                 case AdminConstants.PLATFORM: return accountsRepository.findDistinctPlatform();
-                default: return new ArrayList();
+                default: return new ArrayList<String>();
             }
         }catch (Exception e){
             return new ArrayList<>();

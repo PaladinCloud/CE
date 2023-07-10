@@ -99,7 +99,6 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 		String responseDetails = null;
 		try {
 			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, query1);
-			JSONObject json = new JSONObject(responseDetails);
 			JSONArray jsonArray =new JSONObject(responseDetails).getJSONObject("aggregations").getJSONObject("name").getJSONArray("buckets");
 			for (int i=0; i < jsonArray.length(); i++) {
 				targetTypes.add(jsonArray.getJSONObject(i).get("key").toString());

@@ -333,21 +333,6 @@ public class ElasticSearchRepositoryTest implements Constants {
 		assertThatThrownBy(() -> classUnderTest.getDetailsFromESBySize(eq("dataSource"), eq("targetType"), anyMap(), anyMap(),
 				anyObject(), anyList(), eq(1), eq(1), anyString(), anyMap())).isInstanceOf(Exception.class);
 	}
-
-	@Test
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	public void getDataFromESWithMustNotTermsFilterTest() throws Exception {
-		final ElasticSearchRepository classUnderTest = PowerMockito.spy(new ElasticSearchRepository());
-		ReflectionTestUtils.setField(classUnderTest, "esUrl", "esUrl123");
-		mockStatic(Strings.class);
-		mockStatic(PacHttpUtils.class);
-		PowerMockito.when(Strings.isNullOrEmpty(anyString())).thenReturn(false);
-		String response = "{\"count\":\"1234\", \"hits\":{\"total\":1000,\"max_score\":null,\"hits\":[{\"_index\":\"bank\",\"_type\":\"_doc\",\"_id\":\"0\",\"sort\":[0],\"_score\":null,\"_source\":{\"account_number\":0,\"balance\":16623,\"firstname\":\"Bradshaw\",\"lastname\":\"Mckenzie\",\"age\":29,\"gender\":\"F\",\"address\":\"244 Columbus Place\",\"employer\":\"Euron\",\"email\":\"bradshawmckenzie@euron.com\",\"city\":\"Hobucken\",\"state\":\"CO\"}}]},\"aggregations\":{\"accountid\":{\"buckets\":[{\"accountname\":{\"buckets\" :[{\"key\":\"key678\"}]},\"key\":\"key123\"},{\"accountname\":{\"buckets\" :[{\"key\":\"key566\"}]},\"key\":\"key455\"}]}}}";
-		PowerMockito.when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenReturn(response);
-		assertThat(classUnderTest.getDataFromESWithMustNotTermsFilter(eq("dataSource"), eq("targetType"), anyMap(), anyMap(),
-				anyObject(), anyList(), anyMap(), anyMap(), anyMap()).size(), is(1));
-	}
-
 	@Test
 	@SuppressWarnings({ "unchecked" })
 	public void getSortedDataFromESWithMustNotTermsFilterTest() throws Exception {

@@ -262,7 +262,9 @@ public interface Constants {
     String TAGS_APPS = "tags.Application.keyword";
     String SEVERITY_INFO = "severityInfo";
     String QUALYS_INFO = "qualysinfo";
+    String MATCH_ALL = "match_all";
     String VULN = "vulns";
+    String KEYWORD = ".keyword";
     String VULNEREBILITIES = "vulnerabilities";
     String AGING = "aging";
     String ZERO = "0";
