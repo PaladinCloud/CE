@@ -62,6 +62,7 @@ public class WebAppInventoryCollector {
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("Error Collecting info for {} ", e.getMessage());
+                Util.eCount.getAndIncrement();
             }
         }
         return webAppList;

@@ -1878,6 +1878,7 @@ public class InventoryUtil {
 				}else{
 					log.info("Exception fetching S3 Bucket",e);
 				}
+				ErrorManageUtil.uploadError(accountId,"","s3",e.getMessage());
 			}
 			catch(Exception e){
 				log.warn(expPrefix+ bucket.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
@@ -2001,6 +2002,7 @@ public class InventoryUtil {
 					}
 				}catch(Exception e){
 					log.debug("Erro fetching Advisor Check ",e);
+					ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
 				}
 			}
 		}catch(Exception e){
@@ -2014,6 +2016,7 @@ public class InventoryUtil {
 				awsSupportClient.refreshTrustedAdvisorCheck(new RefreshTrustedAdvisorCheckRequest().withCheckId(checkId));
 			}catch(Exception e){
 				log.info(e.getMessage());
+				ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
 			}
 		}
 		if(!checkList.isEmpty()){
@@ -2437,11 +2440,13 @@ public class InventoryUtil {
 									kmsKey.setTags(awskms.listResourceTags(new ListResourceTagsRequest().withKeyId(key.getKeyId())).getTags());
 								}catch(Exception e){
 									log.debug(e.getMessage());
+									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 								}
 								try{
 									kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
 								}catch(Exception e){
 									log.debug(e.getMessage());
+									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 								}
 								if(!regionKeyAliases.isEmpty() ) {
 									for(AliasListEntry alias: regionKeyAliases) {
@@ -2454,6 +2459,7 @@ public class InventoryUtil {
 								kmsKeysList.add(kmsKey);
 							} catch (Exception e) {
 								log.debug(e.getMessage());
+								ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 							}
 						}
 						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : KMSKey "+region.getName() + " >> "+kmsKeysList.size());
@@ -2594,6 +2600,7 @@ public class InventoryUtil {
 								    ebsObj.setEnvResource(awsElasticBeanstalk.describeEnvironmentResources(new DescribeEnvironmentResourcesRequest().withEnvironmentId(envDes.getEnvironmentId())).getEnvironmentResources());
 								}catch(Exception e){
 								    log.debug("Error in fetching resources for enviroment",e);
+									ErrorManageUtil.uploadError(accountId,region.getName(),"beanstalk",e.getMessage());
 								}
 								ebsList.add(ebsObj);
 							}
@@ -2710,7 +2717,8 @@ public class InventoryUtil {
 	                        sqsList.add(new SQSVH(queueUrl,sqsObj,tags));
                     	}catch(Exception e){
                     		log.debug("Error fetching info for the queue {}",queueUrl);
-                    	}
+							ErrorManageUtil.uploadError(accountId,region.getName(),"sqs",e.getMessage());
+						}
                     }
 
                     if( !sqsList.isEmpty() ) {

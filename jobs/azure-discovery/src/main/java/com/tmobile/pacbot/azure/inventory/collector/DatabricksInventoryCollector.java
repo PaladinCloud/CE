@@ -71,6 +71,7 @@ public class DatabricksInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.info("Error Collecting Databricks",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Databrick",databricksList.size());

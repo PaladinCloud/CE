@@ -96,6 +96,7 @@ public class CloudSqlInventoryCollector {
             }
         } catch (GeneralSecurityException e) {
             logger.error("Exception in connecting to cloud SQL admin service", e);
+            Util.errorCount.getAndIncrement();
         }
 
 

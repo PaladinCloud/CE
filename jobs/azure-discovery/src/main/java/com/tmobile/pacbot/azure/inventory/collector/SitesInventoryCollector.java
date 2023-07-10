@@ -70,6 +70,7 @@ public class SitesInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error Collecting sites",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Site",sitesList.size());

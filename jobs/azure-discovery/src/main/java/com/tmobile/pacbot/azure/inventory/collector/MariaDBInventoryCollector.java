@@ -64,7 +64,8 @@ public class MariaDBInventoryCollector {
             }
 		} catch (Exception e) {
 			log.error("Error Collecting MariaDB",e);
-		}
+            Util.eCount.getAndIncrement();
+        }
 
 		log.info("Target Type : {}  Total: {} ","MariaDB",mariaDBList.size());
 		return mariaDBList;

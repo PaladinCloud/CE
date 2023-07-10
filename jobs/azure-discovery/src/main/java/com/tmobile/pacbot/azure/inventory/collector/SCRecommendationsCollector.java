@@ -43,6 +43,7 @@ public class SCRecommendationsCollector {
 			recommendations = filterRecommendationInfo(response,subscription);
 		} catch (Exception e) {
 			log.error("Error Collecting Security Center Info",e);
+			Util.eCount.getAndIncrement();
 		}
 		log.info("Target Type : {}  Total: {} ","Security Center",recommendations.size());
 		return recommendations;

@@ -144,6 +144,7 @@ public class UnProtectedMongoDBAccess extends BasePolicy {
                 }
             } catch (Exception mue) {
                 logger.info(mue.toString());
+                throw new RuntimeException(mue.getMessage());
             }
 
         } else {

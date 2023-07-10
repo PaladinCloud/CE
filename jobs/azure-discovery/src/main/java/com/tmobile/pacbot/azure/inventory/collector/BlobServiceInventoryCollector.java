@@ -62,7 +62,7 @@ public class BlobServiceInventoryCollector {
                 }
             } catch (Exception e) {
                 log.error(" Error fetching blobService for storage account {} Cause : {}" ,storageAccount.name(),e.getMessage());
-
+                Util.eCount.getAndIncrement();
             }
         }
         log.info("Target Type : {}  Total: {} ","Blob Container",blobServiceVHList.size());

@@ -127,7 +127,7 @@ public class VaultInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
-
+			Util.eCount.getAndIncrement();
 		}
 		return  vaultVH;
 	}
@@ -163,6 +163,7 @@ public class VaultInventoryCollector {
 			vaults.put("vaultRBACList",vaultRBACList);
 		} catch (Exception e) {
 			log.error("Error Colectting vaults ",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Vault",vaultList.size());

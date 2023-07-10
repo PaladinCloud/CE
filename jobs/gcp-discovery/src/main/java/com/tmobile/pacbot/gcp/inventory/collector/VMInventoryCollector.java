@@ -82,6 +82,7 @@ public class VMInventoryCollector {
                     } catch (Exception e) {
                         logger.error("Error while fetching instance inventory for {} {}", instance.getName(), e.getMessage());
                         e.printStackTrace();
+                        Util.errorCount.getAndIncrement();
                     }
                 }
             }

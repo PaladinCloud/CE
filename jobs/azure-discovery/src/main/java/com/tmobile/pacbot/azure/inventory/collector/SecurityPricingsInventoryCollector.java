@@ -59,6 +59,7 @@ public class SecurityPricingsInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collecting Security Pricings",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Security Pricings",securityPricingsList.size());

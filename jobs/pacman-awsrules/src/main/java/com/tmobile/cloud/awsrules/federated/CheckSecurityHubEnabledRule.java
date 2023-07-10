@@ -62,7 +62,6 @@ public class CheckSecurityHubEnabledRule extends BasePolicy {
     }
 
     private String checkValidation(Map<String, String> ruleParam, Map<String, String> resource) {
-        String description = null;
         String accountId = resource.get(PacmanRuleConstants.ACCOUNTID);
         String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
         String regionParam = ruleParam.get(PacmanRuleConstants.REGIONS);
@@ -88,10 +87,9 @@ public class CheckSecurityHubEnabledRule extends BasePolicy {
                 }
             }
         } catch (Exception ex) {
-            logger.error("AWS Security Hub is not enabled" + ex.getMessage(), ex);
-            description = "AWS Security Hub is not enabled";
+            throw new RuntimeException(ex.getMessage());
         }
-        return description;
+        return null;
     }
 
     @Override

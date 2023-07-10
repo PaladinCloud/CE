@@ -55,7 +55,7 @@ public class GKEClusterInventoryCollector {
 
                 } catch (Exception e) {
                     logger.info("Exception {}", e.getMessage());
-
+                    Util.errorCount.getAndIncrement();
                 }
 
                 if(clusterList!=null){
@@ -119,6 +119,7 @@ public class GKEClusterInventoryCollector {
                         listNodePools = clusterManagerClient.listNodePools(nodepoolParent);
                     } catch (Exception e) {
                         logger.debug(e.getMessage());
+                        Util.errorCount.getAndIncrement();
                     }
 
                     List<NodePoolVH> nodePoolVHList = new ArrayList<>();
@@ -152,6 +153,7 @@ public class GKEClusterInventoryCollector {
             }
         } catch (Exception e) {
             logger.debug(e.getMessage());
+            Util.errorCount.getAndIncrement();
         }
         gkeClusterlist.addAll(gkeClusterVHSet);
         return gkeClusterlist;

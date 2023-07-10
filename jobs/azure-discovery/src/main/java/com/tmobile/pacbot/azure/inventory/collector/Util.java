@@ -23,6 +23,7 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class Util {
 
 	private static Logger log = LoggerFactory.getLogger(Util.class);
+	public static AtomicInteger eCount=new AtomicInteger(0);
 
 	/**
 	 * Instantiates a new util.
