@@ -130,6 +130,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   fieldName: string = '_resourceid.keyword';
   fieldType: string = 'string';
 
+  isMultiValuedFilterEnabled = true;
+
   private assetGroupSubscription: Subscription;
   private routeSubscription: Subscription;
   private complianceDropdownSubscription: Subscription;
@@ -163,6 +165,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
       this.selectedAssetGroup = assetGroupName;
       // this.updateComponent();
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
+      this.urlID = currentQueryParams.TypeAsset;
+      if(this.urlID?.toLowerCase().includes("scanned")){
+        this.isMultiValuedFilterEnabled = false;
+        this.showFilterBtn = false;
+      }
       this.getFilters().then(() => {
         this.filterTypeLabels.forEach(label => {
           if(label=="Exempted" || label=="Tagged"){
@@ -251,7 +262,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.fieldName = "_entitytype.keyword";
       this.fieldType = "string";
     } else{
-      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
+      let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
       if(!apiColName){
         apiColName =  find(this.filterTypeOptions, {
           optionName: this.headerColName,
@@ -490,6 +501,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           // the url and method for patching << -- defines url and method
           assetListUrl = environment.assetListScanned.url;
           assetListMethod = environment.assetListScanned.method;
+          this.isMultiValuedFilterEnabled = false;
           this.serviceId = 9;
           this.tableDownloadName = "Scanned Assets";
         } else if (this.urlID.toLowerCase() === "vulnerable") {
@@ -576,18 +588,29 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
       const filterToBePassed = {...this.filterText};
 
-      Object.keys(filterToBePassed).forEach(filterKey => {
-        if(filterKey=="domain") return;
-        filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-      })
-      queryParams = {
-        ag: this.selectedAssetGroup,
-        reqFilter: filterToBePassed,
-        sortFilter: sortFilter,
-        from: this.bucketNumber * this.paginatorSize,
-        searchtext: this.searchTxt,
-        size: this.paginatorSize,
-      };
+      if(this.isMultiValuedFilterEnabled){
+        Object.keys(filterToBePassed).forEach(filterKey => {
+          if(filterKey=="domain") return;
+          filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+        })
+        queryParams = {
+          ag: this.selectedAssetGroup,
+          reqFilter: filterToBePassed,
+          sortFilter: sortFilter,
+          from: this.bucketNumber * this.paginatorSize,
+          searchtext: this.searchTxt,
+          size: this.paginatorSize,
+        };
+      }else{
+        queryParams = {
+          ag: this.selectedAssetGroup,
+          filter: filterToBePassed,
+          sortFilter: sortFilter,
+          from: this.bucketNumber * this.paginatorSize,
+          searchtext: this.searchTxt,
+          size: this.paginatorSize,
+        };
+      }
 
       this.getDataForAParticularTypeOfAssets(
         queryParams,
@@ -922,11 +945,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
       
         if(urlObj.url.includes("attribute")){
           let filtersToBePassed = {};       
-          Object.keys(this.filterText).map(key => {
-            key = key.replace(".keyword", "");
-            if(key=="domain" || key==urlObj.params["attribute"]) return;
-            filtersToBePassed[key] = this.filterText[key+".keyword"].split(",");
-          })
+          if(this.isMultiValuedFilterEnabled){
+            Object.keys(this.filterText).map(key => {
+              key = key.replace(".keyword", "");
+              if(key=="domain" || key==urlObj.params["attribute"]) return;
+              filtersToBePassed[key] = this.filterText[key+".keyword"].split(",");
+            })
+          }
           const payload = {
             type: "asset",
             attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
@@ -1018,17 +1043,22 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
     try {
       if (this.currentFilterType) {
-        const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
-          return v;
-        });
+        let filterTags;
+        if(this.isMultiValuedFilterEnabled){
+          filterTags = filterValues.map(value => {
+            const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
+            return v;
+          });
+        }else{
+          filterTags = filterValues;
+        }
         this.utils.addOrReplaceElement(
           this.filters,
           {
             keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: filterValues,
+            filterValue: filterTags,
             key: this.currentFilterType.optionName,
-            value: filterTags,
+            value: this.isMultiValuedFilterEnabled?filterTags:filterValues,
             filterkey: this.currentFilterType.optionValue.trim(),
             compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
           },
