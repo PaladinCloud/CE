@@ -76,20 +76,23 @@ public class EntityManager implements Constants {
      */
     public List<Map<String, String>> uploadEntityData(String datasource) {
     	List<Map<String,String>> errorList = new ArrayList<>();
-        Set<String> types = ConfigManager.getTypes(datasource);
-        Iterator<String> itr = types.iterator();
+        Map<String,String> types = ConfigManager.getTypesWithDisplayName(datasource);
+        Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
         String type = "";
         LOGGER.info("*** Start Colleting Entity Info ***");
         List<String> filters = Arrays.asList("_docid", FIRST_DISCOVERED);
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
         while (itr.hasNext()) {
             try {
-                type = itr.next();
+                Map.Entry<String, String> entry = itr.next();
+                type = entry.getKey();
+                String displayName= entry.getValue();
                 Map<String, Object> stats = new LinkedHashMap<>();
                 String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
                 stats.put("datasource", datasource);
                 stats.put("docType", type);
                 stats.put("start_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
+                stats.put("TargetTypeDisplayName",displayName);
                 LOGGER.info("Fetching {}", type);
                 String indexName = datasource + "_" + type;
                 Map<String, Map<String, String>> currentInfo = ESManager.getExistingInfo(indexName, type, filters);
