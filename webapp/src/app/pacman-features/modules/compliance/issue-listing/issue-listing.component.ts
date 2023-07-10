@@ -505,11 +505,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
       let filtersToBePassed = {};       
-      Object.keys(this.filterText).map(key => {
-        if(key=="domain" || key=="include_exempt" || key.replace(".keyword", "")==urlObj.params["attribute"] || urlObj.url.includes(key)) return;
+      Object.keys(this.filterText).map(key => {        
+        if(key==this.currentFilterType["optionValue"] || key=="domain" || key=="include_exempt" || key.replace(".keyword", "")==urlObj.params["attribute"] || urlObj.url.includes(key)) return;
         filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
       })
-      if(!filtersToBePassed["issueStatus"]){
+      if(!(filtersToBePassed["issueStatus"] || value=="Status")){
         filtersToBePassed["issueStatus"] = ["open", "exempt"];
       }
       const payload = {
