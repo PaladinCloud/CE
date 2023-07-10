@@ -523,7 +523,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             });
           }
           else if(value.toLowerCase()=="violations" || value.toLowerCase()=="compliance"){
-            console.log("intervals: ", response[0].data);
             const numOfIntervals = 5;
             const min = response[0].data.optionRange.min;
             const max = response[0].data.optionRange.max;
