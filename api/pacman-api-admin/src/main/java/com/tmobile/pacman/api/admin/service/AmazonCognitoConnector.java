@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
+
 @Component
 public class AmazonCognitoConnector {
 
@@ -234,5 +236,35 @@ public class AmazonCognitoConnector {
         responseMap.put(EMAIL, email);
         responseMap.put("action",action);
         return responseMap;
+    }
+
+    public  List<Map<String,Object>> listAllRoles(){
+        List<Map<String,Object>>roleDetails = new ArrayList<>();
+        CognitoIdentityProviderClient identityProviderClient = getCognitoIdentityProviderClient();
+        try{
+            ListGroupsResponse listGroupsResponse= identityProviderClient.listGroups(ListGroupsRequest.builder().userPoolId(USERPOOL_ID).build());
+            List<GroupType> groups=listGroupsResponse.groups();
+
+            for(GroupType group:groups) {
+                Map<String, Object> responseMap = new HashMap<>();
+                String groupName = group.groupName();
+                responseMap.put("roleName", groupName);
+                responseMap.put("isDefault", false);
+                if (groupName.equalsIgnoreCase("ReadOnly")) {
+                    responseMap.put("isDefault", true);
+                }
+                String[] words = groupName.split("(?=[A-Z])");
+                String displayName = String.join(" ", words);
+
+                responseMap.put("roleDisplayName", displayName);
+
+                roleDetails.add(responseMap);
+            }
+        } catch (CognitoIdentityProviderException e){
+            log.error("Error occurred while listing groups", e.getMessage());
+        }catch (Exception e){
+            log.error(UNEXPECTED_ERROR_OCCURRED, e.getMessage());
+        }
+        return  roleDetails;
     }
 }

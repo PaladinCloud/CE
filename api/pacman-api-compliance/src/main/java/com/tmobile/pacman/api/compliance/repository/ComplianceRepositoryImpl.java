@@ -134,6 +134,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * The Constant PROTOCOL.
      */
     static final String PROTOCOL = "http";
+    public static final String KEYWORD = ".keyword";
     /**
      * The rest client.
      */
@@ -517,6 +518,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     }
                 }
             } else {
+                List<Map<String, Object>> sortFilterList = addSortOrderValues(sortFilters, policyIdOrder, targetTypes);
                 if (MapUtils.isNotEmpty(filters) || size > 0 || !Strings.isNullOrEmpty(searchText)) {
                     addSortOrderValues(sortFilters, policyIdOrder, targetTypes);
                     //handling age filter
@@ -539,7 +541,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         mustFilter.remove(CREATED_DATE);
                     }
                     issueDetails = elasticSearchRepository.getSortedDataFromESBySize(assetGroup, null, mustFilter,
-                            mustNotFilter, shouldFilter, fields, from, size, searchText, mustTermsFilter, sortFilters);
+                            mustNotFilter, shouldFilter, fields, from, size, searchText, mustTermsFilter, sortFilterList);
                     for (Map<String, Object> issueDetail : issueDetails) {
                         issueList = getIssueList(null, issueDetail, policyIdwithDisplayNameMap, issueList, domain);
                     }
@@ -573,21 +575,38 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return response;
     }
 
-    private void addSortOrderValues(Map<String, Object> sortFilters, ArrayList<String> policyIdOrder, String targetTypes) {
-        if(sortFilters!=null && sortFilters.get("sortOrder")==null) {
-            String sortBy = ((String) sortFilters.get("fieldName")).replaceAll(".keyword", "");
+    private List<Map<String, Object>> addSortOrderValues(Map<String, Object> sortFilters, ArrayList<String> policyIdOrder, String targetTypes) {
+        List<Map<String,Object>> sortFilterList=new ArrayList<>();
+        if(sortFilters!=null) {
+            String sortBy = ((String) sortFilters.get("fieldName")).replaceAll(KEYWORD, "");
             if (sortBy.equals("policyId")) {
                 sortFilters.put("sortOrder", policyIdOrder);
+                sortFilterList.add(sortFilters);
             } else if(rdsAttributeList.contains(sortBy)) {
                 String sortByAttribute = Constants.RESOURCE_TYPE.equalsIgnoreCase(sortBy) ? Constants.TARGET_TYPE : sortBy;
-                sortFilters.put("fieldName", sortByAttribute + ".keyword");
+                sortFilters.put("fieldName", sortByAttribute + KEYWORD);
                 String sortOrder = (String) sortFilters.get("order");
                 List<Map<String, Object>> policyDetails = getPolicyDetailsSortByColumn(targetTypes, sortByAttribute, sortOrder);
                 Set<String> orderList = new LinkedHashSet<>();
                 policyDetails.forEach(policy -> orderList.add((String) policy.get(sortByAttribute)));
                 sortFilters.put("sortOrder", orderList);
+                sortFilterList.add(sortFilters);
+            }else if(sortBy.equalsIgnoreCase("severity")){
+                //in case of default sort order add violation age as secondary sort, display latest violation first
+                Map<String, Object> ageSortCriteria=new HashMap<>();
+                ageSortCriteria.put("fieldName",CREATED_DATE);
+                ageSortCriteria.put(ORDER, DESC);
+                sortFilterList.add(sortFilters);
+                sortFilterList.add(ageSortCriteria);
+            }else {
+                if(sortBy.equals(CREATED_DATE)){
+                    //flip sort order in case of sort on age
+                    sortFilters.put(ORDER,sortFilters.get(ORDER).equals(DESC)?ASC:DESC);
+                }
+                sortFilterList.add(sortFilters);
             }
         }
+        return sortFilterList;
     }
 
     /*

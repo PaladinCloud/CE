@@ -46,9 +46,24 @@ public interface Constants {
     String LATEST = "latest";
     String TRUE = "true";
     String ISSUE = "issue";
+    String ISSUES= "issues";
+
+    String RESOURCEID_KEYWORD = "_resourceid.keyword";
     String RECOMMENDATION = "RECOMMENDATION";
     String CLOSED = "closed";
     String OPEN = "open";
+    String EXEMPTION_START_DATE = "requestedExemptionStartDate";
+    String EXEMPTION_END_DATE = "requestedExceptionEndDate";
+    String EXEMPTION_REQUEST_RAISED = "requested";
+    String EXEMPTION_REQUEST_CANCELLED = "cancelled";
+    String EXEMPTION_REQUEST_APPROVED = "approved";
+    String EXEMPTION_REQUEST_REVOKED = "revoked";
+    String EXEMPTION_REQUEST_REVOKED_BY = "exemption-request-revoked-by";
+    String EXEMPTION_REQUEST_REVOKED_ON = "exemption-request-revoked-on";
+    String EXEMPTION_REQUEST_CANCELLED_BY = "exemption-request-cancelled-by";
+    String EXEMPTION_REQUEST_APPROVED_BY = "exemption-request-approved-by";
+    String EXEMPTION_REQUEST_CANCELLED_ON = "exemption-request-cancelled-on";
+    String EXEMPTION_REQUEST_APPROVED_ON = "exemption-request-approved-on";
     String POLICY_CATEGORY = "policyCategory";
     String ISSUE_STATUS = "issueStatus";
     String INCLUDE_EXEMPT = "include_exempt";
@@ -77,6 +92,11 @@ public interface Constants {
     String POLICY_DISPAY_NAME = "policyDisplayName";
     String POLICY_PARAMS = "policyParams";
     String TARGET_TYPE = "targetType";
+    String ISSUE_RESOURCE_ID = "resourceId";
+    String ISSUE_EXCEPTION = "issueException";
+    String ISSUE_EXEMPTION_REASON = "exemptionReason";
+    String DELIMITER_UNDERSCORE = "_";
+    String DELIMITER_COMMA = ",";
     String RESOURCE_TYPE = "resourcetType";
     String ANNOTATIONID = "annotationid";
     String POLICY_DESC = "policyDesc";
@@ -97,17 +117,18 @@ public interface Constants {
     String RESOURCEID = "_resourceid";
     String AUDIT_DATE = "auditdate";
     String STATUS = "status";
+    String ENABLED = "ENABLED";
+    String DISABLED = "DISABLED";
     String DATA_SOURCE = "datasource";
     String DELIMITER = "*";
     String _ID = "_id";
     String ID = "id";
     String EXEMPTED = "exempted";
-    String IS_ASSETS_EXEMPTED = "isAssetsExempted";
+    String EXEMPT = "exempt";
     String MODIFIED_DATE = "modifiedDate";
     String PAC_DS = "pac_ds";
     String POLICY_VIOLATION = "#violation";
     String CONTRIBUTION = "contribution";
-    String CONTRIBUTION_PERCENT = "contribution_percent";
     String COMPLIANCE_PERCENTAGE = "compliance";
     String COMPLIANCE_PERCENT = "compliance_percent";
     String LAST_SCAN = "lastScan";
@@ -126,6 +147,10 @@ public interface Constants {
     String CREATED_DATE = "createdDate";
     String TAGS_ENVIRONMENT = "tags.Environment";
     String DESC = "desc";
+    String ASC = "asc";
+    String ORDER = "order";
+
+    String FIELD = "field";
     String POLICY_DISPLAY_NAME = "PolicyName";
     String POLICY_DISPLAY_ID = "PolicyId";
     String ISSUE_ID = "IssueId";
@@ -151,6 +176,7 @@ public interface Constants {
     String BRANCH = "branches";
     String INSCOPE = "inScope";
     String DOMAIN = "domain";
+    String DEFAULT_DOMAIN = "Infra & Platforms";
     String DOMAIN_NAME = "domainName";
     String ENV = "environment";
     String ASSET_MANDATORY = "Asset group is mandatory";
@@ -174,6 +200,10 @@ public interface Constants {
     String EXP_IN_45_DAYS = "expiry45Days";
     String EXP_IN_30_DAYS = "expiry30Days";
     String DOC_COUNT = "doc_count";
+    String DOC_TYPE = "docType";
+    String DOC_TYPE_KEYWORD = "docType.keyword";
+
+    String COMPLIANCE = "compliance";
     String EXP_IN = "expiringIn";
     String THIRTY = "30";
     String FOURTYFIVE = "45";
@@ -190,9 +220,11 @@ public interface Constants {
     String SEARCH = "_search";
     String INFRA_AND_PLATFORMS = "Infra & Platforms";
     String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    String DATE_FORMAT_FOR_BANNER = "MMM dd, YYYY";
     String ERROR_IN_US = "error retrieving inventory from ES";
     String SOX = "sox";
     String AGGREGATIONS = "aggregations";
+    String MAXDATE = "maxdate";
     String KERNEL_VERSION = "kernelVersion";
     String DENOMINATOR = "denominator";
     String NUMERATOR = "numerator";
@@ -204,8 +236,9 @@ public interface Constants {
     String MUST = "must";
     String DIRECTOR = "director";
     String EXCUTIVE_SPONSOR = "executiveSponsor";
-    String UNPATCHED_INSTANCES = "unpatched_instances";
+    String UNPATCHED_INSTANCE = "unpatched_instances";
     String NO_DATA_FOUND = "No Data Found";
+    String UNPATCHED_INSTANCES = "unpatched_instances";
     String TOTAL_INSTANCES = "total_instances";
     String PATCHING_PERCENTAGE = "patching_percentage";
     String EC2 = "ec2";
@@ -216,6 +249,9 @@ public interface Constants {
     String ISSUE_REASON = "issueReason";
     String HITS = "hits";
     String DOCID = "_docid";
+
+    String UNMAPPED_TYPE = "unmapped_type";
+    String LONG = "long";
     int INT_HUNDRED = 100;
     String RANGE = "range";
     String AG_STATS = "assetgroup_stats";
@@ -245,6 +281,7 @@ public interface Constants {
     String APP_TAG = "appTag";
     String KERNEL_RELEASE = "kernel_release";
     String PATCHED_INSTANCES = "patched_instances";
+    String PATCHED_INSTANCE = "patched_instances";
     String START_DATE = "start_date";
     String END_DATE = "end_date";
     String INSTANCE_ID = "instanceid";
@@ -286,6 +323,9 @@ public interface Constants {
     String ISSUE_COUNT_PER_RULE_AG = "issuecountPerRuleAG";
     String ASSET_COUNT = "assetCount";
     String CONTR_PERCENTAGE = "contributionPercentage";
+
+    String IS_ASSETS_EXEMPTED = "isAssetsExempted";
+    String CONTRIBUTION_PERCENT = "contribution_percent";
     String COMP_PERCENTAGE = "compliancePercentage";
     String WORKING = "working";
     String EXE_EMAIL_SEND = "Exception in sendTextMail";
@@ -419,4 +459,7 @@ public interface Constants {
     String NOTIFICATION_CATEGEORY_NAME = "eventCategoryName";
     String NOTIFICATION_SOURCE_NAME = "eventSourceName";
     String NOTIFICATION_EVENT_NAME = "eventName";
+
+    String AUTOFIX_PLANNED_KEYWORD = "isAutofixPlanned.keyword";
+    String TYPE_KEYWORD = "type.keyword";
 }

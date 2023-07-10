@@ -27,11 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.tmobile.pacman.api.admin.domain.CreateRoleDetailsRequest;
 import com.tmobile.pacman.api.admin.domain.Response;
@@ -141,5 +137,19 @@ public class UserRolesController {
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
 		}
 	}
+
+	@ApiOperation(httpMethod = "GET", value = "API to get all the roles from AWS cognito UserPool ", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getUsers(){
+		try {
+			return  ResponseUtils.buildSucessResponse(userRolesService.getAllRoles());
+		}
+		catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+
 }
+
 

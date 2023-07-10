@@ -23,9 +23,11 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.USER_ROLE_UPDAT
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.tmobile.pacman.api.admin.service.AmazonCognitoConnector;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,8 @@ public class UserRolesServiceImpl implements UserRolesService {
 	
 	@Autowired
 	private UserRolesRepository userRolesRepository;
+	@Autowired
+	private AmazonCognitoConnector amazonCognitoConnector;
 
 	@Override
 	public Page<UserRolesResponse> getAllUserRoles(String searchTerm, int page, int size) {
@@ -132,5 +136,10 @@ public class UserRolesServiceImpl implements UserRolesService {
 		} else {
 			throw new PacManException(USER_ROLE_NOT_EXITS);
 		}
+	}
+
+	@Override
+	public List<Map<String,Object>> getAllRoles() throws PacManException {
+		return amazonCognitoConnector.listAllRoles();
 	}
 }

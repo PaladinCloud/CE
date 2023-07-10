@@ -46,6 +46,8 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
@@ -137,12 +139,12 @@ public class AssetRepositoryImpl implements AssetRepository {
 			if (AssetConstants.ALL.equals(type)) {
 				try {
 					countMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
-							null, AssetConstants.UNDERSCORE_TYPE, Constants.THOUSAND, null);
+							null, AssetConstants.DOC_TYPE, Constants.THOUSAND, null);
 				} catch (Exception e) {
 					LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
 				}
 			} else {
-				long count = esRepository.getTotalDocumentCountForIndexAndType(aseetGroupName, type, filter, null,
+				long count = esRepository.getTotalDocumentCountForIndexAndType(aseetGroupName, "", filter, null,
 						null, null, null);
 				countMap.put(type, count);
 			}
@@ -155,6 +157,29 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     @Override
 	public List<Map<String, Object>> getTargetTypesByAssetGroup(String aseetGroupName, String domain, String provider) {
+
+        //Query from ES alias for the asset group to get all the target associated with it
+        String urlToQuery = esUrl+ "/_alias/"+aseetGroupName;
+        List<String> targetTypes = new ArrayList<>();
+        String responseDetails = null;
+        try {
+            responseDetails = PacHttpUtils.getHttpGet(urlToQuery, new HashMap<>());
+            JSONObject jsonResponse = new JSONObject(responseDetails);
+            JSONArray indices = jsonResponse.names();
+            for (int i = 0; i < indices.length(); i++) {
+                String indexName = indices.getString(i);
+                int underscoreIndex = indexName.indexOf("_");
+                if (underscoreIndex != -1 && underscoreIndex < indexName.length() - 1) {
+                    targetTypes.add(indexName.substring(underscoreIndex + 1));
+                } else {
+                    targetTypes.add(indexName);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception in getAssetTargetTypes in fetching target types for es :", e);
+            return new ArrayList<>();
+        }
+        String result = targetTypes.stream().collect(Collectors.joining("','", "'", "'"));
 
 		String query = "select distinct targetType as type, c.displayName as displayName ,c.category as category,c.domain as domain, dataSourceName as "
 		+ Constants.PROVIDER + " from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b ,cf_Target c "
@@ -402,6 +427,7 @@ public class AssetRepositoryImpl implements AssetRepository {
     public Map<String, Long> getAssetCountByApplication(String assetGroup, String type) throws DataException {
         Map<String, Object> filter = new HashMap<>();
         filter.put(Constants.LATEST, Constants.TRUE);
+        filter.put(Constants.DOC_TYPE, type);
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         if (Constants.EC2.equals(type)) {
             shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
@@ -409,7 +435,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPING);
         }
         try {
-            return esRepository.getTotalDistributionForIndexAndType(assetGroup, type, filter, null, shouldFilter,
+            return esRepository.getTotalDistributionForIndexAndType(assetGroup, "", filter, null, shouldFilter,
                     Constants.TAGS_APPS, Constants.THOUSAND, null);
         } catch (Exception e) {
             LOGGER.error("Exception in getAssetCountByApplication ", e);
@@ -861,7 +887,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         mustFilter.put(AssetConstants.ISSUE_STATUS, "exempted");
         try {
             ExemptedCountMap = esRepository.getTotalDistributionForIndexAndType(assetGroup, null, mustFilter, null,
-                    null, AssetConstants.UNDERSCORE_TYPE, Constants.THOUSAND, null);
+                    null, AssetConstants.DOC_TYPE, Constants.THOUSAND, null);
             return ExemptedCountMap;
         } catch (Exception e) {
             LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
@@ -1656,7 +1682,8 @@ public class AssetRepositoryImpl implements AssetRepository {
             shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPED);
             shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPING);
         }
-        
+        List<Map<String,Object>> sortList=new ArrayList<>();
+        sortList.add(sortFilter);
         List<Map<String, Object>> assets = new ArrayList<>();
         try {
             if (AssetConstants.ALL.equals(type)) {
@@ -1664,7 +1691,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     Map<String, Object> mustTermsFilter = new HashMap<>();
                     mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetTypes);
                     assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, null, null, fieldNames,
-                            from, size, searchText, mustTermsFilter, sortFilter);
+                            from, size, searchText, mustTermsFilter, sortList);
                 } catch (Exception e) {
                     LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
                 }
@@ -1674,7 +1701,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     fieldNames = getDisplayFieldsForTargetType(type);
                 }
                 assets = esRepository.getSortedDataFromESBySize(assetGroupName, type, mustFilter, null, shouldFilter,
-                        fieldNames, from, size, searchText, null, sortFilter);
+                        fieldNames, from, size, searchText, null, sortList);
             }
         } catch (Exception e) {
             LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
@@ -2695,7 +2722,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 					Map<String, Object> nestedaggs = esRepository.buildAggs(Constants.TAGS_ENV, Constants.THOUSAND, Constants.ENVIRONMENTS, null);
 					
 					countMap = esRepository.getEnvAndTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
-							null, AssetConstants.UNDERSCORE_TYPE, nestedaggs, Constants.THOUSAND, null);
+							null, AssetConstants.DOC_TYPE, nestedaggs, Constants.THOUSAND, null);
 				} catch (Exception e) {
 					LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
 				}
@@ -2744,7 +2771,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
             StringBuilder request = new StringBuilder(
                    // "{\"size\": 10000, \"_source\": [\"count\",\"ag\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
-                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
+                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [{\"term\\\":{\"docType\":\"count_asset\"}}, { \"match\": {\"ag.keyword\": ");
             request.append("\"" + assetGroup + "\"}}");
             if(type!=null){
                 //request.append(",{ \"match\": {\"type.keyword\": " + "\"" + type + "\"}}");
@@ -2782,7 +2809,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         String responseJson = "";
         try {
             responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort
-                    + "/assetgroup_stats/count_asset/_search", rqstBody);
+                    + "/assetgroup_stats/_search", rqstBody);
         } catch (Exception e) {
             LOGGER.error("Exception in getAssetCountStat " , e);
         }

@@ -436,6 +436,9 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			if (!Strings.isNullOrEmpty(eventName)) {
 				body = body + ",{\"terms\":{\"eventCategoryName.keyword\":" + eventName + "}}";
 			}
+			if (!Strings.isNullOrEmpty(type)) {
+				body = body + ",{\"term\":{\"docType\": \"" + type + "\"}}";
+			}
 			body = body + "]}},\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
 			String urlToQuery = esRepository.buildESURL(esUrl, index, null, size, from);
 			Gson gson = new GsonBuilder().create();
@@ -485,15 +488,11 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		Gson gson = new GsonBuilder().create();
 		String responseDetails = null;
 		StringBuilder requestBody = null;
-		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index)
-				.append("/").append(_SEARCH);
+		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index).append("/").append(_SEARCH);
 
-		String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":true}}, {\n" +
-				"          \"term\": {\n" +
-				"            \"docType\": \""+type+"\"\n" +
-				"          }\n" +
-				"        }]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventId.keyword\",\"size\":1000}}},"
+		String body = "{\"query\":{\"bool\":{\"must\":[{ \"term\": { \"docType\": \"<docType>\" } },{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventId.keyword\",\"size\":1000}}},"
 				+ "\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
+		body = body.replace("<docType>", type);
 		requestBody = new StringBuilder(body);
 		try {
 			responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
@@ -513,8 +512,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 
 	@SuppressWarnings("unchecked")
 	private long getTotalDocCount(String index, String type, String requestBody) {
-		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
-				.append("/").append(_SEARCH);
+		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index).append("/").append(_SEARCH);
 		String responseDetails = null;
 		Gson gson = new GsonBuilder().create();
 		try {
@@ -539,12 +537,11 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	 */
 	private int getAutoFixSummary(String indexName, String type) {
 
-		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(indexName).append("/").append(type)
-				.append("/").append(_COUNT).append("?filter_path=count");
+		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(indexName).append("/").append(_COUNT).append("?filter_path=count");
 		String requestBody = "{}";
 		String responseDetails = null;
 		try {
-			responseDetails = PacHttpUtils.doHttpPost(urlToQuery.toString(), requestBody);
+			responseDetails = PacHttpUtils.doHttpPost(urlToQuery.toString(), type);
 			JsonParser jsonParser = new JsonParser();
 			JsonObject resultJson = (JsonObject) jsonParser.parse(responseDetails);
 			return resultJson.get("count").getAsInt();
@@ -559,10 +556,10 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			throws DataException {
 		List<Map<String, Object>> autofixPlanList = new ArrayList<Map<String, Object>>();
 		try {
-			StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
-					.append("/").append(_SEARCH);
+			StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index).append("/").append(_SEARCH);
 			String body = "";
-			body = "{\"size\":10000,\"_source\":[\"docId\",\"planItems\",\"policyId\",\"issueId\",\"resourceId\",\"resourceType\"]}";
+			body = "{\"size\":10000,\"query\": {\"bool\": {\"must\": [ { \"term\": { \"docType\": \"<type>\" } } ] }} ,\"_source\":[\"docId\",\"planItems\",\"policyId\",\"issueId\",\"resourceId\",\"resourceType\"]}";
+			body = body.replace("<type>", type);
 			Gson gson = new GsonBuilder().create();
 			String responseDetails = null;
 			try {
@@ -724,19 +721,20 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		try {
 			Map<String, Object> countMap = new HashMap<>();
 			if (globalNotifier && Strings.isNullOrEmpty(resourceId) && Strings.isNullOrEmpty(resourceId)) {
-				countMap.put("globalNotificationsCount", getTotalDocCount("cloud_notifications", "cloud_notification",
-						"{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("evnetIssuesCount", getTotalDocCount("cloud_notifications", "cloud_notification",
-						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"issue\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("eventscheduledCount", getTotalDocCount("cloud_notifications", "cloud_notification",
-						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"scheduledChange\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("eventNotificationCount", getTotalDocCount("cloud_notifications", "cloud_notification",
-						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"accountNotification\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+				countMap.put("globalNotificationsCount", getTotalDocCount("cloud_notifications", "",
+						"{\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{ \"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+				countMap.put("evnetIssuesCount", getTotalDocCount("cloud_notifications", "",
+						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{ \"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"issue\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+				countMap.put("eventscheduledCount", getTotalDocCount("cloud_notifications", "",
+						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{ \"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"scheduledChange\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+				countMap.put("eventNotificationCount", getTotalDocCount("cloud_notifications", "",
+						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{ \"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"accountNotification\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
 				countMap.put("autofixCount", 0);
 				summaryList.add(countMap);
 			} else {
 				if (!Strings.isNullOrEmpty(resourceId) && !Strings.isNullOrEmpty(resourceId) && !globalNotifier) {
-					String body = "{\"size\": 1,\"_source\":\"eventtypecategory\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"_resourceid.keyword\":\""
+					String body = "{\"size\": 1,\"_source\":\"eventtypecategory\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"docType\":\""
+							+ TYPE +"\"}},{\"term\":{\"_resourceid.keyword\":\""
 							+ resourceId + "\"}},{\"term\":{\"statuscode.keyword\":\"" + eventStatus + "\"}}]}}}";
 					StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
 							.append(TYPE).append("/").append(_SEARCH);
@@ -797,15 +795,15 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 					summaryList.add(countMap);
 				} else {
 					countMap.put("globalNotificationsCount", getTotalDocCount("cloud_notifications",
-							"cloud_notification",
-							"{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-					countMap.put("evnetIssuesCount", getTotalDocCount(assetGroup, "cloud_notification",
-							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"issue\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-					countMap.put("eventscheduledCount", getTotalDocCount(assetGroup, "cloud_notification",
-							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"scheduledChange\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-					countMap.put("eventNotificationCount", getTotalDocCount(assetGroup, "cloud_notification",
-							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"accountNotification\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-					countMap.put("autofixCount", getAutoFixSummary(assetGroup, "autofixplan"));
+							"",
+							"{\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+					countMap.put("evnetIssuesCount", getTotalDocCount(assetGroup, "",
+							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"issue\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+					countMap.put("eventscheduledCount", getTotalDocCount(assetGroup, "",
+							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"scheduledChange\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+					countMap.put("eventNotificationCount", getTotalDocCount(assetGroup, "",
+							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\": { \"docType\": \"cloud_notification\"}},{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"accountNotification\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+					countMap.put("autofixCount", getAutoFixSummary(assetGroup, "{  \"query\": {\"bool\": {\"must\": [ { \"term\": { \"docType\": \"autofixplan\" } } ] } } }"));
 					summaryList.add(countMap);
 				}
 			}

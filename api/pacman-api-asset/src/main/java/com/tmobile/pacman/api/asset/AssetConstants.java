@@ -59,6 +59,7 @@ public final class AssetConstants {
     public static final String STOPPED = "stopped";
     public static final String STOPPING = "stopping";
     public static final String UNDERSCORE_TYPE = "_type";
+    public static final String DOC_TYPE = "docType";
     public static final String UNDERSCORE_SOURCE = "_source";
     public static final String RECENTLY_VIEWED_AG = "recentlyViewedAg";
     public static final String UNDERSCORE_LOADDATE = "_loaddate";
