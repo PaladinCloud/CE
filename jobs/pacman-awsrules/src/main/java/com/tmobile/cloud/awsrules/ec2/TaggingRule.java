@@ -98,11 +98,9 @@ public class TaggingRule extends BasePolicy {
 			String assetType=resourceAttributes.get("_entitytype");
 
 			if(assetType.equalsIgnoreCase("kms")){
-				String aliasName = resourceAttributes.get("aliasname");
 				String keyManager=resourceAttributes.get("keymanager");
-
-				// Check if the alias name starts with "Alias/Aws"
-				if (aliasName != null && aliasName.startsWith("alias/aws") && keyManager.equalsIgnoreCase("aws")){
+				// Check if the keyManager is aws
+				if ( keyManager.equalsIgnoreCase("aws")){
 					logger.info(targetType, " ", entityId, " is an AWS Managed Resource and is exempt from mandatory tagging.");
 					return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 				}
