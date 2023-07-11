@@ -2688,3 +2688,4 @@ update cf_PolicyParams set description = 'Specify destination bucket name for au
 update cf_PolicyParams set description = 'Restrict these permissions from IAM roles' where policyid='ServiceAccountPrivilegesRule_version-1_UnapprovedServiceAccountAccess_iamuser' and displayName='Unapproved IAM actions';
 update cf_PolicyParams set description = 'Restrict these permissions from IAM roles' where policyid='UnapprovedIamRoleWithLambdaAccess_version-1_UnapprovedIamRoleLambdaAccess_iamrole' and displayName='Unapproved IAM actions';
 update cf_PolicyParams set description = 'Restrict these permissions from IAM roles' where policyid='core-networking-iam-user-with-unapproved-access_version-1_core-networking-iam-user-with-unapproved-access_iamuser' and displayName='Unapproved IAM actions';
+update cf_PolicyParams set paramValue = 'disable-enable-database-flags-for-cloudsql-server' where paramValue='disable-contained-database-Auth-flag-for-sql-server';
