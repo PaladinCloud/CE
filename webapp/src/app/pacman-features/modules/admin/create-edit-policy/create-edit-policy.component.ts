@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { environment } from './../../../../../environments/environment';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,6 +32,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
+import { DatePipe } from '@angular/common';
+import { TourService } from 'src/app/core/services/tour.service';
 
 @Component({
   selector: 'app-admin-create-edit-policy',
@@ -81,20 +83,26 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   hasEditableParams = 0;
   allPolicyParams = Object();
   paramsList = [];
-  status = false;
+  status = true;
   hideContent = false;
   ispolicyCreationFailed = false;
   ispolicyCreationSuccess = false;
   policyPolicyLoader = false;
   policyPolicyLoaderFailure = false;
   policyDisplayName = '';
+  enableUpdate = false;
 
   paginatorSize = 25;
   isLastPage;
   isFirstPage;
   totalPages: number;
   pageNumber = 0;
+  expiryDate: string;
+  expireDate: string;
+  currentDate;
+  headerColName = "";
   @ViewChild('policyForm') policyForm!: NgForm;
+  @ViewChild('disablePolicyRef') disablePolicyRef: TemplateRef<any>;
 
   searchTxt = '';
   dataTableData = [];
@@ -107,6 +115,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   showGenericMessage = false;
   dataTableDesc = '';
   urlID = '';
+  disableDescription = '';
 
   FullQueryParams;
   queryParamsWithoutFilter;
@@ -191,8 +200,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   showAutofix = false;
   assetMap: any;
   assetTypeSubscription: Subscription;
+  updateButtonClicked: boolean = false;
+  exemptionDetails = [];
 
   constructor(
+    private datePipe: DatePipe,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private utils: UtilsService,
@@ -204,7 +216,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
     public dialog: MatDialog,
-    private assetTypeMapService: AssetTypeMapService
+    private assetTypeMapService: AssetTypeMapService,
+    private tourService: TourService
   ) {
       this.routerParam();
   }
@@ -222,10 +235,17 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
+    this.getCurrentDate();
+  }
+
+  getCurrentDate(){
+    this.currentDate = new Date();
+    this.currentDate.setDate(this.currentDate.getDate()+1);
+    this.expiryDate = this.currentDate;
   }
 
   onReset() {
-    this.policyForm.reset(this.formData);
+    this.navigateBack();
   }
 
   selectedType(event: any) {
@@ -346,7 +366,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   }
 
   createOrUpdatepolicy(PolicyModel: any) {
-    this.enableDisableRuleOrJob(this.status?"enable":"disable").then(data=>{
+    this.updateButtonClicked = true;
       const url =  environment.updatePolicy.url;
       const method = environment.updatePolicy.method;
       this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
@@ -354,21 +374,16 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         this.ispolicyCreationSuccess = true;
         const notificationMessage = "Policy " + this.policyDisplayName + " updated successfully!!";
         this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-        this.workflowService.clearAllLevels();
-        this.router.navigate(['../'], {
-          relativeTo: this.activatedRoute,
-          queryParamsHandling: "merge",
-          state: {
-            dataUpdated: true
-            }
-        });
+        this.navigateBack();
       },
-        error => {
-          this.ispolicyCreationFailed = true;
-          this.policyLoader = false;
-        });
-    })
+      error => {
+        this.ispolicyCreationFailed = true;
+        this.policyLoader = false;
+      });
+  }
+
+  getDateData(date: any): any {
+    this.expireDate = this.datePipe.transform(date, 'dd/MM/yyyy');
   }
 
   private buildpolicyParams() {
@@ -380,17 +395,28 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   toggleAutofix(event:any){
     this.isAutofixEnabled = event.checked;
+    this.enableUpdate = true;
   }
 
   toggleSilentNotification(event:any){
     this.warningNotification = event.checked;
   }
 
+  disablePolicy(){
+    this.openDisablePolicyDialog();
+  }
+
+  enablePolicy(){
+    this.enableDisableRuleOrJob("enabled");
+  }
+  
   onSelectCategory(selectedCategory) {
+    this.enableUpdate = true;
     this.selectedCategory = selectedCategory;
   }
 
   onSelectSeverity(selectedSeverity) {
+    this.enableUpdate = true;
     this.selectedSeverity = selectedSeverity;
   }
 
@@ -430,9 +456,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.selectedFrequency = frequencyType;
   }
 
-  getData() {
+  getData(action?) {
     // this.getDatasourceDetails();
-    this.getPolicyDetails(this.policyId);
+    this.getPolicyDetails(this.policyId,action);
   }
 
   /*
@@ -489,10 +515,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
    * This function get calls the keyword service before initializing
    * the filter array ,so that filter keynames are changed
    */
-  getPolicyDetails(policyId: any) {
+  getPolicyDetails(policyId: any,action?) {
     let url = environment.getPolicyDetailsById.url;
     let method = environment.getPolicyDetailsById.method;
 
+    const oldPolicyDetails = this.policyDetails;
     this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
       this.policyDetails = reponse[0];
       this.selectedPolicyId = this.policyDetails.policyId;
@@ -511,6 +538,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.resolutionUrl = this.policyDetails.resolutionUrl;
       this.isAutofixAvailable = this.policyDetails.autoFixAvailable == "true";
       this.isAutofixEnabled =this.policyDetails.autoFixEnabled == "true";
+      this.disableDescription = this.policyDetails.disableDesc;
+      this.exemptionDetails = this.policyDetails.policyExemption;
 
       if (this.resolutionUrl == null || this.resolutionUrl == "") {
         this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
@@ -539,7 +568,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.paramsList = [];
 
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
-        if (this.allPolicyParams[i]["isEdit"]) {
+        if (JSON.parse(this.allPolicyParams[i]["isEdit"])){
           this.hasEditableParams++;
         }
         if(this.allPolicyParams[i]["key"].toLowerCase() == "policycategory" || this.allPolicyParams[i]["key"].toLowerCase() == "severity")
@@ -551,7 +580,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
               "key": this.allPolicyParams[i]["key"],
               "value": this.allPolicyParams[i]["value"],
               "displayName": this.allPolicyParams[i]["displayName"]?this.allPolicyParams[i]["displayName"]:this.allPolicyParams[i]["key"],
-              "isEdit": this.allPolicyParams[i]["isEdit"] ? this.allPolicyParams[i]["isEdit"] : false,
+              "isEdit": this.allPolicyParams[i]["isEdit"] ? JSON.parse(this.allPolicyParams[i]["isEdit"]) : false,
               "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false,
               "description": this.allPolicyParams[i]["description"]
             }
@@ -634,7 +663,25 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateComponent() {
+
+  openDisablePolicyDialog(): void {
+    const dialogRef = this.dialog.open(DialogBoxComponent, {
+      width: '500px',
+      data: { 
+            title: "Disable Policy",
+            noButtonLabel: "Cancel",
+            yesButtonLabel: "Confirm",
+            template: this.disablePolicyRef,
+          } 
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result == "yes") {
+        this.enableDisableRuleOrJob("disabled");
+      }
+    });
+  }
+
+  updateComponent(action?) {
     this.outerArr = [];
     this.searchTxt = '';
     this.currentBucket = [];
@@ -648,12 +695,20 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.seekdata = false;
     this.errorValue = 0;
     this.showGenericMessage = false;
-    this.getData();
+    this.getData(action);
   }
 
   navigateBack() {
     try {
-      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      this.workflowService.clearAllLevels();
+      this.router.navigate(['../'], {
+        relativeTo: this.activatedRoute,
+        queryParamsHandling: "merge", 
+        state: {
+          dataUpdated: this.updateButtonClicked
+          }
+      });
     } catch (error) {
       this.logger.log('error', error);
     }
@@ -661,10 +716,17 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   toggleStatus(event:any){
       this.status = event.checked;
+      if(!this.status)
+      this.isAutofixEnabled = this.status;
   }
 
   toggleWarningNotification(event:any){
       this.warningNotification = event.checked;
+      this.enableUpdate = true;
+  }
+
+  onValueChange(event:any){
+    this.enableUpdate = true;
   }
 
   enableDisableRuleOrJob(action:string) {
@@ -673,17 +735,25 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         const url = environment.enableDisableRuleOrJob.url;
         const method = environment.enableDisableRuleOrJob.method;
         const params = {};
-        params['policyId'] = this.policyId;
-
-        params['action'] = action;
-
-        this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
+        const payload = {
+          "policyId": this.policyId ,
+          "action": action
+        }
+        if(action.toLowerCase()=="disabled"){
+          payload["expireDate"] = this.expireDate,
+          payload["description"] = this.disableDescription
+        }
+        this.adminService.executeHttpAction(url, method, payload, params).subscribe(response => {
+            this.updateComponent(action.toLowerCase());
+            this.tourService.setComponentReady();
             resolve("sucess");
       },
           error => {
+            this.tourService.setComponentReady();
             reject("error");
           });
       } catch (error) {
+        this.tourService.setComponentReady();
         this.logger.log("error", error);
         reject("error");
       }

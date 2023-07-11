@@ -38,7 +38,7 @@ import { AssetTypeMapService } from "src/app/core/services/asset-type-map.servic
   providers: [LoggerService, ErrorHandlingService, AdminService],
 })
 export class PoliciesComponent implements OnInit, OnDestroy {
-  readonly pageTitle = "Policy";
+  pageTitle: String = "Policies";
   allPolicies: any = [];
 
   filterTypeLabels = [];
@@ -61,7 +61,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   headerColName;
   direction;
   columnNamesMap = {"policyDisplayName": "Policy","targetType": "Asset Type",  "severity": "Severity", "category":"Category", "status": "Status"};
-  columnWidths = {"Policy": 2.4, "Asset Type": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8, "Actions": 0.8}
+  columnWidths = {"Policy": 2.4, "Asset Type": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8}
   whiteListColumns;
   isStatePreserved = false;
   tableScrollTop = 0;
@@ -69,7 +69,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":0, "medium":1, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
 
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
@@ -179,9 +179,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     const stateUpdated =  history.state.dataUpdated;
     const state = this.tableStateService.getState("adminPolicies") || {};
     if(stateUpdated){
-      // this.clearState();
       state.data = [];
-      // state = {};
     }
     this.headerColName = state.headerColName || 'Severity';
     this.direction = state.direction || 'desc';
@@ -426,7 +424,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   storeState(data?){
     const state = {
       totalRows: this.totalRows,
-      data: data,
+      // data: data,
       headerColName: this.headerColName,
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
@@ -513,27 +511,28 @@ export class PoliciesComponent implements OnInit, OnDestroy {
               valueText:  currentAssetType?currentAssetType:cellData
             };
           }
-          else if (col.toLowerCase() == "actions") {
-            let dropDownItems: Array<String> = ["Edit"];
-          if (autoFixAvailable === "true"){
-             if(autoFixEnabled == "true") {
-              dropDownItems.push("Disable Autofix");
-             } else {
-              dropDownItems.push("Enable Autofix");
-            }
-          }
-            if (getData[row].Status.toLowerCase() === "enabled") {
-              dropDownItems.push("Disable Policy");
-            } else {
-              dropDownItems.push("Enable Policy");
-            }
-          dropDownItems.push("Run Policy");
-            cellObj = {
-              ...cellObj,
-              isMenuBtn: true,
-              menuItems: dropDownItems,
-            };
-          } else if(col.toLowerCase() == "status"){
+          // else if (col.toLowerCase() == "actions") {
+          //   let dropDownItems: Array<String> = ["Edit"];
+          // if (autoFixAvailable === "true"){ 
+          //    if(autoFixEnabled == "true") {
+          //     dropDownItems.push("Disable Autofix");
+          //    } else {
+          //     dropDownItems.push("Enable Autofix");
+          //   }
+          // }
+          //   if (getData[row].Status.toLowerCase() === "enabled") {
+          //     dropDownItems.push("Disable Policy");
+          //   } else {
+          //     dropDownItems.push("Enable Policy");
+          //   }
+          // dropDownItems.push("Run Policy");
+          //   cellObj = {
+          //     ...cellObj,
+          //     isMenuBtn: true,
+          //     menuItems: dropDownItems,
+          //   };
+          // } 
+          else if(col.toLowerCase() == "status"){
             let chipBackgroundColor,chipTextColor;
             if(getData[row]["Status"].toLowerCase() === "enabled"){
               chipBackgroundColor = "#E6F5EC";
@@ -544,8 +543,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             }
             cellObj = {
               ...cellObj,
-              chipList: [getData[row][col].toLowerCase()],
-              text: getData[row][col].toLowerCase(),
+              chipList: [getData[row][col]],
+              text: getData[row][col],
               isChip: true,
               chipBackgroundColor: chipBackgroundColor,
               chipTextColor: chipTextColor

@@ -20,7 +20,34 @@
 .right-wrapper{
   display: flex;
   width: 100%;
-  height: calc(100% - 90px);
+  flex-direction: column;
+  gap: 24px;
+}
+
+.alert-banner{
+  height: 56px;
+  background-color: #C53434;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.banner-text{
+  color: white;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.has-banner{
+  height: 90%;
+}
+
+.dropdown-wrapper{
+  display: flex;
+  gap: 12px;
 }
 
 .type-wrapper{
@@ -63,30 +90,48 @@
 .button-wrapper .button {
   display: flex;
   flex-direction: row;
-  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 12px;
+  gap: 8px;
   font: var(--text-body-2);
-  border-radius: 4px;
-  flex: none;
-  order: 1;
-  flex-grow: 0;
+  border-radius: 6px;
 }
 
-.submit-btn,.validate-btn{
+.validate-btn,.enable-btn{
   color: white;
   border: none;
   background: var(--primary-400);
 }
 
+.submit-btn{
+   color: #1B46B4;
+   background-color: white;
+   border: 1px solid var(--primary-400);
+}
+
 .cancel-btn{
-  color: var(--primary-400);
-  border: 1px solid var(--primary-400);
+  color: #4A545E;
   background-color: var(--background-white);
+}
+
+.disable-btn{
+  color: white;
+  border: none;
+  background: #C53434;
 }
 
 .disabled{
    background-color: #c0c0c0;
    color: black;
    box-shadow: none;
+}
+
+.submit-btn.disabled-button{
+  background-color: #E9ECEF !important;
+  cursor: not-allowed !important;
+  border: 1px solid #cfd6dd;
+  color: #4A545E;
 }
 
 .button-wrapper{
@@ -257,8 +302,18 @@ input{
   z-index: 100;
 }
 
-.details-wrapper, .autofix-wrapper ::ng-deep .mat-form-field{
+.details-wrapper, .autofix-wrapper, .date-wrapper ::ng-deep .mat-form-field{
   width: 100% !important;
+}
+
+.reason-header, .expiry-header{
+  font-family: var(--text-font-family);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  color: #272E35;
+  font-variation-settings: 'slnt' 0;
 }
 
 .parameter-wrapper ::ng-deep .mat-form-field{
@@ -501,12 +556,10 @@ img{
 .details-content-wrapper{
 padding: 24px;
 display: flex;
-height: calc(100% - 120px);
 flex-direction: column;
 border-bottom: 2px solid var(--border-100);
 border-top: 2px solid var(--border-100);
 gap: 32px;
-overflow: auto;
 }
 
 .tile-content-wrapper{
@@ -546,6 +599,7 @@ gap: 20px;
 .desc{
   font: var(--text-body-1);
   color: var(--text-high-emphasis);
+  white-space: pre-line;
 }
 
 .row{
