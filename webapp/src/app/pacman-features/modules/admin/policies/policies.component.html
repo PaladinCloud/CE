@@ -12,11 +12,10 @@
  * limitations under the License.
  -->
 
-<div
-    class="floating-widgets-section flex flex-col issue-listing-wrapper"
-    [class.filter-absent]="filters.length === 0"
->
-    <app-page-title [title]="pageTitle"></app-page-title>
+ <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
+    <div class="floating-widgets-header flex flex-between admin-widgets-header">
+        <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
+    </div>
     <div class="floating-widgets-container data-table-container">
         <section>
             <ul>

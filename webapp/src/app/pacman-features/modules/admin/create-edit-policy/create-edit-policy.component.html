@@ -1,20 +1,32 @@
-<div class="page-layout">
+<div class="alert-banner" *ngIf="!status">
+    <img  style="height: 16px;width: 16px;" src="../../../../../assets/icons/alert.svg">
+    <span class="banner-text body-2 medium-emphasis" title="{{disableDescription}}">{{disableDescription}}</span>
+</div>
+<div class="page-layout create-edit-policy" [class.has-banner]="!status">
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
         <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
     <div class="header" style="padding-bottom: 24px;">
           <h6>{{policyDisplayName}}</h6>
-          <div class="status-wrapper">
-            <span class="body-1">Enabled</span>
-            <mat-slide-toggle [checked]="status" (change)="toggleStatus($event)"></mat-slide-toggle>
+          <div class="button-wrapper">
+            <button class="button disable-btn" 
+            (click)="disablePolicy()" *ngIf="status">Disable Policy</button>
+            <button class="button enable-btn" 
+            (click)="enablePolicy()" *ngIf="!status">Enable Policy</button>
           </div>
     </div>
     <div class="right-wrapper">
             <div class="details-wrapper">
-                <div class="details-header">
+                <div class="details-header flex flex-around">
                     <div class="details-header-text">
                         Policy Details
+                    </div>
+                    <div class="button-wrapper">
+                        <button class="button submit-btn" [disabled]="!enableUpdate || updateButtonClicked" [class.disabled-button]="!enableUpdate || updateButtonClicked"
+                        (click)="onSubmit()">Save</button>
+                        <button class="button cancel-btn" 
+                            (click)="onReset()" [disabled]="!enableUpdate" [class.disabled-button]="!enableUpdate">Cancel</button>
                     </div>
                 </div>
                 <div class="details-content-wrapper">
@@ -23,12 +35,28 @@
                         <span class="desc">{{description}}</span>
                     </div>
                     <a class="resolution-wrapper" target="_blank" href="{{resolutionUrl}}">
-                        <span class="resolution-link">More Information</span>
+                        <span class="resolution-link">Resolution</span>
                         <img  style="height: 14px;width: 12px;" src="../../../../../assets/icons/right-arrow-icon.svg">
                     </a>    
                     <div class="description-wrapper">
                         <span class="desc-header">Asset Type</span>
                         <span class="desc">{{selectedAssetType}}</span>
+                    </div>
+                    <div class="dropdown-wrapper">
+                        <div class="dropdown">
+                            <app-dropdown [required]="isRequired" [optionImage]="true"
+                                [items]="policySeverities" placeholder="Severity"
+                                [selectedItem]="selectedSeverity" name="severity"
+                                (selected)="onSelectSeverity($event)">
+                            </app-dropdown>
+                        </div>
+                        <div class="dropdown">
+                            <app-dropdown [required]="isRequired" [optionImage]="true"
+                                [items]="policyCategories" placeholder="Category"
+                                [selectedItem]="selectedCategory" name="category"
+                                (selected)="onSelectCategory($event)">
+                            </app-dropdown>
+                        </div>
                     </div>
                     <form #policyForm="ngForm" class="form-wrapper">
                         <div class="attributes-wrapper" *ngIf="hasEditableParams>0">
@@ -40,7 +68,7 @@
                                                 <mat-form-field appearance="outline">
                                                     <mat-label>{{param.displayName}}</mat-label>
                                                     <input autocomplete="off" matInput [name]="param.key" [required]="param.isMandatory"
-                                                        [(ngModel)]="param.value">
+                                                        (ngModelChange)="onValueChange($event)"  [(ngModel)]="param.value">
                                                 </mat-form-field>
                                                 <div class="info-img">
                                                     <img src="../../../assets/icons/info-circle.svg" [matTooltip]="param.description" matTooltipPosition="right">
@@ -76,7 +104,7 @@
                                                         <mat-form-field appearance="outline">
                                                             <mat-label>Duration</mat-label>
                                                             <input autocomplete="off" matInput name="waitingTime" 
-                                                                [(ngModel)]="waitingTime">
+                                                                (ngModelChange)="onValueChange($event)"  [(ngModel)]="waitingTime">
                                                         </mat-form-field>
                                                         <div class="info-img">
                                                             <img src="../../../assets/icons/info-circle.svg" [matTooltip]="" matTooltipPosition="right">
@@ -88,7 +116,7 @@
                                                         <mat-form-field appearance="outline">
                                                             <mat-label>Count</mat-label>
                                                             <input autocomplete="off" matInput name="maxEmailNotification" [class.hideInput]="warningNotification"
-                                                             [(ngModel)]="maxEmailNotification">
+                                                             (ngModelChange)="onValueChange($event)"  [(ngModel)]="maxEmailNotification">
                                                         </mat-form-field>
                                                         <div class="info-img">
                                                             <img src="../../../assets/icons/info-circle.svg" [matTooltip]="" matTooltipPosition="right">
@@ -103,12 +131,24 @@
                     </form>
             </div>
             <div class="details-footer">
-                <div class="button-wrapper">
-                    <button class="button cancel-btn" 
-                        (click)="onReset()">Cancel</button>
-                    <button class="button submit-btn" 
-                        (click)="onSubmit()">Update</button>
-                </div>
             </div>
-    </div>
+        </div>
 </div>
+
+
+<ng-template #disablePolicyRef>
+    <div class="mat-body-wrapper flex flex-col gap-20">
+        <div class="reason-wrapper flex flex-col gap-8">
+            <span class="reason-header">Reason</span>
+            <div class="input-wrapper">
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <textarea type="textarea" autocomplete="off" matInput (ngModelChange)="onValueChange($event)"  [(ngModel)]="disableDescription" [style.height]="'116px'"></textarea>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="date-wrapper flex flex-col gap-8">
+            <span class="expiry-header">Expiry Date</span>
+            <app-date-dropdown [date]="expiryDate" [minDate]="currentDate" [dataForm]="'user'" (dataSent)='getDateData($event)'></app-date-dropdown>
+        </div>
+    </div>
+</ng-template>
