@@ -45,7 +45,7 @@ public class StorageAccountInventoryCollector {
 			storageAccountVH.setHnsEnabled(storageAccount.isHnsEnabled());
 			storageAccountVH.setName(storageAccount.name());
 			storageAccountVH.setRegionName(storageAccount.regionName());
-			storageAccountVH.setRegion(storageAccount.regionName());
+			storageAccountVH.setRegion(Util.getRegionValue(subscription,storageAccount.regionName()));
 			storageAccountVH.setNetworkSubnetsWithAccess(storageAccount.networkSubnetsWithAccess());
 			storageAccountVH.setSystemAssignedManagedServiceIdentityPrincipalId(
 					storageAccount.systemAssignedManagedServiceIdentityPrincipalId());

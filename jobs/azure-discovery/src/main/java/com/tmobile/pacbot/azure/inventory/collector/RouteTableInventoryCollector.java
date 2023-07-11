@@ -48,7 +48,7 @@ public class RouteTableInventoryCollector {
 			getRouteDetails(routTable.routes(), routeTableVH);
 			routeTableVH.setSubscription(subscription.getSubscriptionId());
 			routeTableVH.setSubscriptionName(subscription.getSubscriptionName());
-			routeTableVH.setRegion(routTable.region().toString());
+			routeTableVH.setRegion(Util.getRegionValue(subscription,routTable.region().toString()));
 			routeTableDetailsList.add(routeTableVH);
 
 		}

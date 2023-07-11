@@ -38,7 +38,7 @@ public class SnapshotInventoryCollector {
 			snapshotVH.setTags(Util.tagsList(tagMap, snapshot.resourceGroupName(), snapshot.tags()));
 			snapshotVH.setSubscription(subscription.getSubscriptionId());
 			snapshotVH.setSubscriptionName(subscription.getSubscriptionName());
-			snapshotVH.setRegion(snapshot.regionName());
+			snapshotVH.setRegion(Util.getRegionValue(subscription,snapshot.regionName()));
 			snapshotVH.setKey(snapshot.key());
 			snapshotVH.setRegionName(snapshot.regionName());
 			snapshotVH.setSizeInGB(snapshot.sizeInGB());

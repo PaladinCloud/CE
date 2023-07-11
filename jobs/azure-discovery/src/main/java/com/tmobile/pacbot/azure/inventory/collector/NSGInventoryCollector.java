@@ -46,7 +46,7 @@ public class NSGInventoryCollector {
 			securityGroupVH.setId(securityGroup.id());
 			securityGroupVH.setKey(securityGroup.key());
 			securityGroupVH.setName(securityGroup.name());
-			securityGroupVH.setRegion(securityGroup.regionName());
+			securityGroupVH.setRegion(Util.getRegionValue(subscription,securityGroup.regionName()));
 			securityGroupVH.setResourceGroupName(securityGroup.resourceGroupName());
 			securityGroupVH.setTags(Util.tagsList(tagMap, securityGroup.resourceGroupName(), securityGroup.tags()));
 			securityGroupVH.setSubnetList(getNetworkSecuritySubnetDetails(securityGroup.listAssociatedSubnets()));

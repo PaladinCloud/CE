@@ -32,7 +32,7 @@ public class FunctionAppInventoryCollector {
             functionAppVH.setSubscriptionName(subscription.getSubscriptionName());
             functionAppVH.setResourceGroupName(functionApp.resourceGroupName());
             functionAppVH.setClientCertEnabled(functionApp.clientCertEnabled());
-            functionAppVH.setRegion(functionApp.regionName());
+            functionAppVH.setRegion(Util.getRegionValue(subscription,functionApp.regionName()));
             functionAppVH.setTags(functionApp.tags());
             functionAppList.add(functionAppVH);
 

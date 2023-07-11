@@ -80,7 +80,7 @@ public class SCRecommendationsCollector {
 						recommendationMap.put("resourceId",Util.removeFirstSlash(resourceId.toString()));
 						recommendationMap.put("_resourceIdLower",Util.removeFirstSlash(resourceId.toString()).toLowerCase());
 						recommendation.setId(id);
-						recommendation.setRegion(region);
+						recommendation.setRegion(Util.getRegionValue(subscription,region));
 						recommendation.setRecommendation(recommendationMap);
 						recommendations.add(recommendation);
 					}

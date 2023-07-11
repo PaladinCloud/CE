@@ -1,13 +1,19 @@
 package com.tmobile.pacbot.azure.inventory.file;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.tmobile.pacbot.azure.inventory.collector.*;
 import com.tmobile.pacbot.azure.inventory.vo.VaultVH;
+import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,7 +185,7 @@ public class AssetFileGenerator {
 				log.error("Error authenticating for {}", subscription, e);
 				continue;
 			}
-
+			subscription.setRegions(getRegionsFromAzure(subscription));
 			List<ResourceGroupVH> resourceGroupList = new ArrayList<ResourceGroupVH>();
 			try {
 				resourceGroupList = resourceGroupInventoryCollector.fetchResourceGroupDetails(subscription);
@@ -776,6 +782,26 @@ public class AssetFileGenerator {
 			FileManager.finalise();
 		} catch (IOException e) {
 		}
+	}
+
+	private Map<String, String> getRegionsFromAzure(SubscriptionVH subscription) {
+		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+		String regionTemplate="https://management.azure.com/subscriptions/%s/locations?api-version=2020-01-01";
+		String url=String.format(regionTemplate, URLEncoder.encode(subscription.getSubscriptionId()));
+		Map<String,String> regionMap=new HashMap<>();
+		try {
+			String response= CommonUtils.doHttpGet(url, "Bearer", accessToken);
+			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+			JsonArray regions=responseObj.getAsJsonArray("value");
+			for(JsonElement region:regions)
+			{
+				JsonObject regionObj=region.getAsJsonObject();
+				regionMap.put(regionObj.get("displayName").getAsString(),regionObj.get("name").getAsString());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return regionMap;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package com.tmobile.pacbot.azure.inventory.vo;
 import com.microsoft.azure.management.storage.StorageAccount;
 
 import java.util.List;
+import java.util.Map;
 
 public class SubscriptionVH extends AzureVH {
 
@@ -21,6 +22,15 @@ public class SubscriptionVH extends AzureVH {
 	private List<StorageAccountActivityLogVH>storageAccountLogList;
 
 	private List<RoleDefinitionVH>roleDefinitionList;
+	private Map<String,String> regions;
+
+	public Map<String, String> getRegions() {
+		return regions;
+	}
+
+	public void setRegions(Map<String, String> regions) {
+		this.regions = regions;
+	}
 
 	public String getTenant() {
 		return tenant;

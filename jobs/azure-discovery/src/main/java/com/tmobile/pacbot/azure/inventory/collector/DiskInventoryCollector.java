@@ -36,7 +36,7 @@ public class DiskInventoryCollector {
 			dataDiskVH.setKey(dataDisk.key());
 			dataDiskVH.setName(dataDisk.name());
 			dataDiskVH.setDiskInner(dataDisk.inner());
-			dataDiskVH.setRegion(dataDisk.region().toString());
+			dataDiskVH.setRegion(Util.getRegionValue(subscription,dataDisk.region().toString()));
 			dataDiskVH.setResourceGroupName(dataDisk.resourceGroupName());
 			dataDiskVH.setSizeInGB(dataDisk.sizeInGB());
 			dataDiskVH.setTags(Util.tagsList(tagMap, dataDisk.resourceGroupName(), dataDisk.tags()));
