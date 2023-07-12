@@ -2194,7 +2194,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         auditTrail.put("createdBy",createdBy);
         auditTrail.put("_auditdate", date.substring(0, date.indexOf('T')));
         if(parentDetMap != null)
-            auditTrail.put(target+"_relations", parentDetMap);
+            auditTrail.put(target+_RELATIONS, parentDetMap);
         String _auditTrail = null;
         try {
             _auditTrail = new ObjectMapper().writeValueAsString(auditTrail);
@@ -2260,7 +2260,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     partialDocument.put(ISSUE_STATUS, EXEMPTED);
                     partialDocument.put("_docid", id);
                     partialDocument.put(DOC_TYPE,issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE));
-                    partialDocument.put(target+"_relations", parentDetMap);
+                    partialDocument.put(target+_RELATIONS, parentDetMap);
                     partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
                     issueDetail.put(STATUS, EXEMPT);
                     partialDocument.put(STATUS, "exempt");
@@ -2422,7 +2422,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     issueDetail.put(STATUS, "revoked");
                     partialDocument.put(STATUS, "revoked");
                     partialDocument.put(DOC_TYPE, targetType);
-                    partialDocument.put(target+"_relations", parentDetMap);
+                    partialDocument.put(target+_RELATIONS, parentDetMap);
                     Map<String, Object> issueDocument = Maps.newHashMap();
                     issueDocument.put("doc", partialDocument);
                     StringBuilder doc = new StringBuilder(createESDoc(issueDocument));

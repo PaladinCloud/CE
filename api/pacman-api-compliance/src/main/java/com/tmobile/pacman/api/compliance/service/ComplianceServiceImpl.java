@@ -773,47 +773,6 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         return openIssuesByPolicyListFinal;
     }
 
-    private Map<String, Object> getRangeMapFromPolicyComplianceData(Map<String, Object> obj, List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal){
-        Map<String, Object> rangeMap = new HashMap<>();
-        if(obj.get(Constants.OPTION_TYPE).equals("Double")){
-            double min = openIssuesByPolicyListFinal.stream()
-                    .mapToDouble(map-> (double) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Double.MIN_VALUE))
-                    .min()
-                    .orElse(0);
-            double max =  openIssuesByPolicyListFinal.stream()
-                    .mapToDouble(map-> (double) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Double.MIN_VALUE))
-                    .max()
-                    .orElse(0);
-            rangeMap.put("min", min);
-            rangeMap.put("max", max);
-        }
-        if(obj.get(Constants.OPTION_TYPE).equals("Long")){
-            long min = openIssuesByPolicyListFinal.stream()
-                    .mapToLong(map-> (long) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Long.MIN_VALUE))
-                    .min()
-                    .orElse(0);
-            long max = openIssuesByPolicyListFinal.stream()
-                    .mapToLong(map-> (long) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Long.MAX_VALUE))
-                    .max()
-                    .orElse(min);
-            rangeMap.put("min", min);
-            rangeMap.put("max", max);
-        }
-        if(obj.get(Constants.OPTION_TYPE).equals("Integer")){
-            int min = openIssuesByPolicyListFinal.stream()
-                    .mapToInt(map-> (int) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Integer.MIN_VALUE))
-                    .min()
-                    .orElse(0);
-            int max = openIssuesByPolicyListFinal.stream()
-                    .mapToInt(map-> (int) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Integer.MAX_VALUE))
-                    .max()
-                    .orElse(min);
-            rangeMap.put("min", min);
-            rangeMap.put("max", max);
-        }
-        return rangeMap;
-    }
-
     /**
      * {@inheritDoc}
      */

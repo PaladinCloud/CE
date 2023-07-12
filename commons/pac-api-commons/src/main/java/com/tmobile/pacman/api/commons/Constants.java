@@ -440,6 +440,8 @@ public interface Constants {
     String DATA_SOURCE_KEY = "pac_ds";
     String TENABLE = "tenable";
 
+    String _RELATIONS = "_relations";
+
   enum NotificationTypes {
         @SerializedName("exemption")
         EXEMPTION("exemption"),
