@@ -688,12 +688,12 @@ public class ComplianceController implements Constants {
     })
     @ResponseBody
     public ResponseEntity<Object> addIssuesException(@RequestParam("ag") String assetGroup,
-                                                     @ApiParam(value = "Provide Issue Exception Details", required = true) @RequestBody(required = true) IssuesException issuesException) {
+             @ApiParam(value = "Provide Issue Exception Details", required = true) @RequestBody(required = true) IssuesException issuesException) {
         try {
+
             if (issuesException.getExceptionGrantedDate() == null) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception Granted Date is mandatory"));
             }
-
             if (issuesException.getExceptionEndDate() == null) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception End Date is mandatory"));
             }
@@ -701,19 +701,16 @@ public class ComplianceController implements Constants {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Calendar cal = Calendar.getInstance();
             cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-            if (sdf.parse(sdf.format(issuesException.getExceptionGrantedDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
+            if(sdf.parse(sdf.format(issuesException.getExceptionGrantedDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception Granted Date cannot be earlier date than today"));
             }
-
-            if (sdf.parse(sdf.format(issuesException.getExceptionEndDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
+            if(sdf.parse(sdf.format(issuesException.getExceptionEndDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception End Date cannot be earlier date than today"));
             }
-
-            if (issuesException.getIssueIds().isEmpty()) {
+            if(issuesException.getIssueIds().isEmpty()) {
                 return ResponseUtils.buildFailureResponse(new Exception("Atleast one issue id is required"));
             }
-
-            return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(assetGroup, issuesException));
+            return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(assetGroup,issuesException));
         } catch (ServiceException | ParseException exception) {
             return ResponseUtils.buildFailureResponse(exception);
         }

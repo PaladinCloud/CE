@@ -1023,10 +1023,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         // get all policies mapped to these targetTypes
         List<Object> policies = getPolicies(repository.getTargetTypeForAG(assetGroup, domain));
         List<LinkedHashMap<String, Object>> complainceByPolicies = getComplianceByPolicies(domain, assetGroup, policies);
-        Map<String, Map<String, Double>> policiesComplianceByCategory = getPoliciesComplianceByCategory(complainceByPolicies, assetGroup);
 
+        Map<String, Map<String, Double>> policiesComplianceByCategory = getPoliciesComplianceByCategory(complainceByPolicies,
+                assetGroup);
         int totalCategories = policiesComplianceByCategory.entrySet().size();
-        LinkedHashMap<String, Object> policyCatWeightage = getPolicyCategoryBWeightage(domain, totalCategories, policiesComplianceByCategory);
+        LinkedHashMap<String, Object> policyCatWeightage = getPolicyCategoryBWeightage(domain, totalCategories,
+                policiesComplianceByCategory);
 
         int policyCategoryWeightage = 1;
         int totalWeightage = 0;
@@ -1035,6 +1037,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             for (Map.Entry<String, Map<String, Double>> categoryDistribution : policiesComplianceByCategory.entrySet()) {
                 // calculate compliance By Category
                 if (entry.getKey().equals(categoryDistribution.getKey())) {
+
                     policyCategoryWeightage = (null != policyCatWeightage.get(categoryDistribution.getKey())) ? Integer
                             .valueOf(policyCatWeightage.get(categoryDistribution.getKey()).toString()) : 1;
                     totalWeightage += policyCategoryWeightage;
@@ -1050,17 +1053,15 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                         overallcompliance = Math.floor(overallcompliance);
                         policyCatDistributionWithOverall.put(OVERALL, overallcompliance);
                     }
-
                     // Calculate Overall Compliance
                     totalCategories -= 1;
+
                 }
             }
         }
-
         if (policyCatDistributionWithOverall.isEmpty()) {
             throw new ServiceException(NO_DATA_FOUND);
         }
-
         return policyCatDistributionWithOverall;
     }
 

@@ -74,6 +74,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -111,6 +112,8 @@ import static com.tmobile.pacman.api.compliance.util.Constants.*;
  */
 @Repository
 public class ComplianceRepositoryImpl implements ComplianceRepository, Constants {
+
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
     private List<String> FILTER_CUSTOM_HANDLE=Arrays.asList(DOMAIN,INCLUDE_EXEMPT);
 
@@ -929,6 +932,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 issueExceptionDetails.put(TARGET_TYPE, String.valueOf(issueDetail.get(TARGET_TYPE)));
                 issueExceptionDetails.put("source", "issueException");
                 issueExceptionDetails.put("resourceId", String.valueOf(issueDetail.get(RESOURCEID)));
+                issueExceptionDetails.put("_docid", String.valueOf(issueDetail.get(RESOURCEID)));
                 String dataSource = issueDetail.get(PAC_DS) + "_" + issueDetail.get(TARGET_TYPE);
                 String targetType = issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE);
                 String id = String.valueOf(issueDetail.get(ES_DOC_ID_KEY));
@@ -936,6 +940,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 String parent = String.valueOf(issueDetail.get(ES_DOC_PARENT_KEY));
                 Map<String, Object> partialDocument = Maps.newHashMap();
                 partialDocument.put(ISSUE_STATUS, EXEMPTED);
+                partialDocument.put("_docid", id);
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
@@ -2178,15 +2183,21 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return urlToQuery;
     }
 
-    private String createAuditTrail(String ds, String type, String status, String id) {
-        String date = CommonUtils.getCurrentDateStringWithFormat("UTC", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        Map<String, String> auditTrail = new LinkedHashMap<>();
+    private  String createAuditTrail(String ds, String type, String status, String id,String createdBy, String _type, Map<String, Object> parentDetMap, String target) {
+        String date = CommonUtils.getCurrentDateStringWithFormat("UTC","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Map<String, Object> auditTrail = new LinkedHashMap<>();
         auditTrail.put("datasource", ds);
+        if(!StringUtils.isEmpty(_type))
+            auditTrail.put("docType", _type);
         auditTrail.put("targetType", type);
         auditTrail.put("annotationid", id);
+        auditTrail.put("_docid", id);
         auditTrail.put("status", status);
         auditTrail.put("auditdate", date);
+        auditTrail.put("createdBy",createdBy);
         auditTrail.put("_auditdate", date.substring(0, date.indexOf('T')));
+        if(parentDetMap != null)
+            auditTrail.put(target+"_relations", parentDetMap);
         String _auditTrail = null;
         try {
             _auditTrail = new ObjectMapper().writeValueAsString(auditTrail);
@@ -2199,11 +2210,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     @Override
     public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup, IssuesException issuesException)
             throws DataException {
-        String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_parent\" : \"%s\" } }%n";
-        StringBuilder builderRequestAudit = new StringBuilder();
+        String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\" } }%n";
+        StringBuilder builderRequestAudit= new StringBuilder();
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
-        String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\", \"_parent\" : \"%s\"} }%n";
-        String actionTemplateException = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\"} }%n";
+        String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"routing\" : \"%s\"} }%n";
+        String actionTemplateException = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\"} }%n";
         List<String> issueIds = issuesException.getIssueIds();
 
         StringBuilder bulkRequest = new StringBuilder();
@@ -2214,7 +2225,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
-            issueDetails = getMultipleIssueDetails(assetGroup, issueIds, OPEN);
+            issueDetails = getMultipleIssueDetails(assetGroup,issueIds, OPEN);
         } catch (DataException e) {
             logger.error("Error while fetching open issue details ", e);
             issueExceptionResponse.setStatus("Failed");
@@ -2222,7 +2233,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             return issueExceptionResponse;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat(YYYY_MM_DD, Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         if (!issueDetails.isEmpty()) {
@@ -2231,6 +2242,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 try {
                     Map<String, Object> issueExceptionDetails = Maps.newHashMap();
                     issueExceptionDetails.put("issueId", issueDetail.get(ES_DOC_ID_KEY));
+                    issueExceptionDetails.put("docType", "issue_" + issueDetail.get(TARGET_TYPE) + "_exception");
                     issueExceptionDetails.put("exceptionGrantedDate",
                             sdf.format(issuesException.getExceptionGrantedDate()));
                     issueExceptionDetails.put("exceptionEndDate", sdf.format(issuesException.getExceptionEndDate()));
@@ -2243,18 +2255,28 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     String targetType = issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE);
                     String id = String.valueOf(issueDetail.get(ES_DOC_ID_KEY));
                     String routing = String.valueOf(issueDetail.get(ES_DOC_ROUTING_KEY));
-                    String parent = String.valueOf(issueDetail.get(ES_DOC_PARENT_KEY));
+                    String target = String.valueOf(issueDetail.get(TARGET_TYPE));
+                    Map<String, Object> parentDetMap = Maps.newHashMap();
+                    parentDetMap.put("parent", issueDetail.get(target+"_relations.parent"));
+                    parentDetMap.put("name", issueDetail.get(target+"_relations.name"));
                     Map<String, Object> partialDocument = Maps.newHashMap();
                     partialDocument.put(ISSUE_STATUS, EXEMPTED);
+                    partialDocument.put("_docid", id);
+                    partialDocument.put(DOC_TYPE,issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE));
+                    partialDocument.put(target+"_relations", parentDetMap);
                     partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
+                    issueDetail.put(STATUS, EXEMPT);
                     partialDocument.put(STATUS, "exempt");
-
+                    partialDocument.put(Constants.EXEMPTION_EXPIRING_ON, sdf.format(issuesException.getExceptionEndDate()));
+                    partialDocument.put(Constants.REASON_TO_EXEMPT_KEY, issuesException.getExceptionReason());
+                    partialDocument.put(Constants.EXEMPTION_CREATED_BY,issuesException.getCreatedBy());
+                    partialDocument.put(Constants.EXEMPTION_CREATED_ON,sdf.format(issuesException.getExceptionGrantedDate()));
                     StringBuilder exceptionDoc = new StringBuilder(createESDoc(issueExceptionDetails));
                     if (exceptionDoc != null) {
-                        String exceptionTarget = String.format(actionTemplateException,
-                                dataSource, "issue_" + issueDetail.get(TARGET_TYPE) + "_exception", routing) +
-                                exceptionDoc + "\n";
-                        exceptions.put(id, exceptionTarget);
+                        StringBuilder exceptionTarget = new StringBuilder(String.format(actionTemplateException,
+                                dataSource, routing))
+                                .append(exceptionDoc + "\n");
+                        exceptions.put(id, exceptionTarget.toString());
                     }
 
                     Map<String, Object> issueDocument = Maps.newHashMap();
@@ -2262,12 +2284,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     StringBuilder doc = new StringBuilder(createESDoc(issueDocument));
                     if (doc != null) {
                         bulkRequest.append(
-                                String.format(actionTemplateIssue, id, dataSource, targetType, routing, parent));
+                                String.format(actionTemplateIssue, id, dataSource, routing));
                         bulkRequest.append(doc + "\n");
                         String _index = dataSource;
                         String _type = targetType + "_audit";
 
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id) + "\n");
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id,issuesException.getCreatedBy(), _type, parentDetMap, target)+"\n");
 
                     }
                     i++;
@@ -2277,7 +2299,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         bulkUpload(auditErrors, builderRequestAudit.toString());
 
                         bulkRequest = new StringBuilder();
-                        builderRequestAudit = new StringBuilder();
+                        builderRequestAudit= new StringBuilder();
                     }
                 } catch (Exception e) {
                     throw new DataException(e);
@@ -2294,11 +2316,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 failedIssueIds.addAll(fetchIdFromErrors(errors));
                 issueIds.removeAll(failedIssueIds);
             }
-            failedIssueIds.addAll(revokeException(assetGroup, issueIds));
+            failedIssueIds.addAll(revokeException(assetGroup,issueIds));
 
 
             if (failedIssueIds.isEmpty()) {
-                System.out.println("exception size" + failedIssueIds);
+                System.out.println("exception size"+failedIssueIds);
                 i = 0;
                 for (Map.Entry<String, String> entry : exceptions.entrySet()) {
                     bulkRequest.append(entry.getValue());
@@ -2340,7 +2362,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     }
                 }
             });
-            notificationService.triggerCreateExemptionNotification(issueDetails, failedIssueIds, issuesException);
+            ExemptionRequest exemptionRequest = new ExemptionRequest();
+            BeanUtils.copyProperties(issuesException, exemptionRequest);
+            notificationService.triggerCreateExemptionNotification(issueDetails, failedIssueIds, exemptionRequest);
 
         } else {
             failedIssueIds.addAll(issueIds);
@@ -2360,9 +2384,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     @Override
     public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup, List<String> issueIds, String revokedBy) throws DataException {
 
-        String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_parent\" : \"%s\" } }%n";
-        StringBuilder builderRequestAudit = new StringBuilder();
-        String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\", \"_parent\" : \"%s\"} }%n";
+        String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\"} }%n";
+        StringBuilder builderRequestAudit= new StringBuilder();
+        String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"routing\" : \"%s\"} }%n";
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
 
         StringBuilder bulkRequest = new StringBuilder();
@@ -2372,7 +2396,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
-            issueDetails = getMultipleIssueDetails(assetGroup, issueIds, EXEMPTED);
+            issueDetails = getMultipleIssueDetails(assetGroup,issueIds, EXEMPTED);
         } catch (DataException e) {
             logger.error("Error while fetching exempted issue details ", e);
             issueExceptionResponse.setStatus("Failed");
@@ -2380,7 +2404,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             return issueExceptionResponse;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat(YYYY_MM_DD, Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         if (!issueDetails.isEmpty()) {
@@ -2391,23 +2415,28 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     String targetType = issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE);
                     String id = String.valueOf(issueDetail.get(ES_DOC_ID_KEY));
                     String routing = String.valueOf(issueDetail.get(ES_DOC_ROUTING_KEY));
-                    String parent = String.valueOf(issueDetail.get(ES_DOC_PARENT_KEY));
+                    Map<String, Object> parentDetMap = Maps.newHashMap();
+                    String target = String.valueOf(issueDetail.get(TARGET_TYPE));
+                    parentDetMap.put("parent", issueDetail.get(target+"_relations.parent"));
+                    parentDetMap.put("name", issueDetail.get(target+"_relations.name"));
                     Map<String, Object> partialDocument = Maps.newHashMap();
                     partialDocument.put(ISSUE_STATUS, OPEN);
                     partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
+                    issueDetail.put(STATUS, "revoked");
                     partialDocument.put(STATUS, "revoked");
-
+                    partialDocument.put(DOC_TYPE, targetType);
+                    partialDocument.put(target+"_relations", parentDetMap);
                     Map<String, Object> issueDocument = Maps.newHashMap();
                     issueDocument.put("doc", partialDocument);
                     StringBuilder doc = new StringBuilder(createESDoc(issueDocument));
                     if (doc != null) {
                         bulkRequest.append(
-                                String.format(actionTemplateIssue, id, dataSource, targetType, routing, parent));
+                                String.format(actionTemplateIssue, id, dataSource, routing));
                         bulkRequest.append(doc + "\n");
                         String _index = dataSource;
                         String _type = targetType + "_audit";
 
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "revoked", id) + "\n");
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(assetGroup, targetType, "revoked", id,revokedBy, _type, parentDetMap, target)+"\n");
 
                     }
                     i++;
@@ -2433,8 +2462,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 failedIssueIds.addAll(fetchIdFromErrors(errors));
                 issueIds.removeAll(failedIssueIds);
             }
+
             failedIssueIds.addAll(revokeException(assetGroup,issueIds));
-            notificationService.triggerRevokeExemptionNotification(issueDetails, failedIssueIds, REVOKE_EXEMPTION_SUBJECT,revokedBy);
+            notificationService.triggerRevokeExemptionNotification(issueDetails, failedIssueIds, REVOKE_EXEMPTION_SUBJECT, revokedBy);
         } else {
             failedIssueIds.addAll(issueIds);
         }

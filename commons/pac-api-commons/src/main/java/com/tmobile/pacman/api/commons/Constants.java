@@ -26,6 +26,7 @@
  **/
 package com.tmobile.pacman.api.commons;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -40,6 +41,15 @@ public interface Constants {
     } };
 
     String EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS = "Exception in getting count of account ids";
+
+    String EXEMPTION_CREATED_BY = "exemption-created-by";
+    String EXEMPTION_RAISED_BY = "exemption-raised-by";
+    String EXEMPTION_CREATED_ON = "exemption-created-on";
+    String EXEMPTION_RAISED_ON = "exemption-raised-on";
+    String EXEMPTION_EXPIRING_ON = "exemption-expiring-on";
+    String EXEMPTION_RAISED_EXPIRING_ON = "exemption-raised-expiring-on";
+
+    String REASON_TO_EXEMPT_KEY = "reason-to-exempt";
 
     String NODE_AGGREGATIONS = "aggregations";
 
@@ -493,4 +503,34 @@ public interface Constants {
 
     String AUTOFIX_PLANNED_KEYWORD = "isAutofixPlanned.keyword";
     String TYPE_KEYWORD = "type.keyword";
+    String ACTION_ILLEGAL_ARG_ERR_MSG  =  "Action value should be one of the following create_exemption_request," +
+            " cancel_exemption_request, approve_exemption_request, revoke_exemption_request";
+
+    enum ExemptionActions {
+        CREATE_EXEMPTION_REQUEST("create_exemption_request"),
+        CANCEL_EXEMPTION_REQUEST("cancel_exemption_request"),
+        APPROVE_EXEMPTION_REQUEST("approve_exemption_request"),
+        REVOKE_EXEMPTION_REQUEST("revoke_exemption_request");
+
+        private final String text;
+
+        ExemptionActions(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+
+        @JsonCreator
+        public static ExemptionActions fromText(String text){
+            for(ExemptionActions r : ExemptionActions.values()){
+                if(r.toString().equalsIgnoreCase(text)){
+                    return r;
+                }
+            }
+            throw new IllegalArgumentException(ACTION_ILLEGAL_ARG_ERR_MSG);
+        }
+    }
 }
