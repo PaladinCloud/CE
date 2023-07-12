@@ -412,7 +412,7 @@ public class AssetRepositoryTest {
 
     @Test
     public void testgetListAssets() throws Exception {
-        Map<String, String> filter = new HashMap<>();
+        Map<String, Object> filter = new HashMap<>();
 
         Map<String, Object> ttypeMap1 = new HashMap<>();
         ttypeMap1.put("type", "ec2");

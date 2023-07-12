@@ -15,14 +15,11 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.controller;
 
+import com.tmobile.pacman.api.compliance.domain.FilterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.common.base.Strings;
 import com.tmobile.pacman.api.commons.Constants;
@@ -383,4 +380,18 @@ public class FilterController implements Constants {
         return ResponseUtils.buildSucessResponse(response);
     }
 
+    @PostMapping(value = "/v1/filters/policyCompliance")
+    public ResponseEntity<Object> getPolicyComplianceFilter(@RequestBody FilterRequest request) {
+        String assetGroup = request.getAg();
+        if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(request.getDomain())) {
+            return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_DOMAIN));
+        }
+        ResponseData response = null;
+        try {
+            response = (filterService.getPolicycompliance(request));
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response.getRes());
+    }
 }

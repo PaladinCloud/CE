@@ -20,9 +20,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -246,14 +244,14 @@ public class ComplianceServiceImplTest {
         // request.setAg("aws-all");
         when(complianceRepository.getIssuesFromES(anyObject())).thenReturn(
                 CommonTestUtil.getResponseWithOrder());
-        assertThat(complianceService.getIssues(CommonTestUtil.getRequest()),
+        assertThat(complianceService.getIssues(CommonTestUtil.getApiRequest()),
                 is(notNullValue()));
 
         when(complianceRepository.getIssuesFromES(anyObject())).thenThrow(
                 new DataException());
 
         assertThatThrownBy(
-                () -> complianceService.getIssues(CommonTestUtil.getRequest()))
+                () -> complianceService.getIssues(CommonTestUtil.getApiRequest()))
                 .isInstanceOf(ServiceException.class);
     }
 
@@ -298,19 +296,19 @@ public class ComplianceServiceImplTest {
     public void getPolicycomplianceTest() throws Exception {
         when(complianceRepository.getTargetTypeForAG(anyString(), anyString()))
                 .thenReturn(CommonTestUtil.getTargetTypes());
-        when(complianceRepository.getInstanceCountForQualys(anyString(),anyString(),anyString(),anyString(),anyString()))
+        when(complianceRepository.getInstanceCountForQualys(anyString(),anyString(),anyString(),anyString(),anyString(), anyString()))
         .thenReturn(5000l);
 
         when(
                 complianceRepository
                         .getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
-                                anyString(), anyString())).thenReturn(
+                                anyString(), anyString(),anyBoolean())).thenReturn(
                 CommonTestUtil.getMapList());
         when(complianceRepository.getPoliciesLastScanDate()).thenReturn(
                 CommonTestUtil.getMapList());
         when(complianceRepository.getTotalAssetCount(anyString(), anyString(),anyString(),anyString()))
                 .thenReturn(CommonTestUtil.getMapLong());
-        when(complianceRepository.getPolicyIdDetails(anyString())).thenReturn(
+        when(complianceRepository.getPolicyIdDetails(anyString(),anyBoolean())).thenReturn(
                 CommonTestUtil.getMapList());
         when(complianceRepository.getPolicyIDsForTargetType(anyString()))
                 .thenReturn(CommonTestUtil.getMapList());
@@ -379,7 +377,7 @@ public class ComplianceServiceImplTest {
 
         when(
                 complianceRepository.getInstanceCountForQualysByAppsOrEnv(
-                        anyString(), anyString(),anyString(), anyString(),anyString())).thenReturn(
+                        anyString(), anyString(),anyString(), anyString(),anyString(),anyString())).thenReturn(
                 CommonTestUtil.getMapLong());
 
         assertThat(
@@ -422,7 +420,7 @@ public class ComplianceServiceImplTest {
 
         when(
         		complianceRepository.getInstanceCountForQualys(
-                        anyString(), anyString(),anyString(), anyString(),anyString())).thenReturn(5000l);
+                        anyString(), anyString(),anyString(), anyString(),anyString(),anyString())).thenReturn(5000l);
 
         assertThat(
                 complianceService.getPolicyDetailsByEnvironment(

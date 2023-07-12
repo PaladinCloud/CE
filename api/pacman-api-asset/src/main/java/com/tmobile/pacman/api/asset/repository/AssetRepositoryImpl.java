@@ -16,6 +16,7 @@
 package com.tmobile.pacman.api.asset.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
@@ -62,12 +63,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.tmobile.pacman.api.commons.Constants.*;
+import static com.tmobile.pacman.api.commons.Constants.TRUE;
+
 /**
  * Implemented class for AssetRepository and all its method
  */
 @Repository
 @ConfigurationProperties(prefix = "resource")
 public class AssetRepositoryImpl implements AssetRepository {
+
+    @Autowired
+    private ObjectMapper mapper;
 
     public static final String ASSET = "asset";
     private Map<String, String> events;
@@ -123,6 +130,28 @@ public class AssetRepositoryImpl implements AssetRepository {
 	private static final String AGGS = "aggs";
 	private static final String QUERY = "query";
 	private static final String ERROR_RETRIEVING_INVENTORY_FROM_ES = "error retrieving inventory from ES";
+
+    private static final String ACCOUNT_COUNT_ES_QUERY = "{\"size\":0,\"query\": {\n" +
+            "    \"bool\": {\n" +
+            "      \"filter\": [\n" +
+            "        {\n" +
+            "          \"term\": {\n" +
+            "            \"latest\": \"true\"\n" +
+            "          }\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"term\": {\n" +
+            "            \"_entity\": \"true\"\n" +
+            "          }\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  },\"aggs\"" +
+            ":{\"aws\":{\"terms\":{\"field\":\"accountid.keyword\",\"size\":"+ES_PAGE_SIZE+"}},\"azure\":{\"terms\":" +
+            "{\"field\":\"subscription.keyword\",\"size\":"+ES_PAGE_SIZE+"}},\"gcp\":{\"terms\":{\"field\":" +
+            "\"projectId.keyword\",\"size\":"+ES_PAGE_SIZE+"}}}}";
+    private static final String ACCOUNT_COUNT_ES_FILTER_PATH = "&filter_path=aggregations.aws.buckets.key," +
+            "aggregations.azure.buckets.key,aggregations.gcp.buckets.key";
 
     @Override
 	public Map<String, Long> getAssetCountByAssetGroup(String aseetGroupName, String type, String application) {
@@ -771,57 +800,111 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
+    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
             String searchText, Map<String, Object> sortFilter) {
         LOGGER.info("Inside getListAssets");
         List<Map<String, Object>> assetDetails = new ArrayList<>();
         List<String> fieldNames = new ArrayList<>();
         String targetType = "";
-        String domain = filter.get(Constants.DOMAIN);
+        String domain = filter.get(Constants.DOMAIN) == null ? "" : (String) filter.get(Constants.DOMAIN);
         Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+
+        Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
+        ArrayList<String> tagList=tagsSet.stream().map(tag->"tags."+tag).collect(Collectors.toCollection(ArrayList::new));
 
         Iterator it = filter.entrySet().iterator();
         Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
+        List<String> exemptedResourceIds=new ArrayList<>();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
-            addTagToFilter(mustFilter, mandatoryTagValues, entry);
-            if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
-                targetType = entry.getValue().toString();
+            if(entry.getValue() instanceof String){
+                addTagToFilter(mustFilter, mandatoryTagValues, entry);
             }else{
-                if(!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
-                    mustFilter.put((String) entry.getKey(), entry.getValue());
+                addTagToFilter(mustTermsFilter, mandatoryTagValues, entry);
+            }
+            if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
+                try{
+                    List<String> targetList = (List<String>) entry.getValue();
+                    targetType = targetList.get(0);
+                }catch(Exception e){
+                    targetType = entry.getValue().toString();
+                }
+            }else{
+                if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED)){
+                    String filterTagged = "";
+                    if(entry.getValue() instanceof String){
+                        filterTagged = entry.getValue().toString();
+                    }
+                    else{
+                        filterTagged = ((List<String>) entry.getValue()).get(0);
+                    }
+                    if(filterTagged.equalsIgnoreCase(AssetConstants.FALSE)){
+                        mustFilter.put(AssetConstants.FILTER_UNTAGGED, tagList);
+                    }
+                    else if (filterTagged.equalsIgnoreCase(AssetConstants.TRUE)){
+                        mustFilter.put(AssetConstants.FILTER_TAGGED, tagList);
+                    }
+                }
+                else if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
+                    List<Map<String, Object>> masterList;
+                    try {
+                        masterList = getAssetsExempted(assetGroup);
+                        for(Map<String,Object>asset:masterList){
+                            if(asset.containsKey(RESOURCEID)){
+                                Object resourceId=asset.get(RESOURCEID);
+                                exemptedResourceIds.add((String) resourceId);
+                            }
+                        }
+                        if(entry.getValue() instanceof String){
+                            if(((String) entry.getValue()).equalsIgnoreCase(TRUE)){
+                                mustFilter.put((String) entry.getKey(),exemptedResourceIds);
+                            } else{
+                                mustNotFilter.put((String) entry.getKey(),exemptedResourceIds);
+                            }
+                        }
+                        else{
+                            List<String> exemptInp = (List<String>) entry.getValue();
+                            if(exemptInp != null && exemptInp.size() == 1){
+                                if(exemptInp.get(0).equalsIgnoreCase(TRUE)){
+                                    mustFilter.put((String) entry.getKey(),exemptedResourceIds);
+                                } else{
+                                    mustNotFilter.put((String) entry.getKey(),exemptedResourceIds);
+                                }
+                            }
+                        }
+
+                    } catch (Exception e){
+                        LOGGER.error("Error in listAssets ",e);
+                    }
+                }
+                else if(!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
+                    if(entry.getValue() instanceof String){
+                        mustFilter.put((String) entry.getKey(), entry.getValue());
+                    }else{
+                        mustTermsFilter.put((String) entry.getKey(), entry.getValue());
+                    }
                 }
             }
+        }
+
+        try {
+            fieldNames = getDisplayFieldsForTargetType("all_list");
+        } catch (Exception e) {
+            LOGGER.error("Error while fetching field names for all targetType in getListAssets" , e);
         }
 
         try {
             if (StringUtils.isEmpty(targetType)) {
                 List<String> validTypes = getTargetTypesByAssetGroup(assetGroup, domain, null).stream()
                         .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
-                if (validTypes.size() > 1) {
-                    try {
-                        fieldNames = getDisplayFieldsForTargetType("all_list");
-                    } catch (Exception e) {
-                        LOGGER.error("Error while fetching field names for all targetType in getListAssets" , e);
-                    }
-                } else {
-                    try {
-                        fieldNames = getDisplayFieldsForTargetType(validTypes.get(0));
-                    } catch (Exception e) {
-                        LOGGER.error("Error while fetching field names for " + validTypes.get(0) + " in getListAssets"
-                                , e);
-                    }
-                }
+
                 assetDetails = getAssetsByAssetGroupBySize(assetGroup, AssetConstants.ALL, mustFilter, validTypes,
-                        fieldNames, from, size, searchText, sortFilter);
+                        fieldNames, from, size, searchText, sortFilter,mustNotFilter,mustTermsFilter);
             } else {
-                try {
-                    fieldNames = getDisplayFieldsForTargetType(targetType);
-                } catch (Exception e) {
-                    LOGGER.error("Error while fetching field names for " + targetType + " in getListAssets" , e);
-                }
                 assetDetails = getAssetsByAssetGroupBySize(assetGroup, targetType, mustFilter, null, fieldNames, from,
-                        size, searchText, sortFilter);
+                        size, searchText, sortFilter,mustNotFilter, mustTermsFilter);
             }
 
         } catch (Exception e) {
@@ -831,6 +914,26 @@ public class AssetRepositoryImpl implements AssetRepository {
         List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, Constants.DOCID, AssetConstants.UNDERSCORE_ENTITY,
                 Constants._ID, AssetConstants.UNDERSCORE_LOADDATE, Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
                 AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST, AssetConstants.CREATION_DATE);
+
+        for(Map<String, Object> map : assetDetails){
+            if(!map.containsKey("accountname")){
+                if(map.containsKey("subscriptionName")){
+                    map.put("accountname",map.get("subscriptionName"));
+                }
+                else if(map.containsKey("projectName")){
+                    map.put("accountname",map.get("projectName"));
+                }
+            }
+            if(!map.containsKey("accountid")){
+                if(map.containsKey("subscription")){
+                    map.put("accountid",map.get("subscription"));
+                }
+                else if(map.containsKey("projectId")){
+                    map.put("accountid",map.get("projectId"));
+                }
+            }
+
+        }
         LOGGER.info("Exiting getListAssets");
         return formGetListResponse(fieldNames,assetDetails,fieldsToBeSkipped);
     }
@@ -1671,8 +1774,8 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     private List<Map<String, Object>> getAssetsByAssetGroupBySize(String assetGroupName, String type,
-            Map<String, Object> mustFilter, List<String> targetTypes, List<String> fieldNames, int from, int size,
-            String searchText, Map<String, Object> sortFilter) {
+                     Map<String, Object> mustFilter, List<String> targetTypes, List<String> fieldNames, int from, int size,
+                     String searchText, Map<String, Object> sortFilter, Map<String, Object> mustNotFilter, Map<String, Object> mustTermsFilter) {
         mustFilter.put(Constants.LATEST, Constants.TRUE);
         mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
@@ -1687,9 +1790,10 @@ public class AssetRepositoryImpl implements AssetRepository {
         try {
             if (AssetConstants.ALL.equals(type)) {
                 try {
-                    Map<String, Object> mustTermsFilter = new HashMap<>();
-                    mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetTypes);
-                    assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, null, null, fieldNames,
+                    if(!mustTermsFilter.containsKey(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD)){
+                        mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetTypes);
+                    }
+                    assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, mustNotFilter, null, fieldNames,
                             from, size, searchText, mustTermsFilter, sortList);
                 } catch (Exception e) {
                     LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
@@ -1699,7 +1803,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                 if (Constants.ONPREMSERVER.equalsIgnoreCase(type)) {
                     fieldNames = getDisplayFieldsForTargetType(type);
                 }
-                assets = esRepository.getSortedDataFromESBySize(assetGroupName, type, mustFilter, null, shouldFilter,
+                assets = esRepository.getSortedDataFromESBySize(assetGroupName, type, mustFilter, mustNotFilter, shouldFilter,
                         fieldNames, from, size, searchText, null, sortList);
             }
         } catch (Exception e) {
@@ -2541,7 +2645,8 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         String query = "select displayfields from cf_pac_updatable_fields where resourceType = '" + targetType.trim()
                 + "'";
-        return Arrays.asList(rdsRepository.queryForString(query).split("\\s*,\\s*"));
+        String result=rdsRepository.getDataFromPacman(query).get(0).get("displayfields").toString();
+        return Arrays.asList(result.split("\\s*,\\s*"));
     }
 
     public long getTotalCountForListingAsset(String index, String type) {
@@ -2879,6 +2984,75 @@ public class AssetRepositoryImpl implements AssetRepository {
                 "and fil.filterName='"+filterName+"';";
         return rdsRepository.getDataFromPacman(query).stream().map(item->((String) item.get("optionValue")).trim())
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public long getAutoFixPlanCountForAg(String ag){
+        Map<String, Object> mustFilter = new HashMap<>();
+        mustFilter.put("_type", "autofixplan");
+        long count = 0L;
+        try{
+            count = esRepository.getTotalDocumentCountForIndexAndType(ag, "", mustFilter,
+                    null, null, "",null);
+        }catch(Exception e){
+            return 0L;
+        }
+        return count;
+    }
+    public int getAccountCountByAssetGroup(String assetGroup) {
+        String responseDetails;
+        Set<String> accountNamesSet;
+        try {
+            responseDetails = PacHttpUtils.doHttpPost(esRepository.buildAggsURL(esUrl, assetGroup, null)
+                    + ACCOUNT_COUNT_ES_FILTER_PATH, ACCOUNT_COUNT_ES_QUERY);
+            accountNamesSet = getCountOfKeyFromAggregations(responseDetails);
+            return accountNamesSet.size();
+        } catch (Exception e) {
+            LOGGER.error("Exception in getTargetTypesByAssetGroup in fetching target types for es :", e);
+        }
+        return 0;
+    }
+
+    private Set<String> getCountOfKeyFromAggregations(String responseDetails) {
+        List<String> tags = Arrays.asList(Constants.AWS, Constants.AZURE, Constants.GCP);
+        Set<String> tagKeys = new HashSet<>();
+        try {
+            JsonNode parentNode = mapper.readTree(responseDetails);
+            tags.forEach(tag -> {
+                if (parentNode.has(Constants.NODE_AGGREGATIONS) && parentNode.get(Constants.NODE_AGGREGATIONS).has(tag)
+                        && parentNode.get(Constants.NODE_AGGREGATIONS).get(tag).has(Constants.NODE_BUCKETS)) {
+                    JsonNode tagNode = parentNode.get(Constants.NODE_AGGREGATIONS).get(tag).get(Constants.NODE_BUCKETS);
+                    tagNode.elements().forEachRemaining(valueNode -> {
+                        if (valueNode.has(Constants.NODE_KEY)) {
+                            tagKeys.add(valueNode.get(Constants.NODE_KEY).asText());
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            LOGGER.error(EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS, e);
+        }
+        return tagKeys;
+    }
+
+    private List<Map<String, Object>> getAssetsExempted(String assetGroup)
+    {
+        LOGGER.info("Inside getListAssetsExempted");
+        List<Map<String, Object>> assetList = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.EXEMPTED);
+        try {
+            assetList = esRepository.getDataFromES(assetGroup, null,
+                    mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
+            return assetList;
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+        }
+        return assetList;
     }
 
 }

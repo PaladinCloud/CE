@@ -80,11 +80,12 @@ public class ComplianceController implements Constants {
      */
     @RequestMapping(path = "/v1/issues", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Object> getIssues(@RequestBody(required = false) Request request) {
+    public ResponseEntity<Object> getIssues(@RequestBody(required = false) APIRequest request) {
         String assetGroup = request.getAg();
-        Map<String, String> filters = request.getFilter();
+        Map<String, Object> filters = request.getApiFilter();
 
-        if (Strings.isNullOrEmpty(assetGroup) || MapUtils.isEmpty(filters) || Strings.isNullOrEmpty(filters.get(DOMAIN))) {
+        if (Strings.isNullOrEmpty(assetGroup) || MapUtils.isEmpty(filters)
+                || Strings.isNullOrEmpty((String) filters.get(DOMAIN))) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_DOMAIN));
         }
 
@@ -441,20 +442,21 @@ public class ComplianceController implements Constants {
     // @Cacheable(cacheNames="compliance",key="#request.key")
     public ResponseEntity<Object> getNonCompliancePolicyByPolicy(@RequestBody(required = false) Request request) {
         String assetGroup = request.getAg();
+
         Map<String, String> filters = request.getFilter();
 
-        if (Strings.isNullOrEmpty(assetGroup) || MapUtils.isEmpty(filters) || Strings.isNullOrEmpty(filters.get(DOMAIN))) {
+        if (Strings.isNullOrEmpty(assetGroup) || MapUtils.isEmpty(filters)
+                || Strings.isNullOrEmpty(filters.get(DOMAIN))) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_DOMAIN));
         }
-
         ResponseWithOrder response = null;
         try {
             response = (complianceService.getPolicyCompliance(request));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
-
         return ResponseUtils.buildSucessResponse(response);
+
     }
 
     /**

@@ -24,6 +24,9 @@ public final class AssetConstants {
         
     }
 
+    public static final String TRUE = "true";
+    public static final String FILTER_UNTAGGED = "untagged";
+
     public static final String FILTER_EXEC_SPONSOR = "executiveSponsor";
     public static final String FILTER_RES_TYPE = "resourceType";
     public static final String FILTER_DIRECTOR = "director";

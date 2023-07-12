@@ -63,16 +63,16 @@ public class ComplianceControllerTest {
     public void getIssuesTest() throws Exception {
         when(complianceService.getIssues(anyObject())).thenReturn(CommonTestUtil.getResponseWithOrder());
 
-        assertThat(complianceController.getIssues(CommonTestUtil.getRequest()), is(notNullValue()));
+        assertThat(complianceController.getIssues(CommonTestUtil.getApiRequest()), is(notNullValue()));
 
         when(complianceService.getIssues(anyObject())).thenReturn(
                 CommonTestUtil.getResponseWithOrder());
 
-        assertThat(complianceController.getIssues(CommonTestUtil.getRequestEmpty()), is(notNullValue()));
+        assertThat(complianceController.getIssues(CommonTestUtil.getApiRequestEmpty()), is(notNullValue()));
         
         when(complianceService.getIssues(anyObject())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.getIssues(CommonTestUtil.getRequest());
+        ResponseEntity<Object> responseObj = complianceController.getIssues(CommonTestUtil.getApiRequest());
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     

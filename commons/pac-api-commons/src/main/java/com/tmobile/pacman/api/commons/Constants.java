@@ -28,8 +28,36 @@ package com.tmobile.pacman.api.commons;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public interface Constants {
 
+    List<String> RANGE_ATTRIBUTE =  new ArrayList<String>() {{
+        add("LONG");
+        add("INTEGER");
+        add("DOUBLE");
+    } };
+
+    String EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS = "Exception in getting count of account ids";
+
+    String NODE_AGGREGATIONS = "aggregations";
+
+    String NODE_BUCKETS = "buckets";
+    String NODE_KEY = "key";
+
+    String OPTION_TYPE = "optionType";
+    String OPTION_RANGE = "optionRange";
+
+    String POLICY_COMPLIANCE_FILTER = "policyComplianceFilter";
+    String OPTION_LIST = "optionList";
+    String OPTION_VALUE = "optionValue";
+
+    String MIN = "min";
+
+    String MAX = "max";
+
+    String EXCEPTION_IN_GETTING_COUNT_OF_POLICY_IDS = "Exception in getting count of policy ids";
     String CREATED_BY = "createdBy";
     Integer ES_PAGE_SIZE = 10000;
     String ES_PAGE_SCROLL_TTL = "2m";
@@ -138,6 +166,7 @@ public interface Constants {
     String POLICY_DETAILS_BY_APPLICATION = "policydetailsbyapplication";
     String NON_COMPLIANCE_POLICY = "noncompliancepolicy";
     String OVERALL = "overall";
+    String DISCOVERED_DAYS_RANGE = "discoveredDaysRange";
     String TOTAL_ISSUES = "total_issues";
     String TAGS_APPLICATION = "tags.Application";
     String MISSING_TAGS = "missingTags";

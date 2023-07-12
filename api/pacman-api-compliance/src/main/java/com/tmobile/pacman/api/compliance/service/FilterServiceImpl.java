@@ -15,12 +15,13 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.tmobile.pacman.api.compliance.domain.*;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +29,20 @@ import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.DataException;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.compliance.client.AuthServiceClient;
-import com.tmobile.pacman.api.compliance.domain.AssetCountDTO;
 import com.tmobile.pacman.api.compliance.repository.ComplianceRepository;
 import com.tmobile.pacman.api.compliance.repository.FilterRepository;
+import org.springframework.util.CollectionUtils;
 
 /**
  * The Class FilterServiceImpl.
  */
 @Service
 public class FilterServiceImpl implements FilterService, Constants {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    ComplianceService complianceService;
 
     /** The statistics client. */
   //  @Autowired
@@ -516,6 +522,75 @@ public class FilterServiceImpl implements FilterService, Constants {
         }
         return convertESResponseToMap(sourceMap);
 
+    }
+
+    public ResponseData getPolicycompliance(FilterRequest request) throws ServiceException{
+        Map<String, Object> filterREsponseMap = new HashMap<>();
+        Request req = new Request();
+        req.setReqFilter(request.getApiFilter());
+        req.setAg(request.getAg());
+        req.setFilter(new HashMap<String, String>(){{
+            put(Constants.DOMAIN, request.getDomain());
+        }});
+        Map<String, Object> filterObj = complianceRepository.getSupportedFilters(Constants.POLICY_COMPLIANCE_FILTER, request.getAttributeName());
+        if(filterObj == null){
+            logger.debug("Invalid filter attribute");
+            return new ResponseData(filterREsponseMap);
+        }
+        ResponseWithOrder response = complianceService.getPolicyCompliance(req);
+        if(response != null && !CollectionUtils.isEmpty(response.getResponse())){
+            List<LinkedHashMap<String, Object>> dataList = response.getResponse();
+            List<LinkedHashMap<String, Object>> finalOpenIssuesByPolicyListFinal = dataList;
+            if(Constants.RANGE_ATTRIBUTE.contains(filterObj.get(Constants.OPTION_TYPE).toString().toUpperCase())){
+                filterREsponseMap.put(Constants.OPTION_RANGE, getRangeMapFromPolicyComplianceData(filterObj, finalOpenIssuesByPolicyListFinal));
+            }else{
+                Set<Object> optionList  = finalOpenIssuesByPolicyListFinal.stream()
+                        .filter(x -> x.containsKey(request.getAttributeName())).map(x -> x.get(request.getAttributeName())).collect(Collectors.toSet());
+                filterREsponseMap.put(Constants.OPTION_LIST, optionList);
+            }
+        }
+        return new ResponseData(filterREsponseMap);
+    }
+
+    private Map<String, Object> getRangeMapFromPolicyComplianceData(Map<String, Object> obj, List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal){
+        Map<String, Object> rangeMap = new HashMap<>();
+        if(obj.get(Constants.OPTION_TYPE).equals("Double")){
+            double min = openIssuesByPolicyListFinal.stream()
+                    .mapToDouble(map-> (double) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Double.MIN_VALUE))
+                    .min()
+                    .orElse(0);
+            double max =  openIssuesByPolicyListFinal.stream()
+                    .mapToDouble(map-> (double) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Double.MIN_VALUE))
+                    .max()
+                    .orElse(0);
+            rangeMap.put("min", min);
+            rangeMap.put("max", max);
+        }
+        if(obj.get(Constants.OPTION_TYPE).equals("Long")){
+            long min = openIssuesByPolicyListFinal.stream()
+                    .mapToLong(map-> (long) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Long.MIN_VALUE))
+                    .min()
+                    .orElse(0);
+            long max = openIssuesByPolicyListFinal.stream()
+                    .mapToLong(map-> (long) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Long.MAX_VALUE))
+                    .max()
+                    .orElse(min);
+            rangeMap.put("min", min);
+            rangeMap.put("max", max);
+        }
+        if(obj.get(Constants.OPTION_TYPE).equals("Integer")){
+            int min = openIssuesByPolicyListFinal.stream()
+                    .mapToInt(map-> (int) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Integer.MIN_VALUE))
+                    .min()
+                    .orElse(0);
+            int max = openIssuesByPolicyListFinal.stream()
+                    .mapToInt(map-> (int) map.getOrDefault(obj.get(Constants.OPTION_VALUE),Integer.MAX_VALUE))
+                    .max()
+                    .orElse(min);
+            rangeMap.put("min", min);
+            rangeMap.put("max", max);
+        }
+        return rangeMap;
     }
     
 

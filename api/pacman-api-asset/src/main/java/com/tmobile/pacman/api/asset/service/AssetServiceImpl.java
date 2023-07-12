@@ -19,7 +19,10 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.google.common.collect.Lists;
 import com.google.gson.*;
 import com.tmobile.pacman.api.asset.AssetConstants;
+import com.tmobile.pacman.api.asset.client.ComplianceServiceClient;
+import com.tmobile.pacman.api.asset.domain.Request;
 import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
+import com.tmobile.pacman.api.asset.enums.DefaultAssetGroup;
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
 import com.tmobile.pacman.api.asset.repository.AssetRepository;
 import com.tmobile.pacman.api.commons.Constants;
@@ -80,6 +83,9 @@ public class AssetServiceImpl implements AssetService {
 
     @Autowired
     private CredentialProvider credentialProvider;
+
+    @Autowired
+    private ComplianceServiceClient complianceServiceClient;
 
     @Override
     public List<Map<String, Object>> getAssetCountByAssetGroup(String assetGroup, String type, String domain,
@@ -199,16 +205,35 @@ public class AssetServiceImpl implements AssetService {
     public Map<String, Object> getAssetGroupInfo(String assetGroup) {
         Map<String, Object> assetGroupInfoMap = repository.getAssetGroupInfo(assetGroup);
         if (!assetGroupInfoMap.isEmpty()) {
+            if(assetGroupInfoMap.containsKey("name")){
+                Optional<DefaultAssetGroup> optResult = DefaultAssetGroup.byNameIgnoreCase(assetGroupInfoMap.get("name").toString());
+                if(optResult.isPresent()){
+                    assetGroupInfoMap.put("type", "system");
+                    assetGroupInfoMap.put("createdby", "system");
+                }
+            }
             List<String> applications = new ArrayList<>();
+            long autoFixPlanCount = 0L;
+            Integer policyCount = 0;
             try {
                 applications = repository.getApplicationByAssetGroup(assetGroup, null);
+                autoFixPlanCount = repository.getAutoFixPlanCountForAg(assetGroup);
+                if (Constants.AWS.equalsIgnoreCase(assetGroup) || Constants.AZURE.equalsIgnoreCase(assetGroup) ||
+                        Constants.GCP.equalsIgnoreCase(assetGroup)) {
+                    policyCount = complianceServiceClient.getPolicyCountByAssetGroup(assetGroup);
+                } else {
+                    policyCount = getCountOfNonCompliancePolicies(assetGroup);
+                }
             } catch (Exception e) {
                 LOGGER.error("Error in getAssetGroupInfo ", e);
             }
             assetGroupInfoMap.put("appcount", applications.size());
+            assetGroupInfoMap.put("policyCount", policyCount);
+            assetGroupInfoMap.put("autoFixPlanCount", autoFixPlanCount);
             List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup, AssetConstants.ALL, null, null, null);
             assetGroupInfoMap.put("assetcount",
                     countMap.stream().mapToLong(obj -> Long.valueOf(obj.get(Constants.COUNT).toString())).sum());
+            assetGroupInfoMap.put("accountCount", repository.getAccountCountByAssetGroup(assetGroup));
             assetGroupInfoMap.put("domains", getDomains(assetGroup));
             assetGroupInfoMap.put(Constants.PROVIDERS, getProviderWithTypeCount(assetGroup, countMap));
         }
@@ -295,7 +320,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
+    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
                                                    String searchText, Map<String, Object> sortFilter) {
         return repository.getListAssets(assetGroup, filter, from, size, searchText, sortFilter);
     }
@@ -1187,5 +1212,20 @@ public class AssetServiceImpl implements AssetService {
             valueList.add(valueMap);
         });
         return valueList;
+    }
+
+    private int getCountOfNonCompliancePolicies(String assetGroup) {
+        Request nonComplianceRequest = new Request();
+        Map<String, String> filter = new HashMap<>();
+        try {
+            nonComplianceRequest.setAg(assetGroup);
+            filter.put(Constants.DOMAIN, Constants.DEFAULT_DOMAIN);
+            nonComplianceRequest.setFilter(filter);
+            return complianceServiceClient.getNonCompliancePolicies(nonComplianceRequest)
+                    .getData().getResponse().size();
+        } catch (Exception e) {
+            LOGGER.error(Constants.EXCEPTION_IN_GETTING_COUNT_OF_POLICY_IDS, e);
+            return 0;
+        }
     }
 }

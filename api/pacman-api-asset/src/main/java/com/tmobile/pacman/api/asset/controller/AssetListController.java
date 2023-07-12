@@ -25,6 +25,7 @@ import com.tmobile.pacman.api.asset.service.AssetService;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
+import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -83,6 +84,13 @@ public class AssetListController {
         if (filter == null) {
             filter = new HashMap<>();
         }
+        Map<String, Object> reqFilter = request.getReqFilter();
+        if(reqFilter == null){
+            reqFilter = new HashMap<>();
+            for(Map.Entry<String,String> entry : filter.entrySet()){
+                reqFilter.put(entry.getKey(), entry.getValue());
+            }
+        }
 
         List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_DOMAIN));
         acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
@@ -96,10 +104,11 @@ public class AssetListController {
 
         ResponseWithCount response;
         try {
-            long count = assetService.getAssetCount(assetGroup, filter, searchText);
-            List<Map<String, Object>> masterDetailList = assetService.getListAssets(assetGroup, filter, from, size,
+            //long count = assetService.getAssetCount(assetGroup, filter, searchText);
+            List<Map<String, Object>> masterDetailList = assetService.getListAssets(assetGroup, reqFilter, from, size,
                     searchText, request.getSortFilter());
-            response = new ResponseWithCount(masterDetailList, count);
+            response = new ResponseWithCount(masterDetailList, ThreadLocalUtil.count.get());
+            ThreadLocalUtil.count.remove();
 
         } catch (Exception e) {
             LOGGER.error("Error in listAssets ",e);
