@@ -18,6 +18,8 @@
                             [showDownloadBtn]="false" [showFilterBtn]="true"
                             [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded"
                             [rowClickable]="false" [tableErrorMessage]="errorMessage"
+                            [onScrollDataLoader]="onScrollDataLoader"
+                            (nextPageCalled)="nextPage($event)"
                             (selectedFilterType)='changeFilterType($event)'
                             (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
                             [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
