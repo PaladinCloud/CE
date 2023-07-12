@@ -123,6 +123,8 @@ SET @TENABLE_ENABLED='$TENABLE_ENABLED';
 SET @VULNERABILITY_SCHEDULE_INTERVAL='$VULNERABILITY_SCHEDULE_INTERVAL';
 SET @VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY='$VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY';
 SET @VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY='$VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY';
+SET @ENABLE_EXTERNAL_ID='$ENABLE_EXTERNAL_ID';
+SET @EXTERNAL_ID='$EXTERNAL_ID';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -2974,11 +2976,18 @@ delete from pac_v2_ui_options where optionValue like 'tags.%';
 
 update pac_config_properties set value = 'role/PaladinCloudIntegrationRole' where cfkey = 'pacman.auto.fix.role.name';
 
-SET @ENABLE_EXTERNAL_ID='$ENABLE_EXTERNAL_ID';
+CREATE TABLE IF NOT EXISTS `cf_AssetGroupCriteriaDetails` (
+  `id_` varchar(75) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `groupId` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `criteriaName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `attributeName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `attributeValue` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id_`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
 DELETE iGNORE FROM pac_config_properties where cfkey = "enable.external.id";
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES('enable.external.id',concat(@ENABLE_EXTERNAL_ID, ''),'application','prd','latest',null,null,null,null);
 
-SET @EXTERNAL_ID='$EXTERNAL_ID';
 DELETE iGNORE FROM pac_config_properties where cfkey = "external.id";
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES('external.id',concat(@EXTERNAL_ID, ''),'application','prd','latest',null,null,null,null);
 
