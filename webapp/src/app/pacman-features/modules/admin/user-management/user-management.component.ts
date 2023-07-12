@@ -28,16 +28,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   pageTitle = "Users";
   dataTableDesc = "";
 
-  emailControl = new FormControl('', [
-                  Validators.required,
-                  Validators.email
-               ]);
-  
-  firstNameControl = new FormControl('', [
-                  Validators.required,
-               ]);
-
-  lastNameControl = new FormControl('', [Validators.required]);
 
   @ViewChild("createEditUserRef") createEditUserRef: TemplateRef<any>;
   @ViewChild("actionRef") actionRef: TemplateRef<any>;
@@ -103,7 +93,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   updatedRoles = ["ReadOnly"];
 
   private userForm: FormGroup;
-  public userFormErrors = {
+  public userFormErrors : any = {
     emailID: '',
     firstName: '',
     lastName: ''
@@ -210,13 +200,21 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   public buildForm() {
-    this.userForm = this.form.group({
-      emailID  : ['', [Validators.required,
-                       Validators.email]
-                 ],
-      firstName: ['', [Validators.required]],
-      lastName : ['', [Validators.required]]
-    });
+    if(this.action=='Edit'){
+      this.userForm = this.form.group({
+        emailID  : [this.emailID, [Validators.required,
+                         Validators.email]
+                   ],
+      });
+    }else{
+      this.userForm = this.form.group({
+        emailID  : ['', [Validators.required,
+                         Validators.email]
+                   ],
+        firstName: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
+        lastName : ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]]
+      });
+    }
   }
 
   createEditUser(currentRow:any) {
@@ -233,6 +231,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.lastName = null;
       this.selectedRoles = ["ReadOnly"];
     }
+    this.buildForm();
     const dialogRef = this.dialog.open(DialogBoxComponent,
       {
         width: '600px',
