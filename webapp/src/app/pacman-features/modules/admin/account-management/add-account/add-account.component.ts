@@ -606,9 +606,15 @@ isSelectedAccount(account:string){
 }
 
 redirectTo(){
-  this.router.navigate(['../'], {
+  this.workflowService.navigateTo({
+    urlArray: ['../'],
+    queryParams: {selectedAccount:undefined},
     relativeTo: this.activatedRoute,
-    queryParams: {}
+    currPagetitle: undefined,
+    nextPageTitle: "Plugins",
+    state: {
+      dataUpdated: true
+    }
   });
 }
 

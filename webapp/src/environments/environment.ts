@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-export const environment = {
+ export const environment = {
     production: false,
     base: '{{baseUrl}}',
     envName: 'dev',
@@ -56,6 +56,14 @@ export const environment = {
     policyViolationGraph: {
         url: '{{baseUrl}}/compliance/v1/policyviolations/summary/{assetGroup}/{resourceType}/{resourceId}',
         method: 'GET'
+    },
+    getNotificationPreferences:{
+        url: '{{baseUrl}}/admin/notifications/preferences',
+        method: 'GET'
+    },
+    updateNotificationPreferences:{
+        url: '{{baseUrl}}/admin/notifications/preferences',
+        method: 'POST'
     },
     PullReqLineMetrics: {
         url: '{{baseUrl}}/devstandards/v1/pullrequests/state-trend',
@@ -531,7 +539,7 @@ export const environment = {
     },
 
     enableDisableRuleOrJob: {
-        url: '{{baseUrl}}/admin/enable-disable',
+        url: '{{baseUrl}}/admin/policy/enable-disable',
         method: 'POST'
     },
     listUsers: {
@@ -562,6 +570,10 @@ export const environment = {
         url: '{{baseUrl}}/compliance/v1/policy-details-by-id',
         method: 'GET'
     },
+    getPolicyDetailsWithExemption: {
+        url: "{{baseUrl}}/compliance/v1/policy-details-with-exemption",
+        method: 'GET'
+    },
     getPolicyDetailsById: {
         url: "{{baseUrl}}/admin/policy/details-by-id",
         method: 'GET'
@@ -575,7 +587,7 @@ export const environment = {
         method: 'GET'
     },
     allPolicyIds: {
-        url: '{{baseUrl}}/admin/policy/policy-ids',
+        url: '{{baseUrl}}/admin/policy/list-ids',
         method: 'GET'
     },
     ruleDetails: {
@@ -620,7 +632,7 @@ export const environment = {
     },
     assetGroups: {
         url: '{{baseUrl}}/admin/asset-group/list',
-        method: 'GET'
+        method: 'POST'
     },
     domains: {
         url: '{{baseUrl}}/admin/domains/list',
@@ -679,7 +691,7 @@ export const environment = {
         method: 'GET'
     },
     createAssetGroups: {
-        url: '{{baseUrl}}/admin/asset-group/create',
+        url: '{{baseUrl}}/admin/asset-group/createAssetGroup',
         method: 'POST'
     },
     listTargetTypeAttributeValues: {
@@ -687,7 +699,7 @@ export const environment = {
         method: 'POST'
     },
     roles: {
-        url: '{{baseUrl}}/admin/roles/list',
+        url: '{{baseUrl}}/admin/roles',
         method: 'GET'
     },
     createRole: {
