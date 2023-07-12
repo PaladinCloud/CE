@@ -202,6 +202,13 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         this.awsResources.sort((a: any, b: any) => a.count - b.count);
         const maxIndex = this.awsResources.length;
 
+        if(maxIndex==1){
+            this.treemapData = [{
+                x: this.awsResources[0].displayName,
+                y: 1
+            }]
+            return;
+        }
         for (let i = 0; i < maxIndex; i++) {
             const obj = {
                 x: this.awsResources[i].displayName,
@@ -316,6 +323,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         const selectedTargetType = tagetType.type;
         const queryParams = {
             filter: 'resourceType=' + selectedTargetType,
+            tempFilters: true
         };
         this.workflowService.addRouterSnapshotToLevel(
             this.router.routerState.snapshot.root,

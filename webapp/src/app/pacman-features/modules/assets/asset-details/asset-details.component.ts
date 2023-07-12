@@ -1,18 +1,18 @@
 /*
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
+*Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+* this file except in compliance with the License. A copy of the License is located at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* or in the "license" file accompanying this file. This file is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+* implied. See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
-import { Component, OnInit, ElementRef, ViewChild, OnDestroy, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, OnDestroy, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
 import { Subscription } from 'rxjs';
 import { environment } from './../../../../../environments/environment';
@@ -31,6 +31,10 @@ import { WorkflowService } from '../../../../core/services/workflow.service';
 import { HostVulnerabilitiesSummaryService } from '../../../services/host-vulnerabilities-summary.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CONFIGURATIONS } from '../../../../../config/configurations';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
+
 
 @Component({
   selector: 'app-asset-details',
@@ -40,7 +44,27 @@ import { CONFIGURATIONS } from '../../../../../config/configurations';
 })
 export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('widgetCpu') widgetContainer: ElementRef;
+  tiles = {
+    Policies: {
+      value: 0
+    },
+    Violations: {
+      value: 0
+    },
+    Compliance: {
+      value: 0
+    },
+    Source: {
+      value: "",
+      img: ""
+    },
+    "Asset Type":{
+      value:"",
+      img: ""
+    }
+  };
+
+  tileList = [];
 
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   resourceId: string;
@@ -48,11 +72,11 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   public decodedResourceId: string;
   public emailArray = [];
   public users;
-  widgetWidth = 180;
-  widgetHeight = 185;
+  widgetWidth = 200;
+  widgetHeight = 200;
+  violationErrorMessage="";
   widgetWidth1 = 120;
   widgetHeight1 = 125;
-  graphWidth: any;
   userEmail: FormGroup;
   public elementRef;
   public queryValue = '';
@@ -148,6 +172,22 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   public pageLevel = 0;
   public backButtonRequired;
   configurations;
+  tagErrorMessage: string;
+  outboundRulesData = [];
+  inboundRulesData = [];
+  columnNamesMap = {"fromport": "From Port","toport": "To Port",  "cidrip": "CidrIp"};
+  sgRulesColumnWidths = {"From Port": 1, "To Port": 1, "CidrIp": 1};
+  sgRulesColumns = [];
+  centeredColumns = {
+    "From Port": true,
+    "To Port": true,
+    "CidrIp": true
+  }
+  sgRulesTableErrorMessage: string;
+  headerColName = "";
+  direction = "";
+  sgRulesTableDataLoaded: boolean = false;
+  assetTypeMap: any;
 
   @HostListener('document:click', ['$event']) handleClick(event) {
     let clickedComponent = event.target;
@@ -179,6 +219,8 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
+    private cdRef: ChangeDetectorRef,
+    private assetTypeMapService: AssetTypeMapService,
     private activatedRoute: ActivatedRoute,
     private commonResponseService: CommonResponseService,
     private router: Router,
@@ -193,8 +235,12 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     private workflowService: WorkflowService,
     private hostVulnerabilitiesSummaryService: HostVulnerabilitiesSummaryService,
     private loggerService: LoggerService,
+    private clipboard: Clipboard,
     myElement: ElementRef) {
 
+      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+        this.assetTypeMap = assetTypeMap;
+      });
     this.configurations = CONFIGURATIONS;
 
     this.elementRef = myElement;
@@ -202,18 +248,14 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    try {
-      setTimeout(() => {
-        this.widgetWidth2 = parseInt((window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width')).split('px')[0], 10);
-      }, 0);
-    } catch (error) {
-      this.errorMessage[2] = this.errorHandling.handleJavascriptError(error);
-    }
+    this.sgRulesColumns = Object.keys(this.sgRulesColumnWidths);
   }
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];   
+    
+    this.tileList = Object.keys(this.tiles);
     
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
@@ -304,7 +346,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     */
     this.routeSubscription = this.activatedRoute.params.subscribe(params => {
       this.urlParams = params; // <<-- This urlParams is used while calling the api
-      this.resourceId = this.urlParams.resourceId; // Encoded resource id is used everywhere to pass to api's
+      this.resourceId = this.urlParams.resourceId; // Encoded asset id is used everywhere to pass to api's
       this.decodedResourceId = decodeURIComponent(this.resourceId); // This is used only for Title of the page
       this.resourceType = this.urlParams.resourceType;
       this.updateComponent();
@@ -319,6 +361,22 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dataStore.setCurrentSelectedAssetGroup(this.selectedAssetGroup);
         this.getRuleId();
       });
+  }
+
+  handleHeaderColNameSelection(event) {
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+  }
+
+  fetchPolicyCount(event){
+    this.tiles["Policies"].value = event;
+  }
+
+  assignCloudType(event:string){
+    const cloudType = event.toLowerCase();
+    this.tiles["Source"].value = DATA_MAPPING[cloudType];
+    this.tiles["Source"].img = cloudType;
+    this.cdRef.detectChanges();
   }
 
   replaceUrl(url) {
@@ -344,6 +402,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
         try {
           if (response.attributes.length > 0) {
             this.assetSummaryData = response.attributes;
+            this.tiles["Compliance"].value = this.assetSummaryData[1].value;
             this.showLoader[4] = true;
           } else {
             this.hideContainer[0] = true;
@@ -385,10 +444,30 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.errorMessage[0] = 'apiResponseError';
       }
     );
+  }
 
+  processSgRulesData(sgRules:any){
+    const sgRulesData = this.utilityService.massageTableData(sgRules,this.columnNamesMap);
+    const processedSgRulesData = this.utilityService.processTableData(sgRulesData);
+      for(let i=0;i<processedSgRulesData.length;i++){
+        const sgRule = processedSgRulesData[i];
+        if(sgRule["CidrIp"].text==""){
+          sgRule["CidrIp"].text = "-";
+          sgRule["CidrIp"].titleText = "-";
+          sgRule["CidrIp"].valueText = "-";
+        }
+        if(sgRule.type.text=="inbound"){
+          this.inboundRulesData.push(sgRule);
+        }else{
+          this.outboundRulesData.push(sgRule);
+        }
+      }
+      this.inboundRulesData = [...this.inboundRulesData];
+      this.outboundRulesData = [...this.outboundRulesData];
   }
 
   getAssetDetailsData() {
+    this.sgRulesTableDataLoaded = false;
     const url = environment.assetDetails.url;
     const method = environment.assetDetails.method;
     const newUrl = this.replaceUrl(url);
@@ -396,7 +475,15 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.assetDetailsSubscription = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
       response => {
         try {
+          this.sgRulesTableDataLoaded = true;
           this.detailsData = response;
+          if(this.resourceType=="sg"){
+            if(response.sg_rules){
+              this.processSgRulesData(response.sg_rules);
+            }else{
+              this.sgRulesTableErrorMessage = "noDataAvailable";
+            }
+          }
           if (response.attributes.length > 0) {
             const attributes = response.attributes;
             const refactoredService = this.refactorFieldsService;
@@ -422,6 +509,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.tagsData(response.tags);
             this.showLoader[8] = true;
           } else {
+            this.tagErrorMessage = "noDataAvailable";
             this.showLoader[8] = true;
             this.hideContainer[4] = true;
           }
@@ -450,11 +538,17 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   relatedData(data) {
-    this.dataObj = this.filterAttributesByCategories(data);
-    this.genericAttributes = this.filterGenericAttributes(this.dataObj);
+    try{
+      const assetType = data.find(item  => item.name=="docType")?.value[0];
+      this.tiles["Asset Type"].value = this.assetTypeMap.get(assetType) || assetType;
+      this.dataObj = this.filterAttributesByCategories(data);
+      this.genericAttributes = this.filterGenericAttributes(this.dataObj);
 
-    if (Object.keys(this.genericAttributes).length > 0) {
-      this.filteredData = true;
+      if (Object.keys(this.genericAttributes).length > 0) {
+        this.filteredData = true;
+      }
+    }catch(e){
+      this.loggerService.log("jsError", e);
     }
   }
 
@@ -513,9 +607,11 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
             if (response.totalCount !== 0) {
               this.policyValue = false;
               this.policyData = response;
+              this.tiles["Violations"].value = this.policyData?.totalCount;
               this.policyAvailable[0] = true;
               this.showLoader[0] = true;
             } else {
+              this.violationErrorMessage = "noDataAvailable";
               this.policyValue = false;
               this.showLoader[0] = true;
               this.summary.violation = true;
@@ -790,6 +886,10 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
+  copyToClipboard(text: string) {
+    this.clipboard.copy(text);
+  }
+
   removeData(index): any {
     this.emailArray.splice(index, 1);
     if (this.emailArray.length < 1) {
@@ -903,8 +1003,6 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   navigateToAWSNotifications(status) {
     this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
     const eachParams = { 'eventstatus': status, '_resourceid': this.resourceId };
-    this.router.navigate(['../../../../notifications/notifications-list'],
-      { relativeTo: this.activatedRoute, queryParams: this.utilityService.makeFilterObj(eachParams), queryParamsHandling: 'merge' });
   }
 
   ngOnDestroy() {

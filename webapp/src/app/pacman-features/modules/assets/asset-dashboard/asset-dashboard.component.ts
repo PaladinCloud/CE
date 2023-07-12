@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataCacheService } from '../../../../core/services/data-cache.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -15,6 +15,7 @@ import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/service
 import { MatMenuTrigger } from '@angular/material/menu';
 import { Subscription } from 'rxjs';
 import { OverviewTile } from 'src/app/shared/components/molecules/overview-tile/overview-tile.component';
+import { TourService } from 'src/app/core/services/tour.service';
 
 @Component({
     selector: 'app-asset-dashboard',
@@ -22,10 +23,10 @@ import { OverviewTile } from 'src/app/shared/components/molecules/overview-tile/
     styleUrls: ['./asset-dashboard.component.css'],
     providers: [LoggerService, ErrorHandlingService, MultilineChartService, FetchResourcesService],
 })
-export class AssetDashboardComponent implements OnInit, OnDestroy {
+export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
 
-    readonly pageTitle = 'Asset Summary';
+    pageTitle = 'Asset Summary';
     showNotif = false;
     beepCount = 0;
     errorMessage: string;
@@ -40,6 +41,11 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     totalAssetsCountDataError = '';
     dataSubscription: Subscription;
     trendDataSubscription: Subscription;
+    taggedTileDataSubscription: Subscription;
+    unTaggedTileDataSubscription: Subscription;
+    exemptTileDataSubscription: Subscription;
+    assetGroupSubscription: Subscription;
+    domainSubscription: Subscription;
 
     graphHeight: number;
 
@@ -55,10 +61,10 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
                 count: 0,
                 image: 'total-assets-icon',
             },
-            subContent: {
+            subContent: [{
                 title: 'Asset Types',
                 count: 0,
-            },
+            }],
         },
         {
             mainContent: {
@@ -66,21 +72,21 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
                 count: 0,
                 image: 'exempted-assets-icon',
             },
-            subContent: {
+            subContent: [{
                 title: 'Exempt Asset Types',
                 count: 0,
-            },
+            }],
         },
         {
             mainContent: {
-                title: 'Tagged Assets',
+                title: 'UnTagged Assets',
                 count: 0,
                 image: 'category-tagging',
             },
-            subContent: {
-                title: 'UnTagged Assets',
+            subContent: [{
+                title: 'Tagged Assets',
                 count: 0,
-            },
+            }],
         },
     ];
 
@@ -99,6 +105,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         private commonResponseService: CommonResponseService,
         private assetGroupsService: AssetTilesService,
         private fetchResourcesService: FetchResourcesService,
+        private tourService: TourService,
         private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
     ) {
         this.config = CONFIGURATIONS;
@@ -110,6 +117,9 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
             this.config.optional.general.OSS;
 
         this.getAssetGroup();
+    }
+    ngAfterViewInit(): void {
+        this.tourService.setComponentReady();
     }
 
     ngOnInit() {
@@ -137,21 +147,50 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     }
 
     getAssetsTileData() {
-        const taggingSummaryUrl = environment.taggingSummary.url;
-        const taggingSummaryMethod = environment.taggingSummary.method;
+        const assetListUrl = environment.assetList.url;
+        const assetListMethod =environment.assetList.method;
 
-        const queryParams = {
+        const payloadForTaggedTrue = {
             ag: this.assetGroupName,
+            filter: {
+                "tagged": "true",
+                "domain": this.domainName
+            },
+            from: 0,
+            size: 0
+        };
+
+        const payloadForTaggedFalse = {
+            ag: this.assetGroupName,
+            filter: {
+                "tagged": "false",
+                "domain": this.domainName
+            },
+            from: 0,
+            size: 0
         };
 
         try {
-            this.commonResponseService
-                .getData(taggingSummaryUrl, taggingSummaryMethod, {}, queryParams)
+            this.taggedTileDataSubscription = this.commonResponseService
+                .getData(assetListUrl, assetListMethod, payloadForTaggedTrue, {})
                 .subscribe((response) => {
-                    this.tiles[2].mainContent.count = response.output.tagged;
-                    this.tiles[2].subContent.count = response.output.untagged;
+                    this.tiles[2].subContent[0].count = response.data.total;
+                },
+                error => {
+                    this.logger.log("apiError", error);
                 });
-        } catch (e) {}
+
+            this.unTaggedTileDataSubscription =  this.commonResponseService
+                .getData(assetListUrl, assetListMethod, payloadForTaggedFalse, {})
+                .subscribe((response) => {
+                    this.tiles[2].mainContent.count = response.data.total;
+                },
+                error => {
+                    this.logger.log("apiError", error);
+                });
+        } catch (e) {
+            this.logger.log("jsError", e);
+        }
     }
 
     massageAssetTrendGraphData(graphData) {
@@ -186,8 +225,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         );
         if (data == 'Exempt Assets' || data == 'Exempt Asset Types') {
             const queryParams = {
-                filter: 'exempted=true',
-                TypeAsset: 'exempted',
+                filter: 'exempted=true', "tempFilters": true
             };
             this.router.navigate(['pl/assets/asset-list'], {
                 queryParams: queryParams,
@@ -206,10 +244,9 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         } else if (data == 'Tagged Assets' || data == 'UnTagged Assets') {
             const queryParams = {
                 filter: data == 'Tagged Assets' ? 'tagged=true' : 'tagged=false',
-                TypeAsset: 'taggable',
             };
             this.router.navigate(['pl/assets/asset-list'], {
-                queryParams: queryParams,
+                queryParams: {...queryParams, "tempFilters": true},
                 queryParamsHandling: 'merge',
             });
         }
@@ -247,7 +284,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
                     (response) => {
                         this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
                         if (response[0].trend.length < 2) {
-                            this.totalAssetsCountDataError = 'noDataAvailable';
+                            this.totalAssetsCountDataError = 'waitForData';
                         }
                     },
                     (error) => {
@@ -270,11 +307,11 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         };
 
         try {
-            this.commonResponseService
+            this.exemptTileDataSubscription = this.commonResponseService
                 .getData(exemptedAssetCountUrl, exemptedAssetCountMethod, {}, queryParams)
                 .subscribe((response) => {
                     this.tiles[1].mainContent.count = response.totalassets || 0;
-                    this.tiles[1].subContent.count = response.assettype;
+                    this.tiles[1].subContent[0].count = response.assettype;
                 });
         } catch (e) {}
     }
@@ -293,7 +330,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
             this.awsResourceTypeSelectionService.getAssetTypeCount().subscribe((asset) => {
                 this.tiles[0].mainContent.count = asset['totalassets'];
-                this.tiles[0].subContent.count = asset['assettype'];
+                this.tiles[0].subContent[0].count = asset['assettype'];
             });
         } catch (e) {
             this.logger.log(e, 'error');
@@ -301,7 +338,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     }
 
     getAssetGroup() {
-        this.assetGroupObservableService.getAssetGroup().subscribe((assetGroupName) => {
+        this.assetGroupSubscription = this.assetGroupObservableService.getAssetGroup().subscribe((assetGroupName) => {
             this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
                 this.pageLevel,
             );
@@ -321,6 +358,10 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
             if (this.trendDataSubscription) {
                 this.trendDataSubscription.unsubscribe();
             }
+            this.taggedTileDataSubscription.unsubscribe();
+            this.unTaggedTileDataSubscription.unsubscribe();
+            this.exemptTileDataSubscription.unsubscribe();
+            this.assetGroupSubscription.unsubscribe();
             this.dataStore.set('urlToRedirect', this.urlToRedirect);
         } catch (error) {
             this.logger.log('error', '--- Error while unsubscribing ---');
