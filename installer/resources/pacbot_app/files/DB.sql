@@ -2973,3 +2973,14 @@ CALL update_filter_for_tag(@MANDATORY_TAGS);
 delete from pac_v2_ui_options where optionValue like 'tags.%';
 
 update pac_config_properties set value = 'role/PaladinCloudIntegrationRole' where cfkey = 'pacman.auto.fix.role.name';
+
+SET @ENABLE_EXTERNAL_ID='$ENABLE_EXTERNAL_ID';
+DELETE iGNORE FROM pac_config_properties where cfkey = "enable.external.id";
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES('enable.external.id',concat(@ENABLE_EXTERNAL_ID, ''),'application','prd','latest',null,null,null,null);
+
+SET @EXTERNAL_ID='$EXTERNAL_ID';
+DELETE iGNORE FROM pac_config_properties where cfkey = "external.id";
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES('external.id',concat(@EXTERNAL_ID, ''),'application','prd','latest',null,null,null,null);
+
+
+
