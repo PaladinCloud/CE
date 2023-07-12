@@ -915,27 +915,34 @@ public class AssetRepositoryImpl implements AssetRepository {
                 Constants._ID, AssetConstants.UNDERSCORE_LOADDATE, Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
                 AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST, AssetConstants.CREATION_DATE);
 
-        for(Map<String, Object> map : assetDetails){
-            if(!map.containsKey(AssetConstants.ACCOUNT_NAME)){
-                if(map.containsKey("subscriptionName")){
-                    map.put(AssetConstants.ACCOUNT_NAME,map.get("subscriptionName"));
-                }
-                else if(map.containsKey("projectName")){
-                    map.put(AssetConstants.ACCOUNT_NAME,map.get("projectName"));
-                }
-            }
-            if(!map.containsKey(AssetConstants.ACCOUNT_ID)){
-                if(map.containsKey("subscription")){
-                    map.put(AssetConstants.ACCOUNT_ID,map.get("subscription"));
-                }
-                else if(map.containsKey("projectId")){
-                    map.put(AssetConstants.ACCOUNT_ID,map.get("projectId"));
-                }
-            }
-
-        }
+        assetDetails = setAccountDetails(assetDetails);
         LOGGER.info("Exiting getListAssets");
         return formGetListResponse(fieldNames,assetDetails,fieldsToBeSkipped);
+    }
+
+    private List<Map<String, Object>> setAccountDetails(List<Map<String, Object>> assetDetails){
+        if(!CollectionUtils.isEmpty(assetDetails)){
+            for(Map<String, Object> map : assetDetails){
+                if(!map.containsKey(AssetConstants.ACCOUNT_NAME)){
+                    if(map.containsKey("subscriptionName")){
+                        map.put(AssetConstants.ACCOUNT_NAME,map.get("subscriptionName"));
+                    }
+                    else if(map.containsKey("projectName")){
+                        map.put(AssetConstants.ACCOUNT_NAME,map.get("projectName"));
+                    }
+                }
+                if(!map.containsKey(AssetConstants.ACCOUNT_ID)){
+                    if(map.containsKey("subscription")){
+                        map.put(AssetConstants.ACCOUNT_ID,map.get("subscription"));
+                    }
+                    else if(map.containsKey("projectId")){
+                        map.put(AssetConstants.ACCOUNT_ID,map.get("projectId"));
+                    }
+                }
+
+            }
+        }
+        return assetDetails;
     }
 
     private static void addTagToFilter(Map<String, Object> mustFilter, Set<String> mandatoryTags,Entry<String,String> entry) {

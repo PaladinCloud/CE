@@ -433,7 +433,6 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         } else {
             ttypes = repository.getTargetTypeForAG(assetGroup, filters.get(DOMAIN));
         }
-        logger.debug("Types in scope for invocation {}", ttypes);
         final List<Map<String, String>> dataSourceTargetType = repository.getDataSourceForTargetTypeForAG(assetGroup,
                 filters.get(DOMAIN), resourceTypeFilter);
         String application;
