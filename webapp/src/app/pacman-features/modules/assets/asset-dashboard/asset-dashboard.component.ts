@@ -223,9 +223,12 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             0,
             this.pageTitle,
         );
+        const tempQueryParam = {
+            "tempFilters": true
+        }
         if (data == 'Exempt Assets' || data == 'Exempt Asset Types') {
             const queryParams = {
-                filter: 'exempted=true', "tempFilters": true
+                filter: 'exempted=true', ...tempQueryParam
             };
             this.router.navigate(['pl/assets/asset-list'], {
                 queryParams: queryParams,
@@ -233,20 +236,21 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             });
         } else if (data == 'Total Assets') {
             this.router.navigate(['pl/assets/asset-list'], {
-                queryParams: null,
+                queryParams: {...tempQueryParam},
                 queryParamsHandling: 'merge',
             });
         } else if (data == 'Asset Types') {
             this.router.navigate(['pl/assets/asset-distribution'], {
-                queryParams: null,
+                queryParams: {...tempQueryParam},
                 queryParamsHandling: 'merge',
             });
         } else if (data == 'Tagged Assets' || data == 'UnTagged Assets') {
             const queryParams = {
                 filter: data == 'Tagged Assets' ? 'tagged=true' : 'tagged=false',
+                ...tempQueryParam
             };
             this.router.navigate(['pl/assets/asset-list'], {
-                queryParams: {...queryParams, "tempFilters": true},
+                queryParams: queryParams,
                 queryParamsHandling: 'merge',
             });
         }
