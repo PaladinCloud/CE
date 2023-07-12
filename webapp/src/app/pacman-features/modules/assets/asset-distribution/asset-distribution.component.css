@@ -1,6 +1,6 @@
 .asset-distribution-container {
     height: 100%;
-    padding: 18px 24px;
+    padding: 24px;
 }
 
 .chart {
@@ -11,6 +11,11 @@
 .chart.expanded {
     padding: 10px 24px;
     width: 67%;
+}
+
+.page-header {
+    padding-bottom: 24px;
+    gap: 8px;
 }
 
 .asset-header {
@@ -32,9 +37,19 @@
     transform: rotate(0deg);
 }
 
+.page-header-text {
+    font-size: 2em;
+    font-family: var(--text-font-family);
+    font-weight: 500;
+}
+
 .page-header-subtext {
     font: var(--text-body-1);
     margin-left: 16px;
+}
+
+.text-desc {
+    font: var(--text-body-1);
 }
 
 .overall-distribution {

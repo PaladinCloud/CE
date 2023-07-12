@@ -29,12 +29,10 @@ export class IssueFilterService {
     constructor( @Inject(HttpService) private httpService: HttpService) { }
 
 
-    getFilters(filterParams, filterUrl, filterMethod): Observable<any> {
+    getFilters(queryParams, filterUrl, filterMethod, payload={}): Observable<any> {
 
         const url = filterUrl;
         const method = filterMethod;
-        const payload = {};
-        const queryParams = filterParams;
 
         try {
             return combineLatest(

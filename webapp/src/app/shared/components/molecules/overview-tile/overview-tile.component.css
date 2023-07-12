@@ -33,6 +33,7 @@
 }
 
 .tile-details {
+    flex: 1;
     padding: 4px 8px;
     border: 1px solid var(--border-100);
     background-color: rgb(242 243 245 / 31%);

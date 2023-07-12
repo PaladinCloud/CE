@@ -124,12 +124,14 @@ import { TableComponent } from './table/table.component';
 import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.component';
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
+import {ClipboardModule} from '@angular/cdk/clipboard';
 
 @NgModule({
     imports: [
         MatCheckboxModule,
         AgGridModule,
         CommonModule,
+        ClipboardModule,
         DragDropModule,
         FormsModule,
         MatButtonModule,
@@ -234,6 +236,7 @@ import { WidgetSectionStarterComponent } from './widget-section-starter/widget-s
         AgGridTableComponent,
         AssetSummarySearchFilterPipe,
         BackNavigationComponent,
+        ClipboardModule,
         BackNavigationComponent,
         BarChartComponent,
         BreadcrumbComponent,

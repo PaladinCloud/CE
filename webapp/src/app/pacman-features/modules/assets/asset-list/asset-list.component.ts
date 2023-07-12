@@ -32,12 +32,11 @@ import { AssetTypeMapService } from "src/app/core/services/asset-type-map.servic
   ],
 })
 export class AssetListComponent implements OnInit, OnDestroy {
-  readonly pageTitle = "Asset List";
+  pageTitle = "Asset List";
   assetListData: any;
   selectedAssetGroup: string;
   breadcrumbArray: any = [];
   breadcrumbLinks: any = [];
-  breadcrumbPresent = "Asset List";
   errorMessage: any;
   allColumns: any = [];
   totalRows = 0;
@@ -75,7 +74,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   tableScrollTop=0;
   selectedRowIndex;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Asset ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
+  columnWidths = {'Asset ID': 2, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Cloud Type': 0.5};
   columnNamesMap = {};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -159,16 +158,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
     .subscribe((assetGroupName) => {
-      if(this.selectedAssetGroup){
-        this.filterTagLabels = {};
-        this.tableStateService.clearPreservedFilters(this.pageTitle);
-      }
-      this.filters = [];
-      this.filterText = {};
       this.getPreservedState();
-      if(this.selectedAssetGroup){
-        this.tableScrollTop = 0;
-      }
       this.backButtonRequired =
       this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
       this.selectedAssetGroup = assetGroupName;
@@ -181,12 +171,22 @@ export class AssetListComponent implements OnInit, OnDestroy {
           if(!Object.keys(this.columnWidths).includes(label)){
             this.columnWidths[label] = 0.7;
           }
+          if(!Object.values(this.columnNamesMap).includes(label)){
+            const apiColName =  find(this.filterTypeOptions, {
+              optionName: label,
+            })["optionValue"];
+            if(apiColName) this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
+          }
         })
+        this.columnNamesMap = {...this.columnNamesMap};
         this.columnWidths = {...this.columnWidths}
 
       });
     });
 
+    this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+      this.assetTypeMap = assetTypeMap;
+    });
     this.subscriptionDomain = this.domainObservableService
     .getDomainType()
     .subscribe((domain) => {
@@ -213,6 +213,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.isStatePreserved = true;
     }else{
       this.isStatePreserved = false;
+    }
+    const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
+    if(!isTempFilter && state.filters){
+      this.filters = state.filters || [];
+      this.getUpdatedUrl();
     }
   }
 
@@ -242,30 +247,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.selectedOrder = this.direction;
     const sortColName = this.headerColName.toLowerCase();
     this.sortOrder = null;
-    if (sortColName === "asset id") {
-      this.fieldName = "_resourceid.keyword";
-      this.fieldType = "string";
-    } else if (sortColName === "asset type") {
+    if (sortColName === "asset type") {
       this.fieldName = "_entitytype.keyword";
       this.fieldType = "string";
-    } else if (sortColName === "account id") {
-      this.fieldName = "_resourceid.keyword";
-      this.fieldType = "string";
-    } else if (sortColName === "account name") {
-      this.fieldName = "accountname.keyword";
-      this.fieldType = "string";
-    } else if (sortColName === "region") {
-      this.fieldType = "string";
-      this.fieldName = "region.keyword";
-    }else if(sortColName === "cloud type"){
-      this.fieldType = "string";
-      this.fieldName = "_cloudType.keyword";
-    }else{
+    } else{
       let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
       if(!apiColName){
         apiColName =  find(this.filterTypeOptions, {
           optionName: this.headerColName,
         })["optionValue"];
+      }else{
+        apiColName = apiColName+".keyword";
       }
       this.fieldType = "string";
       this.fieldName = apiColName;
@@ -278,6 +270,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   storeState(data?){
+    const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
+    if(isTempFilter) return;
     const state = {
       totalRows: this.totalRows,
       data: data,
@@ -339,10 +333,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
       if (!event) {
         this.filters = [];
         this.storeState();
-      } else if(event.removeOnlyFilterValue) {
-          this.getUpdatedUrl();
-          this.updateComponent();
-          this.storeState();
+      } else if(event.removeOnlyFilterValue){
+        this.getUpdatedUrl();
+        this.updateComponent();
+        this.storeState();
       } else if(event.index && !this.filters[event.index].filterValue){
         this.filters.splice(event.index, 1);
         this.storeState();
@@ -580,9 +574,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
         sortOrder: this.sortOrder
       }
 
+      const filterToBePassed = {...this.filterText};
+
+      Object.keys(filterToBePassed).forEach(filterKey => {
+        if(filterKey=="domain") return;
+        filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+      })
       queryParams = {
         ag: this.selectedAssetGroup,
-        filter: this.filterText,
+        reqFilter: filterToBePassed,
         sortFilter: sortFilter,
         from: this.bucketNumber * this.paginatorSize,
         searchtext: this.searchTxt,
@@ -608,10 +608,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
       var cellObj = {};
       let processedData = [];
       var getData = data;
-      const keynames = Object.keys(getData[0]);
-
+      
       let cellData;
       for (var row = 0; row < getData.length; row++) {
+        const keynames = Object.keys(getData[row]);
         innerArr = {};
         keynames.forEach(col => {
           cellData = getData[row][col];
@@ -633,9 +633,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
               isLink: true
             };
           } else if(col.toLowerCase()=="asset type"){
-            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-              this.assetTypeMap = assetTypeMap;
-            });
             const currentAssetType = this.assetTypeMap.get(cellData);
               cellObj = {
               ...cellObj,
@@ -678,24 +675,22 @@ export class AssetListComponent implements OnInit, OnDestroy {
             this.searchCriteria = undefined;
             const data = response[0];
             this.tableDataLoaded = true;
-            if (response[0].response.length === 0) {
+            if (response[0].response.length === 0 && !isNextPageCalled) {
               this.allColumns = [];
               this.totalRows = 0;
               this.tableErrorMessage = 'noDataAvailable'
             }
-            if (data.response.length > 0) {
-              this.assetListData = data.response;
-              this.totalRows = data.total;
+            this.assetListData = data.response;
+            this.totalRows = data.total;
 
-              const updatedResponse = this.massageData(this.assetListData);
-              const processedData = this.processData(updatedResponse);
-              if(isNextPageCalled){
-                  this.onScrollDataLoader.next(processedData)
-                }else{
-                  this.tableData = processedData;
-                }
-              // this.processData(updatedResponse);
+            const updatedResponse = this.massageData(this.assetListData);
+            const processedData = this.processData(updatedResponse);
+            if(isNextPageCalled){
+                this.onScrollDataLoader.next(processedData)
+            }else{
+              this.tableData = processedData;
             }
+            // this.processData(updatedResponse);
           } catch (e) {
             this.tableDataLoaded = true;
             this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
@@ -716,6 +711,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
+        const isTag = element.split(".")[0]=="tags";
+        if(isTag){
+          columnNamesMap[element] = element.split(".")[1];
+        }
         if(columnNamesMap[element]) {
           elementnew = columnNamesMap[element];
           newObj = Object.assign(newObj, { [elementnew]: row[element] });
@@ -728,14 +727,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
           newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
         // change data value
-        const isTag = element.split(".")[0]=="tags";
-        if(isTag){
-          columnNamesMap[element] = element.split(".")[1];
-        }
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newData.push(newObj);
     });
+
+    this.columnNamesMap = columnNamesMap;
     return newData;
   }
 
@@ -793,9 +790,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
   nextPg(e) {
     try {
       this.tableScrollTop = e;
+      if(this.bucketNumber*this.paginatorSize<this.totalRows){
         this.bucketNumber++;
         this.storeState();
         this.getData(true);
+      }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -920,20 +919,75 @@ export class AssetListComponent implements OnInit, OnDestroy {
         optionName: value,
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
-      const queryParams = {
-        ...urlObj.params,
-        ag: this.selectedAssetGroup,
-        domain: this.selectedDomain,
-      }
-      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
-        this.issueFilterSubscription = this.issueFilterService
+      
+        if(urlObj.url.includes("attribute")){
+          let filtersToBePassed = {};       
+          Object.keys(this.filterText).map(key => {
+            key = key.replace(".keyword", "");
+            if(key=="domain" || key==urlObj.params["attribute"]) return;
+            filtersToBePassed[key] = this.filterText[key+".keyword"].split(",");
+          })
+          const payload = {
+            type: "asset",
+            attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
+            ag: this.selectedAssetGroup,
+            domain: this.selectedDomain,
+            filter: filtersToBePassed
+          }
+          this.issueFilterSubscription = this.issueFilterService
         .getFilters(
-          urlObj.params,
+          {},
+          environment.base +
+          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+            .url,
+          "POST",
+          payload
+        )
+        .subscribe((response) => {
+          const filterTagsData = response[0].data.response;
+          if(value.toLowerCase()=="asset type"){
+            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+              filterTagsData.map(filterOption => {
+                filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
+              });
+            });
+          }
+          this.filterTagOptions[value] = filterTagsData;
+          this.filterTagLabels = {
+              ...this.filterTagLabels,
+              ...{
+                  [value]: map(filterTagsData, 'name').sort((a, b) =>
+                      a.localeCompare(b),
+                  ),
+              },
+          };
+          if(value.toLowerCase()=="age"){
+            const filterValues = this.filterTagLabels[value].splice(1);            
+            filterValues.sort((a, b) => a-b);
+            this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
+          }
+          resolve(this.filterTagOptions[value]);
+          this.storeState();
+        });
+        }else{
+          const queryParams = {
+            ...urlObj.params,
+            ag: this.selectedAssetGroup,
+            domain: this.selectedDomain,
+          }
+          this.issueFilterSubscription = this.issueFilterService
+        .getFilters(
+          queryParams,
           environment.base +
           urlObj.url,
           "GET"
         )
         .subscribe((response) => {
+          if(value.toLowerCase()=="asset type"){
+            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+              response[0].response.map(filterOption => filterOption["name"] = assetTypeMap.get(filterOption["name"]));
+            });
+          }
           this.filterTagOptions[value] = response[0].response;
           this.filterTagLabels = {
               ...this.filterTagLabels,
@@ -956,8 +1010,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   changeFilterTags(event) {
-    let value = event.filterValue;
-    if(!value){
+    let filterValues = event.filterValue;
+    if(!filterValues){
       return;
     }
     this.currentFilterType =  find(this.filterTypeOptions, {
@@ -965,14 +1019,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
     try {
       if (this.currentFilterType) {
-        const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+        const filterTags = filterValues.map(value => {
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
+          return v;
+        });
         this.utils.addOrReplaceElement(
           this.filters,
           {
             keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: value,
+            filterValue: filterValues,
             key: this.currentFilterType.optionName,
-            value: filterTag["id"],
+            value: filterTags,
             filterkey: this.currentFilterType.optionValue.trim(),
             compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
           },
@@ -1001,6 +1058,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
       "filterkey",
       "value"
     ); // <-- TO update the queryparam which is passed in the filter of the api
+    Object.entries(this.filterText).forEach(([key,value]) => {
+      if (key == "resourceType" && Array.isArray(value) && value.length>1) {
+          delete this.filterText[key];
+          this.filterText["_entitytype.keyword"] = value;
+      }
+    });
     this.filterText = this.utils.makeFilterObj(this.filterText);
 
     /**

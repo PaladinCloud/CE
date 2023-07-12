@@ -36,7 +36,6 @@ import { AssetGroupsComponent } from './asset-groups/asset-groups.component';
 import { ChangeDefaultAssetGroupComponent } from './change-default-asset-group/change-default-asset-group.component';
 import { AssetGroupDetailsComponent } from './common/asset-group-details/asset-group-details.component';
 import { AssetGroupSearchComponent } from './common/asset-group-search/asset-group-search.component';
-import { AssetGroupTabsComponent } from './common/asset-group-tabs/asset-group-tabs.component';
 import { AssetSwitcherComponent } from './common/asset-switcher/asset-switcher.component';
 import { ContextualMenuComponent } from './common/contextual-menu/contextual-menu.component';
 import { DomainDropdownComponent } from './common/domain-dropdown/domain-dropdown.component';
@@ -59,61 +58,70 @@ import { KnowYourDashboardComponent } from './know-your-dashboard/know-your-dash
 import { PostLoginAppRoutingModule } from './post-login-app-routing.module';
 import { PostLoginAppComponent } from './post-login-app.component';
 import { VulnerabilityReportComponent } from './vulnerability-report/vulnerability-report.component';
+import { MatMenuModule } from "@angular/material/menu";
+import { MatBadgeModule } from '@angular/material/badge';
+import { AssetTilesService } from '../core/services/asset-tiles.service';
+import { TreeModule } from '@circlon/angular-tree-component';
+import { StatisticsModule } from '../pacman-features/modules/statistics/statistics.module';
 
 @NgModule({
-    imports: [
-        AdminModule,
-        AssetsModule,
-        CdkTreeModule,
-        CommonModule,
-        ComplianceModule,
-        HttpClientModule,
-        MatIconModule,
-        MatInputModule,
-        MatSidenavModule,
-        NotificationsModule,
-        OmnisearchModule,
-        PostLoginAppRoutingModule,
-        SharedModule,
-        ToolsModule,
-    ],
-    declarations: [
-        AssetGroupDetailsComponent,
-        AssetGroupsComponent,
-        AssetGroupSearchComponent,
-        AssetGroupTabsComponent,
-        AssetSwitcherComponent,
-        ChangeDefaultAssetGroupComponent,
-        ContextualMenuComponent,
-        DefaultAssetGroupComponent,
-        DomainDropdownComponent,
-        DomainGroupComponent,
-        DomainOverlayComponent,
-        FirstTimeUserJourneyComponent,
-        HeaderComponent,
-        KnowYourDashboardComponent,
-        NavIconComponent,
-        PostLoginAppComponent,
-        VulnerabilityReportComponent,
-        VulnReportDistributionComponent,
-        VulnReportStatsComponent,
-        VulnReportTablesComponent,
-        VulnReportTrendComponent,
-        VulnReportWorkflowComponent,
-        VulnTrendGraphComponent,
-    ],
+imports: [
+    MatBadgeModule,
+    MatIconModule,
+    MatInputModule,
+    MatSidenavModule,
+    HttpClientModule,
+    CommonModule,
+    PostLoginAppRoutingModule,
+    SharedModule,
+    ComplianceModule,
+    StatisticsModule,
+    MatMenuModule,
+    AssetsModule,
+    NotificationsModule,
+    ToolsModule,
+    OmnisearchModule,
+    AdminModule,
+    CdkTreeModule,
+    TreeModule
+],
+declarations: [
+    ContextualMenuComponent,
+    HeaderComponent,
+    AssetSwitcherComponent,
+    NavIconComponent,
+    PostLoginAppComponent,
+    DefaultAssetGroupComponent,
+    FirstTimeUserJourneyComponent,
+    AssetGroupsComponent,
+    AssetGroupDetailsComponent,
+    AssetGroupSearchComponent,
+    ChangeDefaultAssetGroupComponent,
+    KnowYourDashboardComponent,
+    DomainGroupComponent,
+    DomainDropdownComponent,
+    VulnerabilityReportComponent,
+    DomainOverlayComponent,
+    VulnReportTrendComponent,
+    VulnReportDistributionComponent,
+    VulnReportTablesComponent,
+    VulnReportStatsComponent,
+    VulnTrendGraphComponent,
+    VulnReportWorkflowComponent,
+],
 
-    providers: [
-        AssetGroupObservableService,
-        AwsResourceTypeSelectionService,
-        CopyElementService,
-        DownloadService,
-        FetchResourcesService,
-        HelpObservableService,
-        StateManagementService,
-        ToastObservableService,
-        TokenResolverService,
-    ],
+providers: [
+    AssetGroupObservableService,
+    AwsResourceTypeSelectionService,
+    StateManagementService,
+    ToastObservableService,
+    CopyElementService,
+    HelpObservableService,
+    DownloadService,
+    FetchResourcesService,
+    TokenResolverService,
+    AssetTilesService
+],
 })
 export class PostLoginAppModule {
     constructor(@Optional() @SkipSelf() parentModule: PostLoginAppModule) {
