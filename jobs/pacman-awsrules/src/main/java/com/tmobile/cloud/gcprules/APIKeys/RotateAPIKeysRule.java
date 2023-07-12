@@ -99,7 +99,7 @@ public class RotateAPIKeysRule extends BasePolicy {
             SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
             TimeZone timeZone=TimeZone.getTimeZone("IST");
             sdf.setTimeZone(timeZone);
-            cdDate=cdDate.replace("IST ", "");
+            cdDate=cdDate.replace("GMT ", "");
             Date date=  sdf.parse(cdDate);
            if (TimeUnit.DAYS.convert(new Date().getTime()-date.getTime(), TimeUnit.MILLISECONDS)<=90){
                     validationResult= true;

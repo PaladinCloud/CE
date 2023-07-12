@@ -102,13 +102,8 @@ public class StorageAccountCMKEncryptionRule extends BasePolicy {
                 JsonObject sourceJsonObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
                 if (sourceJsonObject != null
-                        && sourceJsonObject.get(PacmanRuleConstants.CUSTOMER_MANAGED_KEY) != null) {
-                    String customerManagedKey = sourceJsonObject.get(PacmanRuleConstants.CUSTOMER_MANAGED_KEY)
-                            .getAsString();
-                    logger.debug("Validating the data item: {}", customerManagedKey);
-                    if (customerManagedKey != null) {
-                        validationResult = true;
-                    }
+                        && !sourceJsonObject.get(PacmanRuleConstants.CUSTOMER_MANAGED_KEY).isJsonNull()) {
+                      validationResult = true;
                 } else {
                     logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                 }
