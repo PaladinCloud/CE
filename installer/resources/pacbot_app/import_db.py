@@ -188,7 +188,10 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_CUSTOMER_NAME' : Settings.CUSTOMER_NAME,
                         'ENV_QUALYS_ENABLED' : False,
                         'ENV_AQUA_ENABLED' : False,
-                        'ENV_TENABLE_ENABLED' : False
+                        'ENV_TENABLE_ENABLED' : False,
+                        'ENV_ENABLE_EXTERNAL_ID' : False,
+                        'ENV_EXTERNAL_ID' : "XXX"
+
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }
