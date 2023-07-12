@@ -495,14 +495,14 @@ export class RecommendationsDetailsComponent implements OnInit, OnDestroy {
   goToDetails(row) {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.recommendationParams['name']
       );
       if (row.col.toLowerCase() === "resource id") {
         const resourceType = row.row["type"].text;
         const resourceId = encodeURIComponent(row.row["Resource ID"].text);
         this.router
           .navigate(
-            ["../../../../../assets/asset-detail", resourceType, resourceId],
+            ["../../../../../assets/asset-list", resourceType, resourceId],
             {
               relativeTo: this.activRoute,
               queryParams: this.agAndDomain,
