@@ -225,7 +225,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             return mergedMap.get();
         }
 
-        return new HashMap<String, Object>();
+        return new HashMap<>();
     }
 
     @Override

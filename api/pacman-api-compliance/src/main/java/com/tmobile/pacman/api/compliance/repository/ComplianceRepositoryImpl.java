@@ -113,7 +113,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
-    private List<String> FILTER_CUSTOM_HANDLE = Arrays.asList(DOMAIN,INCLUDE_EXEMPT);
+    private List<String> filterCustomHandler = Arrays.asList(DOMAIN,INCLUDE_EXEMPT);
 
     public static final String YYYY_MM_DD_T="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -446,7 +446,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                             Collectors.toMap(s -> (String) s.get(POLICYID), s -> (String) s.get(POLICY_DISPAY_NAME)));
                 }
 
-                if(!FILTER_CUSTOM_HANDLE.contains(pair.getKey().toString())){
+                if(!filterCustomHandler.contains(pair.getKey().toString())){
                     Object filterValue = pair.getValue();
                     if(filterValue instanceof List){
                         mustTermsFilter.put(pair.getKey().toString(),filterValue);
@@ -929,7 +929,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 issueExceptionDetails.put(TARGET_TYPE, String.valueOf(issueDetail.get(TARGET_TYPE)));
                 issueExceptionDetails.put("source", "issueException");
                 issueExceptionDetails.put("resourceId", String.valueOf(issueDetail.get(RESOURCEID)));
-                issueExceptionDetails.put("_docid", String.valueOf(issueDetail.get(RESOURCEID)));
+                issueExceptionDetails.put(Constants.DOCID, String.valueOf(issueDetail.get(RESOURCEID)));
                 String dataSource = issueDetail.get(PAC_DS) + "_" + issueDetail.get(TARGET_TYPE);
                 String targetType = issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE);
                 String id = String.valueOf(issueDetail.get(ES_DOC_ID_KEY));
@@ -937,7 +937,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 String parent = String.valueOf(issueDetail.get(ES_DOC_PARENT_KEY));
                 Map<String, Object> partialDocument = Maps.newHashMap();
                 partialDocument.put(ISSUE_STATUS, EXEMPTED);
-                partialDocument.put("_docid", id);
+                partialDocument.put(Constants.DOCID, id);
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
@@ -2180,21 +2180,21 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return urlToQuery;
     }
 
-    private  String createAuditTrail(String ds, String type, String status, String id,String createdBy, String _type, Map<String, Object> parentDetMap, String target) {
+    private  String createAuditTrail(String ds, String type, String status, String id,String createdBy, String docType, Map<String, Object> parentDetMap, String target) {
         String date = CommonUtils.getCurrentDateStringWithFormat("UTC",YYYY_MM_DD_T);
         Map<String, Object> auditTrail = new LinkedHashMap<>();
         auditTrail.put("datasource", ds);
-        if(!StringUtils.isEmpty(_type))
-            auditTrail.put("docType", _type);
+        if(!StringUtils.isEmpty(docType))
+            auditTrail.put("docType", docType);
         auditTrail.put("targetType", type);
         auditTrail.put("annotationid", id);
-        auditTrail.put("_docid", id);
+        auditTrail.put(Constants.DOCID, id);
         auditTrail.put("status", status);
         auditTrail.put("auditdate", date);
         auditTrail.put("createdBy",createdBy);
         auditTrail.put("_auditdate", date.substring(0, date.indexOf('T')));
         if(parentDetMap != null)
-            auditTrail.put(target+_RELATIONS, parentDetMap);
+            auditTrail.put(target+RELATIONS, parentDetMap);
         String _auditTrail = null;
         try {
             _auditTrail = new ObjectMapper().writeValueAsString(auditTrail);
@@ -2258,9 +2258,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     parentDetMap.put("name", issueDetail.get(target+"_relations.name"));
                     Map<String, Object> partialDocument = Maps.newHashMap();
                     partialDocument.put(ISSUE_STATUS, EXEMPTED);
-                    partialDocument.put("_docid", id);
+                    partialDocument.put(Constants.DOCID, id);
                     partialDocument.put(DOC_TYPE,issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE));
-                    partialDocument.put(target+_RELATIONS, parentDetMap);
+                    partialDocument.put(target+RELATIONS, parentDetMap);
                     partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
                     issueDetail.put(STATUS, EXEMPT);
                     partialDocument.put(STATUS, "exempt");
@@ -2415,14 +2415,14 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     Map<String, Object> parentDetMap = Maps.newHashMap();
                     String target = String.valueOf(issueDetail.get(TARGET_TYPE));
                     parentDetMap.put("parent", issueDetail.get(target+"_relations.parent"));
-                    parentDetMap.put("name", issueDetail.get(target+"_relations.name"));
+                    parentDetMap.put("name", issueDetail.get(target+"x`.name"));
                     Map<String, Object> partialDocument = Maps.newHashMap();
                     partialDocument.put(ISSUE_STATUS, OPEN);
                     partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
                     issueDetail.put(STATUS, "revoked");
                     partialDocument.put(STATUS, "revoked");
                     partialDocument.put(DOC_TYPE, targetType);
-                    partialDocument.put(target+_RELATIONS, parentDetMap);
+                    partialDocument.put(target+RELATIONS, parentDetMap);
                     Map<String, Object> issueDocument = Maps.newHashMap();
                     issueDocument.put("doc", partialDocument);
                     StringBuilder doc = new StringBuilder(createESDoc(issueDocument));
@@ -2759,11 +2759,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         mustFilter.put(LATEST, true);
         if (EC2.equalsIgnoreCase(targetType)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword(STATE_NAME), RUNNING);
-            mustNotFilter = new HashMap<String, Object>();
+            mustNotFilter = new HashMap<>();
             mustNotFilter.put(CommonUtils.convertAttributetoKeyword(PLATFORM), WINDOWS);
         } else if (VIRTUALMACHINE.equalsIgnoreCase(targetType)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword("status"), RUNNING);
-            mustNotFilter = new HashMap<String, Object>();
+            mustNotFilter = new HashMap<>();
             mustNotFilter.put(CommonUtils.convertAttributetoKeyword("osType"), AZURE_WINDOWS);
         }
         try {
@@ -2789,7 +2789,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 "and fil.filterName='" + filterName +"' and opt.optionValue='" +filterAttribute+ "';";
         List<Map<String, Object>> ls = rdsepository.getDataFromPacman(query);
         if(CollectionUtils.isEmpty(ls)){
-            return null;
+            return new HashMap<>();
         }
         return ls.get(0);
     }

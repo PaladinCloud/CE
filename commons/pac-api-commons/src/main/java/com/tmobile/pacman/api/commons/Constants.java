@@ -29,9 +29,6 @@ package com.tmobile.pacman.api.commons;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public interface Constants {
 
     String EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS = "Exception in getting count of account ids";
@@ -440,7 +437,7 @@ public interface Constants {
     String DATA_SOURCE_KEY = "pac_ds";
     String TENABLE = "tenable";
 
-    String _RELATIONS = "_relations";
+    String RELATIONS = "_relations";
 
   enum NotificationTypes {
         @SerializedName("exemption")
