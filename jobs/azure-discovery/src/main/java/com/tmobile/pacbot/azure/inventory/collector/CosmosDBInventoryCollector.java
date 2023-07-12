@@ -38,7 +38,7 @@ public class CosmosDBInventoryCollector {
 			cosmosDBVH.setKey(cosmosDB.key());
 			cosmosDBVH.setName(cosmosDB.name());
 			cosmosDBVH.setResourceGroupName(cosmosDB.resourceGroupName());
-			cosmosDBVH.setRegion(cosmosDB.regionName());
+			cosmosDBVH.setRegion(Util.getRegionValue(subscription,cosmosDB.regionName()));
 			cosmosDBVH.setTags(Util.tagsList(tagMap, cosmosDB.resourceGroupName(), cosmosDB.tags()));
 			cosmosDBVH.setType(cosmosDB.type());
 			cosmosDBVH.setIpRangeFilter(cosmosDB.ipRangeFilter());

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -165,5 +166,8 @@ public class Util {
 		int beginningIndex=id.indexOf("resourceGroups")+15;
 		return id.substring(beginningIndex,id.indexOf('/',beginningIndex+2));
 	}
-	
+	public static String getRegionValue(SubscriptionVH subscription,String region)
+	{
+		return subscription.getRegions().get(region)!=null?subscription.getRegions().get(region):region;
+	}
 }

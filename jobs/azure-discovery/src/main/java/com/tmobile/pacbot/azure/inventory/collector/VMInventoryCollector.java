@@ -68,7 +68,7 @@ public class VMInventoryCollector {
 						: virtualMachine.instanceView().computerName()
 						: virtualMachine.computerName());
 				vmVH.setName(virtualMachine.name());
-				vmVH.setRegion(virtualMachine.regionName());
+				vmVH.setRegion(Util.getRegionValue(subscription,virtualMachine.regionName()));
 				vmVH.setSubscription(subscription.getSubscriptionId());
 				vmVH.setSubscriptionName(subscription.getSubscriptionName());
 

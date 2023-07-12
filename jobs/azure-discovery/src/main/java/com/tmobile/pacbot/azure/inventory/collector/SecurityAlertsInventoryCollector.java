@@ -48,7 +48,7 @@ public class SecurityAlertsInventoryCollector {
 				securityAlertsVH.setType(databricksObject.get("type").getAsString());
 				securityAlertsVH.setSubscription(subscription.getSubscriptionId());
 				securityAlertsVH.setSubscriptionName(subscription.getSubscriptionName());
-				securityAlertsVH.setRegion(databricksObject.get("location").getAsString());
+				securityAlertsVH.setRegion(Util.getRegionValue(subscription,databricksObject.get("location").getAsString()));
 				securityAlertsVH.setResourceGroupName(Util.getResourceGroupNameFromId(databricksObject.get("id").getAsString()));
 
 				if (properties != null) {
