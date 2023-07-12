@@ -916,20 +916,20 @@ public class AssetRepositoryImpl implements AssetRepository {
                 AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST, AssetConstants.CREATION_DATE);
 
         for(Map<String, Object> map : assetDetails){
-            if(!map.containsKey("accountname")){
+            if(!map.containsKey(AssetConstants.ACCOUNT_NAME)){
                 if(map.containsKey("subscriptionName")){
-                    map.put("accountname",map.get("subscriptionName"));
+                    map.put(AssetConstants.ACCOUNT_NAME,map.get("subscriptionName"));
                 }
                 else if(map.containsKey("projectName")){
-                    map.put("accountname",map.get("projectName"));
+                    map.put(AssetConstants.ACCOUNT_NAME,map.get("projectName"));
                 }
             }
-            if(!map.containsKey("accountid")){
+            if(!map.containsKey(AssetConstants.ACCOUNT_ID)){
                 if(map.containsKey("subscription")){
-                    map.put("accountid",map.get("subscription"));
+                    map.put(AssetConstants.ACCOUNT_ID,map.get("subscription"));
                 }
                 else if(map.containsKey("projectId")){
-                    map.put("accountid",map.get("projectId"));
+                    map.put(AssetConstants.ACCOUNT_ID,map.get("projectId"));
                 }
             }
 
@@ -992,7 +992,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     null, AssetConstants.DOC_TYPE, Constants.THOUSAND, null);
             return ExemptedCountMap;
         } catch (Exception e) {
-            LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+            LOGGER.error(AssetConstants.ES_ERROR_MSG, e);
         }
         return ExemptedCountMap;
     }
@@ -1145,7 +1145,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         try {
             return esRepository.getDataFromES(ag, Constants.EC2, mustFilter, null, null, Arrays.asList(
                     Constants.INSTANCE_ID, "imageid", "publicipaddress", "privateipaddress", "vpcid", "availabilityzone",
-                    "subnetid", "instancetype", "accountid", "tags", "accountname", "iaminstanceprofilearn",
+                    "subnetid", "instancetype", AssetConstants.ACCOUNT_ID, "tags", AssetConstants.ACCOUNT_NAME, "iaminstanceprofilearn",
                     Constants.STATE_NAME, "monitoringstate", "hostid", "statereasoncode", "virtualizationtype",
                     "rootdevicename", "keyname", "kernelid", Constants.STATE_NAME, "hypervisor", "architecture", "tenancy",
                     "launchtime", "platform"), null);
@@ -1277,7 +1277,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
             return assetList;
         } catch (Exception e) {
-            LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+            LOGGER.error(AssetConstants.ES_ERROR_MSG, e);
         }
         return assetList;
     }
@@ -1790,9 +1790,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         try {
             if (AssetConstants.ALL.equals(type)) {
                 try {
-                    if(!mustTermsFilter.containsKey(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD)){
-                        mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetTypes);
-                    }
+                    mustTermsFilter.computeIfAbsent(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, val -> targetTypes);
                     assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, mustNotFilter, null, fieldNames,
                             from, size, searchText, mustTermsFilter, sortList);
                 } catch (Exception e) {
@@ -3050,7 +3048,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
             return assetList;
         } catch (Exception e) {
-            LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+            LOGGER.error(AssetConstants.ES_ERROR_MSG, e);
         }
         return assetList;
     }

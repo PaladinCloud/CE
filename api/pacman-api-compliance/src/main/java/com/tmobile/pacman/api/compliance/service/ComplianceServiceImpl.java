@@ -208,7 +208,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         }
     }
 
-    private Map mergeMaps(List<Map<String, Object>> listOfMaps) {
+    private Map<String, Object> mergeMaps(List<Map<String, Object>> listOfMaps) {
         Optional<Map<String, Object>> mergedMap = listOfMaps.stream().reduce((map1, map2) -> {
             return Stream.concat(map1.entrySet().stream(), map2.entrySet().stream())
                     .collect(Collectors.toMap(
@@ -248,7 +248,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             Map<String, Object> policyDistributionBySeverity = repository.getPolicyCountBySeverity(assetGroup, policies);
             logger.info("Compliance API >> Fetched policyDistributionBySeverity from repository: {}", policyDistributionBySeverity);
 
-            Map distributionBySeverity = this.mergeMaps(Arrays.asList(new Map[]{avgAgeDistribution, policyDistributionBySeverity, assetDistributionBySeverity}));
+            Map<String, Object> distributionBySeverity = this.mergeMaps(Arrays.asList(new Map[]{avgAgeDistribution, policyDistributionBySeverity, assetDistributionBySeverity}));
             distribution.put("distributionBySeverity", distributionBySeverity);
             return distribution;
         } catch (DataException e) {
@@ -539,10 +539,6 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
 
                     executor.shutdown();
 
-                    while (!executor.isTerminated()) {
-
-                    }
-
                     policies.forEach(policyIdDetails -> {
                         Map<String, String> policyIdwithsScanDateMap = new HashMap<>();
                         LinkedHashMap<String, Object> openIssuesByPolicy = new LinkedHashMap<>();
@@ -674,11 +670,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                 } else {
                     //adding filter and sorting
                     openIssuesByPolicyListFinal = filterPolicyComplianceData(openIssuesByPolicyListFinal, request);
-                    int to = (int) (request.getFrom() + request.getSize() == 0 ? openIssuesByPolicyListFinal.size() : request.getSize());
+                    int to = (request.getFrom() + request.getSize() == 0 ? openIssuesByPolicyListFinal.size() : request.getSize());
                     if (to > openIssuesByPolicyListFinal.size()) {
                         to = openIssuesByPolicyListFinal.size();
                     }
-                    openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.subList((int) request.getFrom(), to);
+                    openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.subList(request.getFrom(), to);
                     response = new ResponseWithOrder(openIssuesByPolicyListFinal, openIssuesByPolicyListFinal.size());
                 }
             } catch (DataException e) {
@@ -693,8 +689,6 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     private List<LinkedHashMap<String, Object>> filterPolicyComplianceData(List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal, Request request){
         Map<String, Object> filter = request.getReqFilter();
         Map<String, Object> sortFilter = request.getSortFilter() == null ? new HashMap<>() : request.getSortFilter();
-        String sortAttribute = sortFilter.get(FIELD) == null ? PolicyComplianceFilter.POLICY_NAME.name() :(String) sortFilter.get(FIELD);
-        String sortOrder = sortFilter.get(ORDER) == null ? ASC :(String) sortFilter.get(ORDER);
         if(MapUtils.isNotEmpty(filter)){
             List<String> policyName = filter.containsKey(PolicyComplianceFilter.POLICY_NAME.filter) ?
                     (List<String>) filter.get(PolicyComplianceFilter.POLICY_NAME.filter) : new ArrayList<>();
@@ -710,12 +704,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     (List<Map<String, Double>>) filter.get(PolicyComplianceFilter.COMPLIANCE.filter) : new ArrayList<>();
 
             openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.stream()
-                    .filter(x -> policyName.size() == 0 || policyName.contains(x.get(PolicyComplianceFilter.POLICY_NAME.filter)))
-                    .filter(x -> severity.size() ==0 || severity.contains(x.get(PolicyComplianceFilter.SEVERITY.filter)))
-                    .filter(x -> category.size() ==0 || category.contains(x.get(PolicyComplianceFilter.CATEGORY.filter)))
-                    .filter(x -> compliance.size() ==0 || isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance))
-                    .filter(x -> violations.size() ==0 || isViolationsInRange(Long.valueOf(x.get(PolicyComplianceFilter.VIOLATIONS.filter).toString()), violations))
-                    .filter(x -> assetType.size() ==0 || assetType.contains(x.get(PolicyComplianceFilter.ASSET_TYPE.filter)))
+                    .filter(x -> policyName.isEmpty() || policyName.contains(x.get(PolicyComplianceFilter.POLICY_NAME.filter)))
+                    .filter(x -> severity.isEmpty() || severity.contains(x.get(PolicyComplianceFilter.SEVERITY.filter)))
+                    .filter(x -> category.isEmpty() || category.contains(x.get(PolicyComplianceFilter.CATEGORY.filter)))
+                    .filter(x -> compliance.isEmpty() || isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance))
+                    .filter(x -> violations.isEmpty() || isViolationsInRange(Long.valueOf(x.get(PolicyComplianceFilter.VIOLATIONS.filter).toString()), violations))
+                    .filter(x -> assetType.isEmpty() || assetType.contains(x.get(PolicyComplianceFilter.ASSET_TYPE.filter)))
                     .collect(Collectors.toList());
         }
         if(!CollectionUtils.isEmpty(openIssuesByPolicyListFinal)){
@@ -725,27 +719,27 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     }
 
     private boolean isViolationsInRange(long percent, List<Map<String, String>> rangeList){
+        boolean res = false;
         for(Map<String, String> map: rangeList){
             long min = Long.parseLong(map.get(Constants.MIN));
             long max = Long.parseLong(map.get(Constants.MAX));
             if(percent >= min && percent <= max){
-                return true;
+                res = true;
             }
-            return false;
         }
-        return true;
+        return res;
     }
 
     private boolean isComplianceInRange(double percent, List<Map<String, Double>> rangeList){
+        boolean res = false;
         for(Map<String, Double> map: rangeList){
             double min = map.get(Constants.MIN);
             double max = map.get(Constants.MAX);
             if(percent >= min && percent <= max){
-                return true;
+                res =  true;
             }
-            return false;
         }
-        return true;
+        return res;
     }
 
     private List<LinkedHashMap<String, Object>> sortPolicyComplianceData(List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal, Map<String, Object> sortFilter){
@@ -754,16 +748,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         String sortOrder = sortFilter.get(ORDER) == null ? ASC :(String) sortFilter.get(ORDER);
         boolean isSortDouble = false;
         boolean isSortLong = false;
-        try{
-            Double n = (Double) openIssuesByPolicyListFinal.get(0).get(sortAttribute);
+        if(openIssuesByPolicyListFinal.get(0).get(sortAttribute) instanceof Double){
             isSortDouble = true;
-        }catch(Exception e){
-            try {
-                Long nl = (Long) openIssuesByPolicyListFinal.get(0).get(sortAttribute);
-                isSortLong = true;
-            }catch(Exception e1){
-                isSortDouble = false;
-            }
+        }
+        else if(openIssuesByPolicyListFinal.get(0).get(sortAttribute) instanceof Long){
+            isSortLong = true;
         }
         if(isSortDouble){
             openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.stream()

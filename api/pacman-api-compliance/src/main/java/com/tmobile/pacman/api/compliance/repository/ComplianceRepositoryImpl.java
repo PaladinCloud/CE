@@ -99,10 +99,8 @@ import com.tmobile.pacman.api.compliance.domain.IssueExceptionResponse;
 import com.tmobile.pacman.api.compliance.domain.IssueResponse;
 import com.tmobile.pacman.api.compliance.domain.IssuesException;
 import com.tmobile.pacman.api.compliance.domain.KernelVersion;
-import com.tmobile.pacman.api.compliance.domain.Request;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
-import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
 import com.tmobile.pacman.api.compliance.service.NotificationService;
 
 import static com.tmobile.pacman.api.compliance.util.Constants.*;
@@ -115,7 +113,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
-    private List<String> FILTER_CUSTOM_HANDLE=Arrays.asList(DOMAIN,INCLUDE_EXEMPT);
+    private List<String> FILTER_CUSTOM_HANDLE = Arrays.asList(DOMAIN,INCLUDE_EXEMPT);
 
     public static final String YYYY_MM_DD_T="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -323,7 +321,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             HashMap<String,String>policyDetails=new HashMap<>();
             policyDetails.put(keyName,bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
             policyDetails.put("totalViolations",bucket.getAsJsonObject().get("doc_count").getAsString());
-            if(keyName.equalsIgnoreCase("averageAge")){
+            if(keyName.equalsIgnoreCase(AVERAGE_AGE)){
                 JsonObject jo = bucket.getAsJsonObject().getAsJsonObject("outOfSla");
                 if(jo!=null && jo.get("doc_count")!=null){
                     policyDetails.put("outOfSlaViolations",jo.get("doc_count").getAsString());
@@ -338,7 +336,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         String query;
         String policyIds = Policies.stream().map(policy -> "\"" + policy.toString().trim() + "\"")
                 .collect(Collectors.joining(","));
-        if (keyName.equals("averageAge")) {
+        if (keyName.equals(AVERAGE_AGE)) {
             query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}},{\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\"},\"aggs\":{\"" + keyName + "\":{\"avg\":{\"script\":{\"inline\":\"(new Date().getTime()- ZonedDateTime.parse(params._source.createdDate).toInstant().toEpochMilli())/(24*60*60*1000)\"}}}}}}}";
         } else {
             query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}}, {\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\",\"size\":10000},\"aggs\":{\"" + keyName + "\":{\"cardinality\":{\"field\":\"" + queryAttribute + "\"}}}}}}";
@@ -359,9 +357,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     public HashMap<String, Object> getAverageAge(String assetGroup, List<Object> Policies) throws DataException {
-        String keyName = "averageAge";
-        String query = this.getOuery(keyName, Policies, null);
-        return getDistributionBySeverity(query, assetGroup, keyName);
+        String query = this.getOuery(AVERAGE_AGE, Policies, null);
+        return getDistributionBySeverity(query, assetGroup, AVERAGE_AGE);
     }
 
     /*
@@ -469,7 +466,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         if (null != filters.get("include_exempt") && ("yes".equalsIgnoreCase((String) filters.get(INCLUDE_EXEMPT)))) {
             issueStatus.add(EXEMPTED);
         }
-        if(issueStatus.size()>0) mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
+        if(!issueStatus.isEmpty()) mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
         mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), policyIdOrder);
 
         try {
@@ -2184,7 +2181,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     private  String createAuditTrail(String ds, String type, String status, String id,String createdBy, String _type, Map<String, Object> parentDetMap, String target) {
-        String date = CommonUtils.getCurrentDateStringWithFormat("UTC","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String date = CommonUtils.getCurrentDateStringWithFormat("UTC",YYYY_MM_DD_T);
         Map<String, Object> auditTrail = new LinkedHashMap<>();
         auditTrail.put("datasource", ds);
         if(!StringUtils.isEmpty(_type))
@@ -2762,11 +2759,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         mustFilter.put(LATEST, true);
         if (EC2.equalsIgnoreCase(targetType)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword(STATE_NAME), RUNNING);
-            mustNotFilter = new HashMap<>();
+            mustNotFilter = new HashMap<String, Object>();
             mustNotFilter.put(CommonUtils.convertAttributetoKeyword(PLATFORM), WINDOWS);
         } else if (VIRTUALMACHINE.equalsIgnoreCase(targetType)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword("status"), RUNNING);
-            mustNotFilter = new HashMap<>();
+            mustNotFilter = new HashMap<String, Object>();
             mustNotFilter.put(CommonUtils.convertAttributetoKeyword("osType"), AZURE_WINDOWS);
         }
         try {

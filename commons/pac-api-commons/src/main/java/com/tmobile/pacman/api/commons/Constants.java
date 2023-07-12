@@ -34,12 +34,6 @@ import java.util.List;
 
 public interface Constants {
 
-    List<String> RANGE_ATTRIBUTE =  new ArrayList<String>() {{
-        add("LONG");
-        add("INTEGER");
-        add("DOUBLE");
-    } };
-
     String EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS = "Exception in getting count of account ids";
 
     String EXEMPTION_CREATED_BY = "exemption-created-by";
@@ -341,7 +335,6 @@ public interface Constants {
     String CATEGORY = "category";
     String VULN_TYPE = "vulntype";
     String PATCHABLE = "patchable";
-    String UNKNOWN = "Unknown";
     String ATTRIBUTES = "attributes";
     String SRC_NAME = "srcname";
     String DOUBLE_ZERO = "0.0";
@@ -398,8 +391,6 @@ public interface Constants {
     String ERROR_MESSAGE = "errorMessage";
     String ERROR_DETAILS = "errorDetails";
     String PROVIDER = "provider";
-    String EVENTCATEGORY = "eventtypecategory";
-    String EVENTSTATUS = "eventstatus";
     String FILTER_MANDATORY = "Filter is mandatory, pass the resourceid/docid/issueid/planid";
     String EC2_QUALYS_RULEID = "Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2";
     String VIRTUALMACHINE = "virtualmachine";
@@ -430,9 +421,6 @@ public interface Constants {
     String NPE_PATTERN = "(^(npe|non.?prod(uction)?))|(.*:+(npe).*)";
     String AZURE_WINDOWS = "Windows";
     String CLOUD_KERNEL_COMPLIANCE_POLICY = "cloud-kernel-compliance_version-1";
-    String RESOURCE_IDS = "resourceIds";
-    String POLICY_IDS = "policyIds";
-    String TOTAL_VIOLATIONS = "totalViolations";
     String CLOUD_QUALYS_POLICY = "Ec2InstanceScannedByQualys_version-1";
     String VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE = "cloud-kernel-compliance_version-1_Virtualmachine-Kernel-Compliance-Rule_virtualmachine";
     String GCP = "gcp";
@@ -505,6 +493,7 @@ public interface Constants {
     String TYPE_KEYWORD = "type.keyword";
     String ACTION_ILLEGAL_ARG_ERR_MSG  =  "Action value should be one of the following create_exemption_request," +
             " cancel_exemption_request, approve_exemption_request, revoke_exemption_request";
+    String AVERAGE_AGE = "averageAge";
 
     enum ExemptionActions {
         CREATE_EXEMPTION_REQUEST("create_exemption_request"),

@@ -104,7 +104,6 @@ public class AssetListController {
 
         ResponseWithCount response;
         try {
-            //long count = assetService.getAssetCount(assetGroup, filter, searchText);
             List<Map<String, Object>> masterDetailList = assetService.getListAssets(assetGroup, reqFilter, from, size,
                     searchText, request.getSortFilter());
             response = new ResponseWithCount(masterDetailList, ThreadLocalUtil.count.get());

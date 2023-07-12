@@ -34,7 +34,7 @@ public interface ComplianceServiceClient {
      * @param assetGroup the asset group
      * @return the total issues
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/v1/issues/count")
+    @GetMapping(path = "/v1/issues/count")
     String getTotalIssues(@RequestParam("ag") String assetGroup);
 
     /**
@@ -45,14 +45,14 @@ public interface ComplianceServiceClient {
      * @param resourceType the resource type
      * @return the policy violation summary
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/v1/policyviolations/summary/{dataSource}/{resourceType}/{resourceId}")
+    @GetMapping(path = "/v1/policyviolations/summary/{dataSource}/{resourceType}/{resourceId}")
     PolicyViolationApi getPolicyViolationSummary(@PathVariable("resourceId") String resourceId,
             @PathVariable("dataSource") String dataSource, @PathVariable("resourceType") String resourceType);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/v1/getPolicyCountByAssetGroup")
+    @GetMapping(path = "/v1/getPolicyCountByAssetGroup")
     Integer getPolicyCountByAssetGroup(@RequestParam("ag") String assetGroup);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/v1/noncompliancepolicy", consumes = "application/json")
+    @PostMapping(value = "/v1/noncompliancepolicy", consumes = "application/json")
     ResponseWithTotal getNonCompliancePolicies(@RequestBody Request request);
 
 }

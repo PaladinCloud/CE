@@ -525,13 +525,17 @@ public class FilterServiceImpl implements FilterService, Constants {
     }
 
     public ResponseData getPolicycompliance(FilterRequest request) throws ServiceException{
+        List<String> RANGE_ATTRIBUTE = new ArrayList<String>();
+        RANGE_ATTRIBUTE.add("INTEGER");
+        RANGE_ATTRIBUTE.add("LONG");
+        RANGE_ATTRIBUTE.add("DOUBLE");
         Map<String, Object> filterREsponseMap = new HashMap<>();
         Request req = new Request();
         req.setReqFilter(request.getApiFilter());
         req.setAg(request.getAg());
-        req.setFilter(new HashMap<String, String>(){{
-            put(Constants.DOMAIN, request.getDomain());
-        }});
+        HashMap<String, String> filter = new HashMap<String, String>();
+        filter.put(Constants.DOMAIN, request.getDomain());
+        req.setFilter(filter);
         Map<String, Object> filterObj = complianceRepository.getSupportedFilters(Constants.POLICY_COMPLIANCE_FILTER, request.getAttributeName());
         if(filterObj == null){
             logger.debug("Invalid filter attribute");
@@ -541,7 +545,7 @@ public class FilterServiceImpl implements FilterService, Constants {
         if(response != null && !CollectionUtils.isEmpty(response.getResponse())){
             List<LinkedHashMap<String, Object>> dataList = response.getResponse();
             List<LinkedHashMap<String, Object>> finalOpenIssuesByPolicyListFinal = dataList;
-            if(Constants.RANGE_ATTRIBUTE.contains(filterObj.get(Constants.OPTION_TYPE).toString().toUpperCase())){
+            if(RANGE_ATTRIBUTE.contains(filterObj.get(Constants.OPTION_TYPE).toString().toUpperCase())){
                 filterREsponseMap.put(Constants.OPTION_RANGE, getRangeMapFromPolicyComplianceData(filterObj, finalOpenIssuesByPolicyListFinal));
             }else{
                 Set<Object> optionList  = finalOpenIssuesByPolicyListFinal.stream()
