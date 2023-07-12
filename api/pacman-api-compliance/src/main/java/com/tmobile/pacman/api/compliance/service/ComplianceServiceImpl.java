@@ -232,11 +232,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     public Map<String, Object> getDistributionBySeverity(String assetGroup, String domain) throws ServiceException {
         try {
             Map<String, Object> distribution = new HashMap<>();
-
             // get Policies mapped to targetType
             String targetTypes = repository.getTargetTypeForAG(assetGroup, domain);
             logger.info("Compliance API >> Fetched target types from repository: {}", targetTypes);
-
             List<Object> policies = repository.getPolicyIds(targetTypes);
             logger.info("Compliance API >> Fetched policies from repository: {}", policies);
 
@@ -250,13 +248,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             Map<String, Object> policyDistributionBySeverity = repository.getPolicyCountBySeverity(assetGroup, policies);
             logger.info("Compliance API >> Fetched policyDistributionBySeverity from repository: {}", policyDistributionBySeverity);
 
-            Map distributionBySeverity = this.mergeMaps(Arrays.asList(avgAgeDistribution, policyDistributionBySeverity, assetDistributionBySeverity));
+            Map distributionBySeverity = this.mergeMaps(Arrays.asList(new Map[]{avgAgeDistribution, policyDistributionBySeverity, assetDistributionBySeverity}));
             distribution.put("distributionBySeverity", distributionBySeverity);
-
             return distribution;
         } catch (DataException e) {
-            logger.error("Compliance API >> getDistributionBySeverity >> DataException in getting distribution:{}", e.getStackTrace());
-            logger.error("Compliance API >> getDistributionBySeverity >> DataException in getting distribution", e);
+            logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());
+            logger.error("Compliance API >> DataException in getting distribution",e);
             throw new ServiceException(e);
         }
     }

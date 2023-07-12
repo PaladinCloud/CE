@@ -2874,8 +2874,8 @@ public class AssetRepositoryImpl implements AssetRepository {
         try {
 
             StringBuilder request = new StringBuilder(
-                   // "{\"size\": 10000, \"_source\": [\"count\",\"ag\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
-                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [{\"term\\\":{\"docType\":\"count_asset\"}}, { \"match\": {\"ag.keyword\": ");
+                    // "{\"size\": 10000, \"_source\": [\"count\",\"ag\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
+                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [ {\"term\":{\"docType.keyword\":\"count_asset\"}}, { \"match\": {\"ag.keyword\": ");
             request.append("\"" + assetGroup + "\"}}");
             if(type!=null){
                 //request.append(",{ \"match\": {\"type.keyword\": " + "\"" + type + "\"}}");

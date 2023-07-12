@@ -170,14 +170,12 @@ public class ComplianceController implements Constants {
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));
         }
-
         DitributionDTO distribution = null;
         try {
             distribution = new DitributionDTO(complianceService.getDistributionBySeverity(assetGroup, domainName));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
-
         return ResponseUtils.buildSucessResponse(distribution);
     }
 

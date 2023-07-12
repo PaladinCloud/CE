@@ -297,7 +297,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     private HashMap<String, Object> getDistributionBySeverity(String query, String assetGroup, String keyName) throws DataException {
-        HashMap<String, Object> result = new HashMap<>();
+        HashMap<String,Object>result=new HashMap<>();
         Gson gson = new GsonBuilder().create();
         String responseDetails = null;
         StringBuilder requestBody = null;
@@ -310,17 +310,23 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
         Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
-        Map<String, Object> severity = (Map<String, Object>) aggregations.get("by_severity");
+        Map<String, Object> severity=(Map<String, Object>) aggregations.get("by_severity");
 
-        JsonObject resultJson = JsonParser.parseString(responseDetails).getAsJsonObject();
+        JsonObject resultJson =  JsonParser.parseString(responseDetails).getAsJsonObject();
         JsonObject aggsJson = (JsonObject) JsonParser.parseString(resultJson.get(AGGREGATIONS).toString());
         JsonArray buckets = aggsJson.getAsJsonObject("by_severity").getAsJsonArray(BUCKETS).getAsJsonArray();
 
-        for (JsonElement bucket : buckets) {
-            HashMap<String, String> policyDetails = new HashMap<>();
-            policyDetails.put(keyName, bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
-            policyDetails.put("totalViolations", bucket.getAsJsonObject().get("doc_count").getAsString());
-            result.put(bucket.getAsJsonObject().get("key").getAsString(), policyDetails);
+        for (JsonElement bucket:buckets) {
+            HashMap<String,String>policyDetails=new HashMap<>();
+            policyDetails.put(keyName,bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
+            policyDetails.put("totalViolations",bucket.getAsJsonObject().get("doc_count").getAsString());
+            if(keyName.equalsIgnoreCase("averageAge")){
+                JsonObject jo = bucket.getAsJsonObject().getAsJsonObject("outOfSla");
+                if(jo!=null && jo.get("doc_count")!=null){
+                    policyDetails.put("outOfSlaViolations",jo.get("doc_count").getAsString());
+                }
+            }
+            result.put(bucket.getAsJsonObject().get("key").getAsString(),policyDetails);
         }
         return result;
     }
