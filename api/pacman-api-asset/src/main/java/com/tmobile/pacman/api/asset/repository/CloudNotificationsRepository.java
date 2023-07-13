@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CloudNotificationsRepository {
 	
-	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter, int size, int from);
+	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter, int size, int from,Map<String,Object> sortFilter);
 	public List<Map<String, Object>> getCloudNotificationsSummary(String assetGroup, boolean globalNotifier, String resourceId, String eventStatus);
 	public Map<String, Object> getCloudNotificationDetail(String eventArn, String assetGroup);
 	public Map<String, Object> getCloudNotificationInfo(String eventArn, boolean globalNotifier, String assetGroup);
