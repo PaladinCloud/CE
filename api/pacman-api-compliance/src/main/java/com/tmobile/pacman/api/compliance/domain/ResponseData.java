@@ -33,6 +33,16 @@ public class ResponseData {
     /** The response. */
     List<Map<String, Object>> response;
 
+    Map<String, Object> res;
+
+    public Map<String, Object> getRes() {
+        return res;
+    }
+
+    public void setRes(Map<String, Object> res) {
+        this.res = res;
+    }
+
     /**
      * Instantiates a new response.
      */
@@ -66,6 +76,11 @@ public class ResponseData {
      */
     public void setResponse(List<Map<String, Object>> response) {
         this.response = response;
+    }
+
+    public ResponseData(Map<String, Object> res) {
+        super();
+        this.res = res;
     }
 
 }

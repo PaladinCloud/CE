@@ -36,7 +36,7 @@ public interface ComplianceService {
      * @return ResponseWithOrder
      * @throws ServiceException the service exception
      */
-    ResponseWithOrder getIssues(Request request) throws ServiceException;
+    public ResponseWithOrder getIssues(APIRequest request) throws ServiceException;
 
     /**
      * Gets Issue count based on name of the asset group/policyId/domain passed.
@@ -160,7 +160,7 @@ public interface ComplianceService {
      * @return ResponseWithOrder
      * @throws ServiceException the service exception
      */
-    ResponseWithOrder getPolicyCompliance(Request request) throws ServiceException;
+    public ResponseWithOrder getPolicyCompliance(Request request) throws ServiceException;
 
     /**
      * Gets the policy details by application.SearchText is used to match any text
@@ -310,4 +310,6 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     IssueExceptionResponse revokeMultipleIssueException(String assetGroup, List<String> issueIds, String revokedBy) throws ServiceException;
+
+    public List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails) throws ServiceException;
 }

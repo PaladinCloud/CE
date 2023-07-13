@@ -283,11 +283,10 @@ public class ElasticSearchRepository implements Constants {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getSortedDataFromES(String dataSource, String targetType,
-			Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
-			final HashMultimap<String, Object> shouldFilter, List<String> fields, Map<String, Object> mustTermsFilter,
-			Map<String, Object> sortFieldMapList) throws Exception {
+														 Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
+														 final HashMultimap<String, Object> shouldFilter, List<String> fields, Map<String, Object> mustTermsFilter,
+														 List<Map<String, Object>> sortFieldMapList) throws Exception {
 
 		Long totalDocs = getTotalDocumentCountForIndexAndType(dataSource, targetType, mustFilter, mustNotFilter,
 				shouldFilter, null, mustTermsFilter);
@@ -296,6 +295,7 @@ public class ElasticSearchRepository implements Constants {
 		// paginate
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
 		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
+
 		// paginate for breaking the response into smaller chunks
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put(SIZE, ES_PAGE_SIZE);
@@ -310,6 +310,7 @@ public class ElasticSearchRepository implements Constants {
 		requestBody.put(_SOURCE, fields);
 		Gson serializer = new GsonBuilder().disableHtmlEscaping().create();
 		String request = serializer.toJson(requestBody);
+
 		return prepareResultsUsingPagination(dataSource,request,0,totalDocs);
 	}
 

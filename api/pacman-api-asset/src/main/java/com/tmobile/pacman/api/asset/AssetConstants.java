@@ -24,6 +24,9 @@ public final class AssetConstants {
         
     }
 
+    public static final String TRUE = "true";
+    public static final String FILTER_UNTAGGED = "untagged";
+
     public static final String FILTER_EXEC_SPONSOR = "executiveSponsor";
     public static final String FILTER_RES_TYPE = "resourceType";
     public static final String FILTER_DIRECTOR = "director";
@@ -112,6 +115,12 @@ public final class AssetConstants {
     public static final String EVENTCATEGORY = "eventCategoryName";
     public static final String EVENTSOURCE = "eventSourceName";
     public static final String EVENTNAME = "eventName";
+
+    public static final String ACCOUNT_NAME = "accountname";
+
+    public static final String ACCOUNT_ID = "accountid";
+
+    public static final String ES_ERROR_MSG = "Error retrieving inventory from ES in getExemptedAssetCoun";
     
 }
 

@@ -193,7 +193,7 @@ public class PolicyController {
      * API to enable disable policy
      *
      * @author 
-     * @param RequestBody - valid EnableDisablePolicy 
+     * @param enableDisablePolicy - valid EnableDisablePolicy
      * @return Success or Failure response
      */
 	@ApiOperation(httpMethod = "POST", value = "API to enable disable policy", response = Response.class, consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -20,17 +20,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.api.compliance.domain.*;
 import org.springframework.stereotype.Repository;
 
 import com.google.gson.JsonArray;
 import com.tmobile.pacman.api.commons.exception.DataException;
-import com.tmobile.pacman.api.compliance.domain.IssueExceptionResponse;
-import com.tmobile.pacman.api.compliance.domain.IssueResponse;
-import com.tmobile.pacman.api.compliance.domain.IssuesException;
-import com.tmobile.pacman.api.compliance.domain.KernelVersion;
-import com.tmobile.pacman.api.compliance.domain.Request;
-import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
-import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -80,7 +74,7 @@ public interface ComplianceRepository {
      * @throws DataException
      *             the data exception
      */
-    public ResponseWithOrder getIssuesFromES(Request request)
+    public ResponseWithOrder getIssuesFromES(APIRequest request)
             throws DataException;
 
 
@@ -340,7 +334,7 @@ public interface ComplianceRepository {
      * @return List<Map<String, Object>>
      * @throws DataException the data exception
      */
-    public List<Map<String, Object>> getPolicyIdDetails(String policyId)
+    public List<Map<String, Object>> getPolicyIdDetails(String policyId, boolean includeDisabled)
             throws DataException;
 
     /**
@@ -520,7 +514,7 @@ public interface ComplianceRepository {
      * @throws DataException the data exception
      */
     public List<Map<String, Object>> getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
-            String targetTypes, String policyCategory) throws DataException;
+            String targetTypes, String policyCategory, boolean includeDisabled) throws DataException;
 
   
     /**
@@ -594,7 +588,7 @@ public interface ComplianceRepository {
      * @return the instance count for qualys
      * @throws DataException the data exception
      */
-    public Long getInstanceCountForQualys(String assetGroup,String apiType,String application,String enivironment,String resourceType)
+    public Long getInstanceCountForQualys(String assetGroup, String apiType, String application, String enivironment, String resourceType, String discoverDayRange)
             throws DataException;
 
     /**
@@ -607,7 +601,7 @@ public interface ComplianceRepository {
      * @return the instance count for qualys by apps or env
      * @throws DataException the data exception
      */
-    public Map<String, Long> getInstanceCountForQualysByAppsOrEnv(String assetGroup,String apiType,String application,String enivironment,String targetType)
+    public Map<String, Long> getInstanceCountForQualysByAppsOrEnv(String assetGroup, String apiType, String application, String enivironment, String targetType, String discoverDayRange)
             throws DataException;
 
     /**
@@ -661,6 +655,10 @@ public interface ComplianceRepository {
 	 */
 	public Map<String, Integer> getExemptedAssetsCountByPolicy(String assetGroup, String application,String type)
 			throws DataException;
+
+    public Map<String, Object> getSupportedFilters(String filterName, String filterAttribute);
+
+
 
 
 }

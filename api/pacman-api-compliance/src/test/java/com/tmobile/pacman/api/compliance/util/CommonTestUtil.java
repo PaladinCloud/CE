@@ -26,19 +26,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.commons.Constants;
-import com.tmobile.pacman.api.compliance.domain.AssetCountDTO;
-import com.tmobile.pacman.api.compliance.domain.CompliantTrendRequest;
-import com.tmobile.pacman.api.compliance.domain.IssueAuditLogRequest;
-import com.tmobile.pacman.api.compliance.domain.IssueResponse;
-import com.tmobile.pacman.api.compliance.domain.KernelVersion;
-import com.tmobile.pacman.api.compliance.domain.PatchingProgressResponse;
-import com.tmobile.pacman.api.compliance.domain.PatchingRequest;
-import com.tmobile.pacman.api.compliance.domain.ProjectionResponse;
-import com.tmobile.pacman.api.compliance.domain.Request;
-import com.tmobile.pacman.api.compliance.domain.ResponseWithCount;
-import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
-import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
-import com.tmobile.pacman.api.compliance.domain.PolicyTrendRequest;
+import com.tmobile.pacman.api.compliance.domain.*;
 
 public class CommonTestUtil {
     public static ResponseWithCount getResponseWithCount() {
@@ -229,6 +217,15 @@ public class CommonTestUtil {
         request.setSize(7);
         return request;
     }
+
+    public static APIRequest getApiRequest() {
+        APIRequest request = new APIRequest();
+        request.setAg("aws-all");
+        request.setSearchtext("low");
+        request.setFilter(getFilters());
+        request.setSize(7);
+        return request;
+    }
     
     public static Request getRequestWithIssueId() {
         Request request = new Request();
@@ -249,6 +246,10 @@ public class CommonTestUtil {
 
     public static Request getRequestEmpty() {
         return new Request();
+    }
+
+    public static APIRequest getApiRequestEmpty() {
+        return new APIRequest();
     }
 
     public static Request getRequestFromLessThanZero() {
