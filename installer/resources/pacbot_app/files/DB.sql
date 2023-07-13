@@ -1494,6 +1494,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (31,8,'Asset ID','_resourceid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (32,8,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_cloudType&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (33,8,'Region','region.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=region&type=asset');
+
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,'Asset Name','_resourcename.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourcename&type=asset');
 
 /* Notification filters */
@@ -2973,9 +2974,6 @@ DELIMITER ;
 CALL update_filter_for_tag(@MANDATORY_TAGS);
 
 
-/* Updating resourceName for Azure target Type */
-update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('batchaccounts','blobcontainer', 'blobservice', 'databricks', 'defender', 'disk', 'loadbalancer', 'mysqlserver', 'namespaces', 'networkinterface', 'nsg', 'postgresql', 'rediscache', 'securitypricings', 'sqldatabase', 'sqlserver', 'storageaccount', 'subnets', 'vaults', 'vaultsrbac', 'virtualmachine', 'vnet', 'webapp', 'workflows');
-
 delete from pac_v2_ui_options where optionValue like 'tags.%';
 
 update pac_config_properties set value = 'role/PaladinCloudIntegrationRole' where cfkey = 'pacman.auto.fix.role.name';
@@ -2995,5 +2993,6 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 DELETE iGNORE FROM pac_config_properties where cfkey = "external.id";
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES('external.id',concat(@EXTERNAL_ID, ''),'application','prd','latest',null,null,null,null);
 
+update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('batchaccounts','blobcontainer', 'blobservice', 'databricks', 'defender', 'disk', 'loadbalancer', 'mysqlserver', 'namespaces', 'networkinterface', 'nsg', 'postgresql', 'rediscache', 'securitypricings', 'sqldatabase', 'sqlserver', 'storageaccount', 'subnets', 'vaults', 'vaultsrbac', 'virtualmachine', 'vnet', 'webapp', 'workflows');
 
 
