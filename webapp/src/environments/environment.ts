@@ -835,7 +835,7 @@ export const environment = {
         method: 'GET'
     },
     getAccounts: {
-        url: '{{baseUrl}}/admin/accounts',
+        url: '{{baseUrl}}/admin/accounts/list',
         method: 'GET'
     },
     validateAccount: {
@@ -948,6 +948,10 @@ export const environment = {
     },
     getAllAssetTypes: {
         url: '{{baseUrl}}/asset/v1/list/targettype?ag=ds-all',
+        method: 'GET'
+    },
+    getCloudTypeObject: {
+        url: '{{baseUrl}}/admin/asset-group/cloud-type-object',
         method: 'GET'
     }
 };

@@ -37,7 +37,6 @@ import com.tmobile.pacman.config.ConfigManager;
 import com.tmobile.pacman.dto.AutoFixTransaction;
 import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
-import com.tmobile.pacman.util.ProgramExitUtils;
 import com.tmobile.pacman.util.ReflectionUtils;
 
 // TODO: Auto-generated Javadoc
@@ -84,7 +83,7 @@ public class ElasticSearchDataPublisherTest {
     	autoFixTransaction.setAction(AutoFixAction.AUTOFIX_ACTION_BACKUP);
     	autoFixTransaction.setExecutionId("executionId");
     	autoFixTransaction.setResourceId("resourceId");
-    	autoFixTransaction.setRuleId("ruleId");
+    	autoFixTransaction.setPolicyId("ruleId");
     	autoFixTransaction.setTransactionId("transactionId");
     	autoFixTransaction.setTransationTime("transationTime");
     	autoFixTrans.add(autoFixTransaction);

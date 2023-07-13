@@ -45,7 +45,7 @@ public class SearchServiceInventoryCollector {
 					JsonObject searchServiceObject = searchServiceElement.getAsJsonObject();
 					searchServiceVH.setSubscription(subscription.getSubscriptionId());
 					searchServiceVH.setSubscriptionName(subscription.getSubscriptionName());
-					searchServiceVH.setRegion(searchServiceObject.get("location").getAsString());
+					searchServiceVH.setRegion(Util.getRegionValue(subscription,searchServiceObject.get("location").getAsString()));
 					searchServiceVH.setResourceGroupName(Util.getResourceGroupNameFromId(searchServiceObject.get("id").getAsString()));
 					searchServiceVH.setId(searchServiceObject.get("id").getAsString());
 					searchServiceVH.setLocation(searchServiceObject.get("location").getAsString());
@@ -69,6 +69,7 @@ public class SearchServiceInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collecting Search Service",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Search Service",searchServiceList.size());

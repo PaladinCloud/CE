@@ -3,7 +3,7 @@
         <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
-    <div class="page-content" [class.hide]="isValidating || isValidated">
+    <div class="page-content" [class.hide]="isValidating || isValidated || !selectedAccount">
           <div class="stepper" [hidden]="isValidating || isValidated">
             <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
                 (selectedStepperIndex)="selectedStepperIndex($event)">
@@ -15,23 +15,23 @@
                 </ng-template>
                 <ng-template #stepsContent>
                     <div class="right-wrapper">
-                        <div class="configuration-header" [class.hideDiv]="currentStepperIndex==0">
-                            <img class="cloud-header" src="../../../../../../assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
+                        <div class="configuration-header">
+                            <img class="cloud-header" src="../../../../../../assets/icons/{{getImageName()}}-color.svg">
                             <span class="body-1 medium-emphasis">
-                                {{selectedAccount}} Account Configuration
+                                {{selectedAccount}} Plugin Configuration
                             </span>
                         </div>
                         <ng-container [ngTemplateOutlet]="currentTemplateRef">
                         </ng-container>
                         <div class="button-wrapper" [hidden]="isValidating || isValidated">
-                            <button class="button btn" [class.hide]="currentStepperIndex<3"
-                                (click)="onSubmit()">
+                            <button class="button btn" [class.hide]="currentStepperIndex<2"
+                                (click)="onSubmit()" [disabled]="buttonClicked" [class.disabled-button]="buttonClicked">
                                 Submit</button>
-                            <button class="button btn" [class.hide]="currentStepperIndex<2 || currentStepperIndex>2"
-                                (click)="validateAccount()">
+                            <button class="button btn" [class.hide]="currentStepperIndex<1 || currentStepperIndex>1"
+                                (click)="validateAccount()" [class.isDisabled]="selectedAccount && currentPluginForm?.invalid">
                                 Validate</button>
-                            <button class="button btn" [class.hide]="currentStepperIndex==0 || currentStepperIndex>1"
-                                (click)="pageCounter('next')">
+                         <button class="button btn" [class.hide]="currentStepperIndex>0" (click)="pageCounter('next')"
+                                 [class.isDisabled]="selectedAccount && (selectedAccount.toLowerCase() == 'aws' && currentPluginForm?.invalid)">
                                 Next</button>
                             <button class=" button back-btn" [class.hide]="currentStepperIndex==0"
                                 (click)="pageCounter('back')">Back</button>
@@ -49,7 +49,7 @@
                 <img class="validate-cloud-img" src="/assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
             </div>
             <div class="validation-text-wrapper">
-                <h5 class="high-emphasis">Validating Your {{selectedAccount}} Account</h5>
+                <h5 class="high-emphasis">Validating Your {{selectedAccount}} Plugin</h5>
                 <span class="validation-sub-text">Please wait for few minutes till the validation is done. Do not press back button.</span>
             </div>
         </div>
@@ -57,32 +57,32 @@
     <div *ngIf="isValidated && !isValidating" class="validation-wrapper">
         <div class="validation-inner-wrapper" *ngIf="isValid">
             <div class="configuration-header">
-                <img class="cloud-header" src="../../../../../../assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
+                <img class="cloud-header" src="../../../../../../assets/icons/{{getImageName()}}-color.svg">
                 <span class="body-1 medium-emphasis">
-                    {{selectedAccount}} Account Configuration
+                    {{selectedAccount}} Plugin Configuration
                 </span>
             </div>
             <div class="validation-image-wrapper">
                 <img src="/assets/icons/validation-success.svg">
             </div>
             <div class="validation-text-wrapper">
-                <h5 class="high-emphasis">Account Validated Successfully</h5>
-                <span class="validation-sub-text">Role-based-access {{roleName}} generated Successfully for aws account.</span>
+                <h5 class="high-emphasis">Plugin Validated Successfully</h5>
+                <span class="validation-sub-text" *ngIf="pluginSelected===('aws')">Role-based-access {{roleName}} generated Successfully for aws account.</span>
             </div>
             <button class="button btn" style="width: 185px;" (click)="goToReview()">Review</button>
         </div>
         <div class="validation-inner-wrapper" *ngIf="!isValid">
             <div class="configuration-header">
-                <img class="cloud-header" src="../../../../../../assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
+                <img class="cloud-header" src="../../../../../../assets/icons/{{getImageName()}}-color.svg">
                 <span class="body-1 medium-emphasis">
-                    {{selectedAccount}} Account Configuration
+                    {{selectedAccount}} Plugin Configuration
                 </span>
             </div>
             <div class="validation-image-wrapper">
                 <img src="/assets/icons/validation-failed.svg">
             </div>
             <div class="validation-text-wrapper">
-                <h5 class="high-emphasis">Account Validation Failed</h5>
+                <h5 class="high-emphasis">Plugin Validation Failed</h5>
                 <div *ngFor="let error of errorList">
                     <span class="validation-sub-text">{{error}}</span>
                     </div>
@@ -91,13 +91,10 @@
             <button class="button cancel-btn" style="width: 185px;" (click)="redirectTo()">Cancel</button>
         </div>
     </div>
-</div>
-
-<ng-template #selectAccountRef>
-    <div class="configuration-body">
-        <h6>Select Account</h6>
+    <div *ngIf="!pluginSelected" class="select-account">
+        <h6>Select Plugin</h6>
         <span class="subtext">
-            Select the account below that you want to add to your Paladin account.
+            Select the plugin below that you want to add to your Paladin Cloud.
         </span>
         <div class="tile-wrapper">
             <div class="tile flex flex-col" *ngFor="let account of accountsList">
@@ -110,7 +107,8 @@
             </div>
         </div>
     </div>
-</ng-template>
+</div>
+
 
 <ng-template #configureAccountRef>
     <div class="configuration-body">
@@ -118,9 +116,9 @@
         <span class="subtext">
             Follow the instructions below to setup your account.
         </span>
-          <div  class="configure-wrapper" *ngIf="selectedAccount.toLowerCase()=='aws'">
+          <div  class="configure-wrapper" *ngIf="pluginSelected===('aws')">
             <div class="download-template">
-                <a [href]="downloadUrl">
+                <a [href]="CloudformationTemplateUrl">
                     <img class="download-icon" src="/assets/icons/download-blue.svg">
                 </a>
                 <span class="subtitle-2 primary-400">Click here to download the CloudFormation template</span>
@@ -134,7 +132,7 @@
                 </div>
             </div>
            </div>
-            <div class="configure-wrapper" *ngIf="selectedAccount.toLowerCase()=='gcp'">
+            <div class="configure-wrapper" *ngIf="pluginSelected===('gcp')">
                 <div class="script-wrapper">
                     <div class="steps-wrapper" >
                         <div *ngFor="let step of configureSteps;let i=index">
@@ -144,27 +142,29 @@
                             </div>
                         </div>
                     </div>
-                       <div class="script-text">
-                            <span class="copy-text body-1 medium-emphasis">
-                                {{firstGcpCommand}}
-                            </span>
-                            <img class="copy-icon" [cdkCopyToClipboard]="firstGcpCommand" src="/assets/icons/files.svg">
-                        </div>
-                        <div class="script-text">
-                            <span class="copy-text body-1 medium-emphasis">
-                                {{secondGcpCommand}}
-                            </span>
-                            <img class="copy-icon" [cdkCopyToClipboard]="secondGcpCommand" src="/assets/icons/files.svg">
-                        </div>
-                        <div class="script-text">
-                            <span class="copy-text body-1 medium-emphasis">
-                                {{thirdGcpCommand}}
-                            </span>
-                            <img class="copy-icon" [cdkCopyToClipboard]="thirdGcpCommand" src="/assets/icons/files.svg">
-                        </div>
                 </div>
             </div>
-            <div class="configure-wrapper" *ngIf="selectedAccount.toLowerCase()=='azure'">
+            <div class="configure-wrapper" *ngIf="pluginSelected===('azure')">
+                <div class="steps-wrapper" >
+                    <div *ngFor="let step of configureSteps;let i=index">
+                        <div class="flex flex-row gap-12">
+                            <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
+                            <span class="body-2 medium-emphasis">{{step}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="configure-wrapper" *ngIf="pluginSelected===('qualys')">
+                <div class="steps-wrapper" >
+                    <div *ngFor="let step of configureSteps;let i=index">
+                        <div class="flex flex-row gap-12">
+                            <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
+                            <span class="body-2 medium-emphasis">{{step}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="configure-wrapper" *ngIf="pluginSelected===('aqua')">
                 <div class="steps-wrapper" >
                     <div *ngFor="let step of configureSteps;let i=index">
                         <div class="flex flex-row gap-12">
@@ -183,26 +183,46 @@
         <span class="subtext">
             Fill account details below to configure your account.
         </span>
-        <form class="form-wrapper" #accountForm="ngForm">
-            <div *ngIf="selectedAccount.toLowerCase()=='aws'" class="details-wrapper"> 
-                <app-input-field [placeholder]="'Account ID'" [(value)]="accountId" [name]="accountId"></app-input-field>
-                <app-input-field [placeholder]="'Account Name'" [(value)]="accountName" [name]="accountName"></app-input-field>
+        <div *ngIf="pluginSelected===('aws')" class="details-wrapper"> 
+            <form class="form-wrapper" [formGroup]="awsPluginForm">
+                <app-input-field [parentForm]="awsPluginForm" formControlName="accountId" [label]="'Account ID'" 
+                                 placeholder="Enter only digits" [(value)]="accountId" [shouldApplyNumericDirective]="true"
+                                 [formErrors]="awsFormErrors" [isRequired]="true">
+                </app-input-field>
+                <app-input-field [label]="'Account Name'"[(value)]="accountName"
+                                 [parentForm]="awsPluginForm"
+                                 hint="Please provide the name of your AWS account">
+                </app-input-field>
+            </form>
+        </div>
+        <div *ngIf="pluginSelected===('azure')" class="details-wrapper">
+            <form class="form-wrapper" [formGroup]="azurePluginForm">
+                <app-input-field [label]="'Application ID'" [(value)]="clientId" [parentForm]="azurePluginForm" formControlName="applicationId" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'Directory ID'" [(value)]="tenantId" [parentForm]="azurePluginForm" formControlName="directoryId" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'Client Secret Value'" [(value)]="tenantSecret" [parentForm]="azurePluginForm" formControlName="secretValue" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
+            </form>
+        </div>
+        <div *ngIf="pluginSelected===('gcp')" class="details-wrapper">
+            <form class="form-wrapper" [formGroup]="gcpPluginForm">
+                <app-input-field [label]="'Project ID'" [(value)]="projectId" [parentForm]="gcpPluginForm" formControlName="projectId" [formErrors]="gcpFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field type="textarea" height="56px" [label]="'Service Account Key JSON'" [(value)]="serviceAccount" [parentForm]="gcpPluginForm" formControlName="serviceAccount" [formErrors]="gcpFormErrors" [isRequired]="true"></app-input-field>
+            </form>
             </div>
-            <div *ngIf="selectedAccount.toLowerCase()=='azure'" class="details-wrapper">
-                <app-input-field [placeholder]="'Tenant ID'" [(value)]="tenantId"></app-input-field>
-                <app-input-field [placeholder]="'Tenant Name'" [(value)]="tenantName"></app-input-field>
-                <app-input-field [placeholder]="'Tenant Secret'" [(value)]="tenantSecretData"></app-input-field>
-            </div>
-            <div *ngIf="selectedAccount.toLowerCase()=='gcp'" class="details-wrapper">
-                <app-input-field [placeholder]="'Poject ID'" [(value)]="projectId"></app-input-field>
-                <app-input-field [placeholder]="'Poject Name'" [(value)]="projectName"></app-input-field>
-                <app-input-field [placeholder]="'Poject Number'" [(value)]="gcpProjectNumber"></app-input-field>
-                <app-input-field [placeholder]="'Location'" [(value)]="location"></app-input-field>
-                <app-input-field [placeholder]="'Workload Identity Pool ID'" [(value)]="workloadIdentityPoolId"></app-input-field>
-                <app-input-field [placeholder]="'Provider ID'" [(value)]="providerId"></app-input-field>
-                <app-input-field [placeholder]="'Service Account'" [(value)]="serviceAccount"></app-input-field>
-            </div>
-     </form>
+        <div *ngIf="pluginSelected===('qualys')" class="details-wrapper">
+            <form class="form-wrapper" [formGroup]="qualysPluginForm">
+                <app-input-field [label]="'API URL'" [(value)]="qualysApiUrl" [parentForm]="qualysPluginForm" formControlName="qualysApiUrl" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'API Username'" [(value)]="qualysApiUser" [parentForm]="qualysPluginForm" formControlName="qualysApiUser" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'Password'" type="password" [(value)]="qualysApiPassword" [parentForm]="qualysPluginForm" formControlName="qualysApiPassword" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
+            </form>
+        </div>
+        <div *ngIf="pluginSelected===('aqua')" class="details-wrapper">
+            <form class="form-wrapper" [formGroup]="aquaPluginForm">
+                <app-input-field [label]="'API Username'" [(value)]="aquaApiUser" [parentForm]="aquaPluginForm" formControlName="aquaApiUser" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'Password'" type="password" [(value)]="aquaApiPassword" [parentForm]="aquaPluginForm" formControlName="aquaApiPassword" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'API URL'" [(value)]="aquaApiUrl" [parentForm]="aquaPluginForm" formControlName="aquaApiUrl" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'Clent Domain URL'" [(value)]="aquaClientDomainUrl" [isDisabled]="true" [parentForm]="aquaPluginForm" formControlName="aquaClientDomainUrl" [formErrors]="aquaFormErrors"></app-input-field>
+            </form>
+        </div>
     </div>
 </ng-template>
 
@@ -214,19 +234,19 @@
         </span>
         <div class="review-wrapper">
             <div class="account-details-wrapper">
-            <span class="details-header">Account Details</span>
+            <span class="details-header">Plugin Details</span>
             <div class="details-content">
-                <div *ngIf="selectedAccount.toLowerCase()=='aws'"> 
+                <div *ngIf="pluginSelected===('aws')"> 
                     <div class="flex flex-row gap-12">
                         <span class="key-wrapper">Account ID</span>
                         <span class="value-wrapper">{{accountId}}</span>
                     </div>
                     <div class="flex flex-row gap-12">
                         <span class="key-wrapper">Account Name</span>
-                        <span class="value-wrapper">{{accountName}}</span>
+                        <span class="value-wrapper">{{accountName.length?accoutnName:accountId}}</span>
                     </div>
                 </div>
-                <div *ngIf="selectedAccount.toLowerCase()=='azure'"> 
+                <div *ngIf="pluginSelected===('azure')"> 
                     <div class="flex flex-row gap-12">
                         <span class="key-wrapper">Tenant ID</span>
                         <span class="value-wrapper">{{tenantId}}</span>
@@ -236,57 +256,82 @@
                         <span class="value-wrapper">{{tenantName}}</span>
                     </div>
                 </div>
-                <div *ngIf="selectedAccount.toLowerCase()=='gcp'"> 
+                <div *ngIf="pluginSelected===('gcp')"> 
                     <div class="flex flex-row gap-12">
                         <span class="key-wrapper">Project ID</span>
                         <span class="value-wrapper">{{projectId}}</span>
                     </div>
+                </div>
+                <div *ngIf="pluginSelected===('qualys')"> 
                     <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Project Name</span>
-                        <span class="value-wrapper">{{projectName}}</span>
+                        <span class="key-wrapper">API User Name</span>
+                        <span class="value-wrapper">{{qualysApiUser}}</span>
+                    </div>
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Password</span>
+                        <span class="value-wrapper">{{qualysApiPassword}}</span>
+                    </div>
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">API URL</span>
+                        <span class="value-wrapper">{{qualysApiUrl}}</span>
+                    </div>
+                </div>
+                <div *ngIf="pluginSelected===('aqua')"> 
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Username</span>
+                        <span class="value-wrapper">{{aquaApiUser}}</span>
+                    </div>
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Password</span>
+                        <span class="value-wrapper">{{aquaApiPassword}}</span>
+                    </div>
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">API URL</span>
+                        <span class="value-wrapper">{{aquaApiUrl}}</span>
+                    </div>
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">client Domain URL</span>
+                        <span class="value-wrapper">{{aquaClientDomainUrl}}</span>
                     </div>
                 </div>
             </div>
             </div>
-            <div class="configure-access-wrapper">
+            <div class="configure-access-wrapper" [class.hide]="selectedAccount.toLowerCase() =='aqua' || selectedAccount.toLowerCase() =='qualys'">
                 <span class="configure-header">Configure Access</span>
                 <div class="configure-content">
-                    <div *ngIf="selectedAccount.toLowerCase()=='aws'"> 
+                    <div *ngIf="pluginSelected===('aws')"> 
                         <div class="flex flex-row gap-12">
                             <span class="key-wrapper">Role Arn</span>
                             <span class="value-wrapper">{{roleArn}}</span>
                         </div>
                     </div>
-                    <div *ngIf="selectedAccount.toLowerCase()=='azure'"> 
+                    <div *ngIf="pluginSelected===('azure')"> 
                         <div class="flex flex-row">
                             <span class="key-wrapper">Secret Data</span>
                             <span class="value-wrapper">{{tenantSecretData}}</span>
                         </div>
                     </div>
-                    <div *ngIf="selectedAccount.toLowerCase()=='gcp'"> 
+                    <div *ngIf="pluginSelected===('gcp')"> 
                         <div class="flex flex-row gap-12">
-                            <span class="key-wrapper">Project Number</span>
-                            <span class="value-wrapper">{{gcpProjectNumber}}</span>
-                        </div>
-                        <div class="flex flex-row gap-12">
-                            <span class="key-wrapper">Location</span>
-                            <span class="value-wrapper">{{location}}</span>
-                        </div>
-                        <div class="flex flex-row gap-12">
-                            <span class="key-wrapper">Workload Identity Pool Id</span>
-                            <span class="value-wrapper">{{workloadIdentityPoolId}}</span>
-                        </div>
-                        <div class="flex flex-row gap-12">
-                            <span class="key-wrapper">Workload Identity Provider Id</span>
-                            <span class="value-wrapper">{{providerId}}</span>
-                        </div>
-                        <div class="flex flex-row gap-12">
-                            <span class="key-wrapper">Service Account</span>
+                            <span class="key-wrapper">Service Account Key JSON</span>
                             <span class="value-wrapper">{{serviceAccount}}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</ng-template>
+
+<ng-template #supportInfoRef>
+    <div class="flex flex-around flex-align-center">
+        <img class="info-icon" src="/assets/icons/info-octogon.svg">
+        <img class="close-icon" src="/assets/icons/x-icon.svg" (click)="closeDialog()">  
+    </div>
+    <div class="info-wrapper flex flex-col">
+        <span class="info-text">{{selectedAccountName}} requires manual configuration</span>
+        <span class="supporting-info-text">Please to reach out to Paladin Cloud for assistance in this matter
+            <a href="mailto:Support@paladincloud.io">Support@paladincloud.io</a>
+        </span>
     </div>
 </ng-template>

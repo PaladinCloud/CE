@@ -1,0 +1,81 @@
+/*
+ *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+ * this file except in compliance with the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+ * implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.statistics-container {
+    height: 100%;
+    padding: 18px 24px;
+}
+
+.header {
+    color: var(--text-high-emphasis);
+    grid-area: header;
+}
+
+.header-text {
+    font-size: 2em;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.screenshot-btn {
+    margin-left: auto;
+}
+
+.stats-tiles-container {
+    height: 100%;
+    display: grid;
+    gap: 16px;
+    grid-template:
+        'header header . total-violations'
+        '. . . total-violations'
+        '. . . total-violations';
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.total-violations-header {
+    font-size: var(--text-body-1-font-size);
+    font-weight: 600;
+}
+
+.stats-date {
+    font-size: 16px;
+}
+
+.graph-chart-containter {
+    width: 100%;
+}
+
+.total-violations {
+    padding: 16px;
+    background: white;
+    border: 1px solid rgba(16 40 72 / 9%);
+    border-radius: 6px;
+    box-shadow: 0 2px 2px -1px rgba(27 35 44 / 4%), 0 8px 16px -2px rgba(27 36 44 / 12%);
+    grid-area: total-violations;
+}
+
+.company-logo {
+    height: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#watermark {
+    width: 5%;
+    margin: auto 0;
+    position: absolute;
+    right: 38px;
+    bottom: 26px;
+}

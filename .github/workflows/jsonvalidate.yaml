@@ -38,4 +38,7 @@ jobs:
           cd installer/resources/lambda_rule_engine/files/
           python gcpjsoncheckscript.py
       
-
+      - name: execute gcp json file
+        run: |
+          cd installer/resources/lambda_rule_engine/files/
+          python pluginjsoncheckscript.py

@@ -12,26 +12,38 @@
  * limitations under the License.
  -->
 
- <div class="asset-groups-wrapper floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
-    <div class="flex flex-between">
-        <app-page-title [title]="pageTitle"></app-page-title>
-        <div class="flex relative z-index textarea-button">
-            <button class="submit-btn uppercase" type="button" (click)='goToCreateAssetGroup()'><i class="fa fa-plus"></i> Create Asset Group</button>
+ <div class="asset-groups-wrapper flex flex-col padding-28 gap-24">
+    <div class="flex flex-between flex-align-center">
+        <div>
+            <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
         </div>
+        <app-custom-button buttonType="flat" label="Create Asset Group" (onclick)='goToCreateAssetGroup()'></app-custom-button>
     </div>
-    <div class="floating-widgets-container data-table-container data-table-container">
-        <section>
-            <ul>
-                <li class="widget-wrapper relative">
-                    <div class="relative">
-                        <app-data-table [searchTextValues]='searchTxt' [showGenericMessage]='showGenericMessage' [errorValue]='errorValue' [parentName]="'taggingTargetMessage'" [showingArr]='showingArr' [outerArr]='outerArr' [searchableHeader]='true' [allColumns]='allColumns'
-                            [dataHead]="'All Asset Groups'" (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)'
-                            (previousPageCalled)='prevPage()' (nextPageCalled)='nextPage()' (searchTriggerred)='callNewSearch()'>
-                        </app-data-table>
-                        <div class="data-table-desc">{{dataTableDesc}}</div>
-                    </div>
-                </li>
-            </ul>
-        </section>
+
+    <div class="relative table-wrapper">
+        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
+            [headerColName]="headerColName" [direction]="direction"
+            (actionSelected)="onSelectAction($event)" [doLocalSearch]="true" [doLocalFilter]="true"
+            [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
+            [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
+            [showDownloadBtn]="false" [showFilterBtn]="true" (nextPageCalled)="nextPg($event)"
+            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded"
+            [rowClickable]="false" [showAddRemoveCol]="true" [showDownloadBtn]="false"  [tableErrorMessage]="tableErrorMessage"
+            [onScrollDataLoader]="onScrollDataLoader"
+            [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [selectedRowIndex]="selectedRowIndex"
+            [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
+            (headerColNameSelected)="handleHeaderColNameSelection($event)"
+            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+            (selectedFilter)="handleFilterSelection()"
+            (selectedFilterType)="handleFilterTypeSelection()"
+            (deleteFilters)="deleteFilters($event)">
+        </app-table>
     </div>
 </div>
+
+<ng-template #actionRef>
+    <div class="dialog-body">
+       <span class="dialog-body-header">Delete Asset Group</span>
+       <span class="dialog-body-content">Are you really sure you want to delete "{{selectedAssetGroup}}"?</span>
+    </div>
+</ng-template>

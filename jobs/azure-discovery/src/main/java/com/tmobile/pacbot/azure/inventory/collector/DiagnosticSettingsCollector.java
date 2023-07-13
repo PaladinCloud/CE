@@ -43,7 +43,7 @@ public class DiagnosticSettingsCollector {
                 diagnosticSettingVH.setSubscription(subscription.getSubscriptionId());
                 diagnosticSettingVH.setResourceGroupName(subscription.getResourceGroupName());
                 diagnosticSettingVH.setSubscriptionId(subscription.getSubscriptionId());
-                diagnosticSettingVH.setRegion(diagnosticSetting.getAsJsonObject().getAsJsonPrimitive("location").getAsString());
+                diagnosticSettingVH.setRegion(Util.getRegionValue(subscription,diagnosticSetting.getAsJsonObject().getAsJsonPrimitive("location").getAsString()));
                 JsonObject properties =diagnosticSetting.getAsJsonObject().getAsJsonObject("properties");
                 JsonArray logs=properties.getAsJsonArray("logs");
                 Set<String> enabledCategories=new HashSet();

@@ -1,11 +1,9 @@
 <div class="user-management-page-wrapper">
     <div class="page-header">
-        <app-page-title [title]="pageTitle"></app-page-title>
-        <app-custom-button
-            buttonType="flat"
-            [label]="'Add User'"
-            (click)="createEditUser(false)"
-        ></app-custom-button>
+        <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
+        <app-custom-button buttonType="flat" [label]="'Add User'"
+        (click)="createEditUser(false)">
+    </app-custom-button>
     </div>
     <div class="data-table-container">
         <section>
@@ -17,9 +15,13 @@
                             (actionSelected)="onSelectAction($event)" [doLocalSearch]="true"
                             [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
                             [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
-                            [showDownloadBtn]="false" [showFilterBtn]="false"
+                            [showDownloadBtn]="false" [showFilterBtn]="true"
                             [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded"
-                            [rowClickable]="false">
+                            [rowClickable]="false" [tableErrorMessage]="errorMessage"
+                            (selectedFilterType)='changeFilterType($event)'
+                            (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
+                            [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
+                            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)" [showAddRemoveCol]="true">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>
@@ -38,9 +40,22 @@
                 <input autocomplete="off" matInput required
                     [(ngModel)]="emailID">
             </mat-form-field>
+            <div class="flex flex-align-center gap-12" *ngIf="action!='Edit'">
+                <mat-form-field appearance="outline" class="email-wrapper" [formControl]="firstNameControl">
+                    <mat-label>First Name</mat-label>
+                    <input autocomplete="off" matInput required
+                        [(ngModel)]="firstName">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="email-wrapper" [formControl]="lastNameControl">
+                    <mat-label>Last Name</mat-label>
+                    <input autocomplete="off" matInput required
+                        [(ngModel)]="lastName">
+                </mat-form-field>
+            </div>
         </div>
-        <app-dropdown [items]="sampleRoles" placeholder="Role" [isChipListEnabled]="true"
-            [selectedList]="selectedRoles" (selected)="onRolesChange($event)"></app-dropdown>
+        <app-dropdown [items]="userRoles" placeholder="Role" [isChipListEnabled]="true" 
+        [nonRemovableChips]="nonRemovableChips" [selectedList]="selectedRoles" [disableOptions]=true
+        (applyClick)="onRolesChange($event)" (selected)="onRolesChange($event)"></app-dropdown>
     </div>
 </ng-template>
 

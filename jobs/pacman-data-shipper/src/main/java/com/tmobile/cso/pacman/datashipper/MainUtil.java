@@ -26,9 +26,7 @@ public class MainUtil {
 		}
         
         if(params.get(Constants.CONFIG_QUERY)==null){
-            System.setProperty(Constants.CONFIG_QUERY, "select targetName,targetConfig from cf_Target where domain ='Infra & Platforms'");
-        }
-      
+            System.setProperty(Constants.CONFIG_QUERY, "select targetName,targetConfig,displayName from cf_Target where domain ='Infra & Platforms'");        }
     }
 
 }

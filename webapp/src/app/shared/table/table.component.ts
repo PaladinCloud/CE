@@ -3,7 +3,6 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    HostListener,
     Input,
     OnChanges,
     OnDestroy,
@@ -11,18 +10,15 @@ import {
     Output,
     SimpleChanges,
     ViewChild,
-    ViewChildren,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
+import { Sort, SortDirection } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import find from 'lodash/find';
-import findIndex from 'lodash/findIndex';
 import { Subject } from 'rxjs';
 import { skip, takeUntil } from 'rxjs/operators';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
-import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { OptionChange } from '../table-filters/table-filters.component';
 
 export interface FilterItem {
@@ -34,8 +30,6 @@ export interface FilterItem {
     filterkey?: string;
 }
 
-type SortDirection = 'asc' | 'desc';
-
 @Component({
     selector: 'app-table',
     templateUrl: './table.component.html',
@@ -44,7 +38,13 @@ type SortDirection = 'asc' | 'desc';
 export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @Input() centeredColumns: { [key: string]: boolean } = {};
     @Input() columnsSortFunctionMap;
-    @Input() columnWidths: { [key: string]: number };
+    @Input() set columnWidths(value: { [key: string]: number }) {
+        this._columnWidths = value;
+        this.denominator = Object.keys(value).reduce((acc, next) => acc + value[next], 0);
+    }
+    get columnWidths() {
+        return this._columnWidths;
+    }
     @Input() data = [];
     @Input() direction: SortDirection;
     @Input() doLocalFilter = false;
@@ -71,7 +71,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Input() tableScrollTop: number;
     @Input() tableTitle: string;
     @Input() totalRows = 0;
-    @Input() whiteListColumns = [];
+    @Input() whiteListColumns: string[] = [];
     @Input() filteredArray: FilterItem[] = [];
     @Input() filterTypeOptions: {
         optionName: string;
@@ -104,38 +104,29 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         filterKeyDisplayValue: string;
     }>();
     @Output() selectedFilterType = new EventEmitter<string>();
-    @Output() whitelistColumnsChanged = new EventEmitter<any>();
+    @Output() whitelistColumnsChanged = new EventEmitter<string[]>();
 
     @ViewChild('select') select: MatSelect;
-    @ViewChild('tableContainer') tableContainer: ElementRef;
-    @ViewChildren('customTable') customTable: any;
+    @ViewChild('customTable') customTable: ElementRef<HTMLDivElement>;
 
-    mainDataSource;
-    dataSource;
+    mainDataSource: MatTableDataSource<unknown>;
+    dataSource: MatTableDataSource<unknown>;
 
     displayedColumns: string[];
     searchInColumns = new FormControl();
 
     allSelected = true;
-    screenWidth: number;
-    denominator: number;
-    screenWidthFactor: number;
+
+    denominator = 1;
+
     isWindowExpanded = true;
     isDataLoading = false;
     selectedFiltersList: string[] = [];
     destroy$ = new Subject<void>();
 
-    constructor(
-        private assetGroupChangeService: AssetGroupObservableService,
-        private windowExpansionService: WindowExpansionService,
-    ) {
-        this.windowExpansionService
-            .getExpansionStatus()
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
-                this.waitAndResizeTable();
-            });
-    }
+    private _columnWidths: { [key: string]: number } = {};
+
+    constructor(private assetGroupChangeService: AssetGroupObservableService) {}
 
     ngOnInit(): void {
         if (this.onScrollDataLoader) {
@@ -160,12 +151,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     ngOnChanges(changes: SimpleChanges): void {
         if (this.customTable) {
             if (changes.tableScrollTop && changes.tableScrollTop.currentValue != undefined) {
-                this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
+                this.customTable.nativeElement.scrollTop = this.tableScrollTop;
             }
             if (!this.tableDataLoaded) {
                 this.tableScrollTop = 0;
-                // this.data = []; in a race condition, this may empty data after data is loaded
-                this.customTable.first.nativeElement.scrollTop = 0;
+                this.customTable.nativeElement.scrollTop = 0;
                 this.mainDataSource = new MatTableDataSource([]);
                 this.dataSource = new MatTableDataSource([]);
             }
@@ -193,8 +183,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             if (changes.data) {
                 this.mainDataSource = new MatTableDataSource(this.data);
                 this.dataSource = new MatTableDataSource(this.data);
-
-                this.waitAndResizeTable();
             }
 
             this.selectedFiltersList = this.filteredArray.map((item) => item.keyDisplayValue);
@@ -205,8 +193,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     ngAfterViewInit(): void {
-        this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
-        this.waitAndResizeTable();
+        this.customTable.nativeElement.scrollTop = this.tableScrollTop;
     }
 
     ngOnDestroy(): void {
@@ -223,38 +210,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
     }
 
-    waitAndResizeTable() {
-        setTimeout(() => {
-            this.screenWidth = parseInt(
-                window
-                    .getComputedStyle(this.tableContainer.nativeElement, null)
-                    .getPropertyValue('width'),
-                10,
-            );
-            this.getWidthFactor();
-        }, 1000);
-    }
-
     openColumnSelectorModal() {
         this.select.open();
-    }
-
-    getWidthFactor() {
-        this.denominator = 0;
-        for (const i in this.whiteListColumns) {
-            const col = this.whiteListColumns[i];
-            this.denominator += this.columnWidths[col];
-        }
-        this.getScreenWidthFactor();
-    }
-
-    getScreenWidthFactor() {
-        this.screenWidthFactor = (this.screenWidth - 30) / this.denominator;
-    }
-
-    @HostListener('window:resize', ['$event'])
-    onWindowResize() {
-        this.waitAndResizeTable();
     }
 
     handleSearchInColumnsChange() {
@@ -265,15 +222,15 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.whitelistColumnsChanged.emit(this.whiteListColumns);
     }
 
-    handleClick(row, col, i: number) {
+    handleClick(row, col: string, i: number) {
         if (row[col].isMenuBtn) {
             return;
         }
         const event = {
-            tableScrollTop: this.customTable.first.nativeElement.scrollTop,
+            tableScrollTop: this.customTable.nativeElement.scrollTop,
             rowSelected: row,
             data: this.data,
-            col: col,
+            col,
             filters: this.filteredArray,
             searchTxt: this.searchQuery,
             selectedRowIndex: i,
@@ -281,7 +238,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.rowSelectEventEmitter.emit(event);
     }
 
-    handleAction(element, action, i: number) {
+    handleAction(element, action: string, i: number) {
         const event = {
             action: action,
             rowSelected: element,
@@ -294,8 +251,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.whiteListColumns = Object.keys(this.columnWidths).filter((c) =>
             selectedColumns.includes(c),
         );
-        this.getWidthFactor();
-        this.waitAndResizeTable();
         this.whiteListColumnsChanged();
     }
 
@@ -307,17 +262,15 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     selectFilterCategory(category: string) {
-        const filteredArrayKeys = this.filteredArray.map((item) => item.keyDisplayValue);
-
-        if (!filteredArrayKeys.includes(category)) {
-            // add to filteredArray
-            this.selectedFiltersList.push(category);
-            this.filteredArray.push({
-                keyDisplayValue: category,
-                filterValue: undefined,
-            });
-            this.onSelectFilterType(category, this.filteredArray.length - 1);
+        if (this.filteredArray.some((i) => i.keyDisplayValue === category)) {
+            return;
         }
+        this.selectedFiltersList.push(category);
+        this.filteredArray.push({
+            keyDisplayValue: category,
+            filterValue: undefined,
+        });
+        this.onSelectFilterType(category, this.filteredArray.length - 1);
     }
 
     removeOnlyFilterValue(index: number) {
@@ -348,9 +301,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             };
 
             if (!this.doLocalFilter) {
-                const key = find(this.filterTypeOptions, {
-                    optionName: event.category,
-                }).optionValue;
+                const key = this.filterTypeOptions.find(
+                    (f) => f.optionName === event.category,
+                ).optionValue;
 
                 filterItem = {
                     ...filterItem,
@@ -386,9 +339,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             return;
         }
 
-        const filterIndex = findIndex(this.filteredArray, (el, j) => {
-            return el['keyDisplayValue'] === this.filteredArray[i].keyDisplayValue && i != j;
-        });
+        const filterIndex = this.filteredArray.findIndex(
+            (el, j) => el.keyDisplayValue === this.filteredArray[i].keyDisplayValue && i !== j,
+        );
+
         let currIdx = i;
 
         if (filterIndex >= 0 && filterIndex != i) {
@@ -421,9 +375,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.filteredArray[i].value = undefined;
 
         if (!this.doLocalFilter) {
-            const key = find(this.filterTypeOptions, {
-                optionName: e,
-            })['optionValue'];
+            const key = this.filterTypeOptions.find((f) => f.optionName === e).optionValue;
             this.filteredArray[i].compareKey = key.toLowerCase().trim();
             this.filteredArray[i].filterkey = key.trim();
             this.filteredArray[i].filterValue = undefined;
@@ -534,11 +486,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
     }
 
-    handleSearch(event) {
-        const searchTxt = event.target.value.toLowerCase();
+    handleSearch(event: KeyboardEvent) {
+        const searchTxt = (event.target as HTMLInputElement).value.toLowerCase();
         this.searchQuery = searchTxt;
 
-        if (event.keyCode === 13 || searchTxt == '') {
+        if (event.key === 'Enter' || searchTxt == '') {
             this.tableErrorMessage = '';
             if (this.doLocalSearch) {
                 this.filterAndSort();
@@ -558,7 +510,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
     }
 
-    announceSortChange(sort: { active: string; direction: SortDirection }) {
+    announceSortChange(sort: Sort) {
         if (this.doNotSort) {
             return;
         }
@@ -615,11 +567,12 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         });
     }
 
-    onScroll(event: any) {
+    onScroll(event: Event) {
         // visible height + pixel scrolled >= total height
-        if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 10) {
+        const target = event.target as HTMLDivElement;
+        if (target.offsetHeight + target.scrollTop >= target.scrollHeight - 10) {
             if (this.data.length < this.totalRows && !this.isDataLoading && this.data.length > 0) {
-                this.tableScrollTop = event.target.scrollTop;
+                this.tableScrollTop = target.scrollTop;
                 this.nextPageCalled.emit(this.tableScrollTop);
                 this.isDataLoading = true;
             }
@@ -627,10 +580,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     download() {
-        const event = {
+        this.downloadClicked.emit({
             searchTxt: this.searchQuery,
             filters: this.filteredArray,
-        };
-        this.downloadClicked.emit(event);
+        });
     }
 }

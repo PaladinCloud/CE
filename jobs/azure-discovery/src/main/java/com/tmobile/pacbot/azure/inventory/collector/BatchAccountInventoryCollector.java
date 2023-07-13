@@ -52,7 +52,7 @@ public class BatchAccountInventoryCollector {
 					batchAccountVH.setId(batchAccountObject.get("id").getAsString());
 					batchAccountVH.setResourceGroupName(getResourceGroupNameFromId(batchAccountVH.getId()));
 					batchAccountVH.setLocation(batchAccountObject.get("location").getAsString());
-					batchAccountVH.setRegion(batchAccountObject.get("location").getAsString());
+					batchAccountVH.setRegion(Util.getRegionValue(subscription,batchAccountObject.get("location").getAsString()));
 					batchAccountVH.setName(batchAccountObject.get("name").getAsString());
 					batchAccountVH.setType(batchAccountObject.get("type").getAsString());
 					JsonObject properties = batchAccountObject.getAsJsonObject("properties");
@@ -73,16 +73,13 @@ public class BatchAccountInventoryCollector {
 					if (tags != null) {
 						HashMap<String, Object> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
 						batchAccountVH.setTags(tagsMap);
-						
-						
-						
 					}
-
 					batchAccountList.add(batchAccountVH);
 				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error fetching BatchAccount",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		LOGGER.info("Target Type : {}  Total: {} ","Batch Account",batchAccountList.size());

@@ -5,15 +5,9 @@
         src="/assets/images/Paladin_Logo.svg"
     />
 
-    <div class="header-search-wrapper" (click)="handleSearch()">
-        <div class="header-search-content-container flex flex-row">
-            <img src="/assets/icons/header-search.svg" alt="Search icon" />
-            <form class="header-search-form">
-                <mat-form-field class="header-search-full-width" appearance="fill">
-                    <input type="search" matInput placeholder="Search" />
-                </mat-form-field>
-            </form>
-        </div>
+    <div class="header-search-wrapper flex flex-align-center gap-8" (click)="handleSearch()">
+        <img src="/assets/icons/header-search.svg" alt="Search icon" />
+        <span>Search</span>
     </div>
 
     <div class="header-user-wrapper flex">

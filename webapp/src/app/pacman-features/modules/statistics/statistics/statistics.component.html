@@ -1,0 +1,119 @@
+<!--
+ *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+ * this file except in compliance with the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+ * implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+
+<div #statisticsContainer class="statistics-container flex flex-col">
+    <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
+    <div *ngIf="!errorMessage" class="stats-tiles-container">
+        <img id="watermark" src="/assets/icons/paladin-logo.svg" hidden />
+
+        <div class="header flex flex-col gap-16">
+            <div class="flex flex-align-center gap-8">
+                <div class="header-text">{{ appName }}&nbsp;Statistics</div>
+
+                <div class="stats-date flex titlecase">
+                    {{ currentDate | date : 'MMMM y' }}
+                </div>
+
+                <button
+                    mat-icon-button
+                    class="screenshot-btn"
+                    (click)="takeScreenshot()"
+                    title="Take page screenshot"
+                >
+                    <mat-icon> download </mat-icon>
+                </button>
+            </div>
+
+            <div
+                class="company-logo"
+                [style.background-image]="'url(/assets/icons/company-icon.svg)'"
+            ></div>
+        </div>
+
+        <div class="total-violations flex flex-col flex-align-center gap-16">
+            <div class="total-violations-header uppercase">Total Violations</div>
+            <div class="graph-chart-containter" id="statsDoughnut">
+                <app-doughnut-chart
+                    *ngIf="doughNutData"
+                    (error)="getErrorValues($event)"
+                    [chartContId]="'statsDoughnut'"
+                    [graphData]="doughNutData"
+                    [graphWidth]="widgetWidth"
+                    [graphHeight]="widgetHeight"
+                    [MainTextcolor]="MainTextcolor"
+                    [innerRadius]="innerRadius"
+                    [outerRadius]="outerRadius"
+                ></app-doughnut-chart>
+            </div>
+        </div>
+
+        <app-statistics-tile
+            title="Policies Enforced"
+            icon="Enforce"
+            [counter]="numberOfPoliciesEnforced"
+            [isLoading]="showLoader"
+        >
+        </app-statistics-tile>
+
+        <app-statistics-tile
+            title="Policy Evaluations"
+            subTitle="Everyday"
+            icon="Shield"
+            [counter]="numberOfPolicyEvaluations"
+            [isLoading]="showLoader"
+        >
+        </app-statistics-tile>
+
+        <app-statistics-tile
+            title="Available Auto Fixes"
+            icon="policies-star-badge"
+            [counter]="numberOfPolicyWithAutoFixes"
+            [isLoading]="showLoader"
+        >
+        </app-statistics-tile>
+
+        <app-statistics-tile
+            title="Auto Fixes Applied"
+            icon="Rocket"
+            [counter]="totalAutoFixesApplied"
+            [isLoading]="showLoader"
+        >
+        </app-statistics-tile>
+
+        <app-statistics-tile
+            title="Accounts Scanned"
+            icon="AWS"
+            [counter]="numberOfAwsAccounts"
+            [isLoading]="showLoader"
+        >
+        </app-statistics-tile>
+
+        <app-statistics-tile
+            title="Events Processed"
+            subTitle="Everyday"
+            icon="Processed"
+            [counter]="numberOfEventsProcessed"
+            [isLoading]="showLoader"
+        >
+        </app-statistics-tile>
+
+        <app-statistics-tile
+            title="Assets Scanned"
+            icon="Barcode"
+            [counter]="totalNumberOfAssets"
+            [isLoading]="showLoader"
+        >
+        </app-statistics-tile>
+    </div>
+</div>

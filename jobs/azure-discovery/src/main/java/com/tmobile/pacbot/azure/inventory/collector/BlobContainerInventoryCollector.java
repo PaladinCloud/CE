@@ -52,7 +52,7 @@ public class BlobContainerInventoryCollector {
 					blobContainerVH.setSubscription(subscription.getSubscriptionId());
 					blobContainerVH.setSubscriptionName(subscription.getSubscriptionName());
 					blobContainerVH.setResourceGroupName(storageAccount.resourceGroupName());
-					blobContainerVH.setRegion(storageAccount.regionName());
+					blobContainerVH.setRegion(Util.getRegionValue(subscription,storageAccount.regionName()));
 					JsonObject blobObject = blobObjectElement.getAsJsonObject();
 					JsonObject properties = blobObject.getAsJsonObject("properties");
 					log.debug("Properties data{}", properties);
@@ -72,7 +72,7 @@ public class BlobContainerInventoryCollector {
 				}
 			} catch (Exception e) {
 				log.error(" Error fetching blobcontainers for storage account {} Cause : {}" ,storageAccount.name(),e.getMessage());
-		
+				Util.eCount.getAndIncrement();
 			}
 		}
 		log.info("Target Type : {}  Total: {} ","Blob Container",blobContainerList.size());

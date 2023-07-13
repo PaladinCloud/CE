@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Exception } from '../models/exception.model';
 import { ExceptionInput } from '../models/exception-input.model';
-import { UtilsService } from '../services/utils.service';
-import * as moment from 'moment';
+import { DatePipe } from '@angular/common';
 @Injectable()
 export class ExceptionManagementService {
+  private readonly shortDateFormat = 'yyyy-MM-dd';
 
   constructor(
-    private utils: UtilsService
+    private datePipe: DatePipe,
   ) { }
 
   createDataToAddOrModifyException(input: ExceptionInput) {
@@ -32,11 +32,10 @@ export class ExceptionManagementService {
     resetSelectedDateToExpiry.setDate(numberOfDaysToBeAdded);
     // Set the min date to expiring in date
     inputToExtendException.minDate = minDate;
-    inputToExtendException.selectedDate = moment(resetSelectedDateToExpiry).format('YYYY-MM-DD');
-    if (input.exceptionEndDate) {
-      const formatedDate = moment(input.exceptionEndDate).format('YYYY-MM-DD');
-      inputToExtendException.selectedDate = formatedDate;
-    }
+    inputToExtendException.selectedDate = this.datePipe.transform(
+        input.exceptionEndDate ? input.exceptionEndDate : resetSelectedDateToExpiry,
+        this.shortDateFormat,
+    );
 
     // Get year, month and date string, for calendard pre selected date
     inputToExtendException.disablePolicy = input.common.disablePolicy;

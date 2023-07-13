@@ -49,6 +49,7 @@ import com.google.gson.JsonParser;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 
 @Repository
 public class ElasticSearchRepository implements Constants {
@@ -81,10 +82,7 @@ public class ElasticSearchRepository implements Constants {
 	 *
 	 */
 	private static final String HITS = "hits";
-	/**
-	 *
-	 */
-	private static final String ORDER = "order";
+
 	/**
 	 *
 	 */
@@ -104,6 +102,10 @@ public class ElasticSearchRepository implements Constants {
 	/**
 	 *
 	 */
+	private static final String QUERY_STRING = "query_string";
+	/**
+	 *
+	 */
 	private static final String MATCH_PHRASE_PREFIX = "match_phrase_prefix";
 	/**
 	 *
@@ -114,7 +116,7 @@ public class ElasticSearchRepository implements Constants {
 
 	public static final String ALL = "all";
 
-	public static final String UNDERSCORE_TYPE = "_type";
+	public static final String FIELD_NAME = "fieldName";
 	/**
 	 *
 	 */
@@ -211,8 +213,6 @@ public class ElasticSearchRepository implements Constants {
 	 * @throws Exception
 	 * @deprecated
 	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
 	public List<Map<String, Object>> getDataFromES(String dataSource, String targetType, Map<String, Object> mustFilter,
 			final Map<String, Object> mustNotFilter, final HashMultimap<String, Object> shouldFilter,
 			List<String> fields, Map<String, Object> mustTermsFilter) throws Exception {
@@ -224,11 +224,9 @@ public class ElasticSearchRepository implements Constants {
 		// paginate
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
 		if (!Strings.isNullOrEmpty(targetType)) {
-			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
+			mustFilter.put("docType.keyword",targetType);
 		}
 		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
-
-		String urlToQuery = urlToQueryBuffer.toString();
 		// paginate for breaking the response into smaller chunks
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put(SIZE, ES_PAGE_SIZE);
@@ -240,7 +238,8 @@ public class ElasticSearchRepository implements Constants {
 		Gson serializer = new GsonBuilder().disableHtmlEscaping().create();
 		String request = serializer.toJson(requestBody);
 
-		return prepareResultsUsingScroll(0, totalDocs, urlToQuery, request);
+		LOGGER.info("request {} "+ request);
+		return prepareResultsUsingPagination(dataSource,request,0,totalDocs);
 	}
 
 	public Map<String, Long> getAssetCountByAssetGroup(String aseetGroupName, String type, String application) {
@@ -255,8 +254,12 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Long> countMap = new HashMap<>();
 		try {
 			if (ALL.equals(type)) {
-				countMap = getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
-						null, UNDERSCORE_TYPE, Constants.THOUSAND, null);
+				try {
+					countMap = getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
+							null, DOC_TYPE_KEYWORD, Constants.THOUSAND, null);
+				} catch (Exception e) {
+					LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
+				}
 			} else {
 				long count = getTotalDocumentCountForIndexAndType(aseetGroupName, type, filter, null,
 						null, null, null);
@@ -280,11 +283,10 @@ public class ElasticSearchRepository implements Constants {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getSortedDataFromES(String dataSource, String targetType,
-			Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
-			final HashMultimap<String, Object> shouldFilter, List<String> fields, Map<String, Object> mustTermsFilter,
-			Map<String, Object> sortFieldMapList) throws Exception {
+														 Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
+														 final HashMultimap<String, Object> shouldFilter, List<String> fields, Map<String, Object> mustTermsFilter,
+														 List<Map<String, Object>> sortFieldMapList) throws Exception {
 
 		Long totalDocs = getTotalDocumentCountForIndexAndType(dataSource, targetType, mustFilter, mustNotFilter,
 				shouldFilter, null, mustTermsFilter);
@@ -292,16 +294,12 @@ public class ElasticSearchRepository implements Constants {
 		// also if from and size are -1 -1 send all the data back and do not
 		// paginate
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
-		if (!Strings.isNullOrEmpty(targetType)) {
-			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
-		}
 		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
 
-		String urlToQuery = urlToQueryBuffer.toString();
 		// paginate for breaking the response into smaller chunks
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put(SIZE, ES_PAGE_SIZE);
-		if (totalDocs < ES_PAGE_SIZE) {
+		if (totalDocs > 0 && totalDocs < ES_PAGE_SIZE) {
 			requestBody.put(SIZE, totalDocs);
 		}
 		requestBody.put(QUERY, buildQuery(mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter,null));
@@ -313,51 +311,88 @@ public class ElasticSearchRepository implements Constants {
 		Gson serializer = new GsonBuilder().disableHtmlEscaping().create();
 		String request = serializer.toJson(requestBody);
 
-		return prepareResultsUsingScroll(0, totalDocs, urlToQuery, request);
+		return prepareResultsUsingPagination(dataSource,request,0,totalDocs);
 	}
 
-	/**
-	 *
-	 * @param from
-	 * @param size
-	 * @param urlToQuery
-	 * @param request
-	 * @return
-	 * @throws Exception
-	 */
-	private List<Map<String, Object>> prepareResultsUsingScroll(long from, long size, String urlToQuery, String request)
-			throws Exception {
-		String scrollId = null;
+	public List<Map<String, Object>> prepareResultsUsingPagination(String dataSource, String request,long from, long size) throws Exception {
+		Gson gson = new GsonBuilder().create();
+		String urlToQuery = esUrl + "/" + dataSource +"/" + _SEARCH;
+		Map<String,Object> requestBodyMap = gson.fromJson(request,Map.class);
 		List<Map<String, Object>> results = new ArrayList<>();
+		// paginate for breaking the response into smaller chunks
+		Map<String, Object> sortKey = new HashMap<>();
+		Map<String, Object> sortInnerMap = new HashMap<>();
+		sortInnerMap.put(UNMAPPED_TYPE,LONG);
+		sortInnerMap.put(ORDER,DESC);
+		sortKey.put(DOCID+KEYWORD, sortInnerMap);
 
-		urlToQuery = urlToQuery + "?scroll=" + ES_PAGE_SCROLL_TTL;
-
-		String urlToScroll = new StringBuilder(esUrl).append(FORWARD_SLASH).append(_SEARCH).append("/scroll")
-				.toString();
-		System.out.print(request);
-		for (int index = 0; index <= ((from + size) / ES_PAGE_SIZE); index++) {
-			String responseDetails = null;
-			try {
-				if (!Strings.isNullOrEmpty(scrollId)) {
-					request = buildScrollRequest(scrollId, ES_PAGE_SCROLL_TTL);
-					urlToQuery = urlToScroll;
+		if(requestBodyMap.containsKey("sort")){
+			Object sortObj = requestBodyMap.get("sort");
+			if(sortObj instanceof List){
+				List<Map<String, Object>> sortList = (List<Map<String, Object>>)requestBodyMap.get("sort");
+				if(sortList.stream().noneMatch(p -> p.containsKey(DOCID+KEYWORD))){
+					sortList.add(sortKey);
 				}
-				responseDetails = PacHttpUtils.doHttpPost(urlToQuery, request);
-				scrollId = processResponseAndSendTheScrollBack(responseDetails, results);
+			}
+			else{
+				List<Map<String, Object>> sortList = new ArrayList<>();
+				Map<String,Object> sortMap = (Map<String,Object>)requestBodyMap.get("sort");
+				sortList.add(sortMap);
+				sortList.add(sortKey);
+				requestBodyMap.put("sort",sortList);
+			}
+		}
+		else{
+			List<Map<String, Object>> sortList = new ArrayList<>();
+			sortList.add(sortKey);
+			requestBodyMap.put("sort",sortList);
+		}
+
+		for (int index = 0; index <= ((from+size) / Constants.ES_PAGE_SIZE); index++) {
+			String responseDetails;
+			try {
+				responseDetails = PacHttpUtils.doHttpPost(urlToQuery, gson.toJson(requestBodyMap));
+				LOGGER.info(" responseDetails {} "+responseDetails);
+				Map<String, Object> returnObj = processResponse(responseDetails, results);
+				requestBodyMap.put("search_after", returnObj.get("sortArray"));
 			} catch (Exception e) {
 				LOGGER.error(ERROR_RETRIEVING_INVENTORY_FROM_ES, e);
 				throw e;
 			}
-
 		}
 
 		int to = (int) (from + size);
 		if (to > results.size()) {
-			to = results.size(); // If the size passed is greater than actual
-									// size..
+			to = results.size();
 		}
 		results = results.subList((int) from, to);
 		return results;
+	}
+
+	private static Map<String, Object> processResponse(String responseDetails,
+													   List<Map<String, Object>> results) {
+		Gson serializer = new GsonBuilder().create();
+		Map<String, Object> response = (Map<String, Object>) serializer.fromJson(responseDetails, Object.class);
+		Map<String, Object> lastHitDetail = new HashMap<>();
+		LOGGER.info(" response {} "+response );
+		if (response.containsKey("hits")) {
+			Map<String, Object> hits = (Map<String, Object>) response.get("hits");
+			if (hits.containsKey("hits")) {
+				List<Map<String, Object>> hitDetails = (List<Map<String, Object>>) hits.get("hits");
+				for (Map<String, Object> hitDetail : hitDetails) {
+					Map<String, Object> sources = (Map<String, Object>) hitDetail.get(_SOURCE);
+					sources.put(ES_DOC_ID_KEY, hitDetail.get(ES_DOC_ID_KEY));
+					sources.put(ES_DOC_ROUTING_KEY,
+							hitDetail.get(ES_DOC_ROUTING_KEY));
+					results.add(CommonUtils.flatNestedMap(null, sources));
+					lastHitDetail = hitDetail;
+				}
+			}
+		}
+		List<String> sortArray = (List<String>) lastHitDetail.get("sort");
+		Map<String, Object> returnObject = new HashMap<>();
+		returnObject.put("sortArray", sortArray);
+		return returnObject;
 	}
 
 	/**
@@ -409,7 +444,7 @@ public class ElasticSearchRepository implements Constants {
 
 	/**
 	 *
-	 * @param filter
+	 * @param mustFilter
 	 * @return elastic search query details
 	 */
 	public Map<String, Object> buildQuery(final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
@@ -441,11 +476,11 @@ public class ElasticSearchRepository implements Constants {
 			// If the string is enclosed in quotes, do a match phrase instead of
 			// match
 			if (searchText.startsWith("\"") && searchText.endsWith("\"")) {
-				all.put(_ALL, searchText.substring(1, searchText.length() - 1));
-				match.put(MATCH_PHRASE_PREFIX, all);
+				all.put(QUERY, searchText.substring(1, searchText.length() - 1));
+				match.put(QUERY_STRING, all);
 			} else {
-				all.put(_ALL, searchText);
-				match.put(MATCH, all);
+				all.put(QUERY, searchText);
+				match.put(QUERY_STRING, all);
 			}
 			must.add(match);
 			boolFilters.put(MUST, must);
@@ -470,7 +505,6 @@ public class ElasticSearchRepository implements Constants {
 			}
 
 		}
-
 		if (isNotNullOrEmpty(mustNotFilter)) {
 
 			boolFilters.put(MUST_NOT, getFilter(mustNotFilter, null,null));
@@ -478,7 +512,7 @@ public class ElasticSearchRepository implements Constants {
 		if (isNotNullOrEmpty(shouldFilter)) {
 
 			boolFilters.put(SHOULD, getFilter(shouldFilter));
-			boolFilters.put(MINIMUM_SHOULD_MATCH, 1);
+			boolFilters.put(MINIMUM_SHOULD_MATCH, "1");
 		}
 		queryFilters.put(BOOL, boolFilters);
 		return queryFilters;
@@ -510,16 +544,45 @@ public class ElasticSearchRepository implements Constants {
 	 * @return
 	 */
 	private List<Map<String, Object>> getFilter(final Map<String, Object> mustfilter,
-			final Map<String, Object> mustTerms,
-			Map<String, List<String>> matchPhrasePrefix) {
+												final Map<String, Object> mustTerms,
+												Map<String, List<String>> matchPhrasePrefix) {
 		List<Map<String, Object>> finalFilter = Lists.newArrayList();
 		for (Map.Entry<String, Object> entry : mustfilter.entrySet()) {
 			Map<String, Object> term = Maps.newHashMap();
 			Map<String, Object> termDetails = Maps.newHashMap();
-			termDetails.put(entry.getKey(), entry.getValue());
+
+			if(entry.getKey().equalsIgnoreCase("tagged")){
+				List<Object>fieldValue=(List<Object>)entry.getValue();
+				for(Object value:fieldValue){
+					Map<String, Object> existsDetails = Maps.newHashMap();
+					Map<String, Object> exists = Maps.newHashMap();
+					existsDetails.put("field",value);
+					exists.put("exists",existsDetails);
+					finalFilter.add(exists);
+				}
+			}
+			else if(entry.getKey().equalsIgnoreCase("untagged")){
+				List<Object>fieldValue=(List<Object>)entry.getValue();
+				finalFilter.add(getFilterForUntagged(fieldValue));
+			}
+			else if(entry.getKey().equalsIgnoreCase("exempted")){
+				Map<String, Object> exemptDetails = Maps.newHashMap();
+				Map<String, Object> exempt = Maps.newHashMap();
+				exemptDetails.put("_resourceid.keyword",entry.getValue());
+				exempt.put(TERMS,exemptDetails);
+				finalFilter.add(exempt);
+			}
+			else{
+				termDetails.put(entry.getKey(), entry.getValue());
+			}
+
 			if (RANGE.equals(entry.getKey())) {
 				term.put(RANGE, entry.getValue());
-			} else {
+			}
+			else if(entry.getKey().equalsIgnoreCase("tagged") || entry.getKey().equalsIgnoreCase("exempted") || entry.getKey().equalsIgnoreCase("untagged") ){
+				continue;
+			}
+			else {
 				term.put(TERM, termDetails);
 			}
 			finalFilter.add(term);
@@ -539,7 +602,6 @@ public class ElasticSearchRepository implements Constants {
 				});
 			}
 		}
-
 		if (matchPhrasePrefix != null && !matchPhrasePrefix.isEmpty()) {
 
 			for (Map.Entry<String, List<String>> entry : matchPhrasePrefix
@@ -552,7 +614,7 @@ public class ElasticSearchRepository implements Constants {
 					Map<String, Object> matchPhrasePrefixMap = Maps
 							.newHashMap();
 					map.put(entry.getKey(), val);
-					matchPhrasePrefixMap.put("match_phrase_prefix", map);
+					matchPhrasePrefixMap.put(MATCH_PHRASE_PREFIX, map);
 					finalFilter.add(matchPhrasePrefixMap);
 				}
 
@@ -573,8 +635,13 @@ public class ElasticSearchRepository implements Constants {
 			Map<String, Object> term = Maps.newHashMap();
 			Map<String, Object> termDetails = Maps.newHashMap();
 			termDetails.put(entry.getKey(), entry.getValue());
-			term.put(TERM, termDetails);
-			finalFilter.add(term);
+			if(!("bool".equalsIgnoreCase(entry.getKey()) || RANGE.equalsIgnoreCase(entry.getKey()))){
+				term.put(TERM, termDetails);
+				finalFilter.add(term);
+			}
+			else{
+				finalFilter.add(termDetails);
+			}
 		}
 		return finalFilter;
 	}
@@ -620,7 +687,7 @@ public class ElasticSearchRepository implements Constants {
 
 	/**
 	 *
-	 * @param elastic
+	 * @param mustFilter
 	 *            search url
 	 * @param index
 	 *            name
@@ -628,21 +695,29 @@ public class ElasticSearchRepository implements Constants {
 	 *            name
 	 * @param shouldFilter
 	 * @param mustNotFilter
-	 * @param filters
+	 * @param mustFilter
 	 * @return elastic search count
 	 */
 	@SuppressWarnings("unchecked")
 	public long getTotalDocumentCountForIndexAndType(String index, String type, Map<String, Object> mustFilter,
-			Map<String, Object> mustNotFilter, HashMultimap<String, Object> shouldFilter, String searchText,
-			Map<String, Object> mustTermsFilter) throws Exception {
+													 Map<String, Object> mustNotFilter, HashMultimap<String, Object> shouldFilter, String searchText,
+													 Map<String, Object> mustTermsFilter) throws Exception {
 
-		String urlToQuery = buildCountURL(esUrl, index, type);
+		String urlToQuery = buildCountURL(esUrl, index, "");
 
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		Map<String, Object> matchFilters = Maps.newHashMap();
-		if (mustFilter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
-		} else {
+		if (mustFilter == null && !Strings.isNullOrEmpty(type)) {
+				matchFilters.put(MATCH_ALL, new HashMap<String, String>().put(Constants.DOC_TYPE_KEYWORD, type));
+			}
+		if (mustFilter == null && Strings.isNullOrEmpty(type)) {
+				matchFilters.put(MATCH_ALL, new HashMap<String, String>());
+		}
+		if(mustFilter!=null &&!Strings.isNullOrEmpty(type)){
+			mustFilter.put(Constants.DOC_TYPE_KEYWORD,type);
+			matchFilters.putAll(mustFilter);
+		}
+		if(mustFilter!=null && Strings.isNullOrEmpty(type)){
 			matchFilters.putAll(mustFilter);
 		}
 		if (null != mustFilter) {
@@ -681,6 +756,7 @@ public class ElasticSearchRepository implements Constants {
 		return urlToQuery.toString();
 	}
 
+
 	/**
 	 *
 	 * @param index
@@ -699,12 +775,15 @@ public class ElasticSearchRepository implements Constants {
 			HashMultimap<String, Object> shouldFilter, String aggsFilter, int size, Map<String, Object> mustTermsFilter)
 			throws Exception {
 
-		String urlToQuery = buildAggsURL(esUrl, index, type);
+		String urlToQuery = buildAggsURL(esUrl, index, "");
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		Map<String, Object> matchFilters = Maps.newHashMap();
 		Map<String, Long> distribution = new HashMap<String, Long>();
+		if (!Strings.isNullOrEmpty(type)) {
+			mustFilter.put(DOC_TYPE_KEYWORD, type);
+		}
 		if (mustFilter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
+			matchFilters.put(MATCH_ALL, new HashMap<String, String>());
 		} else {
 			matchFilters.putAll(mustFilter);
 		}
@@ -937,7 +1016,6 @@ public class ElasticSearchRepository implements Constants {
 	 * @throws Exception
 	 * @deprecated
 	 */
-	@Deprecated
 	public List<Map<String, Object>> getDataFromESBySize(String dataSource, String targetType,
 			final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
 			final HashMultimap<String, Object> shouldFilter, List<String> fields, int from, int size, String searchText,
@@ -952,8 +1030,6 @@ public class ElasticSearchRepository implements Constants {
 		}
 		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
 
-		String urlToQuery = urlToQueryBuffer.toString();
-
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put(SIZE, ES_PAGE_SIZE);
 		if ((from + size) < ES_PAGE_SIZE) {
@@ -963,8 +1039,7 @@ public class ElasticSearchRepository implements Constants {
 		requestBody.put(_SOURCE, fields);
 		Gson serializer = new GsonBuilder().create();
 		String request = serializer.toJson(requestBody);
-		return prepareResultsUsingScroll(from, size, urlToQuery, request);
-
+		return prepareResultsUsingPagination(dataSource,request,from,size);
 	}
 
 	/**
@@ -979,26 +1054,24 @@ public class ElasticSearchRepository implements Constants {
 	 * @param size
 	 * @param searchText
 	 * @param mustTermsFilter
-	 * @param sortFieldMapList
 	 * @return
 	 * @throws Exception
 	 */
 	public List<Map<String, Object>> getSortedDataFromESBySize(String dataSource, String targetType,
-			final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
-			final HashMultimap<String, Object> shouldFilter, List<String> fields, int from, int size, String searchText,
-			final Map<String, Object> mustTermsFilter, Map<String, Object> sortFieldMapList) throws Exception {
+															   final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
+															   final HashMultimap<String, Object> shouldFilter, List<String> fields, int from, int size, String searchText,
+															   final Map<String, Object> mustTermsFilter, List<Map<String, Object>> sortList) throws Exception {
+		int totalDocumentCount = (int) getTotalDocumentCountForIndexAndType(dataSource, targetType, mustFilter, mustNotFilter, null,
+				searchText, mustTermsFilter);
 		if (size <= 0) {
-			size = (int) getTotalDocumentCountForIndexAndType(dataSource, targetType, mustFilter, mustNotFilter, null,
-					searchText, mustTermsFilter);
+			size=totalDocumentCount;
 		}
+		ThreadLocalUtil.count.set(totalDocumentCount);
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
 		if (!Strings.isNullOrEmpty(targetType)) {
-			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
+			mustFilter.put(DOC_TYPE_KEYWORD, targetType);
 		}
 		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
-
-		String urlToQuery = urlToQueryBuffer.toString();
-
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put(SIZE, ES_PAGE_SIZE);
 		if ((from + size) < ES_PAGE_SIZE) {
@@ -1006,47 +1079,76 @@ public class ElasticSearchRepository implements Constants {
 		}
 		requestBody.put(QUERY, buildQuery(mustFilter, mustNotFilter, shouldFilter, searchText, mustTermsFilter, null));
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> sortScript = new HashMap<>();
-		Map<String, Object> paramsList = new HashMap<>();
-		Map<String, Object> script = new HashMap<>();
-		Map<String, Object> Outerscript = new HashMap<>();
-		if (null != sortFieldMapList && !sortFieldMapList.isEmpty()) {
-			if(sortFieldMapList.get("sortOrder")!=null) {
-				sortScript.put("type", sortFieldMapList.get("fieldType"));
-				String fieldName = (String) sortFieldMapList.get("fieldName");
-				String inlineScript = "doc['%s'].value";
-				script.put("params", paramsList);
-				inlineScript = "params.sortOrder.indexOf(doc['%s'].value)";
-				paramsList.put("sortOrder", sortFieldMapList.get("sortOrder"));
 
-				if (sortFieldMapList.get("fieldName").equals("_uid")) {
-					inlineScript = "doc['_uid'].value.substring(doc['_uid'].value.indexOf('#')+1)";
+		String order = "";
+		if(null != sortList && !sortList.isEmpty()) {
+			for (Map<String, Object> sortFieldMapList : sortList) {
+				Map<String, Object> sortScript = new HashMap<>();
+				Map<String, Object> paramsList = new HashMap<>();
+				Map<String, Object> script = new HashMap<>();
+				Map<String, Object> Outerscript = new HashMap<>();
+				order = sortFieldMapList.get(ORDER).toString();
+				if (sortFieldMapList.get("sortOrder") != null) {
+					sortScript.put("type", sortFieldMapList.get("fieldType"));
+					String fieldName = (String) sortFieldMapList.get(FIELD_NAME);
+					String inlineScript = "doc['%s'].value";
+					script.put("params", paramsList);
+					inlineScript = "params.sortOrder.indexOf(doc['%s'].value)";
+					paramsList.put("sortOrder", sortFieldMapList.get("sortOrder"));
+
+					if (sortFieldMapList.get(FIELD_NAME).equals("_uid")) {
+						inlineScript = "doc['_uid'].value.substring(doc['_uid'].value.indexOf('#')+1)";
+					}
+					String inlineScriptString = String.format(inlineScript, fieldName);
+					script.put("inline", inlineScriptString);
+					sortScript.put("script", script);
+					sortScript.put(ORDER, sortFieldMapList.get(ORDER));
+					Outerscript.put("_script", sortScript);
+					list.add(Outerscript);
+				} else {
+					Map<String, Object> sortMap = new HashMap<>();
+					String fieldName = (String) sortFieldMapList.get(FIELD_NAME);
+					if (fieldName != null) {
+						String sortOrder = sortFieldMapList.get(ORDER) != null ? (String) sortFieldMapList.get(ORDER) : "asc";
+						if(fieldName.equalsIgnoreCase(AUTOFIX_PLANNED_KEYWORD)){
+							Map<String,String> mappedSort=new HashMap<>();
+							mappedSort.put(UNMAPPED_TYPE, (String) sortFieldMapList.get("fieldType"));
+							mappedSort.put(ORDER, sortOrder);
+							Map<String, Object> sortAttribute = new HashMap<>();
+							sortAttribute.put(fieldName, mappedSort);
+							list.add(sortAttribute);
+						}else{
+							Map<String, Object> sortOrderMap = new HashMap<>();
+							sortOrderMap.put(ORDER, sortOrder);
+							sortMap.put(fieldName, sortOrderMap);
+							list.add(sortMap);
+						}
+					}
 				}
-				String inlineScriptString = String.format(inlineScript, fieldName);
-				script.put("inline", inlineScriptString);
-				sortScript.put("script", script);
-				sortScript.put("order", sortFieldMapList.get("order"));
-				Outerscript.put("_script", sortScript);
-				list.add(Outerscript);
+
+			}
+			Map<String,String> mappedSort=new HashMap<>();
+			mappedSort.put(UNMAPPED_TYPE,"long");
+			String sortOrder = !order.isEmpty() ? order : "asc";
+			mappedSort.put(ORDER,sortOrder);
+			Map<String, Object> docIdSort = new HashMap<>();
+			Map<String, Object> annotationIdSort = new HashMap<>();
+			docIdSort.put(DOCID+KEYWORD, mappedSort);
+			annotationIdSort.put(ANNOTATIONID+KEYWORD, mappedSort);
+			list.add(docIdSort);
+			if(mustFilter != null && mustFilter.containsKey(Constants.TYPE_KEYWORD) && mustFilter.get(Constants.TYPE_KEYWORD).equals(Constants.ISSUE)){
+				list.add(annotationIdSort);
+			}
+
+			if (!list.isEmpty()) {
 				requestBody.put(SORT, list);
-			}else{
-				Map<String,Object> sortMap=new HashMap<>();
-				String fieldName=(String) sortFieldMapList.get("fieldName");
-				if(fieldName!=null) {
-					String sortOrder = sortFieldMapList.get("order") != null ? (String) sortFieldMapList.get("order") : "asc";
-					Map<String, Object> sortOrderMap = new HashMap<>();
-					sortOrderMap.put("order", sortOrder);
-					sortMap.put(fieldName, sortOrderMap);
-					list.add(sortMap);
-					requestBody.put(SORT, list);
-				}
 			}
 		}
 		requestBody.put(_SOURCE, fields);
 		Gson serializer = new GsonBuilder().create();
 		String request = serializer.toJson(requestBody);
-		System.out.println(request+" request ");
-		return prepareResultsUsingScroll(from, size, urlToQuery, request);
+		LOGGER.info(request+" request ");
+		return prepareResultsUsingPagination(dataSource,request,from,size);
 	}
 
 	/**
@@ -1071,6 +1173,7 @@ public class ElasticSearchRepository implements Constants {
 				if (!Strings.isNullOrEmpty(routing) && !Strings.isNullOrEmpty(parent)) {
 					esQueryUrl.append("?routing=").append(routing).append("&parent=").append(parent);
 				}
+				partialDocument.put("_docid", id);
 				Map<String, Object> documentToUpdate = Maps.newHashMap();
 				documentToUpdate.put("doc", partialDocument);
 				Gson serializer = new GsonBuilder().create();
@@ -1150,7 +1253,7 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Object> matchFilters = Maps.newHashMap();
 		Map<String, Long> distribution = new HashMap<String, Long>();
 		if (mustFilter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
+			matchFilters.put(MATCH_ALL, new HashMap<String, String>());
 		} else {
 			matchFilters.putAll(mustFilter);
 		}
@@ -1204,7 +1307,7 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Object> matchFilters = Maps.newHashMap();
 		Map<String, Long> distribution = new HashMap<String, Long>();
 		if (mustFilter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
+			matchFilters.put(MATCH_ALL, new HashMap<String, String>());
 		} else {
 			matchFilters.putAll(mustFilter);
 		}
@@ -1283,7 +1386,7 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Object> matchFilters = Maps.newHashMap();
 		Map<String, String> distribution = new HashMap<String, String>();
 		if (filter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
+			matchFilters.put(MATCH_ALL, new HashMap<String, String>());
 		} else {
 			matchFilters.putAll(filter);
 		}
@@ -1348,7 +1451,7 @@ public class ElasticSearchRepository implements Constants {
 
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
 		if (!Strings.isNullOrEmpty(targetType)) {
-			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
+			mustFilter.put(DOC_TYPE_KEYWORD, targetType);
 		}
 		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
 		if (size > 0 && from >= 0) {
@@ -1361,6 +1464,7 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Map<String, String>> auditDate = new HashMap<String, Map<String, String>>();
 		Map<String, String> order = new HashMap<String, String>();
 		order.put(ORDER, "desc");
+		order.put(UNMAPPED_TYPE,"date");
 		auditDate.put("auditdate", order);
 		List<Map<String, Map<String, String>>> list = new ArrayList<Map<String, Map<String, String>>>();
 		list.add(auditDate);
@@ -1411,56 +1515,6 @@ public class ElasticSearchRepository implements Constants {
 	 * @param mustTermsFilter
 	 * @param mustNotTermsFilter
 	 * @param mustNotWildCardFilter
-	 * @return
-	 * @throws Exception
-	 * @deprecated
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public List<Map<String, Object>> getDataFromESWithMustNotTermsFilter(String dataSource, String targetType,
-			Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
-			final HashMultimap<String, Object> shouldFilter, List<String> fields, Map<String, Object> mustTermsFilter,
-			Map<String, Object> mustNotTermsFilter, Map<String, Object> mustNotWildCardFilter) throws Exception {
-
-		Long totalDocs = getTotalDocumentCountForIndexAndTypeWithMustNotTermsFilter(dataSource, targetType, mustFilter,
-				mustNotFilter, shouldFilter, null, mustTermsFilter, mustNotTermsFilter, mustNotWildCardFilter);
-		// if filter is not null apply filter, this can be a multi value filter
-		// also if from and size are -1 -1 send all the data back and do not
-		// paginate
-		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
-		if (!Strings.isNullOrEmpty(targetType)) {
-			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
-		}
-		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
-
-		String urlToQuery = urlToQueryBuffer.toString();
-		// paginate for breaking the response into smaller chunks
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-
-		requestBody.put(SIZE, ES_PAGE_SIZE);
-		if (totalDocs < ES_PAGE_SIZE) {
-			requestBody.put(SIZE, totalDocs);
-		}
-
-		requestBody.put(QUERY, buildQueryForMustTermsFilter(mustFilter, mustNotFilter, shouldFilter, null,
-				mustTermsFilter, mustNotTermsFilter, mustNotWildCardFilter));
-		requestBody.put(_SOURCE, fields);
-		Gson serializer = new GsonBuilder().create();
-		String request = serializer.toJson(requestBody);
-		return prepareResultsUsingScroll(0, totalDocs, urlToQuery, request);
-	}
-
-	/**
-	 *
-	 * @param dataSource
-	 * @param targetType
-	 * @param mustFilter
-	 * @param mustNotFilter
-	 * @param shouldFilter
-	 * @param fields
-	 * @param mustTermsFilter
-	 * @param mustNotTermsFilter
-	 * @param mustNotWildCardFilter
 	 * @param sortFieldMapList
 	 * @return
 	 * @throws Exception
@@ -1482,8 +1536,6 @@ public class ElasticSearchRepository implements Constants {
 			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
 		}
 		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
-
-		String urlToQuery = urlToQueryBuffer.toString();
 		// paginate for breaking the response into smaller chunks
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 
@@ -1502,7 +1554,7 @@ public class ElasticSearchRepository implements Constants {
 		requestBody.put(_SOURCE, fields);
 		Gson serializer = new GsonBuilder().create();
 		String request = serializer.toJson(requestBody);
-		return prepareResultsUsingScroll(0, totalDocs, urlToQuery, request);
+		return prepareResultsUsingPagination(dataSource,request,0,totalDocs);
 	}
 
 	/**
@@ -1529,7 +1581,7 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		Map<String, Object> matchFilters = Maps.newHashMap();
 		if (mustFilter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
+			matchFilters.put(MATCH_ALL, new HashMap<String, String>());
 		} else {
 			matchFilters.putAll(mustFilter);
 		}
@@ -1555,7 +1607,7 @@ public class ElasticSearchRepository implements Constants {
 
 	/**
 	 *
-	 * @param filter
+	 * @param mustFilter
 	 * @return elastic search query details
 	 */
 	private Map<String, Object> buildQueryForMustTermsFilter(final Map<String, Object> mustFilter,
@@ -1616,7 +1668,7 @@ public class ElasticSearchRepository implements Constants {
 		}
 		if (isNotNullOrEmpty(shouldFilter)) {
 			boolFilters.put(SHOULD, getFilter(shouldFilter));
-			boolFilters.put(MINIMUM_SHOULD_MATCH, 1);
+			boolFilters.put(MINIMUM_SHOULD_MATCH, "1");
 		}
 		queryFilters.put(BOOL, boolFilters);
 		return queryFilters;
@@ -1659,7 +1711,6 @@ public class ElasticSearchRepository implements Constants {
 
 	/**
 	 *
-	 * @param elastic
 	 *            search url
 	 * @param index
 	 *            name
@@ -1667,7 +1718,6 @@ public class ElasticSearchRepository implements Constants {
 	 *            name
 	 * @param shouldFilter
 	 * @param mustNotFilter
-	 * @param filters
 	 * @return elastic search count
 	 */
 	@SuppressWarnings("unchecked")
@@ -1677,14 +1727,14 @@ public class ElasticSearchRepository implements Constants {
 			Map<String, Object> mustTermsFilter,
 			Map<String, List<String>> matchPhrasePrefix) throws Exception {
 
-		String urlToQuery = buildESURL(esUrl, index, type,0,0);
+		String urlToQuery = buildESURL(esUrl, index, type,0);
 		JsonParser parser = new JsonParser();
 		JsonObject aggregationObject = new JsonObject();
 		long totaluntagged = 0;
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		Map<String, Object> matchFilters = Maps.newHashMap();
 		if (mustFilter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
+			matchFilters.put(MATCH_ALL, new HashMap<String, String>());
 		} else {
 			matchFilters.putAll(mustFilter);
 		}
@@ -1723,7 +1773,7 @@ public class ElasticSearchRepository implements Constants {
 	 * @param type
 	 * @return
 	 */
-	public String buildESURL(String url, String index, String type, int size, int from) {
+	public String buildESURL(String url, String index, String type, int from) {
 
 		StringBuilder urlToQuery = new StringBuilder(url).append(FORWARD_SLASH).append(index);
 		if (!Strings.isNullOrEmpty(type)) {
@@ -1759,7 +1809,7 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Object> envMap = new HashMap<>();
 		
 		if (mustFilter == null) {
-			matchFilters.put("match_all", new HashMap<String, String>());
+			matchFilters.put(MATCH_ALL, new HashMap<String, String>());
 		} else {
 			matchFilters.putAll(mustFilter);
 		}
@@ -1780,7 +1830,7 @@ public class ElasticSearchRepository implements Constants {
 		try {
 			String requestJson = gson.toJson(requestBody, Object.class);
 			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, requestJson);
-			Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
+			Map<String, Object> response = gson.fromJson(responseDetails, Map.class);
 			Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
 			Map<String, Object> name = (Map<String, Object>) aggregations.get(NAME);
 			List<Map<String, Object>> buckets = (List<Map<String, Object>>) name.get(BUCKETS);
@@ -1816,19 +1866,17 @@ public class ElasticSearchRepository implements Constants {
 		String accountId;
 		if(cloudType.equalsIgnoreCase("aws")){
 			accountId="accountid";
-		}
-		else if(cloudType.equalsIgnoreCase("azure")){
+		} else if(cloudType.equalsIgnoreCase("azure")){
 			accountId="subscriptionId";
-		}
-		else{
+		} else{
 			accountId="projectId";
 		}
 		String body = "{"
 				+ "\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}}"
 				+ ",\"aggs\": {"
-				+ "\"TargetType\": {\"terms\": {\"field\": \"_type\",\"size\": 10000}},"
-				+ "\"Id\": {\"terms\": {\"field\": \"" + accountId +".keyword\",\"size\": 10000}},"
-				+ "\"Region\": {\"terms\": {\"field\": \"region.keyword\",\"size\": 10000}},";
+				+ "\"TargetType\": {\"terms\": {\"field\": \"docType.keyword\",\"size\":"+ES_PAGE_SIZE+"}},"
+				+ "\"Id\": {\"terms\": {\"field\": \"" + accountId +".keyword\",\"size\":"+ES_PAGE_SIZE+"}},"
+				+ "\"Region\": {\"terms\": {\"field\": \"region.keyword\",\"size\": "+ES_PAGE_SIZE+"}},";
 
 		for(String agg : aggsForTagsList) {
 			body += agg + ",";
@@ -1848,6 +1896,29 @@ public class ElasticSearchRepository implements Constants {
 			LOGGER.error(e.getMessage());
 			throw new DataException(e);
 		}
+	}
+
+	private Map<String,Object> getFilterForUntagged(List<Object>fieldValue){
+		Map<String,Object> finalResponse=new HashMap<>();
+		List<Map<String,Object>> shouldList=new ArrayList<>();
+		Map<String,Object> shouldDetails=new HashMap<>();
+		for(Object value:fieldValue){
+			Map<String, Object> existsDetails = Maps.newHashMap();
+			Map<String, Object> exists = Maps.newHashMap();
+			List<Map<String,Object>> mustNotList=new ArrayList<>();
+			Map<String, Object> mustNotDetails = Maps.newHashMap();
+			Map<String, Object> boolDetails = Maps.newHashMap();
+
+			existsDetails.put("field",value);
+			exists.put("exists",existsDetails);
+			mustNotList.add(exists);
+			mustNotDetails.put(MUST_NOT,mustNotList);
+			boolDetails.put(BOOL,mustNotDetails);
+			shouldList.add(boolDetails);
+		}
+		shouldDetails.put(SHOULD,shouldList);
+		finalResponse.put(BOOL,shouldDetails);
+		return  finalResponse;
 	}
 
 }

@@ -41,7 +41,7 @@ public class NetworkInventoryCollector {
 			networkVH.setVmProtectionEnabled(network.isVmProtectionEnabled());
 			networkVH.setKey(network.key());
 			networkVH.setName(network.name());
-			networkVH.setRegion(network.region().name());
+			networkVH.setRegion(Util.getRegionValue(subscription,network.region().name()));
 			networkVH.setResourceGroupName(network.resourceGroupName());
 			networkVH.setTags(Util.tagsList(tagMap, network.resourceGroupName(), network.tags()));
 			networkVH.setSubscription(subscription.getSubscriptionId());

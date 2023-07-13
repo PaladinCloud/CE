@@ -17,7 +17,6 @@ import { environment } from "./../../../../../environments/environment";
 
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subscription } from "rxjs";
-import * as moment from "moment";
 import { UtilsService } from "../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
@@ -25,6 +24,7 @@ import { RefactorFieldsService } from "./../../../../shared/services/refactor-fi
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { AdminService } from "../../../services/all-admin.service";
+import { DatePipe } from "@angular/common";
 
 @Component({
   selector: "app-sticky-exceptions",
@@ -33,7 +33,7 @@ import { AdminService } from "../../../services/all-admin.service";
   providers: [LoggerService, ErrorHandlingService, AdminService],
 })
 export class StickyExceptionsComponent implements OnInit, OnDestroy {
-  pageTitle: String = "Sticky Exceptions";
+  pageTitle: String = "Exemptions";
   allPolicies: any = [];
   breadcrumbArray: any = ["Admin"];
   breadcrumbLinks: any = ["policies"];
@@ -82,9 +82,11 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  private readonly shortDateFormat = 'dd/MM/yyyy';
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private datePipe: DatePipe,
     private router: Router,
     private utils: UtilsService,
     private logger: LoggerService,
@@ -100,13 +102,13 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
-    this.breadcrumbPresent = "Sticky Exceptions";
+    this.breadcrumbPresent = "Exemptions";
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
@@ -205,9 +207,9 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   /*
-   * This function gets the urlparameter and queryObj
-   *based on that different apis are being hit with different queryparams
-   */
+  * This function gets the urlparameter and queryObj
+  *based on that different apis are being hit with different queryparams
+  */
   routerParam() {
     try {
       // this.filterText saves the queryparam
@@ -224,10 +226,10 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
         delete this.queryParamsWithoutFilter["filter"];
 
         /**
-         * The below code is added to get URLparameter and queryparameter
-         * when the page loads ,only then this function runs and hits the api with the
-         * filterText obj processed through processFilterObj function
-         */
+        * The below code is added to get URLparameter and queryparameter
+        * when the page loads ,only then this function runs and hits the api with the
+        * filterText obj processed through processFilterObj function
+        */
         this.filterText = this.utils.processFilterObj(this.FullQueryParams);
 
         this.urlID = this.FullQueryParams.TypeAsset;
@@ -243,9 +245,9 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This function get calls the keyword service before initializing
-   * the filter array ,so that filter keynames are changed
-   */
+  * This function get calls the keyword service before initializing
+  * the filter array ,so that filter keynames are changed
+  */
 
   updateComponent() {
     this.outerArr = [];
@@ -330,16 +332,21 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
               },
             };
           } else if (getCols[col].toLowerCase() == "expiry date") {
+            const dateValue = this.datePipe.transform(
+                getData[row][getCols[col]],
+                this.shortDateFormat,
+            );
             cellObj = {
               link: "",
               properties: {
                 color: "",
               },
-              colName: moment(getCols[col]).format("DD/MM/YYYY"),
+              colName:dateValue,
               hasPreImg: false,
               imgLink: "",
-              text: moment(getData[row][getCols[col]]).format("DD/MM/YYYY"),
-              valText: moment(getData[row][getCols[col]]).format("DD/MM/YYYY"),
+              text:dateValue,
+              valText:dateValue,
+              isDate: true
             };
           } else {
             cellObj = {

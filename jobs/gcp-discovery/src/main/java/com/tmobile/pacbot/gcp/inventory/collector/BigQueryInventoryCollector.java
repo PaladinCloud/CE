@@ -72,6 +72,7 @@ public class BigQueryInventoryCollector {
             }
         } catch (Exception e) {
             logger.error("Error while fetching inventory data for BigQuery ", e);
+            Util.errorCount.getAndIncrement();
         }
         logger.info("BigQuery Collected list size: {}",bigQueryList.size());
         return bigQueryList;
@@ -162,6 +163,7 @@ public class BigQueryInventoryCollector {
                 }
             } catch (Exception e) {
                 logger.error("Error while fetching inventory data for BigQuery :", e);
+                Util.errorCount.getAndIncrement();
             }
         }
         logger.info("BigQuery Collected for project:{}, number of tables found:{}", project.getProjectId(), tableVHList.size());

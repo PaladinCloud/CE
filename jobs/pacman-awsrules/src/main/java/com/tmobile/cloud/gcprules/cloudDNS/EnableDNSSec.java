@@ -88,10 +88,10 @@ public class EnableDNSSec extends BasePolicy {
                     .get(PacmanRuleConstants.SOURCE);
 
             logger.debug("Validating the data item: {}", vmInstanceObject);
-            String dnsSecState = vmInstanceObject.getAsJsonObject()
-                    .get(PacmanRuleConstants.DNS_SEC_STATE).getAsString();
 
-            if (dnsSecState!=null && dnsSecState.equalsIgnoreCase("on")) {
+            if (!vmInstanceObject.getAsJsonObject()
+                    .get(PacmanRuleConstants.DNS_SEC_STATE).isJsonNull() && vmInstanceObject.getAsJsonObject()
+                    .get(PacmanRuleConstants.DNS_SEC_STATE).getAsString().equalsIgnoreCase("on")) {
                 validationResult = true;
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);

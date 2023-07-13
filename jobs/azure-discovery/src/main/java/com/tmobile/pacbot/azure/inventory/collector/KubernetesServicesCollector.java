@@ -66,7 +66,7 @@ public class KubernetesServicesCollector {
                     }
                     kubernetesClustersVH.setSubscription(subscription.getSubscriptionId());
                     kubernetesClustersVH.setSubscriptionName(subscription.getSubscriptionName());
-                    kubernetesClustersVH.setRegion(kubernetesClusterObject.get("location").getAsString());
+                    kubernetesClustersVH.setRegion(Util.getRegionValue(subscription,kubernetesClusterObject.get("location").getAsString()));
                     kubernetesClustersVH.setResourceGroupName(
                             kubernetesCluster.resourceGroupName());
                     kubernetesClustersVH.setTags(kubernetesCluster.tags());
@@ -85,6 +85,7 @@ public class KubernetesServicesCollector {
             } catch (Exception e){
                 logger.error("Error while fetching kubernetes Cluster: {}",
                         kubernetesCluster.name(), e);
+                Util.eCount.getAndIncrement();
             }
         }
         return kubernetesClustersVHList;

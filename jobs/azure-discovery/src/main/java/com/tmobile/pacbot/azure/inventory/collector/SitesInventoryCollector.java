@@ -46,7 +46,7 @@ public class SitesInventoryCollector {
 					JsonObject sitesObject = sitesElement.getAsJsonObject();
 					sitesVH.setSubscription(subscription.getSubscriptionId());
 					sitesVH.setSubscriptionName(subscription.getSubscriptionName());
-					sitesVH.setRegion(sitesObject.get("location").getAsString());
+					sitesVH.setRegion(Util.getRegionValue(subscription,sitesObject.get("location").getAsString()));
 					sitesVH.setResourceGroupName(Util.getResourceGroupNameFromId(sitesObject.get("id").getAsString()));
 					sitesVH.setId(sitesObject.get("id").getAsString());
 					sitesVH.setEtag(sitesObject.get("etag").getAsString());
@@ -70,6 +70,7 @@ public class SitesInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error Collecting sites",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Site",sitesList.size());

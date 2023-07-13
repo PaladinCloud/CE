@@ -19,12 +19,11 @@ import java.io.IOException;
 import java.util.*;
 
 import com.google.gson.JsonObject;
+import com.tmobile.pacman.dto.ESBulkApiResponse;
 import org.apache.http.HttpHost;
 import org.opensearch.action.bulk.BulkItemResponse;
 import org.opensearch.action.bulk.BulkRequest;
-import org.opensearch.action.bulk.BulkResponse;
 import org.opensearch.action.index.IndexRequest;
-import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestClient;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.common.xcontent.XContentType;
@@ -53,6 +52,7 @@ public class ElasticSearchDataPublisher {
      * The Constant BULK_INDEX_REQUEST_TEMPLATE.
      */
     private static final String BULK_INDEX_REQUEST_TEMPLATE = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\"} }%n";
+    private static final String BULK_INDEX_REQUEST_TEMPLATE_WITHOUT_ID = "{ \"index\" : { \"_index\" : \"%s\"} }%n";
 
     /**
      * The Constant logger.
@@ -99,9 +99,9 @@ public class ElasticSearchDataPublisher {
             return 0;
         }
 
-        BulkRequest bulkRequest = new BulkRequest();
         Gson gson = new Gson();
         StringBuffer bulkRequestBody = new StringBuffer();
+        StringBuilder autoFixTranRequest = new StringBuilder();
         String response = "";
         List<Map<String, Map>> responseList = new ArrayList<>();
         String esUrl = ESUtils.getEsUrl();
@@ -120,12 +120,12 @@ public class ElasticSearchDataPublisher {
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-                }
+                    }
                 try {
                     // parent child document seems to have some issue
                     bulkRequestBody.append(String.format(BULK_INDEX_REQUEST_TEMPLATE, getIndexName(ruleParam), getDocId(autoFixTransaction)));
 
-                    bulkRequestBody.append(gson.toJson(addRelationsToTransaction(autoFixTransaction, autoFixType)));
+                    bulkRequestBody.append(addRelationsToTransaction(autoFixTransaction, autoFixType));
                     bulkRequestBody.append("\n");
                     if (bulkRequestBody.toString().getBytes().length
                             / (1024 * 1024) >= PacmanSdkConstants.ES_MAX_BULK_POST_SIZE) {
@@ -139,44 +139,44 @@ public class ElasticSearchDataPublisher {
                 }
             }
             // build transaction log
-            IndexRequest indexRequest = new IndexRequest(
-                    CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_TRAN_INDEX_NAME_KEY));
-            indexRequest.source(gson.toJson(addDocType(autoFixTransaction, CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_TRAN_TYPE_NAME_KEY))), XContentType.JSON);
-            bulkRequest.add(indexRequest);
+            try {
+                autoFixTranRequest.append(String.format(BULK_INDEX_REQUEST_TEMPLATE_WITHOUT_ID,
+                        CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_TRAN_INDEX_NAME_KEY)));
+                autoFixTranRequest.append(gson.toJson(autoFixTransaction));
+                autoFixTranRequest.append("\n");
+                if (autoFixTranRequest.toString().getBytes().length
+                        / (1024 * 1024) >= PacmanSdkConstants.ES_MAX_BULK_POST_SIZE) {
+                    response = CommonUtils.doHttpPost(bulkPostUrl, autoFixTranRequest.toString(), new HashMap<>());
+                    ESBulkApiResponse esBulkApiResponse = gson.fromJson(response, ESBulkApiResponse.class);
+                    if (esBulkApiResponse.getItems().stream().anyMatch(item -> item.getIndex().getStatus() >= 200 &&
+                            item.getIndex().getStatus() < 300)) {
+                        logger.error("Non 200 response received {}", esBulkApiResponse);
+                        autoFixTransaction.setAdditionalInfo("Non 200 response received " + esBulkApiResponse);
+                    }
+                    autoFixTranRequest.setLength(0);
+                }
+            } catch (Exception e) {
+                logger.error("error occurred while indexing auto fix document", e);
+                autoFixTransaction.setAdditionalInfo("error occurred while indexing auto fix document " + e.getMessage());
+            }
         }
 
         // post the remaining data if available
-        if (bulkRequestBody.length() > 0) {
-            response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequestBody.toString(), new HashMap<>());
-        }
-        responseList.add(gson.fromJson(response, Map.class));
-
-        // now post transaction log
         try {
-            if (null != client) {
-                BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
-                if (bulkResponse.hasFailures()) {
-                    if (!isIndexAvailable(bulkResponse.getItems())) {
-                        logger.info("index not found to write the transaction logs, creating one");
-                        // version 5.6 does not support index creation via API,
-                        // hence executing a post
-                        try {
-                            CommonUtils
-                                    .doHttpPut(
-                                            ESUtils.getEsUrl() + "/"
-                                                    + CommonUtils
-                                                    .getPropValue(PacmanSdkConstants.AUTO_FIX_TRAN_INDEX_NAME_KEY),
-                                            "");
-                            publishAutoFixTransactions(autoFixTrans, ruleParam); // index should be created now
-                        } catch (Exception e) {
-
-                            logger.error("error creating index", e);
-                        }
-                    }
+            if (autoFixTranRequest.length() > 0) {
+                response = CommonUtils.doHttpPost(bulkPostUrl, autoFixTranRequest.toString(), new HashMap<>());
+                ESBulkApiResponse esBulkApiResponse = gson.fromJson(response, ESBulkApiResponse.class);
+                if (esBulkApiResponse.getItems().stream().anyMatch(item -> !(item.getIndex().getStatus() >= 200 &&
+                        item.getIndex().getStatus() < 300))) {
+                    logger.error("Non 200 response received {}", esBulkApiResponse);
                 }
             }
-        } catch (IOException e) {
-            logger.error("error posting auto fix transaction log", e);
+            if (bulkRequestBody.length() > 0) {
+                response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequestBody.toString(), new HashMap<>());
+            }
+            responseList.add(gson.fromJson(response, Map.class));
+        } catch (Exception e) {
+            logger.error("error occurred while indexing auto fix document", e);
             return -1;
         }
         return 0;
@@ -202,6 +202,15 @@ public class ElasticSearchDataPublisher {
     }
 
     private String addDocType(AutoFixTransaction autoFixTransaction, String type) {
+        Gson gson = new Gson();
+        String json = gson.toJson(autoFixTransaction);
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+        jsonObject.addProperty(DOC_TYPE, type);
+
+        return jsonObject.toString();
+    }
+
+    private String generateAutoFixTranBulkRequest(AutoFixTransaction autoFixTransaction, String type) {
         Gson gson = new Gson();
         String json = gson.toJson(autoFixTransaction);
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);

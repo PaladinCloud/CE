@@ -47,7 +47,7 @@ public class SecurityContactsCollector {
                 securityContactsVH.setId(securityObject.get(ID).getAsString());
                 securityContactsVH.setEtag(securityObject.get("etag").getAsString());
                 securityContactsVH.setName(securityObject.get(NAME).getAsString());
-                securityContactsVH.setRegion(securityObject.get("location").getAsString());
+                securityContactsVH.setRegion(Util.getRegionValue(subscription,securityObject.get("location").getAsString()));
                 securityContactsVH.setType(securityObject.get(TYPE).getAsString());
                 JsonObject propertiesJson = securityObject.get(PROPERTY).getAsJsonObject();
                 HashMap<String, Object> propertiesMap = new Gson().fromJson(propertiesJson.toString(), HashMap.class);
@@ -59,6 +59,7 @@ public class SecurityContactsCollector {
 
         } catch (Exception e) {
             LOGGER.error("Error fetching Security Contacts", e);
+            Util.eCount.getAndIncrement();
         }
         LOGGER.info("Target Type : {}  Total: {} ", "Batch Account", securityContactsList.size());
         return securityContactsList;

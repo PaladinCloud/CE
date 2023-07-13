@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { AdminService } from 'src/app/pacman-features/services/all-admin.service';
@@ -10,6 +10,11 @@ import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.s
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
 import { FormControl, Validators } from '@angular/forms';
+import * as _ from 'lodash';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { TableStateService } from 'src/app/core/services/table-state.service';
+import { TourService } from 'src/app/core/services/tour.service';
 
 
 @Component({
@@ -17,35 +22,49 @@ import { FormControl, Validators } from '@angular/forms';
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css']
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit, AfterViewInit {
 
-  pageTitle = "User Management";
+  pageTitle = "Users";
   dataTableDesc = "";
 
   emailControl = new FormControl('', [
                   Validators.required,
                   Validators.email
                ]);
+  
+  firstNameControl = new FormControl('', [
+                  Validators.required,
+               ]);
+
+  lastNameControl = new FormControl('', [Validators.required]);
 
   @ViewChild("createEditUserRef") createEditUserRef: TemplateRef<any>;
   @ViewChild("actionRef") actionRef: TemplateRef<any>;
 
-  sampleRoles = ["PaladinCloud-ReadOnly","TenantAdmin","PaladinCloud-TechnicalAdmin"];
-  columnNamesMap = { "email": "Email ID", "roles": "Role", "status": "Status"};
-  columnWidths = { "Email ID": 0.5, "Role": 1, "Status": 0.25,"Actions": 0.25 }
-  whiteListColumns = ["Email ID", "Role", "Status","Actions"];
+  userRoles = [];
+  nonRemovableChips = [];
+  columnNamesMap = { "email": "Email", "roles": "Roles", "status": "Status"};
+  columnWidths = { "Email": 0.5, "Roles": 1, "Status": 0.25,"Actions": 0.25 }
+  whiteListColumns;
   isStatePreserved = false;
   tableScrollTop = 0;
   searchTxt = "";
   tableDataLoaded = false;
   totalRows = 0;
   dialogHeader = "Add User";
+  filterTypeLabels = [];
+  filterTagLabels = {};
+  filterTypeOptions: any = [];
+  filterTagOptions: any = {};
+  currentFilterType;
 
   headerColName;
   direction;
   errorMessage: string;
   tableData = [];
   emailID: string;
+  firstName: string;
+  lastName: string;
   selectedRoles: string[];
 
   paginatorSize: number = 25;
@@ -65,6 +84,7 @@ export class UserManagementComponent implements OnInit {
   seekdata: boolean = false;
   showLoader: boolean = true;
   filters: any = [];
+  selectedRowIndex;
   searchCriteria: any;
   filterText: any = {};
   errorValue: number = 0;
@@ -79,41 +99,119 @@ export class UserManagementComponent implements OnInit {
   mandatory: any;
   onScrollDataLoader: Subject<any> = new Subject<any>();
   action: any;
-  updatedRoles: any;
+  updatedRoles = ["ReadOnly"];
 
   constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private routerUtilityService: RouterUtilityService,
     private logger: LoggerService,
     private utils: UtilsService,
     private errorHandling: ErrorHandlingService,
     private refactorFieldsService: RefactorFieldsService,
     private adminService: AdminService,
     private notificationObservableService: NotificationObservableService,
-    public dialog: MatDialog
-  ) { }
+    public dialog: MatDialog,
+    private tableStateService: TableStateService,
+    private tourService: TourService
+  ) {
+    this.getPreservedState();
+    this.getFilters();
+  }
+  ngAfterViewInit(): void {
+    this.tourService.setComponentReady();
+  }
 
   ngOnInit(): void {
-    this.updateComponent();
+    this.getRoles();
   }
 
-  updateComponent(){
-    this.getUserList();
+  getPreservedState(){
+    const state = this.tableStateService.getState("user-management") ?? {};
+    if(state){
+      this.headerColName = state.headerColName ?? 'Email';
+      this.direction = state.direction ?? 'asc';
+      this.bucketNumber = state.bucketNumber ?? 0;
+      this.totalRows = state.totalRows ?? 0;
+      this.searchTxt = state?.searchTxt ?? '';
+      
+      this.tableDataLoaded = true;
+
+      this.tableData = state?.data ?? [];
+      this.whiteListColumns = state?.whiteListColumns ?? ["Email", "Roles", "Status","Actions"];;
+      this.tableScrollTop = state?.tableScrollTop;
+      this.selectedRowIndex = state?.selectedRowIndex;
+
+      if(this.tableData && this.tableData.length>0){        
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
+    }
   }
 
+  updateComponent() {
+    if(this.isStatePreserved){
+      this.tableDataLoaded = true;
+      this.clearState();
+    }else{
+      this.tableDataLoaded = false;
+      this.bucketNumber = 0;
+      this.tableData = [];
+      this.getUserList();
+    }
+  }
+
+  getRoles(){
+    const url = environment.roles.url;
+    const method = environment.roles.method;
+
+    this.adminService.executeHttpAction(url,method,{},{}).subscribe(response=>{
+      try{
+        if(response){
+          const userRoles = response[0];
+          this.processRoles(userRoles);
+        }
+      }catch(error){
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+      }
+    })
+  }
+
+  processRoles(userRoles){
+    for(let i=0;i<userRoles.length;i++){
+      if(userRoles[i].isDefault){
+        this.nonRemovableChips.push(userRoles[i].roleName);
+      }
+      this.userRoles.push(userRoles[i].roleName);
+    }
+  }
+  
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
+    this.storeState();
+  }
+
+  handleWhitelistColumnsChange(event){
+    this.whiteListColumns = event;
+    this.storeState();
   }
 
   createEditUser(currentRow:any) {
     if(currentRow){
         this.dialogHeader = "Edit User Information";
-        this.emailID = currentRow["Email ID"].valueText;
-        this.selectedRoles = currentRow["Role"].valueText;
+        this.emailID = currentRow["Email"].valueText;
+        this.selectedRoles = currentRow["Roles"].valueText;
     }
     else{
+      this.action = '';
       this.dialogHeader = "Add User";
       this.emailID = null;
-      this.selectedRoles = [];
+      this.firstName = null;
+      this.lastName = null;
+      this.selectedRoles = ["ReadOnly"];
     }
     const dialogRef = this.dialog.open(DialogBoxComponent,
       {
@@ -127,7 +225,7 @@ export class UserManagementComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result == "yes") {
         if(currentRow)
-        this.updateUserRoles();
+        this.updateUserRoles(this.selectedRoles);
         else{
           this.addNewUser();
         }
@@ -136,27 +234,36 @@ export class UserManagementComponent implements OnInit {
   }
 
   addNewUser(){
-    this.action = "";
+    this.action = "Added";
     const url = environment.addUser.url;
     const method = environment.addUser.method;
 
     const payload = {
-      "username": this.emailID
+      "username": this.emailID,
+      userAttributes: {
+        given_name: this.firstName,
+        family_name: this.lastName
+      }
     }
 
-    this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
-      if(response){
-        this.updateUserRoles();
-      }
-      
-    })
+    if(this.emailID && (this.firstName && this.lastName)){
+      this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
+        if(response){
+          this.getUserList();
+          this.openSnackBar(this.action.toLowerCase()+" user successfully","check-circle");
+          this.updateUserRoles([]);
+        }
+      })
+    }else{
+      this.openSnackBar("Error adding user successfully","Error", "error");
+    }
   }
 
   onRolesChange(updatedRoles:any){
     this.updatedRoles = updatedRoles;
   }
 
-  updateUserRoles(){
+  updateUserRoles(existingRoles:string[]){
      const url = environment.updateUserRole.url;
      const method = environment.updateUserRole.method;
      const newUrl = url.replace("{username}",this.emailID);
@@ -172,23 +279,270 @@ export class UserManagementComponent implements OnInit {
          try{
            if(response){
              this.getUserList();
-             if(this.action == "Edit")
-             this.openSnackBar("Details updated successfully","check-circle");
-             else
-             this.openSnackBar("User added successfully!","check-circle");
-
+             if(this.action == "Edit"){
+              this.openSnackBar("Details updated successfully","check-circle");
+             }
+             else{
+              this.openSnackBar("User added successfully!","check-circle");
+             }
            }
          }
          catch(error){
-           console.log(error);
+           this.logger.log("jsError", error);
          }
      })
   }
 
-  openSnackBar(message, iconSrc) {
-    this.notificationObservableService.postMessage(message, 3 * 1000, "success", iconSrc);
+  openSnackBar(message, iconSrc, infoCategory?) {
+    this.notificationObservableService.postMessage(message, 3 * 1000, infoCategory??"success", iconSrc);
   }
 
+  /*
+   * This function gets the urlparameter and queryObj
+   *based on that different apis are being hit with different queryparams
+   */
+   routerParam() {
+    try {
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
+      if (currentQueryParams) {
+        this.FullQueryParams = currentQueryParams;
+        this.queryParamsWithoutFilter = JSON.parse(
+          JSON.stringify(this.FullQueryParams)
+        );
+        delete this.queryParamsWithoutFilter["filter"];
+        this.filterText = this.utils.processFilterObj(this.FullQueryParams);
+      }
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+
+  getUpdatedUrl() {
+    let updatedQueryParams = {};    
+      this.filterText = this.utils.arrayToObject(
+      this.filters,
+      "filterkey",
+      "value"
+    ); // <-- TO update the queryparam which is passed in the filter of the api
+    this.filterText = this.utils.makeFilterObj(this.filterText);
+
+    /**
+     * To change the url
+     * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+     */
+
+    updatedQueryParams = {
+      filter: this.filterText.filter,
+    }
+
+
+    /**
+     * Finally after changing URL Link
+     * api is again called with the updated filter
+     */
+    this.filterText = this.utils.processFilterObj(this.filterText);
+    
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+  });
+  }
+  deleteFilters(event?) {
+    try {
+      if (!event) {
+        this.filters = [];
+        this.storeState();
+      }else if(event.index && !this.filters[event.index].filterValue){
+        this.filters.splice(event.index, 1);
+        this.storeState();
+      }
+      else {
+        if (event.clearAll) {
+          this.filters = [];
+        } else {
+          this.filters.splice(event.index, 1);
+        }
+        this.storeState();
+        this.getUpdatedUrl();
+        this.updateComponent();
+      }
+    } catch (error) { }
+    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+  }
+  /*
+   * this functin passes query params to filter component to show filter
+   */
+  getFilterArray() {
+    return new Promise((resolve) => {
+      const filterObjKeys = Object.keys(this.filterText);      
+      const dataArray = [];
+      for (let i = 0; i < filterObjKeys.length; i++) {
+        let obj = {};
+        const keyDisplayValue = _.find(this.filterTypeOptions, {
+          optionValue: filterObjKeys[i],
+        })["optionName"];
+        obj = {
+          keyDisplayValue,
+          filterkey: filterObjKeys[i],
+        };
+        dataArray.push(obj);
+      }
+      
+      const state = this.tableStateService.getState("user-management") ?? {};
+      const filters = state?.filters;
+      
+      if(filters){
+        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
+        filters.forEach(filter => {
+          if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
+            dataArray.push({
+              filterkey: filter.filterkey,
+              keyDisplayValue: filter.key
+            });
+          }
+        });
+      }
+
+      const formattedFilters = dataArray;   
+      if(formattedFilters.length==0){
+        resolve(true);
+      }   
+      for (let i = 0; i < formattedFilters.length; i++) {
+
+        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
+        if(!keyDisplayValue){
+          keyDisplayValue = _.find(this.filterTypeOptions, {
+            optionValue: formattedFilters[i].filterKey,
+          })["optionName"];
+        }
+
+        this.changeFilterType(keyDisplayValue).then(() => {
+          let filterValueObj = _.find(this.filterTagOptions[keyDisplayValue], {
+            id: this.filterText[formattedFilters[i].filterkey],
+          });
+
+          let filterKey = dataArray[i].filterkey;
+          
+          if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
+            const eachObj = {
+              keyDisplayValue: keyDisplayValue,
+              filterValue: filterValueObj?filterValueObj["name"]:undefined,
+              key: keyDisplayValue, // <-- displayKey-- Resource Type
+              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
+              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
+              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+            };
+            this.filters.push(eachObj);            
+          }
+          if(i==formattedFilters.length-1){
+            this.filters = [...this.filters];
+            this.storeState();
+            resolve(true);
+          }
+          
+        })
+      }
+
+    })
+  }
+
+  /**
+   * This function get calls the keyword service before initializing
+   * the filter array ,so that filter keynames are changed
+   */
+
+  getFilters() {
+    try {
+      this.filterTypeLabels.push("Status");
+      this.filterTypeOptions.push({
+        optionName: 'Status',
+        optionValue: 'Status'
+      })
+      this.routerParam();
+      this.getFilterArray().then(() => {
+        this.updateComponent();
+      }).catch(e => {
+        this.logger.log("jsError: ", e);
+        this.updateComponent();
+      });
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+  changeFilterType(value) {
+    return new Promise((resolve, reject) => {
+    try {
+      this.currentFilterType = _.find(this.filterTypeOptions, {
+        optionName: value,
+      });
+      this.storeState();
+      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+        if(value.toLowerCase()=="status"){
+        this.filterTagLabels[value] = ["Active", "Inactive"];
+        this.filterTagOptions[value] = [
+          {
+            id: "active",
+            name: "Active"
+          },
+          {
+            id: "inactive",
+            name: "Inactive"
+          }
+        ]
+        resolve(this.filterTagLabels[value]);
+        return;
+      }
+      }
+    } catch (error) {
+      reject(false);
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+    }); 
+  }
+
+  changeFilterTags(event) {    
+    let value = event.filterValue;
+    this.currentFilterType =  _.find(this.filterTypeOptions, {
+        optionName: event.filterKeyDisplayValue,
+      });  
+    try {
+      if (this.currentFilterType) {
+        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });   
+        this.utils.addOrReplaceElement(
+          this.filters,
+          {
+            keyDisplayValue: event.filterKeyDisplayValue,
+            filterValue: value,
+            key: this.currentFilterType.optionName,
+            value: filterTag["id"],
+            filterkey: this.currentFilterType.optionValue.trim(),
+            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
+          },
+          (el) => {
+            return (
+              el.compareKey ===
+              this.currentFilterType.optionValue.toLowerCase().trim()
+            );
+          }
+        );
+      }
+      this.storeState();
+      this.getUpdatedUrl();
+      this.updateComponent();
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
 
   processData(data) {
     try {
@@ -216,7 +570,7 @@ export class UserManagementComponent implements OnInit {
             // chipVariant: "", // this value exists if isChip is true,
           // menuItems: [], // add this if isMenuBtn
           }
-          if (col.toLowerCase() == "role") {
+          if (col.toLowerCase() == "roles") {
             cellObj = {
               ...cellObj,
               chipList: getData[row][col],
@@ -277,6 +631,8 @@ export class UserManagementComponent implements OnInit {
   onSelectAction(event:any){
     const action = event.action;
     const rowSelected = event.rowSelected;
+    this.selectedRowIndex = event.selectedRowIndex;
+    this.storeState();
     this.action = action;
     if(action == "Activate" || action == "Deactivate" || action == "Remove"){
       this.confirmAction(action,rowSelected);
@@ -285,7 +641,7 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-  deleteUser(username:string){
+  deleteUser(username:string, existingRoles:any){
     const url = environment.deleteUser.url;
     const method = environment.deleteUser.method;
     const newUrl = url.replace('{username}',username);
@@ -300,13 +656,14 @@ export class UserManagementComponent implements OnInit {
           }
         }
         catch(error){
-          console.log(error);
+          this.logger.log("jsError", error);
         }
     })
   }
 
   confirmAction(action:string,selectedRow:any){
-    const username = selectedRow["Email ID"].valueText;
+    const username = selectedRow["Email"].valueText;
+    const roles = selectedRow["Roles"].valueText;
     this.emailID = username;
     const dialogRef = this.dialog.open(DialogBoxComponent,
     {
@@ -322,10 +679,10 @@ export class UserManagementComponent implements OnInit {
       try {
         if (result == "yes") {
           if(action == "Remove"){
-              this.deleteUser(username);
+              this.deleteUser(username, roles);
           }
           else
-          this.userActivation(username);
+          this.userActivation(username,roles);
         }
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -334,7 +691,7 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  userActivation(username:string){
+  userActivation(username:string, existingRoles:any){
       const url = environment.editUserStatus.url;
       const method = environment.editUserStatus.method;
       let replacedUrl = url.replace('{username}', username);
@@ -355,20 +712,50 @@ export class UserManagementComponent implements OnInit {
       )
   }
 
+  storeState(data?){
+    const state = {
+        totalRows: this.totalRows,
+        data: data,
+        headerColName: this.headerColName,
+        direction: this.direction,
+        whiteListColumns: this.whiteListColumns,
+        bucketNumber: this.bucketNumber,
+        searchTxt: this.searchTxt,
+        tableScrollTop: this.tableScrollTop,
+        filters: this.filters,
+        selectedRowIndex: this.selectedRowIndex
+        // filterText: this.filterText
+      }
+    this.tableStateService.setState("user-management", state);
+  }
+
+  clearState(){
+    this.isStatePreserved = false;
+  }
+
   getUserList(isNextPageCalled?) {
     var url = environment.listUsers.url;
     var method = environment.listUsers.method;
 
-    var queryParams = {
+    let queryParams = {
       cursor: this.pageNumber,
       limit: this.paginatorSize,
+      filter: undefined
     };
+
+    if(this.filters.length && this.filters[0].key && this.filters[0].value){
+      queryParams = {
+          ...queryParams,
+          filter: "status = \""+(this.filters[0].value=="active" ?"Enabled":"Disabled")+"\""
+        };
+    }
 
     if (this.searchTxt !== undefined && this.searchTxt !== "") {
       queryParams["searchTerm"] = this.searchTxt;
     }
 
     this.errorMessage = '';
+    this.tableDataLoaded = false;
 
     try{
       this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
@@ -379,31 +766,30 @@ export class UserManagementComponent implements OnInit {
           this.searchCriteria = undefined;
           const tableData = response[0];
           this.tableDataLoaded = true;
-          const updatedResponse = this.massageData(tableData);
-          const processedData = this.processData(updatedResponse)
-          if(isNextPageCalled){
-            this.onScrollDataLoader.next(processedData)
-          }else{
-            this.tableData = processedData;
-            if(this.tableData?.length==0){
-              this.errorMessage = "noDataAvailable";
+          if(tableData.length>0){
+            const updatedResponse = this.massageData(tableData);
+            const processedData = this.processData(updatedResponse);
+            if(isNextPageCalled){
+              this.onScrollDataLoader.next(processedData)
+            }else{
+              this.tableData = processedData;
             }
+          }else{
+            this.errorMessage = "noDataAvailable";
           }
           this.totalRows = tableData.length;
           this.dataLoaded = true;
         }
       },
       (error) => {
-        this.showGenericMessage = true;
-        this.errorValue = -1;
-        this.outerArr = [];
-        this.dataLoaded = true;
-        this.seekdata = true;
+        this.tableDataLoaded = true;
         this.errorMessage = "apiResponseError";
-        this.showLoader = false;
+        this.logger.log("apiResponseError: ", error);
       }
     );
     }catch(e){
+      this.tableDataLoaded = true;
+      this.errorMessage = this.errorHandling.handleJavascriptError(e);
       this.logger.log("error: ", e);
     }
   }

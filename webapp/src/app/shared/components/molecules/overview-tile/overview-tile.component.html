@@ -13,8 +13,20 @@
             </div>
         </div>
     </div>
-    <div class="tile-details flex gap-8">
-        <div class="tile-details-name">{{ tile.subContent.title }}</div>
-        <div class="tile-details-count">{{ tile.subContent.count | number }}</div>
+    <div class="flex gap-16">
+        <div class="tile-details flex gap-8" *ngFor="let data of tile.subContent">
+            <div class="tile-details-name">{{ data.title }}</div>
+            <div class="tile-header-count" *ngIf="data.title.toLowerCase()=='tagged assets'; else displayCount" (click)="redirectTo(data.title)">
+                <app-text-with-icon
+                    [text]="data.count"
+                    textVariant="caption primary-400"
+                    gap="8"
+                ></app-text-with-icon>
+            </div>
+            <ng-template #displayCount> 
+                <div class="tile-details-count" *ngIf="!data.isPercent">{{ data.count | number }}</div>
+                <div class="tile-details-count" *ngIf="data.isPercent">{{ data.count }}</div>
+            </ng-template>
+        </div>
     </div>
 </div>

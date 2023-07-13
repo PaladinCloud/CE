@@ -48,7 +48,7 @@ public class SecurityPricingsInventoryCollector {
 				securityPricingsVH.setType(securityPricingsObject.get("type").getAsString());
 				securityPricingsVH.setSubscription(subscription.getSubscriptionId());
 				securityPricingsVH.setSubscriptionName(subscription.getSubscriptionName());
-				securityPricingsVH.setRegion(subscription.getRegion());
+				securityPricingsVH.setRegion(Util.getRegionValue(subscription,subscription.getRegion()));
 				securityPricingsVH.setResourceGroupName(Util.getResourceGroupNameFromId(securityPricingsObject.get("id").getAsString()));
 
 				if (properties != null) {
@@ -59,6 +59,7 @@ public class SecurityPricingsInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collecting Security Pricings",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Security Pricings",securityPricingsList.size());

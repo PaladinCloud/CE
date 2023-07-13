@@ -14,7 +14,7 @@
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,7 +37,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
-import { StatsOverlayComponent } from '../post-login-app/stats-overlay/stats-overlay.component';
 import { AgGridTableComponent } from './ag-grid-table/ag-grid-table.component';
 import { BackNavigationComponent } from './back-navigation/back-navigation.component';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
@@ -118,18 +117,21 @@ import { TableFilterChipComponent } from './table-filters/table-filter-chip/tabl
 import { TableFilterSearchComponent } from './table-filters/table-filter-search/table-filter-search.component';
 import { TableFiltersComponent } from './table-filters/table-filters.component';
 import { TableListComponent } from './table-list/table-list.component';
+import { TableOptionsComponent } from './table-options/table-options.component';
 import { TableTabsComponent } from './table-tabs/table-tabs.component';
+import { TableColumnWidthPipe } from './table/table-column-width.pipe';
 import { TableComponent } from './table/table.component';
 import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.component';
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
-import { TableOptionsComponent } from './table-options/table-options.component';
+import {ClipboardModule} from '@angular/cdk/clipboard';
 
 @NgModule({
     imports: [
         MatCheckboxModule,
         AgGridModule,
         CommonModule,
+        ClipboardModule,
         DragDropModule,
         FormsModule,
         MatButtonModule,
@@ -214,26 +216,27 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         SearchInfoComponent,
         SearchPipe,
         SnackbarComponent,
-        StatsOverlayComponent,
         StepperComponent,
         SubFooterComponent,
+        TableColumnWidthPipe,
         TableComponent,
         TableFilterChipComponent,
         TableFiltersComponent,
         TableFilterSearchComponent,
         TableListComponent,
+        TableOptionsComponent,
         TableTabsComponent,
         TextComponent,
         TextWithIconComponent,
         TitleBurgerHeadComponent,
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
-        TableOptionsComponent,
     ],
     exports: [
         AgGridTableComponent,
         AssetSummarySearchFilterPipe,
         BackNavigationComponent,
+        ClipboardModule,
         BackNavigationComponent,
         BarChartComponent,
         BreadcrumbComponent,
@@ -272,6 +275,7 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         LinkComponent,
         LoaderMsgComponent,
         MainFilterComponent,
+        MatButtonModule,
         MatIconModule,
         MatSelectModule,
         MatTooltipModule,
@@ -298,7 +302,6 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         SearchPipe,
         SelectDropDownModule,
         SnackbarComponent,
-        StatsOverlayComponent,
         StepperComponent,
         SubFooterComponent,
         TableComponent,
@@ -314,6 +317,7 @@ import { TableOptionsComponent } from './table-options/table-options.component';
         AuthGuardService,
         CommonResponseService,
         CopytoClipboardService,
+        DatePipe,
         ErrorHandlingService,
         ExceptionManagementService,
         FilterManagementService,

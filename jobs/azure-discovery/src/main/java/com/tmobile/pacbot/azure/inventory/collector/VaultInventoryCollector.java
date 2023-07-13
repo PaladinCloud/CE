@@ -48,7 +48,7 @@ public class VaultInventoryCollector {
 			vaultVH.setSubscriptionName(subscription.getSubscriptionName());
 			vaultVH.setId(vaultObject.get("id").getAsString());
 			vaultVH.setLocation(vaultObject.get("location").getAsString());
-			vaultVH.setRegion(vaultObject.get("location").getAsString());
+			vaultVH.setRegion(Util.getRegionValue(subscription,vaultObject.get("location").getAsString()));
 			vaultVH.setResourceGroupName(Util.getResourceGroupNameFromId(vaultObject.get("id").getAsString()));
 			vaultVH.setName(vaultObject.get("name").getAsString());
 			vaultVH.setType(vaultObject.get("type").getAsString());
@@ -127,7 +127,7 @@ public class VaultInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
-
+			Util.eCount.getAndIncrement();
 		}
 		return  vaultVH;
 	}
@@ -163,6 +163,7 @@ public class VaultInventoryCollector {
 			vaults.put("vaultRBACList",vaultRBACList);
 		} catch (Exception e) {
 			log.error("Error Colectting vaults ",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Vault",vaultList.size());

@@ -64,8 +64,8 @@ public final class ActivityLogsCollector {
                                         ActivityLogVH activityLogVH = new ActivityLogVH();
 
                                         activityLogVH.setId(activityLogObject.get("id").getAsString());
-                                        activityLogVH.setRegion(
-                                                activityLogObject.get("location").getAsString());
+                                        activityLogVH.setRegion(Util.getRegionValue(subscription,
+                                                activityLogObject.get("location").getAsString()));
                                         activityLogVH.setSubscription(subscription.getSubscriptionId());
                                         activityLogVH.setSubscriptionName(subscription.getSubscriptionName());
                                         activityLogVH.setResourceGroupName(
@@ -85,6 +85,7 @@ public final class ActivityLogsCollector {
                         } catch (Exception e) {
                                 logger.error("Error while fetching activity logs for alert: {}",
                                         activityLogAlert.name(), e);
+                                Util.eCount.getAndIncrement();
                         }
                 }
 

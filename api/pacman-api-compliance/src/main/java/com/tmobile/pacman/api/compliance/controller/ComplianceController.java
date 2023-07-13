@@ -80,11 +80,12 @@ public class ComplianceController implements Constants {
      */
     @RequestMapping(path = "/v1/issues", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Object> getIssues(@RequestBody(required = false) Request request) {
+    public ResponseEntity<Object> getIssues(@RequestBody(required = false) APIRequest request) {
         String assetGroup = request.getAg();
-        Map<String, String> filters = request.getFilter();
+        Map<String, Object> filters = request.getApiFilter();
 
-        if (Strings.isNullOrEmpty(assetGroup) || MapUtils.isEmpty(filters) || Strings.isNullOrEmpty(filters.get(DOMAIN))) {
+        if (Strings.isNullOrEmpty(assetGroup) || MapUtils.isEmpty(filters)
+                || Strings.isNullOrEmpty((String) filters.get(DOMAIN))) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_DOMAIN));
         }
 
@@ -169,14 +170,12 @@ public class ComplianceController implements Constants {
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));
         }
-
         DitributionDTO distribution = null;
         try {
             distribution = new DitributionDTO(complianceService.getDistributionBySeverity(assetGroup, domainName));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
-
         return ResponseUtils.buildSucessResponse(distribution);
     }
 
@@ -441,20 +440,21 @@ public class ComplianceController implements Constants {
     // @Cacheable(cacheNames="compliance",key="#request.key")
     public ResponseEntity<Object> getNonCompliancePolicyByPolicy(@RequestBody(required = false) Request request) {
         String assetGroup = request.getAg();
+
         Map<String, String> filters = request.getFilter();
 
-        if (Strings.isNullOrEmpty(assetGroup) || MapUtils.isEmpty(filters) || Strings.isNullOrEmpty(filters.get(DOMAIN))) {
+        if (Strings.isNullOrEmpty(assetGroup) || MapUtils.isEmpty(filters)
+                || Strings.isNullOrEmpty(filters.get(DOMAIN))) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_DOMAIN));
         }
-
         ResponseWithOrder response = null;
         try {
             response = (complianceService.getPolicyCompliance(request));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
-
         return ResponseUtils.buildSucessResponse(response);
+
     }
 
     /**
@@ -688,12 +688,12 @@ public class ComplianceController implements Constants {
     })
     @ResponseBody
     public ResponseEntity<Object> addIssuesException(@RequestParam("ag") String assetGroup,
-                                                     @ApiParam(value = "Provide Issue Exception Details", required = true) @RequestBody(required = true) IssuesException issuesException) {
+             @ApiParam(value = "Provide Issue Exception Details", required = true) @RequestBody(required = true) IssuesException issuesException) {
         try {
+
             if (issuesException.getExceptionGrantedDate() == null) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception Granted Date is mandatory"));
             }
-
             if (issuesException.getExceptionEndDate() == null) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception End Date is mandatory"));
             }
@@ -701,19 +701,16 @@ public class ComplianceController implements Constants {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Calendar cal = Calendar.getInstance();
             cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-            if (sdf.parse(sdf.format(issuesException.getExceptionGrantedDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
+            if(sdf.parse(sdf.format(issuesException.getExceptionGrantedDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception Granted Date cannot be earlier date than today"));
             }
-
-            if (sdf.parse(sdf.format(issuesException.getExceptionEndDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
+            if(sdf.parse(sdf.format(issuesException.getExceptionEndDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception End Date cannot be earlier date than today"));
             }
-
-            if (issuesException.getIssueIds().isEmpty()) {
+            if(issuesException.getIssueIds().isEmpty()) {
                 return ResponseUtils.buildFailureResponse(new Exception("Atleast one issue id is required"));
             }
-
-            return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(assetGroup, issuesException));
+            return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(assetGroup,issuesException));
         } catch (ServiceException | ParseException exception) {
             return ResponseUtils.buildFailureResponse(exception);
         }

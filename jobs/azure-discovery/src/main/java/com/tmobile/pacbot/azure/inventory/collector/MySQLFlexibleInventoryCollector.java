@@ -48,7 +48,7 @@ public class MySQLFlexibleInventoryCollector {
                     HashMap<String, String> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
                     mySQLFlexibleVH.setTags(tagsMap);
                 }
-                mySQLFlexibleVH.setRegion(serverNames.get(i).getAsJsonObject().get("location").getAsString());
+                mySQLFlexibleVH.setRegion(Util.getRegionValue(subscription,serverNames.get(i).getAsJsonObject().get("location").getAsString()));
                 String serverName=serverNames.get(i).getAsJsonObject().get("name").getAsString();
                 String id=serverNames.get(i).getAsJsonObject().get("id").getAsString();
                 int beginningIndex=id.indexOf("resourceGroups")+15;

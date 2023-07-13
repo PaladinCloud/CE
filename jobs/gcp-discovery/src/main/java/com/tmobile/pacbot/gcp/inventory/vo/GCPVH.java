@@ -7,7 +7,7 @@ import java.util.Map;
 public class GCPVH {
 
     private String discoveryDate;
-    private String _cloudType = "GCP";
+    private String _cloudType = "gcp";
     private String region;
     private String id;
     private String projectName;

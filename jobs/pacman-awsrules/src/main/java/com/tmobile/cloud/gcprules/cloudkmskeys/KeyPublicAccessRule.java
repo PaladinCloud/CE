@@ -90,6 +90,8 @@ public class KeyPublicAccessRule extends BasePolicy {
             JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
             logger.debug("Data retrieved from ES: {}", sourceData);
+            if(!sourceData.getAsJsonObject().get(BINDINGS).isJsonNull())
+            {
             JsonArray bindings = sourceData.getAsJsonObject().get(BINDINGS).getAsJsonArray();
             if (!bindings.isEmpty()) {
                 for (int i = 0; i < bindings.size(); i++) {
@@ -97,6 +99,7 @@ public class KeyPublicAccessRule extends BasePolicy {
                     JsonArray members = bindingRule.get(MEMBERS).getAsJsonArray();
                     if (checkMembersPublicAccess(members)) return false;
                 }
+            }
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }

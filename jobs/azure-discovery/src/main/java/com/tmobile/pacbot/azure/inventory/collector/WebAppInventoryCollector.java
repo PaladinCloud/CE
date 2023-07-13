@@ -37,7 +37,7 @@ public class WebAppInventoryCollector {
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
                 webAppVH.setSubscription(subscription.getSubscriptionId());
                 webAppVH.setSubscriptionName(subscription.getSubscriptionName());
-                webAppVH.setRegion(webApp.regionName());
+                webAppVH.setRegion(Util.getRegionValue(subscription,webApp.regionName()));
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
 
                 if (webApp.ftpsState() != null) {
@@ -62,6 +62,7 @@ public class WebAppInventoryCollector {
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("Error Collecting info for {} ", e.getMessage());
+                Util.eCount.getAndIncrement();
             }
         }
         return webAppList;

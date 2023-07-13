@@ -2,7 +2,7 @@ from core.terraform.resources.misc import NullResource
 from core.terraform.utils import get_terraform_scripts_and_files_dir, get_terraform_scripts_dir, \
     get_terraform_provider_file
 from core.config import Settings
-from resources.lambda_rule_engine.utils import number_of_aws_rules, number_of_azure_rules, number_of_gcp_rules
+from resources.lambda_rule_engine.utils import number_of_aws_rules, number_of_azure_rules, number_of_gcp_rules, number_of_plugin_rules
 from resources.datastore.db import MySQLDatabase
 from resources.datastore.es import ESDomain
 from resources.data.aws_info import AwsAccount, AwsRegion
@@ -68,6 +68,9 @@ class ReplaceSQLPlaceHolder(NullResource):
         job_initialdelay = str(Settings.JOB_SCHEDULE_INITIALDELAY * 60000) 
         job_schedule_initialdelay_shipper = str(Settings.JOB_SCHEDULE_INITIALDELAY_SHIPPER * 60000)
         job_schedule_initialdelay_rules  = str(Settings.JOB_SCHEDULE_INITIALDELAY_RULES * 60000)
+        vulnerability_scheduler_interval = str(Settings.VULNERABILITY_SCHEDULE_INTERVAL * 3600000)
+        vulnerability_scheduler_collector_initialdelay = str(Settings.VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY * 60000)
+        vulnerability_scheduler_shipper_initialdelay =  str(Settings.VULNERABILITY_SHIPPER_INITIAL_DELAY * 60000)
         local_execs = [
             {
                 'local-exec': {
@@ -153,9 +156,13 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_JOB_SCHEDULE_INITIALDELAY' : job_initialdelay,
                         'ENV_JOB_SCHEDULE_INITIALDELAY_SHIPPER' : job_schedule_initialdelay_shipper,
                         'ENV_JOB_SCHEDULE_INITIALDELAY_RULES' : job_schedule_initialdelay_rules,
+                        'ENV_VULNERABILITY_SCHEDULE_INTERVAL' : vulnerability_scheduler_interval,
+                        'ENV_VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY' : vulnerability_scheduler_collector_initialdelay,
+                        'ENV_VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY' : vulnerability_scheduler_shipper_initialdelay,
                         'ENV_AWS_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "aws" + ":" + str(number_of_aws_rules()),
                         'ENV_AZURE_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "azure" + ":" + str(number_of_azure_rules()),
                         'ENV_GCP_EVENTBRIDGE_BUS_DETAILS'  : Settings.RESOURCE_NAME_PREFIX + "-" + "gcp" + ":" + str(number_of_gcp_rules()),
+                        'ENV_VULNERABILITY_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "vulnerability-plugins" + ":" + str(number_of_plugin_rules()),
                         'ENV_AZURE_ENABLED' : str(need_to_enable_azure()).lower(),
                         'ENV_GCP_ENABLED' : str(need_to_enable_gcp()).lower(),
                         'ENV_JOB_SCHEDULER_NUMBER_OF_BATCHES' : str(Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES),
@@ -178,7 +185,13 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_TOPIC_ARN' : NotificationSNS.get_output_attr('arn'),
                         'ENV_EMAIL_TOPIC_ARN' : EmailSNS.get_output_attr('arn'),
                         'ENV_NOTIFICATION_EMAIL_ID' : Settings.COGNITO_ADMIN_EMAIL_ID,
-                        'ENV_CUSTOMER_NAME' : Settings.CUSTOMER_NAME
+                        'ENV_CUSTOMER_NAME' : Settings.CUSTOMER_NAME,
+                        'ENV_QUALYS_ENABLED' : False,
+                        'ENV_AQUA_ENABLED' : False,
+                        'ENV_TENABLE_ENABLED' : False,
+                        'ENV_ENABLE_EXTERNAL_ID' : False,
+                        'ENV_EXTERNAL_ID' : "XXX"
+
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }

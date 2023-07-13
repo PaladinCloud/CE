@@ -22,6 +22,7 @@
 .column-option-list {
     max-height: 270px;
     overflow-y: auto;
+    padding-bottom: 2px;
 }
 
 .column-option-item,

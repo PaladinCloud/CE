@@ -27,6 +27,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,22 +167,33 @@ public abstract class QualysDataImporter {
         }
     }
 
-    private static String getResponseString(HttpEntity entity){
+    private static String getResponseString(HttpEntity entity) {
         LOGGER.debug("Processing response from response entity");
         StringBuilder responseBuilder = new StringBuilder();
         if (entity != null) {
+            long startTimeBeforeChunksProcessing = System.currentTimeMillis();
             LOGGER.debug("Entity not null, getting input stream.");
+            LOGGER.debug("Printing startTime before reading  response in chunks: {}",startTimeBeforeChunksProcessing);
             try (InputStream inputStream = entity.getContent();
-                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                LOGGER.debug("Reading response line by line");
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    responseBuilder.append(line);
-                    LOGGER.debug("Response lines processed:{}",responseBuilder.length());
+                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)) ){
+                LOGGER.debug("Reading response in chunks");
+                //CORE-895 Optimization fix
+                char[] buffer = new char[5242880];
+                int charBytesRead = 0;
+                while(charBytesRead >= 0){
+                    charBytesRead = bufferedReader.read(buffer, 0, buffer.length);
+                    if(charBytesRead > 0){
+                        responseBuilder.append(buffer, 0, charBytesRead);
+                        LOGGER.debug("Response bytes processed: {}", responseBuilder.length());
+                    }
                 }
+
+                long endTimeBeforeChunksProcessing = System.currentTimeMillis();
+                LOGGER.debug("Printing EndTime after reading  response in chunks: {}",endTimeBeforeChunksProcessing);
+                long totalTimeTakingForChunkProcessingInSeconds = (endTimeBeforeChunksProcessing - startTimeBeforeChunksProcessing)/1000;
+                LOGGER.debug("Printing totalTimeTakingForChunkProcessing in minutes: {}",totalTimeTakingForChunkProcessingInSeconds/60);
             } catch (IOException e) {
-                LOGGER.error("Error in processing response",e);
+                LOGGER.error("Error in processing response", e);
             }
         }
 
@@ -189,7 +201,7 @@ public abstract class QualysDataImporter {
         try {
             EntityUtils.consume(entity);
         } catch (IOException e) {
-            LOGGER.error("Error in processing response",e);
+            LOGGER.error("Error in processing response", e);
         }
         return responseString;
     }

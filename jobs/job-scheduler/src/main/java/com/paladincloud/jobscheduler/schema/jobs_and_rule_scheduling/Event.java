@@ -102,7 +102,6 @@ public class Event implements Serializable {
         return this;
     }
 
-
     public Boolean isIsShipper() {
         return isShipper;
     }
@@ -125,7 +124,7 @@ public class Event implements Serializable {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(batchNo, cloudName, isCollector, isRule, submitJob, isShipper);
+        return java.util.Objects.hash(batchNo, cloudName, isCollector,isRule, submitJob, isShipper);
     }
 
 

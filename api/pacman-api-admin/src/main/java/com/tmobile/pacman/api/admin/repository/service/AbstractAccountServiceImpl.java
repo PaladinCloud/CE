@@ -1,12 +1,12 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
-import com.tmobile.pacman.api.admin.domain.AccountList;
-import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
-import com.tmobile.pacman.api.admin.domain.ConfigPropertyItem;
-import com.tmobile.pacman.api.admin.domain.ConfigPropertyRequest;
+import com.tmobile.pacman.api.admin.common.AdminConstants;
+import com.tmobile.pacman.api.admin.domain.*;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
+import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,9 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
 
     @Autowired
     AccountsRepository accountsRepository;
+
+    @Autowired
+    AzureAccountRepository azureAccountRepository;
 
     @Autowired
     ConfigPropertyService configPropertyService;
@@ -40,6 +43,61 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         }
         else {
             return convertToMap(accountsRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, columnName)), searchTerm.toLowerCase()));
+        }
+    }
+
+    @Override
+    public AccountList getAllAccountsByFilter(PluginRequestBody reqBody) {
+        String search = StringUtils.isEmpty(reqBody.getSearchtext()) ? "" : reqBody.getSearchtext();
+        Map<String, String> sortOrderFilter = reqBody.getSortFilter();
+        String sortElement = AdminConstants.ACCOUNT_ID;
+        String sortOrder = AdminConstants.ASC;
+        if(sortOrderFilter != null &&  sortOrderFilter.containsKey(AdminConstants.SORT_ELEMENT)){
+            sortElement=  sortOrderFilter.get(AdminConstants.SORT_ELEMENT);
+            sortOrder = sortOrderFilter.containsKey(AdminConstants.SORT_ORDER) ? sortOrderFilter.get(AdminConstants.SORT_ORDER) :  AdminConstants.ASC;
+        }
+        if(reqBody.getFilter() == null){
+            return convertToMap(accountsRepository.findAll(PageRequest.of(reqBody.getPage(), reqBody.getSize(),
+                            Sort.by(sortOrder.equalsIgnoreCase(AdminConstants.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, sortElement)),
+                    search.toLowerCase()));
+        }
+        List<String> accountName = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.ACCOUNT_NAME) != null))
+                ? (List<String>) reqBody.getFilter().get(AdminConstants.ACCOUNT_NAME) : getPluginFilterVal(AdminConstants.ACCOUNT_NAME);
+        List<String> accountId = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.ACCOUNT_ID) != null))
+                ? (List<String>) reqBody.getFilter().get(AdminConstants.ACCOUNT_ID) : getPluginFilterVal(AdminConstants.ACCOUNT_ID);
+        List<String> createdBy =  ((reqBody.getFilter() != null) &&  (reqBody.getFilter().get(AdminConstants.CREATED_BY) != null))
+                ? (List<String>) reqBody.getFilter().get(AdminConstants.CREATED_BY) : getPluginFilterVal(AdminConstants.CREATED_BY);
+        List<String> asset = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.ASSET) != null))
+                ? (List<String>) reqBody.getFilter().get(AdminConstants.ASSET) : getPluginFilterVal(AdminConstants.ASSET);
+        List<String> violations = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.VIOLATIONS) != null))
+                ? (List<String>) reqBody.getFilter().get(AdminConstants.VIOLATIONS) : getPluginFilterVal(AdminConstants.VIOLATIONS);
+        List<String> status = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.STATUS) != null))
+                ?  (List<String>) reqBody.getFilter().get(AdminConstants.STATUS) : getPluginFilterVal(AdminConstants.STATUS);
+        List<String> platform = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.PLATFORM) != null))
+                ?  (List<String>) reqBody.getFilter().get(AdminConstants.PLATFORM) : getPluginFilterVal(AdminConstants.PLATFORM);
+
+        return convertToMap(accountsRepository.findAll(PageRequest.of(reqBody.getPage(), reqBody.getSize(), sortOrder.equalsIgnoreCase(AdminConstants.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, sortElement),
+                search, accountName, accountId, createdBy, asset, violations, status, platform));
+    }
+
+    @Override
+    public List<String> getPluginFilterVal(String attribute){
+        try{
+            switch (attribute) {
+                case AdminConstants.ACCOUNT_ID:
+                    List<String> accountList= accountsRepository.findDistinctAccountId();
+                    accountList.addAll(azureAccountRepository.findSubscriptions());
+                    return accountList;
+                case AdminConstants.ACCOUNT_NAME:  return accountsRepository.findDistinctAccountName();
+                case AdminConstants.ASSET:  return accountsRepository.findDistinctAssets();
+                case AdminConstants.VIOLATIONS:  return accountsRepository.findDistinctViolations();
+                case AdminConstants.STATUS:  return accountsRepository.findDistinctAccountStatus();
+                case AdminConstants.CREATED_BY: return accountsRepository.findDistinctCreatedBy();
+                case AdminConstants.PLATFORM: return accountsRepository.findDistinctPlatform();
+                default: return new ArrayList<String>();
+            }
+        }catch (Exception e){
+            return new ArrayList<>();
         }
     }
 

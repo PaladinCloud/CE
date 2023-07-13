@@ -38,7 +38,7 @@ public class ErrorManageUtil {
 
     /** The log. */
     private static Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
-	
+
 	/** The error map. */
 	private static Map<String,List<ErrorVH>> errorMap = new HashMap<>();
 	
@@ -47,6 +47,10 @@ public class ErrorManageUtil {
 	 */
 	private ErrorManageUtil() {
 		
+	}
+
+	public static Map<String, List<ErrorVH>> getErrorMap() {
+		return errorMap;
 	}
 	
 	/**

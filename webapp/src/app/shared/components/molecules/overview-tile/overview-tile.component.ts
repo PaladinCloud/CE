@@ -9,7 +9,7 @@ export interface OverviewTile {
     subContent: {
         count: number;
         title: string;
-    };
+    }[];
 }
 
 @Component({

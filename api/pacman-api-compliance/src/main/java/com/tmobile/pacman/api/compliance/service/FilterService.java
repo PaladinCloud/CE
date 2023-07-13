@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.tmobile.pacman.api.commons.exception.ServiceException;
+import com.tmobile.pacman.api.compliance.domain.FilterRequest;
+import com.tmobile.pacman.api.compliance.domain.ResponseData;
 
 /**
  * The Interface FilterService.
@@ -158,4 +160,6 @@ public interface FilterService {
     public List<Map<String, Object>> getNotificationEventName() throws ServiceException;
 
     List<Map<String, Object>> getAttributeValuesForAssetGroup(String assetGroup, String domain, String attributeName, String entityType) throws ServiceException;
+
+    ResponseData getPolicycompliance(FilterRequest request) throws ServiceException;
 }

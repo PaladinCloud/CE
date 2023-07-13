@@ -12,20 +12,22 @@
  * limitations under the License.
  */
 
-.floating-widgets-section {
+ .floating-widgets-section {
     height: 100%;
     width: 100%;
-    padding: 18px 24px;
 }
 
 .floating-widgets-container {
     overflow: hidden;
-    padding: 0;
 }
 
 .floating-widgets-container:hover {
     overflow: auto;
     overflow: overlay;
+}
+
+.floating-widgets-filter-wrapper {
+    padding: 0em 1.5em 1.5em;
 }
 
 .widget-wrapper {
@@ -37,18 +39,30 @@
     color: rgb(85, 85, 85);
 }
 
-.dialog-body-header{
-    font: var(--text-headline-6);
-    color: var(--text-high-emphasis);
+.admin-widgets-header h1 {
+    text-transform: capitalize;
 }
 
-.dialog-body-content{
-   font: var(--text-body-2);
-   color: var(--text-medium-emphasis);
+.details-bar[_ngcontent-c14] {
+    width: 50em !important;
 }
 
-.dialog-body{
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+.submit-btn {
+    height: 36px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--primary-400);
+    color: #fff;
+    display: inline-block;
+    font: var(--text-body-2);
+    padding: 0.6em 1.5em;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    min-width: 5em;
+    text-align: center;
+}
+
+.submit-btn:hover {
+    background-color: var(--primary-500);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }

@@ -22,7 +22,6 @@ import find from 'lodash/find';
 import orderBy from 'lodash/orderBy';
 // import * as frLocale from 'date-fns/locale/en';
 import { WorkflowService } from '../../../../../core/services/workflow.service';
-import * as moment from 'moment';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
@@ -33,7 +32,9 @@ import { AdminService } from '../../../../services/all-admin.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UploadFileService } from '../../../../services/upload-file-service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { HttpService } from 'src/app/shared/services/http-response.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-admin-create-sticky-exceptions',
@@ -65,7 +66,7 @@ import { DataCacheService } from 'src/app/core/services/data-cache.service';
 })
 export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   pageTitle: String = '';
-  breadcrumbArray: any = ['Sticky Exceptions'];
+  breadcrumbArray: any = ['Exemptions'];
   breadcrumbLinks: any = ['sticky-exceptions'];
   breadcrumbPresent: any;
   outerArr: any = [];
@@ -83,7 +84,6 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   allAssetGroupNames: Array<string>;
   selectedAssetGroup: string;
   dataForm: FormGroup;
-  user: FormGroup;
 
   assetLoaderTitle: string = '';
   assetLoader: boolean = false;
@@ -109,7 +109,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   hideContent: boolean = false;
   pageContent: any = [
-    { title: 'Enter Exception Details', hide: false },
+    { title: 'Enter Exemption Details', hide: false },
     { title: 'Exempt Target Types', hide: true }
   ];
 
@@ -179,6 +179,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   queryParamsWithoutFilter: any;
   urlToRedirect: any = '';
   mandatory: any;
+  stickyExceptionDetailsBeforeUpdate : any;
 
   public labels: any;
   private previousUrl: any = '';
@@ -188,9 +189,12 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  private readonly shortDateFormat = 'dd/MM/yyyy';
+  private readonly exceptionDetailsExpiryDateFormat = 'yyyy-MM-dd';
 
   constructor(
     private router: Router,
+    private datePipe: DatePipe,
     private activatedRoute: ActivatedRoute,
     private utils: UtilsService,
     private logger: LoggerService,
@@ -198,6 +202,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
+    private httpService: HttpService,
     private dataCacheService: DataCacheService
   ) {
 
@@ -216,10 +221,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
-    this.expiryDate = moment(new Date()).format('DD/MM/YYYY');
-    this.user = new FormGroup({
-      name: new FormControl(moment('2018-07-14', 'YYYY-MM-DD').toDate(), [Validators.required, Validators.minLength(1)])
-    });
+    this.expiryDate = this.datePipe.transform(new Date(), this.shortDateFormat);
   }
 
   state: string = 'closed';
@@ -354,10 +356,11 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       this.exceptionDetailsForm = {
         name: reponse[0].exceptionName,
         reason: reponse[0].exceptionReason,
-        expiry: moment(reponse[0].expiryDate).format('YYYY-MM-DD'),
+        expiry: this.datePipe.transform(reponse[0].expiryDate, this.exceptionDetailsExpiryDateFormat),
         assetGroup: [{ text: reponse[0].groupName, id: reponse[0].groupName }]
       }
       this.selectedAssetGroup = reponse[0].groupName;
+      this.stickyExceptionDetailsBeforeUpdate = reponse[0];
     },
       error => {
         this.assetLoaderFailure = true;
@@ -439,7 +442,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   expiryDate: any;
   getDateData(date: any): any {
-    this.expiryDate = moment(date).format('DD/MM/YYYY');
+    this.expiryDate = this.datePipe.transform(date, this.shortDateFormat);
   }
 
   closeAssetErrorMessage() {
@@ -474,7 +477,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     let exceptionDetails = this.marshallingCreateExceptionData(exceptionFormDetails);
     this.loadingContent = 'creation';
 
-    this.successTitle = 'Exception Created';
+    this.successTitle = 'Exemption Created';
     this.highlightName = exceptionFormDetails.name;
 
     this.hideContent = true;
@@ -496,6 +499,9 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
         description: '',
         writePermission: false
       };*/
+      // if(reponse[0].message==='success'){
+      //   let reqDetailsOfStickyException = getReqDetailsForLogging(exceptionDetails);
+      // }
     },
       error => {
         this.failedTitle = 'Creation Failed';
@@ -516,7 +522,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     let url = environment.deleteStickyException.url;
     let method = environment.deleteStickyException.method;
     this.adminService.executeHttpAction(url, method, exceptionDetails, {}).subscribe(reponse => {
-      this.successTitle = 'Exception Deleted';
+      this.successTitle = 'Exemption Deleted';
       this.isAssetGroupExceptionCreationUpdationSuccess = true;
       this.assetGroupExceptionLoader = false;
       /*this.assetGroupExceptions = {
@@ -535,7 +541,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   updateException(exceptionFormDetails) {
     let exceptionDetails = this.marshallingUpdateExceptionData(exceptionFormDetails);
     this.loadingContent = 'updation';
-    this.successTitle = 'Exception Updated';
+    this.successTitle = 'Exemption Updated';
     this.highlightName = exceptionFormDetails.name;
     this.hideContent = true;
     this.assetGroupExceptionLoader = true;
@@ -556,6 +562,11 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
         description: '',
         writePermission: false
       };*/
+
+      // if(reponse[0].message==='success'){
+      //   let afterUpdateOfStickyException = getReqDetailsForLogging(exceptionDetails);
+      //   let beforeUpdateOfStickyException = getReqDetailsForLogging(this.stickyExceptionDetailsBeforeUpdate);
+      // }
     },
       error => {
         this.failedTitle = 'Updation Failed';
@@ -627,23 +638,23 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
         delete this.queryParamsWithoutFilter['filter'];
         if (this.exceptionName) {
           this.assetLoaderTitle = this.exceptionName;
-          this.pageTitle = 'Edit Sticky Exceptions';
-          this.breadcrumbPresent = 'Edit Sticky Exceptions';
+          this.pageTitle = 'Edit Exemptions';
+          this.breadcrumbPresent = 'Edit Exemptions';
           this.isCreate = false;
           this.getAllStickyExceptionDetails(this.exceptionName);
         } else {
           this.assetLoaderTitle = 'Asset Groups';
-          this.pageTitle = 'Create Sticky Exceptions';
-          this.breadcrumbPresent = 'Create Sticky Exceptions';
+          this.pageTitle = 'Create Exemptions';
+          this.breadcrumbPresent = 'Create Exemptions';
           this.isCreate = true;
           this.getAllAssetGroupNames();
         }
 
         /**
-         * The below code is added to get URLparameter and queryparameter
-         * when the page loads ,only then this function runs and hits the api with the
-         * filterText obj processed through processFilterObj function
-         */
+        * The below code is added to get URLparameter and queryparameter
+        * when the page loads ,only then this function runs and hits the api with the
+        * filterText obj processed through processFilterObj function
+        */
         this.filterText = this.utils.processFilterObj(
           this.FullQueryParams
         );
@@ -662,20 +673,22 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This function get calls the keyword service before initializing
-   * the filter array ,so that filter keynames are changed
-   */
+  * This function get calls the keyword service before initializing
+  * the filter array ,so that filter keynames are changed
+  */
 
   updateComponent() {
     this.outerArr = [];
     this.showLoader = true;
     this.errorValue = 0;
     this.getData();
+    this.stickyExceptionDetailsBeforeUpdate = {};
   }
 
   navigateBack() {
     try {
       this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
+      this.stickyExceptionDetailsBeforeUpdate = {};
     } catch (error) {
       this.logger.log('error', error);
     }
@@ -694,3 +707,18 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     }
   }
 }
+function getReqDetailsForLogging(exceptionFormDetails: any) {
+  let targetTypesAndPoliciesIncluded = exceptionFormDetails.targetTypes?.filter(obj => obj.policies.length>0).map(obj => {
+    let returnObj = { ...obj};
+    returnObj.policies = returnObj.policies.map(selectedPolicies =>  selectedPolicies.id);
+    delete returnObj.allPolicies;
+    delete returnObj.added;
+    return returnObj;
+  });
+  let requiredDetails = {
+    ...exceptionFormDetails,
+    targetTypes : targetTypesAndPoliciesIncluded
+  };
+  return requiredDetails;
+}
+

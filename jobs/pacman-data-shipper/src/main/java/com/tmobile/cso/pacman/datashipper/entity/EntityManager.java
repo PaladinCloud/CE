@@ -76,15 +76,17 @@ public class EntityManager implements Constants {
      */
     public List<Map<String, String>> uploadEntityData(String datasource) {
     	List<Map<String,String>> errorList = new ArrayList<>();
-        Set<String> types = ConfigManager.getTypes(datasource);
-        Iterator<String> itr = types.iterator();
+        Map<String,String> types = ConfigManager.getTypesWithDisplayName(datasource);
+        Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
         String type = "";
         LOGGER.info("*** Start Colleting Entity Info ***");
         List<String> filters = Arrays.asList("_docid", FIRST_DISCOVERED);
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
         while (itr.hasNext()) {
             try {
-                type = itr.next();
+                Map.Entry<String, String> entry = itr.next();
+                type = entry.getKey();
+                String displayName= entry.getValue();
                 Map<String, Object> stats = new LinkedHashMap<>();
                 String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
                 stats.put("datasource", datasource);
@@ -112,7 +114,7 @@ public class EntityManager implements Constants {
                     String idColumn = ConfigManager.getIdForType(datasource, type);
 	                String[] keysArray = keys.split(",");
 	                
-	                prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type,datasource);
+	                prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type,datasource,displayName);
 	                Map<String,Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName,type,loaddate,errorList,true);
 	                Map<String, Object> uploadInfo = ESManager.uploadData(indexName, type, entities, loaddate);
                     //ESManager.removeViolationForDeletedAssets(entities, indexName);
@@ -181,10 +183,17 @@ public class EntityManager implements Constants {
      */
     private  void prepareDocs(Map<String, Map<String, String>> currentInfo, List<Map<String, Object>> entities,
             List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
-            Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource) {
+            Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource,String displayName) {
         entities.parallelStream().forEach(entityInfo -> {
             String id = entityInfo.get(idColumn).toString();
             String docId = Util.concatenate(entityInfo, _keys, "_");
+            String resourceName = ConfigManager.getResourceNameType(dataSource, _type);
+            if(entityInfo.containsKey(resourceName)) {
+            	entityInfo.put("_resourcename", entityInfo.get(resourceName).toString());
+            } else {
+            	entityInfo.put("_resourcename", id);
+            }
+            
             entityInfo.put("_resourceid", id);
             if("aws".equalsIgnoreCase(dataSource)) {
             	if(Arrays.asList(_keys).contains("accountid")) {
@@ -194,8 +203,7 @@ public class EntityManager implements Constants {
             entityInfo.put("_docid", docId);
             entityInfo.put("_entity", "true");
             entityInfo.put("_entitytype", _type);
-            
-            
+            entityInfo.put("targettypedisplayname",displayName);
 
             if(entityInfo.containsKey("subscriptionName")){
                 entityInfo.put("accountname",entityInfo.get("subscriptionName"));

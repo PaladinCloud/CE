@@ -68,7 +68,7 @@ public class VMInventoryCollector {
 						: virtualMachine.instanceView().computerName()
 						: virtualMachine.computerName());
 				vmVH.setName(virtualMachine.name());
-				vmVH.setRegion(virtualMachine.regionName());
+				vmVH.setRegion(Util.getRegionValue(subscription,virtualMachine.regionName()));
 				vmVH.setSubscription(subscription.getSubscriptionId());
 				vmVH.setSubscriptionName(subscription.getSubscriptionName());
 
@@ -147,6 +147,7 @@ public class VMInventoryCollector {
 			}catch(Exception e) {
 				e.printStackTrace();
 				log.error("Error Collecting info for {} {} ",virtualMachine.computerName(),e.getMessage());
+				Util.eCount.getAndIncrement();
 			}
 		}
 		log.info("Target Type : {}  Total: {} ", "virtualmachine", vmList.size());

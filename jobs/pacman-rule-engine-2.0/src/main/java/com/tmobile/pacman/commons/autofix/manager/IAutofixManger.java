@@ -80,13 +80,13 @@ public interface IAutofixManger {
 
         List<Map<String, String>> existingIssues = null;
         String policyId = policyParam.get(PacmanSdkConstants.POLICY_ID);
-        ResourceOwnerService ownerService = new ResourceOwnerService();
+        //ResourceOwnerService ownerService = new ResourceOwnerService();
         NextStepManager nextStepManager = new NextStepManager();
         ResourceTaggingManager taggingManager = new ResourceTaggingManager();
         AutoFixAction autoFixAction;
         List<FixResult> fixResults = new ArrayList<>();
         AWSService serviceType = null;
-        ResourceOwner resourceOwner = null;
+        //ResourceOwner resourceOwner = null;
         String resourceId = null;
         String targetType = null;
         String parentDocId = null;
@@ -218,7 +218,7 @@ public interface IAutofixManger {
             String issueStatus = annotation.get("issueStatus");
 
             // find resource owner
-            resourceOwner = ownerService.findResourceOwnerByIdAndType(resourceId, serviceType);
+            //resourceOwner = ownerService.findResourceOwnerByIdAndType(resourceId, serviceType);
             // the following method will also trigger a auto fix plan creation if no action is taken on resource yet
             autoFixAction = nextStepManager.getNextStep(policyParam, normalizeResourceId(resourceId, serviceType, annotation), resourceId, clientMap, serviceType);
             if (AutoFixAction.UNABLE_TO_DETERMINE == autoFixAction) {
@@ -261,7 +261,7 @@ public interface IAutofixManger {
 
                         if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))
                                 && !NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EXEMPTED, annotation)) {
-                            logger.error("unable to send email to {}", resourceOwner);
+                            logger.error("unable to send email");
                         }
                     }
                     // should be removed for deployment
@@ -293,35 +293,9 @@ public interface IAutofixManger {
                         logger.error(String.format("unable to create autofix plan for %s,%s,%s,%s,%s", policyId, annotation.get(PacmanSdkConstants.ANNOTATION_PK), resourceId, annotation.get(PacmanSdkConstants.DOC_ID), targetType), e);
                     }
 
-                    logger.debug("found the resource Owner {}", resourceOwner);
-                    if (Strings.isNullOrEmpty(resourceOwner.getEmailId())
-                            && !Strings.isNullOrEmpty(resourceOwner.getName())
-                            && resourceOwner.getName().contains("@")) { // case
-                        // when
-                        // name
-                        // contains
-                        // email
-                        resourceOwner.setEmailId(resourceOwner.getName());
-                    }
-
-                    if (resourceOwner == null || resourceOwner.getEmailId() == null
-                            ||!resourceOwner.getEmailId().contains("@")) { // service
-                        // account
-                        // case, in
-                        // this
-                        // case it
-                        // is a
-                        // service
-                        // account
-                        // name
-                        resourceOwner
-                                .setEmailId(CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL));
-                    }
                 } catch (Exception e) {
-                    logger.error("unable to find the resource owner for {} and {} ", resourceId, e);
-                    resourceOwner = new ResourceOwner("Team",
-                            CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL));
-                    resourceOwnerNotFoundCounter++;
+                    logger.error("unable to find the resource owner", e);
+
                 }
 
                 if (AutoFixAction.DO_NOTHING == autoFixAction) {
@@ -346,17 +320,17 @@ public interface IAutofixManger {
 //                        new SlackMessageRelay().sendMessage(CommonUtils.getPropValue(PacmanSdkConstants.PAC_MONITOR_SLACK_USER), msg);
 //                        continue; // notification was not sent, skip further
 //                        // execution
-//                    }
+//                    } getting here
                     if (!NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EMAIL, annotation)) {
-                        String msg = String.format("unable to send email to %s for vulnerable resource %s, hence skipping this pass", resourceOwner.toString(), resourceId);
+                        String msg = String.format("unable to send email for vulnerable resource %s, hence skipping this pass", resourceId);
                         logger.error(msg);
                         new SlackMessageRelay().sendMessage(CommonUtils.getPropValue(PacmanSdkConstants.PAC_MONITOR_SLACK_USER), msg);
                         continue; // notification was not sent, skip further
                         // execution
                     }
-                    logger.debug("email sent to {}", resourceOwner);
+
                     autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_EMAIL, resourceId, policyId, executionId,
-                            transactionId, "email sent to " + resourceOwner.getEmailId(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
+                            transactionId, "email sent", type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
                     notificationSentCounter++;
                     try {
                         nextStepManager.postFixAction(resourceId, AutoFixAction.EMAIL);
@@ -410,14 +384,14 @@ public interface IAutofixManger {
                                 } catch (Exception e) {
                                     logger.error(String.format("unable to syn plan for %s", resourceId), e);
                                 }
-                                logger.debug("autofixed the resource {} and email sent to  {} and plan synchronized",
-                                        resourceId, resourceOwner);
+                                logger.debug("autofixed the resource {} and email sent and plan synchronized",
+                                        resourceId);
                             }
 //                                    if(annotation.get("policyId").equalsIgnoreCase("PacMan_ApplicationTagsShouldBeValid_version-1")){
 //                                    silentautoFixTrans.add(new AutoFixTransaction(resourceId, ruleId,annotation.get("accountid") , annotation.get("region"),annotation.get("correct_application_tag")));
 //                                    }
                             else {
-                                logger.error("unable to send email to {}", resourceOwner);
+                                logger.error("unable to send email");
 
                             }
                             if (nextStepManager.isSilentFixEnabledForRule(policyId) && null != addDetailsToTransactionLogMethod) {
@@ -432,11 +406,8 @@ public interface IAutofixManger {
                             continue;
                         }
                     } else if (AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY == autoFixAction) {
-
-                        if (!MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId, "",
-                                AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY, addDetailsToLogTrans, annotation)) {
-                            logger.error("unable to send email to {}", resourceOwner);
-                        }
+                        NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY, annotation);
+                        logger.info("Auto fix remainder email sent");
                     }
                 }
             } // if issue open

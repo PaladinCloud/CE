@@ -91,12 +91,13 @@ public class PolicyStatesInventoryCollector {
 
 				policyStatesVH.setSubscription(subscription.getSubscriptionId());
 				policyStatesVH.setSubscriptionName(subscription.getSubscriptionName());
-				policyStatesVH.setRegion(policyStatesObject.get("resourceLocation").getAsString().isEmpty()?null:policyStatesObject.get("resourceLocation").getAsString());
+				policyStatesVH.setRegion(Util.getRegionValue(subscription,policyStatesObject.get("resourceLocation").getAsString().isEmpty()?null:policyStatesObject.get("resourceLocation").getAsString()));
 				policyStatesVH.setResourceGroupName(policyStatesObject.get("resourceGroup").getAsString());
 				policyStatesList.add(policyStatesVH);
 			}
 		} catch (Exception e) {
 			log.error("Error collleting Policy States",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Policy States",policyStatesList.size());

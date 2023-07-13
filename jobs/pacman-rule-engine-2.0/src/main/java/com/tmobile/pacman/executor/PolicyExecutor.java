@@ -294,6 +294,8 @@ public class PolicyExecutor {
             logger.error(msg, e);
             policyEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
             logger.error("exiting now..", e);
+            //below error message will be used by datadog to create notification in slack.
+            logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
             ProgramExitUtils.exitWithError();
         }
 
@@ -324,10 +326,6 @@ public class PolicyExecutor {
             // type annotations
             logger.debug("total potential missing evaluations" + resourceIdToResourceMap.size());
             final Map<String, String> policyParamCopy = ImmutableMap.<String, String>builder().putAll(policyParam).build();
-            String policyKey = policyParam.get("policyKey");
-            Class<?> policyClass = null;
-            policyClass = ReflectionUtils.findAssociateClass(policyKey);
-            PacmanPolicy policyAnnotation = policyClass.getAnnotation(PacmanPolicy.class);
             if (resourceIdToResourceMap.size() > 0) {
                 resourceIdToResourceMap.values().forEach(obj -> {
                     missingEvaluations.add(new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN,

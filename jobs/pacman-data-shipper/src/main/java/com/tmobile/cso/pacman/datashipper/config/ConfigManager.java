@@ -54,7 +54,9 @@ public class ConfigManager {
             try{
                 for (Map<String, String> _type : typeList) {
                     String typeName =  _type.get("targetName");
+                    String displayName=_type.get("displayName");
                     Map<String, String> config =  new ObjectMapper().readValue(_type.get("targetConfig"),new TypeReference<Map<String,String>>() {});
+                    config.put("displayName",displayName);
                     if ( (targetTypesList.isEmpty() || targetTypesList.contains(typeName) ) && !targetTypesOutScopeList.contains(typeName)) {
                         typeInfo.put(typeName, config);
                     }
@@ -94,6 +96,20 @@ public class ConfigManager {
         return getTypeConfig(ds).get(type).get("id");
 
     }
+    
+    /**
+     * Gets the resourceName for type.
+     *
+     * @param ds
+     *            the ds
+     * @param type
+     *            the type
+     * @return the id for type
+     */
+    public static String getResourceNameType(String ds, String type) {
+        return getTypeConfig(ds).get(type).get("name");
+
+    }
 
     /**
      * Gets the types.
@@ -104,6 +120,22 @@ public class ConfigManager {
      */
     public static Set<String> getTypes(String ds) {
         return getTypeConfig(ds).keySet();
+    }
+    public static Map<String,String> getTypesWithDisplayName(String ds) {
+        Map<String, Map<String, String>> typeInfo=getTypeConfig(ds);
+        Map<String,String>targetTypeWithDisplayName=new HashMap<>();
+        for(Map.Entry<String,Map<String,String>> entry:typeInfo.entrySet()){
+            String targetType = entry.getKey();
+            Map<String, String> innerMap = entry.getValue();
+            for(Map.Entry<String,String>innerEntry:innerMap.entrySet()){
+                String innerKey = innerEntry.getKey();
+                String value = innerEntry.getValue();
+                if(innerKey.equalsIgnoreCase("displayName")){
+                    targetTypeWithDisplayName.put(targetType,value);
+                }
+            }
+        }
+        return targetTypeWithDisplayName;
     }
 
 }

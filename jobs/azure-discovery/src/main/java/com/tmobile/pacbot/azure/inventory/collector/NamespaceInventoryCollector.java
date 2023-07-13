@@ -46,7 +46,7 @@ public class NamespaceInventoryCollector {
                     JsonObject namespaceObject = namespaceElement.getAsJsonObject();
                     namespaceVH.setSubscription(subscription.getSubscriptionId());
                     namespaceVH.setSubscriptionName(subscription.getSubscriptionName());
-                    namespaceVH.setRegion(namespaceObject.get("location").getAsString());
+                    namespaceVH.setRegion(Util.getRegionValue(subscription,namespaceObject.get("location").getAsString()));
                     namespaceVH.setResourceGroupName(Util.getResourceGroupNameFromId(namespaceObject.get("id").getAsString()));
                     namespaceVH.setId(namespaceObject.get("id").getAsString());
                     namespaceVH.setLocation(namespaceObject.get("location").getAsString());
@@ -75,6 +75,7 @@ public class NamespaceInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error collecting namespace",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Namespace",namespaceList.size());

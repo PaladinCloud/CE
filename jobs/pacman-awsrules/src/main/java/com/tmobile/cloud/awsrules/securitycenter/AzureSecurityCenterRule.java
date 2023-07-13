@@ -48,7 +48,7 @@ public class AzureSecurityCenterRule extends BasePolicy {
 		String esUrl = null;
 		String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
 		if (!StringUtils.isNullOrEmpty(url)) {
-			esUrl = url + "/azure_securitycenter/securitycenter/_search";
+			esUrl = url + "/azure_securitycenter/_search";
 		}
 	
 		if (entityId != null && !entityId.isEmpty()) {
@@ -58,6 +58,7 @@ public class AzureSecurityCenterRule extends BasePolicy {
 				mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.POLICYNAME), policyName);
 				mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.AZURERESOURCEID), entityId.toLowerCase());
 				mustFilter.put(PacmanRuleConstants.LATEST, true);
+				mustFilter.put(PacmanRuleConstants.DOC_TYPE,"securitycenter");
 				securityCenterData = PacmanUtils.checkResourceIdBypolicyName(esUrl, mustFilter);
 			} catch (Exception e) {
 				logger.error("unable to determine", e);

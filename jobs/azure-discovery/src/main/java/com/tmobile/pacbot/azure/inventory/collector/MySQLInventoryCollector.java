@@ -47,7 +47,7 @@ public class MySQLInventoryCollector {
                 JsonObject sqlServerObject = sqlServerObjectElement.getAsJsonObject();
                 JsonObject properties = sqlServerObject.getAsJsonObject("properties");
                 JsonObject sku = sqlServerObject.getAsJsonObject("sku");
-                mySQLServerVH.setRegion(sqlServerObject.get("location").getAsString());
+                mySQLServerVH.setRegion(Util.getRegionValue(subscription,sqlServerObject.get("location").getAsString()));
                 mySQLServerVH.setResourceGroupName(Util.getResourceGroupNameFromId(sqlServerObject.get("id").getAsString()));
                 mySQLServerVH.setId(sqlServerObject.get("id").getAsString());
                 mySQLServerVH.setLocation(sqlServerObject.get("location").getAsString());
@@ -66,6 +66,7 @@ public class MySQLInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.error("Error Collecting mysqlserver",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","MySQL Server",mySqlServerList.size());

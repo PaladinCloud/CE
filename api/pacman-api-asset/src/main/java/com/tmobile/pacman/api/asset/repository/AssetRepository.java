@@ -205,8 +205,8 @@ public interface AssetRepository {
      * 
      * @return list of assets and its some details.
      */
-    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
-            String searchText, Map<String, Object> sortFilter);
+    public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
+                                                   String searchText, Map<String, Object> sortFilter);
 
     /**
      * Fetches the total asset count for the given asset group.
@@ -214,8 +214,7 @@ public interface AssetRepository {
      * @param assetGroup  name of the asset group
      * @param filter application,environment,resourceType as optional filters
      * @param searchText searchText is used to match any text you are looking for
-     * @param from for pagination
-     * @param size for pagination
+
      * 
      * @return list of assets and its some details.
      */
@@ -569,7 +568,6 @@ public interface AssetRepository {
 	/**
      * Fetches provider list for an asset group
      *
-     * @param Asset Group
      * @return list of providers.
      * @throws DataException
      */
@@ -583,4 +581,8 @@ public interface AssetRepository {
 
     List<String> getValuesListForTag(String aseetGroupName, String tagName,String type) throws DataException;
     public Set<String> getSupportedFilters(String serviceName);
+
+    public long getAutoFixPlanCountForAg(String ag);
+
+    public int getAccountCountByAssetGroup(String aseetGroupName);
 }

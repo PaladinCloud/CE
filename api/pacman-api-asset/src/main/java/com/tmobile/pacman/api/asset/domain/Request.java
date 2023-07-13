@@ -33,6 +33,8 @@ public class Request {
     
     private Map<String, String> filter;
 
+    private Map<String, Object> reqFilter;
+
     private Map<String, Object> sortFilter;
     
     private String ag;
@@ -154,5 +156,13 @@ public class Request {
     public String toString() {
         return "ClassPojo [searchtext = " + searchtext + ", from = " + from + ", filter = " + filter + ", size = "
                 + size + "]";
+    }
+
+    public Map<String, Object> getReqFilter() {
+        return reqFilter;
+    }
+
+    public void setReqFilter(Map<String, Object> reqFilter) {
+        this.reqFilter = reqFilter;
     }
 }

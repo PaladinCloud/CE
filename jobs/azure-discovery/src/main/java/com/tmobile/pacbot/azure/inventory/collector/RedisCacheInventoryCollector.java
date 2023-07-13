@@ -33,7 +33,7 @@ public class RedisCacheInventoryCollector {
             redisCacheVH.setName(redisCache.name());
             redisCacheVH.setPort(redisCache.port());
             redisCacheVH.setId(redisCache.id());
-            redisCacheVH.setRegion(redisCache.regionName());
+            redisCacheVH.setRegion(Util.getRegionValue(subscription,redisCache.regionName()));
             redisCacheVH.setResourceGroupName(redisCache.resourceGroupName());
             redisCacheVH.setTags(redisCache.tags());
             redisCacheList.add(redisCacheVH);

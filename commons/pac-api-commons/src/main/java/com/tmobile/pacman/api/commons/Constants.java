@@ -26,10 +26,39 @@
  **/
 package com.tmobile.pacman.api.commons;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.gson.annotations.SerializedName;
 
 public interface Constants {
 
+    String EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS = "Exception in getting count of account ids";
+
+    String EXEMPTION_CREATED_BY = "exemption-created-by";
+    String EXEMPTION_RAISED_BY = "exemption-raised-by";
+    String EXEMPTION_CREATED_ON = "exemption-created-on";
+    String EXEMPTION_RAISED_ON = "exemption-raised-on";
+    String EXEMPTION_EXPIRING_ON = "exemption-expiring-on";
+    String EXEMPTION_RAISED_EXPIRING_ON = "exemption-raised-expiring-on";
+
+    String REASON_TO_EXEMPT_KEY = "reason-to-exempt";
+
+    String NODE_AGGREGATIONS = "aggregations";
+
+    String NODE_BUCKETS = "buckets";
+    String NODE_KEY = "key";
+
+    String OPTION_TYPE = "optionType";
+    String OPTION_RANGE = "optionRange";
+
+    String POLICY_COMPLIANCE_FILTER = "policyComplianceFilter";
+    String OPTION_LIST = "optionList";
+    String OPTION_VALUE = "optionValue";
+
+    String MIN = "min";
+
+    String MAX = "max";
+
+    String EXCEPTION_IN_GETTING_COUNT_OF_POLICY_IDS = "Exception in getting count of policy ids";
     String CREATED_BY = "createdBy";
     Integer ES_PAGE_SIZE = 10000;
     String ES_PAGE_SCROLL_TTL = "2m";
@@ -46,9 +75,24 @@ public interface Constants {
     String LATEST = "latest";
     String TRUE = "true";
     String ISSUE = "issue";
+    String ISSUES= "issues";
+
+    String RESOURCEID_KEYWORD = "_resourceid.keyword";
     String RECOMMENDATION = "RECOMMENDATION";
     String CLOSED = "closed";
     String OPEN = "open";
+    String EXEMPTION_START_DATE = "requestedExemptionStartDate";
+    String EXEMPTION_END_DATE = "requestedExceptionEndDate";
+    String EXEMPTION_REQUEST_RAISED = "requested";
+    String EXEMPTION_REQUEST_CANCELLED = "cancelled";
+    String EXEMPTION_REQUEST_APPROVED = "approved";
+    String EXEMPTION_REQUEST_REVOKED = "revoked";
+    String EXEMPTION_REQUEST_REVOKED_BY = "exemption-request-revoked-by";
+    String EXEMPTION_REQUEST_REVOKED_ON = "exemption-request-revoked-on";
+    String EXEMPTION_REQUEST_CANCELLED_BY = "exemption-request-cancelled-by";
+    String EXEMPTION_REQUEST_APPROVED_BY = "exemption-request-approved-by";
+    String EXEMPTION_REQUEST_CANCELLED_ON = "exemption-request-cancelled-on";
+    String EXEMPTION_REQUEST_APPROVED_ON = "exemption-request-approved-on";
     String POLICY_CATEGORY = "policyCategory";
     String ISSUE_STATUS = "issueStatus";
     String INCLUDE_EXEMPT = "include_exempt";
@@ -77,6 +121,11 @@ public interface Constants {
     String POLICY_DISPAY_NAME = "policyDisplayName";
     String POLICY_PARAMS = "policyParams";
     String TARGET_TYPE = "targetType";
+    String ISSUE_RESOURCE_ID = "resourceId";
+    String ISSUE_EXCEPTION = "issueException";
+    String ISSUE_EXEMPTION_REASON = "exemptionReason";
+    String DELIMITER_UNDERSCORE = "_";
+    String DELIMITER_COMMA = ",";
     String RESOURCE_TYPE = "resourcetType";
     String ANNOTATIONID = "annotationid";
     String POLICY_DESC = "policyDesc";
@@ -97,17 +146,18 @@ public interface Constants {
     String RESOURCEID = "_resourceid";
     String AUDIT_DATE = "auditdate";
     String STATUS = "status";
+    String ENABLED = "ENABLED";
+    String DISABLED = "DISABLED";
     String DATA_SOURCE = "datasource";
     String DELIMITER = "*";
     String _ID = "_id";
     String ID = "id";
     String EXEMPTED = "exempted";
-    String IS_ASSETS_EXEMPTED = "isAssetsExempted";
+    String EXEMPT = "exempt";
     String MODIFIED_DATE = "modifiedDate";
     String PAC_DS = "pac_ds";
     String POLICY_VIOLATION = "#violation";
     String CONTRIBUTION = "contribution";
-    String CONTRIBUTION_PERCENT = "contribution_percent";
     String COMPLIANCE_PERCENTAGE = "compliance";
     String COMPLIANCE_PERCENT = "compliance_percent";
     String LAST_SCAN = "lastScan";
@@ -117,6 +167,7 @@ public interface Constants {
     String POLICY_DETAILS_BY_APPLICATION = "policydetailsbyapplication";
     String NON_COMPLIANCE_POLICY = "noncompliancepolicy";
     String OVERALL = "overall";
+    String DISCOVERED_DAYS_RANGE = "discoveredDaysRange";
     String TOTAL_ISSUES = "total_issues";
     String TAGS_APPLICATION = "tags.Application";
     String MISSING_TAGS = "missingTags";
@@ -126,6 +177,10 @@ public interface Constants {
     String CREATED_DATE = "createdDate";
     String TAGS_ENVIRONMENT = "tags.Environment";
     String DESC = "desc";
+    String ASC = "asc";
+    String ORDER = "order";
+
+    String FIELD = "field";
     String POLICY_DISPLAY_NAME = "PolicyName";
     String POLICY_DISPLAY_ID = "PolicyId";
     String ISSUE_ID = "IssueId";
@@ -151,6 +206,7 @@ public interface Constants {
     String BRANCH = "branches";
     String INSCOPE = "inScope";
     String DOMAIN = "domain";
+    String DEFAULT_DOMAIN = "Infra & Platforms";
     String DOMAIN_NAME = "domainName";
     String ENV = "environment";
     String ASSET_MANDATORY = "Asset group is mandatory";
@@ -174,6 +230,10 @@ public interface Constants {
     String EXP_IN_45_DAYS = "expiry45Days";
     String EXP_IN_30_DAYS = "expiry30Days";
     String DOC_COUNT = "doc_count";
+    String DOC_TYPE = "docType";
+    String DOC_TYPE_KEYWORD = "docType.keyword";
+
+    String COMPLIANCE = "compliance";
     String EXP_IN = "expiringIn";
     String THIRTY = "30";
     String FOURTYFIVE = "45";
@@ -190,9 +250,11 @@ public interface Constants {
     String SEARCH = "_search";
     String INFRA_AND_PLATFORMS = "Infra & Platforms";
     String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    String DATE_FORMAT_FOR_BANNER = "MMM dd, YYYY";
     String ERROR_IN_US = "error retrieving inventory from ES";
     String SOX = "sox";
     String AGGREGATIONS = "aggregations";
+    String MAXDATE = "maxdate";
     String KERNEL_VERSION = "kernelVersion";
     String DENOMINATOR = "denominator";
     String NUMERATOR = "numerator";
@@ -204,8 +266,9 @@ public interface Constants {
     String MUST = "must";
     String DIRECTOR = "director";
     String EXCUTIVE_SPONSOR = "executiveSponsor";
-    String UNPATCHED_INSTANCES = "unpatched_instances";
+    String UNPATCHED_INSTANCE = "unpatched_instances";
     String NO_DATA_FOUND = "No Data Found";
+    String UNPATCHED_INSTANCES = "unpatched_instances";
     String TOTAL_INSTANCES = "total_instances";
     String PATCHING_PERCENTAGE = "patching_percentage";
     String EC2 = "ec2";
@@ -216,6 +279,9 @@ public interface Constants {
     String ISSUE_REASON = "issueReason";
     String HITS = "hits";
     String DOCID = "_docid";
+
+    String UNMAPPED_TYPE = "unmapped_type";
+    String LONG = "long";
     int INT_HUNDRED = 100;
     String RANGE = "range";
     String AG_STATS = "assetgroup_stats";
@@ -226,7 +292,9 @@ public interface Constants {
     String TAGS_APPS = "tags.Application.keyword";
     String SEVERITY_INFO = "severityInfo";
     String QUALYS_INFO = "qualysinfo";
+    String MATCH_ALL = "match_all";
     String VULN = "vulns";
+    String KEYWORD = ".keyword";
     String VULNEREBILITIES = "vulnerabilities";
     String AGING = "aging";
     String ZERO = "0";
@@ -245,6 +313,7 @@ public interface Constants {
     String APP_TAG = "appTag";
     String KERNEL_RELEASE = "kernel_release";
     String PATCHED_INSTANCES = "patched_instances";
+    String PATCHED_INSTANCE = "patched_instances";
     String START_DATE = "start_date";
     String END_DATE = "end_date";
     String INSTANCE_ID = "instanceid";
@@ -263,7 +332,6 @@ public interface Constants {
     String CATEGORY = "category";
     String VULN_TYPE = "vulntype";
     String PATCHABLE = "patchable";
-    String UNKNOWN = "Unknown";
     String ATTRIBUTES = "attributes";
     String SRC_NAME = "srcname";
     String DOUBLE_ZERO = "0.0";
@@ -286,6 +354,9 @@ public interface Constants {
     String ISSUE_COUNT_PER_RULE_AG = "issuecountPerRuleAG";
     String ASSET_COUNT = "assetCount";
     String CONTR_PERCENTAGE = "contributionPercentage";
+
+    String IS_ASSETS_EXEMPTED = "isAssetsExempted";
+    String CONTRIBUTION_PERCENT = "contribution_percent";
     String COMP_PERCENTAGE = "compliancePercentage";
     String WORKING = "working";
     String EXE_EMAIL_SEND = "Exception in sendTextMail";
@@ -317,8 +388,6 @@ public interface Constants {
     String ERROR_MESSAGE = "errorMessage";
     String ERROR_DETAILS = "errorDetails";
     String PROVIDER = "provider";
-    String EVENTCATEGORY = "eventtypecategory";
-    String EVENTSTATUS = "eventstatus";
     String FILTER_MANDATORY = "Filter is mandatory, pass the resourceid/docid/issueid/planid";
     String EC2_QUALYS_RULEID = "Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2";
     String VIRTUALMACHINE = "virtualmachine";
@@ -349,9 +418,6 @@ public interface Constants {
     String NPE_PATTERN = "(^(npe|non.?prod(uction)?))|(.*:+(npe).*)";
     String AZURE_WINDOWS = "Windows";
     String CLOUD_KERNEL_COMPLIANCE_POLICY = "cloud-kernel-compliance_version-1";
-    String RESOURCE_IDS = "resourceIds";
-    String POLICY_IDS = "policyIds";
-    String TOTAL_VIOLATIONS = "totalViolations";
     String CLOUD_QUALYS_POLICY = "Ec2InstanceScannedByQualys_version-1";
     String VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE = "cloud-kernel-compliance_version-1_Virtualmachine-Kernel-Compliance-Rule_virtualmachine";
     String GCP = "gcp";
@@ -370,6 +436,8 @@ public interface Constants {
 
     String DATA_SOURCE_KEY = "pac_ds";
     String TENABLE = "tenable";
+
+    String RELATIONS = "_relations";
 
   enum NotificationTypes {
         @SerializedName("exemption")
@@ -419,4 +487,38 @@ public interface Constants {
     String NOTIFICATION_CATEGEORY_NAME = "eventCategoryName";
     String NOTIFICATION_SOURCE_NAME = "eventSourceName";
     String NOTIFICATION_EVENT_NAME = "eventName";
+
+    String AUTOFIX_PLANNED_KEYWORD = "isAutofixPlanned.keyword";
+    String TYPE_KEYWORD = "type.keyword";
+    String ACTION_ILLEGAL_ARG_ERR_MSG  =  "Action value should be one of the following create_exemption_request," +
+            " cancel_exemption_request, approve_exemption_request, revoke_exemption_request";
+    String AVERAGE_AGE = "averageAge";
+
+    enum ExemptionActions {
+        CREATE_EXEMPTION_REQUEST("create_exemption_request"),
+        CANCEL_EXEMPTION_REQUEST("cancel_exemption_request"),
+        APPROVE_EXEMPTION_REQUEST("approve_exemption_request"),
+        REVOKE_EXEMPTION_REQUEST("revoke_exemption_request");
+
+        private final String text;
+
+        ExemptionActions(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+
+        @JsonCreator
+        public static ExemptionActions fromText(String text){
+            for(ExemptionActions r : ExemptionActions.values()){
+                if(r.toString().equalsIgnoreCase(text)){
+                    return r;
+                }
+            }
+            throw new IllegalArgumentException(ACTION_ILLEGAL_ARG_ERR_MSG);
+        }
+    }
 }

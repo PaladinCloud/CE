@@ -49,7 +49,7 @@ public class DatabricksInventoryCollector {
 				databricksVH.setId(databricksObject.get("id").getAsString());
 				databricksVH.setResourceGroupName(getResourceGroupNameFromId(databricksVH.getId()));
 				databricksVH.setLocation(databricksObject.get("location").getAsString());
-				databricksVH.setRegion(databricksObject.get("location").getAsString());
+				databricksVH.setRegion(Util.getRegionValue(subscription,databricksObject.get("location").getAsString()));
 				databricksVH.setName(databricksObject.get("name").getAsString());
 				databricksVH.setType(databricksObject.get("type").getAsString());
 				databricksVH.setSubscription(subscription.getSubscriptionId());
@@ -71,6 +71,7 @@ public class DatabricksInventoryCollector {
 			}
 		} catch (Exception e) {
 			log.info("Error Collecting Databricks",e);
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Databrick",databricksList.size());

@@ -82,13 +82,34 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 	@Autowired
 	PacmanRdsRepository rdsRepository;
 
-
 	@Override
 	public List<TargetTypePolicyDetails> getTargetTypesByAssetGroupName(String assetGroupName) {
 		AssetGroupDetails assetGroupDetails = assetGroupService.findByGroupName(assetGroupName);
 		List<AssetGroupTargetDetails> allAssetGroupTargetDetails = assetGroupTargetDetailsRepository.findByGroupId(assetGroupDetails.getGroupId());
 		List<TargetTypePolicyDetails> allStudentsDetails = allAssetGroupTargetDetails.parallelStream().map(fetchTargetTypeRuleDetails).collect(Collectors.toList());
 		return allStudentsDetails;
+	}
+
+	@Override
+	public List<Map<String, Object>> getTargetTypesByAssetGroupNameFromES(String assetGroupName) {
+		String query1 = "{\"size\":\"0\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"docType.keyword\",\"size\":1000}}}}";
+
+		String urlToQuery = buildAggsURL(esUrl, assetGroupName, null);
+		List<String> targetTypes = new ArrayList<>();
+		String responseDetails = null;
+		try {
+			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, query1);
+			JSONArray jsonArray =new JSONObject(responseDetails).getJSONObject("aggregations").getJSONObject("name").getJSONArray("buckets");
+			for (int i=0; i < jsonArray.length(); i++) {
+				targetTypes.add(jsonArray.getJSONObject(i).get("key").toString());
+			}
+		} catch (Exception e) {
+			log.error("Cannot fetch target types from ES");
+		}
+		String result = targetTypes.stream().collect(Collectors.joining("','", "'", "'"));
+		String query = "select distinct targetName as type, displayName as displayName ,category as category,domain as domain from cf_Target "
+				+ " where  (status = 'active' or status = 'enabled') and targetName in ("+result+") ";
+		return rdsRepository.getDataFromPacman(query);
 	}
 
 	Function<AssetGroupTargetDetails, TargetTypePolicyDetails> fetchTargetTypeRuleDetails = assetGroupTargetDetail -> {
@@ -126,27 +147,6 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 		return targetTypeRuleDetails;
 	};
 
-	public List<Map<String, Object>> getTargetTypesByAssetGroupNameFromES(String assetGroupName) {
-		String query1 = "{\"size\":\"0\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"_type\",\"size\":1000}}}}";
-
-		String urlToQuery = buildAggsURL(esUrl, assetGroupName, null);
-		List<String> targetTypes = new ArrayList<>();
-		String responseDetails = null;
-		try {
-			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, query1);
-			JSONArray jsonArray =new JSONObject(responseDetails).getJSONObject("aggregations").getJSONObject("name").getJSONArray("buckets");
-			for (int i=0; i < jsonArray.length(); i++) {
-				targetTypes.add(jsonArray.getJSONObject(i).get("key").toString());
-			}
-		} catch (Exception e) {
-			log.error("Cannot fetch target types from ES");
-		}
-		String result = targetTypes.stream().collect(Collectors.joining("','", "'", "'"));
-		String query = "select distinct targetName as type, displayName as displayName ,category as category,domain as domain from cf_Target "
-				+ " where  (status = 'active' or status = 'enabled') and targetName in ("+result+") ";
-		return rdsRepository.getDataFromPacman(query);
-	}
-
 	private String buildAggsURL(String url, String index, String type) {
 
 		StringBuilder urlToQuery = new StringBuilder(url).append(FORWARD_SLASH).append(index);
@@ -166,7 +166,7 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 		List<Map<String, Object>> gcpValue =rdsRepository.getDataFromPacman(query);
 		String valueString="";
 		for(Map<String,Object>value:gcpValue) {
-			valueString= (String) value.get("value");
+			 valueString= (String) value.get("value");
 		}
 		log.info("gcp {} ",rdsRepository.getDataFromPacman(query));
 		return  valueString;
@@ -186,4 +186,5 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 		log.info("azure {} ",rdsRepository.getDataFromPacman(query));
 		return  valueString;
 	}
+
 }

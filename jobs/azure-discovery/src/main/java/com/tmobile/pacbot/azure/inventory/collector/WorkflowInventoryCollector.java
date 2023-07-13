@@ -46,7 +46,7 @@ public class WorkflowInventoryCollector {
 					JsonObject workflowObject = workflowElement.getAsJsonObject();
 					workflowVH.setSubscription(subscription.getSubscriptionId());
 					workflowVH.setSubscriptionName(subscription.getSubscriptionName());
-					workflowVH.setRegion(workflowObject.get("location").getAsString());
+					workflowVH.setRegion(Util.getRegionValue(subscription,workflowObject.get("location").getAsString()));
 					workflowVH.setResourceGroupName(Util.getResourceGroupNameFromId(workflowObject.get("id").getAsString()));
 					workflowVH.setId(workflowObject.get("id").getAsString());
 					workflowVH.setLocation(workflowObject.get("location").getAsString());
@@ -69,6 +69,7 @@ public class WorkflowInventoryCollector {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","workflow",workflowList.size());
