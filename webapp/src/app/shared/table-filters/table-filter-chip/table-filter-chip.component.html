@@ -3,12 +3,12 @@
     cdkOverlayOrigin
     #optionsMenuTrigger="cdkOverlayOrigin"
 >
-    <div class="tfc-text-container" (click)="toggleOptionsMenu()">
+    <div class="tfc-text-container" [class.disabled]="isDisabled" (click)="toggleOptionsMenu()">
         <span class="tfc-name"> {{ category }}:&nbsp;</span>
 
         <span class="tfc-value" [title]="appliedFilters.length === 1 ? appliedFilters[0].name : ''">
             <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
-                {{ appliedFilters[0].name | slice : 0 : maxOptionChars }}
+                {{ appliedFilters[0].name | slice : 0 : maxOptionChars | celldatacase }}
             </ng-container>
 
             <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
@@ -34,7 +34,7 @@
                     [checked]="appliedFiltersDict[option]"
                     (change)="updateFilterOption(option, $event.checked)"
                 >
-                    {{ option | slice : 0 : maxOptionChars }}
+                    {{ option | slice : 0 : maxOptionChars | celldatacase}}
                 </mat-checkbox>
             </li>
         </ul>

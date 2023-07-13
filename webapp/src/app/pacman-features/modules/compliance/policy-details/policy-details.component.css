@@ -12,11 +12,21 @@
  * limitations under the License.
  */
 
-.policy-knowledgebase-wrapper {
+ .policy-knowledgebase-wrapper {
   max-height: 100%;
   justify-content: flex-start;
   overflow-y: hidden;
   padding-bottom: 2px;
+}
+
+.compliance-issues-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  overflow: auto;
 }
 
 .policy-knowledgebase-content {
@@ -236,7 +246,7 @@
 .pk-btn {
   font-size: 0.92em;
   font-family: var(--text-light-font-family);
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.4px;
   text-align: center;
   color: #ffffff;

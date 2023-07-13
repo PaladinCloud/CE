@@ -1,12 +1,12 @@
 .container-wrapper {
-    padding: 24px;
+    padding: 28px;
     width: 100%;
     min-width: 550px;
     background-color: var(--background-grey);
 }
 
 .container-1 {
-    height: 186px;
+    height: 115px;
 }
 
 .container-2 {

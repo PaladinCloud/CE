@@ -71,14 +71,14 @@ export class CustomCardComponent implements OnInit {
   }
 
   onDropdownClose(){
-    if(this.selectedItem==""){
+    if(this.selectedItem=="-1"){
       this.selectedItem = "Custom";
     }
   }
 
   onCustomSelection(){
     if(this.selectedItem=="Custom"){
-      this.selectedItem = "";
+      this.selectedItem = "-1";
     }
   }
 

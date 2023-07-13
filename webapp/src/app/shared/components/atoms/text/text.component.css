@@ -6,6 +6,10 @@
     font: var(--text-body-2);
 }
 
+.body-3{
+    font: var(--text-body-3);
+}
+
 .subtitle-1{
     font: var(--text-subtitle-1);
 }
@@ -107,13 +111,16 @@
     color: var(--text-low-emphasis);
 }
 
+.medium-emphasis{
+    color: var(--text-medium-emphasis);
+}
+
 .high-emphasis{
     color: var(--text-high-emphasis);
 }
 
 
 .page-title{
-    font-size: 2em;
-    font-family: var(--text-font-family);
-    font-weight: 500;
+    font: var(--text-headline-6);
+    color: var(--text-medium-emphasis);
 }

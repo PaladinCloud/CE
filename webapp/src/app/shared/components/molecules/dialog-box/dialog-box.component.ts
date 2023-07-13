@@ -1,4 +1,5 @@
 import { AfterViewInit,  Component, Inject,  OnInit, TemplateRef } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 interface DialogData {
@@ -6,6 +7,7 @@ interface DialogData {
   template: TemplateRef<any>;
   noButtonLabel: string;
   yesButtonLabel: string;
+  formGroup: FormGroup
 }
 
 @Component({
@@ -24,11 +26,11 @@ export class DialogBoxComponent implements OnInit, AfterViewInit {
     this.dialogRef.componentInstance.data.template = this.data.template;
   }
 
-  onNoClick(): void {
+  onNoClick(event:any): void {
     this.dialogRef.close("no");
   }
 
-  onYesClick(): void {
+  onYesClick(event:any): void {
     this.dialogRef.close("yes");
   }
 

@@ -1,8 +1,20 @@
 .chip{
     border-radius: 4px;
-    font: var(--text-body-2);
+    font: var(--body-2);
     width: fit-content;
     padding: 4px 10px;
+}
+
+.customVariant{
+    cursor: default;
+    background-color: rgb(241, 246, 255);
+    color: rgb(51, 108, 201);
+    width: 100%;
+    height: 35px;
+}
+
+.customVariant:hover{
+    background-color: rgb(193, 196, 204);;
 }
 
 .variant1{
@@ -50,4 +62,19 @@
 
 .hideDiv{
     display: none;
+}
+
+.warn{
+    background: #FEEFEA;
+    color: #F58F6F;
+}
+
+.success{
+    background: #E6F5EC;
+    color: var(--secondary-600);
+}
+
+.error{
+    color: #D95140;
+    background: #FFF1EF;
 }

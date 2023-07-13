@@ -23,16 +23,15 @@ export class CardComponent implements OnInit {
     @Input() card: any;
     @Input() data: any;
     @Input() dataError = '';
-    @Input() breadcrumbPresent: string;
 
     errorType = '';
     widgetWidth = 225;
     widgetHeight = 250;
     strokeColor = '#fff';
     MainTextcolor = '#000';
-    innerRadius = 85;
-    outerRadius = 60;
-    errorMessage: string;
+    innerRadius: any = 85;
+    outerRadius: any = 60;
+    errorMessage: any;
     widgetWidth2: number;
     @Output() graphIntervalSelected = new EventEmitter<any>();
 
@@ -40,7 +39,9 @@ export class CardComponent implements OnInit {
     isCustomSelected = false;
     fromDate: Date = new Date(2022, 0, 1);
     toDate: Date = new Date();
-    selectedItem = 'All time';
+    selectedItem = "All time";
+    breadcrumbPresent: string = "Dashboard";
+
 
     constructor(
         private errorHandling: ErrorHandlingService,
@@ -48,20 +49,20 @@ export class CardComponent implements OnInit {
         private loggerService: LoggerService,
         private workflowService: WorkflowService,
         private router: Router,
-        private activatedRoute: ActivatedRoute,
+        private activatedRoute: ActivatedRoute
     ) {}
 
     ngOnInit() {}
 
-    ifCustomSelected() {
-        if (this.selectedItem == 'Custom') {
-            this.selectedItem = '';
+    ifCustomSelected(){
+        if (this.selectedItem == "Custom") {
+            this.selectedItem = "-1";
         }
     }
 
-    onDropdownClose() {
-        if (this.selectedItem == '') {
-            this.selectedItem = 'Custom';
+    onDropdownClose(){
+        if (this.selectedItem == "-1") {
+            this.selectedItem = "Custom";
         }
     }
 
@@ -125,7 +126,7 @@ export class CardComponent implements OnInit {
 
         this.router.navigate(['/pl/compliance/issue-listing'], {
             relativeTo: this.activatedRoute,
-            queryParams: filterParam,
+            queryParams: {...filterParam, 'tempFilters': true},
             queryParamsHandling: 'merge',
         });
     }

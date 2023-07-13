@@ -12,6 +12,37 @@
  * limitations under the License.
  */
 
+ .exemption-banner{
+  padding: 12px 28px;
+}
+
+.exemption-wrapper{
+  display: flex;
+  gap: 12px;
+  background: #F5F8FF;
+  border: 1px solid #CDDDFF;
+  border-radius: 6px;
+  padding: 20px;
+  align-items: flex-start;
+}
+
+.isDisabled{
+  pointer-events: none;
+  opacity: 70%; 
+}
+
+.custom-highlight{
+  font: var(--text-body-1);
+  background: none;
+  color: var(--text-high-emphasis);
+}
+
+.button-wrapper{
+  gap: 12px;
+  flex-direction: row;
+  justify-content: unset;
+}
+
 .issue-details-wrapper {
   padding: 0.5em 1.5em 1em 1.5em;
   overflow: auto;

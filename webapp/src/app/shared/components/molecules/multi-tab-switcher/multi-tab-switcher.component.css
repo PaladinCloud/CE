@@ -1,0 +1,27 @@
+.switch-wrapper{
+    display: flex;
+    background-color: var(--background-white);
+    padding: 4px;
+    border-radius: 4px;
+    margin-left: auto;
+}
+
+.switch-wrapper ::ng-deep .mat-button-wrapper{
+    display: flex;
+    gap: 6px;
+    padding: 4px 0px;
+    font: var(--text-body-2);
+    color: var(--text-medium-emphasis);
+}
+
+.isSelected{
+    background-color: #F1F6FF;
+}
+
+.isSelected img{
+    filter: invert(47%) sepia(18%) saturate(2804%) hue-rotate(186deg) brightness(80%) contrast(97%);
+}
+
+.switch-wrapper ::ng-deep .mat-button{
+    padding: 0px 8px !important;
+}

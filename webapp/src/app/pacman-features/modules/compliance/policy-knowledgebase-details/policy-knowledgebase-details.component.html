@@ -11,8 +11,11 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-
-<div class="policy-knowledgebase-wrapper flex">
+ <div class="alert-banner" *ngIf="status.toLowerCase()=='disabled'">
+    <img  style="height: 16px;width: 16px;" src="/assets/icons/alert.svg">
+    <span class="banner-text body-2 medium-emphasis">{{bannerText}}</span>
+</div>
+ <div class="policy-knowledgebase-wrapper flex" [class.has-banner]="status.toLowerCase()=='disabled'">
     <div *ngIf="backButtonRequired" class="breadcrumb-container">
         <app-breadcrumb
             *ngIf="breadcrumbLinks"
@@ -33,12 +36,6 @@
             />
             {{ policyDisplayName }}
         </div>
-        <app-dropdown
-            *ngIf="haveAdminPageAccess && haveEditAccess"
-            (selected)="goToDetails($event)"
-            [items]="actionItems"
-            placeholder="Actions"
-        ></app-dropdown>
     </div>
     <div class="details-wrapper">
         <div class="details-header">
@@ -114,12 +111,3 @@
         </div>
     </div>
 </div>
-
-<ng-template #actionRef>
-    <div class="dialog-body flex">
-        <span class="dialog-body-header">{{ action }} Policy</span>
-        <span class="dialog-body-content">
-            Are you really sure you want to {{ action | lowercase }} "{{ policyDisplayName }}"?
-        </span>
-    </div>
-</ng-template>

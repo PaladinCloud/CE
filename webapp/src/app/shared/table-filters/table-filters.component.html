@@ -1,11 +1,13 @@
 <div class="table-filters-container flex flex-align-center flex-wrap gap-16">
     <app-table-filter-chip
-        *ngFor="let appliedFilter of appliedFilters; trackBy: trackByAppliedFilter"
+    [isDisabled]="i!=appliedFilters.length-1"
+        *ngFor="let appliedFilter of appliedFilters; let i=index;trackBy: trackByAppliedFilter"
         [category]="appliedFilter.keyDisplayValue"
         [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
         [options]="categoryOptions[appliedFilter.keyDisplayValue]"
         (clear)="clearFilter($event)"
         (update)="updateFilter($event)"
+        (click)="openFilterCategory(appliedFilter.keyDisplayValue)"
     ></app-table-filter-chip>
 
     <button
@@ -14,6 +16,7 @@
         (click)="openMenu()"
         cdkOverlayOrigin
         #menuTrigger="cdkOverlayOrigin"
+        [class.btn-disabled] = "appliedFilters.length===categories.length"
     >
         <mat-icon class="fmb-icon">add</mat-icon>
         Filters
@@ -54,7 +57,7 @@
                         [checked]="appliedFiltersDict[selectedCategory!][option]"
                         (change)="applyFilter(option, $event)"
                     >
-                        {{ option | slice : 0 : maxOptionChars }}
+                        {{ option | slice : 0 : maxOptionChars | celldatacase }}
                     </mat-checkbox>
                 </li>
             </ul>

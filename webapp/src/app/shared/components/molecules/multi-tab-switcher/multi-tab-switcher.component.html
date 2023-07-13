@@ -1,0 +1,7 @@
+<div class="switch-wrapper">
+    <!-- <app-text [text]="'Toggle'" classNames="body-2"></app-text> -->
+    <button *ngFor="let tab of tabs; let  i = index" mat-button [class.isSelected]="i==tabSelected" (click)="handleSwitchView(i)">
+        <img [src]="tab.tabImage">
+        {{tab.tabName}}
+    </button>
+</div>

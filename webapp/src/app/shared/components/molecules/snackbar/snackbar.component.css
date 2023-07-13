@@ -7,8 +7,21 @@
 }
 
 .success{
+    color: var(--secondary-700);
     background: #D8F5E3;
     margin: 74px 28px 12px;
     padding: 8px 24px;
     border-radius: 4px;
+}
+
+.error{
+    background: #efaca6;
+    margin: 74px 28px 12px;
+    padding: 8px 24px;
+    border-radius: 4px;
+    color: red;
+}
+
+.error img{
+    filter: invert(10%) sepia(97%) saturate(7002%) hue-rotate(0deg) brightness(93%) contrast(117%);
 }

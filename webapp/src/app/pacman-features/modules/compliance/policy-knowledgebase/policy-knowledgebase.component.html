@@ -12,8 +12,12 @@
  * limitations under the License.
  -->
 
-<div class="policy-knowledgebase-wrapper flex flex-between flex-col">
-    <app-page-title [title]="breadcrumbPresent"></app-page-title>
+ <div class="policy-knowledgebase-wrapper flex flex-between flex-col">
+    <div class="policy-header">
+        <div class="title">
+            {{ breadcrumbPresent }}
+        </div>
+    </div>
     <div class="policy-categories-container flex flex-row">
         <div
             class="policy-category-item flex flex-align-center"
@@ -38,11 +42,11 @@
                 [columnWidths]="columnWidths"
                 [data]="tableData"
                 [direction]="direction"
-                [doLocalFilter]="true"
-                [doLocalSearch]="doLocalSearch"
+                [doLocalFilter]="false"
                 [filteredArray]="filters"
                 [filterTagLabels]="filterTagLabels"
                 [filterTypeLabels]="filterTypeLabels"
+                [filterTypeOptions]="filterTypeOptions"
                 [headerColName]="headerColName"
                 [rowSize]="'SM'"
                 [searchQuery]="searchTxt"
@@ -55,16 +59,17 @@
                 [tableScrollTop]="tableScrollTop"
                 [totalRows]="totalRows"
                 [whiteListColumns]="whiteListColumns"
+                [selectedRowIndex]="selectedRowIndex"
+                [enableMultiValuedFilter]="true"
                 (downloadClicked)="handlePopClick($event)"
                 (rowSelectEventEmitter)="goToDetails($event)"
                 (searchCalledEventEmitter)="callNewSearch($event)"
                 (searchInColumnsChanged)="handleSearchInColumnsChange($event)"
                 (headerColNameSelected)="handleHeaderColNameSelection($event)"
                 (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-                (selectedFilter)="handleFilterSelection()"
-                (selectedFilterType)="handleFilterTypeSelection()"
+                (selectedFilter)="changeFilterTags($event)"
+                (selectedFilterType)="changeFilterType($event)"
                 (deleteFilters)="deleteFilters($event)"
-                [selectedRowIndex]="selectedRowIndex"
             >
             </app-table>
         </div>

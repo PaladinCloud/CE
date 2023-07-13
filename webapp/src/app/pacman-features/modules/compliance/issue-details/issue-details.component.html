@@ -12,6 +12,22 @@
  * limitations under the License.
  -->
 
+ <div class="exemption-banner" *ngIf="adminAccess && exemptionDetails?.status == 'requested'">
+    <div class="exemption-wrapper">
+        <img src="/assets/icons/blue-info.svg">
+        <div class="exemption-details-wrapper flex flex-col">
+            <span class="body-1 high-emphasis">Exemption Request: {{issueBlocks.policyViolated}}</span>
+            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionExpiringOn}}</mark></span>
+            <div class="button-wrapper">
+                <app-button
+                (onClickInner)="handleRequest('grant')">Exempt</app-button>
+                <app-button
+                (onClickInner)="handleRequest('deny')" type="secondary">Deny</app-button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px;">
     <app-breadcrumb [breadcrumbArray]="breadcrumbArray" [breadcrumbLinks]="breadcrumbLinks"
                     [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
@@ -58,32 +74,33 @@
                                 <header class="recommend">
                                     Additional Actions
                                 </header>
-                                <div *ngIf='adminAccess' class="btn-wrapper-additional-actions">
-                                    <app-button (onClickInner)="showOtherDiv()" *ngIf="!exceptionAdded">+ Add
-                                        Exemption
-                                    </app-button>
-                                    <app-button (onClickInner)="showOtherDivRevoke();revokeException()"
-                                                *ngIf="exceptionAdded"> Revoke
-                                        Exemption
-                                    </app-button>
+                                <div class="btn-wrapper-additional-actions">
+                                    <app-button-icon (onClickInner)="showOtherDiv()" *ngIf="!exceptionAdded && exemptionDetails.status != 'requested'"> {{addExemption}}
+                                    </app-button-icon>
+                                    <app-button-icon (onClickInner)="showOtherDivRevoke();revokeException()"
+                                                     *ngIf="(exceptionAdded && adminAccess) || (!adminAccess && exemptionDetails.status == 'requested')"> {{revokeExemption}}
+                                    </app-button-icon>
                                 </div>
                                 <div *ngIf="GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL"
                                      class="btn-wrapper-additional-actions">
                                     <app-button-icon (onClickInner)="showOtherDivEmail()" [iconSrc]="emailIcon.icon">
-                                        Email Issue
+                                        Email Violation
                                     </app-button-icon>
                                 </div>
                                 <div *ngIf='GLOBAL_CONFIG.optional.pacmanIssue.CREATE_JIRA_TICKET_FOR_PACMAN_ISSUE && showJiraButton'
                                      class="btn-wrapper-additional-actions jira">
-                                    <app-button-icon (onClickInner)="createJira();showOtherDivJira()"
-                                                     *ngIf='showJiraData'
+                                    <app-button-icon (onClickInner)="createJira();showOtherDivJira()" *ngIf='showJiraData'
                                                      [iconSrc]="jiraIcon.icon">Create Jira Ticket
                                     </app-button-icon>
-                                    <app-button-icon (onClickInner)="showJiraTicket();showOtherDivJira()"
-                                                     *ngIf='!showJiraData'
+                                    <app-button-icon (onClickInner)="showJiraTicket();showOtherDivJira()" *ngIf='!showJiraData'
                                                      [iconSrc]="jiraIcon.icon">View Jira
                                         Ticket
                                     </app-button-icon>
+                                </div>
+                                <div *ngIf="autofixDetails" class="autofix-data">
+                                    <div class="blocks-section flex">
+                                        <app-policy-autofix [autofixDetails]="autofixDetails"></app-policy-autofix>
+                                    </div>
                                 </div>
                             </div>
                             <div [class.after-click-button-opposite]='showOppositeRecommend'
@@ -102,11 +119,9 @@
                                         <div [class.load-complete-failure]='showLoadcompleteRecommend && checkRecommend'
                                              [class.load-complete-success]='showLoadcompleteRecommend && !checkRecommend'
                                              class="circle-loader">
-                                            <div *ngIf='!checkRecommend'
-                                                 [class.checkmark-show]='showLoadcompleteRecommend'
+                                            <div *ngIf='!checkRecommend' [class.checkmark-show]='showLoadcompleteRecommend'
                                                  class="checkmark draw"></div>
-                                            <div *ngIf='checkRecommend'
-                                                 [class.crossmark-show]='showLoadcompleteRecommend'
+                                            <div *ngIf='checkRecommend' [class.crossmark-show]='showLoadcompleteRecommend'
                                                  class="crossmark draw"></div>
                                         </div>
                                     </div>
@@ -162,8 +177,7 @@
                                              [class.load-complete-failure]='showLoadcompleteJira && checkJira'
                                              [class.load-complete-success]='showLoadcompleteJira && !checkJira'
                                              class="circle-loader">
-                                            <div *ngIf='!checkJira && !viewJira'
-                                                 [class.checkmark-show]='showLoadcompleteJira'
+                                            <div *ngIf='!checkJira && !viewJira' [class.checkmark-show]='showLoadcompleteJira'
                                                  class="checkmark draw"></div>
                                             <div *ngIf='checkJira' [class.crossmark-show]='showLoadcompleteJira'
                                                  class="crossmark draw"></div>
@@ -186,18 +200,18 @@
                             <div [class.after-click-button-opposite]='showOpposite' class="actions-wrapper back">
                                 <header class="recommend-flip flex-between flex flex-align-center">
                                     <div class="header-text">
-                                        Add Exemption
+                                        {{addExemption}}
                                     </div>
                                     <div (click)="showOtherDiv()" [class.showNone]='showNone' class="delete-img">
                                         <img src="../assets/icons/x-icon.svg" style="height: 1.8em;">
                                     </div>
                                 </header>
                                 <section class="text-wrapper">
-                                    <form (ngSubmit)="onSubmit(user);clearContents(this)" *ngIf="!showTransaction"
+                                    <form (ngSubmit)="onSubmit();clearContents(this)" *ngIf="!showTransaction"
                                           [formGroup]="user" novalidate>
                                         <label>
                                             <div class="text-wrapper-header">Reason</div>
-                                            <textarea class="textarea-container" formControlName="name"
+                                            <textarea class="textarea-container" formControlName="name" [(ngModel)]="exemptionReason"
                                                       id="textarea-id"></textarea>
                                         </label>
                                         <div *ngIf="user.get('name').hasError('minlength') || user.get('name').hasError('required')"
@@ -205,11 +219,15 @@
                                             Please enter min 5 characters
                                         </div>
                                         <div class="text-wrapper-header">End Date</div>
-                                        <app-date-dropdown (dataSent)='getDateData($event)'
-                                                           [dataForm]="'user'"></app-date-dropdown>
+                                        <app-date-dropdown (dataSent)='getDateData($event)' [dataForm]="dataForm"
+                                                           [minDate]="today"></app-date-dropdown>
                                         <div class="textarea-button">
-                                            <button [disabled]="user.invalid" class="button-textarea" type="submit">ADD
+                                            <button *ngIf="adminAccess;else userRef" [disabled]="user.invalid" class="button-textarea" type="submit">ADD
                                             </button>
+                                            <ng-template #userRef>
+                                                <button [disabled]="user.invalid" class="button-textarea" type="submit">Request
+                                                </button>
+                                            </ng-template>
                                         </div>
                                     </form>
                                     <div *ngIf="showTransaction" class="circle-container">
@@ -275,8 +293,7 @@
                                                 <ul class="suggestion-list">
                                                     <li (click)="select(item)"
                                                         (keydown)="keyEvent($event, item)"
-                                                        *ngFor="let item of filteredList; let i = index "
-                                                        [class.active]="i == arrowkeyLocation"
+                                                        *ngFor="let item of filteredList; let i = index " [class.active]="i == arrowkeyLocation"
                                                         class="lists-suggestion">
                                                         <a>{{item}}</a>
                                                     </li>
@@ -323,13 +340,13 @@
         <div class="article-wrapper">
             <article *ngIf="issueAudit && issueBlocks" class="details-container replace-padding">
                 <div>
-                    <app-data-table (nextPageCalled)='nextPg()' (previousPageCalled)='prevPg()'
-                                    [allColumns]='allColumns'
-                                    [currentPointer]='currentPointer'
-                                    [dataHead]="'Issue Audit Log'" [errorValue]='errorValue'
-                                    [firstPaginator]='firstPaginator' [heightValue]="'27.4em'"
-                                    [lastPaginator]='lastPaginator' [outerArr]='outerArr'
-                                    [tableIdAppend]="'8'"
+                    <app-data-table (nextPageCalled)='nextPg()' (previousPageCalled)='prevPg()' (searchRowTxt)='searchCalled($event)'
+                                    (searchTriggerred)='callNewSearch()' [allColumns]='allColumns' [currentPointer]='currentPointer'
+                                    [dataHead]="'Violation Audit Log'" [errorValue]='errorValue'
+                                    [firstPaginator]='firstPaginator'
+                                    [heightValue]="'27.4em'" [lastPaginator]='lastPaginator'
+                                    [outerArr]='violationAuditLogs'
+                                    [searchableHeader]='false' [tableIdAppend]="'8'"
                                     [totalRows]='totalRows'>
                     </app-data-table>
                 </div>

@@ -18,6 +18,7 @@ import { RouterUtilityService } from "../../../../shared/services/router-utility
 import { PermissionGuardService } from "../../../../core/services/permission-guard.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
+import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
 
 @Component({
   selector: "app-issue-listing",
@@ -31,7 +32,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   selectedDomain: string;
   breadcrumbArray: any = [];
   breadcrumbLinks: any = [];
-  breadcrumbPresent: any;
   totalRows = 0;
   bucketNumber = 0;
   paginatorSize = 100;
@@ -67,11 +67,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Policy': 2, 'Violation ID': 1, 'Asset ID': 1, 'Asset Type': 0.5, 'Account Name': 0.7, 'Region': 0.7, 'Severity': 0.5, 'Category':0.5, 'Age': 0.5, 'Status': 0.5};
+  columnWidths = {'Policy': 2, 'Violation ID': 1, 'Asset ID': 1, 'Asset Type': 0.5, 'Account Name': 0.7, 'Region': 0.7, 'Severity': 0.5, 'Category':0.5, 'Status': 0.5};
   centeredColumns = {
     Policy: false,
     'Violation ID': false,
-    'Resource ID': false,
+    'Asset ID': false,
     Severity: true,
     Category: true,
   };
@@ -134,23 +134,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private permissions: PermissionGuardService,
-    private tableStateService: TableStateService
+    private tableStateService: TableStateService,
+    private assetTypeMapService: AssetTypeMapService
   ) {
 
-
     this.assetGroupSubscription = this.assetGroupObservableService
-      .getAssetGroup()
-      .subscribe((assetGroupName) => {
-        if(this.selectedAssetGroup){
-          this.filterTagLabels = {};
-          this.tableStateService.clearPreservedFilters(this.pageTitle);
-        }
-        this.filters = [];
-        this.filterText = {};
+    .getAssetGroup()
+    .subscribe((assetGroupName) => {
         this.getPreservedState();
-        if(this.selectedAssetGroup){
-          this.tableScrollTop = 0;
-        }
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
@@ -162,7 +153,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             if(!Object.keys(this.columnWidths).includes(label)){
               this.columnWidths[label] = 0.7;
             }
+            if(!Object.values(this.columnNamesMap).includes(label)){
+              const apiColName =  find(this.filterTypeOptions, {
+                optionName: label,
+              })["optionValue"];
+              if(apiColName) this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
+            }
           })
+          this.columnNamesMap = {...this.columnNamesMap};
           this.columnWidths = {...this.columnWidths};
 
         });
@@ -187,16 +185,22 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.tableDataLoaded = true;
 
       this.tableData = state?.data ?? [];
-      this.displayedColumns = ['Policy', 'Asset ID', 'Severity', 'Category', 'Age'];
+      this.displayedColumns = ['Policy', 'Asset ID', 'Severity', 'Category'];
       this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
       this.tableScrollTop = state?.tableScrollTop;
       this.selectedRowIndex = state?.selectedRowIndex;
+      // this.filterText = state.filterText??"";
 
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
-        this.selectedRowIndex = state.selectedRowIndex;
       }else{
         this.isStatePreserved = false;
+      }
+
+      const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
+      if(!isTempFilter && state.filters){
+        this.filters = state.filters || [];
+        this.getUpdatedUrl();
       }
     }
   }
@@ -209,7 +213,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
 
-    this.breadcrumbPresent = "Violations";
     // check for admin access
     this.adminAccess = this.permissions.checkAdminPermission();
   }
@@ -230,7 +233,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     } else if (sortColName === "violation id") {
       this.fieldName = "_id";
       this.fieldType = "string";
-    } else if (sortColName === "resource id") {
+    } else if (sortColName === "asset id") {
       this.fieldName = "_resourceid.keyword";
       this.fieldType = "string";
     } else if (sortColName === "category") {
@@ -243,9 +246,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }else if (sortColName === "asset type") {
       this.fieldType = "number";
       this.fieldName = "resourcetType.keyword";
-    }else if (sortColName === "age") {
-      this.fieldType = "number";
-      this.fieldName = "createdDate";
     }else{
       let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
       if(!apiColName){
@@ -274,6 +274,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   storeState(data?){
+    const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
+    if(isTempFilter) return;
     const state = {
         totalRows: this.totalRows,
         data: data,
@@ -284,7 +286,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         searchTxt: this.searchTxt,
         tableScrollTop: this.tableScrollTop,
         filters: this.filters,
-        selectedRowIndex: this.selectedRowIndex
+        selectedRowIndex: this.selectedRowIndex,
         // filterText: this.filterText
       }
     this.tableStateService.setState(this.pageTitle, state);
@@ -474,6 +476,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           resolve(true);
           this.filterTypeOptions = response[0].response;
 
+          this.filterTypeLabels.sort();
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
@@ -501,40 +504,53 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         optionName: value,
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
-      const queryParams = {
-            ...urlObj.params,
-            ag: this.selectedAssetGroup,
-            domain: this.selectedDomain,
-          }
-
-      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+      let filtersToBePassed = {};       
+      Object.keys(this.filterText).map(key => {
+        if(key=="domain" || key=="include_exempt" || key.replace(".keyword", "")==urlObj.params["attribute"] || urlObj.url.includes(key)) return;
+        filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
+      })
+      if(!filtersToBePassed["issueStatus"]){
+        filtersToBePassed["issueStatus"] = ["open", "exempt"];
+      }
+      const payload = {
+        type: "issue",
+        attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
+        ag: this.selectedAssetGroup,
+        domain: this.selectedDomain,
+        filter: filtersToBePassed
+      }
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
-          queryParams,
+          {},
           environment.base +
-          urlObj.url,
-          "GET"
+          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+            .url,
+          "POST",
+          payload
         )
         .subscribe((response) => {
-          this.filterTagOptions[value] = response[0].response;
+          const filterTagsData = response[0].data.response;
+          if(value.toLowerCase()=="asset type"){
+            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+              filterTagsData.map(filterOption => {
+                filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
+              });
+            });
+          }
+          this.filterTagOptions[value] = filterTagsData;
           this.filterTagLabels = {
               ...this.filterTagLabels,
               ...{
-                  [value]: map(response[0].response, 'name').sort((a, b) =>
+                  [value]: map(filterTagsData, 'name').sort((a, b) =>
                       a.localeCompare(b),
                   ),
               },
           };
-          if(value.toLowerCase()=="age"){
-            const filterValues = this.filterTagLabels[value].splice(1);
-            filterValues.sort((a, b) => a-b);
-            this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
-          }
           if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
           resolve(this.filterTagOptions[value]);
           this.storeState();
         });
-      }
+      
     } catch (error) {
       this.filterErrorMessage = 'apiResponseError';
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -544,8 +560,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   changeFilterTags(event) {
-    let value = event.filterValue;
-    if(!value){
+    let filterValues = event.filterValue;
+    if(!filterValues){
       return;
     }
     this.currentFilterType =  find(this.filterTypeOptions, {
@@ -554,14 +570,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     try {
       if (this.currentFilterType) {
-        const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+        const filterTags = filterValues.map(value => {
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
+          return v;
+        });
         this.utils.addOrReplaceElement(
           this.filters,
           {
             keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: value,
+            filterValue: filterValues,
             key: this.currentFilterType.optionName,
-            value: filterTag["id"],
+            value: filterTags,
             filterkey: this.currentFilterType.optionValue.trim(),
             compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
           },
@@ -630,7 +649,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             isChip: "",
             isMenuBtn: false,
             properties: "",
-            isLink: false
+            isLink: false,
+            imageTitleText: ""
           }
           if(col.toLowerCase()=="policy"){
             cellObj = {
@@ -659,13 +679,18 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       if (this.issueListingSubscription) {
         this.issueListingSubscription.unsubscribe();
       }
-      const filterToBePassed = this.filterText;
+      const filterToBePassed = {...this.filterText};
       if(filterToBePassed){
         filterToBePassed.domain = this.selectedDomain;
-        if (!filterToBePassed["issueStatus.keyword"] && filterToBePassed.include_exempt=="yes") {
+        if (!filterToBePassed["issueStatus.keyword"]) {
           filterToBePassed.include_exempt = "yes";
         }
       }
+
+      Object.keys(filterToBePassed).forEach(filterKey => {
+        if(filterKey=="domain" || filterKey=="include_exempt") return;
+        filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+      })
 
       const sortFilters = {
         fieldName: this.fieldName,
@@ -735,6 +760,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   massageData(data){
     const refactoredService = this.refactorFieldsService;
     const columnNamesMap = this.columnNamesMap;
+    let assetTypeMapData;
+    this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+      assetTypeMapData = assetTypeMap;
+    });
     const newData = [];
     data.map(function (row) {
       const KeysTobeChanged = Object.keys(row);
@@ -754,6 +783,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         }
         // change data value
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
+        if(elementnew=='Asset Type'){
+          newObj[elementnew] = assetTypeMapData.get(newObj[elementnew]);
+        }
       });
 
       newData.push(newObj);
@@ -769,7 +801,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
+        this.router.routerState.snapshot.root, 0, this.pageTitle
       );
       this.router
           .navigate(["issue-details", row["Violation ID"].valueText], {
@@ -789,29 +821,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-  }
-
-  calculateDate(_JSDate) {
-    if (!_JSDate) {
-      return "No Data";
-    }
-    const date = new Date(_JSDate);
-    const year = date.getFullYear().toString();
-    const month = date.getMonth() + 1;
-    let monthString;
-    if (month < 10) {
-      monthString = "0" + month.toString();
-    } else {
-      monthString = month.toString();
-    }
-    const day = date.getDate();
-    let dayString;
-    if (day < 10) {
-      dayString = "0" + day.toString();
-    } else {
-      dayString = day.toString();
-    }
-    return monthString + "-" + dayString + "-" + year;
   }
 
   handlePopClick(e) {
@@ -877,7 +886,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
-    // this.storeState();
     try {
       if (this.assetGroupSubscription) {
         this.assetGroupSubscription.unsubscribe();

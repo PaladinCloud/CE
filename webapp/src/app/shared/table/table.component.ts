@@ -19,13 +19,13 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
 import { skip, takeUntil } from 'rxjs/operators';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
-import { OptionChange } from '../table-filters/table-filters.component';
+import { AppliedFilterTags, OptionChange } from '../table-filters/table-filters.component';
 
 export interface FilterItem {
-    filterValue?: string | undefined;
+    filterValue?: string[] | string | undefined;
     key?: string;
     keyDisplayValue: string;
-    value?: string | undefined;
+    value?: string[] | string | undefined;
     compareKey?: string;
     filterkey?: string;
 }
@@ -47,6 +47,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
     @Input() data = [];
     @Input() direction: SortDirection;
+    @Input() enableMultiValuedFilter = false;
     @Input() doLocalFilter = false;
     @Input() doLocalSearch = false;
     @Input() doLocalSort = true;
@@ -54,7 +55,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Input() filterTagLabels: { [key: string]: string[] };
     @Input() filterTypeLabels = [];
     @Input() headerColName: string;
-    @Input() imageDataMap = {};
     @Input() onScrollDataLoader: Subject<any>;
     @Input() rowClickable = true;
     @Input() rowSize: 'SM' | 'MD' | 'LG' = 'SM';
@@ -72,13 +72,25 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Input() tableTitle: string;
     @Input() totalRows = 0;
     @Input() whiteListColumns: string[] = [];
-    @Input() filteredArray: FilterItem[] = [];
+    @Input() set filteredArray(filterItems: FilterItem[]){
+        filterItems?.forEach(filterItem => {
+            if(typeof filterItem.value == "string" && typeof filterItem.filterValue == "string"){
+                filterItem.value = filterItem.value?.split(",");
+                filterItem.filterValue = filterItem.filterValue?.split(",");
+            }
+        })
+        this._filteredArray = filterItems;
+    }
+    get filteredArray() {
+        return this._filteredArray;
+    }
     @Input() filterTypeOptions: {
         optionName: string;
         optionURL: string;
         optionValue: string;
     }[];
 
+    private _filteredArray: FilterItem[];
     @Output() actionSelected = new EventEmitter();
     @Output() deleteFilters = new EventEmitter<{
         index?: number;
@@ -100,7 +112,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Output() searchInColumnsChanged = new EventEmitter<string>();
     @Output() selectedFilter = new EventEmitter<{
         index: number;
-        filterValue: string;
+        filterValue: string[] | string;
         filterKeyDisplayValue: string;
     }>();
     @Output() selectedFilterType = new EventEmitter<string>();
@@ -125,6 +137,28 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     destroy$ = new Subject<void>();
 
     private _columnWidths: { [key: string]: number } = {};
+    private sortByColumn = {
+        severity: (a, b, isAsc) => {
+            const severeness = { low: 1, medium: 2, high: 3, critical: 4, default: 5 * (isAsc ? 1 : -1) };
+      
+            const ASeverity = a["Severity"].valueText??"default";
+            const BSeverity = b["Severity"].valueText??"default";
+            if(severeness[ASeverity] == severeness[BSeverity]){
+              return a['Violations'].valueText<b['Violations'].valueText ? 1: -1
+            }
+            return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
+          },
+          category: (a, b, isAsc) => {
+            const priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+      
+            const ACategory = a["Category"].valueText??"default";
+            const BCategory = b["Category"].valueText??"default";
+            if(priority[ACategory] == priority[BCategory]){
+              return a['Violations']<b['Violations'] ? -1: 1
+            }
+            return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
+          },
+    }
 
     constructor(private assetGroupChangeService: AssetGroupObservableService) {}
 
@@ -185,7 +219,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                 this.dataSource = new MatTableDataSource(this.data);
             }
 
-            this.selectedFiltersList = this.filteredArray.map((item) => item.keyDisplayValue);
         }
         if ((this.doLocalSearch || this.doLocalSort) && this.tableDataLoaded) {
             this.filterAndSort();
@@ -223,7 +256,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     handleClick(row, col: string, i: number) {
-        if (row[col].isMenuBtn) {
+        if (row[col].isMenuBtn || row[col].isCheckbox) {
             return;
         }
         const event = {
@@ -254,23 +287,19 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.whiteListColumnsChanged();
     }
 
-    handleFilterDropdownOpen() {
-        this.selectedFiltersList = [];
-        this.filteredArray.forEach((filter) => {
-            this.selectedFiltersList.push(filter.keyDisplayValue);
-        });
-    }
 
     selectFilterCategory(category: string) {
         if (this.filteredArray.some((i) => i.keyDisplayValue === category)) {
+            this.handleFilterTagsDropdownOpen(category);
             return;
         }
-        this.selectedFiltersList.push(category);
         this.filteredArray.push({
             keyDisplayValue: category,
             filterValue: undefined,
         });
-        this.onSelectFilterType(category, this.filteredArray.length - 1);
+        const filteredArrayKeys = this.filteredArray.map((item) => item.keyDisplayValue);
+        const index = filteredArrayKeys.indexOf(category)>=0?filteredArrayKeys.indexOf(category):this.filteredArray.length-1;
+        this.onSelectFilterType(category, index);
     }
 
     removeOnlyFilterValue(index: number) {
@@ -288,7 +317,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     selectFilterCategoryOption(event: OptionChange) {
         let index = this.filteredArray.findIndex((i) => i.key === event.category);
 
-        if (event.value == false) {
+        const appliedFilterTags = event.appliedFilterTags;
+
+        if(appliedFilterTags.length==0){
             this.removeOnlyFilterValue(index);
             return;
         }
@@ -318,7 +349,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             this.filteredArray = [...this.filteredArray, filterItem];
             index = this.filteredArray.length - 1;
         } else {
-            this.filteredArray[index].filterValue = this.filteredArray[index].value = event.option;
+            this.filteredArray[index].filterValue = this.filteredArray[index].value = appliedFilterTags;
         }
 
         if (this.doLocalFilter) {
@@ -328,13 +359,12 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.selectedFilter.emit({
             index,
             filterKeyDisplayValue: event.category,
-            filterValue: event.option,
+            filterValue: this.enableMultiValuedFilter?event.appliedFilterTags:event.appliedFilterTags[0],
         });
     }
 
-    onSelectFilter(e: string | undefined, i: number) {
+    onSelectFilter(e: string[] | undefined, i: number) {
         if (!e) {
-            this.selectedFiltersList.splice(i, 1);
             this.removeFilter(i);
             return;
         }
@@ -369,6 +399,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.selectedFilter.emit(event);
     }
 
+    handleFilterTagsDropdownOpen(e){
+        this.selectedFilterType.emit(e);
+    }
+
     onSelectFilterType(e: string, i: number) {
         this.filteredArray[i].key = e;
         this.filteredArray[i].keyDisplayValue = e;
@@ -385,8 +419,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     removeFilter(i: number) {
-        this.selectedFiltersList.splice(i, 1);
-
         if (this.doLocalFilter) {
             this.filteredArray.splice(i, 1);
             this.filterAndSort();
@@ -398,8 +430,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     removeFilterCategory(filterCategory: string) {
-        const index = this.selectedFiltersList.indexOf(filterCategory);
-        this.selectedFiltersList.splice(index, 1);
+        const index = this.filteredArray.map(filter => filter.keyDisplayValue).indexOf(filterCategory);
         if (this.doLocalFilter) {
             this.filteredArray.splice(index, 1);
             this.filterAndSort();
@@ -410,7 +441,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     removeAllFilters() {
-        this.selectedFiltersList = [];
         if (this.doLocalFilter) {
             this.filteredArray = [];
             this.filterAndSort();
@@ -449,7 +479,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                         if (filterValue == '26%-50%' && !(cv_f >= 26 && cv_f <= 50)) return false;
                         if (filterValue == '51%-75%' && !(cv_f >= 51 && cv_f <= 75)) return false;
                         if (filterValue == '76%-100%' && !(cv_f >= 76 && cv_f <= 100)) return false;
-                    } else if (!(String(cellValue).toLowerCase() == filterValue.toLowerCase())) {
+                    } else if(filterValue.includes('-')){
+                        const [min, max] = filterValue.split('-');
+                        return (cellValue >=min && cellValue<=max);
+                    }
+                    else if (!(String(cellValue).toLowerCase() == filterValue.toLowerCase())) {
                         return false;
                     }
                 }
@@ -531,12 +565,14 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.dataSource.data = this.dataSource.data.sort((a, b) => {
             if (this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]) {
                 return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
+            }else if(this.sortByColumn[this.headerColName.toLowerCase()]){
+                return this.sortByColumn[this.headerColName.toLowerCase()](a, b, isAsc);
             }
 
             const elementA = a[this.headerColName];
             const elementB = b[this.headerColName];
 
-            if (!isNaN(parseFloat(elementA.valueText)) || !isNaN(parseFloat(elementB.valueText))) {
+            if (!isNaN(parseFloat(elementA?.valueText)) && !isNaN(parseFloat(elementB?.valueText))) {
                 if (
                     typeof elementA.valueText == 'number' ||
                     typeof elementB.valueText == 'number'
@@ -552,16 +588,16 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
             const elementAValue =
                 elementA && elementA.valueText
-                    ? elementA.valueText.toLowerCase()
+                    ? elementA.valueText.toString().toLowerCase().trim()
                     : isAsc
-                    ? 'zzzzzz'
-                    : '000000';
+                    ? 'zzzzzzzzzzzzzzzz'
+                    : '0000000000000000';
             const elementBValue =
                 elementB && elementB.valueText
-                    ? elementB.valueText.toLowerCase()
+                    ? elementB.valueText.toString().toLowerCase().trim()
                     : isAsc
-                    ? 'zzzzzz'
-                    : '000000';
+                    ? 'zzzzzzzzzzzzzzzz'
+                    : '0000000000000000';
 
             return (elementAValue < elementBValue ? -1 : 1) * (isAsc ? 1 : -1);
         });
@@ -577,6 +613,15 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                 this.isDataLoading = true;
             }
         }
+    }
+
+    handleCheckboxChange(row, col, e){
+        row[col].valueText=e.checked?'checked':'unchecked';
+        const event = {
+            rowSelected: row,
+            col
+        };
+        this.rowSelectEventEmitter.emit(event);
     }
 
     download() {

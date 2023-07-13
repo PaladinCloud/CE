@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.issue-blocks-wrapper{
+ .issue-blocks-wrapper{
 	padding: 0.5em 0.8em;
 	width: 11em;
 }
@@ -39,5 +39,8 @@
 	text-align: center;
 	font-size: 1.1em;
 	line-height: 1.4;
+}
+
+.footer::first-letter{
     text-transform: capitalize;
 }

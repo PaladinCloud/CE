@@ -5,15 +5,15 @@ import { FilterItem } from '../table/table.component';
 import { FilterChipUpdateEvent } from './table-filter-chip/table-filter-chip.component';
 
 interface AppliedFilter {
-    [categoryName: string]: {
-        [optionName: string]: boolean;
-    };
+    [categoryName: string]: AppliedFilterTags
 }
 
+export interface AppliedFilterTags {
+    [optionName: string]: boolean;
+};
 export interface OptionChange {
     category: string;
-    option: string;
-    value: boolean;
+    appliedFilterTags: string[];
 }
 
 @Component({
@@ -22,22 +22,25 @@ export interface OptionChange {
     styleUrls: ['./table-filters.component.css'],
 })
 export class TableFiltersComponent implements OnInit {
+    @Input() enableMultiValuedFilter = false;
     @Input() set appliedFilters(filters: FilterItem[] | undefined) {
         this._appliedFilters = filters || [];
         const optionDict = this._appliedFilters.reduce((prev, next) => {
             if (!next.filterValue || !next.key) {
                 return prev;
             }
+        (next.filterValue as any).map(item => {
             prev = merge({}, prev, {
                 [next.key]: {
-                    [next.filterValue]: true,
+                    [item]: true,
                 },
             });
+        })
             return prev;
         }, {});
 
         // TODO: REMOVE IF STATEMENT WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
-        if (Object.keys(this.appliedFiltersDict).length) {
+        if (Object.keys(this.appliedFiltersDict).length && !this.enableMultiValuedFilter) {
             this.appliedFiltersDict = Object.keys(this.appliedFiltersDict).reduce((acc, next) => {
                 acc[next] = optionDict[next] ? optionDict[next] : this.appliedFiltersDict[next];
                 return acc;
@@ -51,8 +54,8 @@ export class TableFiltersComponent implements OnInit {
         return this._appliedFilters;
     }
 
-    @Input() set categories(values: string[] | undefined) {
-        this._categories = values || [];
+    @Input() set categories(values) {
+        this._categories = values;
         this.appliedFiltersDict = merge(
             {},
             this.appliedFiltersDict,
@@ -122,7 +125,7 @@ export class TableFiltersComponent implements OnInit {
         // TODO: REMOVE WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
         const uncheckedOptionsDict = Object.entries(this.appliedFiltersDict[filterCategory]).reduce(
             (prev, [name]) => {
-                if (name !== event.filterName) {
+                if (name !== event.filterName && !this.enableMultiValuedFilter) {
                     prev[name] = false;
                 }
                 return prev;
@@ -137,9 +140,8 @@ export class TableFiltersComponent implements OnInit {
         });
 
         this.optionChange.emit({
-            category: event.category,
-            option: event.filterName,
-            value: event.filterValue,
+            category: filterCategory,
+            appliedFilterTags: Object.keys(this.appliedFiltersDict[filterCategory]).filter(filter => this.appliedFiltersDict[filterCategory][filter])
         });
     }
 
@@ -166,11 +168,13 @@ export class TableFiltersComponent implements OnInit {
     }
 
     filterCategoriesByQuery() {
+        const appliedFilterCategories = this.appliedFilters.map(filter => filter.keyDisplayValue);
         return (
             this.categories?.filter((c) =>
-                c.toLowerCase().includes(this.categoryFilterQuery.toLowerCase()),
+                c.toLowerCase().includes(this.categoryFilterQuery.toLowerCase())
+                &&  !appliedFilterCategories.includes(c),
             ) || []
-        );
+        )
     }
 
     filterSelectedCategoryOptionsByQuery() {
