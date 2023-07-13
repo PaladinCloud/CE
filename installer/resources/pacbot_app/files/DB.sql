@@ -1485,6 +1485,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (31,8,'Asset ID','_resourceid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (32,8,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_cloudType&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (33,8,'Region','region.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=region&type=asset');
+
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,'Asset Name','_resourcename.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourcename&type=asset');
 
 /* Notification filters */
@@ -2949,6 +2950,7 @@ END $$
 DELIMITER ;
 
 CALL update_filter_for_tag(@MANDATORY_TAGS);
+
 
 update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('batchaccounts','blobcontainer', 'blobservice', 'databricks', 'defender', 'disk', 'loadbalancer', 'mysqlserver', 'namespaces', 'networkinterface', 'nsg', 'postgresql', 'rediscache', 'securitypricings', 'sqldatabase', 'sqlserver', 'storageaccount', 'subnets', 'vaults', 'vaultsrbac', 'virtualmachine', 'vnet', 'webapp', 'workflows');
 
