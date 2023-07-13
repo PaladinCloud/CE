@@ -51,6 +51,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	private static final String _SEARCH = "_search";
 	private static final String HITS = "hits";
 	private static final String ERROR_IN_US = "error retrieving inventory from ES";
+	private final int  ES_PAGE_SIZE=10000;
 	@Value("${elastic-search.host}")
 	private String esHost;
 	@Value("${elastic-search.port}")
@@ -78,22 +79,18 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 
 	@Override
 	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter, int size,
-			int from) {
+			int from,Map<String,Object> sortFilter) {
 		LOGGER.info("Inside getNotifications");
 		notifications = new ArrayList<>();
 		try {
 
-			getCloudNotifications(INDEX, TYPE, filter, size, from).forEach(notification -> {
+			getCloudNotifications(INDEX, TYPE, filter, size, from,sortFilter).forEach(notification -> {
 				notifications.add(notification);
 			});
 
 		} catch (Exception e) {
 			LOGGER.error("Error in getNotifications", e);
 		}
-		Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate
-				.parse(m2.get(START_TIME).toString().substring(0, 10), DateTimeFormatter.ISO_DATE).compareTo(
-						LocalDate.parse(m1.get(START_TIME).toString().substring(0, 10), DateTimeFormatter.ISO_DATE));
-		Collections.sort(notifications, comp);
 
 		LOGGER.info("Exiting getNotifications");
 		return notifications.stream().distinct().collect(Collectors.toList());
@@ -408,29 +405,23 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getCloudNotifications(String index, String type, Map<String, String> filter,
-			int size, int from) throws DataException {
+			int size, int from,Map<String,Object> sortFilter) throws DataException {
 		Map<String, Object> eventMap = new HashMap<>();
+		int docSize=0;
 		eventMap.put("scheduledChange", "Scheduled Change");
 		eventMap.put("accountNotification", "Account Notification");
 		eventMap.put("issue", "Issue");
 		List<Map<String, Object>> notificationsList = new ArrayList<Map<String, Object>>();
 		try {
-			Map<String, Object> eventArnMap = new HashMap<String, Object>();
-			eventArnMap = getCloudEventArn(index, type, size, from);
-			String eventArn = eventArnMap.keySet().stream().collect(Collectors.toList()).stream()
-					.collect(Collectors.joining("\",\"", "\"", "\""));
-
 			String body = "";
 			String eventCategory = filterkey(filter, AssetConstants.EVENTCATEGORY);
 
 			String eventSource = filterkey(filter, AssetConstants.EVENTSOURCE);
 
 			String eventName = filterkey(filter, AssetConstants.EVENTNAME);
-
-			body = "{\"size\":10000,\"_source\":[\"eventId\",\"eventName\",\"eventCategory\",\"eventCategoryName\",\"eventSource\",\"eventSourceName\",\"_loaddate\"],"
-					+ "\"query\":{\"bool\":{\"must\":[{\"terms\":{\"eventId.keyword\":[" + eventArn
-					+ "]}},{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType\":\"notification\"}}";
-
+			Map<String, Object> requestBody = new HashMap<String, Object>();
+			body = "{\"size\":<size>,\"_source\":[\"eventId\",\"eventName\",\"eventCategory\",\"eventCategoryName\",\"eventSource\",\"eventSourceName\",\"_loaddate\"],"
+					+ "\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType.keyword\":\"notification\"}}";
 			if (!Strings.isNullOrEmpty(eventSource)) {
 				body = body + ",{\"terms\":{\"eventSourceName.keyword\":" + eventSource + "}}";
 			}
@@ -438,42 +429,44 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 				body = body + ",{\"terms\":{\"eventCategoryName.keyword\":" + eventCategory + "}}";
 			}
 			if (!Strings.isNullOrEmpty(eventName)) {
-				body = body + ",{\"terms\":{\"eventCategoryName.keyword\":" + eventName + "}}";
+				body = body + ",{\"terms\":{\"eventName.keyword\":" + eventName + "}}";
 			}
-			if (!Strings.isNullOrEmpty(type)) {
-				body = body + ",{\"term\":{\"docType\": \"" + type + "\"}}";
-			}
-			body = body + "]}},\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
-			String urlToQuery = esRepository.buildESURL(esUrl, index, null,  from);
-			Gson gson = new GsonBuilder().create();
-			String responseDetails = null;
-			try {
-				responseDetails = PacHttpUtils.doHttpPost(urlToQuery, new StringBuilder(body).toString());
-			} catch (Exception e) {
-				LOGGER.error("Error in getCloudNotifications", e);
-			}
-			Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Object.class);
-			if (response.containsKey(HITS)) {
-				Map<String, Object> hits = (Map<String, Object>) response.get(HITS);
-				if (hits.containsKey(HITS)) {
-					List<Map<String, Object>> hitDetails = (List<Map<String, Object>>) hits.get(HITS);
-					if (!hitDetails.isEmpty()) {
-						for (Map<String, Object> hitDetail : hitDetails) {
-							Map<String, Object> sources = (Map<String, Object>) hitDetail.get(_SOURCE);
-							Map<String, Object> notifcation = new LinkedHashMap<String, Object>();
-							notifcation.put("eventId", sources.get("eventId").toString());
-							notifcation.put("eventName", sources.get("eventName"));
-							notifcation.put("eventCategory", sources.get("eventCategory"));
-							notifcation.put("eventCategoryName", sources.get("eventCategoryName"));
-							notifcation.put("eventSource", sources.get("eventSource"));
-							notifcation.put("eventSourceName", sources.get("eventSourceName"));
-							notifcation.put("payload", sources.get("payload"));
-							notifcation.put("startTime", sources.get("_loaddate"));
-							notificationsList.add(notifcation);
-						}
-					}
+			body = body + "]}},";
+			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+			if(null != sortFilter && !sortFilter.isEmpty()) {
+				Map<String, Object> sortMap = new HashMap<>();
+				String fieldName = (String) sortFilter.get("fieldName");
+				if(fieldName!=null) {
+					String sortOrder = sortFilter.get("order") != null ? (String) sortFilter.get("order") : "asc";
+					Map<String, Object> sortOrderMap = new HashMap<>();
+					sortOrderMap.put("order", sortOrder);
+					sortMap.put(fieldName, sortOrderMap);
+					list.add(sortMap);
 				}
 			}
+			else if(null == sortFilter || sortFilter.isEmpty() || !sortFilter.get("fieldName").toString().equals("_loaddate.keyword"))
+			{
+				Map<String, Object> sortMap = new HashMap<>();
+				Map<String, Object> sortOrderMap = new HashMap<>();
+				sortOrderMap.put("order", "desc");
+				sortMap.put("_loaddate.keyword", sortOrderMap);
+				list.add(sortMap);
+			}
+			if (!list.isEmpty()) {
+				requestBody.put("sort", list);
+			}
+			Gson serializer = new GsonBuilder().create();
+			String request = serializer.toJson(requestBody).substring(1);
+			body=body+request;
+			String requestForCount = body.replace("\"size\":<size>,","");
+			requestForCount=requestForCount.replace("\"_source\":[\"eventId\",\"eventName\",\"eventCategory\",\"eventCategoryName\",\"eventSource\",\"eventSourceName\",\"_loaddate\"],","");
+			requestForCount = requestForCount.replace(","+request.substring(0,request.length()-1),"");
+			if((from+size)<ES_PAGE_SIZE)
+				body=body.replace("<size>",String.valueOf(size+from));
+			else
+				body=body.replace("<size>",String.valueOf(ES_PAGE_SIZE));
+
+			notificationsList=esRepository.fetchCloudNotifications(index,"",body,requestForCount,from,size,docSize);
 		} catch (Exception e) {
 			LOGGER.error("Error in getCloudNotifications", e);
 		}

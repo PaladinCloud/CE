@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,15 +72,18 @@ public class CloudNotificationsController {
 
 			String searchText = request.getSearchtext();
 			Map<String, String> filter = request.getFilter();
+			Map<String,Object> sortFilter=request.getSortFilter();
 			List<Map<String, Object>> masterList;
 			
 			try {
-				masterList = cloudService.getNotifications(assetGroup, filter, size, from);
+				masterList = cloudService.getNotifications(assetGroup, filter, size, from,sortFilter);
 			} catch (Exception e) {
 				LOGGER.error("Error in getlistOfCloudNotifications ", e);
 				return ResponseUtils.buildFailureResponse(e);
 			}
-			return formResponseWithCount(masterList, from, size, searchText);
+			int count = ThreadLocalUtil.count.get();
+			ThreadLocalUtil.count.remove();
+			return formResponseWithCount(masterList, from, size, searchText,count);
 		}
 
 		 /**
@@ -94,7 +98,7 @@ public class CloudNotificationsController {
 	     */
 	    @SuppressWarnings("unchecked")
 	    private ResponseEntity<Object> formResponseWithCount(List<Map<String, Object>> masterList, int from, int size,
-	            String searchText) {
+	            String searchText,long totalDocumentCount) {
 	        try {
 	            List<Map<String, Object>> masterDetailList = (List<Map<String, Object>>) CommonUtils
 	                    .filterMatchingCollectionElements(masterList, searchText, true);
@@ -120,7 +124,7 @@ public class CloudNotificationsController {
 	            }
 
 	            List<Map<String, Object>> subDetailList = masterDetailList.subList(from, endIndex);
-	            return ResponseUtils.buildSucessResponse(new ResponseWithCount(subDetailList, masterDetailList.size()));
+	            return ResponseUtils.buildSucessResponse(new ResponseWithCount(masterDetailList, totalDocumentCount));
 	        } catch (Exception e) {
 	            LOGGER.error("Exception in formResponseWithCount ",e);
 	            return ResponseUtils.buildFailureResponse(e);

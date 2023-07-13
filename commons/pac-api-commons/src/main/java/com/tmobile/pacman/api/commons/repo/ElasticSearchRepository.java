@@ -1920,5 +1920,38 @@ public class ElasticSearchRepository implements Constants {
 		finalResponse.put(BOOL,shouldDetails);
 		return  finalResponse;
 	}
+	public long getTotalDocCountWithConditions(String dataSource,String targetType, String request) throws Exception {
+		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
+		if (!Strings.isNullOrEmpty(targetType)) {
+			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
+		}
+		urlToQueryBuffer.append(FORWARD_SLASH).append("_count");
+		String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), request);
+		Gson serializer = new GsonBuilder().create();
+		Map<String, Object> response = (Map<String, Object>) serializer.fromJson(responseDetails,
+				Object.class);
+		if(response.containsKey("count")){
+			return (long)(Double.parseDouble(response.get(COUNT).toString()));
+		} else
+			throw new Exception("Could not fetch count.");
+	}
 
+	public List<Map<String,Object>> fetchCloudNotifications(String dataSource,String targetType, String request, String requestForCount, int from, int size,int docSize) throws Exception {
+		try{
+			LOGGER.info("inside ElasticSearchRepository:::fetchCloudNotifications");
+			long docCount=getTotalDocCountWithConditions(dataSource,"", requestForCount);
+			ThreadLocalUtil.count.set((int)docCount);
+			long documentCount = size==0 ? docCount : size;
+			LOGGER.info("inside ElasticSearchRepository:::fetchCloudNotifications, docCount is "+docCount);
+			StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
+			if (!Strings.isNullOrEmpty(targetType)) {
+				urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
+			}
+			urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
+			return prepareResultsUsingPagination(dataSource,request,from,documentCount);
+		} catch(Exception exception){
+			LOGGER.error("Exception occurred in ElasticSearchRepository:::fetchCloudNotifications");
+			throw new Exception(exception.getMessage());
+		}
+	}
 }
