@@ -22,11 +22,9 @@
  **/
 package com.tmobile.pacman.api.commons.repo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+
 
 import javax.annotation.PostConstruct;
 
@@ -1953,5 +1951,21 @@ public class ElasticSearchRepository implements Constants {
 			LOGGER.error("Exception occurred in ElasticSearchRepository:::fetchCloudNotifications");
 			throw new Exception(exception.getMessage());
 		}
+	}
+
+	public List<Map<String, Object>> getDataFromES(String dataSource, String targetType, Map<String, Object> queryMap) throws Exception {
+		Gson gson = new GsonBuilder().create();
+		Map<String, Object> mapForCount = new HashMap<>();
+		mapForCount.putAll(queryMap);
+		mapForCount.remove("size");
+		String requestBodyForCount = gson.toJson(mapForCount);
+		String requestBody = gson.toJson(queryMap);
+		Long totalDocs = getTotalDocCountWithConditions(dataSource, targetType, requestBodyForCount);
+		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append(FORWARD_SLASH).append(dataSource);
+		if (!Strings.isNullOrEmpty(targetType)) {
+			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
+		}
+		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
+		return prepareResultsUsingPagination(dataSource,requestBody,0,totalDocs);
 	}
 }

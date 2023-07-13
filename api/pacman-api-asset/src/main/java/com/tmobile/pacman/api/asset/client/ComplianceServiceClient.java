@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.client;
 
+import com.tmobile.pacman.api.asset.domain.PolicyParamResponse;
 import com.tmobile.pacman.api.asset.domain.Request;
 import com.tmobile.pacman.api.asset.domain.ResponseWithTotal;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -54,5 +55,9 @@ public interface ComplianceServiceClient {
 
     @PostMapping(value = "/v1/noncompliancepolicy", consumes = "application/json")
     ResponseWithTotal getNonCompliancePolicies(@RequestBody Request request);
+
+    @GetMapping(path = "/policyparams/param")
+    PolicyParamResponse getPolicyParam(@RequestParam("policyId") String policyId,
+                                       @RequestParam("policyParamKey") String policyParamkey);
 
 }

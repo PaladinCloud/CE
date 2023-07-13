@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.api.asset.domain.FilterRequest;
 import org.springframework.stereotype.Repository;
 
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
@@ -505,6 +506,8 @@ public interface AssetRepository {
      */
     List<Map<String, Object>> getDomainsByAssetGroup(String aseetGroupName);
 
+    List<Map<String, Object>> getDomainsByTargetTypes(String targetTypesParam);
+
     /**
      * Fetches the updatable fields info maintained in RDS for the given targettype.
      *
@@ -585,4 +588,9 @@ public interface AssetRepository {
     public long getAutoFixPlanCountForAg(String ag);
 
     public int getAccountCountByAssetGroup(String aseetGroupName);
+
+    List<Map<String, Object>> getChildResourceDetailByDocId(String ag, String resourceType, String documentId)
+            throws DataException;
+
+    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
 }
