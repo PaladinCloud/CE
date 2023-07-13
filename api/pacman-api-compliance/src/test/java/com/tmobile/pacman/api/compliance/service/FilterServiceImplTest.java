@@ -20,8 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -118,13 +117,13 @@ public class FilterServiceImplTest {
         Map<String, Long> regionMap = new HashMap<>();
         regionMap.put("us-east-1", 1l);
         regionMap.put("us-west-2", 2l);
-        when(repository.getRegionsFromES(anyString()))
+        when(repository.getRegionsFromES(anyString(), anyObject()))
                 .thenReturn(regionMap);
-        assertThat(filterServiceImpl.getRegions("dummyString"),
+        assertThat(filterServiceImpl.getRegions("dummyString", anyObject()),
                 is(notNullValue()));
-        when(filterServiceImpl.getRegions(anyString())).thenThrow(new DataException());
+        when(filterServiceImpl.getRegions(anyString(),  anyObject())).thenThrow(new DataException());
         assertThatThrownBy( 
-                () -> filterServiceImpl.getRegions("qwe")).isInstanceOf(ServiceException.class);
+                () -> filterServiceImpl.getRegions("qwe", anyObject())).isInstanceOf(ServiceException.class);
     }
     
     @Test

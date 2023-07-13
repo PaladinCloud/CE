@@ -56,7 +56,7 @@ public interface FilterService {
      * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    public List<Map<String, Object>> getRegions(String assetGroup)
+    public List<Map<String, Object>> getRegions(String assetGroup,Map<String,Object> filter)
             throws ServiceException;
 
     /**
@@ -124,7 +124,7 @@ public interface FilterService {
          * @throws ServiceException the service exception
          */
         public List<Map<String, Object>> getSeveritiesForAssetGroup(
-                        String assetGroup, String domain) throws ServiceException;
+                        String assetGroup, String domain, Map<String,Object> filter) throws ServiceException;
                 
          /**
          * Gets the categories for asset group.
@@ -159,7 +159,7 @@ public interface FilterService {
     public List<Map<String, Object>> getNotificationSource() throws ServiceException;
     public List<Map<String, Object>> getNotificationEventName() throws ServiceException;
 
-    List<Map<String, Object>> getAttributeValuesForAssetGroup(String assetGroup, String domain, String attributeName, String entityType) throws ServiceException;
+    List<Map<String, Object>> getAttributeValuesForAssetGroup(String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName) throws ServiceException;
 
     ResponseData getPolicycompliance(FilterRequest request) throws ServiceException;
 }

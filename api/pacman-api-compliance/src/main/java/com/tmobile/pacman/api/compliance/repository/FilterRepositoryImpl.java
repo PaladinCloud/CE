@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.HashMultimap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,15 +140,25 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
      * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
      * getRegionsFromES(java.lang.String)
      */
-    public Map<String, Long> getRegionsFromES(String assetGroup)
+    public Map<String, Long> getRegionsFromES(String assetGroup,Map<String,Object> filter)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter=new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        mustFilter.put(Constants.TYPE, "issue");
         String aggsFilter = CommonUtils.convertAttributetoKeyword("region");
+        if(filter.keySet().size()!=0)
+        {
+            for(String key: filter.keySet())
+            {
+                mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(key),filter.get(key));
+            }
+        }
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
-                    assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
-                    THOUSAND, null);
+                    assetGroup, null, mustFilter, mustNotFilter, shouldFilter, aggsFilter,
+                    THOUSAND, mustTermsFilter);
         } catch (Exception e) {
             throw new DataException(e);
         }

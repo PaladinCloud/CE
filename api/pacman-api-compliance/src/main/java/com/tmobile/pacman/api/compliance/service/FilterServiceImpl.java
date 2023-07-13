@@ -126,12 +126,12 @@ public class FilterServiceImpl implements FilterService, Constants {
     /* (non-Javadoc)
      * @see com.tmobile.pacman.api.compliance.service.FilterService#getRegions(java.lang.String)
      */
-    public List<Map<String, Object>> getRegions(String assetGroup)
+    public List<Map<String, Object>> getRegions(String assetGroup,Map<String,Object> filter)
             throws ServiceException {
         Map<String, Long> regionsMap;
 
         List<Map<String, Object>> regions = new ArrayList<>();
-       try{ regionsMap = repository.getRegionsFromES(assetGroup);
+       try{ regionsMap = repository.getRegionsFromES(assetGroup,filter);
        }catch(DataException e){
            throw new ServiceException(e);
        }
@@ -332,7 +332,7 @@ public class FilterServiceImpl implements FilterService, Constants {
          * @throws ServiceException the service exception
          */
         public List<Map<String, Object>> getSeveritiesForAssetGroup(
-                String assetGroup, String domain) throws ServiceException {
+                String assetGroup, String domain, Map<String,Object> filter) throws ServiceException {
 
             Map<String, Long> severityMap;
 
@@ -348,8 +348,9 @@ public class FilterServiceImpl implements FilterService, Constants {
             severityMap.entrySet().parallelStream().forEach(severity -> {
                 Map<String, Object> severity_Map = new HashMap<>();
                 if (StringUtils.isNotBlank(severity.getKey())) {
-                    severity_Map.put(NAME, severity.getKey());
-                    severity_Map.put(ID, severity.getKey());
+                    String key=severity.getKey();
+                    severity_Map.put(NAME, key.substring(0,1).toUpperCase()+key.substring(1).toLowerCase());
+                    severity_Map.put(ID, key);
                     synchronized (severities) {
                         severities.add(severity_Map);
                     }
@@ -486,7 +487,7 @@ public class FilterServiceImpl implements FilterService, Constants {
 	}
 
     public List<Map<String, Object>> getAttributeValuesForAssetGroup(
-            String assetGroup, String domain, String attributeName, String entityType) throws ServiceException {
+            String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName) throws ServiceException {
         Map<String, Long> valueMap;
         List<Map<String, Object>> valueList = new ArrayList<>();
         try {
@@ -500,8 +501,9 @@ public class FilterServiceImpl implements FilterService, Constants {
         valueMap.entrySet().parallelStream().forEach(dataValue -> {
             Map<String, Object> values = new HashMap<>();
             if (StringUtils.isNotBlank(dataValue.getKey())) {
-                values.put(NAME, dataValue.getKey());
-                values.put(ID, dataValue.getKey());
+                String key=dataValue.getKey();
+                values.put(NAME, key.substring(0,1).toUpperCase()+key.substring(1).toLowerCase());
+                values.put(ID, key);
                 synchronized (valueList) {
                     valueList.add(values);
                 }
