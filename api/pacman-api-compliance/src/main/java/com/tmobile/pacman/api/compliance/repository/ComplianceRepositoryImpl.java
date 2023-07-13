@@ -321,26 +321,15 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             HashMap<String,String>policyDetails=new HashMap<>();
             policyDetails.put(keyName,bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
             policyDetails.put("totalViolations",bucket.getAsJsonObject().get("doc_count").getAsString());
-            if(keyName.equalsIgnoreCase(AVERAGE_AGE)){
-                JsonObject jo = bucket.getAsJsonObject().getAsJsonObject("outOfSla");
-                if(jo!=null && jo.get("doc_count")!=null){
-                    policyDetails.put("outOfSlaViolations",jo.get("doc_count").getAsString());
-                }
-            }
             result.put(bucket.getAsJsonObject().get("key").getAsString(),policyDetails);
         }
         return result;
     }
 
     private String getOuery(String keyName, List<Object> Policies, String queryAttribute) {
-        String query;
         String policyIds = Policies.stream().map(policy -> "\"" + policy.toString().trim() + "\"")
                 .collect(Collectors.joining(","));
-        if (keyName.equals(AVERAGE_AGE)) {
-            query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}},{\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\"},\"aggs\":{\"" + keyName + "\":{\"avg\":{\"script\":{\"inline\":\"(new Date().getTime()- ZonedDateTime.parse(params._source.createdDate).toInstant().toEpochMilli())/(24*60*60*1000)\"}}}}}}}";
-        } else {
-            query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}}, {\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\",\"size\":10000},\"aggs\":{\"" + keyName + "\":{\"cardinality\":{\"field\":\"" + queryAttribute + "\"}}}}}}";
-        }
+        String query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}}, {\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\",\"size\":10000},\"aggs\":{\"" + keyName + "\":{\"cardinality\":{\"field\":\"" + queryAttribute + "\"}}}}}}";
         return query;
     }
 

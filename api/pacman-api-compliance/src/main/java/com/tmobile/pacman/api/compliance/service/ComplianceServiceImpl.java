@@ -239,21 +239,17 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             logger.info("Compliance API >> Fetched policies from repository: {}", policies);
 
             // get Policies mapped to targetType
-            Map<String, Object> avgAgeDistribution = repository.getAverageAge(assetGroup, policies);
-            logger.info("Compliance API >> Fetched avgAgeDistribution from repository: {}", avgAgeDistribution);
-
             Map<String, Object> assetDistributionBySeverity = repository.getAssetCountBySeverity(assetGroup, policies);
             logger.info("Compliance API >> Fetched assetDistributionBySeverity from repository: {}", assetDistributionBySeverity);
 
             Map<String, Object> policyDistributionBySeverity = repository.getPolicyCountBySeverity(assetGroup, policies);
             logger.info("Compliance API >> Fetched policyDistributionBySeverity from repository: {}", policyDistributionBySeverity);
 
-            Map<String, Object> distributionBySeverity = this.mergeMaps(Arrays.asList(new Map[]{avgAgeDistribution, policyDistributionBySeverity, assetDistributionBySeverity}));
+            Map<String, Object> distributionBySeverity = this.mergeMaps(Arrays.asList(new Map[]{policyDistributionBySeverity, assetDistributionBySeverity}));
             distribution.put("distributionBySeverity", distributionBySeverity);
             return distribution;
         } catch (DataException e) {
-            logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());
-            logger.error("Compliance API >> DataException in getting distribution",e);
+            logger.error("Compliance API >> DataException in getting distribution:{}",e);
             throw new ServiceException(e);
         }
     }
