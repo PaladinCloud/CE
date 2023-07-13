@@ -2950,7 +2950,7 @@ DELIMITER ;
 
 CALL update_filter_for_tag(@MANDATORY_TAGS);
 
-
+/* Updating resourceName for Azure target Type */
 update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('batchaccounts','blobcontainer', 'blobservice', 'databricks', 'defender', 'disk', 'loadbalancer', 'mysqlserver', 'namespaces', 'networkinterface', 'nsg', 'postgresql', 'rediscache', 'securitypricings', 'sqldatabase', 'sqlserver', 'storageaccount', 'subnets', 'vaults', 'vaultsrbac', 'virtualmachine', 'vnet', 'webapp', 'workflows');
 
 
