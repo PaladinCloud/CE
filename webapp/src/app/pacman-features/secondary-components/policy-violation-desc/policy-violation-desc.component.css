@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.policy-violation-label {
+ .policy-violation-label {
     font-size: 1.2em;
     padding-bottom: 1.5em;
 }
@@ -28,6 +28,7 @@
 
 .policy-violation-label-content {
     font-family: var(--text-light-font-family);
+    white-space: pre-line;
     line-height: 1.2;
     flex-wrap: wrap;
     text-transform: capitalize;
@@ -61,6 +62,16 @@
     padding-right: 0;
 }
 
+.copy-icon{
+    height: 12px;
+}
+
+.copy-wrapper{
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+}
+
 .goto-link {
     transition: all .3s;
 }
@@ -80,4 +91,18 @@
     width: 100%;
     padding-left: 0;
     padding-top: 4px;
+}
+
+.red{
+    color: rgb(204, 98, 98) !important;
+    font: var(--text-body-2);
+  }
+
+.dialog-body{
+    height: 400px;
+}
+
+.dialog-body ::ng-deep .mat-icon{
+    height: 16px;
+    width: 16px;
 }

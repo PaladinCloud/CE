@@ -80,9 +80,10 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     selectedSeverity: string;
     selectedCategory: string;
     assetGroup;
-    status: string;
+    status: string = "";
     assetType: string;
     action: string;
+    bannerText: string;
     assetTypeMap: any;
     private dataSubscriber: Subscription;
     private subscriptionToAssetGroup: Subscription;
@@ -214,7 +215,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
             data.category == 'Governance' ? 'Operations' : this.uppercasefirst(data.category);
         this.selectedSeverity = this.uppercasefirst(data.severity);
         this.status = this.uppercasefirst(data.status);
-
+        this.bannerText = data.disableDesc;
         const policyParams = JSON.parse(this.policyDetails.policyParams);
         this.allpolicyParams = Array.isArray(policyParams.params)
             ? (policyParams.params as PolicyParams[]).filter(

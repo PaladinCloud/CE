@@ -33,7 +33,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
   @ViewChild('widget') widgetContainer: ElementRef;
 
-  pageTitle = 'policy compliance';
+  pageTitle = 'Policy Compliance';
   widgetWidth: number;
   widgetHeight: number;
   /*variables for breadcrumb data*/
@@ -78,9 +78,9 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 }
 
   ngOnInit() {
-    try {
+    setTimeout(()=>{
+      try {
       const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -92,6 +92,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log('error', error);
     }
+  },0)
   }
 
   updateComponent() {

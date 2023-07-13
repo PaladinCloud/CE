@@ -16,6 +16,7 @@
 
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
+import _ from 'lodash';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { DataCacheService } from './data-cache.service';
@@ -190,5 +191,33 @@ export class WorkflowService {
 
     clearDataOfOpenedPageInModule() {
         this.trackOpenedPageInAModule = {};
+    }
+
+    getIndexIfLevelAlreadyExists(title){
+        const levels = this.level["level0"];
+        const levelIdx = _.findIndex(levels, {"title": title});
+        return levelIdx;
+    }
+
+    navigateTo(urlArray, queryParams, relativeTo, currPagetitle, nextPageTitle?){
+        try{
+            if(nextPageTitle){
+                const index = this.getIndexIfLevelAlreadyExists(nextPageTitle);
+                if(index>=0){
+                    this.goToLevel(index);
+                }
+            }
+            this.addRouterSnapshotToLevel(
+                this.router.routerState.snapshot.root, 0, currPagetitle
+              );
+            this.router.navigate(
+                urlArray,
+                { relativeTo: relativeTo, queryParams:queryParams, queryParamsHandling: "merge" }
+              ).catch(e => {
+                this.logger.log("error in navigation from workflow service --", e);
+              });
+        }catch(e){
+            this.logger.log("jsError: ", e);
+        }
     }
 }

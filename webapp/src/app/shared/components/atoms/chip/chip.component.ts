@@ -8,12 +8,14 @@ import { Subject } from 'rxjs';
 })
 export class ChipComponent implements AfterViewInit {
 
+  @Input() chipVariant;
   @Input() backgroundColor = "white";
   @Input() color = "black";
   @Input() chipsList :any[] = [];
   @Input() isRemovable = false;
   @Input() maxChips = 3;
   @Output() updatedChipsList = new Subject();
+  @Input() nonRemovableChips = [];
 
   constructor() {}
 
@@ -23,6 +25,15 @@ export class ChipComponent implements AfterViewInit {
     let selectedList = this.chipsList as string[];
     this.removeFirst(selectedList, selectedItem);
     this.updatedChipsList.next(selectedList);
+  }
+
+  isRemovableChip(item:string){
+    for (const currentItem of this.nonRemovableChips) {
+      if (item === currentItem) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private removeFirst<T>(array: T[], toRemove: T): void {

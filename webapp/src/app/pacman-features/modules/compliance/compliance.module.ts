@@ -118,9 +118,14 @@ import { PacmanIssuesService } from "../../services/pacman-issues.service";
 import { ProgressBarChartComponent } from "./progress-bar-chart/progress-bar-chart.component";
 import { HorizontalBarChartComponent } from "./horizontal-bar-chart/horizontal-bar-chart.component";
 import { MatMenuModule } from "@angular/material/menu";
+import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { PolicyAutofixComponent } from './issue-details/policy-autofix/policy-autofix.component';
 
 @NgModule({
   imports: [
+    MatInputModule,
+    MatFormFieldModule,
     MatMenuModule,
     MatCardModule,
     MatGridListModule,
@@ -222,6 +227,7 @@ import { MatMenuModule } from "@angular/material/menu";
     OverallVulnerabilitiesComponent,
     CardComponent,
     ViolationsCardComponent,
+    PolicyAutofixComponent,
   ],
   providers: [
     SelectComplianceDropdown,

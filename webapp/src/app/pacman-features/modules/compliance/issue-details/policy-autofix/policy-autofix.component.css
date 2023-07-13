@@ -1,0 +1,22 @@
+:host {
+    background-color: rgb(239 243 246 / 50%);
+    border-radius: 4px;
+    box-shadow: 0 0 2px 2px #d3d3d3;
+    padding: 1.5em;
+    margin: 0;
+    width: 100%;
+}
+
+.autofix-header {
+    padding-bottom: 8px;
+}
+
+.autofix-header,
+.autofix-info-value {
+    font-family: var(--text-medium-font-family);
+}
+
+.autofix-header,
+.autofix-info {
+    font-size: 1.2em;
+}

@@ -22,9 +22,10 @@
         </div>
     </div>
     <div class="policy-violation-label flex flex-col" *ngIf="violationId">
-        <div class="policy-violation-label-header capitalize">
+        <div class="policy-violation-label-header capitalize " >
             Violation ID</div>
-        <div class="policy-violation-label-content" [title]="violationId">{{violationId}}
+        <div class="policy-violation-label-content copy-wrapper" [title]="violationId">{{violationId}}
+        <img class="copy-icon" [cdkCopyToClipboard]="violationId" src="/assets/icons/files.svg">
         </div>
     </div>
         <div class="policy-violation-label flex flex-col" *ngIf="violationData.policyDescription">
@@ -65,32 +66,53 @@
             </div>
         </div>
     </div>
+    <div style="padding-bottom: 1.5em;" *ngIf="violationData.vulnerabilityDetails.length">
+        <app-text-with-icon class="pointer" (click)="openVulnerabilityDialog()" text="Vulnerabilty Information" postImagePath="/assets/icons/right-arrow-icon.svg" textVariant="body-2 primary-400"></app-text-with-icon>
+    </div>
     <div class="policy-violation-label flex flex-col flex-align-start" *ngIf="violationData.resouceViolatedPolicy">
         <div class="policy-violation-label-header capitalize">
-            Resource ID </div>
-        <div class="policy-violation-label-content anchor-link pointer" title="{{violationData.resouceViolatedPolicy}}" (click)="navigateTo('asset details',violationData.resouceViolatedPolicy,violationData.resourceType)">
+            Asset ID </div>
+        <div class="policy-violation-label-content anchor-link pointer copy-wrapper" title="{{violationData.resouceViolatedPolicy}}" (click)="navigateTo('asset details',violationData.resouceViolatedPolicy,violationData.resourceType)">
             {{violationData.resouceViolatedPolicy}}
+                 <img class="copy-icon" [cdkCopyToClipboard]="violationData.resouceViolatedPolicy" src="/assets/icons/files.svg">
         </div>
     </div>
     <div class="policy-violation-label flex flex-col" *ngIf="violationData.violationCreatedDate">
         <div class="policy-violation-label-header capitalize">
             Date Created 
         </div>
-        <div class="policy-violation-label-content" title="{{violationData.violationCreatedDate}}">
-            {{violationData.violationCreatedDate}}
+        <div class="policy-violation-label-content" title="{{violationData.violationCreatedDate | date : 'medium'}}">
+            {{violationData.violationCreatedDate | date : 'medium'}}
         </div>
     </div>
     <div class="policy-violation-label flex flex-col" *ngIf="violationData.violationModifiedDate">
         <div class="policy-violation-label-header capitalize">
             Last Status Change
         </div>
-        <div class="policy-violation-label-content" title="{{violationData.violationModifiedDate}}">
+        <div class="policy-violation-label-content" title="{{violationData.violationModifiedDate | date : 'medium'}}">
             <div>
-            {{ violationData.status}}
-          </div>
-            <div >
-              {{violationData.violationModifiedDate}}
+            {{ violationData.status}} - {{violationData.violationModifiedDate | date : 'medium'}}
             </div>
         </div>
     </div>
 </section>
+
+<ng-template #vulnerabilityDialogRef>
+    <div class="dialog-body">
+       <div class="flex flex-col gap-4" *ngFor="let detail of vulnerabilityDetails">
+            <div class="each-detail-wrapper flex flex-col gap-4" style="border-bottom: 1px solid var(--border-200); padding: 15px 0px;">
+                <div class="flex flex-align-center gap-8"> 
+                    <app-text [text]="detail.title" classNames="body-2 medium-emphasis"></app-text>
+                    <a class="acs-console-link" target="_blank" [href]="detail.vulnerabilityUrl">
+                        <img src="/assets/icons/open-new-tab.svg" alt="" height="16px">
+                    </a>
+                </div>
+                <div class="flex flex-wrap">
+                    <a [href]="cve.url" *ngFor="let cve of detail.cveList; let i=index" [style.padding]="i==0?'8px 6px 8px 0px':'8px 6px'" [style.border-right]="i==detail.cveList.length-1?'none':'1px solid var(--border-200)'" target="_blank">
+                        <app-text [text]="cve.id" classNames="caption-2 primary-400"></app-text>
+                    </a>
+                </div>
+            </div>
+       </div>
+    </div>
+</ng-template>

@@ -830,6 +830,10 @@ export const environment = {
         url: '{{baseUrl}}/compliance/v2/issue/add-exception',
         method: 'POST'
     },
+    createRevokeExemption: {
+        url: '{{baseUrl}}/compliance/v2/issue/create-revoke-user-exemption',
+        method: 'POST'
+    },
     getPlugins: {
         url: '{{baseUrl}}/admin/plugin/v1/plugins',
         method: 'GET'
@@ -953,5 +957,9 @@ export const environment = {
     getCloudTypeObject: {
         url: '{{baseUrl}}/admin/asset-group/cloud-type-object',
         method: 'GET'
-    }
+    },
+    issueAutofix: {
+        url: '{{baseUrl}}/asset/v1/autofix/notifications/detail',
+        method: 'POST',
+    },
 };

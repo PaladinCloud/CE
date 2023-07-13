@@ -119,7 +119,8 @@ import { TableFiltersComponent } from './table-filters/table-filters.component';
 import { TableListComponent } from './table-list/table-list.component';
 import { TableOptionsComponent } from './table-options/table-options.component';
 import { TableTabsComponent } from './table-tabs/table-tabs.component';
-import { TableColumnWidthPipe } from './table/table-column-width.pipe';
+import { TableColumnWidthPipe } from './table/pipes/table-column-width.pipe';
+import { CellDataCasePipe } from "./table/pipes/cell-data-case-pipe";
 import { TableComponent } from './table/table.component';
 import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.component';
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
@@ -231,8 +232,10 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
         TitleBurgerHeadComponent,
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
+        CellDataCasePipe
     ],
     exports: [
+        CellDataCasePipe,
         AgGridTableComponent,
         AssetSummarySearchFilterPipe,
         BackNavigationComponent,

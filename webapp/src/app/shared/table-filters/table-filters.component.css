@@ -54,3 +54,8 @@
     cursor: pointer;
     background: rgba(2 47 82 / 6%);
 }
+
+.btn-disabled{
+    pointer-events: none;
+    color: var(--text-low-emphasis);
+}

@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import find from 'lodash/find';
+import map from 'lodash/map';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
@@ -7,6 +9,7 @@ import { DomainTypeObservableService } from 'src/app/core/services/domain-type-o
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
@@ -14,6 +17,7 @@ import { ErrorHandlingService } from 'src/app/shared/services/error-handling.ser
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
 
 enum PolicyCategory {
@@ -37,6 +41,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   subscriptionToAssetGroup: Subscription;
   domainSubscription: Subscription;
   complianceTableSubscription: Subscription;
+  issueFilterSubscription: Subscription;
   tableDataLoaded = false;
   searchTxt = '';
   breadcrumbPresent;
@@ -60,9 +65,14 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   direction;
   showSearchBar = true;
   showAddRemoveCol = true;
+  filterText;
+  queryParamsWithoutFilter;
   filters = [];
   filterTypeLabels = [];
   filterTagLabels = {};
+  filterTypeOptions: any = [];
+  filterTagOptions = {};
+  currentFilterType;
   centeredColumns = {
     Policy: false,
     Source: true,
@@ -70,8 +80,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     Category: true,
     'Asset Type': false,
   };
-  columnWidths = { Policy: 3, Source: 1, Severity: 1, Category: 1, 'Asset Type': 1 };
-  columnNamesMap = { name: 'Policy', provider: 'Source' };
+  columnWidths = { Policy: 3, Source: 0.5, Severity: 0.75, Category: 0.75, 'Asset Type': 1};
+  columnNamesMap = { name: 'Policy', provider: 'Source'};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       const severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
@@ -151,18 +161,29 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     private downloadService: DownloadService,
     private assetTypeMapService: AssetTypeMapService,
     private tourService: TourService,
+    private utils: UtilsService,
+    private issueFilterService: IssueFilterService
     ) {
 
+      this.getPreservedState();
       this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
         this.selectedAssetGroup = assetGroupName;
         this.searchTxt = "";
+        this.updateComponent();
       });
       this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
         this.selectedDomain = domain;
+        this.updateComponent();
       });
     }
 
     ngOnInit(): void {
+      this.breadcrumbPresent = "Policies"
+
+      this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
+    }
+
+  getPreservedState(){
       const state = this.tableStateService.getState("policyKnowledgebase") || {};
 
       this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
@@ -181,17 +202,16 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.selectedRowIndex = state?.selectedRowIndex;
 
       if(this.tableData && this.tableData.length>0){
-        this.getFiltersData(this.tableData);
         this.isStatePreserved = true;
       }else{
         this.isStatePreserved = false;
       }
 
-      this.breadcrumbPresent = "Policy"
-
-    this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
-    this.getRouteQueryParameters();
-    }
+      if(state.filters){
+        this.filters = state.filters;
+        this.getUpdatedUrl();
+      }
+  }
 
   getRouteQueryParameters(): any {
     this.activatedRoute.queryParams.subscribe(
@@ -276,17 +296,302 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     this.tableStateService.setState("policyKnowledgebase", state);
   }
 
+  /*
+   * This function gets the urlparameter and queryObj
+   *based on that different apis are being hit with different queryparams
+   */
+   routerParam() {
+    try {
+      // this.filterText saves the queryparam
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
+      if (currentQueryParams) {
+        this.queryParamsWithoutFilter = JSON.parse(
+          JSON.stringify(currentQueryParams)
+        );
+        delete this.queryParamsWithoutFilter["filter"];
+        /**
+         * The below code is added to get URLparameter and queryparameter
+         * when the page loads ,only then this function runs and hits the api with the
+         * filterText obj processed through processFilterObj function
+         */
+        this.filterText = this.utils.processFilterObj(currentQueryParams);
+      }
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
   getUpdatedUrl(){
     let updatedQueryParams = {};
+      this.filterText = this.utils.arrayToObject(
+      this.filters,
+      "filterkey",
+      "value"
+    ); // <-- TO update the queryparam which is passed in the filter of the api
+    this.filterText = this.utils.makeFilterObj(this.filterText);
+
+    /**
+     * To change the url
+     * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+     */
+
     updatedQueryParams = {
-      // searchValue: this.searchTxt,
+      filter: this.filterText.filter,
     }
 
+    /**
+     * Finally after changing URL Link
+     * api is again called with the updated filter
+     */
+    this.filterText = this.utils.processFilterObj(this.filterText);
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: updatedQueryParams,
       queryParamsHandling: 'merge',
+  });
+  }
+  deleteFilters(event?) {
+    try {
+      if (!event) {
+        this.filters = [];
+        this.storeState();
+      } else if(event.removeOnlyFilterValue) {
+        this.getUpdatedUrl();
+        this.getData();
+        this.storeState();
+      } else if(event.index && !this.filters[event.index].filterValue) {
+        this.filters.splice(event.index, 1);
+        this.storeState();
+      }
+      else {
+        if (event.clearAll) {
+          this.filters = [];
+        } else {
+          this.filters.splice(event.index, 1);
+        }
+        this.storeState();
+        this.getUpdatedUrl();
+        this.getData();
+      }
+    } catch (error) { }
+    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+  }
+  /*
+   * this functin passes query params to filter component to show filter
+   */
+  getFilterArray() {
+    try {
+      const filterObjKeys = Object.keys(this.filterText);
+      const dataArray = [];
+      for (let i = 0; i < filterObjKeys.length; i++) {
+        let obj = {};
+        const keyDisplayValue = find(this.filterTypeOptions, {
+          optionValue: filterObjKeys[i],
+        })["optionName"];
+        obj = {
+          keyDisplayValue,
+          filterkey: filterObjKeys[i],
+        };
+        dataArray.push(obj);
+      }
+
+      const state = this.tableStateService.getState(this.pageTitle) ?? {};
+      const filters = state?.filters;
+
+      if(filters){
+        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
+        filters.forEach(filter => {
+          if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
+            dataArray.push({
+              filterkey: filter.filterkey,
+              keyDisplayValue: filter.key
+            });
+          }
+        });
+      }
+
+      const formattedFilters = dataArray;
+      for (let i = 0; i < formattedFilters.length; i++) {
+
+        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
+        if(!keyDisplayValue){
+          keyDisplayValue = find(this.filterTypeOptions, {
+            optionValue: formattedFilters[i].filterKey,
+          })["optionName"];
+        }
+
+        this.changeFilterType(keyDisplayValue).then(() => {
+          let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
+            id: this.filterText[formattedFilters[i].filterkey],
+          });
+
+          let filterKey = dataArray[i].filterkey;
+
+          if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
+            const eachObj = {
+              keyDisplayValue: keyDisplayValue,
+              filterValue: filterValueObj?filterValueObj["name"]:undefined,
+              key: keyDisplayValue, // <-- displayKey-- Resource Type
+              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
+              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
+              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+            };
+            this.filters.push(eachObj);
+            this.filters = [...this.filters];
+            this.storeState();
+          }
+        })
+      }
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+  /**
+   * This function get calls the keyword service before initializing
+   * the filter array ,so that filter keynames are changed
+   */
+
+  getFilters() {
+    return new Promise((resolve) => {
+    try {
+      this.issueFilterSubscription = this.issueFilterService
+        .getFilters(
+          { filterId: 13, domain: this.selectedDomain },
+          environment.issueFilter.url,
+          environment.issueFilter.method
+        )
+        .subscribe((response) => {
+          this.filterTypeLabels = map(response[0].response, "optionName");
+          resolve(true);
+          this.filterTypeOptions = response[0].response;
+
+          this.filterTypeLabels.sort();
+          this.routerParam();
+          // this.deleteFilters();
+          this.getFilterArray();
+          this.getData();
+        });
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+      resolve(false);
+    }
     });
+  }
+
+  changeFilterType(value) {
+    return new Promise((resolve) => {
+    try {
+      this.currentFilterType = find(this.filterTypeOptions, {
+        optionName: value,
+      });
+      
+      let filtersToBePassed = {};       
+      Object.keys(this.filterText).map(key => {
+        if(key=="domain" || this.currentFilterType.optionValue == key) return;
+        filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
+      })
+      const payload = {
+        attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
+        ag: this.selectedAssetGroup,
+        domain: this.selectedDomain,
+        filter: filtersToBePassed
+      }
+        this.issueFilterSubscription = this.issueFilterService
+        .getFilters(
+          {},
+          environment.base +
+          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+            .url,
+          "POST",
+          payload
+        )
+        .subscribe((response) => {          
+          let filterTagsData: {[key:string]: any}[] = (response[0].data.optionList || []).map(filterTag => {
+            return {id: filterTag, name: filterTag};
+          });
+          if(value.toLowerCase()=="asset type"){
+            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+              filterTagsData.map(filterOption => {
+                filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
+              });
+            });
+          }
+          else if(value.toLowerCase()=="violations" || value.toLowerCase()=="compliance"){
+            console.log("intervals: ", response[0].data);
+            const numOfIntervals = 5;
+            const min = response[0].data.optionRange.min;
+            const max = response[0].data.optionRange.max;
+            const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
+            intervals.forEach(interval => {
+              filterTagsData.push({id: interval.lowerBound + "-" + interval.upperBound, name: interval.lowerBound + "-" + interval.upperBound});
+            })
+          }
+          this.filterTagOptions[value] = filterTagsData;
+          this.filterTagLabels = {
+              ...this.filterTagLabels,
+              ...{
+                  [value]: map(filterTagsData, 'name').sort((a, b) =>
+                      a.localeCompare(b),
+                  ),
+              },
+          };
+          resolve(this.filterTagOptions[value]);
+          this.storeState();
+        });
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+    });
+  }
+
+  changeFilterTags(event) {    
+    const filterValues = event.filterValue;
+    
+    this.currentFilterType =  find(this.filterTypeOptions, {
+      optionName: event.filterKeyDisplayValue,
+    });
+    try {
+      if (this.currentFilterType) {
+        const filterTags = filterValues.map(value => {
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
+          return v;
+        });
+        
+        this.utils.addOrReplaceElement(
+          this.filters,
+          {
+            keyDisplayValue: event.filterKeyDisplayValue,
+            filterValue: filterValues,
+            key: this.currentFilterType.optionName,
+            value: filterTags,
+            filterkey: this.currentFilterType.optionValue.trim(),
+            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
+          },
+          (el) => {
+            return (
+              el.compareKey ===
+              this.currentFilterType.optionValue.toLowerCase().trim()
+            );
+          }
+        );
+      }
+      this.filters = [...this.filters];
+      console.log("filters: ", this.filters);
+      
+      this.storeState();
+      this.getUpdatedUrl();
+      this.getData();
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
   }
 
   callNewSearch(searchVal){
@@ -307,13 +612,12 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   updateComponent() {
     if(this.isStatePreserved){
-      this.getTilesData(this.tableData);
       this.tableDataLoaded = true;
       this.clearState();
       this.tourService.setComponentReady();
     }else{
       this.tableDataLoaded = false;
-      this.getData();
+      this.getFilters();
     }
   }
 
@@ -373,6 +677,24 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
               valueText:  currentAssetType?currentAssetType:cellData
             };
           }
+          // else if(col.toLowerCase() == "status"){
+          //   let chipBackgroundColor,chipTextColor;
+          //   if(getData[row]["Status"].toLowerCase() === "enabled"){
+          //     chipBackgroundColor = "#E6F5EC";
+          //     chipTextColor = "#00923f";
+          //   }else{
+          //     chipBackgroundColor = "#F2F3F5";
+          //     chipTextColor = "#73777D";
+          //   }
+          //   cellObj = {
+          //     ...cellObj,
+          //     chipList: [getData[row][col]],
+          //     text: getData[row][col],
+          //     isChip: true,
+          //     chipBackgroundColor: chipBackgroundColor,
+          //     chipTextColor: chipTextColor
+          //   };
+          // }
           innerArr[col] = cellObj;
           totalVariablesObj[col] = "";
         });
@@ -389,9 +711,11 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     return processedData;
   }
 
-  getTilesData(getData){
-    try{
-        const newPolicyDic: {[key in PolicyCategory]: number} = {
+  getTilesData(){
+    if(this.policyCategoryDic["all policies"]){
+      return;
+    }
+    const newPolicyDic: {[key in PolicyCategory]: number} = {
             [PolicyCategory.ALL_POLICIES]: 0,
             [PolicyCategory.COST]: 0,
             [PolicyCategory.OPERATIONS]: 0,
@@ -399,15 +723,32 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             [PolicyCategory.TAGGING]: 0,
         };
 
-        for (let i = 0; i < getData.length; i++) {
-          newPolicyDic[PolicyCategory.ALL_POLICIES]++;
-          newPolicyDic[getData[i].Category.valueText.toLowerCase()]++
-        }
-        this.policyCategoryDic = newPolicyDic;
+    const payload = {
+      ag: this.selectedAssetGroup,
+      filter: {domain: this.selectedDomain},
+      reqFilter: {},
+      "includeDisabled" : false 
+    };
 
-      } catch (error) {
-      this.logger.log('error', error);
-    }
+    const complianceTableUrl = environment.complianceTable.url;
+    const complianceTableMethod = environment.complianceTable.method;
+    this.complianceTableSubscription = this.commonResponseService
+    .getData(complianceTableUrl, complianceTableMethod, payload, {})
+    .subscribe(
+      (response) => {
+        try {
+          const getData = response.data.response;
+          for (let i = 0; i < getData.length; i++) {
+            newPolicyDic[PolicyCategory.ALL_POLICIES]++;
+            newPolicyDic[getData[i]["policyCategory"].toLowerCase()]++
+          }
+          this.policyCategoryDic = newPolicyDic;
+        }catch(e){
+          this.logger.log("jsError", e);
+        }
+      }, error => {
+        this.logger.log("apiError", error);
+      })
   }
 
   massageData(data){
@@ -440,76 +781,71 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     return newData;
   }
 
-  getFiltersData(data){
-    this.filterTypeLabels = [];
-    this.filterTagLabels = {};
-    const filtersList = [...Object.keys(this.columnWidths), "Autofix status"];
-    filtersList.forEach(column => {
-      let filterTags = [];
-      this.filterTypeLabels.push(column);
-      if(column=='Severity'){
-        filterTags = ["low", "medium", "high", "critical"];
-      }else if(column=='Category'){
-        filterTags = ["security", "cost", "operations", "tagging"];
-      }else if(column=='Autofix status'){
-        filterTags = ["available", "enabled", "not available"];
-      }
-      else{
-        const set = new Set();
-        data.forEach(row => {
-          set.add(row[column].valueText);
-        });
-        filterTags = Array.from(set);
-        filterTags.sort();
-      }
-
-      this.filterTagLabels[column] = filterTags;
-    });
-
-    this.filterTypeLabels.sort();
-  }
-
   getData() {
+    if(!this.selectedAssetGroup || !this.selectedDomain){
+      return;
+    }
     this.tableDataLoaded = false;
+    this.errorMessage = '';
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
+    const filterToBePassed = {...this.filterText};
+
+    Object.keys(filterToBePassed).forEach(filterKey => {
+      if(filterKey=="domain") return;
+      filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+      if(filterKey=="failed" || filterKey=="compliance_percent"){
+        filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
+          const [min, max] = filterVal.split("-");
+          return {min, max}
+        })
+      }
+    })
+
+    const filters = {domain: this.selectedDomain};
+
     const payload = {
-      'ag': this.selectedAssetGroup,
-      'searchtext': this.searchTxt,
-      'filter': {
-        'domain': this.selectedDomain
-      },
-      'from': 0,
-      'size': 10
+      ag: this.selectedAssetGroup,
+      filter: filters,
+      reqFilter: filterToBePassed,
+      "includeDisabled" : false 
     };
 
-    const queryParams = {};
     const complianceTableUrl = environment.complianceTable.url;
     const complianceTableMethod = environment.complianceTable.method;
-    this.complianceTableSubscription = this.commonResponseService.getData(
-      complianceTableUrl, complianceTableMethod, payload, queryParams).subscribe(
-        response => {
-          if (response.data.response.length !== 0) {
-            this.errorMessage = '';
-            this.totalRows = response.data.total;
-            this.tableData = this.massageData(response.data.response);
-
-            this.tableDataLoaded = true;
-            this.tableData = this.processData(this.tableData);
-            this.getTilesData(this.tableData);
-            this.getFiltersData(this.tableData);
-          } else {
-            this.tableDataLoaded = true;
+    this.complianceTableSubscription = this.commonResponseService
+    .getData(complianceTableUrl, complianceTableMethod, payload, {})
+    .subscribe(
+      (response) => {
+        this.totalRows = response.total;
+        try {
+          const updatedResponse = this.massageData(response.data.response);
+          const processedData = this.processData(updatedResponse);
+          this.tableData = processedData;
+          this.getTilesData();
+          this.tableDataLoaded = true;
+          if (this.tableData.length === 0) {
+            this.totalRows = 0;
             this.errorMessage = 'noDataAvailable';
           }
-          this.tourService.setComponentReady();
-        },
-        error => {
+          if (response.hasOwnProperty("total")) {
+            this.totalRows = response.data.total;
+          } else {
+            this.totalRows = this.tableData.length;
+          }
+        } catch (e) {
           this.tableDataLoaded = true;
-          this.errorMessage = 'apiResponseError';
-          this.tourService.setComponentReady();
-        });
+          this.errorMessage = this.errorHandling.handleJavascriptError(e);
+        }
+        this.tourService.setComponentReady();
+      },
+      (error) => {
+        this.tableDataLoaded = true;
+        this.errorMessage = "apiResponseError";
+        this.tourService.setComponentReady();
+      }
+    );
   }
 
   /*
@@ -542,38 +878,17 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-  deleteFilters(event?) {
-    try {
-      if (!event) {
-        this.filters = [];
-      } else if (event.clearAll) {
-        this.filters = [];
-      }
-      this.storeState();
-    } catch (error) { }
-  }
-
-  handleFilterSelection(){
-    this.storeState();
-  }
-
-  handleFilterTypeSelection(){
-    this.storeState();
-  }
-
   applyFilterByCategory(policyCategory: PolicyCategory) {
       const key = 'Category';
       const newFilters = this.filters.filter((f) => f.key !== key);
       if (policyCategory !== PolicyCategory.ALL_POLICIES) {
-          newFilters.push({
-              key,
-              keyDisplayValue: key,
-              filterValue: policyCategory,
-              value: policyCategory,
-          });
+          this.changeFilterType(key).then(() => {
+            this.changeFilterTags({
+              filterKeyDisplayValue: key,
+              filterValue: [policyCategory],
+            })
+          })
       }
-      this.filters = newFilters;
-      this.storeState();
   }
 
   ngOnDestroy() {

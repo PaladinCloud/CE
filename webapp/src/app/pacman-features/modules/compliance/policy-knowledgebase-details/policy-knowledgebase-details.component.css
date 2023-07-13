@@ -12,15 +12,39 @@
  * limitations under the License.
  */
 
-.header {
+ .alert-banner{
+    height: 56px;
+    background-color: #C53434;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .banner-text{
+    color: white;
+  }
+
+  .has-banner{
+      height: 90%;
+  }
+
+ .header {
     justify-content: space-between;
     align-items: center;
 }
 
 .header-text {
-    min-height: 28px;
     font: var(--text-headline-6);
     color: var(--text-medium-emphasis);
+    align-items: center;
+    display: flex;
+    gap: 4px;
+}
+
+.header-autofix-icon{
+    height: 20px;
+    width: 20px;
 }
 
 .details-wrapper {
@@ -47,16 +71,15 @@
 }
 
 .policy-knowledgebase-wrapper {
-    overflow: scroll;
-    height: 100%;
+    height: calc(100vh - 125px);
     flex-direction: column;
     gap: 20px;
     padding: 28px;
 }
 
 img {
-    height: 20px;
-    width: 20px;
+    height: 16px;
+    width: 16px;
 }
 
 .details-content-wrapper {
@@ -112,12 +135,15 @@ img {
 }
 
 .attribute-value {
+    display: flex;
+    align-items: center;
     gap: 6px;
 }
 
 .desc {
     font: var(--text-body-1);
     color: var(--text-high-emphasis);
+    white-space: pre-line;
 }
 
 .table-wrapper {
@@ -160,6 +186,10 @@ img {
 
 .policy-knowledgebase-wrapper ::ng-deep .mat-select-arrow {
     background-image: url('../../../../../assets/icons/white-arrow.svg') !important;
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
+  display: none !important;
 }
 
 .policy-knowledgebase-wrapper ::ng-deep .mat-form-field-infix {

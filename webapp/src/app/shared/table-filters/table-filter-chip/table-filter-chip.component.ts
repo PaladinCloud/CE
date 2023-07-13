@@ -12,6 +12,7 @@ export interface FilterChipUpdateEvent {
     styleUrls: ['./table-filter-chip.component.css'],
 })
 export class TableFilterChipComponent implements OnInit {
+    @Input() isDisabled = false;
     @Input() category: string;
     @Input() options: string[] = [];
     @Input() set appliedFiltersDict(values: { [key: string]: boolean }) {

@@ -11,17 +11,21 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-<div class="violations-container" [class.admin-rights]="adminAccess">
+ <div class="violations-table" [class.admin-rights]="adminAccess">
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
         <app-breadcrumb
             *ngIf="breadcrumbLinks.length > 0"
             [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray"
-            [breadcrumbPresent]="breadcrumbPresent"
+            [breadcrumbPresent]="pageTitle"
         ></app-breadcrumb>
     </div>
-    <app-page-title [title]="breadcrumbPresent"></app-page-title>
-    <div class="table-wrapper">
+    <div class="violations-header flex">
+        <div class="flex flex-align-center">
+            <span class="title">{{ pageTitle }}</span>
+        </div>
+    </div>
+    <div class="wrapper">
         <app-table
             style="height: 100%; width: 100%"
             [centeredColumns]="centeredColumns"
@@ -37,7 +41,6 @@
             [onScrollDataLoader]="onScrollDataLoader"
             [rowSize]="'SM'"
             [searchQuery]="searchTxt"
-            [selectedRowIndex]="selectedRowIndex"
             [showAddRemoveCol]="true"
             [showDownloadBtn]="showDownloadBtn"
             [showFilterBtn]="showFilterBtn"
@@ -48,6 +51,7 @@
             [totalRows]="totalRows"
             [whiteListColumns]="whiteListColumns"
             [selectedRowIndex]="selectedRowIndex"
+            [enableMultiValuedFilter]="true"
             (deleteFilters)="deleteFilters($event)"
             (downloadClicked)="handlePopClick($event)"
             (headerColNameSelected)="handleHeaderColNameSelection($event)"

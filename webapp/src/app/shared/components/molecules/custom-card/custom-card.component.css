@@ -101,3 +101,7 @@ mat-card-content {
 .date-selection-trigger {
     margin-right: 150px;
 }
+
+::ng-deep .mat-select-panel-wrap{
+  padding-top: 29px;
+}

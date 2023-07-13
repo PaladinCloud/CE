@@ -29,6 +29,7 @@
                     [appliedFilters]="filteredArray"
                     [categories]="filterTypeLabels"
                     [categoryOptions]="filterTagLabels"
+                    [enableMultiValuedFilter]="enableMultiValuedFilter"
                     (categoryChange)="selectFilterCategory($event)"
                     (categoryClear)="removeFilterCategory($event)"
                     (optionChange)="selectFilterCategoryOption($event)"
@@ -64,7 +65,7 @@
         ></app-error-message>
         <div class="table-wrapper">
             <mat-table
-                *ngIf="!tableErrorMessage && data.length > 0"
+                *ngIf="!tableErrorMessage && data?.length > 0"
                 [dataSource]="dataSource"
                 [matSortActive]="headerColName"
                 [matSortDirection]="direction"
@@ -84,7 +85,6 @@
                     <ng-template #cellDefinition let-column="column" let-columnWidth="columnWidth">
                         <mat-header-cell
                             [style.flex-basis.%]="columnWidth"
-                            class="capitalize"
                             [class.flex-center]="centeredColumns[column]"
                             *matHeaderCellDef
                             [mat-sort-header]="
@@ -98,7 +98,7 @@
 
                         <mat-cell
                             (click)="handleClick(element, column, i)"
-                            class="capitalize table-cell"
+                            class="table-cell"
                             [style.flex-basis.%]="columnWidth"
                             *matCellDef="let element; let i = index"
                             [class.flex-center]="centeredColumns[column]"
@@ -155,16 +155,11 @@
                                         <div
                                             *ngIf="element[column]?.isCheckbox; else textImageData"
                                         >
-                                            <app-check-box-btn
-                                                (checkBoxClickEvent)="
-                                                    element[column].valueText = $event
-                                                        ? 'checked'
-                                                        : 'unchecked'
-                                                "
-                                                [isChecked]="
-                                                    element[column].valueText === 'checked'
-                                                "
-                                            ></app-check-box-btn>
+                                        <mat-checkbox
+                                        (change)="handleCheckboxChange(element, column, $event)"
+                                            [checked]="element[column].valueText == 'checked'?true:false"
+                                            [disabled]="element[column].valueText == 'disabled'">
+                                        </mat-checkbox>
                                         </div>
                                     </ng-template>
                                     <ng-template #textImageData>
@@ -199,7 +194,7 @@
                                                     !element[column].isNumber
                                                 "
                                             >
-                                                {{ element[column].text }}
+                                                {{ element[column].text | celldatacase }}
                                             </span>
                                             <span *ngIf="element[column].isDate">
                                                 {{ element[column].text | date : 'medium' }}

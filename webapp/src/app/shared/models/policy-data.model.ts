@@ -35,4 +35,29 @@ export interface PolicyData {
     waitingTime: number;
     warningMailSubject: string | null;
     warningMessage: string | null;
+    disableDesc: string | null;
+    exemptionDetails?: ExemptionDetails | null;
+}
+
+export interface ExemptionDetails {
+    "expiryDate": string,
+    "assetGroup": string,
+    "policyId": string,
+    "exceptionReason": string,
+    "dataSource": string,
+    "exceptionName": string,
+    "createdBy"?: string,
+    "createdOn"?: string
+};
+
+export interface PolicyParams {
+    key: string;
+    value: string;
+    encrypt: boolean;
+    isEdit?: boolean;
+    isMandatory?: boolean;
+    description?: string;
+    defaultVal?: string;
+    displayName?: string;
+    isValueNew?: boolean;
 }
