@@ -2651,7 +2651,17 @@ public class AssetRepositoryImpl implements AssetRepository {
         String query = "select displayfields from cf_pac_updatable_fields where resourceType = '" + targetType.trim()
                 + "'";
         String result=rdsRepository.getDataFromPacman(query).get(0).get("displayfields").toString();
-        return Arrays.asList(result.split("\\s*,\\s*"));
+        List<String> res = new ArrayList<>();
+        if(StringUtils.isEmpty(result)){
+            try{
+                String[] resArr = Arrays.stream(result.split(",")).map(String::trim).toArray(String[]::new);
+                res = Arrays.asList(resArr);
+            }catch(Exception e){
+                LOGGER.error(e);
+            }
+
+        }
+        return res;
     }
 
     public long getTotalCountForListingAsset(String index, String type) {
