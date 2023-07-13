@@ -415,9 +415,8 @@ public class RecommendationsRepository {
 	public List<Map<String,Object>> getGeneralRecommendationSummary(List<String> providers) throws DataException {
     	
     	List<Map<String,Object>> recommendationSummary = new ArrayList<>();
-    	StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append("global_recommendations").append("/")
-    			.append("recommendation").append("/").append(Constants.SEARCH);
-		StringBuilder requestBody = new StringBuilder("{\"size\":0,\"query\":{\"bool\": {\"filter\":[{\"term\":{\"latest\":\"true\"}},{\"terms\":{\"_cloudType\":[\"");
+    	StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append("global_recommendations").append("/").append(Constants.SEARCH);
+		StringBuilder requestBody = new StringBuilder("{\"size\":0,\"query\":{\"bool\": {\"filter\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType\":\"recommendation\"}},{\"terms\":{\"_cloudType\":[\"");
 		requestBody.append(String.join("\",\" ", providers.stream().collect(Collectors.toList())));
 		requestBody.append("\"]}}]}},\"aggs\":{\"category\":{\"terms\":{\"field\":\"category.keyword\",\"size\":100}}}}");
 		
