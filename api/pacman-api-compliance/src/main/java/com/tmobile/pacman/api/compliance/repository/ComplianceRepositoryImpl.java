@@ -1264,7 +1264,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         JsonObject nameObj;
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/fre-stats/_search");
         StringBuilder requestBody = new StringBuilder(
-                "{\"size\":0,\"query\":{},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"policyId.keyword\",\"size\":1000},\"aggs\":{\"NAME\":{\"max\":{\"field\":\"startTime\"}}}}}}");
+                "{\"size\":0,\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"policyId.keyword\",\"size\":1000},\"aggs\":{\"NAME\":{\"max\":{\"field\":\"startTime\"}}}}}}");
         try {
             responseJson = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
         } catch (Exception e) {
@@ -1333,7 +1333,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 }
                 requestBody.setLength(requestBody.length() - 1);
                 requestBody.append("]");
-                requestBody.append(",\"minimum_should_match\":1");
+                requestBody.append(",\"minimum_should_match\":\"1\"");
             }
         }
         requestBody

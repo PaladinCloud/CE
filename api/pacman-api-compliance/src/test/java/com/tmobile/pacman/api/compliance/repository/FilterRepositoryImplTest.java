@@ -126,11 +126,11 @@ public class FilterRepositoryImplTest {
        //test method returning regions
         when(
                 elasticSearchRepository.getTotalDistributionForIndexAndType(anyString(), anyString(), anyObject(), anyObject(), anyObject(), anyObject(), anyInt(), anyObject())).thenReturn(regions);
-       filterRepositoryImpl.getRegionsFromES("aws-all");
+       filterRepositoryImpl.getRegionsFromES("aws-all", anyObject());
        //test method returning DataExceptons
        when(
                 elasticSearchRepository.getTotalDistributionForIndexAndType(anyString(), anyString(), anyObject(), anyObject(), anyObject(), anyObject(), anyInt(), anyObject())).thenThrow(new RuntimeException());
-        assertThatThrownBy(() ->  filterRepositoryImpl.getRegionsFromES("aws-all")).isInstanceOf(DataException.class);
+        assertThatThrownBy(() ->  filterRepositoryImpl.getRegionsFromES("aws-all", anyObject())).isInstanceOf(DataException.class);
     }
     @Test
     public void  getRulesFromESTest()throws Exception{

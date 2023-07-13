@@ -31,6 +31,8 @@ import com.tmobile.pacman.api.compliance.service.FilterService;
 
 import io.swagger.annotations.ApiParam;
 
+import java.util.Map;
+
 /**
  * The Class FilterController.
  */
@@ -56,7 +58,7 @@ public class FilterController implements Constants {
      * @return ResponseEntity.
      */
     
-    @RequestMapping(path = "/v1/filters", method = RequestMethod.GET)
+    @GetMapping(value = "/v1/filters")
     public ResponseEntity<Object> getFilters(
             @ApiParam(value = "Provide filter 1-issue,2-vulnerability,3-asset,4-compliance", required = false) @RequestParam("filterId") int filterId,
             @RequestParam(name = "domain", required = false) String domain) {
@@ -80,7 +82,7 @@ public class FilterController implements Constants {
      * @return ResponseEntity<Object>.
      */
     
-    @RequestMapping(path = "/v1/filters/policies", method = RequestMethod.GET)
+    @GetMapping(value = "/v1/filters/policies")
     public ResponseEntity<Object> getPolicies(@RequestParam("ag") String assetGroup,
             @RequestParam("domain") String domain) {
         if (Strings.isNullOrEmpty(assetGroup)) {
@@ -98,18 +100,19 @@ public class FilterController implements Constants {
     /**
      * Gets the list of regions based on the asset group passed.
      *
-     * @param assetGroup the asset group
      * @return ResponseEntity<Object>
      */
-    
-    @RequestMapping(path = "/v1/filters/regions", method = RequestMethod.GET)
-    public ResponseEntity<Object> getRegions(@RequestParam("ag") String assetGroup) {
+
+    @PostMapping(path = "/v1/filters/regions")
+    public ResponseEntity<Object> getRegions(@RequestBody FilterRequest filterRequest) {
+        String assetGroup=filterRequest.getAg();
+        Map<String,Object> filter=filterRequest.getApiFilter();
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
         }
         ResponseData response = null;
         try {
-            response = new ResponseData(filterService.getRegions(assetGroup));
+            response = new ResponseData(filterService.getRegions(assetGroup, filter));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
@@ -235,15 +238,17 @@ public class FilterController implements Constants {
         return ResponseUtils.buildSucessResponse(response);
     }
 
-    @GetMapping(value = "/v1/filters/severities")
-    public ResponseEntity<Object> getListOfSeverities(@RequestParam(name = "ag", required = true) String assetGroup,
-            @RequestParam(name = "domain", required = false) String domain) {
+    @PostMapping(value = "/v1/filters/severities")
+    public ResponseEntity<Object> getListOfSeverities(@RequestBody FilterRequest filterRequest) {
+        String assetGroup=filterRequest.getAg();
+        String domain=filterRequest.getDomain();
+        Map<String,Object> filter=filterRequest.getApiFilter();
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
         }
         ResponseData response = null;
         try {
-            response = new ResponseData(filterService.getSeveritiesForAssetGroup(assetGroup, domain));
+            response = new ResponseData(filterService.getSeveritiesForAssetGroup(assetGroup, domain,filter));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
@@ -343,29 +348,35 @@ public class FilterController implements Constants {
         return ResponseUtils.buildSucessResponse(response);
     }
 
-    @GetMapping(value = "/v1/filters/attribute")
-    public ResponseEntity<Object> getListOfCategories(@RequestParam(name = "ag", required = true) String assetGroup,
-                                                      @RequestParam(name = "domain", required = false) String domain,
-                                                      @RequestParam(name = "attribute", required = true) String attribute,
-                                                      @RequestParam(name = "type", required = false, defaultValue = "asset")
-                                                          String entityType) {
+    @PostMapping(value = "/v1/filters/attribute")
+    public ResponseEntity<Object> getListOfCategories(@RequestBody FilterRequest filterRequest) {
+        String assetGroup=filterRequest.getAg();
+        String domain=filterRequest.getDomain();
+        Map<String,Object> filter=filterRequest.getApiFilter();
+        String entityType=filterRequest.getType();
+        String attributeName=filterRequest.getAttributeName();
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
+        }
+        if (Strings.isNullOrEmpty(entityType)) {
+            entityType="asset";
         }
         ResponseData response = null;
         try {
             //pass entityType as asset if we want to find attribute value of an asset, for finding attribute value
             // of issue/violation pass entityType as issue
-            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, attribute, entityType));
+            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, filter, entityType,attributeName));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
         return ResponseUtils.buildSucessResponse(response);
     }
 
-    @GetMapping(value = "/v1/filters/violationAge")
-    public ResponseEntity<Object> getViolationAgeList(@RequestParam(name = "ag", required = true) String assetGroup,
-                                                      @RequestParam(name = "domain", required = false) String domain) {
+    @PostMapping(value = "/v1/filters/violationAge")
+    public ResponseEntity<Object> getViolationAgeList(@RequestBody FilterRequest filterRequest) {
+        String assetGroup=filterRequest.getAg();
+        String domain=filterRequest.getDomain();
+        Map<String,Object> filter=filterRequest.getApiFilter();
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
         }
@@ -373,7 +384,7 @@ public class FilterController implements Constants {
         try {
             //pass entityType as asset if we want to find attribute value of an asset, for finding attribute value
             // of issue/violation pass entityType as issue
-            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, CREATED_DATE, ISSUE));
+            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, filter, ISSUE,CREATED_DATE));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }

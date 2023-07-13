@@ -156,7 +156,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AWS).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
-                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"account\"}}]}},\"aggs\":{\"accounts\":{\"terms\":{\"field\":\"accountname.keyword\",\"size\":10000}}}}");
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType.keyword\":\"account\"}}]}},\"aggs\":{\"accounts\":{\"terms\":{\"field\":\"accountname.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
@@ -215,8 +215,8 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
     @Override
     public List<Map<String, Object>> getAutofixRulesFromDb() throws DataException{
         try {
-                    
-            String query="SELECT * FROM cf_PolicyTable WHERE `status`='ENABLED' AND policyParams LIKE '%\"autofix\":true%'";
+
+            String query="SELECT * FROM cf_PolicyTable WHERE `status`='ENABLED' AND IFNULL(autoFixAvailable,'false')='true' AND IFNULL(autoFixEnabled,'false')='true'";
             return rdsepository.getDataFromPacman(query);
         } catch (Exception e) {
             LOGGER.error("Error @ StatisticsRepositoryImpl/ getAutofixPolicesFromDb ", e);
@@ -273,7 +273,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AZURE).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
-                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"subscription\"}}]}},\"aggs\":{\"subscriptions\":{\"terms\":{\"field\":\"subscriptionId.keyword\",\"size\":10000}}}}");
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType.keyword\":\"subscription\"}}]}},\"aggs\":{\"subscriptions\":{\"terms\":{\"field\":\"subscriptionId.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
@@ -291,7 +291,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(GCP).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
-                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"project\"}}]}},\"aggs\":{\"projects\":{\"terms\":{\"field\":\"projectId.keyword\",\"size\":10000}}}}");
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType.keyword\":\"project\"}}]}},\"aggs\":{\"projects\":{\"terms\":{\"field\":\"projectId.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());

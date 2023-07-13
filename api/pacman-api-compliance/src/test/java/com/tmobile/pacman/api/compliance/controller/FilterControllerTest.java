@@ -77,13 +77,13 @@ public class FilterControllerTest {
     
     @Test
     public void getRegionsTest() throws Exception {
-        when(filterService.getRegions(anyString())).thenReturn(CommonTestUtil.getListMapObject());
-        assertThat(filterController.getRegions("ag"), is(notNullValue()));
-        assertThat(filterController.getRegions(""), is(notNullValue()));
+        when(filterService.getRegions(anyString(), anyObject())).thenReturn(CommonTestUtil.getListMapObject());
+        assertThat(filterController.getRegions(anyObject()), is(notNullValue()));
+        assertThat(filterController.getRegions(anyObject()), is(notNullValue()));
         
-        when(filterService.getRegions(anyString())).thenThrow(new ServiceException());
+        when(filterService.getRegions(anyString(), anyObject())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = filterController.getRegions("ag");
+        ResponseEntity<Object> responseObj = filterController.getRegions(anyObject());
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     
