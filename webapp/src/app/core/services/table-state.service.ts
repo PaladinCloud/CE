@@ -66,6 +66,7 @@ export class TableStateService {
             });
             componentState["bucketNumber"] = 0;
             componentState["selectedRowIndex"] = 0;
+            componentState["totalRows"] = 0;
             this.setState(componentKey, componentState);
         }catch(e){
             this.logger.log(componentKey, ": Error in clearing state: "+e);
@@ -81,6 +82,7 @@ export class TableStateService {
             });
             storedState[next].bucketNumber = 0;
             storedState[next].selectedRowIndex = undefined;
+            storedState[next].totalRows = 0;
             acc[next] = storedState[next];
             return acc;
         }, {});
@@ -90,17 +92,11 @@ export class TableStateService {
     clearState(componentKey){
         try{
             const componentState = this.getState(componentKey);
-            const keys = Object.keys(componentState);
-            const columnsListKey = keys.find(key => key.includes("whiteList"));
-            const filterListKey = keys.find(key => key.includes("filter"));
-            componentState[filterListKey]?.forEach(filter => {
-                filter.value = undefined;
-                filter.filterValue = undefined;
-            })
-            const newState = {};
-            newState[columnsListKey] = componentState[columnsListKey];
-            newState[filterListKey] = componentState[filterListKey];
-            this.setState(componentKey, newState);
+            componentState["data"] = [];
+            componentState["bucketNumber"] = 0;
+            componentState["selectedRowIndex"] = undefined;
+            componentState["totalRows"] = 0;
+            this.setState(componentKey, componentState);
         }catch(e){
             this.logger.log(componentKey, ": Error in clearing state: "+e);
         }

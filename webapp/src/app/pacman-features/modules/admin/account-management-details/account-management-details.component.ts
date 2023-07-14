@@ -138,7 +138,6 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
         const FullQueryParams = currentQueryParams;
         const queryParamsWithoutFilter = JSON.parse(JSON.stringify(FullQueryParams));
         this.accountId = queryParamsWithoutFilter.accountId;
-        console.log(this.accountId," accoutnId");
         this.getData();
       }
     } catch (error) {
