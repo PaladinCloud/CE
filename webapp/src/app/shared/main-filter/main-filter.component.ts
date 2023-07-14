@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import {
+ import {
   Component,
   OnInit,
   Input,
@@ -42,7 +42,7 @@ export class MainFilterComponent implements OnInit {
    * @desc  This component paints the omni search filter
    */
 
-  public hideFilter = true;
+  @Input("hideFilter") hideFilter = false;
   @Output() filterOptionClicked: EventEmitter<any> = new EventEmitter();
   @Output() filterOpenEvent: EventEmitter<any> = new EventEmitter();
 
@@ -134,7 +134,14 @@ export class MainFilterComponent implements OnInit {
             this.dataStore.get('OmniSearchFirstLevelIndex') === undefined ||
             this.dataStore.get('OmniSearchFirstLevelIndex') === 'undefined'
           ) {
-            this.storeFirstLevel(this.filterData['groupBy'].values[0], 0);
+            let index = 0;
+            for(let i = 0;i<this.filterData['groupBy'].values.length;i++){
+              if(this.filterData['groupBy'].values[i].applied){
+                index = i;
+                break;
+              }
+            }
+            this.storeFirstLevel(this.filterData['groupBy'].values[index], index);
           }
         }
       } else {
@@ -272,7 +279,6 @@ export class MainFilterComponent implements OnInit {
 
   storeFirstLevel(data, index, event?) {
     try {
-      if (this.utils.isObjectEmpty(this.secondaryLevelData)) {
         if (event) {
           event.stopPropagation();
         }
@@ -317,11 +323,20 @@ export class MainFilterComponent implements OnInit {
          * "applied = true" field is tested
          */
         this.filterData = this.filterQuery;
+
+        this.findAndReplace(
+          this.filterQuery['groupBy'].values[this.firstLevelIndex]['groupBy']
+            .values,
+          'applied',
+          true,
+          false
+        );
+        this.filterOptionClicked.emit(this.filterQuery);
+
         this.dataStore.set(
           'OmniSearchFirstLevelIndex',
           JSON.stringify({ firstLevelIndex: this.firstLevelIndex })
         );
-      }
     } catch (error) {
       this.logger.log('error', error);
     }

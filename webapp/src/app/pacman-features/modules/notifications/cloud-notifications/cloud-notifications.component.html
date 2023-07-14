@@ -1,44 +1,55 @@
-<div class="notifications-wrapper flex flex-col">
-    <app-page-title [title]="pageTitle"></app-page-title>
-    <div class="table-wrapper">
-        <app-table
-            style="height: 100%; width: 100%"
-            [centeredColumns]="centeredColumns"
-            [columnWidths]="columnWidths"
-            [data]="tableData"
-            [direction]="direction"
-            [doLocalFilter]="false"
-            [doLocalSearch]="false"
-            [filteredArray]="filters"
-            [filterTagLabels]="filterTagLabels"
-            [filterTypeLabels]="filterTypeLabels"
-            [filterTypeOptions]="filterTypeOptions"
-            [headerColName]="headerColName"
-            [onScrollDataLoader]="onScrollDataLoader"
-            [rowClickable]="true"
-            [rowSize]="'SM'"
-            [searchQuery]="searchTxt"
-            [selectedRowIndex]="selectedRowIndex"
-            [showAddRemoveCol]="true"
-            [showDownloadBtn]="true"
-            [showFilterBtn]="true"
-            [showMoreMenu]="true"
-            [showSearchBar]="true"
-            [tableDataLoaded]="tableDataLoaded"
-            [tableErrorMessage]="tableErrorMessage"
-            [tableScrollTop]="tableScrollTop"
-            [totalRows]="totalRows"
-            [whiteListColumns]="whiteListColumns"
-            (deleteFilters)="deleteFilters($event)"
-            (downloadClicked)="handlePopClick($event)"
-            (headerColNameSelected)="handleHeaderColNameSelection($event)"
-            (nextPageCalled)="nextPg($event)"
-            (rowSelectEventEmitter)="goToDetails($event)"
-            (searchCalledEventEmitter)="callNewSearch($event)"
-            (selectedFilter)="changeFilterTags($event)"
-            (selectedFilterType)="changeFilterType($event)"
-            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-        >
-        </app-table>
+<div class="notifications-wrapper flex flex-col padding-28 gap-24">
+    <div class="flex flex-between flex-align-center">
+        <div class="title">
+            <app-text [text]="pageTitle"></app-text>
+        </div>
+    </div>
+    <div class="flex flex-col full-height">
+        <div class="flex flex-col full-height cloud-notifications-wrap">
+            <div class="flex flex-col full-height data-table-container">
+                <div class="relative table-wrapper">
+                    <app-table
+                        (deleteFilters)="deleteFilters($event)"
+                        (downloadClicked)="handlePopClick($event)"
+                        (nextPageCalled)="nextPg($event)"
+                        (rowSelectEventEmitter)="goToDetails($event)"
+                        (searchCalledEventEmitter)="callNewSearch($event)"
+                        (selectedFilter)="changeFilterTags($event)"
+                        (selectedFilterType)="changeFilterType($event)"
+                        [centeredColumns]="centeredColumns"
+                        [columnWidths]="columnWidths"
+                        [data]="tableData"
+                        [direction]="direction"
+                        [doLocalSort]="false"
+                        [doLocalFilter]="false"
+                        [doLocalSearch]="false"
+                        [filterTagLabels]="filterTagLabels"
+                        [filterTypeLabels]="filterTypeLabels"
+                        [filterTypeOptions]="filterTypeOptions"
+                        [filteredArray]="filters"
+                        [headerColName]="headerColName"
+                        [onScrollDataLoader]="onScrollDataLoader"
+                        [rowClickable]="true"
+                        [rowSize]="'SM'"
+                        [searchQuery]="searchTxt"
+                        [showAddRemoveCol]="true"
+                        [showDownloadBtn]="true"
+                        [showFilterBtn]="true"
+                        [showMoreMenu]="true"
+                        [showSearchBar]="true"
+                        [tableDataLoaded]="tableDataLoaded"
+                        [tableErrorMessage]="tableErrorMessage"
+                        [tableScrollTop]="tableScrollTop"
+                        [totalRows]="totalRows"
+                        [whiteListColumns]="whiteListColumns"
+                        (headerColNameSelected)="handleHeaderColNameSelection($event)"
+                        style="height: 100%; width: 100%"
+                        (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                        [selectedRowIndex]="selectedRowIndex"
+                    >
+                    </app-table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

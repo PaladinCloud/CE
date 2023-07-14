@@ -13,12 +13,12 @@
  -->
 
  <section class="search-details-wrapper flex flex-col">
-    <div class="relative">
+    <!-- <div class="relative">
         <app-searchbar-dropdown [showTerminatedCheckBox]="true" [dropDownSelectedValue]="searchboxValueSelected" [displaySearchDropDown]="true" [displaySearchDropDown]="false" [dropdownData]="dropdownData" [searchboxPlaceHolder]="'Search By Keyword'" (navigatePage)="searchCalled($event)" [searchboxValueSelected]="searchText"></app-searchbar-dropdown>
-    </div>
+    </div> -->
     <div class="search-details-filter-wrapper relative">
         <div class="filter-outer-wrapper pointer">
-            <app-main-filter [searchClickedToGetFilter]="filterDataIsRequested" (filterOpenEvent)="isfilterOpen($event)" [filterDataChange]="filterData" (filterOptionClicked)="filterOptionClicked($event)"></app-main-filter>
+            <app-main-filter [searchClickedToGetFilter]="filterDataIsRequested" (filterOpenEvent)="isfilterOpen($event)" [filterDataChange]="filterData" (filterOptionClicked)="filterOptionClicked($event)" [hideFilter]="hideFilter"></app-main-filter>
         </div>
         <!-- search cards are shown here-->
         <div class="search-results-outer-wrapper relative">
@@ -36,8 +36,8 @@
                     <div class='upper-section-wrapper flex flex-col flex-grow'>
                     <div class="hover-element flex">
                         <p class="search-card-name nowrap-ellipsis" *ngIf="searchCard._id">
-                            <span *ngIf="(searchCard.searchCategory | lowercase) == 'assets'">Resource Id:</span>
-                            <span *ngIf="(searchCard.searchCategory | lowercase) == 'policy violations'">Issue Id:</span>
+                            <span *ngIf="(searchCard.searchCategory | lowercase) == 'assets'">Asset Id:</span>
+                            <span *ngIf="(searchCard.searchCategory | lowercase) == 'policy violations'">Violation Id:</span>
                             <span *ngIf="(searchCard.searchCategory | lowercase) == 'vulnerabilities'">Qid:</span>
                             <span title='{{searchCard._id}}'>{{searchCard._id}}</span>
                         </p>
@@ -82,7 +82,7 @@
                         </p>
                         <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard._resourceid">
                             <span class="nowrap-ellipsis text-element">
-                                <span>Resource Id:</span>
+                                <span>Asset Id:</span>
                                 <span class="font-color" title="{{searchCard._resourceid}}">{{searchCard._resourceid}}</span>
                             </span>
                             <span class="copy-icon"><app-copy-element [CopyElement]="searchCard._resourceid" [iconSize]="'10px'"></app-copy-element></span>

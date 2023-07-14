@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.floating-widgets-section {
+ .floating-widgets-section {
   height: 100%;
   width: 100%;
 }
@@ -360,7 +360,7 @@
 }
 
 .key-val-summary .txt:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .summary-desc {

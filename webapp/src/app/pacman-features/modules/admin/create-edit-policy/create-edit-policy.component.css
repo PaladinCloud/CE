@@ -90,6 +90,7 @@
 .button-wrapper .button {
   display: flex;
   flex-direction: row;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   padding: 4px 12px;

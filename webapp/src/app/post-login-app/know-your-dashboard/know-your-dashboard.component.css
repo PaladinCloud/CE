@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.first-time-container {
+ .first-time-container {
   z-index: 14;
   background-color: var(--background-white);
   margin: auto;
@@ -84,7 +84,7 @@
   border-radius: 8em;
   line-height: 3em;
   background-color: var(--primary-400);
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.2px;
   text-align: center;
   color: #ffffff;
@@ -109,7 +109,7 @@
   left: 50%;
   text-align: center;
   color: #fff;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 1px;
   font-family: var(--text-light-font-family);
   cursor: pointer;

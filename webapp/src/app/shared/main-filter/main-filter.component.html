@@ -12,12 +12,12 @@
  * limitations under the License.
  -->
 
-<section class="filter-main-inner-wrapper">
-    <div class="filter-pesudo-opener flex pointer" [class.filter-hide]="hideFilter == false" (click)="toggleFilter()">
+ <section class="filter-main-inner-wrapper">
+    <div class="filter-pesudo-opener flex pointer" [class.filter-hide]="!hideFilter" (click)="toggleFilter()">
         <span>FILTER</span>
         <i class="fa fa-angle-right mr-panel-icon" aria-hidden="true"></i>
     </div>
-    <div class="filter-wrapper flex flex-col" [class.filter-show]="hideFilter == false">
+    <div class="filter-wrapper flex flex-col" [class.filter-show]="!hideFilter">
         <div class="filter-header pointer" (click)="toggleFilter()">
             <h6 class="uppercase">Filter</h6>
             <i class="fa fa-angle-left mr-panel-icon" aria-hidden="true"></i>
@@ -35,7 +35,7 @@
                     *all the data particular to that node(starting from that position)
                     *is passed to storeFirstLevel to store in a global Obj
               -->
-                        <li class="each-filter-options pointer" [class.active]="mainFilterTypes.applied === true"
+                        <li class="each-filter-options pointer" [class.notClickable]="mainFilterTypes.count==0" [class.active]="mainFilterTypes.applied === true"
                             (click)="storeFirstLevel(mainFilterTypes,i,$event)"
                             *ngFor='let mainFilterTypes of filterData.groupBy.values; let i = index '
                             title="{{mainFilterTypes.name}}">

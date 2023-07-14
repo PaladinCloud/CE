@@ -19,4 +19,8 @@ export class KeyvalueNotificationComponent implements OnInit {
             queryParamsHandling: 'merge',
         });
     }
+
+    isObject(item) {
+        return typeof item.value === 'object' || Array.isArray(item.value);
+    }
 }

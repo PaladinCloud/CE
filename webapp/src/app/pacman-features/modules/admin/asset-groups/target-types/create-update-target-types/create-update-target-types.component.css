@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.floating-widgets-section {
+ .floating-widgets-section {
   height: 100%;
   width: 100%;
 }
@@ -433,7 +433,7 @@ li.list-inputs:hover {
 }
 
 .row-cells div:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .row-cells a {
@@ -464,7 +464,7 @@ li.list-inputs:hover {
 }
 
 .table-cells:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .data-table-inner-content {
@@ -728,7 +728,7 @@ li.list-inputs:hover {
   font-weight: bold;
   padding: 0.6em 1.5em;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  text-transform: capitalize;
   cursor: pointer;
   min-height: 2em;
   min-width: 5em;

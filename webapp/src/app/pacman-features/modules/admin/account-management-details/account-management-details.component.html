@@ -1,55 +1,55 @@
-<div class="compliance-dashboard-wrapper flex flex-between">
-    <div class="floating-widgets-section-full flex flex-col">
-        <div class="padding-top"></div>
-        <div class="floating-widgets-header flex flex-between">
-            <div>
-                <!-- <img *ngIf="backButtonRequired" class="arrow-img" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg"> -->
-                <h6 class="title-text">
-                    <span *ngIf='isCreateFlow'>Create Account</span>
-                    <span *ngIf="!isCreateFlow">Edit Account</span>
-                </h6>
-            </div>
-            <div class='flex relative z-index' *ngIf="isFilterRquiredOnPage">
-                <app-generic-page-filter [filterId]="1" [filterArray]="filterArray" (onFilterValueChange)="updateUrlWithNewFilters($event)"></app-generic-page-filter>
-            </div>
-        </div>
-        <div class="floating-widgets-section-full">
-            <section>
-                <ul>
-                    <li class="widget-wrapper">
-                        <div class="widget-admin">
-                            <div class="form-container" *ngIf='errorValue == 1'>
-                                <form class="form-class" [formGroup]="accountManagementForm" (ngSubmit)="register(accountManagementForm)" novalidate>
-                                    <div class="widget-form-header">
-                                        <span>Account Management Details</span>
-                                    </div>
-                                    <app-forms [parentForm]="accountManagementForm" formControlName="accountNumber" [id]="accountNumber" [inputLabel]="'Account ID'"
-                                        [formErrors]="formErrors"></app-forms>
-                                    <app-forms [parentForm]="accountManagementForm" formControlName="accountName" [id]="accountName" [inputLabel]="'Account Name'"
-                                        [formErrors]="formErrors"></app-forms>
-                                    <app-forms [parentForm]="accountManagementForm" formControlName="accountDescription" [inputType]="'desc'" [id]="accountDescription"
-                                        [inputLabel]="'Account Description'" [formErrors]="formErrors"></app-forms>
-                                    <div class="widget-form-footer button-list">
-                                        <div class="create-cancel">
-                                            <div *ngIf="backButtonRequired">
-                                                <app-button [type]="'secondary'" (click)="navigateBack()">CANCEL</app-button>
-                                            </div>
-                                            <app-button [disabled]="!accountManagementForm.valid">
-                                                <span *ngIf='isCreateFlow'>CREATE</span>
-                                                <span *ngIf='!isCreateFlow'>UPDATE</span>
-                                            </app-button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="loader" *ngIf='errorValue == 0'></div>
-                            <div class="full-page-center" *ngIf="errorValue == 2 || errorValue == -1">
-                                <app-loader-msg [response]="allMessages(errorValue)" (actionClick)="takeActionPostTransaction($event)"></app-loader-msg>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-        </div>
+<div class="page-layout">
+    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
+        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
-</div>
+    <div class="header-wrapper">
+        <app-text classNames="headline-6 medium-emphasis" [text]="accountName"></app-text>
+        <button class="app-button white-button" (click)="openModal()">Delete</button>
+    </div>
+    <div class="content-wrapper">
+                <div class="text-wrapper flex flex-col">
+                    <span class="body-2 low-emphasis">Account ID</span>
+                    <span class="value-text body-2 high-emphasis">{{accountId}}</span>
+                </div>
+                <div class="text-wrapper flex flex-col">
+                    <span class="body-2 low-emphasis">Assets</span>
+                    <span class="value-text body-2 high-emphasis">{{assets}}</span>
+                </div>
+                <div class="text-wrapper flex flex-col">
+                    <span class="body-2 low-emphasis">Violations</span>
+                    <span class="value-text body-2 high-emphasis">{{violations}}</span>
+                </div>
+                <div class="text-wrapper flex flex-col">
+                    <span class="body-2 low-emphasis">Status</span>
+                    <app-chip 
+                     [backgroundColor]="'#E6F5EC'"
+                     [color]="'#00923F'"
+                     [chipsList]="chipList">
+                    </app-chip>
+                </div>
+                <div class="text-wrapper flex flex-col">
+                    <span class="body-2 low-emphasis">Platform</span>
+                    <div class="image-wrapper flex gap-8">
+                         <img style="height: 12px;" src="../../../../assets/icons/{{platform}}-color.svg" />
+                        <span class="value-text body-2 high-emphasis">{{platformDisplayName}}</span>
+                    </div>
+                </div>
+                <div class="text-wrapper flex flex-col">
+                    <span class="body-2 low-emphasis">Created By</span>
+                    <span class="value-text body-2 high-emphasis">{{createdBy}}</span>
+                </div>
+                <div class="text-wrapper flex flex-col">
+                    <span class="body-2 low-emphasis">Date Created</span>
+                    <span class="value-text body-2 high-emphasis">{{createdTime}}</span>
+                </div>
+    </div>
+ </div>
+
+
+ <ng-template #deleteAccountRef>
+    <div class="dialog-body">
+        <span class="dialog-body-header">Delete Account</span>
+        <span class="dialog-body-content">Are you really sure you want to delete account "{{accountName}} - {{accountId}}"?</span>
+     </div>
+ </ng-template>

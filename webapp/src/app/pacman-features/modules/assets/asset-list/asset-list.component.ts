@@ -961,6 +961,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
                   ),
               },
           };
+          if(value.toLowerCase()=="age"){
+            const filterValues = this.filterTagLabels[value].splice(1);            
+            filterValues.sort((a, b) => a-b);
+            this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
+          }
           resolve(this.filterTagOptions[value]);
           this.storeState();
         });
@@ -995,8 +1000,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           resolve(this.filterTagOptions[value]);
           this.storeState();
         });
-      }
-
+        }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);

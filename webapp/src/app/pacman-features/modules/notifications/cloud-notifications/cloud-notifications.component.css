@@ -1,9 +1,14 @@
-.notifications-wrapper {
-    padding: 18px 24px;
+.notifications-wrapper{
     height: 100%;
 }
 
-.table-wrapper {
-    max-height: 80vh;
+.table-wrapper{
+    max-height: 75vh;
     height: 100%;
+}
+
+.title {
+    font-size: 2em;
+    font-family: var(--text-font-family);
+    font-weight: 500;
 }

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.floating-widgets-section {
+ .floating-widgets-section {
   height: 100%;
   width: 100%;
 }
@@ -375,7 +375,7 @@ ul.input-wrapper {
   font-family: var(--text-medium-font-family);
   padding: 0.6em 1.5em;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  text-transform: capitalize;
   cursor: pointer;
   min-height: 2em;
   min-width: 5em;
@@ -644,7 +644,7 @@ button.tmbutton:disabled:hover {
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row > a:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row > a:hover {
