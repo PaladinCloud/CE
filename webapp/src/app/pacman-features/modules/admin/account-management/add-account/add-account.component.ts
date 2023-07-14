@@ -392,7 +392,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
             "Go to GCP IAM, navigate to service account",
             "Grant this service account owner access to the project",
             "Create key for the service account in JSON format",
-            "Copy the conetents of JSON key file, it will be used in next step"
+            "Copy the contents of JSON key file, it will be used in next step"
          ];
           break;
       case "qualys": 

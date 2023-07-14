@@ -327,7 +327,9 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
       ...filterToBePassed,
     };
 
-    this.tableDataLoaded = false;
+    if(!isNextPageCalled){
+      this.tableDataLoaded = false;
+    }
     this.tableErrorMessage = "";
 
     if (this.searchTxt !== undefined && this.searchTxt !== "") {

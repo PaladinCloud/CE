@@ -41,7 +41,7 @@
                         classNames="body-2 high-emphasis"
                     ></app-text>
                     <div class="table-count-info">
-                        {{ (totalRows === 0 ? dataSource?.data?.length : totalRows) ?? 0 | number }}
+                        {{ (totalRecordsAfterFilter === 0 ? dataSource?.data?.length : totalRecordsAfterFilter) ?? 0 | number }}
                         Results
                     </div>
                     <app-table-options
