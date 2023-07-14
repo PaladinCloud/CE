@@ -51,7 +51,7 @@
      readonly innerRadius = 70;
      readonly outerRadius = 50;
      readonly currentDate = new Date();
-     companyIcon = CONFIGURATIONS.optional.general.logo.CustomerLogo;
+     companyIcon = '/assets/icons/company-icon.svg';
  
      @ViewChild('statisticsContainer') statisticsContainer: ElementRef<HTMLDivElement>;
  
