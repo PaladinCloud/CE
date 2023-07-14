@@ -82,7 +82,9 @@ public interface StatisticsRepository {
      * @return the autofix rules from db
      * @throws DataException the data exception
      */
-    public List<Map<String, Object>> getAutofixRulesFromDb() throws DataException;
+    public List<Map<String, Object>> getAutofixEnabled() throws DataException;
+
+    List<Map<String, Object>> getAutofixAvailable() throws DataException;
 
     /**
      * Gets the autofix action count by rule.
