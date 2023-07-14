@@ -20,7 +20,10 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import com.tmobile.pacman.api.compliance.repository.model.PolicyParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +47,7 @@ public class CommonUtil implements Constants {
     private final static Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 
     private static final String KERNEL_CRITERIA_KEY = "pacman.kernel.compliance.map";
+    private static final String POLICY_PARAM_JSON = "{\"policyId\": \"%s\", \"params\": [%s]}";
 
 	/**
      * Decode aws cron exp.
@@ -168,4 +172,9 @@ public class CommonUtil implements Constants {
 				.concat(String.valueOf(year)).concat(".q")
 				.concat(String.valueOf(currentQuarter));
 	}
+    public static String generatePolicyParamJson(String policyId, List<PolicyParams> policyParams) {
+        String policyParamString = policyParams.stream().map(PolicyParams::paramsToJsonString)
+                .collect(Collectors.joining(DELIMITER_COMMA));
+        return String.format(POLICY_PARAM_JSON, policyId, policyParamString);
+    }
 }

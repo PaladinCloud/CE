@@ -165,6 +165,8 @@ public class AssetRepositoryImpl implements AssetRepository {
 	public Map<String, Long> getAssetCountByAssetGroup(String aseetGroupName, String type, String application) {
 
 		Map<String, Object> filter = new HashMap<>();
+        if(!StringUtils.isEmpty(type) && !AssetConstants.ALL.equals(type))
+            filter.put(Constants.DOC_TYPE_KEYWORD, type);
 		filter.put(Constants.LATEST, Constants.TRUE);
 		filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
 		if (application != null) {
@@ -176,7 +178,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 			if (AssetConstants.ALL.equals(type)) {
 				try {
 					countMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
-							null, AssetConstants.DOC_TYPE, Constants.THOUSAND, null);
+							null, AssetConstants.DOC_TYPE_KEYWORD, Constants.THOUSAND, null);
 				} catch (Exception e) {
 					LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
 				}
