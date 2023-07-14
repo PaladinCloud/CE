@@ -154,4 +154,16 @@ public class PolicyAssetController {
         }
 
     }
+    @GetMapping(path = "/v1/getPolicyCountByAssetGroup")
+    @ResponseBody
+    public Integer getPolicyCountByAssetGroup(@RequestParam("ag") String assetGroup) throws UnsupportedEncodingException {
+        try {
+            Integer policy = service.getPolicyCountByAssetGroup(assetGroup);
+            return policy;
+        } catch (Exception e) {
+            LOGGER.error(e.toString());
+            return 0;
+        }
+
+    }
 }

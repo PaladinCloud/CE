@@ -22,6 +22,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.tmobile.pacman.api.compliance.repository.PolicyParamsRepository;
+import com.tmobile.pacman.api.compliance.repository.PolicyTableRepository;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyParams;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +37,9 @@ import com.tmobile.pacman.api.compliance.domain.PolicyVialationSummary;
 import com.tmobile.pacman.api.compliance.domain.SevInfo;
 import com.tmobile.pacman.api.compliance.repository.PolicyAssetRepository;
 import com.tmobile.pacman.api.compliance.util.CommonUtil;
+
+import static com.tmobile.pacman.api.compliance.util.CommonUtil.generatePolicyParamJson;
+
 /**
  * The Class PolicyAssetServiceImpl.
  */
@@ -42,6 +49,10 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
     /** The repository. */
     @Autowired
     PolicyAssetRepository repository;
+    @Autowired
+    PolicyTableRepository policyTableRepository;
+    @Autowired
+    PolicyParamsRepository policyParamsRepository;
 
     /* (non-Javadoc)
      * @see com.tmobile.pacman.api.compliance.service.PolicyAssetService#getPolicyExecutionDetails(java.lang.String, java.lang.String, java.lang.String)
@@ -212,6 +223,21 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
         summary.setSeverityInfo(new ArrayList<>());
         summary.setCompliance(INT_HUNDRED);
         return summary;
+    }
+    public Integer getPolicyCountByAssetGroup(String ag) throws ServiceException{
+        List<PolicyTable> policyLs;
+        try {
+            policyLs = policyTableRepository.findPoicyTableByAssetGroup(ag);
+            policyLs.forEach(policy -> {
+                Optional<List<PolicyParams>> policyParams = policyParamsRepository.findByPolicyId(policy.getPolicyId());
+                if (policyParams.isPresent() && !policyParams.get().isEmpty()) {
+                    policy.setPolicyParams(generatePolicyParamJson(policy.getPolicyId(), policyParams.get()));
+                }
+            });
+        }catch (Exception e){
+            return 0;
+        }
+        return policyLs.size();
     }
 
 }

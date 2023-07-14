@@ -20,6 +20,8 @@ import org.springframework.stereotype.Repository;
 
 import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 
+import java.util.List;
+
 /**
  * The Interface RuleInstanceRepository.
  */
@@ -43,5 +45,6 @@ public interface PolicyTableRepository extends
      * @return PolicyTable
      */
     public PolicyTable findPoicyTableByPolicyUUID(final String policyUUID);
+    public List<PolicyTable> findPoicyTableByAssetGroup(String assetGroup);
 
 }

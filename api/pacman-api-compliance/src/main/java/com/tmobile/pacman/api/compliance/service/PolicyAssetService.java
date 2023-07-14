@@ -46,5 +46,6 @@ public interface PolicyAssetService {
      */
     public PolicyVialationSummary getPolicyViolationSummary(String ag,
             String resourceType, String resourceId) throws ServiceException;
+    public Integer getPolicyCountByAssetGroup(String ag) throws ServiceException;
 
 }
