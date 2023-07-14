@@ -852,7 +852,7 @@ export const environment = {
     },
     getAccounts: {
         url: '{{baseUrl}}/admin/accounts/list',
-        method: 'GET'
+        method: 'POST'
     },
     validateAccount: {
         url: '{{baseUrl}}/admin/accounts/validate',

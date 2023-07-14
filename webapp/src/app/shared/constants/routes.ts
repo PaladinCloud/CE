@@ -565,15 +565,17 @@ export const ADMIN_ROUTES = [
           },
           canActivate: [AuthGuardService, PermissionGuardService]
     },
-  /*  {
-        path: 'account-management-details/:id',
+    {
+        path: 'account-management/account-management-details',
         component: AccountManagementDetailsComponent,
         data: {
-            title: 'Account Management Details',
-            roles: ['ROLE_ADMIN']
-        }
+            title: 'Plugin Manager Details',
+            roles: ['ROLE_ADMIN'],
+            capabilities: ["account-management"]
+        },
+        canActivate: [AuthGuardService, PermissionGuardService]
     },
-    {
+    /*  {
         path: 'account-management-create',
         component: AccountManagementDetailsComponent,
         data: {

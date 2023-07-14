@@ -491,7 +491,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             return true;
         });
 
-        this.totalRows = this.dataSource.data.length;
         if (this.dataSource.data.length == 0) {
             this.tableErrorMessage = 'noDataAvailable';
         }
@@ -513,7 +512,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         if (this.dataSource.data.length == 0) {
             this.tableErrorMessage = 'noDataAvailable';
         }
-        this.totalRows = this.dataSource.data.length;
 
         if (this.doLocalFilter) {
             this.customFilter();

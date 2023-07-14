@@ -67,7 +67,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   lastName: string;
   selectedRoles: string[];
 
-  paginatorSize: number = 25;
+  paginatorSize: number = 60;
   isLastPage: boolean;
   isFirstPage: boolean;
   totalPages: number;
