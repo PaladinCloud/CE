@@ -126,6 +126,7 @@ import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
 import {ClipboardModule} from '@angular/cdk/clipboard';
+import { IssueFilterService } from '../pacman-features/services/issue-filter.service';
 
 @NgModule({
     imports: [
@@ -316,6 +317,7 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
         WidgetSectionStarterComponent,
     ],
     providers: [
+        IssueFilterService,
         AssetSummarySearchFilterPipe,
         AuthGuardService,
         CommonResponseService,
