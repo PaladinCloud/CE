@@ -325,12 +325,12 @@ public class RecommendationsRepository {
 		if(StringUtils.isNotBlank(application)) {
 			requestBody.append(",{\"has_parent\":{\"parent_type\":\"");
 			requestBody.append(parentType);
-			requestBody.append("\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\":{\"_entity.keyword\":true}},{\"match\":{\"tags.Application.keyword\":\"");
+			requestBody.append("\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\":{\"docType.keyword\":\"recommendation\"}},{\"match\":{\"_entity.keyword\":true}},{\"match\":{\"tags.Application.keyword\":\"");
 			requestBody.append(application);
 			requestBody.append("\"}}]}}}}");
 		}
 		requestBody.append("]}}}");
-		long totalDocs = getTotalDocCount(assetGroup, "recommendation", "{" + requestBody.toString().substring(14));
+		long totalDocs = getTotalDocCount(assetGroup,  "{" + requestBody.toString().substring(14));
 		String request = requestBody.toString();
         String scrollId = null;
         if(totalDocs > 0){
@@ -371,11 +371,8 @@ public class RecommendationsRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-    private long getTotalDocCount(String index, String type, String requestBody) {
+    private long getTotalDocCount(String index, String requestBody) {
     	StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index);
-        if(StringUtils.isNotBlank(type)) {
-        	urlToQuery.append("/").append(type);
-        }
         urlToQuery.append("/").append("_count");
         String responseDetails = null;
         Gson gson = new GsonBuilder().create();
@@ -464,9 +461,8 @@ public class RecommendationsRepository {
 		Map<String,Object> result = new HashMap<>();
 		List<Map<String,Object>> recommendations = new ArrayList<>();
 		
-		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append("global_recommendations").append("/")
-    			.append("recommendation").append("/").append(Constants.SEARCH);
-		StringBuilder requestBody = new StringBuilder("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\":{\"category.keyword\":\"");
+		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append("global_recommendations").append("/").append(Constants.SEARCH);
+		StringBuilder requestBody = new StringBuilder("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\":{\"docType.keyword\":\"recommendation\"}},{\"match\":{\"category.keyword\":\"");
 		requestBody.append(category);
 		requestBody.append("\"}}],\"filter\":[{\"terms\":{\"_cloudType\":[\"");
 		requestBody.append(String.join("\",\" ", providers.stream().collect(Collectors.toList())));
@@ -511,17 +507,17 @@ public class RecommendationsRepository {
 		List<Map<String,Object>> resources = new ArrayList<>();
 		
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append("global_recommendations").append("/")
-    			.append("recommendation").append("/").append(Constants.SEARCH).append("?scroll=")
+    			.append(Constants.SEARCH).append("?scroll=")
                 .append(Constants.ES_PAGE_SCROLL_TTL);
 
         String urlToQuery = urlToQueryBuffer.toString();
         String urlToScroll = new StringBuilder(esUrl).append("/").append(Constants.SEARCH).append("/scroll")
                 .toString();
 		
-		StringBuilder requestBody = new StringBuilder("{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\":{\"recommendationId.keyword\":\"");
+		StringBuilder requestBody = new StringBuilder("{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\":{\"docType.keyword\":\"recommendation\"}},{\"match\":{\"recommendationId.keyword\":\"");
 		requestBody.append(recommendationId);
 		requestBody.append("\"}}]}}}");
-		long totalDocs = getTotalDocCount("global_recommendations", "recommendation", "{" + requestBody.toString().substring(14));
+		long totalDocs = getTotalDocCount("global_recommendations", "{" + requestBody.toString().substring(14));
 		String request = requestBody.toString();
         String scrollId = null;
         if(totalDocs > 0){
