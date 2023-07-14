@@ -327,7 +327,6 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
       ...filterToBePassed,
     };
 
-    this.tableData = [];
     this.tableDataLoaded = false;
     this.tableErrorMessage = "";
 
@@ -337,7 +336,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
 
     this.adminService.executeHttpAction(url, method, payload, queryParams).subscribe(
       (reponse) => {
-        const data = reponse[0].data;
+        const data = reponse[0];
         if (data.content !== undefined) {
           this.tableDataLoaded = true;
           if (data.content.length == 0) {
