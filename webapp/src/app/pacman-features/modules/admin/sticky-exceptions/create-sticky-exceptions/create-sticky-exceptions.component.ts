@@ -12,713 +12,696 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { environment } from './../../../../../../environments/environment';
-
-import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import cloneDeep from 'lodash/cloneDeep';
-import find from 'lodash/find';
-import orderBy from 'lodash/orderBy';
-// import * as frLocale from 'date-fns/locale/en';
-import { WorkflowService } from '../../../../../core/services/workflow.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { LoggerService } from '../../../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
-
-
-import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
-import { AdminService } from '../../../../services/all-admin.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UploadFileService } from '../../../../services/upload-file-service';
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { HttpService } from 'src/app/shared/services/http-response.service';
-import { DataCacheService } from 'src/app/core/services/data-cache.service';
-import { DatePipe } from '@angular/common';
-
-@Component({
-  selector: 'app-admin-create-sticky-exceptions',
-  templateUrl: './create-sticky-exceptions.component.html',
-  styleUrls: ['./create-sticky-exceptions.component.css'],
-  animations: [
-    trigger('slideInOut', [
-      state('in', style({
-        transform: 'translate3d(0, 0, 0)'
-      })),
-      state('out', style({
-        transform: 'translate3d(100%, 0, 0)'
-      })),
-      transition('in => out', animate('400ms ease-in-out')),
-      transition('out => in', animate('400ms ease-in-out'))
-    ]),
-    trigger('fadeInOut', [
-      state('open', style({ 'z-index': 2, opacity: 1 })),
-      state('closed', style({ 'z-index': -1, opacity: 0 })),
-      transition('open <=> closed', animate('500ms')),
-    ])
-  ],
-  providers: [
-    LoggerService,
-    ErrorHandlingService,
-    UploadFileService,
-    AdminService
-  ]
-})
-export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
-  pageTitle: String = '';
-  breadcrumbArray: any = ['Exemptions'];
-  breadcrumbLinks: any = ['sticky-exceptions'];
-  breadcrumbPresent: any;
-  outerArr: any = [];
-  filters: any = [];
-  date = new Date();
-  dateToday = this.date.getFullYear() + '-' + (this.date.getMonth() + 1) + '-' + this.date.getDate();
-  exceptionDetailsForm: any = {
-    name: '',
-    reason: '',
-    expiry: this.date,
-    assetGroup: []
-  }
-
-  isExceptionNameValid: any = -1;
-  allAssetGroupNames: Array<string>;
-  selectedAssetGroup: string;
-  dataForm: FormGroup;
-
-  assetLoaderTitle: string = '';
-  assetLoader: boolean = false;
-  assetLoaderFailure: boolean = false;
-  attributeName: any = [];
-  attributeValue: string = '';
-  selectedRules: any = [];
-
-  allOptionalRuleParams: any = [];
-  isRuleInvokeFailed: boolean = false;
-  isRuleInvokeSuccess: boolean = false;
-  ruleContentLoader: boolean = true;
-  ruleLoader: boolean = false;
-  invocationId: String = '';
-  paginatorSize: number = 25;
-  isLastPage: boolean;
-  isFirstPage: boolean;
-  totalPages: number;
-  pageNumber: number = 0;
-  showLoader: boolean = true;
-  errorMessage: any;
-  searchTerm: String = '';
-
-  hideContent: boolean = false;
-  pageContent: any = [
-    { title: 'Enter Exemption Details', hide: false },
-    { title: 'Exempt Target Types', hide: true }
-  ];
-
-  isCreate: boolean = false;
-  successTitle: String = '';
-  failedTitle: string = '';
-  successSubTitle: String = '';
-  isAssetGroupExceptionCreationUpdationFailed: boolean = false;
-  isAssetGroupExceptionCreationUpdationSuccess: boolean = false;
-  loadingContent: string = '';
-  assetGroupExceptionLoader: boolean = false;
-  highlightName: string = '';
-
-  availChoosedItems: any = {};
-  availChoosedSelectedItems = {};
-  availChoosedItemsCount = 0;
-
-  selectChoosedItems: any = {};
-  selectChoosedSelectedItems = {};
-  selectChoosedItemsCount = 0;
-
-  availableItems: any = [];
-  selectedItems: any = [];
-
-  availableItemsBackUp: any = [];
-  selectedItemsBackUp: any = [];
-
-  availableItemsCopy: any = [];
-  selectedItemsCopy: any = [];
-
-  searchSelectedDomainTerms: any = '';
-  searchAvailableDomainTerms = '';
-
-
-  // Target Details //
-  availTdChoosedItems: any = {};
-  availTdChoosedSelectedItems = {};
-  availTdChoosedItemsCount = 0;
-
-  selectTdChoosedItems: any = {};
-  selectTdChoosedSelectedItems = {};
-  selectTdChoosedItemsCount = 0;
-
-  availableTdItems: any = [];
-  selectedTdItems: any = [];
-
-  availableTdItemsBackUp: any = [];
-  selectedTdItemsBackUp: any = [];
-
-  availableTdItemsCopy: any = [];
-  selectedTdItemsCopy: any = [];
-
-  searchSelectedTargetTerms: any = '';
-  searchAvailableTargetTerms = '';
-
-  stepIndex: number = 0;
-  stepTitle: any = this.pageContent[this.stepIndex].title;
-  allAttributeDetails: any = [];
-  allAttributeDetailsCopy: any = [];
-
-  filterText: any = {};
-  errorValue: number = 0;
-  urlID: string = '';
-  exceptionName: string = '';
-
-  FullQueryParams: any;
-  queryParamsWithoutFilter: any;
-  urlToRedirect: any = '';
-  mandatory: any;
-  stickyExceptionDetailsBeforeUpdate : any;
-
-  public labels: any;
-  private previousUrl: any = '';
-  private pageLevel = 0;
-  public backButtonRequired;
-  private routeSubscription: Subscription;
-  private getKeywords: Subscription;
-  private previousUrlSubscription: Subscription;
-  private downloadSubscription: Subscription;
-  private readonly shortDateFormat = 'dd/MM/yyyy';
-  private readonly exceptionDetailsExpiryDateFormat = 'yyyy-MM-dd';
-
-  constructor(
-    private router: Router,
-    private datePipe: DatePipe,
-    private activatedRoute: ActivatedRoute,
-    private utils: UtilsService,
-    private logger: LoggerService,
-    private errorHandling: ErrorHandlingService,
-    private workflowService: WorkflowService,
-    private routerUtilityService: RouterUtilityService,
-    private adminService: AdminService,
-    private httpService: HttpService,
-    private dataCacheService: DataCacheService
-  ) {
-
-    this.routerParam();
-    this.updateComponent();
-  }
-
-  ngOnInit() {
-    this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
-
-    if(breadcrumbInfo){
-      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
-      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
-    }
-    this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
-      this.pageLevel
-    );
-    this.expiryDate = this.datePipe.transform(new Date(), this.shortDateFormat);
-  }
-
-  state: string = 'closed';
-  menuState: string = 'out';
-  closeAttributeConfigure() {
-    this.state = 'closed';
-    this.menuState = 'out';
-    this.searchAttribute();
-  }
-  selectedIndex: number = -1;
-  selectedallPolicies: Array<string> = [];
-
-  openAttributeConfigure(attributeDetail, index) {
-    this.attributeValue = '';
-    this.attributeName = [];
-    this.state = 'open';
-    this.menuState = 'in';
-    this.selectedallPolicies = attributeDetail.allPolicies;
-    this.selectedRules = attributeDetail.policies;
-    this.selectedIndex = index;
-  }
-
-  addAttributes(attributeName, attributeValue) {
-    let ruleDetails = find(this.allAttributeDetails[this.selectedIndex].allPolicies, { text: attributeName });
-    this.allAttributeDetails[this.selectedIndex].policies.push(ruleDetails);
-    let itemIndex = this.allAttributeDetails[this.selectedIndex].allPolicies.indexOf(ruleDetails);
-    if (itemIndex !== -1) {
-      this.allAttributeDetails[this.selectedIndex].allPolicies.splice(itemIndex, 1);
-      this.selectedallPolicies = this.allAttributeDetails[this.selectedIndex].allPolicies;
-    }
-    this.attributeValue = '';
-    this.attributeName = [];
-  }
-
-  deleteAttributes(attributeName, itemIndex) {
-    let ruleDetails = this.allAttributeDetails[this.selectedIndex].policies[itemIndex];
-    this.allAttributeDetails[this.selectedIndex].policies.splice(itemIndex, 1);
-    if (itemIndex !== -1) {
-      this.allAttributeDetails[this.selectedIndex].allPolicies.push(ruleDetails);
-      this.selectedallPolicies = this.allAttributeDetails[this.selectedIndex].allPolicies;
-    }
-  }
-
-  nextPage() {
-    try {
-      if (!this.isLastPage) {
-        this.pageNumber++;
-        this.showLoader = true;
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  prevPage() {
-    try {
-      if (!this.isFirstPage) {
-        this.pageNumber--;
-        this.showLoader = true;
-      }
-
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  exceptionNames: any = [];
-  isExceptionNameAvailable(exceptionNameKeyword) {
-    if (exceptionNameKeyword.trim().length < 5) {
-      this.isExceptionNameValid = -1;
-    } else {
-      let isKeywordExits = this.exceptionNames.findIndex(item => exceptionNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());
-      if (isKeywordExits === -1) {
-        this.isExceptionNameValid = 1;
-      } else {
-        this.isExceptionNameValid = 0;
-      }
-    }
-  }
-
-  getAllExceptionNames() {
-    const url = environment.getAllStickyExceptionNames.url;
-    const method = environment.getAllStickyExceptionNames.method;
-    this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
-      this.pageContent[0].hide = false;
-      this.exceptionNames = reponse[0];
-      this.assetLoader = false;
-    },
-      error => {
-        this.assetLoaderFailure = true;
-        this.allAssetGroupNames = [];
-        this.errorMessage = 'apiResponseError';
-        this.assetLoader = false;
-        this.showLoader = false;
-      })
-  }
-
-  getAllAssetGroupNames() {
-    this.assetLoader = true;
-    this.pageContent[0].hide = true;
-    this.assetLoaderFailure = false;
-    var url = environment.assetGroupNames.url;
-    var method = environment.assetGroupNames.method;
-    this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
-      this.allAssetGroupNames = reponse[0];
-      this.getAllExceptionNames();
-    },
-      error => {
-        this.assetLoaderFailure = true;
-        this.allAssetGroupNames = [];
-        this.errorMessage = 'apiResponseError';
-        this.assetLoader = false;
-        this.showLoader = false;
-      });
-  }
-
-  stickyExceptionDetails: any;
-  getAllStickyExceptionDetails(exceptionName) {
-    this.assetLoaderFailure = false;
-    this.assetLoader = true;
-    this.pageContent[0].hide = true;
-    this.assetLoaderTitle = this.exceptionName;
-    var url = environment.getAllStickyExceptionDetails.url;
-    var method = environment.getAllStickyExceptionDetails.method;
-    this.adminService.executeHttpAction(url, method, {}, { exceptionName: exceptionName, dataSource: 'aws' }).subscribe(reponse => {
-      this.assetLoader = false;
-      this.pageContent[0].hide = false;
-      this.stickyExceptionDetails = reponse[0];
-
-      this.exceptionDetailsForm = {
-        name: reponse[0].exceptionName,
-        reason: reponse[0].exceptionReason,
-        expiry: this.datePipe.transform(reponse[0].expiryDate, this.exceptionDetailsExpiryDateFormat),
-        assetGroup: [{ text: reponse[0].groupName, id: reponse[0].groupName }]
-      }
-      this.selectedAssetGroup = reponse[0].groupName;
-      this.stickyExceptionDetailsBeforeUpdate = reponse[0];
-    },
-      error => {
-        this.assetLoaderFailure = true;
-        this.allAssetGroupNames = [];
-        this.errorMessage = 'apiResponseError';
-        this.assetLoader = false;
-        this.showLoader = false;
-      });
-  }
-
-  private collectTargetTypes() {
-    this.assetLoaderFailure = false;
-    this.assetLoader = true;
-    this.assetLoaderTitle = 'Target Types';
-    this.pageContent[0].hide = true;
-    let url = environment.getTargetTypesByAssetGroupName.url;
-    let method = environment.getTargetTypesByAssetGroupName.method;
-    let assetGroupName = '';
-    if (this.exceptionDetailsForm.assetGroup) {
-      assetGroupName = this.exceptionDetailsForm.assetGroup;
-    }
-    this.adminService.executeHttpAction(url, method, {}, { assetGroupName: assetGroupName }).subscribe(reponse => {
-      this.assetLoader = false;
-      this.showLoader = false;
-      if (reponse.length > 0) {
-        reponse[0].sort(function (a, b) {
-          return b.policies.length - a.policies.length;
-        });
-        reponse[0] = orderBy(reponse[0], ['added'], ['desc']);
-        this.allAttributeDetails = reponse[0];
-        this.allAttributeDetailsCopy = reponse[0];
-        this.goToNextStep();
-      }
-    },
-      error => {
-        this.assetLoader = false;
-        this.assetLoaderFailure = true;
-        this.errorValue = -1;
-        this.outerArr = [];
-        this.errorMessage = 'apiResponseError';
-        this.showLoader = false;
-      });
-  }
-
-  nextStep() {
-    if (this.stepIndex + 1 === 1) {
-      if (this.isCreate) {
-        this.collectTargetTypes();
-      } else {
-        let selectedAssetGroup = this.exceptionDetailsForm.assetGroup[0].text;
-        if (this.stickyExceptionDetails.groupName === selectedAssetGroup) {
-          this.allAttributeDetails = this.stickyExceptionDetails.targetTypes;
-          this.allAttributeDetailsCopy = cloneDeep(this.allAttributeDetails);
-          this.goToNextStep();
-        } else {
-          this.collectTargetTypes();
-        }
-      }
-      this.searchAttribute();
-    }
-    else {
-      this.goToNextStep();
-    }
-  }
-
-  goToNextStep() {
-    this.pageContent[this.stepIndex].hide = true;
-    this.stepIndex++;
-    this.stepTitle = this.pageContent[this.stepIndex].title;
-    this.pageContent[this.stepIndex].hide = false;
-  }
-
-  prevStep() {
-    this.pageContent[this.stepIndex].hide = true;
-    this.stepIndex--;
-    this.stepTitle = this.pageContent[this.stepIndex].title;
-    this.pageContent[this.stepIndex].hide = false;
-  }
-
-  expiryDate: any;
-  getDateData(date: any): any {
-    this.expiryDate = this.datePipe.transform(date, this.shortDateFormat);
-  }
-
-  closeAssetErrorMessage() {
-    this.assetLoaderFailure = false;
-    this.assetLoader = false;
-    this.pageContent[this.stepIndex].hide = false;
-  }
-
-  navigateToCreateAssetGroup() {
-    try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
-      this.router.navigate(['../create-asset-groups'], {
-        relativeTo: this.activatedRoute,
-        queryParamsHandling: 'merge',
-        queryParams: {
-        }
-      });
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  onSelectRuleName(ruleName: any) {
-    this.attributeName = ruleName;
-  }
-
-  onSelectAssetGroup(assetGroup: any) {
-    this.exceptionDetailsForm.assetGroup = assetGroup;
-  }
-  createException(exceptionFormDetails) {
-    let exceptionDetails = this.marshallingCreateExceptionData(exceptionFormDetails);
-    this.loadingContent = 'creation';
-
-    this.successTitle = 'Exemption Created';
-    this.highlightName = exceptionFormDetails.name;
-
-    this.hideContent = true;
-    this.assetGroupExceptionLoader = true;
-    this.isAssetGroupExceptionCreationUpdationFailed = false;
-    this.isAssetGroupExceptionCreationUpdationSuccess = false;
-    //this.selectedAssetGroupExceptionName = assetGroupExceptionDetails.assetGroupExceptionName;
-    //this.highlightName = assetGroupExceptionDetails.assetGroupExceptionName;
-    let url = environment.configureStickyException.url;
-    let method = environment.configureStickyException.method;
-    const userDetails = this.dataCacheService.getUserDetailsValue();
-    let userId = userDetails.getEmail();
-    this.adminService.executeHttpAction(url, method, { ...exceptionDetails, createdBy : userId }, {}).subscribe(reponse => {
-      this.successTitle = 'Exception Created';
-      this.isAssetGroupExceptionCreationUpdationSuccess = true;
-      this.assetGroupExceptionLoader = false;
-      /*this.assetGroupExceptions = {
-        assetGroupExceptionName: '',
-        description: '',
-        writePermission: false
-      };*/
-      // if(reponse[0].message==='success'){
-      //   let reqDetailsOfStickyException = getReqDetailsForLogging(exceptionDetails);
-      // }
-    },
-      error => {
-        this.failedTitle = 'Creation Failed';
-        this.assetGroupExceptionLoader = false;
-        this.isAssetGroupExceptionCreationUpdationFailed = true;
-      })
-  }
-
-  deleteException(exceptionDetails) {
-    this.loadingContent = 'deletion';
-    this.hideContent = true;
-    this.highlightName = '';
-    this.assetGroupExceptionLoader = true;
-    this.isAssetGroupExceptionCreationUpdationFailed = false;
-    this.isAssetGroupExceptionCreationUpdationSuccess = false;
-    //this.selectedAssetGroupExceptionName = assetGroupExceptionDetails.assetGroupExceptionName;
-    //this.highlightName = assetGroupExceptionDetails.assetGroupExceptionName;
-    let url = environment.deleteStickyException.url;
-    let method = environment.deleteStickyException.method;
-    this.adminService.executeHttpAction(url, method, exceptionDetails, {}).subscribe(reponse => {
-      this.successTitle = 'Exemption Deleted';
-      this.isAssetGroupExceptionCreationUpdationSuccess = true;
-      this.assetGroupExceptionLoader = false;
-      /*this.assetGroupExceptions = {
-        assetGroupExceptionName: '',
-        description: '',
-        writePermission: false
-      };*/
-    },
-      error => {
-        this.failedTitle = 'Deletion Failed';
-        this.assetGroupExceptionLoader = false;
-        this.isAssetGroupExceptionCreationUpdationFailed = true;
-      })
-  }
-
-  updateException(exceptionFormDetails) {
-    let exceptionDetails = this.marshallingUpdateExceptionData(exceptionFormDetails);
-    this.loadingContent = 'updation';
-    this.successTitle = 'Exemption Updated';
-    this.highlightName = exceptionFormDetails.name;
-    this.hideContent = true;
-    this.assetGroupExceptionLoader = true;
-    this.isAssetGroupExceptionCreationUpdationFailed = false;
-    this.isAssetGroupExceptionCreationUpdationSuccess = false;
-    //this.selectedAssetGroupExceptionName = assetGroupExceptionDetails.assetGroupExceptionName;
-    //this.highlightName = assetGroupExceptionDetails.assetGroupExceptionName;
-    let url = environment.configureStickyException.url;
-    let method = environment.configureStickyException.method;
-    const userDetails = this.dataCacheService.getUserDetailsValue();
-    let userId = userDetails.getEmail();
-    this.adminService.executeHttpAction(url, method, { ...exceptionDetails, createdBy : userId }, {}).subscribe(reponse => {
-      this.successTitle = 'Exception Updated';
-      this.isAssetGroupExceptionCreationUpdationSuccess = true;
-      this.assetGroupExceptionLoader = false;
-      /*this.assetGroupExceptions = {
-        assetGroupExceptionName: '',
-        description: '',
-        writePermission: false
-      };*/
-
-      // if(reponse[0].message==='success'){
-      //   let afterUpdateOfStickyException = getReqDetailsForLogging(exceptionDetails);
-      //   let beforeUpdateOfStickyException = getReqDetailsForLogging(this.stickyExceptionDetailsBeforeUpdate);
-      // }
-    },
-      error => {
-        this.failedTitle = 'Updation Failed';
-        this.assetGroupExceptionLoader = false;
-        this.isAssetGroupExceptionCreationUpdationFailed = true;
-      })
-  }
-
-  marshallingUpdateExceptionData(exceptionFormDetails) {
-    let exceptionDetails = {
-      exceptionName: exceptionFormDetails.name,
-      exceptionReason: exceptionFormDetails.reason,
-      expiryDate: this.expiryDate,
-      assetGroup: exceptionFormDetails.assetGroup[0].text,
-      dataSource: 'aws',
-      targetTypes: this.allAttributeDetails
-    }
-    return exceptionDetails;
-  }
-
-  marshallingCreateExceptionData(exceptionFormDetails) {
-    let exceptionDetails = {
-      exceptionName: exceptionFormDetails.name,
-      exceptionReason: exceptionFormDetails.reason,
-      expiryDate: this.expiryDate,
-      assetGroup: exceptionFormDetails.assetGroup,
-      dataSource: 'aws',
-      targetTypes: this.allAttributeDetails
-    }
-    return exceptionDetails;
-  }
-
-  closeErrorMessage() {
-    this.isRuleInvokeFailed = false;
-    this.hideContent = false;
-  }
-
-  searchAttribute() {
-    let term = this.searchTerm;
-    this.allAttributeDetails = this.allAttributeDetailsCopy.filter(function (tag) {
-      return tag.targetName.indexOf(term) >= 0;
-    });
-
-    this.allAttributeDetails.sort(function (a, b) {
-      return b.policies.length - a.policies.length;
-    });
-    this.allAttributeDetails = orderBy(this.allAttributeDetails, ['added'], ['desc']);
-  }
-
-  getData() {
-    //this.getAllPolicyIds();
-    this.allAttributeDetails = [];
-    this.allAttributeDetailsCopy = [];
-  }
-
-  /*
-    * This function gets the urlparameter and queryObj
-    *based on that different apis are being hit with different queryparams
+ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+ import { environment } from './../../../../../../environments/environment';
+ 
+ import { Router, ActivatedRoute } from '@angular/router';
+ import { Subscription } from 'rxjs';
+ import cloneDeep from 'lodash/cloneDeep';
+ import find from 'lodash/find';
+ import orderBy from 'lodash/orderBy';
+ // import * as frLocale from 'date-fns/locale/en';
+ import { WorkflowService } from '../../../../../core/services/workflow.service';
+ import { UtilsService } from '../../../../../shared/services/utils.service';
+ import { LoggerService } from '../../../../../shared/services/logger.service';
+ import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
+ 
+ 
+ import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
+ import { AdminService } from '../../../../services/all-admin.service';
+ import { FormGroup, FormControl, Validators } from '@angular/forms';
+ import { UploadFileService } from '../../../../services/upload-file-service';
+ import { animate, state, style, transition, trigger } from '@angular/animations';
+ import { HttpService } from 'src/app/shared/services/http-response.service';
+ import { DataCacheService } from 'src/app/core/services/data-cache.service';
+ import { DatePipe } from '@angular/common';
+ 
+ @Component({
+   selector: 'app-admin-create-sticky-exceptions',
+   templateUrl: './create-sticky-exceptions.component.html',
+   styleUrls: ['./create-sticky-exceptions.component.css'],
+   animations: [
+     trigger('slideInOut', [
+       state('in', style({
+         transform: 'translate3d(0, 0, 0)'
+       })),
+       state('out', style({
+         transform: 'translate3d(100%, 0, 0)'
+       })),
+       transition('in => out', animate('400ms ease-in-out')),
+       transition('out => in', animate('400ms ease-in-out'))
+     ]),
+     trigger('fadeInOut', [
+       state('open', style({ 'z-index': 2, opacity: 1 })),
+       state('closed', style({ 'z-index': -1, opacity: 0 })),
+       transition('open <=> closed', animate('500ms')),
+     ])
+   ],
+   providers: [
+     LoggerService,
+     ErrorHandlingService,
+     UploadFileService,
+     AdminService
+   ]
+ })
+ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
+   pageTitle: String = '';
+   breadcrumbArray: any = ['Exemptions'];
+   breadcrumbLinks: any = ['sticky-exceptions'];
+   breadcrumbPresent: any;
+   outerArr: any = [];
+   filters: any = [];
+   date = new Date();
+   dateToday = this.date.getFullYear() + '-' + (this.date.getMonth() + 1) + '-' + this.date.getDate();
+   exceptionDetailsForm: any = {
+     name: '',
+     reason: '',
+     expiry: this.date,
+     assetGroup: []
+   }
+ 
+   isExceptionNameValid: any = -1;
+   allAssetGroupNames: Array<string>;
+   selectedAssetGroup: string;
+   dataForm: FormGroup;
+ 
+   assetLoaderTitle: string = '';
+   assetLoader: boolean = false;
+   assetLoaderFailure: boolean = false;
+   attributeName: any = [];
+   attributeValue: string = '';
+   selectedRules: any = [];
+ 
+   allOptionalRuleParams: any = [];
+   isRuleInvokeFailed: boolean = false;
+   isRuleInvokeSuccess: boolean = false;
+   ruleContentLoader: boolean = true;
+   ruleLoader: boolean = false;
+   invocationId: String = '';
+   paginatorSize: number = 25;
+   isLastPage: boolean;
+   isFirstPage: boolean;
+   totalPages: number;
+   pageNumber: number = 0;
+   showLoader: boolean = true;
+   errorMessage: any;
+   searchTerm: String = '';
+ 
+   hideContent: boolean = false;
+   pageContent: any = [
+     { title: 'Enter Exemption Details', hide: false },
+     { title: 'Exempt Target Types', hide: true }
+   ];
+ 
+   isCreate: boolean = false;
+   successTitle: String = '';
+   failedTitle: string = '';
+   successSubTitle: String = '';
+   isAssetGroupExceptionCreationUpdationFailed: boolean = false;
+   isAssetGroupExceptionCreationUpdationSuccess: boolean = false;
+   loadingContent: string = '';
+   assetGroupExceptionLoader: boolean = false;
+   highlightName: string = '';
+ 
+   availChoosedItems: any = {};
+   availChoosedSelectedItems = {};
+   availChoosedItemsCount = 0;
+ 
+   selectChoosedItems: any = {};
+   selectChoosedSelectedItems = {};
+   selectChoosedItemsCount = 0;
+ 
+   availableItems: any = [];
+   selectedItems: any = [];
+ 
+   availableItemsBackUp: any = [];
+   selectedItemsBackUp: any = [];
+ 
+   availableItemsCopy: any = [];
+   selectedItemsCopy: any = [];
+ 
+   searchSelectedDomainTerms: any = '';
+   searchAvailableDomainTerms = '';
+ 
+ 
+   // Target Details //
+   availTdChoosedItems: any = {};
+   availTdChoosedSelectedItems = {};
+   availTdChoosedItemsCount = 0;
+ 
+   selectTdChoosedItems: any = {};
+   selectTdChoosedSelectedItems = {};
+   selectTdChoosedItemsCount = 0;
+ 
+   availableTdItems: any = [];
+   selectedTdItems: any = [];
+ 
+   availableTdItemsBackUp: any = [];
+   selectedTdItemsBackUp: any = [];
+ 
+   availableTdItemsCopy: any = [];
+   selectedTdItemsCopy: any = [];
+ 
+   searchSelectedTargetTerms: any = '';
+   searchAvailableTargetTerms = '';
+ 
+   stepIndex: number = 0;
+   stepTitle: any = this.pageContent[this.stepIndex].title;
+   allAttributeDetails: any = [];
+   allAttributeDetailsCopy: any = [];
+ 
+   filterText: any = {};
+   errorValue: number = 0;
+   urlID: string = '';
+   exceptionName: string = '';
+ 
+   FullQueryParams: any;
+   queryParamsWithoutFilter: any;
+   urlToRedirect: any = '';
+   mandatory: any;
+   stickyExceptionDetailsBeforeUpdate : any;
+ 
+   public labels: any;
+   private previousUrl: any = '';
+   private pageLevel = 0;
+   public backButtonRequired;
+   private routeSubscription: Subscription;
+   private getKeywords: Subscription;
+   private previousUrlSubscription: Subscription;
+   private downloadSubscription: Subscription;
+   private readonly shortDateFormat = 'dd/MM/yyyy';
+   private readonly exceptionDetailsExpiryDateFormat = 'yyyy-MM-dd';
+ 
+   constructor(
+     private router: Router,
+     private datePipe: DatePipe,
+     private activatedRoute: ActivatedRoute,
+     private utils: UtilsService,
+     private logger: LoggerService,
+     private errorHandling: ErrorHandlingService,
+     private workflowService: WorkflowService,
+     private routerUtilityService: RouterUtilityService,
+     private adminService: AdminService,
+     private httpService: HttpService,
+     private dataCacheService: DataCacheService
+   ) {
+ 
+     this.routerParam();
+     this.updateComponent();
+   }
+ 
+   ngOnInit() {
+     this.urlToRedirect = this.router.routerState.snapshot.url;
+     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+ 
+     if(breadcrumbInfo){
+       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+     }
+     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
+       this.pageLevel
+     );
+     this.expiryDate = this.datePipe.transform(new Date(), this.shortDateFormat);
+   }
+ 
+   state: string = 'closed';
+   menuState: string = 'out';
+   closeAttributeConfigure() {
+     this.state = 'closed';
+     this.menuState = 'out';
+     this.searchAttribute();
+   }
+   selectedIndex: number = -1;
+   selectedallPolicies: Array<string> = [];
+ 
+   openAttributeConfigure(attributeDetail, index) {
+     this.attributeValue = '';
+     this.attributeName = [];
+     this.state = 'open';
+     this.menuState = 'in';
+     this.selectedallPolicies = attributeDetail.allPolicies;
+     this.selectedRules = attributeDetail.policies;
+     this.selectedIndex = index;
+   }
+ 
+   addAttributes(attributeName, attributeValue) {
+     let ruleDetails = find(this.allAttributeDetails[this.selectedIndex].allPolicies, { text: attributeName });
+     this.allAttributeDetails[this.selectedIndex].policies.push(ruleDetails);
+     let itemIndex = this.allAttributeDetails[this.selectedIndex].allPolicies.indexOf(ruleDetails);
+     if (itemIndex !== -1) {
+       this.allAttributeDetails[this.selectedIndex].allPolicies.splice(itemIndex, 1);
+       this.selectedallPolicies = this.allAttributeDetails[this.selectedIndex].allPolicies;
+     }
+     this.attributeValue = '';
+     this.attributeName = [];
+   }
+ 
+   deleteAttributes(attributeName, itemIndex) {
+     let ruleDetails = this.allAttributeDetails[this.selectedIndex].policies[itemIndex];
+     this.allAttributeDetails[this.selectedIndex].policies.splice(itemIndex, 1);
+     if (itemIndex !== -1) {
+       this.allAttributeDetails[this.selectedIndex].allPolicies.push(ruleDetails);
+       this.selectedallPolicies = this.allAttributeDetails[this.selectedIndex].allPolicies;
+     }
+   }
+ 
+   nextPage() {
+     try {
+       if (!this.isLastPage) {
+         this.pageNumber++;
+         this.showLoader = true;
+       }
+     } catch (error) {
+       this.errorMessage = this.errorHandling.handleJavascriptError(error);
+       this.logger.log('error', error);
+     }
+   }
+ 
+   prevPage() {
+     try {
+       if (!this.isFirstPage) {
+         this.pageNumber--;
+         this.showLoader = true;
+       }
+ 
+     } catch (error) {
+       this.errorMessage = this.errorHandling.handleJavascriptError(error);
+       this.logger.log('error', error);
+     }
+   }
+ 
+   exceptionNames: any = [];
+   isExceptionNameAvailable(exceptionNameKeyword) {
+     if (exceptionNameKeyword.trim().length < 5) {
+       this.isExceptionNameValid = -1;
+     } else {
+       let isKeywordExits = this.exceptionNames.findIndex(item => exceptionNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());
+       if (isKeywordExits === -1) {
+         this.isExceptionNameValid = 1;
+       } else {
+         this.isExceptionNameValid = 0;
+       }
+     }
+   }
+ 
+   getAllExceptionNames() {
+     const url = environment.getAllStickyExceptionNames.url;
+     const method = environment.getAllStickyExceptionNames.method;
+     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
+       this.pageContent[0].hide = false;
+       this.exceptionNames = reponse[0];
+       this.assetLoader = false;
+     },
+       error => {
+         this.assetLoaderFailure = true;
+         this.allAssetGroupNames = [];
+         this.errorMessage = 'apiResponseError';
+         this.assetLoader = false;
+         this.showLoader = false;
+       })
+   }
+ 
+   getAllAssetGroupNames() {
+     this.assetLoader = true;
+     this.pageContent[0].hide = true;
+     this.assetLoaderFailure = false;
+     var url = environment.assetGroupNames.url;
+     var method = environment.assetGroupNames.method;
+     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
+       this.allAssetGroupNames = reponse[0];
+       this.getAllExceptionNames();
+     },
+       error => {
+         this.assetLoaderFailure = true;
+         this.allAssetGroupNames = [];
+         this.errorMessage = 'apiResponseError';
+         this.assetLoader = false;
+         this.showLoader = false;
+       });
+   }
+ 
+   stickyExceptionDetails: any;
+   getAllStickyExceptionDetails(exceptionName) {
+     this.assetLoaderFailure = false;
+     this.assetLoader = true;
+     this.pageContent[0].hide = true;
+     this.assetLoaderTitle = this.exceptionName;
+     var url = environment.getAllStickyExceptionDetails.url;
+     var method = environment.getAllStickyExceptionDetails.method;
+     this.adminService.executeHttpAction(url, method, {}, { exceptionName: exceptionName, dataSource: 'aws' }).subscribe(reponse => {
+       this.assetLoader = false;
+       this.pageContent[0].hide = false;
+       this.stickyExceptionDetails = reponse[0];
+ 
+       this.exceptionDetailsForm = {
+         name: reponse[0].exceptionName,
+         reason: reponse[0].exceptionReason,
+         expiry: this.datePipe.transform(reponse[0].expiryDate, this.exceptionDetailsExpiryDateFormat),
+         assetGroup: [{ text: reponse[0].groupName, id: reponse[0].groupName }]
+       }
+       this.selectedAssetGroup = reponse[0].groupName;
+       this.stickyExceptionDetailsBeforeUpdate = reponse[0];
+     },
+       error => {
+         this.assetLoaderFailure = true;
+         this.allAssetGroupNames = [];
+         this.errorMessage = 'apiResponseError';
+         this.assetLoader = false;
+         this.showLoader = false;
+       });
+   }
+ 
+   private collectTargetTypes() {
+     this.assetLoaderFailure = false;
+     this.assetLoader = true;
+     this.assetLoaderTitle = 'Target Types';
+     this.pageContent[0].hide = true;
+     let url = environment.getTargetTypesByAssetGroupName.url;
+     let method = environment.getTargetTypesByAssetGroupName.method;
+     let assetGroupName = '';
+     if (this.exceptionDetailsForm.assetGroup) {
+       assetGroupName = this.exceptionDetailsForm.assetGroup;
+     }
+     this.adminService.executeHttpAction(url, method, {}, { assetGroupName: assetGroupName }).subscribe(reponse => {
+       this.assetLoader = false;
+       this.showLoader = false;
+       if (reponse.length > 0) {
+         reponse[0].sort(function (a, b) {
+           return b.policies.length - a.policies.length;
+         });
+         reponse[0] = orderBy(reponse[0], ['added'], ['desc']);
+         this.allAttributeDetails = reponse[0];
+         this.allAttributeDetailsCopy = reponse[0];
+         this.goToNextStep();
+       }
+     },
+       error => {
+         this.assetLoader = false;
+         this.assetLoaderFailure = true;
+         this.errorValue = -1;
+         this.outerArr = [];
+         this.errorMessage = 'apiResponseError';
+         this.showLoader = false;
+       });
+   }
+ 
+   nextStep() {
+     if (this.stepIndex + 1 === 1) {
+       if (this.isCreate) {
+         this.collectTargetTypes();
+       } else {
+         let selectedAssetGroup = this.exceptionDetailsForm.assetGroup[0].text;
+         if (this.stickyExceptionDetails.groupName === selectedAssetGroup) {
+           this.allAttributeDetails = this.stickyExceptionDetails.targetTypes;
+           this.allAttributeDetailsCopy = cloneDeep(this.allAttributeDetails);
+           this.goToNextStep();
+         } else {
+           this.collectTargetTypes();
+         }
+       }
+       this.searchAttribute();
+     }
+     else {
+       this.goToNextStep();
+     }
+   }
+ 
+   goToNextStep() {
+     this.pageContent[this.stepIndex].hide = true;
+     this.stepIndex++;
+     this.stepTitle = this.pageContent[this.stepIndex].title;
+     this.pageContent[this.stepIndex].hide = false;
+   }
+ 
+   prevStep() {
+     this.pageContent[this.stepIndex].hide = true;
+     this.stepIndex--;
+     this.stepTitle = this.pageContent[this.stepIndex].title;
+     this.pageContent[this.stepIndex].hide = false;
+   }
+ 
+   expiryDate: any;
+   getDateData(date: any): any {
+     this.expiryDate = this.datePipe.transform(date, this.shortDateFormat);
+   }
+ 
+   closeAssetErrorMessage() {
+     this.assetLoaderFailure = false;
+     this.assetLoader = false;
+     this.pageContent[this.stepIndex].hide = false;
+   }
+ 
+   navigateToCreateAssetGroup() {
+     try {
+       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
+       this.router.navigate(['../create-asset-groups'], {
+         relativeTo: this.activatedRoute,
+         queryParamsHandling: 'merge',
+         queryParams: {
+         }
+       });
+     } catch (error) {
+       this.errorMessage = this.errorHandling.handleJavascriptError(error);
+       this.logger.log('error', error);
+     }
+   }
+ 
+   onSelectRuleName(ruleName: any) {
+     this.attributeName = ruleName;
+   }
+ 
+   onSelectAssetGroup(assetGroup: any) {
+     this.exceptionDetailsForm.assetGroup = assetGroup;
+   }
+   createException(exceptionFormDetails) {
+     let exceptionDetails = this.marshallingCreateExceptionData(exceptionFormDetails);
+     this.loadingContent = 'creation';
+ 
+     this.successTitle = 'Exemption Created';
+     this.highlightName = exceptionFormDetails.name;
+ 
+     this.hideContent = true;
+     this.assetGroupExceptionLoader = true;
+     this.isAssetGroupExceptionCreationUpdationFailed = false;
+     this.isAssetGroupExceptionCreationUpdationSuccess = false;
+     //this.selectedAssetGroupExceptionName = assetGroupExceptionDetails.assetGroupExceptionName;
+     //this.highlightName = assetGroupExceptionDetails.assetGroupExceptionName;
+     let url = environment.configureStickyException.url;
+     let method = environment.configureStickyException.method;
+     const userDetails = this.dataCacheService.getUserDetailsValue();
+     let userId = userDetails.getEmail();
+     this.adminService.executeHttpAction(url, method, { ...exceptionDetails, createdBy : userId }, {}).subscribe(reponse => {
+       this.successTitle = 'Exception Created';
+       this.isAssetGroupExceptionCreationUpdationSuccess = true;
+       this.assetGroupExceptionLoader = false;
+     },
+       error => {
+         this.failedTitle = 'Creation Failed';
+         this.assetGroupExceptionLoader = false;
+         this.isAssetGroupExceptionCreationUpdationFailed = true;
+       })
+   }
+ 
+   deleteException(exceptionDetails) {
+     this.loadingContent = 'deletion';
+     this.hideContent = true;
+     this.highlightName = '';
+     this.assetGroupExceptionLoader = true;
+     this.isAssetGroupExceptionCreationUpdationFailed = false;
+     this.isAssetGroupExceptionCreationUpdationSuccess = false;
+     //this.selectedAssetGroupExceptionName = assetGroupExceptionDetails.assetGroupExceptionName;
+     //this.highlightName = assetGroupExceptionDetails.assetGroupExceptionName;
+     let url = environment.deleteStickyException.url;
+     let method = environment.deleteStickyException.method;
+     this.adminService.executeHttpAction(url, method, exceptionDetails, {}).subscribe(reponse => {
+       this.successTitle = 'Exemption Deleted';
+       this.isAssetGroupExceptionCreationUpdationSuccess = true;
+       this.assetGroupExceptionLoader = false;
+       /*this.assetGroupExceptions = {
+         assetGroupExceptionName: '',
+         description: '',
+         writePermission: false
+       };*/
+     },
+       error => {
+         this.failedTitle = 'Deletion Failed';
+         this.assetGroupExceptionLoader = false;
+         this.isAssetGroupExceptionCreationUpdationFailed = true;
+       })
+   }
+ 
+   updateException(exceptionFormDetails) {
+     let exceptionDetails = this.marshallingUpdateExceptionData(exceptionFormDetails);
+     this.loadingContent = 'updation';
+     this.successTitle = 'Exemption Updated';
+     this.highlightName = exceptionFormDetails.name;
+     this.hideContent = true;
+     this.assetGroupExceptionLoader = true;
+     this.isAssetGroupExceptionCreationUpdationFailed = false;
+     this.isAssetGroupExceptionCreationUpdationSuccess = false;
+     //this.selectedAssetGroupExceptionName = assetGroupExceptionDetails.assetGroupExceptionName;
+     //this.highlightName = assetGroupExceptionDetails.assetGroupExceptionName;
+     let url = environment.configureStickyException.url;
+     let method = environment.configureStickyException.method;
+     const userDetails = this.dataCacheService.getUserDetailsValue();
+     let userId = userDetails.getEmail();
+     this.adminService.executeHttpAction(url, method, { ...exceptionDetails, createdBy : userId }, {}).subscribe(reponse => {
+       this.successTitle = 'Exception Updated';
+       this.isAssetGroupExceptionCreationUpdationSuccess = true;
+       this.assetGroupExceptionLoader = false;
+     },
+       error => {
+         this.failedTitle = 'Updation Failed';
+         this.assetGroupExceptionLoader = false;
+         this.isAssetGroupExceptionCreationUpdationFailed = true;
+       })
+   }
+ 
+   marshallingUpdateExceptionData(exceptionFormDetails) {
+     let exceptionDetails = {
+       exceptionName: exceptionFormDetails.name,
+       exceptionReason: exceptionFormDetails.reason,
+       expiryDate: this.expiryDate,
+       assetGroup: exceptionFormDetails.assetGroup[0].text,
+       dataSource: 'aws',
+       targetTypes: this.allAttributeDetails
+     }
+     return exceptionDetails;
+   }
+ 
+   marshallingCreateExceptionData(exceptionFormDetails) {
+     let exceptionDetails = {
+       exceptionName: exceptionFormDetails.name,
+       exceptionReason: exceptionFormDetails.reason,
+       expiryDate: this.expiryDate,
+       assetGroup: exceptionFormDetails.assetGroup,
+       dataSource: 'aws',
+       targetTypes: this.allAttributeDetails
+     }
+     return exceptionDetails;
+   }
+ 
+   closeErrorMessage() {
+     this.isRuleInvokeFailed = false;
+     this.hideContent = false;
+   }
+ 
+   searchAttribute() {
+     let term = this.searchTerm;
+     this.allAttributeDetails = this.allAttributeDetailsCopy.filter(function (tag) {
+       return tag.targetName.indexOf(term) >= 0;
+     });
+ 
+     this.allAttributeDetails.sort(function (a, b) {
+       return b.policies.length - a.policies.length;
+     });
+     this.allAttributeDetails = orderBy(this.allAttributeDetails, ['added'], ['desc']);
+   }
+ 
+   getData() {
+     //this.getAllPolicyIds();
+     this.allAttributeDetails = [];
+     this.allAttributeDetailsCopy = [];
+   }
+ 
+   /*
+     * This function gets the urlparameter and queryObj
+     *based on that different apis are being hit with different queryparams
+     */
+   routerParam() {
+     try {
+       // this.filterText saves the queryparam
+       let currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
+       if (currentQueryParams) {
+ 
+         this.FullQueryParams = currentQueryParams;
+         this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
+         this.exceptionName = this.queryParamsWithoutFilter.exceptionName;
+         delete this.queryParamsWithoutFilter['filter'];
+         if (this.exceptionName) {
+           this.assetLoaderTitle = this.exceptionName;
+           this.pageTitle = 'Edit Exemptions';
+           this.breadcrumbPresent = 'Edit Exemptions';
+           this.isCreate = false;
+           this.getAllStickyExceptionDetails(this.exceptionName);
+         } else {
+           this.assetLoaderTitle = 'Asset Groups';
+           this.pageTitle = 'Create Exemptions';
+           this.breadcrumbPresent = 'Create Exemptions';
+           this.isCreate = true;
+           this.getAllAssetGroupNames();
+         }
+ 
+         /**
+          * The below code is added to get URLparameter and queryparameter
+          * when the page loads ,only then this function runs and hits the api with the
+          * filterText obj processed through processFilterObj function
+          */
+         this.filterText = this.utils.processFilterObj(
+           this.FullQueryParams
+         );
+ 
+         this.urlID = this.FullQueryParams.TypeAsset;
+         //check for mandatory filters.
+         if (this.FullQueryParams.mandatory) {
+           this.mandatory = this.FullQueryParams.mandatory;
+         }
+ 
+       }
+     } catch (error) {
+       this.errorMessage = this.errorHandling.handleJavascriptError(error);
+       this.logger.log('error', error);
+     }
+   }
+ 
+   /**
+    * This function get calls the keyword service before initializing
+    * the filter array ,so that filter keynames are changed
     */
-  routerParam() {
-    try {
-      // this.filterText saves the queryparam
-      let currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
-      if (currentQueryParams) {
-
-        this.FullQueryParams = currentQueryParams;
-        this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
-        this.exceptionName = this.queryParamsWithoutFilter.exceptionName;
-        delete this.queryParamsWithoutFilter['filter'];
-        if (this.exceptionName) {
-          this.assetLoaderTitle = this.exceptionName;
-          this.pageTitle = 'Edit Exemptions';
-          this.breadcrumbPresent = 'Edit Exemptions';
-          this.isCreate = false;
-          this.getAllStickyExceptionDetails(this.exceptionName);
-        } else {
-          this.assetLoaderTitle = 'Asset Groups';
-          this.pageTitle = 'Create Exemptions';
-          this.breadcrumbPresent = 'Create Exemptions';
-          this.isCreate = true;
-          this.getAllAssetGroupNames();
-        }
-
-        /**
-        * The below code is added to get URLparameter and queryparameter
-        * when the page loads ,only then this function runs and hits the api with the
-        * filterText obj processed through processFilterObj function
-        */
-        this.filterText = this.utils.processFilterObj(
-          this.FullQueryParams
-        );
-
-        this.urlID = this.FullQueryParams.TypeAsset;
-        //check for mandatory filters.
-        if (this.FullQueryParams.mandatory) {
-          this.mandatory = this.FullQueryParams.mandatory;
-        }
-
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  /**
-  * This function get calls the keyword service before initializing
-  * the filter array ,so that filter keynames are changed
-  */
-
-  updateComponent() {
-    this.outerArr = [];
-    this.showLoader = true;
-    this.errorValue = 0;
-    this.getData();
-    this.stickyExceptionDetailsBeforeUpdate = {};
-  }
-
-  navigateBack() {
-    try {
-      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
-      this.stickyExceptionDetailsBeforeUpdate = {};
-    } catch (error) {
-      this.logger.log('error', error);
-    }
-  }
-
-  ngOnDestroy() {
-    try {
-      if (this.routeSubscription) {
-        this.routeSubscription.unsubscribe();
-      }
-      if (this.previousUrlSubscription) {
-        this.previousUrlSubscription.unsubscribe();
-      }
-    } catch (error) {
-      this.logger.log('error', '--- Error while unsubscribing ---');
-    }
-  }
-}
-function getReqDetailsForLogging(exceptionFormDetails: any) {
-  let targetTypesAndPoliciesIncluded = exceptionFormDetails.targetTypes?.filter(obj => obj.policies.length>0).map(obj => {
-    let returnObj = { ...obj};
-    returnObj.policies = returnObj.policies.map(selectedPolicies =>  selectedPolicies.id);
-    delete returnObj.allPolicies;
-    delete returnObj.added;
-    return returnObj;
-  });
-  let requiredDetails = {
-    ...exceptionFormDetails,
-    targetTypes : targetTypesAndPoliciesIncluded
-  };
-  return requiredDetails;
-}
-
+ 
+   updateComponent() {
+     this.outerArr = [];
+     this.showLoader = true;
+     this.errorValue = 0;
+     this.getData();
+     this.stickyExceptionDetailsBeforeUpdate = {};
+   }
+ 
+   navigateBack() {
+     try {
+       this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
+       this.stickyExceptionDetailsBeforeUpdate = {};
+     } catch (error) {
+       this.logger.log('error', error);
+     }
+   }
+ 
+   ngOnDestroy() {
+     try {
+       if (this.routeSubscription) {
+         this.routeSubscription.unsubscribe();
+       }
+       if (this.previousUrlSubscription) {
+         this.previousUrlSubscription.unsubscribe();
+       }
+     } catch (error) {
+       this.logger.log('error', '--- Error while unsubscribing ---');
+     }
+   }
+ }
+ function getReqDetailsForLogging(exceptionFormDetails: any) {
+   let targetTypesAndPoliciesIncluded = exceptionFormDetails.targetTypes?.filter(obj => obj.policies.length>0).map(obj => {
+     let returnObj = { ...obj};
+     returnObj.policies = returnObj.policies.map(selectedPolicies =>  selectedPolicies.id);
+     delete returnObj.allPolicies;
+     delete returnObj.added;
+     return returnObj;
+   });
+   let requiredDetails = {
+     ...exceptionFormDetails,
+     targetTypes : targetTypesAndPoliciesIncluded
+   };
+   return requiredDetails;
+ }
+ 
+ 

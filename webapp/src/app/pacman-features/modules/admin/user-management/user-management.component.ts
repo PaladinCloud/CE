@@ -9,7 +9,7 @@ import { NotificationObservableService } from 'src/app/shared/services/notificat
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
-import { FormControl, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
@@ -101,6 +101,13 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   action: any;
   updatedRoles = ["ReadOnly"];
 
+  private userForm: FormGroup;
+  public userFormErrors = {
+    emailID: '',
+    firstName: '',
+    lastName: ''
+  }
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -113,7 +120,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     private notificationObservableService: NotificationObservableService,
     public dialog: MatDialog,
     private tableStateService: TableStateService,
-    private tourService: TourService
+    private tourService: TourService,
+    public form: FormBuilder
   ) {
     this.getPreservedState();
     this.getFilters();
@@ -123,6 +131,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.buildForm();
     this.getRoles();
   }
 
@@ -199,6 +208,16 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     this.storeState();
   }
 
+  public buildForm() {
+    this.userForm = this.form.group({
+      emailID  : ['', [Validators.required,
+                       Validators.email]
+                 ],
+      firstName: ['', [Validators.required]],
+      lastName : ['', [Validators.required]]
+    });
+  }
+
   createEditUser(currentRow:any) {
     if(currentRow){
         this.dialogHeader = "Edit User Information";
@@ -219,7 +238,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         data: {
           title: this.dialogHeader,
           yesButtonLabel: "Save",
-          template: this.createEditUserRef
+          template: this.createEditUserRef,
+          formGroup : this.userForm
         }
       });
     dialogRef.afterClosed().subscribe(result => {

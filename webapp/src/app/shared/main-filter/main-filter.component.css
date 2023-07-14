@@ -12,6 +12,10 @@
  * limitations under the License.
  */
 
+ .notClickable{
+  pointer-events: none;
+}
+
 .filter-wrapper {
   height: 100%;
 }

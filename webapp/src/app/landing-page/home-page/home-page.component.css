@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.mr-wrapper {
+ .mr-wrapper {
   font-size: 1em;
   /* The height needs to be set to a fixed value for the effect to work.
     * 100vh is the full height of the viewport. */
@@ -194,7 +194,7 @@
   text-shadow: 0 2px 4px rgba(147, 147, 147, 0.35);
   padding: 2em 0;
   text-align: center;
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .mr-footer-links-container {
@@ -268,7 +268,7 @@
   font-weight: 300;
   letter-spacing: 1.2px;
   color: #ffffff;
-  text-transform: uppercase;
+  text-transform: capitalize;
   transition: font-size 0.5s ease-in-out;
 }
 

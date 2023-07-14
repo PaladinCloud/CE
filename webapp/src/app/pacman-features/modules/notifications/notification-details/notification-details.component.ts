@@ -6,6 +6,7 @@ import { AssetGroupObservableService } from 'src/app/core/services/asset-group-o
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
 import { CloudNotification, LayoutService, LayoutType } from '../layout.service';
 
@@ -44,6 +45,7 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
         private logger: LoggerService,
         private router: Router,
         private workflowService: WorkflowService,
+        private utils: UtilsService,
     ) {
         this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
 
@@ -77,9 +79,12 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
         if (!link) {
             return;
         }
-
-        const url = new URL(link);
-        const route = url.pathname + url.search;
+        const urlObj = this.utils.getParamsFromUrlSnippet(link);
+        const queryParams = {
+            ...urlObj.params,
+          }
+        // const url = new URL(urlObj.url);
+        // const route = url.pathname + url.search;
 
         this.workflowService.addRouterSnapshotToLevel(
             this.router.routerState.snapshot.root,
@@ -87,7 +92,9 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
             this.breadcrumbPresent,
         );
         this.router
-            .navigate([route], {
+            .navigate([urlObj.url.replace(window.location.origin, "")], {
+                relativeTo: this.activatedRoute,
+                queryParams: queryParams,
                 queryParamsHandling: 'merge',
             })
             .then((response) => {

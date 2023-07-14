@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.floating-widgets-section {
+ .floating-widgets-section {
   height: 100%;
   width: 100%;
 }
@@ -421,7 +421,7 @@ li.list-inputs:hover {
 }
 
 .row-cells div:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .row-cells a {
@@ -452,7 +452,7 @@ li.list-inputs:hover {
 }
 
 .table-cells:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .data-table-inner-content {
@@ -716,7 +716,7 @@ li.list-inputs:hover {
   font-family: var(--text-medium-font-family);
   padding: 0.6em 1.5em;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  text-transform: capitalize;
   cursor: pointer;
   min-height: 2em;
   min-width: 5em;
@@ -1146,7 +1146,7 @@ button.tmbutton:disabled:hover {
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row > a:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row > a:hover {

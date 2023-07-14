@@ -1,20 +1,22 @@
 <app-toast-notification></app-toast-notification>
-<div class="config-management-wrapper flex flex-between">
+<div class="compliance-dashboard-wrapper flex flex-between">
   <div class="floating-widgets-section-full flex flex-col">
-      <div class="flex flex-between">
-        <app-page-title [title]="pageTitle"></app-page-title>
-        <div class='history-wrapper'>
+      <div class="floating-widgets-header admin-widgets-header flex flex-between">
+        <div>
+            <h6 class="title-text">{{pageTitle}}</h6>
+        </div>
+          <div class='history-wrapper'>
             <div class='input-box select-input' [class.disabled]='errorValue != 1 || transactionResponse.responseCount > 0' (click)='resetUserRemarks(); showDropdown = !showDropdown'>
                 <div class='History'>History</div>
                 <div class='filter-arrow absolute' [class.revert-arrow]='showDropdown'></div>
-        </div>
-      </div>
+            </div>
+          </div>
       </div>
         <div class="floating-widgets-section-content" [class.relative]='showDropdown'>
             <div class='page-overlay' *ngIf='showDropdown' (click)='resetUserRemarks(); showDropdown = false'></div>
             <div class='flex flex-row height-100' *ngIf="errorValue == 1">
                 <!-- *********** Application column wrapper starts here *********** -->
-                <div *ngIf='!showHistoryPreview' class="filter-outer-wrapper pointer">
+                <div *ngIf='!showHistoryPreview' class="filter-outer-wrapper pointer">               
                     <section class="filter-main-content flex flex-start relative" *ngIf="filterData">
                         <ng-container *ngIf="filterData.length > 0">
                             <div class="each-filter-column primary-column">
@@ -64,7 +66,7 @@
                     <!-- ************** Edit form wrapper starts here ************  -->
                   <div class='flex flex-col property-wrapper'>
                     <div class='each-property-wrapper overflow-auto' [class.height-100]='editData && editData.properties && editData.properties.length === 0'>
-                        <div [class.each-property]='editData.properties.length > 0 ||  overiddenData.length > 0 || formData.length || overrideFormData.length'
+                        <div [class.each-property]='editData.properties.length > 0 ||  overiddenData.length > 0 || formData.length || overrideFormData.length' 
                                 [class.single-property]='editData.properties.length === 0 && showPreview' [class.margin-bottom]='showUserRemarks' *ngIf='editData && editProperty && !showHistoryPreview'>
                             <div class='flex flex-between property-name'>
                                 <div class='app-name'>{{editData.name}}</div>
@@ -91,12 +93,12 @@
                                                 <td>{{data.value}}</td>
                                                 <td>NA</td>
                                             </tr>
-                                        </ng-container>
+                                        </ng-container>                                       
                                     </table>
-                                </div>
+                                </div> 
                                 <div class='err-msg flex flex-center flex-align-center' *ngIf='editData.properties.length === 0 && overiddenData.length === 0'>
                                     There are no configurations updated.
-                                </div>
+                                </div>                            
                             </div>
                             <!-- ************** specific to Edited form preview ends here ************  -->
                             <!-- ************** specific to Edit form starts here ************  -->
@@ -119,7 +121,7 @@
                                                 <div class="edit-fields-container each-field" *ngFor='let inputs of overrideFormData'>
                                                     <div class="edit-fields-wrapper">
                                                         <app-forms [metadata]='inputs.metadata' [parentForm]="configManagementForm" formControlName="{{inputs.formControlName}}" [id]="inputs.formControlName" [inputLabel]="inputs.formControlDisplayName" [placeHolderValue]="inputs.formControlDisplayName" [formErrors]="formErrors"></app-forms>
-                                                    </div>
+                                                    </div>                                                
                                                     <div *ngIf='editProperty && activeColumn > 1' class='override' (click)='onDeleteNotSavedField("overidden", inputs)'>remove</div>
                                                 </div>
                                             </div>
@@ -156,13 +158,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div [class.each-property]='secondaryLevelData.properties.length > 0' *ngIf='!showPreview && !showHistoryPreview && secondaryLevelData && secondaryLevelData.properties && (activeColumn === 2 || activeColumn === 3) && editColumnIndex !== 2 '>
+                        <div [class.each-property]='secondaryLevelData.properties.length > 0' *ngIf='!showPreview && !showHistoryPreview && secondaryLevelData && secondaryLevelData.properties && (activeColumn === 2 || activeColumn === 3) && editColumnIndex !== 2 '>        
                             <div class='flex flex-between property-name'>
                                     <div class='app-name'>{{secondaryLevelData.name}}</div>
                                 <div *ngIf='editProperty === false && activeColumn === 2' class='edit-property' (click)='editProperty = true; buildForm(secondaryLevelData, 2)'>Edit</div>
                             </div>
                             <div class='property-content' *ngIf='secondaryLevelData.properties.length > 0'>
-                                <div class='each-field' *ngFor ='let data of secondaryLevelData.properties; let l = index'>
+                                <div class='each-field' *ngFor ='let data of secondaryLevelData.properties; let l = index'>              
                                     <div class='flex flex-row flex-start property-label'>
                                         <div class='property-key' [class.child-active-key]='editProperty && activeColumn > 2'>{{data.key}}</div>
                                         <div class='info-icon' [class.child-active-info]='editProperty && activeColumn > 2' *ngIf='data.description'>
@@ -191,7 +193,7 @@
                                 <div class='edit-property'  *ngIf='editProperty === false && activeColumn === 1' (click)='editProperty = true; buildForm(firstLevelData, 1)'>Edit</div>
                             </div>
                             <div class='property-content' *ngIf='firstLevelData.properties.length > 0'>
-                                <div class='each-field' *ngFor ='let data of firstLevelData.properties'>
+                                <div class='each-field' *ngFor ='let data of firstLevelData.properties'>              
                                     <div class='flex flex-row flex-start property-label'>
                                         <div class='property-key' [class.child-active-key]='editProperty && activeColumn > 1'>{{data.key}}</div>
                                         <div class='info-icon'  [class.child-active-info]='editProperty && activeColumn > 1' *ngIf='data.description'>
@@ -241,7 +243,7 @@
                             </div>
                         </div>
                         <!-- **************** History preview starts here ************-->
-
+                        
                         <div class='each-property' *ngIf='showHistoryPreview'>
                                 <div class='history-preview-wrapper overflow-auto' *ngFor='let property of historyPreview.configPropertyChangeList' >
                                     <div class='flex flex-between property-name'>
@@ -259,7 +261,7 @@
                                                         <td>{{data.configKey}}</td>
                                                         <td>{{data.newConfigValue}}</td>
                                                         <td>{{data.oldConfigValue}}</td>
-                                                    </tr>
+                                                    </tr>                                      
                                                 </table>
                                             </div>
                                     </div>
@@ -296,7 +298,7 @@
             </div>
             <div *ngIf="errorValue == 10" class="flex flex-col flex-center flex-align-center height-100">
                 <div class="circle-loader"></div>
-            </div>
+            </div>            
         </div>
     </div>
 </div>

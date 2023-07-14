@@ -34,25 +34,22 @@
 
 <ng-template #createEditUserRef>
     <div class="dialog-body">
-        <div [class.isDisabled]="action=='Edit'">
-            <mat-form-field appearance="outline" class="email-wrapper" [formControl]="emailControl">
-                <mat-label>Email ID</mat-label>
-                <input autocomplete="off" matInput required
-                    [(ngModel)]="emailID">
-            </mat-form-field>
-            <div class="flex flex-align-center gap-12" *ngIf="action!='Edit'">
-                <mat-form-field appearance="outline" class="email-wrapper" [formControl]="firstNameControl">
-                    <mat-label>First Name</mat-label>
-                    <input autocomplete="off" matInput required
-                        [(ngModel)]="firstName">
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="email-wrapper" [formControl]="lastNameControl">
-                    <mat-label>Last Name</mat-label>
-                    <input autocomplete="off" matInput required
-                        [(ngModel)]="lastName">
-                </mat-form-field>
-            </div>
-        </div>
+        <form class="form-wrapper" [formGroup]="userForm">
+                <app-input-field [parentForm]="userForm" formControlName="emailID" label="Email ID" 
+                placeholder="Enter User Email" [(value)]="emailID" [height] = "'30px'" type="email"
+                [formErrors]="userFormErrors" [isRequired]="true" [isDisabled]="action=='Edit'">
+                </app-input-field>
+                <div class="names-wrapper flex flex-align-center gap-12" *ngIf="action!='Edit'">
+                    <app-input-field [parentForm]="userForm" formControlName="firstName" [label]="'First Name'" 
+                                    placeholder="Enter First Name" [(value)]="firstName" [height] = "'30px'"
+                                    [formErrors]="userFormErrors" [isRequired]="true">
+                    </app-input-field>
+                    <app-input-field [parentForm]="userForm" formControlName="lastName" [label]="'Last Name'" 
+                    placeholder="Enter Last Name" [(value)]="lastName" [height] = "'30px'"
+                    [formErrors]="userFormErrors" [isRequired]="true">
+                    </app-input-field>
+                </div>
+        </form>
         <app-dropdown [items]="userRoles" placeholder="Role" [isChipListEnabled]="true" 
         [nonRemovableChips]="nonRemovableChips" [selectedList]="selectedRoles" [disableOptions]=true
         (applyClick)="onRolesChange($event)" (selected)="onRolesChange($event)"></app-dropdown>

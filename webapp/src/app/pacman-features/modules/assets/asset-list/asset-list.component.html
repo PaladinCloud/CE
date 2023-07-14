@@ -7,10 +7,12 @@
             *ngIf="breadcrumbLinks.length > 0"
             [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray"
-            [breadcrumbPresent]="breadcrumbPresent"
+            [breadcrumbPresent]="pageTitle"
         ></app-breadcrumb>
     </div>
-    <app-page-title [title]="pageTitle"></app-page-title>
+    <div class="flex">
+        <h6 class="title-text">{{ pageTitle }}</h6>
+    </div>
     <div class="data-table-container">
         <section>
             <ul>
@@ -50,6 +52,7 @@
                             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
                             [doLocalSort]="false"
                             [selectedRowIndex]="selectedRowIndex"
+                            [enableMultiValuedFilter]="true"
                         ></app-table>
                         <div class="data-table-desc">{{ dataTableDesc }}</div>
                     </div>

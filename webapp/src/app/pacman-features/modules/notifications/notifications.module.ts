@@ -26,10 +26,10 @@ import { PropValueLinkDirective } from './prop-value-link.directive';
         NotificationDetailsComponent,
         NotificationDetailsPipe,
         PaladinCloudViolationNotificationComponent,
-        PropTitleCasePipe,
         PropValueLinkDirective,
         RedhatAcsNotificationComponent,
         SeverityPipe,
+        PropTitleCasePipe
     ],
     imports: [CommonModule, SharedModule, NotificationsRoutingModule, NgxJsonViewerModule],
 })

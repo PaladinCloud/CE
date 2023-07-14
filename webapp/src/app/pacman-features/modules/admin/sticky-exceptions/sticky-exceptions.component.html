@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -13,11 +13,14 @@
  -->
 
  <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
-    <div class="flex flex-between">
-        <app-page-title [title]="pageTitle"></app-page-title>
+    <div class="padding-top"></div>
+    <div class="floating-widgets-header flex flex-between">
+        <div>
+          <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
+        </div>
         <div class="flex relative z-index textarea-button">
 
-            <button class="submit-btn uppercase" type="button" (click)='goToCreateRules()'><i class="fa fa-plus"></i> Create Exceptions</button>
+            <button class="submit-btn uppercase" type="button" (click)='goToCreateRules()'><i class="fa fa-plus"></i> Create Exemptions</button>
         </div>
     </div>
     <div class="floating-widgets-container data-table-container">
@@ -26,7 +29,7 @@
                 <li class="widget-wrapper relative">
                     <div class="relative">
                         <app-data-table [searchTextValues]=searchTxt [showGenericMessage]='showGenericMessage' [errorValue]='errorValue' [parentName]="'taggingTargetMessage'" [showingArr]='showingArr' [outerArr]='outerArr' [searchableHeader]='true' [allColumns]='allColumns'
-                            [dataHead]="'All Sticky Exceptions'" (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)'
+                            [dataHead]="'All Exemptions'" (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)'
                             (previousPageCalled)='prevPage()' (nextPageCalled)='nextPage()' (searchTriggerred)='callNewSearch()'>
                         </app-data-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>

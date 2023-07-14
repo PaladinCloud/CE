@@ -12,175 +12,175 @@
  * limitations under the License.
  -->
 
-<div class="sticky-exceptions-wrapper floating-widgets-section flex flex-col issue-listing-wrapper"
-    [class.filter-absent]='filters.length == 0'>
-    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px;">
-    <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [isCustomParentRoute]="true"
-        [parentRouteName]="'admin'" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
-    </div>
-    <div class="floating-widgets-header flex flex-between">
-        <div>
-            <!-- <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;"
-                src="../assets/icons/left-arrow.svg"> -->
-            <h1 class="title-text">{{pageTitle}}</h1>
-        </div>
-    </div>
-    <div class="floating-widgets-container ">
-        <section>
-            <ul>
-                <li class="widget-wrapper relative ">
-                    <div class="data-table-wrap relative ">
-                        <div class="sub-head ">
-                            <div class="flex flex-between flex-align-center ">
-                                <div class="sub-head-title capitalize flex flex-align-center after-load ">
-                                    <div class="header-text ">Asset Type Details</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div [hidden]="hideContent">
-                            <div class="data-content group-details">
-                                <div class="formcontainerwrapper">
-                                    <div class="asset-formctn">
-                                        <div class="formctnleft">
-                                            <div class="input-form">
-                                                <label>Select Domain *</label>
-                                                <app-dropdown [items]="allDomainDetails"
-                                                    (selected)='onSelectTargetTypeDomain($event)'
-                                                    [selectedItem]="targetTypes.domain"
-                                                    [placeholder]="'Select Asset Group'">
-                                                </app-dropdown>
-                                            </div>
-                                            <div class="input-form">
-                                                <label>Select Category *</label>
-                                                <app-dropdown [items]="allCategoryDetails"
-                                                    (selected)='onSelectTargetTypeCategory($event)'
-                                                    [selectedItem]="targetTypes.category"
-                                                    [placeholder]="'Select Category'">
-                                                </app-dropdown>
-                                            </div>
-                                            <div class="input-box">
-                                                <label>Display Name *</label>
-                                                <ul class="input-wrapper">
-                                                    <input type="text" name="displayName" class="inputarea-container" [(ngModel)]="targetTypes.displayName" placeholder="Enter Asset Type Display Name" autocomplete="off">
-                                                </ul>
-                                                <div class="validation-error-message" *ngIf="targetTypes.displayName.trim().length<5">Please enter min 5 characters</div>
-                                            </div>
-                                            <div class="bm10 input-box">
-                                                <label>Description *</label>
-                                                <ul>
-                                                    <textarea name="description" class="textarea-container " [(ngModel)]="targetTypes.desc" placeholder="Enter Asset Type Description"></textarea>
-                                                </ul>
-                                                <div class="validation-error-message" *ngIf="targetTypes.desc.trim().length<15">Please enter min 15 characters</div>
-                                            </div>
-
-                                        </div>
-                                        <div class="formctnright">
+ <div class="sticky-exceptions-wrapper floating-widgets-section flex flex-col issue-listing-wrapper"
+ [class.filter-absent]='filters.length == 0'>
+ <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px;">
+ <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [isCustomParentRoute]="true"
+     [parentRouteName]="'admin'" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+ </div>
+ <div class="floating-widgets-header flex flex-between">
+     <div>
+         <!-- <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;"
+             src="../assets/icons/left-arrow.svg"> -->
+         <h6 class="title-text">{{pageTitle}}</h6>
+     </div>
+ </div>
+ <div class="floating-widgets-container ">
+     <section>
+         <ul>
+             <li class="widget-wrapper relative ">
+                 <div class="data-table-wrap relative ">
+                     <div class="sub-head ">
+                         <div class="flex flex-between flex-align-center ">
+                             <div class="sub-head-title capitalize flex flex-align-center after-load ">
+                                 <div class="header-text ">Asset Type Details</div>
+                             </div>
+                         </div>
+                     </div>
+                     <div [hidden]="hideContent">
+                         <div class="data-content group-details">
+                             <div class="formcontainerwrapper">
+                                 <div class="asset-formctn">
+                                     <div class="formctnleft">
                                          <div class="input-form">
-                                                <label>Data Source *</label>
-                                                <app-dropdown [items]="datasourceDetails"
-																									(selected)='onSelectDataSource($event)'												
-												[selectedItem]="targetTypes.dataSource" 
-												placeholder="'Select Datasource'">
-                                                 </app-dropdown>
-                                            </div>
+                                             <label>Select Domain *</label>
+                                             <app-dropdown [items]="allDomainDetails"
+                                                 (selected)='onSelectTargetTypeDomain($event)'
+                                                 [selectedItem]="targetTypes.domain"
+                                                 [placeholder]="'Select Asset Group'">
+                                             </app-dropdown>
+                                         </div>
+                                         <div class="input-form">
+                                             <label>Select Category *</label>
+                                             <app-dropdown [items]="allCategoryDetails"
+                                                 (selected)='onSelectTargetTypeCategory($event)'
+                                                 [selectedItem]="targetTypes.category"
+                                                 [placeholder]="'Select Category'">
+                                             </app-dropdown>
+                                         </div>
+                                         <div class="input-box">
+                                             <label>Display Name *</label>
+                                             <ul class="input-wrapper">
+                                                 <input type="text" name="displayName" class="inputarea-container" [(ngModel)]="targetTypes.displayName" placeholder="Enter Asset Type Display Name" autocomplete="off">
+                                             </ul>
+                                             <div class="validation-error-message" *ngIf="targetTypes.displayName.trim().length<5">Please enter min 5 characters</div>
+                                         </div>
+                                         <div class="bm10 input-box">
+                                             <label>Description *</label>
+                                             <ul>
+                                                 <textarea name="description" class="textarea-container " [(ngModel)]="targetTypes.desc" placeholder="Enter Asset Type Description"></textarea>
+                                             </ul>
+                                             <div class="validation-error-message" *ngIf="targetTypes.desc.trim().length<15">Please enter min 15 characters</div>
+                                         </div>
 
-                                             <div class="input-box" *ngIf="isCreate">
-                                                <label>Asset Type Name *</label>
-                                                <ul class="input-wrapper">
-                                                    <input type="text" name="type" class="inputarea-container"
-                                                        [(ngModel)]="targetTypes.name"
-                                                        placeholder="Enter Asset Type Name" autocomplete="off">
-                                                </ul>
-                                                <div class="validation-error-message" *ngIf="targetTypes.name.trim().length<5">Please enter min 5 characters</div>
-                                            </div>
+                                     </div>
+                                     <div class="formctnright">
+                                      <div class="input-form">
+                                             <label>Data Source *</label>
+                                             <app-dropdown [items]="datasourceDetails"
+                                                                                                 (selected)='onSelectDataSource($event)'												
+                                             [selectedItem]="targetTypes.dataSource" 
+                                             placeholder="'Select Datasource'">
+                                              </app-dropdown>
+                                         </div>
 
-                                            <div class="input-box" *ngIf="!isCreate">
-                                                <label>Asset Type Name *</label>
-                                                <div class="text-value">{{targetTypes.name}}</div>
-                                            </div>
-											 
-                                            <div class="bm10 input-box">
-                                                <label>Config *</label>
-                                                <ul>
-                                                    <textarea name="description" class="textarea-container "
-                                                        [(ngModel)]="targetTypes.config"
-                                                        placeholder="Enter Asset Type Config"></textarea>
-                                                </ul>
-                                                <div class="validation-error-message" *ngIf="targetTypes.config.trim().length<15">Please enter min 15 characters</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                          <div class="input-box" *ngIf="isCreate">
+                                             <label>Asset Type Name *</label>
+                                             <ul class="input-wrapper">
+                                                 <input type="text" name="type" class="inputarea-container"
+                                                     [(ngModel)]="targetTypes.name"
+                                                     placeholder="Enter Asset Type Name" autocomplete="off">
+                                             </ul>
+                                             <div class="validation-error-message" *ngIf="targetTypes.name.trim().length<5">Please enter min 5 characters</div>
+                                         </div>
 
-                            <div class="data-table-paginator-wrap flex flex-center flex-align-center">
-                                <a class="save-container flex flex-row-reverse" *ngIf="isCreate">
-                                    <button class="submit-btn uppercase" (click)="createTargetType(targetTypes)" [disabled]="targetTypes.name.trim().length<5 || targetTypes.desc.trim().length<15 || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config.trim().length<15"><i class="fa fa-check"></i> CREATE</button>
-                                </a>
-                                <a class="save-container flex flex-row-reverse" *ngIf="!isCreate">
-                                    <button class="submit-btn uppercase" (click)="updateTargetType(targetTypes)" [disabled]="targetTypes.name.trim().length<5 || targetTypes.desc.trim().length<15 || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config.trim().length<15"><i class="fa fa-check"></i> UPDATE</button>
-                                </a>
-                                <a class="save-container flex flex-row-reverse">
-                                    <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i
-                                            class="fa fa-remove"></i> CANCEL</button>
-                                </a>
-                            </div>
-                        </div>
+                                         <div class="input-box" *ngIf="!isCreate">
+                                             <label>Asset Type Name *</label>
+                                             <div class="text-value">{{targetTypes.name}}</div>
+                                         </div>
+                                          
+                                         <div class="bm10 input-box">
+                                             <label>Config *</label>
+                                             <ul>
+                                                 <textarea name="description" class="textarea-container "
+                                                     [(ngModel)]="targetTypes.config"
+                                                     placeholder="Enter Asset Type Config"></textarea>
+                                             </ul>
+                                             <div class="validation-error-message" *ngIf="targetTypes.config.trim().length<15">Please enter min 15 characters</div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
 
-                        <div class="pacman-alert" *ngIf="isTargetTypeCreationUpdationFailed">
-                            <div class="sa-icon sa-error animateErrorIcon" style="display: block;">
-                                <span class="sa-x-mark animateXMark">
-                                    <span class="sa-line sa-left"></span>
-                                    <span class="sa-line sa-right"></span>
-                                </span>
-                            </div>
-                            <div class="pacman-alert-title">
-                                {{failedTitle}}
-                            </div>
-                            <div class="pacman-alert-message">
-                                {{loadingContent}} <span class="highlight-pink">{{highlightName}}</span> failed!!!
-                            </div>
-                            <div class="pacman-alert-button">
-                                <button class="submit-btn uppercase" type="button" (click)="closeErrorMessage()"><span
-                                        *ngIf="failedTitle!=='Loading Failed'"><i class="fa fa-remove"></i> CLOSE</span>
-                                    <span *ngIf="failedTitle==='Loading Failed'"><i class="fa fa-refresh"></i>
-                                        RETRY</span></button>
-                            </div>
-                        </div>
-                        <div class="pacman-alert" *ngIf="isTargetTypeCreationUpdationSuccess">
-                            <div class="sa-icon sa-success animate">
-                                <span class="sa-line sa-tip animateSuccessTip"></span>
-                                <span class="sa-line sa-long animateSuccessLong"></span>
-                                <div class="sa-placeholder"></div>
-                                <div class="sa-fix"></div>
-                            </div>
+                         <div class="data-table-paginator-wrap flex flex-center flex-align-center">
+                             <a class="save-container flex flex-row-reverse" *ngIf="isCreate">
+                                 <button class="submit-btn uppercase" (click)="createTargetType(targetTypes)" [disabled]="targetTypes.name.trim().length<5 || targetTypes.desc.trim().length<15 || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config.trim().length<15"><i class="fa fa-check"></i> CREATE</button>
+                             </a>
+                             <a class="save-container flex flex-row-reverse" *ngIf="!isCreate">
+                                 <button class="submit-btn uppercase" (click)="updateTargetType(targetTypes)" [disabled]="targetTypes.name.trim().length<5 || targetTypes.desc.trim().length<15 || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config.trim().length<15"><i class="fa fa-check"></i> UPDATE</button>
+                             </a>
+                             <a class="save-container flex flex-row-reverse">
+                                 <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i
+                                         class="fa fa-remove"></i> CANCEL</button>
+                             </a>
+                         </div>
+                     </div>
 
-                            <div class="pacman-alert-title">
-                                {{successTitle}}
-                            </div>
-                            <div class="pacman-alert-message">
-                                Asset Type <span class="highlight-pink">{{selectedTargetTypeName}}</span> has been
-                                successfully <span *ngIf="isCreate">created</span><span *ngIf="!isCreate">updated</span>
-                                !!!
-                            </div>
-                            <div class="pacman-alert-button">
-                                <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i
-                                        class="fa fa-remove"></i> CLOSE</button>
-                            </div>
-                        </div>
-                        <div class="pacman-progress" *ngIf="targetTypeLoader">
-                            <app-pacman-loader></app-pacman-loader>
-                            <div class="title">
-                                Please Wait...
-                            </div>
-                            <div class="pacman-alert-message">
-                                <span class="highlight-pink">{{highlightName}}</span> {{loadingContent}} is in
-                                progress...
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </section>
-    </div>
+                     <div class="pacman-alert" *ngIf="isTargetTypeCreationUpdationFailed">
+                         <div class="sa-icon sa-error animateErrorIcon" style="display: block;">
+                             <span class="sa-x-mark animateXMark">
+                                 <span class="sa-line sa-left"></span>
+                                 <span class="sa-line sa-right"></span>
+                             </span>
+                         </div>
+                         <div class="pacman-alert-title">
+                             {{failedTitle}}
+                         </div>
+                         <div class="pacman-alert-message">
+                             {{loadingContent}} <span class="highlight-pink">{{highlightName}}</span> failed!!!
+                         </div>
+                         <div class="pacman-alert-button">
+                             <button class="submit-btn uppercase" type="button" (click)="closeErrorMessage()"><span
+                                     *ngIf="failedTitle!=='Loading Failed'"><i class="fa fa-remove"></i> CLOSE</span>
+                                 <span *ngIf="failedTitle==='Loading Failed'"><i class="fa fa-refresh"></i>
+                                     RETRY</span></button>
+                         </div>
+                     </div>
+                     <div class="pacman-alert" *ngIf="isTargetTypeCreationUpdationSuccess">
+                         <div class="sa-icon sa-success animate">
+                             <span class="sa-line sa-tip animateSuccessTip"></span>
+                             <span class="sa-line sa-long animateSuccessLong"></span>
+                             <div class="sa-placeholder"></div>
+                             <div class="sa-fix"></div>
+                         </div>
+
+                         <div class="pacman-alert-title">
+                             {{successTitle}}
+                         </div>
+                         <div class="pacman-alert-message">
+                             Asset Type <span class="highlight-pink">{{selectedTargetTypeName}}</span> has been
+                             successfully <span *ngIf="isCreate">created</span><span *ngIf="!isCreate">updated</span>
+                             !!!
+                         </div>
+                         <div class="pacman-alert-button">
+                             <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i
+                                     class="fa fa-remove"></i> CLOSE</button>
+                         </div>
+                     </div>
+                     <div class="pacman-progress" *ngIf="targetTypeLoader">
+                         <app-pacman-loader></app-pacman-loader>
+                         <div class="title">
+                             Please Wait...
+                         </div>
+                         <div class="pacman-alert-message">
+                             <span class="highlight-pink">{{highlightName}}</span> {{loadingContent}} is in
+                             progress...
+                         </div>
+                     </div>
+                 </div>
+             </li>
+         </ul>
+     </section>
+ </div>
 </div>

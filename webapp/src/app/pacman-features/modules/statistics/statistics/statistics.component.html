@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
-<div #statisticsContainer class="statistics-container flex flex-col">
+ <div #statisticsContainer class="statistics-container flex flex-col">
     <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
     <div *ngIf="!errorMessage" class="stats-tiles-container">
         <img id="watermark" src="/assets/icons/paladin-logo.svg" hidden />
@@ -37,7 +37,7 @@
 
             <div
                 class="company-logo"
-                [style.background-image]="'url(/assets/icons/company-icon.svg)'"
+                [style.background-image]="'url('+companyIcon+')'"
             ></div>
         </div>
 
@@ -78,15 +78,15 @@
         <app-statistics-tile
             title="Available Auto Fixes"
             icon="policies-star-badge"
-            [counter]="numberOfPolicyWithAutoFixes"
+            [counter]="numberOfPolicyWithAutoFixesAvailable"
             [isLoading]="showLoader"
         >
         </app-statistics-tile>
 
         <app-statistics-tile
-            title="Auto Fixes Applied"
+            title="Enabled Auto Fixes"
             icon="Rocket"
-            [counter]="totalAutoFixesApplied"
+            [counter]="numberOfPolicyWithAutoFixesEnabled"
             [isLoading]="showLoader"
         >
         </app-statistics-tile>
