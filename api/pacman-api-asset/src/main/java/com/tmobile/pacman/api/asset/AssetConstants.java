@@ -24,6 +24,7 @@ public final class AssetConstants {
         
     }
 
+    public static final String UNKNOWN = "unknown";
     public static final String TRUE = "true";
     public static final String FILTER_UNTAGGED = "untagged";
 
@@ -87,6 +88,8 @@ public final class AssetConstants {
     public static final String CREATED_BY = "createdBy";
     public static final String EMAIL = "email";
     public static final String USERNAME = "username";
+
+    public static final String LATEST = "latest";
     public static final String TOTAL_COST = "totalCost";
     public static final String MANAGED_BY = "managedBy";
     public static final String FIELDNAME = "fieldName";

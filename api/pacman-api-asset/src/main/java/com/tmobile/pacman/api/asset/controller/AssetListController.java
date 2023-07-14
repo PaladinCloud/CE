@@ -17,10 +17,7 @@ package com.tmobile.pacman.api.asset.controller;
 
 import com.google.common.base.Strings;
 import com.tmobile.pacman.api.asset.AssetConstants;
-import com.tmobile.pacman.api.asset.domain.Request;
-import com.tmobile.pacman.api.asset.domain.ResponseWithCount;
-import com.tmobile.pacman.api.asset.domain.ResponseWithEditableFields;
-import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
+import com.tmobile.pacman.api.asset.domain.*;
 import com.tmobile.pacman.api.asset.service.AssetService;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
@@ -562,5 +559,13 @@ public class AssetListController {
     private boolean isEC2OrOnPremServer(Map<String, String> filter) {
         return Constants.EC2.equals(filter.get(AssetConstants.FILTER_RES_TYPE))
                 || Constants.ONPREMSERVER.equals(filter.get(AssetConstants.FILTER_RES_TYPE));
+    }
+
+    @PostMapping(value = "/v1/getAssetFilterValue/{attribute}")
+    public ResponseEntity<Object> getExemptFilterValue(@PathVariable String attribute, @RequestBody FilterRequest request) {
+        if (request == null || Strings.isNullOrEmpty(request.getAg())) {
+            return ResponseUtils.buildFailureResponse(new Exception("Asset group is Mandatory"));
+        }
+        return ResponseUtils.buildSucessResponse(assetService.getAssetExemptedFilterValue(request, attribute));
     }
 }

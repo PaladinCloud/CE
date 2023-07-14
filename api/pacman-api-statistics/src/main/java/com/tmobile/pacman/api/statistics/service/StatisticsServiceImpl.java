@@ -92,7 +92,9 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
 
     private String numberOfPolicyEvaluations;
 
-    private int numberOfPolicyWithAutoFixes;
+    private int numberOfPolicyWithAutoFixesEnabled;
+    private int numberOfPolicyWithAutoFixesAvailable;
+
 
     /*
      * (non-Javadoc)
@@ -217,7 +219,10 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
              numberOfPolicyEvaluations = getNumberOfPolicyEvaluations();
             });
             executor.execute(() -> {
-             numberOfPolicyWithAutoFixes = getNumberOfPolicyWithAutoFixes();
+                numberOfPolicyWithAutoFixesEnabled = getNumberOfPolicyWithAutoFixesEnabled();
+            });
+            executor.execute(() -> {
+                numberOfPolicyWithAutoFixesAvailable = getNumberOfPolicyWithAutoFixesAvailable();
             });
             executor.shutdown();
             while (!executor.isTerminated()) {
@@ -237,7 +242,9 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
             // 5. No of polices Evaluated from Fre-stats
             data.put("numberOfPolicyEvaluations", numberOfPolicyEvaluations);
             // 6. Auto Fix
-            data.put("numberOfPolicyWithAutoFixes", numberOfPolicyWithAutoFixes);
+            data.put("numberOfPolicyWithAutoFixesAvailable", numberOfPolicyWithAutoFixesAvailable);
+            data.put("numberOfPolicyWithAutoFixesEnabled", numberOfPolicyWithAutoFixesEnabled);
+
             //data.put("totalAutoFixesApplied", totalAutofixapplied);
             data.put("totalViolations", violationsMap);
             // 6. Stats
@@ -462,10 +469,21 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
         return numberOfPolicyEvaluations;
     }
 
-    private int getNumberOfPolicyWithAutoFixes() {
+    private int getNumberOfPolicyWithAutoFixesEnabled() {
         int numberOfPolicyWithAutoFixes = 0;
         try {
-            numberOfPolicyWithAutoFixes = repository.getAutofixRulesFromDb().size();
+            numberOfPolicyWithAutoFixes = repository.getAutofixEnabled().size();
+        } catch (DataException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        return numberOfPolicyWithAutoFixes;
+    }
+
+    private int getNumberOfPolicyWithAutoFixesAvailable() {
+        int numberOfPolicyWithAutoFixes = 0;
+        try {
+            numberOfPolicyWithAutoFixes = repository.getAutofixAvailable().size();
         } catch (DataException e) {
             LOGGER.error(e.getMessage());
             Thread.currentThread().interrupt();

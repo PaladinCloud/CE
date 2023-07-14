@@ -213,13 +213,25 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
     }
 
     @Override
-    public List<Map<String, Object>> getAutofixRulesFromDb() throws DataException{
+    public List<Map<String, Object>> getAutofixEnabled() throws DataException{
         try {
 
             String query="SELECT * FROM cf_PolicyTable WHERE `status`='ENABLED' AND IFNULL(autoFixAvailable,'false')='true' AND IFNULL(autoFixEnabled,'false')='true'";
             return rdsepository.getDataFromPacman(query);
         } catch (Exception e) {
-            LOGGER.error("Error @ StatisticsRepositoryImpl/ getAutofixPolicesFromDb ", e);
+            LOGGER.error("Error @ StatisticsRepositoryImpl/ getAutofixEnabled ", e);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> getAutofixAvailable() throws DataException{
+        try {
+
+            String query="SELECT * FROM cf_PolicyTable WHERE `status`='ENABLED' AND IFNULL(autoFixAvailable,'false')='true'";
+            return rdsepository.getDataFromPacman(query);
+        } catch (Exception e) {
+            LOGGER.error("Error @ StatisticsRepositoryImpl/ getAutofixAvailable ", e);
             return new ArrayList<>();
         }
     }
@@ -256,7 +268,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
-            JsonArray outerBuckets = aggsJson.getAsJsonObject("POICYID").getAsJsonArray(BUCKETS);
+            JsonArray outerBuckets = aggsJson.getAsJsonObject("POLICYID").getAsJsonArray(BUCKETS);
             Arrays.asList(outerBuckets);
             Gson googleJson = new Gson();
            return googleJson.fromJson(outerBuckets, ArrayList.class); 

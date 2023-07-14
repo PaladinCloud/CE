@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.api.asset.domain.FilterRequest;
 import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
 import com.tmobile.pacman.api.commons.exception.DataException;
@@ -537,5 +538,7 @@ public interface AssetService {
     public List<Map<String, Object>> getValuesByTag(String aseetGroupName, String tag,String type) throws DataException;
 
     public Set<String> getSupportedFilters(String filterName);
+
+    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
 
 }

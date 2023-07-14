@@ -16,10 +16,12 @@
 package com.tmobile.pacman.api.asset.service;
 
 import com.amazonaws.auth.BasicSessionCredentials;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.*;
 import com.tmobile.pacman.api.asset.AssetConstants;
 import com.tmobile.pacman.api.asset.client.ComplianceServiceClient;
+import com.tmobile.pacman.api.asset.domain.FilterRequest;
 import com.tmobile.pacman.api.asset.domain.Request;
 import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
 import com.tmobile.pacman.api.asset.enums.DefaultAssetGroup;
@@ -53,6 +55,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +65,12 @@ import java.util.stream.Collectors;
 public class AssetServiceImpl implements AssetService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AssetServiceImpl.class);
+
+    private static final String DELIMITER_SINGLE_QUOTE = "'";
+    private static final String DELIMITER_COMA = ",";
+
+    private static final String TYPE = "type";
+
 
     @Autowired
     private AssetRepository repository;
@@ -584,8 +593,36 @@ public class AssetServiceImpl implements AssetService {
         } catch (Exception e) {
             LOGGER.error("Error Fetching created info for resrouce " + resourceId, e);
         }
+
+        Set<String> mandatoryTags = getMandatoryTagsNames(AssetConstants.ASSETLISTING);
+        for(String mandatoryTag : mandatoryTags){
+            if(!tagsKvPairs.containsKey(mandatoryTag)){
+                tagsKvPairs.put(mandatoryTag, AssetConstants.UNKNOWN);
+            }
+        }
         assetDetailMap.put("tags", tagsKvPairs);
         assetDetailMap.put("attributes", attributesList);
+
+         /* If cloudProvider is aws, then we can have sg as one of resource type. We derive below additional details of security group(sg) from
+        sg_rules index type.
+        */
+
+        if("sg".equalsIgnoreCase(resourceType)){
+            List<Map<String, Object>> childResourceDetailsList = new ArrayList<>();
+            childResourceDetailsList = repository.getChildResourceDetailByDocId(ag,"",resourceData.get(Constants.DOCID).toString());
+            if(!childResourceDetailsList.isEmpty()){
+                childResourceDetailsList.stream().forEach(map -> {
+                    map.keySet().retainAll(Arrays.asList("fromport", "toport", "cidrip", "type"));
+                    if(Strings.isNullOrEmpty((String) map.get("fromport"))){
+                        map.put("fromport","All");
+                    }
+                    if(Strings.isNullOrEmpty((String) map.get("toport"))){
+                        map.put("toport","All");
+                    }
+                });
+            }
+            assetDetailMap.put("sg_rules",childResourceDetailsList);
+        }
 
         return assetDetailMap;
     }
@@ -988,8 +1025,21 @@ public class AssetServiceImpl implements AssetService {
     }
 
     private List<String> getDomains(String assetGroup) {
-        List<Map<String, Object>> domains = repository.getDomainsByAssetGroup(assetGroup);
         List<String> domainsList = new ArrayList<>();
+        List<String> targetTypesList = new ArrayList<>();
+        List<Map<String, Object>> targetTypes = repository.getTargetTypesByAssetGroup(assetGroup,
+                StringUtils.EMPTY, StringUtils.EMPTY);
+        targetTypes.forEach(row -> {
+            if (!Objects.isNull(row.get(TYPE))) {
+                targetTypesList.add(String.valueOf(row.get(TYPE)));
+            }
+        });
+        if (targetTypesList.isEmpty()) {
+            return domainsList;
+        }
+        Function<String, String> addQuotes = str -> DELIMITER_SINGLE_QUOTE + str + DELIMITER_SINGLE_QUOTE;
+        String allTargetTypes = targetTypesList.stream().map(addQuotes).collect(Collectors.joining(DELIMITER_COMA));
+        List<Map<String, Object>> domains = repository.getDomainsByTargetTypes(allTargetTypes);
         if (!domains.isEmpty()) {
             domainsList = domains.stream().map(obj -> obj.get(Constants.DOMAIN).toString())
                     .collect(Collectors.toList());
@@ -1196,7 +1246,11 @@ public class AssetServiceImpl implements AssetService {
     public Set<String> getSupportedFilters(String filterName) {
         return repository.getSupportedFilters(filterName);
     }
-    
+
+    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest filter, String attribute){
+        return repository.getAssetExemptedFilterValue(filter, attribute);
+    }
+
 
     public Set<String> getMandatoryTagsNames(String filterName) {
         return repository.getMandatoryTagsNames(filterName);

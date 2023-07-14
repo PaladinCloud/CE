@@ -170,7 +170,7 @@ public class AssetCountController {
 
     response.put("ag", assetGroup);
     response.put(AssetConstants.ASSET_TYPE, exemptedAssetTypes);
-    response.put(AssetConstants.TOTAL_ASSETS, exemptedAssetCount);
+    response.put(AssetConstants.TOTAL_ASSETS, exemptedAssetCount.isPresent() ? exemptedAssetCount : countMap.size());
     return ResponseUtils.buildSucessResponse(response);
     }
 }
