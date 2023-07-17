@@ -1561,8 +1561,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             if (domain.equals(SOX)) {
                 issue.put(ENV, sourceMap.get(ENV));
             }
-            populateViolationAge(sourceMap, issue);
-
 
             nonDisplayable.put(POLICY_DISPLAY_ID, sourceMap.get(POLICYID));
             issue.put("nonDisplayableAttributes", nonDisplayable);
@@ -1570,41 +1568,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         return issueList;
     }
-
-    private void populateViolationAge(Map<String, Object> sourceMap, LinkedHashMap<String, Object> issue) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
-        String createdDate=(String) sourceMap.get(CREATED_DATE);
-        try {
-            Date createDateObj=dateFormatter.parse(createdDate);
-            Date current = new Date();
-            long diffInMillies = Math.abs(current.getTime() - createDateObj.getTime());
-            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-            if (diff>0) {
-                issue.put(AGE, diff+" Days");
-            }else{
-                //Violation age less than a day, send age in hours
-                diff = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                if(diff>0){
-                    issue.put(AGE,diff+ " Hours");
-                }else{
-                    //Violation age less than an hour, send age in minutes
-                    diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                    if(diff>0){
-                        issue.put(AGE,diff+ " Minutes");
-                    }else{
-                        //Violation age less than a minute, send age in seconds
-                        diff = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                        issue.put(AGE,diff+ " Seconds");
-                    }
-                }
-
-            }
-        } catch (ParseException e) {
-            logger.error(e);
-        }
-    }
-
-
 
     /*
      * (non-Javadoc)

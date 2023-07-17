@@ -230,7 +230,7 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
             }
             body = body.substring(0, body.length() - 1);
             body = body + "]";
-            body = body + ",\"minimum_should_match\":1";
+            body = body + ",\"minimum_should_match\":\"1\"";
         }
         body = body
                 + "}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"targetType.keyword\",\"size\":1000}}}}";
