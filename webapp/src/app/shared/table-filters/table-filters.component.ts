@@ -47,7 +47,7 @@ export class TableFiltersComponent implements OnInit {
             }, {});
             return;
         }
-        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, optionDict);
+        this.appliedFiltersDict = merge({}, {}, optionDict);
     }
 
     get appliedFilters() {
