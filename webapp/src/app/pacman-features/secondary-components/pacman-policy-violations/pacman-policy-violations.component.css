@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.policy-violations-container {
+ .policy-violations-container {
   border-radius: var(--border-radius);
   background-color: var(--background-white);
   min-height: 10em;
@@ -40,4 +40,9 @@
   border-top-left-radius: var(--border-radius);
   border-top-right-radius: var(--border-radius);
   border-bottom: 2px solid var(--border-100);
+}
+
+.table-wrapper{
+  position: relative;
+  height: 300px;
 }

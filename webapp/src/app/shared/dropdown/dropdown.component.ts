@@ -29,6 +29,7 @@ export class DropdownComponent implements OnChanges {
   @Input() buttonLabel;
   @Input() dropdownTitle;
   @Input() sortValues = false;
+  @Input() nonRemovableChips = [];
 
   @Output() selected = new EventEmitter();
   @Output() applyClick = new EventEmitter();
@@ -159,7 +160,7 @@ export class DropdownComponent implements OnChanges {
   }
 
   handleSelection(e){
-    e.stopPropagation()
+    this.matSelectRef.close();
     this.applyClick.emit(this.listControl.value);
   }
 
@@ -178,13 +179,22 @@ export class DropdownComponent implements OnChanges {
   }
 
   disableOption(option:string){
+  if(this.nonRemovableChips.length>0){
+    for(let nonRemovableChip of this.nonRemovableChips){
+      if(nonRemovableChip == option){
+        return true;
+      }
+    }
+  } else{
     if(!this.selectedList) return false;
     for(let selectedOption of this.selectedList){
       if(selectedOption == option && this.selectedOption != option){
         return true;
       }
     }
+  }
     return false;
   }
 
 }
+

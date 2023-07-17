@@ -1,10 +1,30 @@
-<div #graphContainer class="multiline-graph-container" id="{{id}}">
-     <ul *ngIf="showLegend" class="flex flex-row flex-center flex-wrap">
-        <li *ngFor="let line of graphData; let i = index;" class="flex flex-align-center">
-            <div class="legend-color" [ngStyle]="{'background-color': lineColorsObject[line.key.split('-')[0]] || lineColorsObject[lineColorsArray[i]] }"></div>
-            <div class="flex flex-col flex-center legend-text capitalize">{{line.key.split("-")[0]}}</div>
-        </li>
-    </ul>
+<div [class.loader]="graphLinesData.length==0 && errorMessage==''"></div>
+<app-error-message *ngIf="errorMessage"
+    [selectedValue]="errorMessage"></app-error-message>
+ <div *ngIf="graphLinesData" #graphContainer class="multiline-graph-container" id="{{id}}">
+     <div class="flex nowrap-ellipsis gap-16" style="padding: 0px 20px;">
+         <ul *ngIf="showLegend" style="flex-grow: 1;" class="flex flex-row nowrap-ellipsis flex-wrap" [class.flex-center]="multiSelectForm.value.length<6">
+            <li [title]="line.split('-')[0]" (click)="handleLegendClick(line.split('-')[0])" *ngFor="let line of multiSelectForm.value; let i = index;" class="flex flex-align-center pointer nowrap-ellipsis">
+                <div class="legend-color" [ngStyle]="{'background-color': lineColorsObject[line.split('-')[0]?.toLowerCase()] || lineColorsObject[lineColorsArray[i]?.toLowerCase()] }"></div>
+                <div class="legend-text capitalize nowrap-ellipsis">{{line.split("-")[0]}}</div>
+            </li>
+        </ul>
+        <mat-form-field *ngIf="allLines.length>numberOfLinesToDisplay">
+            <mat-select [formControl]="multiSelectForm" multiple>
+                <mat-select-trigger class="line-selector-trigger">
+                    <div class="flex line-selector-trigger-wrapper gap-4 flex-align-center flex-center">
+                        <div>{{allLines.length}}</div>
+                        <img [class.rotate-180]="false" height="12" width="10" src="/assets/icons/arrow-down-2.svg" alt="">
+                    </div>
+                </mat-select-trigger>
+                <mat-option class="disabled-option" disabled="true" value="disabled">Show/hide lines(Max {{ numberOfLinesToDisplay }})</mat-option>
+                <mat-option (click)="changeDisplayedLines(i, line)" *ngFor="let line of allLines; let i=index" [value]="line">
+                    1. {{ (i+1) }} {{line}}
+                <!-- <app-text classNames="body-2 high-emphasis capitalize" [text]="'1.' + (i+1) + ' ' + line"></app-text> -->
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+     </div>
     <svg></svg>
     <div class="x-axis-text">Timeline</div>
 </div>

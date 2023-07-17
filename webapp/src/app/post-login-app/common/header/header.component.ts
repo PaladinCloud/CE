@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,10 +6,14 @@ import { Apollo } from 'apollo-angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { NOTIFICATIONS_SUBSCRIPTION } from 'src/app/core/graphql/subscriptions/notifications.gql';
-import { AuthService } from '../../../core/services/auth.service';
-import { DataCacheService } from '../../../core/services/data-cache.service';
-import { PermissionGuardService } from '../../../core/services/permission-guard.service';
-import { LoggerService } from '../../../shared/services/logger.service';
+import { AuthService } from "../../../core/services/auth.service";
+import { DataCacheService } from "../../../core/services/data-cache.service";
+import { PermissionGuardService } from "../../../core/services/permission-guard.service";
+import { LoggerService } from "../../../shared/services/logger.service";
+import { environment } from "../../../../environments/environment";
+import { CommonResponseService } from "src/app/shared/services/common-response.service";
+import { MatDialog } from "@angular/material/dialog";
+import { TourService } from 'src/app/core/services/tour.service';
 
 @Component({
     selector: 'app-header',
@@ -17,37 +21,60 @@ import { LoggerService } from '../../../shared/services/logger.service';
     styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+
+    currentVersion = '';
     showUserInfo = false;
     haveAdminPageAccess = false;
     userName: string;
     userEmail: string;
-    profilePictureSrc = '/assets/icons/profile-picture.svg';
+    userType;
+    profilePictureSrc: any = '/assets/icons/profile-picture.svg';
+    queryParams;
+    isUserMenuOpen = false;
+    searchQuery;
 
     haveNewNotification = false;
-
     private readonly NOTIFICATIONS_CHANNEL = 'InAppNotification';
     private destroy$ = new Subject<void>();
 
     constructor(
         private apollo: Apollo,
+        private commonResponseService: CommonResponseService,
         private authenticateService: AuthService,
+        private router: Router,
+        private route: ActivatedRoute,
         private dataCacheService: DataCacheService,
-        private domSanitizer: DomSanitizer,
+        private permissions: PermissionGuardService,
         private loggerService: LoggerService,
         private matIconRegistry: MatIconRegistry,
-        private permissions: PermissionGuardService,
-        private route: ActivatedRoute,
-        private router: Router,
-    ) {
+        private domSanitizer: DomSanitizer,
+        private tourService: TourService,
+        ) {
+        const userRoles = this.dataCacheService.getUserDetailsValue().getRoles();
+        this.tourService.init(userRoles);
         this.matIconRegistry.addSvgIcon(
-            'customSearchIcon',
-            this.domSanitizer.bypassSecurityTrustResourceUrl('/assets/icons/header-search.svg'),
+            `customSearchIcon`,
+            this.domSanitizer.bypassSecurityTrustResourceUrl(
+                '/assets/icons/header-search.svg',
+            ),
+        );
+
+        const url = environment.getCurrentVersion.url;
+        const urlMethod = environment.getCurrentVersion.method;
+        const queryParam = {
+            'cfkey': 'current-release',
+        };
+        this.commonResponseService.getData(url, urlMethod, '', queryParam).subscribe(
+            response => {
+                this.currentVersion = response[0].value;
+            },
         );
     }
 
     ngOnInit() {
         try {
             this.haveAdminPageAccess = this.permissions.checkAdminPermission();
+            this.userType = this.haveAdminPageAccess ? 'Admin' : '';
             this.userName = 'Guest';
             this.userEmail = 'Guest';
             const detailsData = this.dataCacheService.getUserDetailsValue();
@@ -61,7 +88,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 this.userName = this.userEmail.split('@')[0].split('.')[0];
             }
 
-            this.getProfilePictureOfUser();
+            this.route.queryParams.subscribe((params) => {
+                this.queryParams = params;
+                this.searchQuery = params["searchText"]
+            });
         } catch (error) {
             this.loggerService.log('error', 'JS Error' + error);
         }
@@ -81,41 +111,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
             });
     }
 
+    showTour(){
+        this.tourService.start();
+    }
+
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
     }
 
-    handleSearch() {
-        this.router.navigate(['/pl/omnisearch/omni-search-page'], {
-            queryParams: this.route.snapshot.queryParams,
-        });
-    }
-
-    getProfilePictureOfUser() {
-        // Get profile picture of user from azure ad.
-        // this.adalService.acquireToken(CONFIGURATIONS.optional.auth.resource).subscribe(token => {
-        //     const api = environment.fetchProfilePic.url;
-        //     const httpMethod = environment.fetchProfilePic.method;
-        //     const header = new HttpHeaders();
-        //     const updatedHeader = header.append('Authorization', 'Bearer ' + token);
-        //     this.httpResponseService.getBlobHttpResponse(api, httpMethod, {}, {}, {headers: updatedHeader}).subscribe(response => {
-        //         this.utilService.generateBase64String(response).subscribe(image => {
-        //             this.loggerService.log('info', 'user profile pic received');
-        //             this.dataCacheService.setUserProfileImage(image);
-        //             this.profilePictureSrc = image;
-        //         });
-        //     },
-        //     error => {
-        //         this.loggerService.log('error', 'error while fetching image from azure ad - ' + error);
-        //     });
-        // }, error => {
-        //     this.loggerService.log('error', 'Error while fetching access token for resource - ' + error);
-        // });
-    }
-
-    logout() {
-        this.authenticateService.doLogout();
+    navigateTo(pageName) {
+        if (pageName == 'health-notifications') {
+            this.router
+                .navigate(['/pl/notifications/notifications-list'], {
+                    queryParams: this.queryParams,
+                });
+        }
     }
 
     openNotification() {
@@ -123,10 +134,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.haveNewNotification = false;
         }
         this.router.navigate(['pl/notifications/notifications-list'], {
-            queryParams: this.route.snapshot.queryParams,
+            queryParams: {...this.route.snapshot.queryParams, tempFilters: true, filter: undefined},
         });
     }
 
+    handleSearch(event) {
+        let searchTxt = event.target.value.toLowerCase();
+        this.searchQuery = searchTxt;
+
+        if (event.keyCode === 13) {
+            const queryParams = {
+                ...this.queryParams,
+                searchText: searchTxt
+            }
+            this.router
+                .navigate(['/pl/omnisearch/omni-search-details'], {
+                    queryParams: queryParams,
+                })
+                .then((response) => {
+                    // Clearig page levels.
+                });
+        }
+    }
+  logout() {
+      this.authenticateService.doLogout();
+    }
+  
     openDashboard() {
         const queryParams = this.route.snapshot.queryParams;
         this.router.navigate(['pl/compliance/compliance-dashboard'], {

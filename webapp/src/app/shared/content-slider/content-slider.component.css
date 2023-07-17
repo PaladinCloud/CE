@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.content-slider-wrapper {
+ .content-slider-wrapper {
   padding: 1.5em;
   border-radius: var(--border-radius);
   background-color: var(--background-white);
@@ -37,7 +37,7 @@
 }
 
 .content-header:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .content-subheader-open {

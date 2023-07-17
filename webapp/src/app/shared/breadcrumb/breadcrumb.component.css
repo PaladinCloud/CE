@@ -12,11 +12,7 @@
  * limitations under the License.
  */
 
-.breadcrumb-wrapper{
-	/* padding: 1em 1.8em; */
-}
-
-.breadcrumb-text{
+ .breadcrumb-text{
 	color: var(--primary-500);
 }
 

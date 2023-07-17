@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-export const MESSAGES = {
+ export const MESSAGES = {
     'errorMessages': {
         'apiResponseError': {
             'title': 'Uh-oh!',
@@ -91,12 +91,12 @@ export const MESSAGES = {
         },
         'violationMessage': {
             'title': 'Great!',
-            'description': 'No Violations for this Resource ID',
+            'description': 'No Violations for this Asset ID',
             'image': '/assets/images/empty-state.svg'
         },
         'vulnerabilitiesMessage': {
             'title': 'Great!',
-            'description': 'No Vulnerabilities for this Resource ID',
+            'description': 'No Vulnerabilities for this Asset ID',
             'image': '/assets/images/empty-state.svg'
         },
         'awsNotificationMessage': {
@@ -123,6 +123,15 @@ export const MESSAGES = {
             'title': 'No Search Found!!',
             'description': 'Retry searching something else.',
             'image': '/assets/images/empty-search.svg'
+        },
+        'additionalInfo': {
+            'title': 'Click filters for additional information.',
+            'description': '',
+            'image': '/assets/images/empty-state.svg'
+        },
+        'waitForData': {
+            'description': 'The trend graph requires upto two days to display data.',
+            'image': '/assets/images/glass-timer.svg'
         }
     }
 };

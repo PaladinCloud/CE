@@ -217,13 +217,13 @@
        if (destination === "asset details") {
          const resourceId = encodeURIComponent(id1);
          const resourceType = encodeURIComponent(id2);
-         this.workflowService.navigateTo(
-           ["../../../../", "assets", "asset-list", resourceType, resourceId],
-           {},
-           this.activatedRoute,
-           this.breadcrumbPresent,
-           "Asset Details"
-         );
+         this.workflowService.navigateTo({
+           urlArray: ["../../../../", "assets", "asset-list", resourceType, resourceId],
+           queryParams: {},
+           relativeTo: this.activatedRoute,
+           currPagetitle: this.breadcrumbPresent,
+           nextPageTitle: "Asset Details"
+         });
          // window.open("/pl/assets/asset-list/"+resourceType+"/"+resourceId);
        } else if (destination === "policy knowledgebase details") {
          const policyId = encodeURIComponent(id1);

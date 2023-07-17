@@ -6,7 +6,7 @@
                 (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption"
                  [formControl]="listControl" [multiple]="isChipListEnabled || isMultiSelect">
                  <div class="dropdown-title" *ngIf="dropdownTitle">{{ dropdownTitle }}</div>
-                 <mat-checkbox #selectedAll *ngIf="selectAll.length>0" [disableRipple]="true" (change)="toggleAllSelection($event)">{{selectAll}}</mat-checkbox>
+                 <mat-checkbox style="margin: 4px 0px 4px 15px;" #selectedAll *ngIf="selectAll.length>0" [disableRipple]="true" (change)="toggleAllSelection($event)">{{selectAll}}</mat-checkbox>
                 <mat-select-trigger>
                     <div *ngIf="customLabel?.length>0" class="flex-align-center" [class.optionImage]="customLabel">
                         <span>{{customLabel}}</span>
@@ -22,7 +22,7 @@
                     </div>
                     <div *ngIf="isChipListEnabled">
                     <app-chip [chipsList]="listControl.value" [backgroundColor]="'#F1F6FF'" [color]="'#336CC9'" (updatedChipsList)="updateChipsList($event, true)"
-                     [isRemovable]="true"></app-chip>
+                     [isRemovable]="true" [nonRemovableChips]="nonRemovableChips"></app-chip>
                     </div>
                     <div *ngIf="!optionImage && !isChipListEnabled && !customLabel">
                         <span *ngIf="isFirstCharNumber(selectedOption); else isNotNumber;">{{selectedOption}}</span>

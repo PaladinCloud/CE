@@ -12,25 +12,25 @@
  * limitations under the License.
  -->
 
-<section class="parent-wrapper donut-container-{{chartContId}}" [class.showFlex]='flexTrue == true'>
+ <section class="parent-wrapper donut-container-{{chartContId}}" [class.showFlex]='flexTrue == true'>
     <div #doughContainer class="graph-outer-container relative" *ngIf="!zeroData">
         <!-- absolute center text to donut is given only for vulnerability report -->
-        <div class='center-text' *ngIf="graphData.legendText">{{this.graphData.centerText}}</div>
+        <div class='center-text' *ngIf="graphData.legendText">{{this.graphData.centerText | number}}</div>
         <svg id="donut-chart"></svg>
         <div class="absolute concentric-ring"
             [ngStyle]="{'width': 190 - (rings.level * 10) + 'px', 'height': 190 - (rings.level * 10) + 'px'}"
             *ngFor='let rings of ringData'></div>
     </div>
     <!--Legend text for default donut charts-->
-    <div class="graph-legend-cont flex" *ngIf="graphData.legend" [ngStyle]="{'color': graphData.legendTextcolor}">
+    <div class="graph-legend-cont flex" [class.belowDoughnut]="belowDoughnut" *ngIf="graphData.legend" [ngStyle]="{'color': graphData.legendTextcolor}">
         <div class="legend-each" *ngFor="let eachGraphPath of graphData.legend;let i = index"
             [ngStyle]="{'color': graphData.legendTextcolor}">
             <!-- <div class="legend-color" [ngStyle]="{'background-color': graphData.color[i]}"></div> -->
             <img style="margin-right: 5px;" src="/assets/icons/violations-{{eachGraphPath.toLowerCase()}}-icon.svg" alt="">
-            <span class="legend-text" [ngStyle]="{'color':isFullScreen === true ? '#fff' : '#000' }">{{eachGraphPath}}
+            <span *ngIf="displayLegendText" class="legend-text" [ngStyle]="{'color':isFullScreen === true ? '#fff' : '#000' }">{{eachGraphPath}}
             </span>
             <span class="legend-text-count"
-                [ngStyle]="{'color':isFullScreen === true ? '#fff' : '#000' }">{{graphData.data[i]}}</span>
+                [ngStyle]="{'color':isFullScreen === true ? '#fff' : '#000' }">{{graphData.data[i] | number}}</span>
         </div>
     </div>
     <!--Legend text for the donut charts where percentage is shown next to count-->

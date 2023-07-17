@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.target-type-details-wrapper {
+ .target-type-details-wrapper {
     height: 14em;
     width: 14em;
     background-color:#fff;
@@ -34,7 +34,7 @@
     padding: 6% 8% 1% 8%;
     white-space: nowrap;
     overflow: hidden;
-    text-transform: uppercase;
+    text-transform: capitalize;
     text-overflow: ellipsis;
 }
 
@@ -123,7 +123,7 @@
     color: #fff;
     font-size: 1.7em;
     border-radius: 2em;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-family: var(--text-light-font-family);
     letter-spacing: 0.5px;
     box-shadow: 0 0 4px 0px rgba(0,0,0,0.15);

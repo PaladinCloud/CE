@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.app-button {
+ .app-button {
     border: none;
     box-shadow: none;
     border-radius: 100px;
@@ -22,7 +22,6 @@
     padding: 0.7em 2.5em;
     letter-spacing: .1em;
     font-size: 1em;
-    text-transform: uppercase;
     cursor: pointer;
     min-height: 2.8em;
     min-width: 10em;

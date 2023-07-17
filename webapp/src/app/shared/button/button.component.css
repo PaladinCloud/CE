@@ -12,35 +12,28 @@
  * limitations under the License.
  */
 
-.app-button {
+ .app-button {
     border: none;
     box-shadow: none;
-    border-radius: 8px;
+    border-radius: 4px;
     background-color: var(--primary-400);
     color: #fff;
     display: inline-block;
-    padding: 0.7em 2.5em;
-    letter-spacing: .1em;
-    font-size: 1em;
-    text-transform: uppercase;
+    padding: 8px 16px;
+    font: var(--text-body-2);
+    text-transform: capitalize;
     cursor: pointer;
-    min-height: 2.8em;
-    min-width: 10em;
     text-align: center;
-    transition: all .5s ease;
 }
 .white-button.app-button {
     border: none;
     box-shadow: none;
     display: inline-block;
-    padding:0;
-    letter-spacing: .1em;
     background:none;
-    font-size: 1em;
-    text-transform: uppercase;
+    text-transform: capitalize;
     cursor: pointer;
     text-align: center;
-   color: var(--primary-500);
+    color: var(--primary-500);
 }
 .app-button:hover {
     background-color: var(--primary-500);

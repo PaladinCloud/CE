@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.sub-head {
+ .sub-head {
   padding: 0.8em;
   background-color: var(--background-white);
   border: solid 1px #d6e2f1;
@@ -284,7 +284,7 @@
   margin: auto;
   text-align: center;
   transform: translate(-50%, calc(-100% - 5px));
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 11px;
   letter-spacing: 0.5px;
   color: var(--primary-500);

@@ -74,7 +74,6 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnChanges
         private themeObservableService: ThemeObservableService,
         private tourService: TourService,
     ) {
-        this.tourService.init();
         this.assetTypeMapService.fetchAssetTypes();
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {

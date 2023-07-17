@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.wrapper{
+ .wrapper{
 	width: 50%;
 	margin-bottom: 1.5em;
 	line-height: 1.5;
@@ -31,9 +31,9 @@
 }
 
 .content-header:first-letter {
-	text-transform: uppercase;
+	text-transform: capitalize;
 }
 
 .content:first-letter {
-	text-transform: uppercase;
+	text-transform: capitalize;
 }
