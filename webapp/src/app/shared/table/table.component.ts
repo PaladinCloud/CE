@@ -484,7 +484,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                     } else if(filterValue.includes('-')){
                         const [min, max] = filterValue.split('-');
                         return (cellValue >=min && cellValue<=max);
-                    } else if(this.filterFunctionMap[filterKey]){
+                    } else if(this.filterFunctionMap && this.filterFunctionMap[filterKey]){
                         if(!this.filterFunctionMap[filterKey](item, filterKey, filterValue)){
                             return false;
                         }

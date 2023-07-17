@@ -582,7 +582,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         );
       }
       this.filters = [...this.filters];
-      console.log("filters: ", this.filters);
       
       this.storeState();
       this.getUpdatedUrl();
