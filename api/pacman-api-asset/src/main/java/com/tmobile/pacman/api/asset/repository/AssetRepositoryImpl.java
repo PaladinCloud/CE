@@ -1039,7 +1039,6 @@ public class AssetRepositoryImpl implements AssetRepository {
     public Map<String, Long> getExemptedAssetsCount(String assetGroup){
         Map<String, Long> ExemptedCountMap = new HashMap<>();
         Map<String, Object> mustFilter = new HashMap<>();
-        mustFilter.put(AssetConstants.LATEST, AssetConstants.TRUE);
         mustFilter.put(AssetConstants.TYPE, "issue");
         mustFilter.put(AssetConstants.ISSUE_STATUS, "exempted");
         try {
