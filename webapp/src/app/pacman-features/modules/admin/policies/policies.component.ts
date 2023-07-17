@@ -67,6 +67,17 @@
    tableScrollTop = 0;
    @ViewChild("enableOrDisablePolicyRef") enableOrDisablePolicyRef: TemplateRef<any>;
    onScrollDataLoader: Subject<any> = new Subject<any>();
+   filterFunctionMap = {
+    'Autofix status': (item, filterKey, filterValue) => {
+      if(filterValue=="available"){
+        return item[filterKey].valueText.toLowerCase()=="enabled" || item[filterKey].valueText.toLowerCase()=="available";  
+      }else if(filterValue=="enabled"){
+        return item[filterKey].valueText.toLowerCase()=="enabled";
+      }else{
+        return item[filterKey].valueText.toLowerCase()!="enabled" && item[filterKey].valueText.toLowerCase()!="available";
+      }
+    }
+  }
    columnsSortFunctionMap = {
      Severity: (a, b, isAsc) => {
        let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
