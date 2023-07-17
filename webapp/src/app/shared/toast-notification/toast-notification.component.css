@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.toast-body {
+ .toast-body {
 	top: 2px;
     margin: auto;
     max-width: 100%;
@@ -78,7 +78,7 @@
 
 }
 .toast-msg:first-letter {
-	text-transform: uppercase;
+	text-transform: capitalize;
 }
 
 @media print {

@@ -193,26 +193,26 @@ export class WorkflowService {
         this.trackOpenedPageInAModule = {};
     }
 
-    getIndexIfLevelAlreadyExists(title){
+    getIndexByTitleIfLevelAlreadyExists(title){
         const levels = this.level["level0"];
         const levelIdx = _.findIndex(levels, {"title": title});
         return levelIdx;
     }
 
-    navigateTo(urlArray, queryParams, relativeTo, currPagetitle, nextPageTitle?){
+    navigateTo({urlArray, queryParams, relativeTo, currPagetitle, nextPageTitle=undefined, state=undefined}){
         try{
             if(nextPageTitle){
-                const index = this.getIndexIfLevelAlreadyExists(nextPageTitle);
+                const index = this.getIndexByTitleIfLevelAlreadyExists(nextPageTitle);
                 if(index>=0){
                     this.goToLevel(index);
                 }
             }
-            this.addRouterSnapshotToLevel(
+            if(currPagetitle) this.addRouterSnapshotToLevel(
                 this.router.routerState.snapshot.root, 0, currPagetitle
               );
             this.router.navigate(
                 urlArray,
-                { relativeTo: relativeTo, queryParams:queryParams, queryParamsHandling: "merge" }
+                { relativeTo: relativeTo, queryParams:queryParams, queryParamsHandling: "merge", state }
               ).catch(e => {
                 this.logger.log("error in navigation from workflow service --", e);
               });

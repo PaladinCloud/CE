@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import {
+ import {
   Component,
   OnInit,
   OnDestroy,
@@ -55,7 +55,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   autoRefresh: boolean;
   totalRows = 0;
   bucketNumber = 0;
-  paginatorSize = 10;
+  paginatorSize = 1000;
   currentBucket: any = [];
   firstPaginator = 1;
   dataTableData: any = [];
@@ -66,15 +66,70 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   searchTxt = "";
   showGenericMessage = false;
   firstTimeLoad = true;
-  headerColName;
-  direction;
-
+  headerColName = "Status";
+  direction = "asc";
+  columnWidths = {"Policy":1.5,"Severity":0.5,"Category":0.5,"Status": 0.5};
+  centeredColumns = {
+    Severity: true,
+    Category: true,
+    Status: true,
+};
   @Input() breadcrumbPresent;
   private urlToRedirect: string;
   @Input() pageLevel: number;
   @Input() resourceId = "";
   @Input() resourceType = "ec2";
   @Output() errorOccured = new EventEmitter<any>();
+  @Output() policyCount = new EventEmitter<any>();
+  policyTableDataLoaded: boolean = false;
+  tableErrorMessage: string;
+  whiteListColumns: string[];
+  columnNamesMap = {"lastScan": "Status","policyName": "Policy"};
+  tableImageDataMap = {
+    security:{
+        image: "category-security",
+        imageOnly: true
+    },
+    operations:{
+        image: "category-operations",
+        imageOnly: true
+    },
+    cost:{
+        image: "category-cost",
+        imageOnly: true
+    },
+    tagging:{
+        image: "category-tagging",
+        imageOnly: true
+    },
+    low: {
+        image: "violations-low-icon",
+        imageOnly: true
+    },
+    medium: {
+        image: "violations-medium-icon",
+        imageOnly: true
+    },
+    high: {
+        image: "violations-high-icon",
+        imageOnly: true
+    },
+    critical: {
+        image: "violations-critical-icon",
+        imageOnly: true
+    }
+}
+  associatedPolicies = [];
+
+  columnsSortFunctionMap = {
+    Status: (a, b, isAsc) => {
+      const order = ["fail", "exempt", "exempted", "pass"];
+      const AStatus = a["Status"].valueText.toLowerCase();
+      const BStatus = b["Status"].valueText.toLowerCase();
+
+      return (order.indexOf(AStatus) < order.indexOf(BStatus) ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+  }
 
   constructor(
     private commonResponseService: CommonResponseService,
@@ -87,10 +142,6 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private refactorFieldsService: RefactorFieldsService
   ) {
-    this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
-    this.direction = this.activatedRoute.snapshot.queryParams.direction;
-    this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
-
     this.durationParams = this.autorefreshService.getDuration();
     this.durationParams = parseInt(this.durationParams, 10);
     this.autoRefresh = this.autorefreshService.autoRefresh;
@@ -103,6 +154,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.whiteListColumns = Object.keys(this.columnWidths);
     this.urlToRedirect = this.router.routerState.snapshot.url;
     this.updateComponent();
   }
@@ -110,7 +162,6 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.getUpdatedUrl();
   }
 
   getUpdatedUrl(){
@@ -149,35 +200,37 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(row) {
+    const rowSelected = row.rowSelected;
+    const status = rowSelected["Status"].valueText.toLowerCase();
     try {
-      this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
-      );
+      
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["headerColName"] = undefined;
       updatedQueryParams["direction"] = undefined;
       updatedQueryParams["bucketNumber"] = undefined;
       updatedQueryParams["searchValue"] = undefined;
-      if (row.col.toLowerCase() === "Rule name") {
-        this.router.navigate(
-          [
-            "/pl/compliance/policy-knowledgebase-details",
-            row.row["Rule ID"].text,
-            "false",
-          ],
-          { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }
-        );
-      } else if (row.col.toLowerCase() === 'status') {
-        this.router.navigate(
-          [
-            "../../../../",
-            "compliance",
-            "issue-listing",
-            "issue-details",
-            row.row["Issue ID"].text,
-          ],
-          { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }
-        );
+      // if (row.col.toLowerCase() === "policy") {
+      //   this.router.navigate(
+      //     [
+      //       "/pl/compliance/policy-knowledgebase-details",
+      //       rowSelected["policy"].text,
+      //       "false",
+      //     ],
+      //     { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }
+      //   );
+      //   this.workflowService.addRouterSnapshotToLevel(
+      //     this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
+      //   );
+      // } else 
+      if (status == "fail") {
+        this.workflowService.navigateTo({
+          urlArray: [
+          "../../../../",
+          "compliance",
+          "issue-listing",
+          "issue-details",
+          rowSelected["Violation ID"].text,
+        ], queryParams: updatedQueryParams,relativeTo: this.activatedRoute,currPagetitle: this.breadcrumbPresent,nextPageTitle: "Violation Details"});
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -246,7 +299,9 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
             if (response.response.length > 0) {
               const updatedResponse = this.massageData(response.response);
               this.currentBucket[this.bucketNumber] = updatedResponse;
-              this.processData(updatedResponse);
+              this.associatedPolicies = this.processData(updatedResponse);
+              this.policyCount.emit(this.associatedPolicies.length);
+              this.policyTableDataLoaded = true;
             }
           } catch (e) {
             this.errorValue = 0;
@@ -289,152 +344,84 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
      * the funciton replaces keys of the table header data to a readable format
      */
     const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
     const newData = [];
-    const formattedFilters = data.map(function (eachRow) {
-      const KeysTobeChanged = Object.keys(eachRow);
+    const formattedFilters = data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
-        const elementnew =
-          refactoredService.getDisplayNameForAKey(
-            element.toLocaleLowerCase() == "lastscan"
-            ? "status"
-            : element.toLocaleLowerCase()
-          ) || element;
-        newObj = Object.assign(newObj, { [elementnew]: eachRow[element] });
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }else{
+        elementnew =
+        refactoredService.getDisplayNameForAKey(
+          element.toLocaleLowerCase()
+        ) || element;
+        newObj = Object.assign(newObj, { [elementnew]: row[element] });
+      }
       });
       newData.push(newObj);
-
     });
     return newData;
   }
+
   processData(data) {
-    let innerArr = {};
-    const totalVariablesObj = {};
-    let cellObj = {};
-    this.outerArr = [];
-    const getData = data;
+    try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
 
-    if (!this.totalRows) {
-      this.totalRows = getData.length;
-      this.lastPaginator = this.totalRows;
-    }
-
-    const getCols = Object.keys(getData[0]);
-
-    for (let row = 0; row < getData.length; row++) {
-      innerArr = {};
-      for ( let col = 0; col < getCols.length; col++) {
-        if (getCols[col].toLowerCase() === 'status') {
-          if (getData[row][getCols[col]].toLowerCase() === 'pass') {
-            cellObj = {
-              link: "",
-              properties: {
-                color: "rgb(0, 185, 70)",
-                "font-family": "ex2-medium",
-                "text-transform": "capitalize",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              valText: getData[row][getCols[col]],
-              text: getData[row][getCols[col]],
-            };
-          } else {
-            cellObj = {
-              link: "true",
-              properties: {
-                color: "#d40325",
-                "font-family": "ex2-medium",
-                "text-transform": "capitalize",
-              },
-              imgProp: { cursor: "pointer" },
-              colName: getCols[col],
-              hasPostImg: true,
-              hasPreImg: false,
-              imgLink: "../assets/icons/left-arrow.svg",
-              valText: getData[row][getCols[col]],
-              text: getData[row][getCols[col]],
-            };
+      let cellData;
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellData = getData[row][col];
+          cellObj = {
+            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
+            titleText: cellData, // text to show on hover
+            valueText: cellData,
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            isLink: false
+            // chipVariant: "", // this value exists if isChip is true,
+            // menuItems: [], // add this if isMenuBtn
           }
-        } else if (getCols[col].toLowerCase() === "scan history") {
-          const arr = [];
-          for (let ele = 0; ele < getData[row][getCols[col]].length; ele++) {
-            let obj = {};
-            if (getData[row][getCols[col]][ele] === "pass") {
-              obj = {
-                text: getData[row][getCols[col]][ele],
-                styling: {
-                  height: "0.66em",
-                  width: "0.66em",
-                  background: "rgb(0, 185, 70)",
-                  "border-radius": "50%",
-                  margin: "0em 1em 0em 0em",
-                },
-              };
-            } else {
-              obj = {
-                text: getData[row][getCols[col]][ele],
-                styling: {
-                  height: "0.66em",
-                  width: "0.66em",
-                  background: "rgb(212, 3, 37)",
-                  "border-radius": "50%",
-                  margin: "0em 1em 0em 0em",
-                },
-              };
-            }
-            arr.push(obj);
+          if(col.toLowerCase()=="policy name"){
+            cellObj = {
+              ...cellObj,
+              isLink: true
+            };
+          } else if(col.toLowerCase()=="status"){
+              if(cellData.toLowerCase() == "fail"){
+                cellObj = {
+                  ...cellObj,
+                  isLink: true
+                };
+              }
           }
-
-          cellObj = {
-            link: "",
-            properties: {
-              color: "",
-            },
-            colName: getCols[col],
-            isArray: true,
-            hasPreImg: false,
-            imgLink: "",
-            valText: getData[row][getCols[col]],
-            text: arr,
-          };
-        } else if (getCols[col].toLowerCase() === "Rule name") {
-          cellObj = {
-            link: "true",
-            properties: {
-              "text-transform": "lowercase",
-              "text-shadow": "0.1px 0",
-            },
-            colName: getCols[col],
-            hasPreImg: false,
-            imgLink: "",
-            text: getData[row][getCols[col]],
-            valText: getData[row][getCols[col]],
-          };
-        } else {
-          cellObj = {
-            link: "",
-            properties: {
-              color: "",
-            },
-            colName: getCols[col],
-            hasPreImg: false,
-            imgLink: "",
-            valText: getData[row][getCols[col]],
-            text: getData[row][getCols[col]],
-          };
-        }
-
-        innerArr[getCols[col]] = cellObj;
-        totalVariablesObj[getCols[col]] = "";
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
       }
-      this.outerArr.push(innerArr);
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
+      return processedData;
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
     }
-    if (this.outerArr.length > getData.length) {
-      const halfLength = this.outerArr.length / 2;
-      this.outerArr = this.outerArr.splice(halfLength);
-    }
-    this.allColumns = Object.keys(totalVariablesObj);
   }
 
   prevPg() {

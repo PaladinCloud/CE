@@ -12,33 +12,34 @@
  * limitations under the License.
  */
 
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
-const routes: Routes = [
-    {
-        path: '',
-        redirectTo: '/home',
-        pathMatch: 'full',
-    },
-    {
-        path: 'pl',
-        redirectTo: '/home',
-        pathMatch: 'full',
-    },
-    {
-        path: 'post-login',
-        redirectTo: '/home',
-        pathMatch: 'prefix',
-    },
-    {
-        path: 'callback',
-        redirectTo: '/home',
-    },
-];
-
-@NgModule({
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule],
-})
-export class AppRoutingModule {}
+ import { NgModule } from '@angular/core';
+ import { Routes, RouterModule } from '@angular/router';
+ 
+ const routes: Routes = [
+     {
+         path: '',
+         redirectTo: '/home/login',
+         pathMatch: 'full'
+     },
+     {
+         path: 'pl',
+         redirectTo: '/home',
+         pathMatch: 'full',
+     },
+     {
+         path: 'post-login',
+         redirectTo: '/home',
+         pathMatch: 'prefix',
+     },
+     {
+         path: 'callback',
+         redirectTo: '/home',
+     }
+ ];
+ 
+ @NgModule({
+     imports: [RouterModule.forRoot(routes)],
+     exports: [RouterModule],
+ })
+ export class AppRoutingModule {}
+ 

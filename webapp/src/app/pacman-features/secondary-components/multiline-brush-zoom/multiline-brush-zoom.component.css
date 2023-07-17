@@ -12,11 +12,17 @@
  * limitations under the License.
  */
 
-.multiline-graph-container {
+ .multiline-graph-container {
   width: 100%;
   height: 100%;
   position: relative;
   font: var(--text-overline);
+}
+
+.x-axis-text{
+  font: var(--text-caption);
+  display: flex;
+  justify-content: center;
 }
 
 .multiline-graph-container .count-in-range {
@@ -54,10 +60,4 @@
 
 .hover {
   transition: 0.2s ease;
-}
-
-.x-axis-text{
-  font: var(--text-caption);
-  display: flex;
-  justify-content: center;
 }

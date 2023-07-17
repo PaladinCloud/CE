@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.sub-head {
+ .sub-head {
   padding: 0.8em;
   background-color: var(--background-white);
   border: solid 1px #d6e2f1;
@@ -262,7 +262,7 @@
   margin: auto;
   text-align: center;
   transform: translate(-50%, calc(-100% - 5px));
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 11px;
   letter-spacing: 0.5px;
   color: var(--primary-500);
@@ -448,7 +448,7 @@
   transition: 0.2s ease;
   font-weight: bold;
   color: rgb(226, 0, 116);
-  text-transform: uppercase;
+  text-transform: capitalize;
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
   cursor: pointer;
@@ -570,7 +570,7 @@
 
 .view-btn {
   transition: 0.2s ease;
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 1.2em;
   background-color: var(--background-white);
   padding: 0.5em 0.6em;

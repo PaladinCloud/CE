@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import {
+ import {
   Component,
   OnInit,
   Input,
@@ -52,6 +52,7 @@ export class DoughnutChartComponent implements OnInit, OnChanges {
   @Input() strokeColor: 'transparent';
   @Input() flexTrue: any;
   @Input() isFullScreen;
+  @Input() displayLegendText = true;
   @Output() error: EventEmitter<any> = new EventEmitter();
   @Output() navigatePage: EventEmitter<any> = new EventEmitter();
   @Output() linkData: EventEmitter<any> = new EventEmitter();

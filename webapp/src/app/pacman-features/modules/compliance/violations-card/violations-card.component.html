@@ -10,7 +10,7 @@
             <div class="violations-title capitalize nowrap-ellipsis">
                 {{ card.name }} Violations
             </div>
-            <div class="violations-count" (click)="redirect()">
+            <div class="violations-count" (click)="redirect(card.name)">
                 {{ card.totalViolations | number }}
                 <img src="/assets/icons/Path.svg" alt="go to violation" />
             </div>

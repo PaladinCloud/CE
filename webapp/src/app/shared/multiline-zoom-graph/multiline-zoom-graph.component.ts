@@ -1,13 +1,11 @@
 import {
   Component,
-  OnInit,
   Input,
   Output,
   EventEmitter,
   ViewChild,
   ElementRef,
   OnChanges,
-  SimpleChanges,
   HostListener,
   NgZone,
   AfterViewInit,
@@ -23,6 +21,7 @@ import * as d3Brush from "d3-brush";
 import * as d3TimeFormat from "d3-time-format";
 import { LoggerService } from "../services/logger.service";
 import { WindowExpansionService } from "src/app/core/services/window-expansion.service";
+import { FormControl } from "@angular/forms";
 
 @Component({
   selector: "app-multiline-zoom-graph",
@@ -30,21 +29,33 @@ import { WindowExpansionService } from "src/app/core/services/window-expansion.s
   styleUrls: ["./multiline-zoom-graph.component.css"],
   providers: [DecimalPipe],
 })
-export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
+export class MultilineZoomGraphComponent implements AfterViewInit, OnChanges {
   @Input() id: any;
-  @Input() graphWidth: any;
-  @Input() graphHeight: number;
-  @Input() graphLinesData: any;
+  @Input() graphWidth: any = 700;
+  @Input() graphHeight: number = 290;
+  @Input() graphLinesData: any = [];
   @Input() yAxisLabel = "";
-  @Input() xAxisLabel = "";
+  @Input() xAxisLabel = "Timeline";
   @Input() showLegend = true;
   @Input() showArea = false;
   @Input() singlePercentLine = false;
   @Input() hoverActive = true;
   @Input() doNotShowContext;
+  @Input() showLandingTooltip = true;
   axisMinValue;
   axisMaxValue;
   graphTickValues;
+  @Input() errorMessage = '';
+  allLines = [];
+  selectedLines = [];
+  multiSelectForm = new FormControl();
+  duplicateGraphData = [];
+  numberOfLinesToDisplay = 10;
+  triangleShape = d3Shape.symbol().type(d3Shape.symbolTriangle).size(100);
+  circleShape = d3Shape.symbol().type(d3Shape.symbolCircle).size(100);
+  squareShape = d3Shape.symbol().type(d3Shape.symbolSquare).size(100);
+
+  tooltipWidth = '260px';
 
   @Output() error: EventEmitter<any> = new EventEmitter();
 
@@ -76,7 +87,10 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     pullrequest: "#f2425f", // Red
     repository: "#3f4a59", // Dark Blue,
     noOfAlerts: "#3F4A59", // Dark Blue,
-    "Total Assets": "#506EA7"
+    benchmark: "#CF62A8",
+    company: "#D4772C",
+    category: "#B072CC",
+    "total assets": "#506EA7"
   };
   private lineColorsArray = Object.keys(this.lineColorsObject);
   private countInRange: any;
@@ -132,6 +146,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   private searchAnObjectFromArray: any;
   private bisectDate: any;
   private firstMouseMove = 0;
+  private highlightedLine;
 
   constructor(private loggerService: LoggerService,
     private windowExpansionService: WindowExpansionService,
@@ -139,12 +154,12 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     private numbersPipe: DecimalPipe,
   )
   {
-    window.onresize = (e) => {
-      // ngZone.run will help to run change detection
-      this.ngZone.run(() => {
-      this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
-      });
-    };
+    // window.onresize = (e) => {
+    //   // ngZone.run will help to run change detection
+    //   this.ngZone.run(() => {
+    //   this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
+    //   });
+    // };
   }
 
   @HostListener("window:resize", ["$event"]) onSizeChanges() {
@@ -153,7 +168,32 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     this.init();
   }
 
-  plotGraph() {
+  handleLegendClick(e){
+    for (let i = 0; i < this.graphData.length; i++) {
+      const processedKey = this.getHyphenSeperatedString(this.graphData[i].key);
+      const lineElement = document.querySelector("."+processedKey);
+      lineElement.setAttribute("opacity", "1");
+    }
+    if(e.toLowerCase()==this.highlightedLine){
+      this.highlightedLine = undefined;
+    }else{
+      this.highlightedLine = e.toLowerCase();
+    }
+    if(this.highlightedLine){      
+      const currentKey = this.getHyphenSeperatedString(e);
+      for (let i = 0; i < this.graphData.length; i++) {
+        const processedKey = this.getHyphenSeperatedString(this.graphData[i].key);
+        if(processedKey!=currentKey){
+          const lineElement = document.querySelector("."+processedKey);
+          lineElement.setAttribute("opacity", "0.1");
+          // const tooltipElement = document.querySelector("."+processedKey+"-tooltip");
+          // tooltipElement.setAttribute("display", "none");
+        }
+      }
+    }
+  }
+
+  plotGraph() {    
     try {
       this.removeZeroValues();
       this.initSvg();
@@ -166,6 +206,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       this.drawLine();
       if (this.hoverActive && this.data.length > 1) {
         this.drawHover();
+        if(this.firstMouseMove==0 && this.showLandingTooltip) this.drawlandingToolTip();
       }
     } catch (error) {
       this.error.emit("jsError");
@@ -176,7 +217,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   removeEmptyDataObject() {
     const tempArray = [];
     this.graphLinesData.forEach((line) => {
-      if (line.values.length > 0) {
+      if (line?.values?.length > 0) {
         tempArray.push(line);
       }
     });
@@ -292,11 +333,57 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     return elm.clientHeight - padding
   }
 
-  ngOnInit() {
+  changeDisplayedLines(index: number, lineText: string){
+    if(this.multiSelectForm.value.length==0){
+      this.multiSelectForm.setValue(this.selectedLines);
+      return;
+    }
+    try{
+      if (this.multiSelectForm.value.length <= this.numberOfLinesToDisplay) {
+        this.selectedLines = this.multiSelectForm.value;
+      
+      if(this.multiSelectForm.value.indexOf(lineText)>=0){
+        const indexOfLine = this.duplicateGraphData.findIndex((item) => item.key==lineText);
+        this.graphLinesData.push(this.duplicateGraphData[indexOfLine]);
+        
+      }else{
+        const indexOfLine = this.graphLinesData.findIndex((item) => item.key==lineText);
+        this.graphLinesData.splice(indexOfLine, 1);
+      }
+      this.init();
+      } else {
+        this.multiSelectForm.setValue(this.selectedLines);
+      }
+
+      this.focus
+        .selectAll(".hover.rectCoverDate")
+        .attr("height", (this.multiSelectForm.value.length*27+44)+"px")
+        .attr("width", this.tooltipWidth)
+    }catch(e){
+      this.loggerService.log("error", e);
+    }
+  }
+
+  ngOnChanges() {   
+    this.firstMouseMove = 0;
+    this.duplicateGraphData = this.graphLinesData;
+    let colorObj = ["#CF62A8", "#B072CC", "#D4772C", "#7986D8", "#E7A500", "#D66BAE", "#AA64C5", "#C66E29", "#7C8EDD", "#F4B800"]
+    this.allLines = [];
+    this.graphLinesData.forEach((element, i) => {
+      if(element && element.key){
+        this.allLines.push(element.key)
+      // const color = Math.floor(Math.random()*16777215).toString(16);
+      if(!this.lineColorsObject[element.key?.toLowerCase()]) this.lineColorsObject[element.key.toLowerCase()] = colorObj[i];
+      }
+    });
+    this.selectedLines = this.allLines.slice(0, this.numberOfLinesToDisplay);
+    this.multiSelectForm.setValue(this.selectedLines);
+    this.graphLinesData = this.duplicateGraphData.slice(0, this.numberOfLinesToDisplay);
+ 
     this.axisMinValue = Infinity;
     this.axisMaxValue = 0;
     for(let i=0; i<this.graphLinesData.length; i++){
-      this.graphLinesData[i].values.forEach(element => {
+      this.graphLinesData[i]?.values?.forEach(element => {      
       if(element.value<this.axisMinValue){
         this.axisMinValue = element.value;
       }
@@ -332,28 +419,27 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     }
   }
 
-  roundToNDecimalPlaces(val, n){
-    const powN = Math.pow(10,n);
-    return Math.round((val + Number.EPSILON)*powN)/powN;
-  }
-
   getTickValuesForYAxis(){
     const roundOffMultiple = 2;
     const maxNumberOfTickValues = 6;
-    let roundOffToVal = roundOffMultiple*this.getNearestPowerOf10(this.axisMaxValue - this.axisMinValue, 1);
     let graphTickValues = [];
-    // we need floor of val to get tickVal below minVal, minval should be rounded off to nearest roundOffToVal
-    const yMin = this.roundOff(this.axisMinValue-roundOffToVal, roundOffToVal) // we remove roundOffToVal from axisMinValue to get floor value since roundOff function returns ceil val
-    const yMax = this.roundOff(this.axisMaxValue, roundOffToVal);
-    let y = this.roundOff(Math.ceil((yMax - yMin)/(maxNumberOfTickValues - 1)),roundOffToVal);
-    let x = yMin;
-    for(let i=0; i<maxNumberOfTickValues; i++){
-      const tickVal = x + i*y;
-      graphTickValues.push(tickVal);
-      if(tickVal>this.axisMaxValue) break;
+    if(this.singlePercentLine){
+      graphTickValues = [0, 20, 40, 60, 80, 100];
+    }else{
+      let roundOffToVal = roundOffMultiple*this.getNearestPowerOf10(this.axisMaxValue - this.axisMinValue, 1);
+      // we need floor of val to get tickVal below minVal, minval should be rounded off to nearest roundOffToVal
+      const yMin = this.roundOff(this.axisMinValue-roundOffToVal, roundOffToVal) // we remove roundOffToVal from axisMinValue to get floor value since roundOff function returns ceil val
+      const yMax = this.roundOff(this.axisMaxValue, roundOffToVal); 
+      let y = this.roundOff(Math.ceil((yMax - yMin)/(maxNumberOfTickValues - 1)),roundOffToVal);
+      let x = yMin;
+      for(let i=0; i<maxNumberOfTickValues; i++){
+        const tickVal = x + i*y;
+        graphTickValues.push(tickVal);
+        if(tickVal>this.axisMaxValue) break;
+      }
+      this.axisMinValue = graphTickValues[0];
+      this.axisMaxValue = graphTickValues[graphTickValues.length-1];
     }
-    this.axisMinValue = graphTickValues[0];
-    this.axisMaxValue = graphTickValues[graphTickValues.length-1];
     return graphTickValues;
   }
 
@@ -1163,15 +1249,28 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       .attr("stroke", "#2c2e3d")
       .style("text-anchor", "end")
       .text(this.yAxisLabel);
+
+      // this.focus
+      // .append("g")
+      // .attr("transform", "translate(0," + (this.graphHeight) + ")")
+      // .append("text")
+      // .attr("class", "axis-title")
+      // .attr("stroke-width", "0.5")
+      // .attr("fill", "#2c2e3d")
+      // .attr("stroke", "#2c2e3d")
+      // .style("text-anchor", "end")
+      // .attr("y", 0)
+      // .attr("x", this.graphWidth/2 - 30)
+      // .text(this.xAxisLabel);
   }
 
   abbreviateNumber(number) {
     number = parseInt(number, 10);
     number =
       number > 1000000
-        ? this.roundToNDecimalPlaces((number / 1000000), 2) + "M"
+        ? number / 1000000 + "M"
         : number > 1000
-        ? this.roundToNDecimalPlaces((number / 1000), 2) + "K"
+        ? number / 1000 + "K"
         : number;
     return number;
   }
@@ -1191,23 +1290,28 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       .y((d: any) => this.y2(d.value))
       .curve(d3Shape.curveMonotoneX);
 
+    const lineKeys = Object.keys(this.lineColorsObject);
     for (let i = 0; i < this.graphData.length; i++) {
-      const lineKeys = Object.keys(this.lineColorsObject);
+      const processedKey = this.getHyphenSeperatedString(this.graphData[i].key);
       const lineColor =
-        this.lineColorsObject[this.graphData[i].key] ||
+        this.lineColorsObject[this.graphData[i].key?.toLowerCase()] ||
         this.lineColorsObject[lineKeys[i]];
+
       this.focus
         .append("path")
         .datum(this.graphData[i].values)
         .attr("clip-path", "url(#clip)")
-        .transition()
-        .duration(5000)
-        .attr("class", "line line" + `${i + 1}`)
+        // .transition()
+        // .duration(5000)
+        .attr("class", `line ${processedKey} line + ${i + 1}`)
         .attr("fill", "none")
         .attr("stroke-width", "2px")
         .attr("stroke", lineColor)
-        .attr("d", this.line);
+        .attr("d", this.line)
+        .attr("opacity", 1)
+        .attr("display", i>4?"none":"block");
     }
+
 
     this.area = d3Shape
       .area()
@@ -1293,7 +1397,6 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
     this.context.selectAll(".handle").attr("height", "4").attr("y", "0");
 
-    d3.selectAll(".ticks");
 
     this.context
       .select(".brush")
@@ -1315,13 +1418,13 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
     this.svg
       .select("#clip rect")
-      .transition()
-      .duration(2000)
+      // .transition()
+      // .duration(2000)
       .attr("width", this.width)
       .attr("transform", "translate(0," + -7 + ")");
 
     // Temporarily hide the area selection feature on top of the graph
-    this.focus.selectAll(".brush").attr("display", "none");
+    this.focus.selectAll(".brush").attr("display", "none");    
 
     if (this.yLogAxis) {
       this.checkNumberOfLogAxisTicks();
@@ -1369,6 +1472,43 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getValueBasedShape(value){
+    let shape, color;
+    if(typeof value == "string" && value.toLowerCase() == "no data"){
+      shape = this.squareShape;
+      color = "transparent";
+    }
+    else if(value<80){
+      shape = this.circleShape;
+      color = "#CC6262";
+    }else if(value>=80 && value < 90){
+      shape = this.triangleShape;
+      color = "#F5B66F";
+    }else{
+      shape = this.squareShape;
+      color = "#6AAA75";
+    }
+    return [shape, color];
+  }
+
+  getTypeBasedValue(str){
+    if(this.singlePercentLine){
+      return str+"%";
+    }
+    return str;
+  }
+
+  getTrimmedString(str: string){
+    if(str.length>30){
+      str = str.substring(0, 27) + "...";
+    }
+    return str;
+  }
+
+  getHyphenSeperatedString(str){
+    return str.replace(/[^a-zA-Z]/g, '').toLowerCase();
+  }
+
   private drawHover() {
     const self = this;
     const numOfLines = this.graphLinesData.length - 1;
@@ -1393,8 +1533,8 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         .attr("class", "hover rectCoverDate")
         .attr("fill", "#fff")
         // .attr("fill-opacity", "0.9")
-        .attr("height", "69px")
-        .attr("width", "169px")
+        .attr("height", (this.multiSelectForm.value.length*27+44)+"px")
+        .attr("width", this.tooltipWidth)
         .attr("stroke", "#DFE6EE")
         .attr("display", "none")
         .attr("text-align", "middle")
@@ -1412,16 +1552,17 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
 
       for (let i = 0; i < self.graphLinesData.length; i++) {
+      const processedKey = this.getHyphenSeperatedString(this.graphData[i].key);
 
         self.focus
           .append("text")
-          .attr("class", "hover valueData" + i)
-          .attr("x", 25)
+          .attr("class", "hover "+ processedKey + "-tooltip" +" valueData")
+          .attr("x", 90)
           .attr("dy", "0.50em");
 
         self.focus
           .append("text")
-          .attr("class", "hover rectText" + i)
+          .attr("class", "hover "+ processedKey + "-tooltip" +" rectText")
           .style("stroke-width", "0px")
           .style("fill", "#000")
           .style("text-transform", "capitalize")
@@ -1431,10 +1572,10 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
         self.focus
           .append("rect")
-          .attr("class", "hover rectData" + i)
+          .attr("class", "hover "+ processedKey + "-tooltip" +" rectData")
           .attr(
             "fill",
-            self.lineColorsObject[self.graphLinesData[numOfLines - i].key]
+            self.lineColorsObject[self.graphLinesData[i].key?.toLowerCase()]
           )
           .attr("height", "14px")
           .attr("width", "14px")
@@ -1442,10 +1583,15 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           .attr("text-align", "middle")
           .style(
             "stroke",
-            self.lineColorsObject[self.graphLinesData[numOfLines - i].key]
+            self.lineColorsObject[self.graphLinesData[i].key?.toLowerCase()]
           )
           .attr("x", -110)
           .attr("y", -7);
+
+          self.focus
+          .append("path")
+          .attr("class", "hover "+ processedKey + "-tooltip" + " valueBasedShape")
+        
       }
 
       this.focus
@@ -1460,17 +1606,33 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     }
     this.svg
       .append("rect")
-      .attr("transform", "translate(" + 0 + "," + (this.margin.left - 10) + ")")
+      .attr("transform", "translate(" + 0 + "," + (2 * this.margin.top + 40) + ")")
       .attr("class", "overlay")
       .attr("width", this.width)
       .attr("height", this.height)
       .on("mouseover", () => {
-        self.focus.selectAll(".hover").style("display", "block");
-        if (this.firstMouseMove) {
-          self.focus.selectAll(".hover").style("opacity", "1");
-        } else {
-          self.focus.selectAll(".hover").style("opacity", "0");
+        this.multiSelectForm.value.forEach((key, i) => {
+          
+        const processedKey = this.getHyphenSeperatedString(key);
+        
+        if(this.highlightedLine){
+          if(processedKey == this.highlightedLine){
+            self.focus.selectAll(`.hover.${processedKey}-tooltip`).style("display", "block");
+          }else{
+            self.focus.selectAll(`.hover.${processedKey}-tooltip`).style("display", "none");
+          }
+        }else{
+            self.focus.selectAll(`.hover.${processedKey}-tooltip`).style("display", "block");
         }
+        if (this.firstMouseMove) {
+          self.focus.selectAll(`.hover.${processedKey}-tooltip`).style("opacity", "1");
+        } else {
+          self.focus.selectAll(`.hover.${processedKey}-tooltip`).style("opacity", "0");
+        }
+        });
+        self.focus.selectAll(".x.hover").style("display", "block");
+        self.focus.selectAll(".hover.rectCoverDate").style("display", "block");
+        self.focus.selectAll(".hover.dateData").style("display", "block");
       })
       .on("mouseout", () => {
         self.focus.selectAll(".hover").style("display", "none");
@@ -1493,9 +1655,11 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
         self.legendHover.map(function (legend) {
           for (let i = 0; i < self.graphLinesData.length; i++) {
+        const processedKey = self.getHyphenSeperatedString(self.graphLinesData[i].key);
             const currentLineValues =
-              self.graphLinesData[numOfLines - i].values;
-            dobj["value" + i] = "No Data";
+              self.graphLinesData[i].values;
+              
+            dobj["value-" + processedKey] = "No Data";
             for (let j = 0; j < currentLineValues.length; j++) {
               if (currentLineValues[j]["zero-value"]) {
                 currentLineValues[j].value = 0;
@@ -1505,12 +1669,12 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
               valueDate.setHours(0, 0, 0, 0);
               hoverDate.setHours(0, 0, 0, 0);
               if (valueDate.toString() === hoverDate.toString()) {
-                dobj["value" + i] = self.numbersPipe.transform(currentLineValues[j].value);
+                dobj["value-" + processedKey] = self.numbersPipe.transform(currentLineValues[j].value);
                 break;
               }
             }
           }
-        });
+        });        
 
         self.focus
           .select(".x.hover")
@@ -1527,20 +1691,31 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         const rectData = {};
         const dateData = {};
         const yearData = {};
-
+        const valueBasedShapePos = {};
+        
         rectText["dx"] =
           mousePosition < axisRange / 4
             ? "4em"
             : mousePosition > axisRange * 0.75
-            ? "-14em"
+            ? -265
             : "5em";
         // rectData["dx"] = mousePosition < axisRange / 4 ? "70" : "-140";
+        valueBasedShapePos["x"] = mousePosition < axisRange / 4
+            ? 255
+            : mousePosition > axisRange * 0.75
+            ? -45
+            : 270;
+        valueBasedShapePos["y"] = mousePosition < axisRange / 4
+            ? 42
+            : mousePosition > axisRange * 0.75
+            ? 42
+            : 42;
         valueData["dx"] =
           mousePosition < axisRange / 4
-            ? "9em"
+            ? "11.5em"
             : mousePosition > axisRange * 0.75
-            ? "-19em"
-            : "10em";
+            ? -180
+            : "12em";
         valueData["dy"] =
           mousePosition < axisRange / 4
             ? "3.5em"
@@ -1551,7 +1726,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "2.1em"
             : mousePosition > axisRange * 0.75
-            ? "-5em"
+            ? -275
             : "3.1em";
         rectData["dy"] =
           mousePosition < axisRange / 4
@@ -1568,20 +1743,20 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "15"
             : mousePosition > axisRange * 0.75
-            ? "-198"
+            ? -285
             : "25";
         dateData["dx"] =
           mousePosition < axisRange / 4
             ? "2em"
             : mousePosition > axisRange * 0.75
-            ? "-17em"
+            ? -275
             : "3em";
         dateData["dy"] =
           mousePosition < axisRange / 4
-            ? ".95em"
+            ? "1.5em"
             : mousePosition > axisRange * 0.75
-            ? "1.1em"
-            : ".95em";
+            ? "1.6em"
+            : "1.5em";
         yearData["dx"] =
           mousePosition < axisRange / 4
             ? "1em"
@@ -1595,7 +1770,10 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
             ? "2.8em"
             : "2.5em";
 
-        self.graphLinesData.forEach((eachline) => {
+        for(let m=0; m<self.multiSelectForm.value.length; m++){
+        const processedKey = self.getHyphenSeperatedString(self.multiSelectForm.value[m]);
+        const yPosFact = self.highlightedLine?0:m;
+
           self.focus
             .select(".dateData")
             .attr(
@@ -1605,45 +1783,49 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
             .text(formatDate(dobj[`label`]).toUpperCase())
             .attr("dx", dateData["dx"])
             .attr("dy", dateData["dy"]);
-        });
 
-          self.graphLinesData.forEach((eachline, m) => {
             self.focus
-              .select(".valueData" + m)
+              .select(".valueData"+"."+processedKey+"-tooltip")
               .attr(
                 "transform",
                 "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
               )
-              .text(dobj["value" + m])
+              .text(self.getTypeBasedValue(dobj["value-" + processedKey]))
               .attr("dx", valueData["dx"])
-              .attr("dy", 3.5 + m * 2.5 + "em");
-          });
+              .attr("dy", 4 + yPosFact * 2.5 + "em");
 
-          self.graphLinesData.forEach((eachline, m) => {
             self.focus
-              .select(".rectData" + m)
+              .select(".rectData"+"."+processedKey+"-tooltip")
               .attr(
                 "transform",
                 "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
               )
               .attr("x", rectData["dx"])
-              .attr("y", 2.5 + m * 2.5 + "em");
-          });
+              .attr("y", 3 + yPosFact * 2.5 + "em");
 
-          self.graphLinesData.forEach((eachline, m) => {
-            const legend = self.graphLinesData[numOfLines - m].key;
+            if(self.singlePercentLine && self.getValueBasedShape(dobj["value-" + processedKey])){
+              const [shape, color] = self.getValueBasedShape(dobj["value-" + processedKey]);
+              self.focus
+                .select(".valueBasedShape"+"."+processedKey+"-tooltip")
+                .attr("d", shape)
+                .attr("fill", color)
+                .attr(
+                  "transform",
+                  "translate(" + (self.x(dobj[`label`]) + valueBasedShapePos["x"]) + "," + (yPosFact*27.1 + valueBasedShapePos["y"]) + ")"
+                )
+            }
+
+            const legend = self.multiSelectForm.value[m];            
             self.focus
-              .select(".rectText" + m)
+              .select(".rectText"+"."+processedKey+"-tooltip")
               .attr(
                 "transform",
                 "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
               )
-              .text(legend)
+              .text(self.getTrimmedString(legend))
               .attr("dx", rectText["dx"])
-              .attr("dy", 3.7 + m * 2.5 + "em");
-          });
+              .attr("dy", 4.2 + yPosFact * 2.78 + "em");
 
-          self.graphLinesData.forEach((eachline, m) => {
             self.focus
               .select(".rectCoverDate")
               .attr(
@@ -1651,11 +1833,270 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
                 "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
               )
               .attr("x", rectCoverDate["dx"])
-              .attr("y", -10 + m);
-          });
+              .attr("y", -10 + yPosFact);
+          };
+      } catch (error) {
+        self.loggerService.log("error", "Error in mouse over - " + error);
+      }
+    }
+  }
+
+  private drawlandingToolTip() {
+    this.svg.selectAll(".overlay").style("display", "none");
+    this.svg.selectAll(".hover").style("display", "none");
+    const self = this;
+    const numOfLines = this.graphLinesData.length - 1;
+
+    this.legendHover = this.graphLinesData.map((eachLine) => {
+      return eachLine.values;
+    });
+
+    this.searchAnObjectFromArray = (key, value, array) => {
+      const obj = array.filter((objs) => {
+        return objs[key] === value;
+      })[0];
+
+      return obj;
+    };
+
+    this.bisectDate = d3Array.bisector((d) => d[`date`]).left;
+
+      this.focus
+        .append("rect")
+        .attr("class", "landingToolTip rectCoverDate")
+        .attr("fill", "#fff")
+        // .attr("fill-opacity", "0.9")
+        .attr("height", (this.multiSelectForm.value.length*27+44)+"px")
+        .attr("width", this.tooltipWidth)
+        .attr("stroke", "#DFE6EE")
+        .attr("display", "none")
+        .attr("text-align", "middle")
+        .attr("rx", 8)
+        .attr("ry", 8)
+        .attr("x", 15)
+        .attr("y", -7);
+
+      this.focus
+        .append("text")
+        .attr("class", "landingToolTip dateData")
+        .attr("x", 2)
+        .attr("dy", ".35em");
+
+
+
+      for (let i = 0; i < self.graphLinesData.length; i++) {
+
+        const processedKey = self.getHyphenSeperatedString(self.graphData[i].key);  
+
+        self.focus
+          .append("text")
+          .attr("class", "landingToolTip hover "+ processedKey + "-tooltip" +" valueData")
+          .attr("x", 90)
+          .attr("dy", "0.50em");
+
+        self.focus
+          .append("text")
+          .attr("class", "landingToolTip hover "+ processedKey + "-tooltip" +" rectText")
+          .style("stroke-width", "0px")
+          .style("fill", "#000")
+          .style("text-transform", "capitalize")
+          .style("font-size", "10px")
+          .attr("x", 9)
+          .attr("dy", ".35em");
+
+        self.focus
+          .append("rect")
+          .attr("class", "landingToolTip hover "+ processedKey + "-tooltip" +" rectData")
+          .attr(
+            "fill",
+            self.lineColorsObject[self.graphLinesData[i].key?.toLowerCase()]
+          )
+          .attr("height", "14px")
+          .attr("width", "14px")
+          .attr("display", "none")
+          .attr("text-align", "middle")
+          .style(
+            "stroke",
+            self.lineColorsObject[self.graphLinesData[i].key?.toLowerCase()]
+          )
+          .attr("x", -110)
+          .attr("y", -7);
+
+          self.focus
+          .append("path")
+          .attr("class", "landingToolTip hover "+ processedKey + "-tooltip" + " valueBasedShape")        
+      }
+
+      this.focus
+        .append("line")
+        .attr("class", "x landingToolTip")
+        .style("stroke", "#bbb")
+        .style("stroke-width", "2px")
+        .style("opacity", 1)
+        .attr("display", "none")
+        .attr("y1", 0)
+        .attr("y2", this.height);
+    
+    this.svg
+      .append("rect")
+      .attr("transform", "translate(" + 0 + "," + (2 * this.margin.top + 40) + ")")
+      .attr("class", "landingToolTipOverlay")
+      .attr("width", this.width)
+      .attr("height", this.height)
+      .on("mouseover", () => {        
+          this.focus.selectAll(".landingToolTip").remove();
+          this.svg.select(".landingToolTipOverlay").remove();
+          this.svg.selectAll(".overlay").style("display", "block");
+      })
+      this.focus.selectAll(".landingToolTip").style("display", "block");
+      mousemove();
+
+      function mousemove() {
+      try {
+        const mousePosition = self.graphWidth - 85;
+        const formatDate = d3TimeFormat.timeFormat("%b %d");
+        const formatYear = d3TimeFormat.timeFormat("%Y");
+        const label = self.x.invert(mousePosition);
+        const dobj = {};
+        const axisRange = self.x2.range()[1];
+        dobj[`label`] = label;
+
+        self.legendHover.map(function (legend) {
+          for (let i = 0; i < self.graphLinesData.length; i++) {
+        const processedKey = self.getHyphenSeperatedString(self.graphLinesData[i].key);    
+            const currentLineValues =
+              self.graphLinesData[i].values;
+              
+            dobj["value-" + processedKey] = "No Data";
+            for (let j = 0; j < currentLineValues.length; j++) {
+              if (currentLineValues[j]["zero-value"]) {
+                currentLineValues[j].value = 0;
+              }
+              const valueDate = new Date(currentLineValues[j].date);
+              const hoverDate = new Date(label);
+              valueDate.setHours(0, 0, 0, 0);
+              hoverDate.setHours(0, 0, 0, 0);
+              if (valueDate.toString() === hoverDate.toString()) {
+                dobj["value-" + processedKey] = self.numbersPipe.transform(currentLineValues[j].value);
+                break;
+              }
+            }
+          }
+        });        
+
+        self.focus
+          .select(".x.landingToolTip")
+          .attr(
+            "transform",
+            "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
+          )
+          .attr("y2", self.height);
+
+        const valueData = {};
+        const rectCoverData = {};
+        const rectCoverDate = {};
+        const rectText = {};
+        const rectData = {};
+        const dateData = {};
+        const yearData = {};
+        const valueBasedShapePos = {};
+        
+        rectText["dx"] = -265;
+            
+        // rectData["dx"] = mousePosition < axisRange / 4 ? "70" : "-140";
+        valueBasedShapePos["x"] = -45;
+
+        valueBasedShapePos["y"] = 42;
+
+        valueData["dx"] = -180;
+            
+        valueData["dy"] = "3.5em"
+            
+        rectData["dx"] = -275;
+            
+        rectData["dy"] = "3.5em"
+            
+        rectData["y"] =  28
+            
+        rectCoverDate["dx"] = -285;
+            
+        dateData["dx"] = -275;
+            
+        dateData["dy"] = "1.5em"
+            
+        yearData["dx"] = "1em"
+            
+        yearData["dy"] = "2.5em"
+        
+        for(let m=0; m<self.multiSelectForm.value.length; m++){
+        const processedKey = self.getHyphenSeperatedString(self.multiSelectForm.value[m]) 
+        const yPosFact = self.highlightedLine?0:m;
+
+          self.focus
+            .select(".dateData")
+            .attr(
+              "transform",
+              "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
+            )
+            .text(formatDate(dobj[`label`]).toUpperCase())
+            .attr("dx", dateData["dx"])
+            .attr("dy", dateData["dy"]);
+
+            if(self.singlePercentLine && self.getValueBasedShape(dobj["value-" + processedKey])){
+            const [shape, color] = self.getValueBasedShape(dobj["value-" + processedKey]);
+            self.focus
+              .select(".valueBasedShape"+"."+processedKey+"-tooltip")
+              .attr("d", shape)
+              .attr("fill", color)
+              .attr(
+                "transform",
+                "translate(" + (self.x(dobj[`label`]) + valueBasedShapePos["x"]) + "," + (yPosFact*27.1 + valueBasedShapePos["y"]) + ")"
+              )
+            }
+
+            self.focus
+              .select(".valueData"+"."+processedKey+"-tooltip")
+              .attr(
+                "transform",
+                "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
+              )
+              .text(self.getTypeBasedValue(dobj["value-" + processedKey]))
+              .attr("dx", valueData["dx"])
+              .attr("dy", 4 + yPosFact * 2.5 + "em");
+
+            self.focus
+              .select(".rectData"+"."+processedKey+"-tooltip")
+              .attr(
+                "transform",
+                "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
+              )
+              .attr("x", rectData["dx"])
+              .attr("y", 3 + yPosFact * 2.5 + "em");
+
+            const legend = self.multiSelectForm.value[m];            
+            self.focus
+              .select(".rectText"+"."+processedKey+"-tooltip")
+              .attr(
+                "transform",
+                "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
+              )
+              .text(self.getTrimmedString(legend))
+              .attr("dx", rectText["dx"])
+              .attr("dy", 4.2 + yPosFact * 2.78 + "em");
+
+            self.focus
+              .select(".rectCoverDate")
+              .attr(
+                "transform",
+                "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
+              )
+              .attr("x", rectCoverDate["dx"])
+              .attr("y", -10 + yPosFact);
+          };
       } catch (error) {
         self.loggerService.log("error", "Error in mouse over - " + error);
       }
     }
   }
 }
+

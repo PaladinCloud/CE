@@ -1,84 +1,53 @@
 .stepper-content-wrapper{
-   display: flex;
-}
-
-.stepper-header-wrapper{
-    width: 200px;
-    padding-right: 20px;
-    border-right: 1px solid var(--border-200);
-}
-
-::ng-deep .mat-step-header{
-    pointer-events: none !important;
-}
-
-.stepper-wrapper{
-    height: 100%;
     display: flex;
-}
-
-::ng-deep .mat-step-header .mat-step-header-ripple{
-    display: none !important;
-}
-
-::ng-deep .mat-vertical-stepper-content{
-    height: auto !important;
-}
-
-::ng-deep .mat-step-header{
-    background: none !important;
-}
-
-.stepper{
-    width: 20%;
-}
-
-::ng-deep .mat-vertical-content{
-    padding: 0px !important;
-}
-
-::ng-deep .mat-vertical-content-container{
-    margin-left: 8px !important;
-}
-
-::ng-deep .mat-step-icon{
-    height: 24px !important;
-    width: 24px !important;
-}
-
-::ng-deep .mat-vertical-stepper-header{
-    padding: 24px 0px;
-}
-
-::ng-deep .mat-step-icon-state-edit{
-    background-color: var(--primary-100) !important;
-}
-
-.stepper-wrapper .right-wrapper{
-    position: absolute;
-    top: 70px;
-    right: 48px;
-}
-
-.text-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.title{
-    font-family: 'Mark Pro';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 140%;
-    color: var(--text-high-emphasis);
-    }
-    
-    .sub-text{
-    font: var(--text-body-1);
-    color: var(--text-medium-emphasis);
-    flex: none;
-    order: 1;
-    flex-grow: 0;
-    }
+ }
+ 
+ .stepper-header-wrapper{
+     width: 250px;
+     padding-right: 20px;
+     border-right: 1px solid var(--border-200);
+ }
+ 
+ ::ng-deep .mat-step-header{
+     pointer-events: none !important;
+ }
+ 
+ .stepper-wrapper{
+     height: 100%;
+     display: flex;
+ }
+ 
+ ::ng-deep .mat-step-header .mat-step-header-ripple{
+     display: none !important;
+ }
+ 
+ ::ng-deep .mat-vertical-stepper-content{
+     height: auto !important;
+ }
+ 
+ ::ng-deep .mat-step-header{
+     background: none !important;
+ }
+ 
+ 
+ ::ng-deep .mat-vertical-content{
+     padding: 0px !important;
+ }
+ 
+ ::ng-deep .mat-vertical-content-container{
+     margin-left: 8px !important;
+ }
+ 
+ ::ng-deep .mat-step-icon{
+     height: 24px !important;
+     width: 24px !important;
+ }
+ 
+ ::ng-deep .mat-vertical-stepper-header{
+     padding: 24px 0px;
+ }
+ 
+ ::ng-deep .mat-step-icon-state-edit{
+     background-color: var(--primary-100) !important;
+ }
+ 

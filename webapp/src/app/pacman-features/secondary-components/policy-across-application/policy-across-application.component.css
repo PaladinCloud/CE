@@ -12,23 +12,11 @@
  * limitations under the License.
  */
 
-.sub-head {
+ .sub-head {
     padding: 16px 24px;
     background-color: #dce3e9;
     font-size: 1em;
     color: #3f4a59;
-}
-.vulnerability-across-app-outer-wrapper{
-    min-height: 50%;
-    /*overflow-x: auto; overflow-x: overlay;*/
-
-    /* added for height adjustment by trinanjan on 9th jan,2017.
-        Once it is verified by puneet,it will be added to other table page also
-    */
-
-    height: calc(100% - 20em);
-    overflow: hidden;
-    /* *********** */
 }
 
 .vulnerability-across-app-outer-wrapper:hover {

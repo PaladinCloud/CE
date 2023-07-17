@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.help-text-modal {
+ .help-text-modal {
     position: fixed;
     left: 15.7%;
     right: 23.5%;
@@ -188,7 +188,7 @@
 }
 
 .uppercase-first-letter:first-letter {
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 
 .error-head {
