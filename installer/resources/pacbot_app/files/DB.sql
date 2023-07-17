@@ -1483,7 +1483,6 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (25,1,'Policy','policyName.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=policyName&type=issue');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (26,1,'Asset ID','_resourceid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=issue');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (27,1,'Violation ID','annotationid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=annotationid&type=issue');
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (28,1,'Age','createdDate','/compliance/v1/filters/violationAge?ag=aws');
 UPDATE pac_v2_ui_options set optionName='Asset Type' where optionId=24;
 DELETE IGNORE from pac_v2_ui_options where optionId=4;
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (4,1,'Account Name','accountname.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountname&type=issue');
@@ -2994,6 +2993,8 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 
 DELETE iGNORE FROM pac_config_properties where cfkey = "external.id";
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES('external.id',concat(@EXTERNAL_ID, ''),'application','prd','latest',null,null,null,null);
+
+delete from pac_v2_ui_options where optionId=28;
 
 
 
