@@ -38,6 +38,7 @@ export interface FilterItem {
 export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @Input() centeredColumns: { [key: string]: boolean } = {};
     @Input() columnsSortFunctionMap;
+    @Input() filterFunctionMap;
     @Input() set columnWidths(value: { [key: string]: number }) {
         this._columnWidths = value;
         this.denominator = Object.keys(value).reduce((acc, next) => acc + value[next], 0);
@@ -483,8 +484,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                     } else if(filterValue.includes('-')){
                         const [min, max] = filterValue.split('-');
                         return (cellValue >=min && cellValue<=max);
-                    }
-                    else if (!(String(cellValue).toLowerCase() == filterValue.toLowerCase())) {
+                    } else if(this.filterFunctionMap[filterKey]){
+                        if(!this.filterFunctionMap[filterKey](item, filterKey, filterValue)){
+                            return false;
+                        }
+                    } else if (!(String(cellValue).toLowerCase() == filterValue.toLowerCase())) {
                         return false;
                     }
                 }

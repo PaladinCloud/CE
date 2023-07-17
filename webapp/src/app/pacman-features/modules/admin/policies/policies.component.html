@@ -34,7 +34,8 @@
                             (selectedFilter)="handleFilterSelection()"
                             (selectedFilterType)="handleFilterTypeSelection()"
                             (deleteFilters)="deleteFilters($event)"
-                            [selectedRowIndex]="selectedRowIndex">
+                            [selectedRowIndex]="selectedRowIndex"
+                            [filterFunctionMap]="filterFunctionMap">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>
