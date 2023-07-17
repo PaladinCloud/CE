@@ -124,8 +124,8 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
                                 .get(PacmanRuleConstants.DESTINATIONPORTRANGES).getAsJsonArray();
                         String access = nBoundarySecurityDataItem.getAsJsonObject().get("access").getAsString();
 
-                        if (sourceAddressPrefixes != null && (protocol.equalsIgnoreCase(validateProtocol)||protocol.equalsIgnoreCase(PacmanRuleConstants.PORT_ANY)
-                                && checkDestinationPort(destinationPortRanges,validatePort))) {
+                        if (sourceAddressPrefixes != null && (protocol.equalsIgnoreCase(validateProtocol)||protocol.equalsIgnoreCase(PacmanRuleConstants.PORT_ANY))
+                                && checkDestinationPort(destinationPortRanges,validatePort)) {
                             for (int srcAdsIndex = 0; srcAdsIndex < sourceAddressPrefixes.size(); srcAdsIndex++) {
                                 if (sourceAddressPrefixes.get(srcAdsIndex).getAsString()
                                         .equals(PacmanRuleConstants.PORT_ANY)
