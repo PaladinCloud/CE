@@ -236,7 +236,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
       if(!isTempFilter){
         this.filters = state.filters || [];
-        this.getUpdatedUrl();
+        setTimeout(()=>this.getUpdatedUrl(),0);
       }
   }
 

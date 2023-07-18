@@ -200,7 +200,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
       if(!isTempFilter && state.filters){
         this.filters = state.filters || [];
-        this.getUpdatedUrl();
+        setTimeout(()=>this.getUpdatedUrl(),0);
       }
     }
   }

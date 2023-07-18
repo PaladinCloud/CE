@@ -61,7 +61,6 @@ import { VulnerabilityReportComponent } from './vulnerability-report/vulnerabili
 import { MatMenuModule } from "@angular/material/menu";
 import { MatBadgeModule } from '@angular/material/badge';
 import { AssetTilesService } from '../core/services/asset-tiles.service';
-import { TreeModule } from '@circlon/angular-tree-component';
 import { StatisticsModule } from '../pacman-features/modules/statistics/statistics.module';
 
 @NgModule({
@@ -83,7 +82,6 @@ imports: [
     OmnisearchModule,
     AdminModule,
     CdkTreeModule,
-    TreeModule
 ],
 declarations: [
     ContextualMenuComponent,
