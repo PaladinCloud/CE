@@ -102,7 +102,7 @@ Login as Admin user and go to the Admin page from the top menu. In the Admin sec
 * Manage Jobs
 * Create/Manage Access Roles
 * Manage Paladin cloud Configurations
-* See detailed instructions review the [documentation]([https://paladincloud.io/docs/)
+* For detailed instructions visit the Paladin Cloud [documentation](https://paladincloud.io/docs/)
 
 # License
 
