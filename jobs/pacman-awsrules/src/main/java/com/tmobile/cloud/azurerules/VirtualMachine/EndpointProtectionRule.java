@@ -106,7 +106,7 @@ public class EndpointProtectionRule extends BasePolicy {
                     for (int i = 0; i < vmExtensions.size(); i++) {
                         JsonObject vmExtension = vmExtensions.get(i).getAsJsonObject();
                         List<String> vmExtensionName = new ArrayList<>();
-                        if(!vmExtension.get(PacmanRuleConstants.NAME).isJsonNull()) {
+                        if(vmExtension.has(PacmanRuleConstants.NAME)) {
                             JsonArray vmExtensionArray = vmExtension.get(PacmanRuleConstants.NAME).getAsJsonArray();
                             for (JsonElement vmElement : vmExtensionArray) {
                                 String name = vmElement.getAsString();
