@@ -16,7 +16,7 @@
         <div class="{{item}}-count flex flex-row violations-info space-between"
          *ngFor="let item of keyList">
           <div class="name nowrap-ellipsis flex-grow">{{ item }}</div>
-          <div [class.red]="item=='Out of SLA' && card.subInfo[item].value>0" [class.link]="card.subInfo[item].isLink" class="count" (click)="redirect(item)">
+          <div [class.link]="card.subInfo[item].isLink" class="count" (click)="redirect(item)">
                {{ card.subInfo[item].value | number }}
                <img [class.hidden]="!card.subInfo[item].isLink" style="height: 8px;" src="/assets/icons/Path.svg"/>
             </div>
