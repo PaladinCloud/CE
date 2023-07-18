@@ -562,7 +562,7 @@
            this.warningMailSubject = this.policyDetails.warningMailSubject;
            this.elapsedTime = this.policyDetails.elapsedTime;
            this.fixType = this.policyDetails.fixType;
-           this.warningNotification = this.fixType == "silent";
+           this.warningNotification = this.fixType == "non-silent";
          }
        this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
        this.paramsList = [];
