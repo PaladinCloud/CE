@@ -55,8 +55,8 @@ export const MENU_NODES: MenuItem[] = [
         ],
     },
     {
-        id: 'Policy',
-        name: 'Policy',
+        id: 'user-policies',
+        name: 'Policies',
         image: 'policy-icon',
         route: '/pl/compliance/policy-knowledgebase',
     },

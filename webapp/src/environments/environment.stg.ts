@@ -18,15 +18,15 @@ export const environment = {
     envName: 'stg',
     version: '2.8.3',
     users: {
-        url: '{{cloudBaseUrl}}/api/platform/ad/users',
+        url: '{{cloudBaseUrl}}/platform/ad/users',
         method: 'GET'
     },
     createJira: {
-        url: '{{cloudBaseUrl}}/api/pacman/create-jira-ticket',
+        url: '{{cloudBaseUrl}}/pacman/create-jira-ticket',
         method: 'POST'
     },
     findJira: {
-        url: '{{cloudBaseUrl}}/api/pacman/find-jira-ticket',
+        url: '{{cloudBaseUrl}}/pacman/find-jira-ticket',
         method: 'POST'
     },
     login: {
