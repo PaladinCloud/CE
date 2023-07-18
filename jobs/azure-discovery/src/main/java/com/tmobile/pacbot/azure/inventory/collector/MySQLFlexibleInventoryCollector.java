@@ -78,6 +78,7 @@ public class MySQLFlexibleInventoryCollector {
                         mySQLFlexibleVH.setTlsVersion(tlsVersion);
                         mySQLFlexibleVH.setResourceGroupName(resourceGroupName);
                         mySQLFlexibleVH.setId(id);
+                        mySQLFlexibleVH.setName(serverName);
                         mySQLFlexibleVH.setSubscriptionName(subscription.getSubscriptionName());
                         mySQLFlexibleVH.setSubscription(subscription.getSubscriptionId());
                         break;

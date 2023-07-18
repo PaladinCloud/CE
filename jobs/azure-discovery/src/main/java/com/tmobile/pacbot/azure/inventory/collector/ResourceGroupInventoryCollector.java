@@ -39,6 +39,7 @@ public class ResourceGroupInventoryCollector {
 			resourceGroupVH.setRegionName(resourceGroup.regionName());
 			resourceGroupVH.setRegion(Util.getRegionValue(subscription,resourceGroup.regionName()));
 			resourceGroupVH.setTags(resourceGroup.tags());
+			resourceGroupVH.setName(resourceGroup.name());
 			resourceGroupList.add(resourceGroupVH);
 		}
 		log.info("Target Type : {}  Total: {} ","ResourceGroup",resourceGroupList.size());
