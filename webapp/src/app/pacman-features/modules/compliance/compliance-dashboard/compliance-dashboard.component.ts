@@ -20,6 +20,7 @@ import find from 'lodash/find';
 import map from 'lodash/map';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
@@ -282,65 +283,69 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         private utils: UtilsService,
         private windowExpansionService: WindowExpansionService,
         private workflowService: WorkflowService,
-    ) {}
+        private assetTypeMapService: AssetTypeMapService
+    ) {
+      this.getPreservedState();
+      this.assetGroupSubscription = this.subscriptionToAssetGroup =
+        this.assetGroupObservableService
+          .getAssetGroup()
+          .subscribe((assetGroupName) => {
+            this.selectedAssetGroup = assetGroupName;
+            this.updateComponent();
+          });
 
+      this.subscriptionDomain = this.domainObservableService
+        .getDomainType()
+        .subscribe((domain) => {
+          this.selectedDomain = domain;
+          if(this.selectedAssetGroup){
+            this.updateComponent();
+          }
+        });
+    }
+
+    getPreservedState(){
+      const state = this.tableStateService.getState("dashboard") ?? {};
+      
+      this.headerColName = state.headerColName ?? 'Severity';
+      this.direction = state.direction ?? 'desc';
+      this.displayedColumns = ["Policy", "Violations", "Source", "Severity", "Category", "Compliance"];
+      // this.bucketNumber = state.bucketNumber ?? 0;
+      this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
+      this.complianceTableData = state?.data ?? [];
+      this.tableDataLoaded = true;
+      this.searchTxt = state?.searchTxt ?? '';
+      this.tableScrollTop = state?.tableScrollTop;
+      this.totalRows = state.totalRows ?? 0;
+      this.filters = state?.filters ?? [];
+      this.selectedRowIndex = state?.selectedRowIndex;
+  
+      if(this.complianceTableData && this.complianceTableData.length>0){
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
+      if(state.filters){
+        this.filters = state.filters;
+        setTimeout(()=>this.getUpdatedUrl(),0);
+      }
+    }
+  
     ngOnInit() {
-        const state = this.tableStateService.getState('dashboard') || {};
-
-        this.headerColName = state.headerColName || 'Severity';
-        this.direction = state.direction || 'asc';
-        // this.bucketNumber = state.bucketNumber || 0;
-
-        this.displayedColumns = Object.keys(this.columnWidths);
-        this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-        this.complianceTableData = state?.data || [];
-        this.tableDataLoaded = true;
-        this.searchTxt = state?.searchTxt || '';
-        this.tableScrollTop = state?.tableScrollTop;
-        this.totalRows = state.totalRows || 0;
-        this.filters = state?.filters || [];
-        this.selectedRowIndex = state?.selectedRowIndex;
-
-        if (this.filters) {
-            this.getFiltersData(this.complianceTableData);
-        }
-
-        if (this.complianceTableData && this.complianceTableData.length > 0) {
-            this.isStatePreserved = true;
-        } else {
-            this.isStatePreserved = false;
-        }
-
-        this.assetGroupSubscription = this.subscriptionToAssetGroup =
-            this.assetGroupObservableService.getAssetGroup().subscribe((assetGroupName) => {
-                this.selectedAssetGroup = assetGroupName;
-                this.updateComponent();
-            });
-
-        this.subscriptionDomain = this.domainObservableService
-            .getDomainType()
-            .subscribe((domain) => {
-                this.selectedDomain = domain;
-                if (this.selectedAssetGroup) {
-                    this.updateComponent();
-                }
-            });
-
-        const breadcrumbInfo = this.workflowService.getDetailsFromStorage()['level0'];
-
-        if (breadcrumbInfo) {
-            this.breadcrumbArray = breadcrumbInfo.map((item) => item.title);
-            this.breadcrumbLinks = breadcrumbInfo.map((item) => item.url);
-        }
-
-        this.breadcrumbPresent = 'Dashboard';
-
-        this.breakpoint1 = window.innerWidth <= 800 ? 2 : 4;
-        this.breakpoint2 = window.innerWidth <= 800 ? 1 : 2;
-        this.breakpoint3 = window.innerWidth <= 400 ? 1 : 1;
-        this.breakpoint4 = window.innerWidth <= 400 ? 1 : 1;
-        this.dashboardContainers = this.dashboardArrangementService.getArrangement();
-        this.dashcobardCollapsedContainers = this.dashboardArrangementService.getCollapsed();
+  
+  
+      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+  
+      if(breadcrumbInfo){
+        this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+        this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+      }
+      this.breakpoint1 = window.innerWidth <= 800 ? 2 : 4;
+      this.breakpoint2 = window.innerWidth <= 800 ? 1 : 2;
+      this.breakpoint3 = window.innerWidth <= 400 ? 1 : 1;
+      this.breakpoint4 = window.innerWidth <= 400 ? 1 : 1;
+      this.dashboardContainers = this.dashboardArrangementService.getArrangement();
+      this.dashcobardCollapsedContainers = this.dashboardArrangementService.getCollapsed();
     }
 
     massageAssetTrendGraphData(graphData) {
@@ -605,242 +610,338 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         this.error = true;
     }
 
-    /*
-     * This function gets the urlparameter and queryObj
-     *based on that different apis are being hit with different queryparams
-     */
     routerParam() {
-        try {
-            // this.filterText saves the queryparam
-            const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(
-                this.router.routerState.snapshot.root,
-            );
-            if (currentQueryParams) {
-                this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(currentQueryParams));
-                delete this.queryParamsWithoutFilter['filter'];
-                /**
-                 * The below code is added to get URLparameter and queryparameter
-                 * when the page loads ,only then this function runs and hits the api with the
-                 * filterText obj processed through processFilterObj function
-                 */
-                this.filterText = this.utils.processFilterObj(currentQueryParams);
-            }
-        } catch (error) {
-            this.errorMessage = this.errorHandling.handleJavascriptError(error);
-            this.logger.log('error', error);
+      try {
+        // this.filterText saves the queryparam
+        const currentQueryParams =
+          this.routerUtilityService.getQueryParametersFromSnapshot(
+            this.router.routerState.snapshot.root
+          );
+        if (currentQueryParams) {
+          this.queryParamsWithoutFilter = JSON.parse(
+            JSON.stringify(currentQueryParams)
+          );
+          delete this.queryParamsWithoutFilter["filter"];
+          /**
+           * The below code is added to get URLparameter and queryparameter
+           * when the page loads ,only then this function runs and hits the api with the
+           * filterText obj processed through processFilterObj function
+           */
+          this.filterText = this.utils.processFilterObj(currentQueryParams);
         }
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+      }
     }
     getUpdatedUrl() {
-        let updatedQueryParams = {};
-        this.filterText = this.utils.arrayToObject(this.filters, 'filterkey', 'value'); // <-- TO update the queryparam which is passed in the filter of the api
-        this.filterText = this.utils.makeFilterObj(this.filterText);
-
-        /**
-         * To change the url
-         * with the deleted filter value along with the other existing paramter(ex-->tv:true)
-         */
-
-        updatedQueryParams = {
-            filter: this.filterText.filter,
-        };
-
-        /**
-         * Finally after changing URL Link
-         * api is again called with the updated filter
-         */
-        this.filterText = this.utils.processFilterObj(this.filterText);
-
-        this.router.navigate([], {
-            relativeTo: this.activatedRoute,
-            queryParams: updatedQueryParams,
-            queryParamsHandling: 'merge',
-        });
+      let updatedQueryParams = {};
+        this.filterText = this.utils.arrayToObject(
+        this.filters,
+        "filterkey",
+        "value"
+      ); // <-- TO update the queryparam which is passed in the filter of the api
+      this.filterText = this.utils.makeFilterObj(this.filterText);
+  
+      /**
+       * To change the url
+       * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+       */
+  
+      updatedQueryParams = {
+        filter: this.filterText.filter,
+      }
+  
+  
+      /**
+       * Finally after changing URL Link
+       * api is again called with the updated filter
+       */
+      this.filterText = this.utils.processFilterObj(this.filterText);
+  
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: updatedQueryParams,
+        queryParamsHandling: 'merge',
+    });
     }
     deleteFilters(event?) {
-        try {
-          if (!event) {
+      try {
+        if (!event) {
+          this.filters = [];
+          this.storeState();
+        } else if(event.removeOnlyFilterValue) {
+          this.getUpdatedUrl();
+          this.getData();
+          this.storeState();
+        } else if(event.index && !this.filters[event.index].filterValue) {
+          this.filters.splice(event.index, 1);
+          this.storeState();
+        }
+        else {
+          if (event.clearAll) {
             this.filters = [];
-          } else if (event.clearAll) {
-            this.filters = [];
+          } else {
+            this.filters.splice(event.index, 1);
           }
           this.storeState();
-        } catch (error) { }
-      }
+          this.getUpdatedUrl();
+          this.getData();
+        }
+      } catch (error) { }
+      /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+    }
     /*
      * this functin passes query params to filter component to show filter
      */
     getFilterArray() {
-        try {
-            // let labelsKey = Object.keys(this.labels);
-            const filterObjKeys = Object.keys(this.filterText);
-            const dataArray = [];
-            for (let i = 0; i < filterObjKeys.length; i++) {
-                let obj = {};
-                obj = {
-                    name: filterObjKeys[i],
-                };
-                dataArray.push(obj);
-            }
-            const formattedFilters = dataArray;
-            for (let i = 0; i < formattedFilters.length; i++) {
-                const keyValue = find(this.filterTypeOptions, {
-                    optionValue: formattedFilters[i].name,
-                })['optionName'];
-                this.changeFilterType(keyValue).then(() => {
-                    const filterValue = find(this.filterTagOptions[keyValue], {
-                        id: this.filterText[filterObjKeys[i]],
-                    })['name'];
-                    const eachObj = {
-                        keyDisplayValue: keyValue,
-                        filterValue: filterValue,
-                        key: keyValue, // <-- displayKey-- Resource Type
-                        value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
-                        filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-                        compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-                    };
-                    this.filters.push(eachObj);
-                    this.filters = [...this.filters];
-                });
-            }
-        } catch (error) {
-            this.errorMessage = this.errorHandling.handleJavascriptError(error);
-            this.logger.log('error', error);
+      try {
+        const filterObjKeys = Object.keys(this.filterText);
+        const dataArray = [];
+        for (let i = 0; i < filterObjKeys.length; i++) {
+          let obj = {};
+          const keyDisplayValue = find(this.filterTypeOptions, {
+            optionValue: filterObjKeys[i],
+          })["optionName"];
+          obj = {
+            keyDisplayValue,
+            filterkey: filterObjKeys[i],
+          };
+          dataArray.push(obj);
         }
+  
+        const state = this.tableStateService.getState(this.pageTitle) ?? {};
+        const filters = state?.filters;
+  
+        if(filters){
+          const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
+          filters.forEach(filter => {
+            if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
+              dataArray.push({
+                filterkey: filter.filterkey,
+                keyDisplayValue: filter.key
+              });
+            }
+          });
+        }
+  
+        const formattedFilters = dataArray;
+        for (let i = 0; i < formattedFilters.length; i++) {
+  
+          let keyDisplayValue = formattedFilters[i].keyDisplayValue;
+          if(!keyDisplayValue){
+            keyDisplayValue = find(this.filterTypeOptions, {
+              optionValue: formattedFilters[i].filterKey,
+            })["optionName"];
+          }
+  
+          this.changeFilterType(keyDisplayValue).then(() => {
+            let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
+              id: this.filterText[formattedFilters[i].filterkey],
+            });
+  
+            let filterKey = dataArray[i].filterkey;
+  
+            if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
+              const eachObj = {
+                keyDisplayValue: keyDisplayValue,
+                filterValue: filterValueObj?filterValueObj["name"]:undefined,
+                key: keyDisplayValue, // <-- displayKey-- Resource Type
+                value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
+                filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
+                compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+              };
+              this.filters.push(eachObj);
+              this.filters = [...this.filters];
+              this.storeState();
+            }
+          })
+        }
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+      }
     }
-
+  
     /**
      * This function get calls the keyword service before initializing
      * the filter array ,so that filter keynames are changed
      */
-
+  
     getFilters() {
-        try {
-            this.issueFilterSubscription = this.issueFilterService
-                .getFilters(
-                    { filterId: 4 },
-                    environment.issueFilter.url,
-                    environment.issueFilter.method,
-                )
-                .subscribe((response) => {
-                    this.filterTypeLabels = map(response[0].response, 'optionName');
-                    this.filterTypeOptions = response[0].response;
-
-                    this.routerParam();
-                    // this.deleteFilters();
-                    this.getFilterArray();
-                    this.updateComponent();
-                });
-        } catch (error) {
-            this.errorMessage = this.errorHandling.handleJavascriptError(error);
-            this.logger.log('error', error);
-        }
+      return new Promise((resolve) => {
+      try {
+        this.issueFilterSubscription = this.issueFilterService
+          .getFilters(
+            { filterId: 13, domain: this.selectedDomain },
+            environment.issueFilter.url,
+            environment.issueFilter.method
+          )
+          .subscribe((response) => {
+            this.filterTypeLabels = map(response[0].response, "optionName");
+            resolve(true);
+            this.filterTypeOptions = response[0].response;
+  
+            this.filterTypeLabels.sort();
+            this.routerParam();
+            // this.deleteFilters();
+            this.getFilterArray();
+            this.getData();
+          });
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+        resolve(false);
+      }
+      });
     }
-
+  
     changeFilterType(value) {
-        return new Promise((resolve) => {
-            try {
-                this.currentFilterType = find(this.filterTypeOptions, {
-                    optionName: value,
-                });
-                if (!this.filterTagOptions[value] || !this.filterTagLabels[value]) {
-                    this.issueFilterSubscription = this.issueFilterService
-                        .getFilters(
-                            {
-                                ag: this.selectedAssetGroup,
-                                domain: this.selectedDomain,
-                            },
-                            environment.base +
-                                this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-                                    .url,
-                            'GET',
-                        )
-                        .subscribe((response) => {
-                            this.filterTagOptions[value] = response[0].response;
-                            this.filterTagLabels[value] = map(response[0].response, 'name');
-                            this.filterTagLabels[value].sort((a, b) => a.localeCompare(b));
-                            resolve(this.filterTagOptions[value]);
-                        });
-                }
-            } catch (error) {
-                this.errorMessage = this.errorHandling.handleJavascriptError(error);
-                this.logger.log('error', error);
-            }
-        });
-    }
-
-    changeFilterTags(event) {
-        const value = event.filterValue;
+      return new Promise((resolve) => {
+      try {
         this.currentFilterType = find(this.filterTypeOptions, {
-            optionName: event.filterKeyDisplayValue,
+          optionName: value,
         });
-
-        try {
-            if (this.currentFilterType) {
-                const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], {
-                    name: value,
-                });
-                this.utils.addOrReplaceElement(
-                    this.filters,
-                    {
-                        keyDisplayValue: event.filterKeyDisplayValue,
-                        filterValue: value,
-                        key: this.currentFilterType.optionName,
-                        value: filterTag['id'],
-                        filterkey: this.currentFilterType.optionValue.trim(),
-                        compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
-                    },
-                    (el) => {
-                        return (
-                            el.compareKey ===
-                            this.currentFilterType.optionValue.toLowerCase().trim()
-                        );
-                    },
-                );
-            }
-            this.getUpdatedUrl();
-            this.utils.clickClearDropdown();
-            this.updateComponent();
-        } catch (error) {
-            this.errorMessage = this.errorHandling.handleJavascriptError(error);
-            this.logger.log('error', error);
+        
+        let filtersToBePassed = {};       
+        Object.keys(this.filterText).map(key => {
+          if(key=="domain" || this.currentFilterType.optionValue == key) return;
+          filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
+        })
+        const payload = {
+          attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
+          ag: this.selectedAssetGroup,
+          domain: this.selectedDomain,
+          filter: filtersToBePassed
         }
+          this.issueFilterSubscription = this.issueFilterService
+          .getFilters(
+            {},
+            environment.base +
+            this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+              .url,
+            "POST",
+            payload
+          )
+          .subscribe((response) => {          
+            let filterTagsData: {[key:string]: any}[] = (response[0].data.optionList || []).map(filterTag => {
+              return {id: filterTag, name: filterTag};
+            });
+            if(value.toLowerCase()=="asset type"){
+              this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+                filterTagsData.map(filterOption => {
+                  filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
+                });
+              });
+            }
+            else if(value.toLowerCase()=="violations" || value.toLowerCase()=="compliance"){
+              console.log("intervals: ", response[0].data);
+              const numOfIntervals = 5;
+              const min = response[0].data.optionRange.min;
+              const max = response[0].data.optionRange.max;
+              const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
+              intervals.forEach(interval => {
+                filterTagsData.push({id: interval.lowerBound + "-" + interval.upperBound, name: interval.lowerBound + "-" + interval.upperBound});
+              })
+            }
+            this.filterTagOptions[value] = filterTagsData;
+            this.filterTagLabels = {
+                ...this.filterTagLabels,
+                ...{
+                    [value]: map(filterTagsData, 'name').sort((a, b) =>
+                        a.localeCompare(b),
+                    ),
+                },
+            };
+            resolve(this.filterTagOptions[value]);
+            this.storeState();
+          });
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+      }
+      });
+    }
+  
+    changeFilterTags(event) {    
+      const filterValues = event.filterValue;
+      
+      this.currentFilterType =  find(this.filterTypeOptions, {
+        optionName: event.filterKeyDisplayValue,
+      });
+      try {
+        if (this.currentFilterType) {
+          const filterTags = filterValues.map(value => {
+            const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
+            return v;
+          });
+          
+          this.utils.addOrReplaceElement(
+            this.filters,
+            {
+              keyDisplayValue: event.filterKeyDisplayValue,
+              filterValue: filterValues,
+              key: this.currentFilterType.optionName,
+              value: filterTags,
+              filterkey: this.currentFilterType.optionValue.trim(),
+              compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
+            },
+            (el) => {
+              return (
+                el.compareKey ===
+                this.currentFilterType.optionValue.toLowerCase().trim()
+              );
+            }
+          );
+        }
+        this.storeState();
+        this.getUpdatedUrl();
+        this.utils.clickClearDropdown();
+        this.getData();
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+      }
     }
 
     updateComponent() {
-        if (this.complianceTableSubscription) {
-            this.complianceTableSubscription.unsubscribe();
-        }
-        // below condition ensures that on initial landing, updatecomponent executes only once
-        if (!this.selectedAssetGroup || !this.selectedDomain) {
-            return;
-        }
-        this.ruleCatFilter = undefined;
-        this.noMinHeight = false;
-        // this.bucketNumber = 0;
-        // this.currentPointer = 0;
-
-        this.assetsCountData = [];
-        this.assetsCountDataError = '';
-        this.complianceData = [];
-        this.complianceDataError = '';
-        this.policyDataError = '';
-        if (this.isStatePreserved) {
-            this.tableDataLoaded = true;
-            this.clearState();
-        } else {
-            this.tableScrollTop = 0;
-            this.searchTxt = '';
-            this.tableErrorMessage = '';
-            this.errorMessage = '';
-            this.tableDataLoaded = false;
-            this.bucketNumber = 0;
-            this.complianceTableData = [];
-            this.getData();
-        }
-        this.getDistributionBySeverity();
-        this.getPacmanIssues();
-        this.getAssetsCountData({});
-        this.getComplianceData();
+      if (this.complianceTableSubscription) {
+        this.complianceTableSubscription.unsubscribe();
+      }
+      // below condition ensures that on initial landing, updatecomponent executes only once
+      if(!this.selectedAssetGroup || !this.selectedDomain){
+        return;
+      }
+      this.ruleCatFilter = undefined;
+      this.noMinHeight = false;
+      // this.bucketNumber = 0;
+      // this.currentPointer = 0;
+  
+      this.assetsCountData = [];
+      this.assetsCountDataError = '';
+      this.complianceData = [];
+      this.complianceDataError = '';
+      this.policyDataError = '';
+      if(this.isStatePreserved){
+        this.tableDataLoaded = true;
+        this.getFilters();
+        // this.clearState();
+      }else{
+        this.tableScrollTop = 0;
+        this.searchTxt = "";
+        this.tableErrorMessage = '';
+        this.errorMessage = '';
+        this.tableDataLoaded = false;
+        this.bucketNumber = 0;
+        this.complianceTableData = [];
+        this.getFilters().then(() => {
+          this.getData();
+        });
+      }
+      this.getDistributionBySeverity();
+      this.getPacmanIssues();
+      this.getAssetsCountData({});
+      this.getComplianceData();
     }
 
     // changeFilterTags(value) {
@@ -909,7 +1010,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
                     (response) => {
                         this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
                         if (response[0].trend.length < 2) {
-                            this.totalAssetsCountDataError = 'noDataAvailable';
+                            this.totalAssetsCountDataError = 'waitForData';
                         }
                     },
                     (error) => {
@@ -1040,105 +1141,66 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             });
     }
 
-    getFiltersData(data) {
-        this.filterTypeLabels = [];
-        this.filterTagLabels = {};
-        const filtersList = Object.keys(this.columnWidths);
-        filtersList.forEach(column => {
-            let filterTags = [];
-            this.filterTypeLabels.push(column);
-            if(column=='Severity'){
-              filterTags = ["low", "medium", "high", "critical"];
-            }else if(column=='Category'){
-              filterTags = ["security", "cost", "operations", "tagging"];
-            }
-            else if(column=='Compliance'){
-              filterTags = ["0%-25%","26%-50%","51%-75%","76%-100%"];
-            }
-            else{
-              const set = new Set();
-              data.forEach(row => {
-                set.add(row[column].valueText);
-              });
-              filterTags = Array.from(set);
-              this.sortFilters(filterTags, column);
-            }
-            this.filterTagLabels[column] = filterTags;
-          });
-          this.filterTypeLabels.sort();
-    }
-
-    sortFilters(array, column) {
-        if (column == 'Compliance') {
-            array.sort((a, b) => {
-                const isAsc = true;
-                if (a == 'NR') isAsc ? (a = '101%') : (a = '-1%');
-                if (b == 'NR') isAsc ? (b = '101%') : (b = '-1%');
-
-                a = a.substring(0, a.length - 1);
-                b = b.substring(0, b.length - 1);
-
-                const aNum = parseFloat(a);
-                const bNum = parseFloat(b);
-
-                return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
-            });
-        } else if (column == 'Violations') {
-            array.sort((a, b) => a - b);
-        } else {
-            array.sort();
-        }
-    }
-
     getData() {
-        if (!this.selectedAssetGroup || !this.selectedDomain) {
-            return;
+      if(!this.selectedAssetGroup || !this.selectedDomain){
+        return;
+      }
+      const filterToBePassed = {...this.filterText};
+  
+      Object.keys(filterToBePassed).forEach(filterKey => {
+        if(filterKey=="domain") return;
+        filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+        if(filterKey=="failed" || filterKey=="compliance_percent"){
+          filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
+            const [min, max] = filterVal.split("-");
+            return {min, max}
+          })
         }
-        const filters = this.utils.arrayToObject(this.filters, 'typeValue', 'tagValue');
-        filters['domain'] = this.selectedDomain;
-
-        const payload = {
-            ag: this.selectedAssetGroup,
-            filter: filters,
-            from: this.bucketNumber * this.paginatorSize,
-            searchtext: this.searchTxt,
-            size: 0,
-        };
-
-        this.tableErrorMessage = '';
-        const complianceTableUrl = environment.complianceTable.url;
-        const complianceTableMethod = environment.complianceTable.method;
-        this.complianceTableSubscription = this.commonResponseService
-            .getData(complianceTableUrl, complianceTableMethod, payload, {})
-            .subscribe(
-                (response) => {
-                    this.totalRows = response.total;
-                    try {
-                        const updatedResponse = this.massageData(response.data.response);
-                        const processedData = this.processData(updatedResponse);
-                        this.complianceTableData = processedData;
-                        this.getFiltersData(this.complianceTableData);
-                        this.tableDataLoaded = true;
-                        if (this.complianceTableData.length === 0) {
-                            this.totalRows = 0;
-                            this.tableErrorMessage = 'noDataAvailable';
-                        }
-                        if (response.hasOwnProperty('total')) {
-                            this.totalRows = response.data.total;
-                        } else {
-                            this.totalRows = this.complianceTableData.length;
-                        }
-                    } catch (e) {
-                        this.tableDataLoaded = true;
-                        this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
-                    }
-                },
-                (error) => {
-                    this.tableDataLoaded = true;
-                    this.tableErrorMessage = 'apiResponseError';
-                    this.logger.log('error', error);
-                },
-            );
+      })
+  
+      const filters = {domain: this.selectedDomain};
+  
+      const payload = {
+        ag: this.selectedAssetGroup,
+        filter: filters,
+        reqFilter: filterToBePassed,
+        from: this.bucketNumber * this.paginatorSize,
+        // searchtext: this.searchTxt,
+      };
+  
+      this.tableErrorMessage = '';
+      const complianceTableUrl = environment.complianceTable.url;
+      const complianceTableMethod = environment.complianceTable.method;
+      this.complianceTableSubscription = this.commonResponseService
+      .getData(complianceTableUrl, complianceTableMethod, payload, {})
+      .subscribe(
+        (response) => {
+          this.totalRows = response.total;
+          try {
+            const updatedResponse = this.massageData(response.data.response);
+            const processedData = this.processData(updatedResponse);
+            this.complianceTableData = processedData;
+            this.tableDataLoaded = true;
+            if (this.complianceTableData.length === 0) {
+              this.totalRows = 0;
+              this.tableErrorMessage = 'noDataAvailable';
+            }
+            if (response.hasOwnProperty("total")) {
+              this.totalRows = response.data.total;
+            } else {
+              this.totalRows = this.complianceTableData.length;
+            }
+          } catch (e) {
+            this.tableDataLoaded = true;
+            this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
+          }
+        },
+        (error) => {
+          this.tableDataLoaded = true;
+          this.tableErrorMessage = "apiResponseError";
+          this.logger.log("error", error);
+        }
+      );
     }
 
     getRouteQueryParameters(): any {
