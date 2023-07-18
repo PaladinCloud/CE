@@ -1837,6 +1837,48 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 issueDetails.put(CREATED_DATE, source.get(CREATED_DATE).getAsString());
                 issueDetails.put(MODIFIED_DATE, source.get(MODIFIED_DATE).getAsString());
                 issueDetails.put(PAC_DS, source.get(PAC_DS).getAsString());
+
+                issueDetails.put(REASON_TO_EXEMPT_KEY, (Objects.isNull(source.get(REASON_TO_EXEMPT_KEY)) ||
+                        source.get(REASON_TO_EXEMPT_KEY).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(REASON_TO_EXEMPT_KEY).getAsString()));
+                issueDetails.put(STATUS, (Objects.isNull(source.get(STATUS)) ? StringUtils.EMPTY :
+                        source.get(STATUS).getAsString()));
+                issueDetails.put(EXEMPTION_EXPIRING_ON, (Objects.isNull(source.get(EXEMPTION_EXPIRING_ON)) ||
+                        source.get(EXEMPTION_EXPIRING_ON).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_EXPIRING_ON).getAsString()));
+                issueDetails.put(EXEMPTION_RAISED_EXPIRING_ON, (Objects.isNull(source.get(EXEMPTION_RAISED_EXPIRING_ON)) ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_RAISED_EXPIRING_ON).getAsString()));
+                issueDetails.put(EXEMPTION_RAISED_BY, (Objects.isNull(source.get(EXEMPTION_RAISED_BY)) ||
+                        source.get(EXEMPTION_RAISED_BY).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_RAISED_BY).getAsString()));
+                issueDetails.put(EXEMPTION_RAISED_ON, (Objects.isNull(source.get(EXEMPTION_RAISED_ON)) ||
+                        source.get(EXEMPTION_RAISED_ON).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_RAISED_ON).getAsString()));
+                issueDetails.put(EXEMPTION_REQUEST_REVOKED_ON, (Objects.isNull(source
+                        .get(EXEMPTION_REQUEST_REVOKED_ON)) ||
+                        source.get(EXEMPTION_REQUEST_REVOKED_ON).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_REQUEST_REVOKED_ON).getAsString()));
+                issueDetails.put(EXEMPTION_REQUEST_REVOKED_BY, (Objects.isNull(source
+                        .get(EXEMPTION_REQUEST_REVOKED_BY)) ||
+                        source.get(EXEMPTION_REQUEST_REVOKED_BY).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_REQUEST_REVOKED_BY).getAsString()));
+                issueDetails.put(EXEMPTION_REQUEST_CANCELLED_ON, (Objects.isNull(source
+                        .get(EXEMPTION_REQUEST_CANCELLED_ON)) ||
+                        source.get(EXEMPTION_REQUEST_CANCELLED_ON).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_REQUEST_CANCELLED_ON).getAsString()));
+                issueDetails.put(EXEMPTION_REQUEST_CANCELLED_BY, (Objects.isNull(source
+                        .get(EXEMPTION_REQUEST_CANCELLED_BY)) ||
+                        source.get(EXEMPTION_REQUEST_CANCELLED_BY).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_REQUEST_CANCELLED_BY).getAsString()));
+                issueDetails.put(EXEMPTION_REQUEST_APPROVED_ON, (Objects.isNull(source
+                        .get(EXEMPTION_REQUEST_APPROVED_ON)) ||
+                        source.get(EXEMPTION_REQUEST_APPROVED_ON).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_REQUEST_APPROVED_ON).getAsString()));
+                issueDetails.put(EXEMPTION_REQUEST_APPROVED_BY, (Objects.isNull(source
+                        .get(EXEMPTION_REQUEST_APPROVED_BY)) ||
+                        source.get(EXEMPTION_REQUEST_APPROVED_BY).isJsonNull() ?
+                        StringUtils.EMPTY : source.get(EXEMPTION_REQUEST_APPROVED_BY).getAsString()));
+
                 if (source.has("desc")) {
                     issueDetails.put(ISSUE_REASON, source.get("desc").getAsString());
                 } else if (source.has(STATUS_REASON)) {

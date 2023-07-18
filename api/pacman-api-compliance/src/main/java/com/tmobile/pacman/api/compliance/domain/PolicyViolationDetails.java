@@ -71,6 +71,8 @@ public class PolicyViolationDetails {
 
     List<Map<String,Object>> vulnerabilityDetails;
 
+    private ExemptionDTO exemption;
+
     /**
      * Instantiates a new policy violation details.
      *
@@ -84,18 +86,18 @@ public class PolicyViolationDetails {
      * @param violationReason the violation reason
      * @param violationCreatedDate the violation created date
      * @param violationModifiedDate the violation modified date
-     * @param policyId the policy id
      * @param ruleId the rule id
      * @param assetGroup the asset group
      * @param violationDetails the violation details
      */
     public PolicyViolationDetails(String resourceType, String status,
-            String severity, String ruleCategory, String resouceViolatedPolicy,
-            String policyViolated, String policyDescription,
-            String violationReason, String violationCreatedDate,
-            String violationModifiedDate, String ruleId,
-            String assetGroup,
-            List<Map<String, Object>> violationDetails, List<Map<String, Object>> vulnerabilityDetails) {
+                                  String severity, String ruleCategory, String resouceViolatedPolicy,
+                                  String policyViolated, String policyDescription,
+                                  String violationReason, String violationCreatedDate,
+                                  String violationModifiedDate, String ruleId,
+                                  String assetGroup,
+                                  List<Map<String, Object>> violationDetails,List<Map<String, Object>> vulnerabilityDetails,
+                                  ExemptionDTO exemption) {
         super();
         this.resourceType = resourceType;
         this.status = status;
@@ -109,8 +111,9 @@ public class PolicyViolationDetails {
         this.violationModifiedDate = violationModifiedDate;
         this.policyId = ruleId;
         this.violationDetails = violationDetails;
-        this.vulnerabilityDetails = vulnerabilityDetails;
+        this.vulnerabilityDetails = vulnerabilityDetails ;
         this.assetGroup = assetGroup;
+        this.exemption = exemption;
     }
 
       /**
@@ -361,5 +364,13 @@ public class PolicyViolationDetails {
 
     public void setVulnerabilityDetails(List<Map<String, Object>> vulnerabilityDetails) {
         this.vulnerabilityDetails = vulnerabilityDetails;
+    }
+
+    public ExemptionDTO getExemption() {
+        return exemption;
+    }
+
+    public void setExemption(ExemptionDTO exemption) {
+        this.exemption = exemption;
     }
 }

@@ -1116,22 +1116,47 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                 violationList.add(violation);
             }
 
-            return new PolicyViolationDetails(
-                    policyViolationByIssueId.get(TARGET_TYPE).toString(),
-                    policyViolationByIssueId.get(ISSUE_STATUS).toString(),
-                    policyViolationByIssueId.get(SEVERITY).toString(),
-                    policyViolationByIssueId.get(POLICY_CATEGORY).toString(),
-                    policyViolationByIssueId.get(ISSUE_REASON).toString(),
-                    policyViolationByIssueId.get(CREATED_DATE).toString(),
-                    policyViolationByIssueId.get(MODIFIED_DATE).toString(),
-                    resourceId,
-                    policyViolated,
-                    policyDescription,
-                    policyId,
-                    pac_ds,
-                    violationList,
-                    vulnerabilityList
-            );
+            ExemptionDTO exemption = ExemptionDTO.builder()
+                    .reasonToExempt(Objects.isNull(policyViolationByIssueId.get(REASON_TO_EXEMPT_KEY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId.get(REASON_TO_EXEMPT_KEY)))
+                    .status(Objects.isNull(policyViolationByIssueId.get(STATUS)) ? StringUtils.EMPTY :
+                            String.valueOf(policyViolationByIssueId.get(STATUS)))
+                    .exemptionExpiringOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_EXPIRING_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId.get(EXEMPTION_EXPIRING_ON)))
+                    .exemptionRaisedExpiringOn(Objects.isNull(policyViolationByIssueId
+                            .get(EXEMPTION_RAISED_EXPIRING_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_RAISED_EXPIRING_ON)))
+                    .exemptionRaisedBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_RAISED_BY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId.get(EXEMPTION_RAISED_BY)))
+                    .exemptionRaisedOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_RAISED_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId.get(EXEMPTION_RAISED_ON)))
+                    .exemptionRevokedOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_REVOKED_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_REVOKED_ON)))
+                    .exemptionRevokedBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_REVOKED_BY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_REVOKED_BY)))
+                    .exemptionCancelledOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_CANCELLED_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_CANCELLED_ON)))
+                    .exemptionCancelledBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_CANCELLED_BY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_CANCELLED_BY)))
+                    .exemptionApprovedOn(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_APPROVED_ON)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_APPROVED_ON)))
+                    .exemptionApprovedBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_APPROVED_BY)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_REQUEST_APPROVED_BY)))
+                    .build();
+            return new PolicyViolationDetails(policyViolationByIssueId.get(TARGET_TYPE).toString(),
+                    policyViolationByIssueId.get(ISSUE_STATUS).toString(), policyViolationByIssueId.get(SEVERITY)
+                    .toString(),
+                    policyViolationByIssueId.get(POLICY_CATEGORY).toString(), resourceId,
+                    policyViolated, policyDescription, policyViolationByIssueId.get(ISSUE_REASON).toString(),
+                    policyViolationByIssueId.get(CREATED_DATE).toString(), policyViolationByIssueId.get(MODIFIED_DATE)
+                    .toString(), policyId, pac_ds, violationList, vulnerabilityList, exemption);
         } else {
             throw new ServiceException(NO_DATA_FOUND);
         }
