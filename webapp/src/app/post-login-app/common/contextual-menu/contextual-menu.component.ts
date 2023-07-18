@@ -162,7 +162,7 @@
      selectNode(node) {
          this.workflowService.clearAllLevels();
          this.tableStateService.clearAll();
-         this.router.navigate([node.route], {queryParamsHandling: "merge"});
+         this.router.navigate([node.route], {queryParams: this.agAndDomain});
      }
  
      private selectCurrentNode() {
