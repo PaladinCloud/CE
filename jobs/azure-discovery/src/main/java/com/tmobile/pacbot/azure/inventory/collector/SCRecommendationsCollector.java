@@ -73,6 +73,7 @@ public class SCRecommendationsCollector {
 					
 					Map<String,Object> recommendationMap = new Gson().fromJson(secTaskParameters, new TypeToken<Map<String, Object>>() {}.getType() );
 					Object resourceId = recommendationMap.get("resourceId");
+					String recommendationName = String.valueOf(recommendationMap.get("name")!=null?recommendationMap.get("name"):"");
 					if(resourceId!=null) {
 						RecommendationVH recommendation = new RecommendationVH();
 						recommendation.setSubscription(subscription.getSubscriptionId());
@@ -80,6 +81,7 @@ public class SCRecommendationsCollector {
 						recommendationMap.put("resourceId",Util.removeFirstSlash(resourceId.toString()));
 						recommendationMap.put("_resourceIdLower",Util.removeFirstSlash(resourceId.toString()).toLowerCase());
 						recommendation.setId(id);
+						recommendation.setName(recommendationName);
 						recommendation.setRegion(Util.getRegionValue(subscription,region));
 						recommendation.setRecommendation(recommendationMap);
 						recommendations.add(recommendation);

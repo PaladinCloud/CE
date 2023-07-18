@@ -46,7 +46,7 @@ public class SubscriptionInventoryCollector {
 
         subscriptionVH.setStorageAccountLogList(fetchStorageAccountActivityLog(subscriptionVH));
         subscriptionVH.setRoleDefinitionList(fetchAzureRoleDefinition(subscriptionVH));
-
+        subscriptionVH.setName(subscription.getSubscriptionName());
 
         subscriptionList.add(subscriptionVH);
 

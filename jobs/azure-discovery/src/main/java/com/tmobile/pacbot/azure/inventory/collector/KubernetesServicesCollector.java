@@ -61,14 +61,17 @@ public class KubernetesServicesCollector {
                     kubernetesClustersVH.setVersion(kubernetesCluster.version().toString());
                     kubernetesClustersVH.setId(kubernetesCluster.id());
                     kubernetesClustersVH.setEnableRBAC(kubernetesCluster.enableRBAC());
+                    String kubernatesClusterName = kubernetesClusterObject.get("name").getAsString()!=null && !kubernetesClusterObject.get("name").getAsString().isEmpty()?kubernetesClusterObject.get("name").getAsString():"";
+                    logger.info("kubernatesClusterName: {}", kubernatesClusterName);
+                    kubernetesClustersVH.setName(kubernatesClusterName);
                     if(kubernetesCluster.addonProfiles().get("kubeDashboard")!=null) {
                         kubernetesClustersVH.setDashBoardEnabled( kubernetesCluster.addonProfiles().get("kubeDashboard").enabled());
                     }
                     kubernetesClustersVH.setSubscription(subscription.getSubscriptionId());
                     kubernetesClustersVH.setSubscriptionName(subscription.getSubscriptionName());
                     kubernetesClustersVH.setRegion(Util.getRegionValue(subscription,kubernetesClusterObject.get("location").getAsString()));
-                    kubernetesClustersVH.setResourceGroupName(
-                            kubernetesCluster.resourceGroupName());
+                  //  kubernetesClustersVH.setResourceGroupName(
+                           // kubernetesCluster.());
                     kubernetesClustersVH.setTags(kubernetesCluster.tags());
                     JsonObject properties = kubernetesClusterObject.getAsJsonObject("properties");
 
