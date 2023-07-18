@@ -24,10 +24,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 import joptsimple.internal.Strings;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -199,7 +201,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
             StringBuilder urlToQuery = new StringBuilder(PROTOCOL + esHost + ":" + esPort + "/" + ag);
             if (!Strings.isNullOrEmpty(esType)) {
-                urlToQuery.append("/").append(esType);
+                mustFilter.put(AssetConstants.DOC_TYPE_KEYWORD, esType);
             }
             urlToQuery.append("/").append("_search?from=").append(from).append("&size=").append(size);
 
@@ -209,13 +211,18 @@ public class SearchRepositoryImpl implements SearchRepository {
             query.put("sort", resourceIdSort);
 
             String resultJson = invokeESCall("GET", urlToQuery.toString(), new Gson().toJson(query));
-
-            Gson serializer = new GsonBuilder().create();
-            Map<String, Object> response = (Map<String, Object>) serializer.fromJson(resultJson, Object.class);
-            if (response.containsKey("hits")) {
-                Map<String, Object> hits = (Map<String, Object>) response.get("hits");
-                long total = Double.valueOf(hits.get("total").toString()).longValue();
-                result.setTotal(total);
+            JsonObject responseJson = null;
+            if (!Objects.isNull(resultJson)) {
+                responseJson = (JsonObject) JsonParser.parseString(resultJson);
+            }
+            if (responseJson != null && responseJson.has(AssetConstants.HITS) && responseJson.get(AssetConstants.HITS)
+                    .getAsJsonObject().has(AssetConstants.TOTAL) && responseJson.get(AssetConstants.HITS)
+                    .getAsJsonObject().get(AssetConstants.TOTAL).isJsonObject() && responseJson.get(AssetConstants.HITS)
+                    .getAsJsonObject().get(AssetConstants.TOTAL).getAsJsonObject().has(AssetConstants.VALUE) &&
+                    responseJson.get(AssetConstants.HITS).getAsJsonObject().get(AssetConstants.TOTAL).getAsJsonObject()
+                            .get(AssetConstants.VALUE).isJsonPrimitive()) {
+                result.setTotal(responseJson.get(AssetConstants.HITS).getAsJsonObject().get(AssetConstants.TOTAL)
+                        .getAsJsonObject().get(AssetConstants.VALUE).getAsLong());
             }
             esRepository.processResponseAndSendTheScrollBack(resultJson, results);
 
@@ -288,6 +295,10 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public List<Map<String, Object>> fetchTargetTypes(String ag, String searchText, String searchCategory,
             String domain, boolean includeAllAssets) throws DataException {
+        List<Map<String, Object>> resourceTypeBucketList = new ArrayList<>();
+        if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
+            return resourceTypeBucketList;
+        }
 
         if (categoryToRefineByMap.size() == 0 || categoryToReturnFieldsMap.size() == 0) {
 
@@ -295,7 +306,6 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         }
 
-        List<Map<String, Object>> resourceTypeBucketList = new ArrayList<>();
 
         String aggStringForHighLevelEntities = "";
         if (AssetConstants.ASSETS.equals(searchCategory)) {
@@ -306,21 +316,22 @@ public class SearchRepositoryImpl implements SearchRepository {
             aggStringForHighLevelEntities = "\"targetTypes\":{\"terms\":{\"field\":\"targetType.keyword\",\"size\":10000}}";
         }
 
-        if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
+        /*if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
             aggStringForHighLevelEntities = "\"targetTypes\":{\"terms\":{\"field\":\"_index\",\"size\":10000},\"aggs\":{\"unique\":{\"cardinality\":{\"field\":\""
                     + getReturnFieldsForSearch(null, searchCategory).get(0) + "\"}}}}";
-        }
+        }*/
 
         String payLoadStr = createPayLoad(aggStringForHighLevelEntities, searchText, searchCategory, null,
                 includeAllAssets);
 
         String firstUrl = "";
 
-        if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
+        /*if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
             firstUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.VULN_INFO + "/" + Constants.SEARCH;
-        } else {
-            firstUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
-        }
+        }*/
+
+        firstUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
+
         String responseJson = "";
 
         try {
@@ -425,16 +436,16 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         String secondUrl = null;
         if (AssetConstants.ASSETS.equals(searchCategory)) {
-            secondUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + resourceType + "/" + Constants.SEARCH;
+            secondUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
         }
         if (AssetConstants.POLICY_VIOLATIONS.equals(searchCategory)) {
-            secondUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + "issue_" + resourceType + "/"
-                    + Constants.SEARCH;
+            secondUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
         }
-        if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
+        /*Commented because we are not using Constants.VULN_INFO index anymore*/
+        /*if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
             secondUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.VULN_INFO + "/"
                     + Constants.SEARCH;
-        }
+        }*/
 
         try {
             LOGGER.debug("To get distribution, the URL is: {} and the payload is: {}", secondUrl, lowLevelPayLoadStr);
@@ -523,18 +534,27 @@ public class SearchRepositoryImpl implements SearchRepository {
             boolean includeAllAssets) {
         StringBuilder payLoad = new StringBuilder();
         String matchString = "";
-        if (AssetConstants.ASSETS.equals(searchCategory)) {
+        if (AssetConstants.ASSETS.equals(searchCategory) && Objects.isNull(resourceType)) {
             matchString = "{\"match\":{\"_entity\":\"true\"}}";
         }
-        if (AssetConstants.POLICY_VIOLATIONS.equals(searchCategory)) {
-            matchString = "{\"match\":{\"type.keyword\":\"issue\"}},{\"terms\":{\"issueStatus.keyword\":[ \"open\",\"exempted\"]}}";
+        if (AssetConstants.ASSETS.equals(searchCategory) && !Objects.isNull(resourceType)) {
+            matchString = "{\"match\":{\"_entity\":\"true\"}},{\"term\":{\"docType.keyword\":{\"value\":\"" +
+                    resourceType + "\"}}}";
         }
-        if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
+        if (AssetConstants.POLICY_VIOLATIONS.equals(searchCategory) && !Objects.isNull(resourceType)) {
+            matchString = "{\"match\":{\"type.keyword\":\"issue\"}},{\"term\":{\"docType.keyword\":{\"value\":\"issue_"
+                    + resourceType + "\"}}},{\"terms\":{\"issueStatus.keyword\":[ \"open\",\"exempted\"]}}";
+        }
+        if (AssetConstants.POLICY_VIOLATIONS.equals(searchCategory) && Objects.isNull(resourceType)) {
+            matchString = "{\"match\":{\"type.keyword\":\"issue\"}}," +
+                    "{\"terms\":{\"issueStatus.keyword\":[ \"open\",\"exempted\"]}}";
+        }
+        /*if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
             matchString = "{\"terms\":{\"severitylevel.keyword\":[3,4,5]}}";
             if (resourceType != null) {
                 matchString = matchString + ",{\"match\":{\"_index\":\"aws_" + resourceType + "\"}}";
             }
-        }
+        }*/
 
         payLoad.append("{\"size\":0,\"query\":{\"bool\":{\"must\":[");
         payLoad.append(matchString);
@@ -545,7 +565,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             payLoad.append(",{\"match\":{\"latest\":\"true\"}}");
         }
 
-        payLoad.append(",{\"match_phrase_prefix\":{\"_all\":\"");
+        payLoad.append(",{\"query_string\":{\"query\":\"");
         payLoad.append(searchText);
         payLoad.append("\"}}]}}");
         payLoad.append(",\"aggs\":{");
