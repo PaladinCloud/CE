@@ -79,7 +79,7 @@ public interface FilterRepository {
      * @throws DataException the data exception
      */
     public Map<String, Long> getRegionsFromES(String assetGroup,Map<String,Object> filter)
-            throws DataException;
+                    throws DataException;
             
     /**
      * Gets the map of all the severities and its count from the ES.
@@ -88,7 +88,7 @@ public interface FilterRepository {
      * @return Map<String, Long>.
      * @throws DataException the data exception
      */
-    public Map<String, Long> getSeveritiesFromES(String assetGroup)
+    public Map<String, Long> getSeveritiesFromES(String assetGroup,Map<String,Object> filter)
                     throws DataException;
             
 
@@ -165,6 +165,6 @@ public interface FilterRepository {
     public Map<String, Long> getNotificationEventNamesFromES() throws DataException;
 
 
-    public Map<String, Long> getAttributeValuesFromES(String assetGroup, String attributeName, String entityType) throws DataException;
+    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName) throws DataException;
 
 }

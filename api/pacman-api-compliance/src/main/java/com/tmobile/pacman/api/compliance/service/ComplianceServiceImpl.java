@@ -44,6 +44,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
@@ -56,6 +58,18 @@ import java.util.stream.Stream;
  */
 @Service
 public class ComplianceServiceImpl implements ComplianceService, Constants {
+
+    private static final String ACTION_REQUIRED_MSG = "Action is required";
+    private static final String ASSET_GROUP_REQUIRED_MSG = "Asset group is required";
+    private static final String CREATED_BY_REQUIRED_MSG = "Created by is required";
+    private static final String APPROVED_BY_REQUIRED_MSG = "Approved by is required";
+    private static final String ISSUE_ID_REQUIRED_MSG = "At least one issue Id is required";
+    private static final String GRANTED_DATE_REQUIRED_MSG = "Exemption Granted Date is mandatory";
+    private static final String GRANTED_DATE_VALIDATION_MSG = "Exception Granted Date cannot be earlier date than today";
+    private static final String END_DATE_VALIDATION_MSG = "Exception End Date cannot be earlier date than today";
+    private static final String END_DATE_REQUIRED_MSG = "Exception End Date is mandatory";
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String UTC = "UTC";
 
     /**
      * The Constant PROTOCOL
@@ -1575,6 +1589,53 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
 
         }
         return policiesevCatDetails;
+    }
+
+    public ResponseEntity<Object> validateIssuesExemptionRequest(ExemptionRequest exemptionRequest) throws ParseException
+    {
+        if (Objects.isNull(exemptionRequest.getAction()) ||
+                Strings.isNullOrEmpty(exemptionRequest.getAction().toString())) {
+            return ResponseUtils.buildFailureResponse(new Exception(ACTION_REQUIRED_MSG));
+        }
+        if (Objects.isNull(exemptionRequest.getAssetGroup()) ||
+                Strings.isNullOrEmpty(exemptionRequest.getAssetGroup())) {
+            return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_REQUIRED_MSG));
+        }
+        if (Objects.isNull(exemptionRequest.getCreatedBy()) ||
+                Strings.isNullOrEmpty(exemptionRequest.getCreatedBy())) {
+            return ResponseUtils.buildFailureResponse(new Exception(CREATED_BY_REQUIRED_MSG));
+        }
+        if (Objects.isNull(exemptionRequest.getIssueIds()) || exemptionRequest.getIssueIds().isEmpty()) {
+            return ResponseUtils.buildFailureResponse(new Exception(ISSUE_ID_REQUIRED_MSG));
+        }
+        if (exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST) ||
+                exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST)) {
+            if (exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST) &&
+                    StringUtils.isEmpty(exemptionRequest.getApprovedBy())) {
+                return ResponseUtils.buildFailureResponse(new Exception(APPROVED_BY_REQUIRED_MSG));
+            }
+            if (exemptionRequest.getExceptionEndDate() == null) {
+                return ResponseUtils.buildFailureResponse(new Exception(END_DATE_REQUIRED_MSG));
+            }
+
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeZone(TimeZone.getTimeZone(UTC));
+            if (sdf.parse(sdf.format(exemptionRequest.getExceptionEndDate())).before(sdf.parse(sdf.format(cal.getTime())))) {
+                return ResponseUtils.buildFailureResponse(
+                        new Exception(END_DATE_VALIDATION_MSG));
+            }
+        }
+        return null;
+    }
+
+    public ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest)
+            throws ServiceException {
+        try {
+            return repository.createOrRevokeUserExemptionRequest(exemptionRequest);
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
     }
 
 }

@@ -332,13 +332,13 @@ public class FilterServiceImpl implements FilterService, Constants {
          * @throws ServiceException the service exception
          */
         public List<Map<String, Object>> getSeveritiesForAssetGroup(
-                String assetGroup, String domain, Map<String,Object> filter) throws ServiceException {
+                String assetGroup, String domain,Map<String,Object> filter) throws ServiceException {
 
             Map<String, Long> severityMap;
 
             List<Map<String, Object>> severities = new ArrayList<>();
             try {
-                severityMap = repository.getSeveritiesFromES(assetGroup);
+                severityMap = repository.getSeveritiesFromES(assetGroup,filter);
             } catch (DataException e) {
                 throw new ServiceException(e);
             }
@@ -491,7 +491,7 @@ public class FilterServiceImpl implements FilterService, Constants {
         Map<String, Long> valueMap;
         List<Map<String, Object>> valueList = new ArrayList<>();
         try {
-            valueMap = repository.getAttributeValuesFromES(assetGroup,attributeName, entityType);
+            valueMap = repository.getAttributeValuesFromES(assetGroup,filter, entityType,attributeName);
         } catch (DataException e) {
             throw new ServiceException(e);
         }

@@ -203,6 +203,13 @@ public class TrendController implements Constants {
         String assetGroup = request.getAg();
 
         Date input = request.getFrom();
+        Date to = request.getTo();
+        LocalDate toDate=LocalDate.now();
+        if(to!=null){
+            Instant instant_to = to.toInstant();
+            ZonedDateTime zdt_to = instant_to.atZone(ZoneId.systemDefault());
+            toDate = zdt_to.toLocalDate();
+        }
 
         if (input == null) {
             Calendar cal = Calendar.getInstance();
@@ -222,7 +229,7 @@ public class TrendController implements Constants {
 
         String domain = filter.get(DOMAIN);
         try {
-            Map<String, Object> trendData = trendService.getComplianceTrendProgress(assetGroup, fromDate, domain);
+            Map<String, Object> trendData = trendService.getComplianceTrendProgress(assetGroup, fromDate, toDate, domain);
             response.put(RESPONSE, trendData);
         } catch (ServiceException e) {
             LOGGER.error("Exception in getCompliantTrend()" ,e.getMessage());
@@ -400,6 +407,12 @@ public class TrendController implements Constants {
         ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
         LocalDate fromDate = zdt.toLocalDate();
         LocalDate toDate = LocalDate.now();
+        Date to = request.getTo();
+        if(to!=null){
+            Instant instant_to = to.toInstant();
+            ZonedDateTime zdt_to = instant_to.atZone(ZoneId.systemDefault());
+            toDate = zdt_to.toLocalDate();
+        }
 
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));

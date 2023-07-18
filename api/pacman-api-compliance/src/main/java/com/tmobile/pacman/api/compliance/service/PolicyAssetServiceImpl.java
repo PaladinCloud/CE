@@ -95,7 +95,7 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
                     scanInfo.setIssueId(openIssue.get("_id").toString());
                     scanList.add(0, scanInfo);
                 }else if(exemptIssue != null && !exemptIssue.isEmpty()) {
-                	 scanInfo.setLastScan("Exempted");
+                	 scanInfo.setLastScan("Exempt");
                      scanInfo.setIssueId(exemptIssue.get("_id").toString());
                      scanList.add(scanInfo);
                 } else {
@@ -105,8 +105,7 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
                 }
                 scanInfo.setFrequency(CommonUtil.decodeAwsCronExp(policy.get(
                         "policyFrequency").toString()));
-                scanInfo.setSeverity(CommonUtil.getPolicySeverityFromParms(policy
-                        .get("policyParams").toString()));
+                scanInfo.setSeverity(policy.get(SEVERITY).toString().toString());
                 scanInfo.setCategory(policy.get("category").toString());
                 scanInfo.setScanHistory(new ArrayList<>());
                 // Need additional data source to find if the asset is scanned.

@@ -24,10 +24,12 @@ public class CompliantTrendRequest {
 
     /** The ag. */
     private String ag;
-    
+
     /** The from. */
     private Date from;
-    
+
+    private Date to;
+
     /** The filters. */
     private Map<String, String> filters;
 
@@ -83,6 +85,13 @@ public class CompliantTrendRequest {
      */
     public void setFrom(Date from) {
         this.from = from;
+    }
+    public Date getTo() {
+        return to;
+    }
+
+    public void setTo(Date to) {
+        this.to = to;
     }
 
 }

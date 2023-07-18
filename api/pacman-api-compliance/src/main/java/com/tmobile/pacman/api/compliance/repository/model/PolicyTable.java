@@ -2,6 +2,7 @@ package com.tmobile.pacman.api.compliance.repository.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +32,7 @@ public class PolicyTable {
 	private String targetType;
 	private String assetGroup;
 	private String alexaKeyword;
+	@Transient
 	private String policyParams;
 	private String policyFrequency;
 	private String policyExecutable;
@@ -57,10 +59,15 @@ public class PolicyTable {
 	private String fixMessage;
 	private String violationMessage;
 	private Integer elapsedTime;
-	
+	@Transient
+	private String disableDesc;
+
+	@Transient
+	private Map<String, Object> exemptionDetails;
+
 	@Transient
 	private List<PolicyExemption> policyExemption;
-	
+
 	public String getPolicyId() {
 		return policyId;
 	}
@@ -277,13 +284,24 @@ public class PolicyTable {
 	public void setElapsedTime(Integer elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
+	public Map<String, Object> getExemptionDetails() {
+		return exemptionDetails;
+	}
+	public void setExemptionDetails(Map<String, Object> exemptionDetails) {
+		this.exemptionDetails = exemptionDetails;
+	}
 	public List<PolicyExemption> getPolicyExemption() {
 		return policyExemption;
 	}
 	public void setPolicyExemption(List<PolicyExemption> policyExemption) {
 		this.policyExemption = policyExemption;
 	}
-	
+	public String getDisableDesc() {
+		return disableDesc;
+	}
+	public void setDisableDesc(String disableDesc) {
+		this.disableDesc = disableDesc;
+	}
 
-	
+
 }

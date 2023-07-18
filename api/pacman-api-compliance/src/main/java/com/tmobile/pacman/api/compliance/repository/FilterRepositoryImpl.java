@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.HashMultimap;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,15 +172,25 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
      * @return Map<String, Long>.
      * @throws DataException the data exception
      */
-    public Map<String, Long> getSeveritiesFromES(String assetGroup)
+    public Map<String, Long> getSeveritiesFromES(String assetGroup,Map<String,Object> filter)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter=new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        mustFilter.put(Constants.TYPE, "issue");
         String aggsFilter = CommonUtils.convertAttributetoKeyword("severity");
+        if(filter.keySet().size()!=0)
+        {
+            for(String key: filter.keySet())
+            {
+                mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(key),filter.get(key));
+            }
+        }
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
-                    assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
-                    THOUSAND, null);
+                    assetGroup, null, mustFilter, mustNotFilter, shouldFilter, aggsFilter,
+                    THOUSAND, mustTermsFilter);
         } catch (Exception e) {
             throw new DataException(e);
         }
@@ -315,26 +326,34 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
             throw new DataException(e);
         }
     }
-    public Map<String, Long> getAttributeValuesFromES(String assetGroup, String attributeName, String entityType)
+    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter=new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         if(entityType.equalsIgnoreCase("asset")){
             mustFilter.put(UNDERSCORE_ENTITY, Constants.TRUE);
+            mustFilter.put(LATEST, Constants.TRUE);
         }else if(entityType.equalsIgnoreCase("issue")){
             mustFilter.put(Constants.TYPE, "issue");
         }
-
+        if(filter.keySet().size()!=0)
+        {
+            for(String key: filter.keySet())
+            {
+                mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(key),filter.get(key));
+            }
+        }
         String aggsFilter=attributeName;
         try {
             if(attributeName.equalsIgnoreCase(CREATED_DATE)){
                 //for createdDate .keyword doesn't work, pass it as is
-                Map<String, Object> mustTermsFilter=new HashMap<>();
                 if(entityType.equalsIgnoreCase(ISSUE)){
                         mustTermsFilter.put("issueStatus.keyword", Arrays.asList("open","exempted"));
                 }
                 Map<String, Long> totalDistributionForIndexAndType = elasticSearchRepository.getTotalDistributionForIndexAndType(
-                        assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
+                        assetGroup, null, mustFilter, mustNotFilter, shouldFilter, aggsFilter,
                         THOUSAND, mustTermsFilter);
                 Map<String, Long> resultMap=new HashMap<>();
                 for (String key : totalDistributionForIndexAndType.keySet()){
@@ -360,14 +379,36 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
                 }
                 return resultMap;
             }else{
-                aggsFilter=CommonUtils.convertAttributetoKeyword(attributeName);
-                return elasticSearchRepository.getTotalDistributionForIndexAndType(
-                        assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
-                        THOUSAND, null);
+                if(StringUtils.endsWith(attributeName,".keyword") || attributeName.contains(AUTOFIX_PLANNED)){
+                    aggsFilter=attributeName;
+                }else{
+                    aggsFilter=CommonUtils.convertAttributetoKeyword(attributeName);
+                }
+                Map<String, Long> totalDistributionForIndexAndType = elasticSearchRepository.getTotalDistributionForIndexAndType(
+                        assetGroup, null, mustFilter, mustNotFilter, shouldFilter, aggsFilter,
+                        THOUSAND, mustTermsFilter);
+                if(attributeName.contains(AUTOFIX_PLANNED)){
+                    updateFinalMap(totalDistributionForIndexAndType);
+                }
+                return totalDistributionForIndexAndType;
             }
         } catch (Exception e) {
             throw new DataException(e);
         }
+    }
+
+    private void updateFinalMap(Map<String, Long> totalDistributionForIndexAndType) {
+        Map<String, Long> tempMap = new HashMap<>();
+        totalDistributionForIndexAndType.entrySet().forEach(entry -> {
+            String key = entry.getKey();
+            String newKey = key.equals("1.0") ? "true" : "false";
+            tempMap.put(newKey, entry.getValue());
+        });
+        if(!tempMap.containsKey("false")){
+            tempMap.put("false",0L);
+        }
+        totalDistributionForIndexAndType.clear();
+        totalDistributionForIndexAndType.putAll(tempMap);
     }
 
     public Map<String, Long> getNotificationEventNamesFromES()

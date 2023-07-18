@@ -658,7 +658,6 @@ public interface ComplianceRepository {
 
     public Map<String, Object> getSupportedFilters(String filterName, String filterAttribute);
 
-
-
+    ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest) throws DataException;
 
 }

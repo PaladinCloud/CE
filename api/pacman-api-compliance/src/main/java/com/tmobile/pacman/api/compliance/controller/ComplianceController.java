@@ -38,10 +38,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * The Class ComplianceController.
@@ -717,6 +714,31 @@ public class ComplianceController implements Constants {
     }
 
     /**
+     * Create or Destroys the user exemption request.
+     *
+     * @param exemptionRequest exemption request
+     * @return response
+     */
+    @PreAuthorize("@securityService.hasPermissionForIssueExemption(authentication, #exemptionRequest.action)")
+    @ApiOperation(httpMethod = "POST", value = "Adding exemption to the corresponding issueIds")
+    @RequestMapping(path = "/v2/issue/create-revoke-user-exemption", method = RequestMethod.POST)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully Added Issue Exception"),
+            @ApiResponse(code = 401, message = "You are not authorized to Add Issue Exception"),
+            @ApiResponse(code = 403, message = "Add Issue Exception is forbidden")})
+    public ResponseEntity<Object> createOrRevokeUserExemptionRequest(@RequestBody ExemptionRequest exemptionRequest) {
+        try {
+            ResponseEntity<Object> validationResult = complianceService.validateIssuesExemptionRequest(exemptionRequest);
+            if (!Objects.isNull(validationResult)) {
+                return validationResult;
+            }
+            return ResponseUtils.buildSucessResponse(complianceService.createOrRevokeUserExemptionRequest(
+                    exemptionRequest));
+        } catch (ServiceException | ParseException exception) {
+            return ResponseUtils.buildFailureResponse(exception);
+        }
+    }
+
+    /**
      * Revoke issue exception.
      *
      * @param assetGroup the issue ids
@@ -756,6 +778,30 @@ public class ComplianceController implements Constants {
             @ApiParam(value = "provide valid policy id", required = true) @RequestParam(defaultValue = "", name = "policyId", required = true) String policyId) {
         try {
             return ResponseUtils.buildSucessResponse(policyTableService.getPolicyTableByPolicyId(policyId));
+        } catch (Exception exception) {
+            log.error("Unexpected error occurred!!", exception);
+            return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+        }
+    }
+
+    /**
+     * API to get policy by id
+     *
+     * @author
+     * @param policyId - valid policy Id
+     * @param ag - valid Asset Group
+     * @return Policies details
+     */
+    @ApiOperation(httpMethod = "GET", value = "API to get policy by id",  produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/v1/policy-details-with-exemption", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getPoliciesById(
+            @ApiParam(value = "provide valid policy id", required = true) @RequestParam(defaultValue = "", name = "policyId", required = true) String policyId,
+            @ApiParam(value = "provide valid asset group", required = true) @RequestParam(defaultValue = "", name = "ag", required = true) String ag) {
+        try {
+            if (Strings.isNullOrEmpty(ag) || Strings.isNullOrEmpty(policyId)) {
+                return ResponseUtils.buildFailureResponse(new Exception("Policy ID and Assetgroup is required"));
+            }
+            return ResponseUtils.buildSucessResponse(policyTableService.getPolicyDetailsWithExemption(ag,policyId));
         } catch (Exception exception) {
             log.error("Unexpected error occurred!!", exception);
             return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());

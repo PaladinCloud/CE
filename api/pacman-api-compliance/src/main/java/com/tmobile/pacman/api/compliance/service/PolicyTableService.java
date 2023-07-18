@@ -38,4 +38,12 @@ public interface PolicyTableService {
      */
     public PolicyTable getPolicyTableByPolicyUUID(String policyUUID);
 
+    /**
+     * Gets the policy instance by policy id.
+     *
+     * @param policyId the policy id
+     * @return the policy instance by policy id
+     */
+    public PolicyTable getPolicyDetailsWithExemption(String ag, String policyId);
+
 }

@@ -49,14 +49,18 @@ public class TrendRepositoryImpl implements TrendRepository, Constants {
      */
     @Override
     public List<Map<String, Object>> getComplianceTrendProgress(
-            String assetGroup, LocalDate fromDate, String domain,
+            String assetGroup, LocalDate fromDate, LocalDate toDate, String domain,
             Set<String> ruleCat) throws DataException {
         List<String> categoryList = new ArrayList<>(ruleCat);
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(CommonUtils.convertAttributetoKeyword("ag"), assetGroup);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(DOMAIN), domain);
+        mustFilter.put(DOC_TYPE_KEYWORD, COMPLIANCE);
         Map<String, Object> rangeMap = new HashMap<>();
         rangeMap.put("gte", fromDate.format(DateTimeFormatter.ISO_DATE));
+        if(toDate!=null){
+            rangeMap.put("lte", toDate.format(DateTimeFormatter.ISO_DATE));
+        }
 
         Map<String, Object> dateRangeMap = new HashMap<>();
         dateRangeMap.put("date", rangeMap);
@@ -84,6 +88,8 @@ try{
         if ("issuecompliance".equals(trendCategory)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword("policyId"),
                     ruleId);
+            mustFilter.put(CommonUtils.convertAttributetoKeyword("docType"),
+                    trendCategory);
         }
 
         Map<String, Object> rangeMap = new HashMap<>();
@@ -116,6 +122,7 @@ try{
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(CommonUtils.convertAttributetoKeyword("ag"), assetGroup);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(DOMAIN), domain);
+        mustFilter.put(DOC_TYPE_KEYWORD, ISSUES);
         Map<String, Object> rangeMap = new HashMap<>();
         rangeMap.put("gte", startDate.format(DateTimeFormatter.ISO_DATE));
         rangeMap.put("lte", endDate.format(DateTimeFormatter.ISO_DATE));

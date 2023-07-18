@@ -52,7 +52,7 @@ public interface IssueTrendService {
      * @throws ServiceException the service exception
      */
     public Map<String, Object> getComplianceTrendProgress(String assetGroup,
-            LocalDate fromDate, String domain) throws ServiceException;
+            LocalDate fromDate, LocalDate toDate, String domain) throws ServiceException;
 
     /**
      * Gets the trend progress.

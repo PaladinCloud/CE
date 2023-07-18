@@ -38,7 +38,7 @@ public interface TrendRepository {
      * @throws DataException the data exception
      */
     List<Map<String, Object>> getComplianceTrendProgress(String assetGroup,
-            LocalDate fromDate, String domain, Set<String> ruleSev)
+            LocalDate fromDate, LocalDate toDate, String domain, Set<String> ruleSev)
             throws DataException;
 
     /**

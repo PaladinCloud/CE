@@ -17,6 +17,16 @@ public class IndividualExNotificationRequest extends ExemptionCommonDetails {
     private String createdBy;
     private String policyNameLink;
 
+    private String docid;
+
+    public String getDocid() {
+        return docid;
+    }
+
+    public void setDocid(String docid) {
+        this.docid = docid;
+    }
+
     private Map<String,Object> additionalInfo=new HashMap<>();
 
     public Map<String, Object> getAdditionalInfo() {
