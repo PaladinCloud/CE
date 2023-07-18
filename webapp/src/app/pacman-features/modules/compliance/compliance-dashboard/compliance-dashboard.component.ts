@@ -403,25 +403,25 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             id: 1,
             name: 'critical',
             totalViolations: 0,
-            subInfo: { Policy: 0, Assets: 0, 'Average age': 0 },
+            subInfo: { Policies: {value: 0}, Assets: {value: 0} },
         },
         {
             id: 2,
             name: 'high',
             totalViolations: 0,
-            subInfo: { Policy: 0, Assets: 0, 'Average age': 0 },
+            subInfo: { Policies: {value: 0}, Assets: {value: 0} },
         },
         {
             id: 3,
             name: 'medium',
             totalViolations: 0,
-            subInfo: { Policy: 0, Assets: 0, 'Average age': 0 },
+            subInfo: { Policies: {value: 0}, Assets: {value: 0} },
         },
         {
             id: 4,
             name: 'low',
             totalViolations: 0,
-            subInfo: { Policy: 0, Assets: 0, 'Average age': 0 },
+            subInfo: { Policies: {value: 0}, Assets: {value: 0} },
         },
     ];
 
@@ -505,16 +505,15 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
                             this.violationCards[i].totalViolations =
                                 data[violationName].totalViolations;
                             this.violationCards[i].subInfo = {
-                                Policy: data[violationName].policyCount,
-                                Assets: data[violationName].assetCount,
-                                'Average age': Math.round(data[violationName].averageAge),
+                                Policies: {value: data[violationName].policyCount},
+                                Assets: {value: data[violationName].assetCount},
+                                // 'Average age': Math.round(data[violationName].averageAge),
                             };
                         } else {
                             this.violationCards[i].totalViolations = 0;
                             this.violationCards[i].subInfo = {
-                                Policy: 0,
-                                Assets: 0,
-                                'Average age': 0,
+                              Policies: {value: 0}, Assets: {value: 0}
+                                // 'Average age': {value: 0},
                             };
                         }
                     }

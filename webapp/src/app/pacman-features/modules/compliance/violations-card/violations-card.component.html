@@ -1,26 +1,25 @@
 <div class="violations-card flex flex-col">
     <div class="violations-content-container flex flex-row">
-        <div class="violations-img">
-            <img
-                src="/assets/icons/violations-{{ card.name }}.svg"
-                [alt]="card.name + ' violation icon'"
-            />
+      <div class="violations-img">
+        <img src="/assets/icons/violations-{{card.name}}.svg" alt="" >
+      </div>
+      <div class="violations-content flex flex-col">
+        <div class="violations-title capitalize nowrap-ellipsis">{{card.name}} Violations</div>
+        <div class="violations-count flex gap-4 flex-align-center" (click)="redirect(card.name)">
+            {{card.totalViolations | number}}
+            <img src="/assets/icons/Path.svg"/>
         </div>
-        <div class="violations-content flex flex-col">
-            <div class="violations-title capitalize nowrap-ellipsis">
-                {{ card.name }} Violations
-            </div>
-            <div class="violations-count" (click)="redirect(card.name)">
-                {{ card.totalViolations | number }}
-                <img src="/assets/icons/Path.svg" alt="go to violation" />
-            </div>
-        </div>
+      </div>
     </div>
-    <hr class="violations-card-divider" width="100%" />
-    <div class="violations-info-container flex flex-row">
-        <div class="violations-info-item flex flex-col" *ngFor="let item of getKeys(card.subInfo)">
-            <div class="name nowrap-ellipsis">{{ item }}</div>
-            <div class="count center">{{ card.subInfo[item] | number }}</div>
+    <div class="violations-info-container">
+      <div class="violations-info-wrapper">
+        <div class="{{item}}-count flex flex-row violations-info space-between"
+         *ngFor="let item of keyList">
+          <div class="name nowrap-ellipsis flex-grow">{{ item }}</div>
+          <div [class.red]="item=='Out of SLA' && card.subInfo[item].value>0" [class.link]="card.subInfo[item].isLink" class="count" (click)="redirect(item)">
+               {{ card.subInfo[item].value | number }}
+               <img [class.hidden]="!card.subInfo[item].isLink" style="height: 8px;" src="/assets/icons/Path.svg"/>
+            </div>
         </div>
     </div>
 </div>
