@@ -18,6 +18,14 @@ Paladin Cloud is more than a tool to manage cloud misconfiguration. It's a holis
 
 Paladin Cloud's plugin-based connector architecture allows for data ingestion from multiple sources. Plugins allow you to pull data from various cloud-based enterprise systems, such as Kubernetes management, API gateways and threat intelligence systems in order to holistically manage cloud security. Examples include, Qualys Vulnerability Assessment Platform, Bitbucket, TrendMicro Deep Security, Tripwire, Venafi Certificate Management, and Redhat. You can write rules based on data collected by these plugins to get a complete picture of your cloud security posture.
 
+# Installation
+
+Detailed installation instructions are available [here](https://paladincloud.io/docs/Paladin-Cloud-Installation-(On-AWS-Cloud))
+
+## Documentation
+
+Documentation is [here](https://paladincloud.io/docs/).
+
 # How Does It Work?
 
 Assess -> Report -> Remediate -> Repeat
@@ -70,44 +78,19 @@ A good example is when some teams would like to enforce additional tagging stand
 * AWS S3 - For storing inventory files and persistent storage of historical data
 * AWS Lambda - policy execution
 
-Paladin Cloud installer automatically launches all of these services and configures them. A
-typical [installation](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud)) takes about 20 minutes.
-
-# Paladin Cloud User Interface
-
-**Overview Screen**
-<img src=./wiki/images/compliance_compliance-dashboard-Readme.png>
-
-**Violation List View**
-<img src=./wiki/images/violations-list.png>
-
-**Asset Detail View**
-<img src=./wiki/images/Asset-360-Readme.png>
-
-**Search results**
-<img src=./wiki/images/Search-Results-Readme.png>
-
-**Category Summary**
-<img src=./wiki/images/category-compliance-readme.png>
-
-**Asset Group Selection**
-<img src=./wiki/images/asset-group-selection-Readme.png>
-
-# Installation
-
-Detailed installation instructions are available [here](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud))
+[Paladin Cloud installer](https://paladincloud.io/docs/Paladin-Cloud-Installation-(On-AWS-Cloud))  automatically launches all of these services and configures them.
 
 # Usage
 
 The installer will launch required AWS services listed in
-the [installation instructions](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud)). After successful installation hit
+the [installation instructions](https://paladincloud.io/docs/Paladin-Cloud-Installation-(On-AWS-Cloud)). After successful installation hit
 the UI load balancer URL. Log into the application using the credentials supplied during the installation. The results
 from the policy evaluation will start getting populated within 30 minutes. Trend line widgets will be populated when
 there are at least two data points.
 
 When you install Paladin Cloud, the AWS account where you install is the **source** account. Paladin Cloud can then
 monitor other **target** AWS accounts. Refer to the
-instructions [here](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud)) to add new accounts to Paladin Cloud. By
+instructions [here](https://paladincloud.io/docs/Paladin-Cloud-Installation-(On-AWS-Cloud)) to add new accounts to Paladin Cloud. By
 default the **source** account will be monitored by Paladin Cloud.
 
 Login as Admin user and go to the Admin page from the top menu. In the Admin section, you can
@@ -119,12 +102,7 @@ Login as Admin user and go to the Admin page from the top menu. In the Admin sec
 * Manage Jobs
 * Create/Manage Access Roles
 * Manage Paladin cloud Configurations
-* See detailed instruction with screenshots on how to use the admin
-  feature [here](https://github.com/paladincloud/rev1/wiki/Admin-Features)
-
-## User Guide / Wiki
-
-Wiki is [here](https://github.com/PaladinCloud/CE/wiki).
+* See detailed instructions review the [documentation]([https://paladincloud.io/docs/)
 
 # License
 
