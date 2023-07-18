@@ -35,6 +35,8 @@ import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 
+import static com.tmobile.pacman.api.commons.Constants.ES_PAGE_SIZE;
+
 /**
  * Implemented class for CloudNotificationsRepository and all its method
  */
@@ -617,8 +619,9 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		try {
 			StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(ag).append("/").append(_SEARCH);
 			filter.entrySet().forEach(autofix -> {
-				autoFixQuery = "{\"size\":1,\"_source\":[\"docId\",\"planItems\",\"policyId\",\"issueId\",\"resourceId\",\"resourceType\"],\"query\":{\"match\":{\""
-						+ autofix.getKey() + ".keyword" + "\":\"" + autofix.getValue() + "\"}}}";
+				autoFixQuery = "{\"size\":1,\"_source\":[\"docId\",\"planItems\",\"policyId\",\"issueId\",\"resourceId\",\"resourceType\"],"
+						+ "\"query\":{\"bool\":{\"must\":[{\"match\":{\"docType.keyword\":\"autofixplan\"}},"
+						+ "{\"match\":{\""+ autofix.getKey() +".keyword\":\""+ autofix.getValue() + "\"}}]}}}";
 			});
 			Gson gson = new GsonBuilder().create();
 			String responseDetails = null;
@@ -646,23 +649,24 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 							autofixPlanDet.put("policyId", sources.get("policyId"));
 							autofixPlanDet.put("resourceType", sources.get("resourceType"));
 							List<Map<String, Object>> planitems = (List<Map<String, Object>>) sources.get("planItems");
-							planitems.get(0).entrySet().forEach(item -> {
-								if ("plannedActionTime".equalsIgnoreCase(item.getKey())) {
-									autofixPlanDet.put("startTime", item.getValue());
-								}
-								if ("status".equalsIgnoreCase(item.getKey())) {
-									autofixPlanDet.put("status", item.getValue().toString().toLowerCase());
-								}
-							});
-							planitems.get(3).entrySet().forEach(item -> {
-								if ("plannedActionTime".equalsIgnoreCase(item.getKey())) {
-									autofixPlanDet.put("endTime", item.getValue());
-								}
-								if ("status".equalsIgnoreCase(item.getKey())) {
-									autofixPlanDet.put("status", item.getValue().toString().toLowerCase());
-								}
-							});
-
+							if (planitems != null && planitems.size() > 0) {
+								planitems.get(0).entrySet().forEach(item -> {
+									if ("plannedActionTime".equalsIgnoreCase(item.getKey())) {
+										autofixPlanDet.put("startTime", item.getValue());
+									}
+									if ("status".equalsIgnoreCase(item.getKey())) {
+										autofixPlanDet.put("status", item.getValue().toString().toLowerCase());
+									}
+								});
+								planitems.get(planitems.size() - 1).entrySet().forEach(item -> {
+									if ("plannedActionTime".equalsIgnoreCase(item.getKey())) {
+										autofixPlanDet.put("endTime", item.getValue());
+									}
+									if ("status".equalsIgnoreCase(item.getKey())) {
+										autofixPlanDet.put("status", item.getValue().toString().toLowerCase());
+									}
+								});
+							}
 							List<Map<String, Object>> ruleDetails = new ArrayList<Map<String, Object>>();
 							try {
 								ruleDetails = rdsRepository.getDataFromPacman(

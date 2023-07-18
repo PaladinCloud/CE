@@ -148,7 +148,6 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    @Cacheable(cacheNames = "assets", unless = "#result == null")
     public List<Map<String, Object>> getTargetTypesForAssetGroup(String assetGroup, String domain, String provider) {
         if (Constants.AWS.equals(assetGroup) || Constants.AZURE.equals(assetGroup) || Constants.GCP.equals(assetGroup)) {
             return repository.getAllTargetTypes(assetGroup);
@@ -193,20 +192,18 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public List<Map<String, Object>> getAllAssetGroups() {
         List<Map<String, Object>> assetGroups = repository.getAllAssetGroups();
-        List<Map<String, Object>> assetGroupDomains = repository.getAssetGroupAndDomains();
-        Map<String, List<String>> agDomainMap = new ConcurrentHashMap<>();
-        assetGroupDomains.parallelStream().forEach(obj -> {
-            String groupName = obj.get(Constants.NAME).toString();
-            String domain = obj.get(Constants.DOMAIN).toString();
-            List<String> domains = agDomainMap.get(groupName);
-            if (domains == null) {
-                domains = new ArrayList<>();
-                agDomainMap.put(groupName, domains);
-            }
-            domains.add(domain);
-        });
         assetGroups.parallelStream().forEach(
-                obj -> obj.put("domains", agDomainMap.get(obj.get(Constants.NAME).toString())));
+                obj -> {
+                    List<String> domains = getDomains(obj.get(Constants.NAME).toString());
+                    obj.put(Constants.DOMAINS, domains);
+                    if(obj.containsKey("name")){
+                        Optional<DefaultAssetGroup> optResult = DefaultAssetGroup.byNameIgnoreCase(obj.get("name").toString());
+                        if(optResult.isPresent()){
+                            obj.put("type", "system");
+                            obj.put("createdby", "system");
+                        }
+                    }
+                });
         return assetGroups;
     }
 
@@ -227,12 +224,7 @@ public class AssetServiceImpl implements AssetService {
             try {
                 applications = repository.getApplicationByAssetGroup(assetGroup, null);
                 autoFixPlanCount = repository.getAutoFixPlanCountForAg(assetGroup);
-                if (Constants.AWS.equalsIgnoreCase(assetGroup) || Constants.AZURE.equalsIgnoreCase(assetGroup) ||
-                        Constants.GCP.equalsIgnoreCase(assetGroup)) {
-                    policyCount = complianceServiceClient.getPolicyCountByAssetGroup(assetGroup);
-                } else {
-                    policyCount = getCountOfNonCompliancePolicies(assetGroup);
-                }
+                policyCount = getCountOfNonCompliancePolicies(assetGroup);
             } catch (Exception e) {
                 LOGGER.error("Error in getAssetGroupInfo ", e);
             }

@@ -292,10 +292,6 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public List<String> getSearchCategories(String domain) {
-        if (null != domain && domain.contains("Infra")) {
-            return Arrays.asList(AssetConstants.ASSETS, AssetConstants.POLICY_VIOLATIONS,
-                    AssetConstants.VULNERABILITIES);
-        }
         return Arrays.asList(AssetConstants.ASSETS, AssetConstants.POLICY_VIOLATIONS);
     }
 

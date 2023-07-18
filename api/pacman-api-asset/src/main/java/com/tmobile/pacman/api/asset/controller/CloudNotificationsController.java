@@ -106,24 +106,6 @@ public class CloudNotificationsController {
 	                return ResponseUtils
 	                        .buildSucessResponse(new ResponseWithCount(new ArrayList<Map<String, Object>>(), 0));
 	            }
-
-	            if (from >= masterDetailList.size()) {
-	                return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FROM_EXCEEDS));
-	            }
-
-	            int endIndex = 0;
-
-	            if (size == 0) {
-	                size = masterDetailList.size();
-	            }
-
-	            if ((from + size) > masterDetailList.size()) {
-	                endIndex = masterDetailList.size();
-	            } else {
-	                endIndex = from + size;
-	            }
-
-	            List<Map<String, Object>> subDetailList = masterDetailList.subList(from, endIndex);
 	            return ResponseUtils.buildSucessResponse(new ResponseWithCount(masterDetailList, totalDocumentCount));
 	        } catch (Exception e) {
 	            LOGGER.error("Exception in formResponseWithCount ",e);
