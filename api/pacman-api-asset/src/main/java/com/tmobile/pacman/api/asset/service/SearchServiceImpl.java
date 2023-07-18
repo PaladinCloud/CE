@@ -153,8 +153,10 @@ public class SearchServiceImpl implements SearchService {
         LOGGER.info("Both the main threads - search and filter - have completed. It took: {}"
                 , (System.currentTimeMillis() - submissionTime));
         if (candidateResult.isEmpty()) {
+            SearchResult defaultSearchResult = new SearchResult();
+            defaultSearchResult.setFilter(outgoingFilter);
             // None of the search categories yielded results.
-            return null;
+            return defaultSearchResult;
         }
 
         candidateResult.get(0).setFilter(outgoingFilter);
