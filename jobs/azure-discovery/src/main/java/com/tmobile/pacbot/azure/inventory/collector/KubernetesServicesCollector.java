@@ -70,8 +70,8 @@ public class KubernetesServicesCollector {
                     kubernetesClustersVH.setSubscription(subscription.getSubscriptionId());
                     kubernetesClustersVH.setSubscriptionName(subscription.getSubscriptionName());
                     kubernetesClustersVH.setRegion(Util.getRegionValue(subscription,kubernetesClusterObject.get("location").getAsString()));
-                  //  kubernetesClustersVH.setResourceGroupName(
-                           // kubernetesCluster.());
+                    kubernetesClustersVH.setResourceGroupName(
+                            kubernetesCluster.resourceGroupName());
                     kubernetesClustersVH.setTags(kubernetesCluster.tags());
                     JsonObject properties = kubernetesClusterObject.getAsJsonObject("properties");
 
