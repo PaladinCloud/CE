@@ -128,6 +128,8 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     private static final String GET_DOMAIN_BY_TARGET_TYPES = "SELECT DISTINCT domain FROM cf_Target WHERE targetName in (%s)";
 
+    private static final String GET_COUNT_BY_GROUP_NAME = "SELECT count(*) FROM cf_AssetGroupDetails WHERE groupName = ?";
+
     @PostConstruct
     void init() {
         esUrl = PROTOCOL + "://" + esHost + ":" + esPort;
@@ -235,13 +237,14 @@ public class AssetRepositoryImpl implements AssetRepository {
 	@Override
 	public List<Map<String, Object>> getAllTargetTypes(String datasource) {
 
-		String query = "select distinct targetName as type,displayName as displayName, category, dataSourceName as " + Constants.PROVIDER + " from cf_Target ";
-		if(datasource!=null) {
-			query = query + " where lower(dataSourceName) = '"+datasource.toLowerCase()+"' and (status = 'active' or status = 'enabled')";
-		}else {
-			query = query + " where status = 'active' or status = 'enabled'";
-		}
-		return rdsRepository.getDataFromPacman(query);
+        String query = "select distinct targetName as type,displayName as displayName, category, dataSourceName as " + Constants.PROVIDER + " from cf_Target ";
+        if(datasource!=null) {
+            query = query + " where lower(dataSourceName) = '"+datasource.toLowerCase()+"' and (status = 'active' or status = 'enabled')";
+        }else {
+            query = query + " where status = 'active' or status = 'enabled'";
+        }
+        query = query+" and dataSourceName in (select distinct platform from cf_Accounts where accountStatus='configured') ";
+        return rdsRepository.getDataFromPacman(query);
 
 	}
 
@@ -465,7 +468,7 @@ public class AssetRepositoryImpl implements AssetRepository {
     public Map<String, Long> getAssetCountByApplication(String assetGroup, String type) throws DataException {
         Map<String, Object> filter = new HashMap<>();
         filter.put(Constants.LATEST, Constants.TRUE);
-        filter.put(Constants.DOC_TYPE, type);
+        filter.put(DOC_TYPE_KEYWORD, type);
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         if (Constants.EC2.equals(type)) {
             shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
@@ -488,7 +491,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         try {
 
             StringBuilder request = new StringBuilder(
-                    "{\"size\": 10000, \"_source\": [\"min\",\"max\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
+                    "{\"size\": 10000, \"_source\": [\"min\",\"max\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"docType.keyword\": \"count_type\"}} ,{ \"match\": {\"ag.keyword\": ");
             request.append("\"" + assetGroup + "\"}} ,{ \"match\": {\"type.keyword\": " + "\"" + type + "\"}}");
             String gte = null;
             String lte = null;
@@ -523,7 +526,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         String responseJson = "";
         try {
             responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort
-                    + "/assetgroup_stats/count_type/_search", rqstBody);
+                    + "/assetgroup_stats/_search", rqstBody);
         } catch (Exception e) {
             LOGGER.error("Exception in getAssetStats " , e);
         }
@@ -600,7 +603,7 @@ public class AssetRepositoryImpl implements AssetRepository {
     @Override
     public List<Map<String, Object>> getAssetCountByEnvironment(String assetGroup, String application, String type) {
         StringBuilder request = new StringBuilder(
-                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}}"); // Common
+                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"docType.keyword\":\"" + type + "\"}},{\"match\":{\"latest\":\"true\"}}"); // Common
                                                                                                  // part
                                                                                                  // where
                                                                                                  // we
@@ -627,12 +630,14 @@ public class AssetRepositoryImpl implements AssetRepository {
             request.append("]}}");
             request.append(",\"aggs\":{\"apps\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":1000},\"aggs\":{\"envs\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}}}"); // Aggs
         } else {
-        	request.append("]}}}"); // part
+
+            request.append("]}},\"aggs\":{\"apps\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":1000},\"aggs\":{\"envs\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}}}"); // part
+
         }
 
         String responseJson = "";
         try {
-            responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort + "/" + assetGroup + "/" + type
+            responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort  + "/" + assetGroup
                     + "/_search", request.toString());
         } catch (Exception e) {
             LOGGER.error("Error in getAssetCountByEnvironment " , e);
@@ -700,6 +705,10 @@ public class AssetRepositoryImpl implements AssetRepository {
 						recentViewList = new CopyOnWriteArrayList(Arrays.asList(recentView.split(",")));
 					}
 				}
+                if (!recentViewList.isEmpty()) {
+                    recentViewList.removeIf(groupName -> StringUtils.isEmpty(groupName) ||
+                            !rdsRepository.isExists(GET_COUNT_BY_GROUP_NAME, groupName));
+                }
 
 				if (userCount > 0) {
 					if (!StringUtils.isEmpty(recentView)) {
@@ -1028,7 +1037,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             } else {
                 mustFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetType);
             }
-            return esRepository.getTotalDocumentCountForIndexAndType(assetGroup, null, mustFilter, null, null,
+            return esRepository.getTotalDocumentCountForIndexAndType(assetGroup, null, mustFilter, mustNotFilter, null,
                     searchText, mustTermFilter);
         } catch (Exception e) {
             LOGGER.error("Error retrieving inventory from ES in getAssetCount ", e);
