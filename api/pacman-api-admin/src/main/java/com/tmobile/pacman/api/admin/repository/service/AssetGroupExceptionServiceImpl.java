@@ -22,10 +22,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gson.Gson;
+import com.tmobile.pacman.api.admin.domain.*;
+import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -41,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,18 +53,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
-import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionDetailsForES;
-import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionDetailsRequest;
-import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionProjections;
-import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupExceptionRequest;
-import com.tmobile.pacman.api.admin.domain.PolicyDetails;
-import com.tmobile.pacman.api.admin.domain.PolicyProjection;
-import com.tmobile.pacman.api.admin.domain.StickyExceptionResponse;
-import com.tmobile.pacman.api.admin.domain.TargetTypePolicyDetails;
-import com.tmobile.pacman.api.admin.domain.TargetTypePolicyViewDetails;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.AssetGroupExceptionRepository;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupException;
+import com.tmobile.pacman.api.admin.service.AmazonCognitoConnector;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
 
 /**
@@ -90,6 +87,10 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	@Autowired
 	private ObjectMapper mapper;
 	
+	@Autowired
+	private  AmazonCognitoConnector amazonCognitoConnector;
+
+
 	@Override
 	public Page<AssetGroupExceptionProjections> getAllAssetGroupExceptions(String searchTerm, int page, int size) {
 		return assetGroupExceptionRepository.findAllAssetGroupExceptions(searchTerm.toLowerCase(), PageRequest.of(page, size));
@@ -167,6 +168,9 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 			String status = deleteAssetGroupExceptions(new DeleteAssetGroupExceptionRequest(assetGroupExceptionDetails.getExceptionName().trim(), assetGroupExceptionDetails.getAssetGroup().trim()), userId,"create");
 			String notificationSubject = EXCEPTION_DELETEION_SUCCESS.equalsIgnoreCase(status)? UPDATE_STICKY_EXCEPTION_SUBJECT : CREATE_STICKY_EXCEPTION_SUBJECT;
 			Actions action = EXCEPTION_DELETEION_SUCCESS.equalsIgnoreCase(status)? Actions.UPDATE : Actions.CREATE;
+			CognitoUserResponse user = amazonCognitoConnector.getCognitoUserDetails(userId);
+			assetGroupExceptionDetails.setCreatedBy(user.getEmail());
+			assetGroupExceptionDetails.setCreatedOn(AdminUtils.getFormatedDate("dd/MM/yyyy",new Date()));
 			if (updateExceptionToES(assetGroupExceptionDetails)) {
 				try {
 					boolean haveNoRules = true;
@@ -181,6 +185,8 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 							assetGroupException.setExceptionName(assetGroupExceptionDetails.getExceptionName().trim());
 							assetGroupException.setExceptionReason(assetGroupExceptionDetails.getExceptionReason().trim());
 							assetGroupException.setExpiryDate(AdminUtils.getFormatedDate("dd/MM/yyyy", assetGroupExceptionDetails.getExpiryDate()));
+							assetGroupException.setCreatedBy(user.getEmail());
+							assetGroupException.setCreatedOn(new Date());
 							assetGroupException.setPolicyId(policies.get(policyIndex).getId().trim());
 							assetGroupException.setPolicyName(policies.get(policyIndex).getText().trim());
 							policyIds.add(policies.get(policyIndex).getId().trim());
@@ -197,6 +203,8 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 						assetGroupException.setExceptionName(assetGroupExceptionDetails.getExceptionName().trim());
 						assetGroupException.setExceptionReason(assetGroupExceptionDetails.getExceptionReason().trim());
 						assetGroupException.setExpiryDate(AdminUtils.getFormatedDate("dd/MM/yyyy", assetGroupExceptionDetails.getExpiryDate()));
+						assetGroupException.setCreatedBy(user.getEmail());
+						assetGroupException.setCreatedOn(new Date());
 						assetGroupException.setPolicyId(StringUtils.EMPTY);
 						assetGroupException.setPolicyName(StringUtils.EMPTY);
 						allAssetGroupExceptions.add(assetGroupException);
@@ -286,7 +294,8 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 			exceptionDetailsForES.setDataSource(assetGroupExceptionDetails.getDataSource().trim());
 			exceptionDetailsForES.setExceptionName(assetGroupExceptionDetails.getExceptionName().trim());
 			exceptionDetailsForES.setExceptionReason(assetGroupExceptionDetails.getExceptionReason().trim());
-
+			exceptionDetailsForES.setCreatedBy(assetGroupExceptionDetails.getCreatedBy());
+			exceptionDetailsForES.setCreatedOn(AdminUtils.getFormatedStringDate("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", AdminUtils.getFormatedDate("dd/MM/yyyy", assetGroupExceptionDetails.getCreatedOn())));
 			List<Object> targetTypesForES = Lists.newArrayList(); 
 			List<TargetTypePolicyDetails> targetTypes = assetGroupExceptionDetails.getTargetTypes();
 			for (int targetIndex = 0; targetIndex < targetTypes.size(); targetIndex++) {
@@ -328,8 +337,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	
 	private void createIndex(String indexName) {
 		if (!indexExists(indexName)) {
-			String payLoad = "{\"settings\": {  \"number_of_shards\" : 1,\"number_of_replicas\" : 1 }}";
-			invokeAPI("PUT", indexName, payLoad);
+			invokeAPI("PUT", indexName, null);
 		}
 	}
 	

@@ -25,8 +25,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -64,6 +66,7 @@ public class AdminUtils {
 	public static final String STATEMENT = "Statement";
 	public static final String RESOURCE = "Resource";
 	public static final String MULTIPLE_RESOURCES_FOUND = "Multiple resources found";
+	public static final String DATE_FORMAT_ERR_MSG = "Unable to parse date object for date %s and format %s";
 
 	private AdminUtils() {
 	}
@@ -191,6 +194,21 @@ public class AdminUtils {
 		return new SimpleDateFormat(format).parse(date);
 	}
 
+
+	public static String getFormatedDate(final String format, final Date date) throws ParseException {
+		DateFormat df = new SimpleDateFormat(format);
+		return df.format(date);
+
+	}
+
+	public static String getStringDate(final String format, final Date date) {
+		try {
+			return getFormatedDate(format, date);
+		} catch (Exception ex) {
+			log.error(String.format(DATE_FORMAT_ERR_MSG, date.toString(), format));
+			return date.toString().substring(0, 10);
+		}
+	}
 	private static SecretKeySpec getSecretKey(final String baseKey) throws UnsupportedEncodingException {
 		String secretKeyValue = Base64Utils.encodeToString(baseKey.substring(0, 16).getBytes()).substring(0, 16);
 		return new SecretKeySpec(secretKeyValue.getBytes("UTF-8"), "AES");
@@ -280,4 +298,14 @@ public class AdminUtils {
 		return result;
 	}
 
+	public static void main(String[] args) {
+		deleteResourceFromPolicy(null,null);
+	}
+
+	public static Date addDays(Date dt, int amount) {
+		Calendar calendarDate = Calendar.getInstance();
+		calendarDate.setTime(dt);
+		calendarDate.add(Calendar.DATE, amount);
+		return calendarDate.getTime();
+	}
 }

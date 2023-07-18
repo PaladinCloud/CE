@@ -55,6 +55,9 @@ public class Policy {
 	private String fixMessage;
 	private String violationMessage;
 	private Integer elapsedTime;
+
+	@Transient
+	private String disableDesc;
 	
 	@Transient
 	private List<PolicyExemption> policyExemption;
@@ -281,6 +284,13 @@ public class Policy {
 	}
 	public void setPolicyExemption(List<PolicyExemption> policyExemption) {
 		this.policyExemption = policyExemption;
+	}
+	public String getDisableDesc() {
+		return disableDesc;
+	}
+
+	public void setDisableDesc(String disableDesc) {
+		this.disableDesc = disableDesc;
 	}
 	
 	

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface NotificationSettings {
-    Map<String,Object> getNotificationSettings();
+    Map<String,Object> getNotificationSettings(String channelCodeOrDisplayName);
     void updateNotificationSettings(List<NotificationPrefsRequest> notificationPreferencesList) throws Exception;
 
     Map<String,Object> getNotificationSettingsAndConfigs();

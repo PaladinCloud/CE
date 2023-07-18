@@ -29,7 +29,8 @@ public interface UserPreferencesService {
      * @author Nidhish
      * @param ntId - valid user NT Id
      * @return UserPreferences details
-     * @throws PacManExceptio
      */
 	public UserPreferences getUserPreferencesByNtId(final String ntId) throws PacManException;
+
+	public Integer updateDefaultAssetGroup(final String assetGroup) ;
 }

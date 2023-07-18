@@ -8,6 +8,7 @@ import com.amazonaws.services.identitymanagement.model.*;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
@@ -22,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
@@ -33,6 +35,7 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
     public static final String SUCCESS = "Success";
     public static final String ARN_AWS_IAM = "arn:aws:iam::";
     public static final String COGNITO_ACCOUNT = "COGNITO_ACCOUNT";
+    public static final String AWS_ENABLED = "aws.enabled";
 
     @Autowired
     CredentialProvider credentialProvider;
@@ -106,7 +109,7 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
 
     @Override
     public AccountValidationResponse addAccount(CreateAccountRequest accountData) {
-        AccountValidationResponse response = createAccountInDb(accountData.getAccountId(), accountData.getAccountName(), accountData.getPlatform());
+        AccountValidationResponse response = createAccountInDb(accountData.getAccountId(), accountData.getAccountName(), accountData.getPlatform(),accountData.getCreatedBy());
         response.setAccountName(accountData.getAccountName());
         response.setAccountId(accountData.getAccountId());
         if(response.getValidationStatus().equalsIgnoreCase(FAILURE)){
@@ -116,6 +119,7 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
         String roleName=System.getenv(PALADINCLOUD_RO);
         try {
             updatePolicy(accountData.getAccountId(), accountId, roleName,"add");
+            updateConfigProperty(AWS_ENABLED,TRUE,JOB_SCHEDULER);
         } catch (SdkException | UnsupportedEncodingException e) {
             LOGGER.error("Error in updating policy for account");
             response.setErrorDetails(e.getMessage());
@@ -144,6 +148,11 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
         String roleName=System.getenv(PALADINCLOUD_RO);
         try {
             updatePolicy(accountId, baseAccount, roleName,"delete");
+            List<AccountDetails> onlineAccounts=findOnlineAccounts(STATUS_CONFIGURED,Constants.AWS);
+            if(onlineAccounts==null || onlineAccounts.isEmpty()){
+                LOGGER.debug("Last account for AWS is deleted, disabling aws enable flag");
+                updateConfigProperty(AWS_ENABLED,FALSE,JOB_SCHEDULER);
+            }
 
         } catch (SdkException | UnsupportedEncodingException e) {
             LOGGER.error("Error in updating policy for account");
@@ -220,7 +229,7 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
     }
     private static void delayForCompletion() {
         try{
-            Thread.sleep(8000);
+            Thread.sleep(12000);
         }catch(InterruptedException e){
             LOGGER.error("Error in uploadAllFiles",e);
             Thread.currentThread().interrupt();

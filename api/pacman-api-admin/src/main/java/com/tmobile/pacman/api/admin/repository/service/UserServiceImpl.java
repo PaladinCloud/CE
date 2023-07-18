@@ -52,9 +52,6 @@ public class UserServiceImpl implements UserService {
 		if(cursor==null){
 			cursor=DEFAULT_CURSOR;
 		}
-		if(limit==null){
-			limit=DEFAULT_LIMIT;
-		}
 		return amazonCognitoConnector.listAllUsers(cursor,limit,filter);
 	}
 

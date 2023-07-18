@@ -8,6 +8,10 @@ public class CreateAssetGroup {
 
     private String datasource;
 
+    private String groupId;
+
+    private String displayName;
+
     private String groupName;
     private String type;
     private String createdBy;
@@ -15,6 +19,21 @@ public class CreateAssetGroup {
 
     private List<TargetTypesDetails> targetTypes;
 
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
     private boolean isVisible = true;
 

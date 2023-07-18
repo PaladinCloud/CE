@@ -440,12 +440,14 @@ public interface Constants {
     String RELATIONS = "_relations";
 
   enum NotificationTypes {
-        @SerializedName("exemption")
-        EXEMPTION("exemption"),
-        @SerializedName("violation")
-        VIOLATION("violation"),
-        @SerializedName("autofix")
-        AUTOFIX("autofix");
+      @SerializedName("exemption")
+      EXEMPTION("exemption"),
+      @SerializedName("violation")
+      VIOLATION("violation"),
+      @SerializedName("autofix")
+      AUTOFIX("autofix"),
+      @SerializedName("policy")
+      POLICY("policy");
 
         String value;
 

@@ -207,7 +207,7 @@ public class TargetTypesServiceImpl implements TargetTypesService {
 			String type = targetTypeDetailsRequest.getName().toLowerCase().trim().replaceAll(" ", "-");
 			String indexName = dataSource+"_"+type;
 			StringBuilder payLoad = new StringBuilder("{ \"mappings\": {");
-			payLoad.append("\""+type+"\":{},\"issue_"+type+"\": { \"_parent\": {\"type\": \""+type+"\"}},\"recommendation_"+type+"\": { \"_parent\": {\"type\": \""+type+"\"}},\"issue_"+type+"_audit\": { \"_parent\": {\"type\": \"issue_"+type+"\"}},\"issue_"+type+"_comment\": { \"_parent\": {\"type\": \"issue_"+type+"\"}},\"issue_"+type+"_exception\": { \"_parent\": {\"type\": \"issue_"+type+"\"}}");
+			payLoad.append("\"properties\": {\""+type+"_relations\":{\"type\": \"join\",\"relations\": {\""+type+"\": [\"issue_"+type+"\",\"recommendation_"+type+"\"],\"issue_"+type+"\":[\"issue_"+type+"_audit\",\"issue_"+type+"_comment\",\"issue_"+type+"_exception\"]}}}");
 	        payLoad.append("}}");
 	        if(!indexExists(indexName)) {
 	        	Response indexResponse = invokeAPI("PUT", indexName, payLoad.toString());

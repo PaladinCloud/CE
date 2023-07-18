@@ -43,7 +43,7 @@ public class AmazonClientBuilderService {
 	 * @param region 
      * @return AmazonS3 Client
      */
-	public AmazonS3 getAmazonS3(final String region) {		
+	public AmazonS3 getAmazonS3(final String region) {
 		return AmazonS3ClientBuilder.standard().withRegion(region).build();
 	}
 

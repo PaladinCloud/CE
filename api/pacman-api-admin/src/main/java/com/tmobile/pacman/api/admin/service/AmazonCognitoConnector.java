@@ -2,6 +2,7 @@ package com.tmobile.pacman.api.admin.service;
 
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.tmobile.pacman.api.admin.domain.CognitoUserDetails;
+import com.tmobile.pacman.api.admin.domain.CognitoUserResponse;
 import com.tmobile.pacman.api.admin.domain.CreateCognitoUserDetails;
 import com.tmobile.pacman.api.admin.repository.model.CognitoUser;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
@@ -15,10 +16,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
@@ -32,6 +30,30 @@ public class AmazonCognitoConnector {
     private static final String USERPOOL_ID = System.getenv("USERPOOL_ID");
     private  static final String REGION = System.getenv("AWS_USERPOOL_REGION");
     private  static  final  String EMAIL="email";
+    private  static  final  String GIVEN_NAME = "given_name";
+    private  static  final  String FAMILY_NAME="family_name";
+
+    private AdminGetUserResponse getUserByAccessToken(String accessToken) {
+        CognitoIdentityProviderClient cognitoClient = getCognitoIdentityProviderClient();
+        AdminGetUserRequest getRequest=AdminGetUserRequest.builder().userPoolId(USERPOOL_ID)
+                .username(accessToken).build();
+        return cognitoClient.adminGetUser(getRequest);
+    }
+
+    public CognitoUserResponse getCognitoUserDetails(String accessToken) {
+        AdminGetUserResponse response = getUserByAccessToken(accessToken);
+        CognitoUserResponse userFromCognito = new CognitoUserResponse();
+        response.userAttributes().forEach(attr -> {
+            if (attr.name().equalsIgnoreCase(GIVEN_NAME)) {
+                userFromCognito.setFirstName(attr.value());
+            } else if (attr.name().equalsIgnoreCase(FAMILY_NAME)) {
+                userFromCognito.setLastName(attr.value());
+            } else if (attr.name().equalsIgnoreCase(EMAIL)) {
+                userFromCognito.setEmail(attr.value());
+            }
+        });
+        return userFromCognito;
+    }
 
 
     public List<CognitoUser> listAllUsers(Integer cursor, Integer limit, String filter) {
@@ -67,7 +89,9 @@ public class AmazonCognitoConnector {
                 return users;
             }
         }
-        requestBuilder.limit(limit);
+        if(limit!=null && limit>1){
+            requestBuilder.limit(limit);
+        }
         result = identityProviderClient.listUsers(requestBuilder.build());
         userTypeList = result.users();
         log.info("UserTypeList {}",userTypeList);
@@ -203,19 +227,36 @@ public class AmazonCognitoConnector {
         CognitoIdentityProviderClient cognitoClient = getCognitoIdentityProviderClient();
 
         String username=details.getUsername();
-        String firstName=details.getFirstName();
-        String lastName=details.getLastName();
 
-        AdminCreateUserRequest createUserRequest=AdminCreateUserRequest.builder()
+        List<AttributeType> attributeList=prepareUserAttributes(details.getUserAttributes());
+        attributeList.add(AttributeType.builder().name(EMAIL).value(username).build());
+
+        AdminCreateUserRequest createUserRequest= AdminCreateUserRequest.builder()
                 .userPoolId(USERPOOL_ID)
                 .username(username)
-                .userAttributes(
-                        (username!=null)?AttributeType.builder().name(EMAIL).value(username).build():null,
-                        (firstName!=null)?AttributeType.builder().name("firstName").value(firstName).build():null ,
-                        (lastName!=null)?AttributeType.builder().name("lastName").value(lastName).build():null
-                ).build();
-        cognitoClient.adminCreateUser(createUserRequest);
+                .userAttributes(attributeList.toArray(new AttributeType[attributeList.size()])).build();
+       cognitoClient.adminCreateUser(createUserRequest);
+
+        AdminUpdateUserAttributesRequest updateUserAttributesRequest = AdminUpdateUserAttributesRequest.builder()
+                .userPoolId(USERPOOL_ID)
+                .username(username)
+                .userAttributes(AttributeType.builder().name("email_verified").value("true").build())
+                .build();
+
+        cognitoClient.adminUpdateUserAttributes(updateUserAttributesRequest);
         return createResponseMapForUser(username, "create");
+    }
+
+    private List<AttributeType> prepareUserAttributes(Map<String, Object> userAttributes) {
+        List<AttributeType> attributesList=new ArrayList<>();
+        if(userAttributes!=null && !userAttributes.isEmpty()) {
+            userAttributes.forEach((key, value) -> {
+                if (value != null) {
+                    attributesList.add(AttributeType.builder().name(key).value((String) value).build());
+                }
+            });
+        }
+        return  attributesList;
     }
 
     //delete user
@@ -242,29 +283,29 @@ public class AmazonCognitoConnector {
         List<Map<String,Object>>roleDetails = new ArrayList<>();
         CognitoIdentityProviderClient identityProviderClient = getCognitoIdentityProviderClient();
         try{
-            ListGroupsResponse listGroupsResponse= identityProviderClient.listGroups(ListGroupsRequest.builder().userPoolId(USERPOOL_ID).build());
-            List<GroupType> groups=listGroupsResponse.groups();
+       ListGroupsResponse listGroupsResponse= identityProviderClient.listGroups(ListGroupsRequest.builder().userPoolId(USERPOOL_ID).build());
+       List<GroupType> groups=listGroupsResponse.groups();
 
-            for(GroupType group:groups) {
-                Map<String, Object> responseMap = new HashMap<>();
-                String groupName = group.groupName();
-                responseMap.put("roleName", groupName);
-                responseMap.put("isDefault", false);
-                if (groupName.equalsIgnoreCase("ReadOnly")) {
-                    responseMap.put("isDefault", true);
-                }
-                String[] words = groupName.split("(?=[A-Z])");
-                String displayName = String.join(" ", words);
+       for(GroupType group:groups) {
+           Map<String, Object> responseMap = new HashMap<>();
+           String groupName = group.groupName();
+           responseMap.put("roleName", groupName);
+           responseMap.put("isDefault", false);
+           if (groupName.equalsIgnoreCase("ROLE_ADMIN") || groupName.equalsIgnoreCase("ROLE_USER")) {
+               responseMap.put("isDefault", true);
+           }
+           String[] words = groupName.split("(?=[A-Z])");
+           String displayName = String.join(" ", words);
 
-                responseMap.put("roleDisplayName", displayName);
+           responseMap.put("roleDisplayName", displayName);
 
-                roleDetails.add(responseMap);
-            }
-        } catch (CognitoIdentityProviderException e){
+           roleDetails.add(responseMap);
+           }
+       } catch (CognitoIdentityProviderException e){
             log.error("Error occurred while listing groups %s", e.getMessage());
         }catch (Exception e){
             log.error(UNEXPECTED_ERROR_OCCURRED, e.getMessage());
         }
-        return  roleDetails;
+       return  roleDetails;
     }
 }

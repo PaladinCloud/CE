@@ -2,26 +2,37 @@ package com.tmobile.pacman.api.admin.repository.service;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.CLOUDWATCH_RULE_DISABLE_FAILURE;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.CLOUDWATCH_RULE_ENABLE_FAILURE;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER_AT;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER_DOT_REGEX;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.EMAIL_REGEX_PATTERN;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.INVALID_USER_ATTRIBUTES;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
+import static com.tmobile.pacman.api.admin.util.AdminUtils.addDays;
 
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.tmobile.pacman.api.admin.repository.*;
+import com.tmobile.pacman.api.admin.repository.model.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +41,6 @@ import com.amazonaws.services.cloudwatchevents.model.DisableRuleRequest;
 import com.amazonaws.services.cloudwatchevents.model.DisableRuleResult;
 import com.amazonaws.services.cloudwatchevents.model.EnableRuleRequest;
 import com.amazonaws.services.cloudwatchevents.model.EnableRuleResult;
-import com.amazonaws.services.cloudwatchevents.model.PutEventsRequest;
 import com.amazonaws.services.cloudwatchevents.model.PutRuleRequest;
 import com.amazonaws.services.cloudwatchevents.model.PutRuleResult;
 import com.amazonaws.services.cloudwatchevents.model.PutTargetsRequest;
@@ -52,17 +62,13 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
+import com.tmobile.pacman.api.admin.domain.CognitoUserResponse;
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
 import com.tmobile.pacman.api.admin.domain.EnableDisablePolicy;
 import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
-import com.tmobile.pacman.api.admin.repository.PolicyCategoryRepository;
-import com.tmobile.pacman.api.admin.repository.PolicyExemptionRepository;
-import com.tmobile.pacman.api.admin.repository.PolicyRepository;
-import com.tmobile.pacman.api.admin.repository.model.Policy;
-import com.tmobile.pacman.api.admin.repository.model.PolicyCategory;
-import com.tmobile.pacman.api.admin.repository.model.PolicyExemption;
 import com.tmobile.pacman.api.admin.service.AmazonClientBuilderService;
+import com.tmobile.pacman.api.admin.service.AmazonCognitoConnector;
 import com.tmobile.pacman.api.admin.service.AwsS3BucketService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
 
@@ -71,6 +77,10 @@ import com.tmobile.pacman.api.admin.util.AdminUtils;
  */
 @Service
 public class PolicyServiceImpl implements PolicyService {
+
+	private static final String POLICY_PARAM_JSON = "{\"policyId\": \"%s\", \"params\": [%s]}";
+	private static final String DATE_FORMAT = "MMM dd, YYYY";
+
 
 	private static final Logger log = LoggerFactory.getLogger(PolicyServiceImpl.class);
 
@@ -85,9 +95,10 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Autowired
 	private PolicyRepository policyRepository;
-
 	@Autowired
-	private PolicyExemptionRepository policyExempRepository;
+	private PolicyParamsRepository policyParamsRepository;
+	@Autowired
+	private AccountsRepository accountsRepository;
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -98,9 +109,25 @@ public class PolicyServiceImpl implements PolicyService {
 	@Autowired
 	private PolicyCategoryRepository policyCategoryRepository;
 
+	@Autowired
+	private PolicyExemptionRepository policyExempRepository;
+
+	@Autowired
+	private  AmazonCognitoConnector amazonCognitoConnector;
+
+	@Autowired
+	private NotificationService notificationService;
+
 	@Override
 	public List<Policy> getAllPoliciesByTargetType(String targetType) {
-		return policyRepository.findByTargetTypeIgnoreCase(targetType);
+		List<Policy> policies = policyRepository.findByTargetTypeIgnoreCase(targetType);
+		policies.forEach(policy -> {
+			Optional<List<PolicyParams>> policyParams = policyParamsRepository.findByPolicyId(policy.getPolicyId());
+			if (policyParams.isPresent() && !policyParams.get().isEmpty()) {
+				policy.setPolicyParams(generatePolicyParamJson(policy.getPolicyId(), policyParams.get()));
+			}
+		});
+		return policies;
 	}
 
 	@Override
@@ -123,14 +150,65 @@ public class PolicyServiceImpl implements PolicyService {
 	@Override
 	public Policy getByPolicyId(String policyId) {
 		Policy policy = policyRepository.findByPolicyId(policyId);
+		Optional<List<PolicyParams>> policyParams = policyParamsRepository.findByPolicyId(policy.getPolicyId());
+		if (policyParams.isPresent() && !policyParams.get().isEmpty()) {
+			policy.setPolicyParams(generatePolicyParamJson(policy.getPolicyId(), policyParams.get()));
+		}
 		List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyID(policyId);
 		policy.setPolicyExemption(policyExemptionList);
+		if (policyExemptionList != null && !policyExemptionList.isEmpty()
+				&& AdminConstants.DISABLED_CAPS.equals(policy.getStatus())) {
+			PolicyExemption policyExemption = policyExemptionList.get(0);
+			String createdByName=policyExemption.getCreatedBy();
+			String[] parts=createdByName.split(",");
+			createdByName=(parts.length == 2 && parts[0].equals(parts[1]))? parts[0]:parts[0] +" "+parts[1];
+			policy.setDisableDesc(String.format(AdminConstants.POLICY_DISABLE_DESCRIPTION,
+					createdByName, AdminUtils.getStringDate(DATE_FORMAT,
+							addDays(policyExemption.getExpireDate(), 1))));
+		}
 		return policy;
 	}
 
 	@Override
 	public Page<Policy> getPolicies(final String searchTerm, final int page, final int size) {
-		return policyRepository.findAll(searchTerm.toLowerCase(), PageRequest.of(page, size));
+		Page<Policy> allPolicies = policyRepository.findAll(searchTerm.toLowerCase(), PageRequest.of(page, size));
+		List<AccountDetails> onlineAccounts=accountsRepository.findByAccountStatus(AdminConstants.STATUS_CONFIGURED);
+		if(onlineAccounts!=null && !onlineAccounts.isEmpty()){
+			List<String> platformType = onlineAccounts.stream().map(AccountDetails::getPlatform).collect(Collectors.toList());
+			List<Policy> policies= allPolicies.stream().filter(policy -> platformType.contains(policy.getAssetGroup())).collect(Collectors.toList());
+			updatePolicyPluginType(policies,platformType);
+			allPolicies=new PageImpl<>(policies);
+		}
+		allPolicies.stream().forEach(policy -> {
+			Optional<List<PolicyParams>> policyParams = policyParamsRepository.findByPolicyId(policy.getPolicyId());
+			if (policyParams.isPresent() && !policyParams.get().isEmpty()) {
+				policy.setPolicyParams(generatePolicyParamJson(policy.getPolicyId(), policyParams.get()));
+			}
+		});
+		return allPolicies;
+	}
+
+	private void updatePolicyPluginType(List<Policy> policies,List<String> enabledPluginTypes) {
+			policies.removeIf(p->checkPolicyPlugin(p,enabledPluginTypes));
+	}
+
+	private boolean checkPolicyPlugin(Policy policy, List<String> enabledPluginTypes) {
+		Optional<List<PolicyParams>> policyParams = policyParamsRepository.findByPolicyId(policy.getPolicyId());
+
+		if (policyParams.isPresent() && !policyParams.get().isEmpty()) {
+			PolicyParams policyParamPluginType = policyParams.get().stream()
+					.filter(param -> param.getKey().equalsIgnoreCase("pluginType")).findFirst().orElse(null);
+			if(policyParamPluginType!=null) {
+				return !enabledPluginTypes.contains(policyParamPluginType.getValue());
+			}
+		}
+		return false;
+	}
+
+	private String generatePolicyParamJson(String policyId, List<PolicyParams> policyParams) {
+		String policyParamString = policyParams.stream().map(PolicyParams::paramsToJsonString)
+				.collect(Collectors.joining(DELIMITER));
+		return String.format(POLICY_PARAM_JSON, policyId, policyParamString);
 	}
 
 	@Override
@@ -177,12 +255,14 @@ public class PolicyServiceImpl implements PolicyService {
 		if (policyRepository.existsById(policyId)) {
 			Policy existingPolicy = policyRepository.findById(policyId).get();
 			PolicyExemption policyExemption = null;
+			CognitoUserResponse user = amazonCognitoConnector.getCognitoUserDetails(userId);
+			String currentUser = getUserName(user);
 			if (enableDisablePolicy.getAction().equalsIgnoreCase(AdminConstants.ENABLED_CAPS)) {
 				List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndExpireDate(policyId,
 						new Date());
 				if (policyExemptionList != null && policyExemptionList.size() > 0) {
 					policyExemption = policyExemptionList.get(0);
-					policyExemption.setModifiedBy(userId);
+					policyExemption.setModifiedBy(currentUser);
 					policyExemption.setModifiedOn(new Date());
 					policyExemption.setStatus(AdminConstants.STATUS_CLOSE);
 					existingPolicy.setStatus(AdminConstants.ENABLED_CAPS);
@@ -199,20 +279,21 @@ public class PolicyServiceImpl implements PolicyService {
 				policyExemption.setId(UUID.randomUUID().toString());
 				policyExemption.setPolicyID(policyId);
 				policyExemption.setExemptionDesc(enableDisablePolicy.getDescription());
-				policyExemption.setCreatedBy(userId);
+				policyExemption.setCreatedBy(currentUser);
 				policyExemption.setCeatedOn(new Date());
 				policyExemption.setStatus(AdminConstants.STATUS_OPEN);
 				existingPolicy.setStatus(AdminConstants.DISABLED_CAPS);
 			}
 			updatePolicyStatus(existingPolicy, policyExemption);
+			notificationService.triggerNotificationForEnableDisablePolicy(existingPolicy, policyExemption);
 			return String.format(AdminConstants.POLICY_DISABLE_ENABLE_SUCCESS, enableDisablePolicy.getAction());
 
 		} else {
 			throw new PacManException(String.format(AdminConstants.POLICY_ID_NOT_EXITS, policyId));
+
 		}
 	}
-	
-	
+
 	@Override
 	public String enablePolicyForExpiredExemption(String policyUUID) throws PacManException {
 		Policy existingPolicy = policyRepository.findPoicyTableByPolicyUUID(policyUUID);
@@ -234,8 +315,6 @@ public class PolicyServiceImpl implements PolicyService {
 		}
 	}
 
-	
-	
 	@Transactional
 	private boolean updatePolicyStatus(Policy policy, PolicyExemption exemption) {
 		policyRepository.save(policy);
@@ -243,6 +322,105 @@ public class PolicyServiceImpl implements PolicyService {
 			policyExempRepository.save(exemption);
 		}
 		return true;
+	}
+
+	private String getUserName(CognitoUserResponse user) throws PacManException {
+        if (Objects.isNull(user.getFirstName()) && Objects.isNull(user.getLastName())
+                && (Objects.isNull(user.getEmail()) || user.getEmail().isEmpty()
+                || !patternMatches(user.getEmail(), EMAIL_REGEX_PATTERN))) {
+        	log.error(UNEXPECTED_ERROR_OCCURRED + INVALID_USER_ATTRIBUTES + user);
+            throw new PacManException(UNEXPECTED_ERROR_OCCURRED + INVALID_USER_ATTRIBUTES + user);
+        }
+
+        if (Objects.isNull(user.getFirstName()) && Objects.isNull(user.getLastName())
+                && !Objects.isNull(user.getEmail())) {
+            String[] nameFromEmail = user.getEmail().substring(0, user.getEmail().indexOf(DELIMITER_AT))
+                    .split(DELIMITER_DOT_REGEX, 2);
+            user.setFirstName(nameFromEmail[0]);
+            user.setLastName(nameFromEmail.length > 1 ? nameFromEmail[1] : nameFromEmail[0]);
+        }
+        if ((!Objects.isNull(user.getFirstName()) && Objects.isNull(user.getLastName()))) {
+            user.setLastName(user.getFirstName());
+        }
+        return   StringUtils.capitalize(user.getFirstName()) + DELIMITER
+                + StringUtils.capitalize(user.getLastName());
+    }
+
+	private static boolean patternMatches(String testString, String regexPattern) {
+        return Pattern.compile(regexPattern)
+                .matcher(testString)
+                .matches();
+    }
+	private String getEventBus(String assetGroup) {
+		String eventBus = "default";
+		switch (assetGroup.toLowerCase()) {
+		case "azure":
+			String azureBusDetails = config.getAzure().getEventbridge().getBus().getDetails();
+			eventBus = azureBusDetails.split(":")[0];
+			break;
+		case "gcp":
+			String gcpBusDetails = config.getGcp().getEventbridge().getBus().getDetails();
+			eventBus = gcpBusDetails.split(":")[0];
+			break;
+		case "aws":
+			String awsBusDetails = config.getAws().getEventbridge().getBus().getDetails();
+			eventBus = awsBusDetails.split(":")[0];
+			break;
+		default:
+			eventBus = "default";
+		}
+		log.info("Event bridge bus : {} ", eventBus);
+		return eventBus;
+	}
+
+	private String disableCloudWatchRule(Policy existingPolicy, String userId, RuleState ruleState)
+			throws PacManException {
+		String eventBusName = getEventBus(existingPolicy.getAssetGroup());
+		DisableRuleRequest disableRuleRequest = new DisableRuleRequest().withName(existingPolicy.getPolicyUUID());
+		disableRuleRequest.setEventBusName(eventBusName);
+		DisableRuleResult disableRuleResult = amazonClient
+				.getAmazonCloudWatchEvents(config.getRule().getLambda().getRegion()).disableRule(disableRuleRequest);
+		if (disableRuleResult.getSdkHttpMetadata() != null) {
+			if (disableRuleResult.getSdkHttpMetadata().getHttpStatusCode() == 200) {
+				existingPolicy.setUserId(userId);
+				existingPolicy.setModifiedDate(new Date());
+				existingPolicy.setStatus(ruleState.name());
+				policyRepository.save(existingPolicy);
+				return String.format(AdminConstants.POLICY_DISABLE_ENABLE_SUCCESS, ruleState.name().toLowerCase());
+			} else {
+				throw new PacManException(CLOUDWATCH_RULE_DISABLE_FAILURE);
+			}
+		} else {
+			throw new PacManException(CLOUDWATCH_RULE_DISABLE_FAILURE);
+		}
+	}
+
+	private String enableCloudWatchRule(Policy existingPolicy, String userId, RuleState ruleState)
+			throws PacManException {
+		AWSLambda awsLambdaClient = amazonClient.getAWSLambdaClient(config.getRule().getLambda().getRegion());
+		if (!checkIfPolicyAvailableForLambda(config.getRule().getLambda().getFunctionName(), awsLambdaClient)) {
+			createPolicyForLambda(config.getRule().getLambda().getFunctionName(), awsLambdaClient);
+		}
+		String eventBusName = getEventBus(existingPolicy.getAssetGroup());
+
+		EnableRuleRequest enableRuleRequest = new EnableRuleRequest().withName(existingPolicy.getPolicyUUID());
+		enableRuleRequest.setEventBusName(eventBusName);
+		EnableRuleResult enableRuleResult = amazonClient
+				.getAmazonCloudWatchEvents(config.getRule().getLambda().getRegion()).enableRule(enableRuleRequest);
+		if (enableRuleResult.getSdkHttpMetadata() != null) {
+			if (enableRuleResult.getSdkHttpMetadata().getHttpStatusCode() == 200) {
+				existingPolicy.setUserId(userId);
+				existingPolicy.setModifiedDate(new Date());
+				existingPolicy.setStatus(ruleState.name());
+				policyRepository.save(existingPolicy);
+				invokePolicy(awsLambdaClient, existingPolicy, null, null);
+				return String.format(AdminConstants.POLICY_DISABLE_ENABLE_SUCCESS, ruleState.name().toLowerCase());
+			} else {
+				throw new PacManException(CLOUDWATCH_RULE_ENABLE_FAILURE);
+			}
+		} else {
+			throw new PacManException(CLOUDWATCH_RULE_ENABLE_FAILURE);
+		}
 	}
 
 	private void checkPolicyTypeNotServerlessOrManaged(CreateUpdatePolicyDetails policyDetails,
@@ -260,7 +438,7 @@ public class PolicyServiceImpl implements PolicyService {
 			if (isPolicyIdExits(policyDetails.getPolicyId())) {
 				Date currentDate = new Date();
 				Policy updatePolicyDetails = policyRepository.findById(policyDetails.getPolicyId()).get();
-				updatePolicyDetails.setPolicyParams(policyDetails.getPolicyParams());
+				updatePolicyParams(policyDetails.getPolicyParams(), policyDetails.getPolicyId());
 				updatePolicyDetails.setSeverity(policyDetails.getSeverity());
 				updatePolicyDetails.setCategory(policyDetails.getCategory());
 				updatePolicyDetails.setAutoFixEnabled(policyDetails.getAutofixEnabled());
@@ -313,6 +491,43 @@ public class PolicyServiceImpl implements PolicyService {
 			throw new PacManException("Invalid Policy Instance, please provide valid details.");
 		}
 		return AdminConstants.POLICY_CREATION_SUCCESS;
+	}
+
+	private void updatePolicyParams(String policyParamsString, String policyId) throws PacManException {
+		try {
+			Optional<List<PolicyParams>> policyParamsFromDBOptional = policyParamsRepository
+					.findByPolicyIdAndIsEdit(policyId, Boolean.TRUE.toString());
+			if (!policyParamsFromDBOptional.isPresent()) {
+				/*this policy doesn't have editable params*/
+				return;
+			}
+			final PolicyParamDetails policyParamDetails =
+					mapper.readValue(policyParamsString, PolicyParamDetails.class);
+			if (Objects.isNull(policyParamDetails) || Objects.isNull(policyParamDetails.getParams())
+					|| policyParamDetails.getParams().isEmpty()) {
+				/*since the params are empty, there is nothing to update*/
+				return;
+			}
+			List<PolicyParams> latestPolicyParamsFiltered = policyParamDetails.getParams().stream().filter(
+					param -> param.getIsEdit().equalsIgnoreCase(Boolean.TRUE.toString())).collect(Collectors.toList());
+			if (latestPolicyParamsFiltered.isEmpty()) {
+				/*params in request doesn't have editable fields*/
+				return;
+			}
+			policyParamsFromDBOptional.get().forEach(paramFromDB -> {
+				Optional<PolicyParams> latestPolicyParam = latestPolicyParamsFiltered.stream().filter(
+						param -> param.getKey().equalsIgnoreCase(paramFromDB.getKey())).findAny();
+				if (paramFromDB.getIsEdit().equalsIgnoreCase(Boolean.TRUE.toString()) &&
+						latestPolicyParam.isPresent()) {
+					paramFromDB.setValue(latestPolicyParam.get().getValue());
+				}
+			});
+			/*only updates the value field of params with isEdit as true*/
+			policyParamsRepository.saveAll(policyParamsFromDBOptional.get());
+		} catch (Exception e) {
+			log.error(String.format(AdminConstants.UNABLE_TO_UPDATE_POLICY_PARAMS, policyId), e);
+			throw new PacManException(String.format(AdminConstants.UNABLE_TO_UPDATE_POLICY_PARAMS, policyId + e));
+		}
 	}
 
 	private String retrieveDataSource(final Policy updatePolicyDetails) {

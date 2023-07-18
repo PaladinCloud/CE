@@ -44,7 +44,6 @@ public interface PolicyRepository extends JpaRepository<Policy, String> {
 			+ "LOWER(p.targetType) LIKE %:searchTerm% OR "
 			+ "LOWER(p.assetGroup) LIKE %:searchTerm% OR "
 			+ "LOWER(p.alexaKeyword) LIKE %:searchTerm% OR "
-			+ "LOWER(p.policyParams) LIKE %:searchTerm% OR "
 			+ "LOWER(p.policyFrequency) LIKE %:searchTerm% OR "
 			+ "LOWER(p.policyExecutable) LIKE %:searchTerm% OR "
 			+ "LOWER(p.policyRestUrl) LIKE %:searchTerm% OR "
@@ -67,7 +66,6 @@ public interface PolicyRepository extends JpaRepository<Policy, String> {
 					+ "LOWER(p.targetType) LIKE %:searchTerm% OR "
 					+ "LOWER(p.assetGroup) LIKE %:searchTerm% OR "
 					+ "LOWER(p.alexaKeyword) LIKE %:searchTerm% OR "
-					+ "LOWER(p.policyParams) LIKE %:searchTerm% OR "
 					+ "LOWER(p.policyFrequency) LIKE %:searchTerm% OR "
 					+ "LOWER(p.policyExecutable) LIKE %:searchTerm% OR "
 					+ "LOWER(p.policyRestUrl) LIKE %:searchTerm% OR "
@@ -86,11 +84,12 @@ public interface PolicyRepository extends JpaRepository<Policy, String> {
 	@Query("SELECT policyId FROM Policy WHERE policyId != '' AND policyId != null GROUP BY policyId")
 	public Collection<String> getAllPolicyIds();
 	
+
 	 /**
-     * Find PolicyTable by policy UUID.
-     *
-     * @param policyUUID the policy UUID
-     * @return PolicyTable
-     */
-    public Policy findPoicyTableByPolicyUUID(final String policyUUID);
+    * Find PolicyTable by policy UUID.
+    *
+    * @param policyUUID the policy UUID
+    * @return PolicyTable
+    */
+   public Policy findPoicyTableByPolicyUUID(final String policyUUID);
 }

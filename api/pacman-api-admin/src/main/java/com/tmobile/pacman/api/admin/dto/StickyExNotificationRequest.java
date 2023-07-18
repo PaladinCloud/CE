@@ -12,6 +12,16 @@ public class StickyExNotificationRequest extends ExemptionCommonDetails {
 
     private String userId;
 
+    private String docid;
+
+    public String getDocid() {
+        return docid;
+    }
+
+    public void setDocid(String docid) {
+        this.docid = docid;
+    }
+
     public String getAssetGroup() {
         return assetGroup;
     }

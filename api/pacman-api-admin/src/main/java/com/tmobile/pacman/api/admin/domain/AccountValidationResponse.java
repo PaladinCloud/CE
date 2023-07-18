@@ -22,4 +22,6 @@ public class AccountValidationResponse {
 
     private String aquaApiUrl;
     private String aquaUser;
+
+    private String createdBy;
 }
