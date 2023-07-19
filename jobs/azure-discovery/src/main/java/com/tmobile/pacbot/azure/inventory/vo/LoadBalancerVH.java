@@ -25,6 +25,7 @@ public class LoadBalancerVH extends AzureVH {
 	private Map<String, LoadBalancingRule> loadBalancingRules;
 	private Map<String, LoadBalancerPrivateFrontend> privateFrontends;
 	private Map<String, LoadBalancerPublicFrontend> publicFrontends;
+	private List<String> backendPoolInstances;
 
 	public int getHashCode() {
 		return hashCode;
@@ -112,6 +113,14 @@ public class LoadBalancerVH extends AzureVH {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public List<String> getBackendPoolInstances() {
+		return backendPoolInstances;
+	}
+
+	public void setBackendPoolInstances(List<String> backendPoolInstances) {
+		this.backendPoolInstances = backendPoolInstances;
 	}
 
 }

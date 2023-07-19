@@ -3,6 +3,7 @@ package com.tmobile.pacbot.azure.inventory.collector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,11 @@ public class LoadBalancerInventoryCollector {
 			loadBalancerVH.setType(loadBalancer.type());
 			loadBalancerVH.setSubscription(subscription.getSubscriptionId());
 			loadBalancerVH.setSubscriptionName(subscription.getSubscriptionName());
+			List<String> backendIpConfigurationIds = loadBalancer.inner().backendAddressPools().stream()
+					.flatMap(pool -> pool.backendIPConfigurations().stream())
+					.map(backendIpConfig -> backendIpConfig.id())
+					.collect(Collectors.toList());
+			loadBalancerVH.setBackendPoolInstances(backendIpConfigurationIds);
 			loadBalancerList.add(loadBalancerVH);
 
 		}
