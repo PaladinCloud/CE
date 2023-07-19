@@ -44,17 +44,8 @@ public interface AssetGroupRepository extends JpaRepository<AssetGroupDetails, S
 	@Query("SELECT groupName FROM AssetGroupDetails WHERE groupName != '' AND groupName != null GROUP BY groupName")
 	public Collection<String> getAllAssetGroupNames();
 
-	/**
-     * AssetGroup Repository function for to get all assetGroup names
-	 * removed stakeholder asset groups by removing user groupTypes from list
-     *
-     * @author NKrishn3
-     * @param searchTerm - searchTerm to be searched.
-     * @param pageRequest - pagination information 
-     * @return All AssetGroup Details
-     */
-	@Query(value = "SELECT ag FROM AssetGroupDetails ag WHERE LOWER(ag.groupType) <> 'user' AND (LOWER(ag.groupId) LIKE %:searchTerm% OR LOWER(ag.groupName) LIKE %:searchTerm% OR LOWER(ag.dataSource) LIKE %:searchTerm% OR LOWER(ag.displayName) LIKE %:searchTerm% OR LOWER(ag.groupType) LIKE %:searchTerm% OR LOWER(ag.createdBy) LIKE %:searchTerm% OR LOWER(ag.createdUser) LIKE %:searchTerm% OR LOWER(ag.createdDate) LIKE %:searchTerm% OR LOWER(ag.modifiedUser) LIKE %:searchTerm% OR LOWER(ag.modifiedDate) LIKE %:searchTerm% OR LOWER(ag.description) LIKE %:searchTerm% OR LOWER(ag.aliasQuery) LIKE %:searchTerm%) GROUP BY ag.groupId",
-	countQuery = "SELECT COUNT(*) FROM AssetGroupDetails ag WHERE LOWER(ag.groupType) <> 'user' AND (LOWER(ag.groupId) LIKE %:searchTerm% OR LOWER(ag.groupName) LIKE %:searchTerm% OR LOWER(ag.dataSource) LIKE %:searchTerm% OR LOWER(ag.displayName) LIKE %:searchTerm% OR LOWER(ag.groupType) LIKE %:searchTerm% OR LOWER(ag.createdBy) LIKE %:searchTerm% OR LOWER(ag.createdUser) LIKE %:searchTerm% OR LOWER(ag.createdDate) LIKE %:searchTerm% OR LOWER(ag.modifiedUser) LIKE %:searchTerm% OR LOWER(ag.modifiedDate) LIKE %:searchTerm% OR LOWER(ag.description) LIKE %:searchTerm% OR LOWER(ag.aliasQuery) LIKE %:searchTerm%) GROUP BY ag.groupId")
+	@Query(value = "SELECT ag FROM AssetGroupDetails ag WHERE (LOWER(ag.groupId) LIKE %:searchTerm% OR LOWER(ag.groupName) LIKE %:searchTerm% OR LOWER(ag.dataSource) LIKE %:searchTerm% OR LOWER(ag.displayName) LIKE %:searchTerm% OR LOWER(ag.groupType) LIKE %:searchTerm% OR LOWER(ag.createdBy) LIKE %:searchTerm% OR LOWER(ag.createdUser) LIKE %:searchTerm% OR LOWER(ag.createdDate) LIKE %:searchTerm% OR LOWER(ag.modifiedUser) LIKE %:searchTerm% OR LOWER(ag.modifiedDate) LIKE %:searchTerm% OR LOWER(ag.description) LIKE %:searchTerm% OR LOWER(ag.aliasQuery) LIKE %:searchTerm%) GROUP BY ag.groupId",
+	countQuery = "SELECT COUNT(*) FROM AssetGroupDetails ag WHERE (LOWER(ag.groupId) LIKE %:searchTerm% OR LOWER(ag.groupName) LIKE %:searchTerm% OR LOWER(ag.dataSource) LIKE %:searchTerm% OR LOWER(ag.displayName) LIKE %:searchTerm% OR LOWER(ag.groupType) LIKE %:searchTerm% OR LOWER(ag.createdBy) LIKE %:searchTerm% OR LOWER(ag.createdUser) LIKE %:searchTerm% OR LOWER(ag.createdDate) LIKE %:searchTerm% OR LOWER(ag.modifiedUser) LIKE %:searchTerm% OR LOWER(ag.modifiedDate) LIKE %:searchTerm% OR LOWER(ag.description) LIKE %:searchTerm% OR LOWER(ag.aliasQuery) LIKE %:searchTerm%) GROUP BY ag.groupId")
 	public Page<AssetGroupDetails> findAll(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 	/**
