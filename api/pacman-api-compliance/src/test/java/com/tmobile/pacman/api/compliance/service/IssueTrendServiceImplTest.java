@@ -165,13 +165,13 @@ public class IssueTrendServiceImplTest {
         when(complianceService.getPoliciesCatDetails(anyObject()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
-        when(repository.getComplianceTrendProgress(anyString(),anyObject(),anyString(),anyObject()))
+        when(repository.getComplianceTrendProgress(anyString(),anyObject(),anyObject(), anyString(),anyObject()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(complianceService.getOverallComplianceByDomain(anyString(),anyString()))
         .thenReturn(CommonTestUtil.getMapObject());
         
-        assertThat(issueTrendServiceImpl.getComplianceTrendProgress("ansString", LocalDate.now(),"compliance"),
+        assertThat(issueTrendServiceImpl.getComplianceTrendProgress("ansString", LocalDate.now(), anyObject(),"compliance"),
                 is(notNullValue()));
 
     }

@@ -73,12 +73,12 @@ public class TrendRepositoryImplTest {
         when(
                 elasticSearchRepository.getSortedDataFromES(anyString(), anyString(), anyObject(), anyObject(),
                         anyObject(), anyObject(), anyObject(), anyObject())).thenReturn(compliantTrendProgress);
-        trendRepositoryImpl.getComplianceTrendProgress("aws-all", LocalDate.now(), "test", ruleCat);
+        trendRepositoryImpl.getComplianceTrendProgress("aws-all", LocalDate.now(), anyObject(),"test", ruleCat);
         when(
                 elasticSearchRepository.getSortedDataFromES(anyString(), anyString(), anyObject(), anyObject(),
                         anyObject(), anyObject(), anyObject(), anyObject())).thenThrow(new RuntimeException());
         assertThatThrownBy(
-                () -> trendRepositoryImpl.getComplianceTrendProgress("aws-all", LocalDate.now(), "test", ruleCat))
+                () -> trendRepositoryImpl.getComplianceTrendProgress("aws-all", LocalDate.now(), anyObject(), "test", ruleCat))
                 .isInstanceOf(DataException.class);
 
     }
