@@ -73,11 +73,11 @@ public class TrendControllerTest {
     
     @Test
     public void getCompliantTrendTest() throws Exception {
-        when(issueTrendService.getComplianceTrendProgress(anyString(),anyObject(),anyString())).thenReturn(CommonTestUtil.getMapObject());
+        when(issueTrendService.getComplianceTrendProgress(anyString(),anyObject(),anyObject(),anyString())).thenReturn(CommonTestUtil.getMapObject());
         assertThat(trendController.getCompliantTrend(CommonTestUtil.getCompliantTrendRequest()), is(notNullValue()));
         assertThat(trendController.getCompliantTrend(CommonTestUtil.getCompliantTrendEmptyRequest()), is(notNullValue()));
         
-        when(issueTrendService.getComplianceTrendProgress(anyString(),anyObject(),anyString())).thenThrow(new ServiceException());
+        when(issueTrendService.getComplianceTrendProgress(anyString(),anyObject(),anyObject(),anyString())).thenThrow(new ServiceException());
         ResponseEntity<Object> responseObj = trendController.getCompliantTrend(CommonTestUtil.getCompliantTrendRequest());
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
