@@ -26,7 +26,7 @@ import com.tmobile.pacman.api.asset.domain.PolicyViolationApi;
 /**
  * The Interface ComplianceServiceClient.
  */
-@FeignClient(name = "compliance", url = "http://localhost:8083/api/compliance")
+@FeignClient(name = "compliance", url = "${service.url.compliance}")
 public interface ComplianceServiceClient {
 
     /**

@@ -291,7 +291,7 @@ public class AmazonCognitoConnector {
            String groupName = group.groupName();
            responseMap.put("roleName", groupName);
            responseMap.put("isDefault", false);
-           if (groupName.equalsIgnoreCase("ROLE_ADMIN") || groupName.equalsIgnoreCase("ROLE_USER")) {
+           if (groupName.equalsIgnoreCase("ROLE_USER")) {
                responseMap.put("isDefault", true);
            }
            String[] words = groupName.split("(?=[A-Z])");
