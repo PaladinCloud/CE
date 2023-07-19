@@ -19,6 +19,7 @@ import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.compliance.domain.*;
 import org.springframework.http.ResponseEntity;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -131,7 +132,7 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     ResponseWithOrder getIssueAuditLog(String datasource, String annotationId, String targetType, int from, int size,
-                                              String searchText) throws ServiceException;
+                                       String searchText) throws ServiceException;
 
     /**
      * Gets the resource details.
@@ -187,7 +188,7 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     List<Map<String, Object>> getPolicyDetailsByEnvironment(String assetGroup, String policyId, String application,
-                                                                   String searchText) throws ServiceException;
+                                                            String searchText) throws ServiceException;
 
     /**
      * Gets the policy description and other details.
@@ -310,6 +311,10 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     IssueExceptionResponse revokeMultipleIssueException(String assetGroup, List<String> issueIds, String revokedBy) throws ServiceException;
+
+    ResponseEntity<Object> validateIssuesExemptionRequest(ExemptionRequest exemptionRequest) throws ParseException;
+
+    ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest) throws ServiceException;
 
     public List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails) throws ServiceException;
 }

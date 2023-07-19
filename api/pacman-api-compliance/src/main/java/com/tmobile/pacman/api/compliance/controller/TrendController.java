@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -79,7 +79,7 @@ public class TrendController implements Constants {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
             @ApiResponse(code = 417, message = "Expectation Failed") })
-    
+
     @ApiOperation(value = "view the issue trends over the period of last 3 months", response = Iterable.class)
     @RequestMapping(path = "/v1/trend", method = RequestMethod.GET)
     public String getTrend() {
@@ -111,7 +111,7 @@ public class TrendController implements Constants {
      *            the app
      * @param env
      *            the env
-     * @return ResponseEntity<Object> 
+     * @return ResponseEntity<Object>
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved trend"),
@@ -119,18 +119,18 @@ public class TrendController implements Constants {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
             @ApiResponse(code = 417, message = "Expectation Failed") })
-    
+
     @ApiOperation(value = "view the issue trends over the period of last 3 months", response = Iterable.class)
     // @Cacheable(cacheNames="trends",unless="#result.status==200")
     @Cacheable(cacheNames = "trends", key = "T(java.util.Objects).hash(#p0,#p1, #p2, #p3, #p4, #p5, #p6, #p7)")
     @RequestMapping(path = "/v1/trend/issueTrend", method = RequestMethod.GET)
     public ResponseEntity<Object> getTrendForIssues(@RequestParam("ag") String assetGroup,
-            @RequestParam(name = "frdt", required = false) String fromDate,
-            @RequestParam(name = "todt", required = false) String toDate,
-            @RequestParam(name = "severity", required = false) String severity,
-            @RequestParam(name = "policyId", required = false) String policyId,
-            @RequestParam(name = "app", required = false) String app,
-            @RequestParam(name = "env", required = false) String env) {
+                                                    @RequestParam(name = "frdt", required = false) String fromDate,
+                                                    @RequestParam(name = "todt", required = false) String toDate,
+                                                    @RequestParam(name = "severity", required = false) String severity,
+                                                    @RequestParam(name = "policyId", required = false) String policyId,
+                                                    @RequestParam(name = "app", required = false) String app,
+                                                    @RequestParam(name = "env", required = false) String env) {
         try {
             return ResponseUtils.buildSucessResponse(trendService.getTrendForIssues(assetGroup, fromDate, toDate,
                     severity, policyId, app, env));
@@ -157,7 +157,7 @@ public class TrendController implements Constants {
      *
      * @return the trend from cache
      */
-    
+
     public String getTrendFromCache() {
         return "{\"message\":\"retrieving from cache..! when I will implement caching it will get picked up :-)))\"}";
     }
@@ -175,11 +175,11 @@ public class TrendController implements Constants {
      *            the severity
      * @param ruleId
      *            the rule id
-     * @return ResponseEntity<Object> 
+     * @return ResponseEntity<Object>
      */
-    
+
     public ResponseEntity<Object> getTrendFromCache(String assetGroup, String fromDate, String toDate, String severity,
-            String ruleId) {
+                                                    String ruleId) {
         return ResponseUtils.buildFailureResponse(new ServiceException(
                 "retrieving from cache..! when I will implement caching it will get picked up :-)))"));
     }
@@ -197,12 +197,19 @@ public class TrendController implements Constants {
      */
 
     @RequestMapping(path = "/v1/trend/compliance", method = RequestMethod.POST)
-    
+
     public ResponseEntity<Object> getCompliantTrend(@RequestBody(required = true) CompliantTrendRequest request) {
         Map<String, Object> response = new HashMap<>();
         String assetGroup = request.getAg();
 
         Date input = request.getFrom();
+        Date to = request.getTo();
+        LocalDate toDate=LocalDate.now();
+        if(to!=null){
+            Instant instant_to = to.toInstant();
+            ZonedDateTime zdt_to = instant_to.atZone(ZoneId.systemDefault());
+            toDate = zdt_to.toLocalDate();
+        }
 
         if (input == null) {
             Calendar cal = Calendar.getInstance();
@@ -222,7 +229,7 @@ public class TrendController implements Constants {
 
         String domain = filter.get(DOMAIN);
         try {
-            Map<String, Object> trendData = trendService.getComplianceTrendProgress(assetGroup, fromDate, domain);
+            Map<String, Object> trendData = trendService.getComplianceTrendProgress(assetGroup, fromDate, toDate, domain);
             response.put(RESPONSE, trendData);
         } catch (ServiceException e) {
             LOGGER.error("Exception in getCompliantTrend()" ,e.getMessage());
@@ -332,7 +339,7 @@ public class TrendController implements Constants {
      *
      * @param request
      *            the request
-     * @return ResponseEntity<Object> 
+     * @return ResponseEntity<Object>
      */
     
     @RequestMapping(path = "/v1/trend/compliance/certificates", method = RequestMethod.POST)
@@ -400,6 +407,12 @@ public class TrendController implements Constants {
         ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
         LocalDate fromDate = zdt.toLocalDate();
         LocalDate toDate = LocalDate.now();
+        Date to = request.getTo();
+        if(to!=null){
+            Instant instant_to = to.toInstant();
+            ZonedDateTime zdt_to = instant_to.atZone(ZoneId.systemDefault());
+            toDate = zdt_to.toLocalDate();
+        }
 
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));

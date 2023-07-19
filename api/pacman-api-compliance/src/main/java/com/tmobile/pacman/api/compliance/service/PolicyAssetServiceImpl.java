@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -59,35 +59,35 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
      */
     @Override
     public List<PolicyScanInfo> getPolicyExecutionDetails(String ag,
-            String resourceType, String resourceId) throws ServiceException {
+                                                          String resourceType, String resourceId) throws ServiceException {
         List<Map<String, Object>> poicies = repository
                 .fetchRuleDetails(resourceType);
         List<Map<String, Object>> issueList;
-		try {
-			issueList = repository.fetchOpenIssues(ag,
-			        resourceType, resourceId, true);
-		} catch (DataException e) {
-			throw new ServiceException("Error fetching issues from ES",e);
-		}
+        try {
+            issueList = repository.fetchOpenIssues(ag,
+                    resourceType, resourceId, true);
+        } catch (DataException e) {
+            throw new ServiceException("Error fetching issues from ES",e);
+        }
         List<PolicyScanInfo> scanList = new ArrayList<>();
         if (issueList != null) {
 
             for (Map<String, Object> policy : poicies) {
                 PolicyScanInfo scanInfo = new PolicyScanInfo();
-				Optional<Map<String, Object>> issueOpenOptonal = issueList.stream()
-						.filter(obj -> (policy.get(POLICYID).equals(obj.get(POLICYID)) && obj.get("issueStatus").equals("open"))).findFirst();
-				Map<String, Object> openIssue = null;
+                Optional<Map<String, Object>> issueOpenOptonal = issueList.stream()
+                        .filter(obj -> (policy.get(POLICYID).equals(obj.get(POLICYID)) && obj.get("issueStatus").equals("open"))).findFirst();
+                Map<String, Object> openIssue = null;
                 if (issueOpenOptonal.isPresent()) {
                     openIssue = issueOpenOptonal.get();
                 }
-                
-            	Optional<Map<String, Object>> issueExemptOptonal = issueList.stream()
-						.filter(obj -> (policy.get(POLICYID).equals(obj.get(POLICYID)) && obj.get("issueStatus").equals("exempted"))).findFirst();
-				Map<String, Object> exemptIssue = null;
+
+                Optional<Map<String, Object>> issueExemptOptonal = issueList.stream()
+                        .filter(obj -> (policy.get(POLICYID).equals(obj.get(POLICYID)) && obj.get("issueStatus").equals("exempted"))).findFirst();
+                Map<String, Object> exemptIssue = null;
                 if (issueExemptOptonal.isPresent()) {
-                	exemptIssue = issueExemptOptonal.get();
+                    exemptIssue = issueExemptOptonal.get();
                 }
-                
+
                 scanInfo.setPolicyName(policy.get("policyDisplayName").toString());
                 scanInfo.setPolicyId(policy.get(POLICYID).toString());
                 if (openIssue != null && !openIssue.isEmpty()) {
@@ -95,9 +95,9 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
                     scanInfo.setIssueId(openIssue.get("_id").toString());
                     scanList.add(0, scanInfo);
                 }else if(exemptIssue != null && !exemptIssue.isEmpty()) {
-                	 scanInfo.setLastScan("Exempted");
-                     scanInfo.setIssueId(exemptIssue.get("_id").toString());
-                     scanList.add(scanInfo);
+                    scanInfo.setLastScan("Exempt");
+                    scanInfo.setIssueId(exemptIssue.get("_id").toString());
+                    scanList.add(scanInfo);
                 } else {
                     scanInfo.setLastScan("Pass");
                     scanInfo.setIssueId("");
@@ -105,15 +105,14 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
                 }
                 scanInfo.setFrequency(CommonUtil.decodeAwsCronExp(policy.get(
                         "policyFrequency").toString()));
-                scanInfo.setSeverity(CommonUtil.getPolicySeverityFromParms(policy
-                        .get("policyParams").toString()));
+                scanInfo.setSeverity(policy.get(SEVERITY).toString().toString());
                 scanInfo.setCategory(policy.get("category").toString());
                 scanInfo.setScanHistory(new ArrayList<>());
                 // Need additional data source to find if the asset is scanned.
                 // As we only capture issue aduti which is not truley scan
                 // history
             }
-        } 
+        }
         return scanList;
     }
 
@@ -122,16 +121,16 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
      */
     @Override
     public PolicyVialationSummary getPolicyViolationSummary(String ag,
-            String resourceType, String resourceId) throws ServiceException {
+                                                            String resourceType, String resourceId) throws ServiceException {
         List<Map<String, Object>> policies = repository
                 .fetchRuleDetails(resourceType);
         Map<String, String> policySevMap = new HashMap<>();
-		List<Map<String, Object>> issueList;
-		try {
-			issueList = repository.fetchOpenIssues(ag, resourceType, resourceId, false);
-		} catch (DataException e) {
-			throw new ServiceException("Error fetching issues from ES",e);
-		}
+        List<Map<String, Object>> issueList;
+        try {
+            issueList = repository.fetchOpenIssues(ag, resourceType, resourceId, false);
+        } catch (DataException e) {
+            throw new ServiceException("Error fetching issues from ES",e);
+        }
 
         if (!issueList.isEmpty()) {
             policies.forEach(policy -> {
@@ -153,20 +152,20 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
                 String severity = policySevMap.get(issue.get(POLICYID).toString());
                 if (severity != null) {
                     switch (severity) {
-                    case CRITICAL:
-                        criticalCnt++;
-                        break;
-                    case HIGH:
-                        highCnt++;
-                        break;
-                    case MEDIUM:
-                        mediumCnt++;
-                        break;
-                    case LOW:
-                        lowCnt++;
-                        break;
+                        case CRITICAL:
+                            criticalCnt++;
+                            break;
+                        case HIGH:
+                            highCnt++;
+                            break;
+                        case MEDIUM:
+                            mediumCnt++;
+                            break;
+                        case LOW:
+                            lowCnt++;
+                            break;
                         default:
-                            
+
                     }
                 }
             }
@@ -184,19 +183,19 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
                     .mapToLong(severity -> {
                         long weigtage = 0;
                         switch (severity) {
-                        case CRITICAL:
-                            weigtage = TEN;
-                            break;
-                        case HIGH:
-                            weigtage = FIVE;
-                            break;
-                        case MEDIUM:
-                            weigtage = THREE;
-                            break;
-                        case LOW:
-                            weigtage = ONE;
-                            break;
-                        default:
+                            case CRITICAL:
+                                weigtage = TEN;
+                                break;
+                            case HIGH:
+                                weigtage = FIVE;
+                                break;
+                            case MEDIUM:
+                                weigtage = THREE;
+                                break;
+                            case LOW:
+                                weigtage = ONE;
+                                break;
+                            default:
                         }
                         return weigtage;
                     }).sum();

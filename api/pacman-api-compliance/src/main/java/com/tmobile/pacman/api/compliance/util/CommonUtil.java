@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -18,6 +18,8 @@ package com.tmobile.pacman.api.compliance.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -42,14 +44,16 @@ public class CommonUtil implements Constants {
     private CommonUtil() {
 
     }
-    
+
     /** The logger. */
     private final static Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 
     private static final String KERNEL_CRITERIA_KEY = "pacman.kernel.compliance.map";
     private static final String POLICY_PARAM_JSON = "{\"policyId\": \"%s\", \"params\": [%s]}";
 
-	/**
+    public static final String DATE_FORMAT_ERR_MSG = "Unable to parse date object for date %s and format %s";
+
+    /**
      * Decode aws cron exp.
      *
      * @param cron the cron
@@ -160,21 +164,31 @@ public class CommonUtil implements Constants {
         Gson serializer = new GsonBuilder().create();
         return serializer.fromJson(jsonString, Object.class);
     }
-    
+
     public static String getCurrentQuarterCriteriaKey() {
-		Date date = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH);
-		int currentQuarter = (month / 3) + 1;
-		return KERNEL_CRITERIA_KEY.concat(".")
-				.concat(String.valueOf(year)).concat(".q")
-				.concat(String.valueOf(currentQuarter));
-	}
+        Date date = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int currentQuarter = (month / 3) + 1;
+        return KERNEL_CRITERIA_KEY.concat(".")
+                .concat(String.valueOf(year)).concat(".q")
+                .concat(String.valueOf(currentQuarter));
+    }
     public static String generatePolicyParamJson(String policyId, List<PolicyParams> policyParams) {
         String policyParamString = policyParams.stream().map(PolicyParams::paramsToJsonString)
                 .collect(Collectors.joining(DELIMITER_COMMA));
         return String.format(POLICY_PARAM_JSON, policyId, policyParamString);
+    }
+
+    public static String getStringDate(final String format, final Date date) {
+        try {
+            DateFormat df = new SimpleDateFormat(format);
+            return df.format(date);
+        } catch (Exception ex) {
+            logger.error(String.format(DATE_FORMAT_ERR_MSG, date.toString(), format));
+            return date.toString().substring(0, 10);
+        }
     }
 }

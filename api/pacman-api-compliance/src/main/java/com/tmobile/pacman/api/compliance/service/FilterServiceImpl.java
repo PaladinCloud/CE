@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -45,7 +45,7 @@ public class FilterServiceImpl implements FilterService, Constants {
     ComplianceService complianceService;
 
     /** The statistics client. */
-  //  @Autowired
+    //  @Autowired
 
     /** The auth client. */
     @Autowired
@@ -58,10 +58,10 @@ public class FilterServiceImpl implements FilterService, Constants {
     /** The compliance repository. */
     @Autowired
     private ComplianceRepository complianceRepository;
-    
+
     /** The empty list. */
     List<Map<String, Object>> emptyList = null;
-    
+
     /** The empty asset count. */
     AssetCountDTO[] emptyAssetCount;
 
@@ -73,17 +73,17 @@ public class FilterServiceImpl implements FilterService, Constants {
         List<Map<String, Object>> filters;
         try{
             filters = repository
-                .getFiltersFromDb(filterId);
-    }catch(DataException e){
-        throw new ServiceException(e);
-    }
+                    .getFiltersFromDb(filterId);
+        }catch(DataException e){
+            throw new ServiceException(e);
+        }
         if (null != domain && !INFRA_AND_PLATFORMS.equalsIgnoreCase(domain))
             filters.removeIf(f -> (f.get("optionName").equals(
                     REGION_DISPALY_NAME) || f.get("optionName").equals(
                     ACCOUNT_NAME)));
-       if(filters.isEmpty()){
-           throw new ServiceException(NO_DATA_FOUND);
-       }
+        if(filters.isEmpty()){
+            throw new ServiceException(NO_DATA_FOUND);
+        }
         return filters;
 
     }
@@ -92,19 +92,19 @@ public class FilterServiceImpl implements FilterService, Constants {
      * @see com.tmobile.pacman.api.compliance.service.FilterService#getPolicies(java.lang.String, java.lang.String)
      */
     public List<Map<String, Object>> getPolicies(String assetGroup,
-            String domain) throws ServiceException {
+                                                 String domain) throws ServiceException {
         List<Map<String, Object>> policyDetList = new ArrayList<>();
 
         String ttypes = complianceRepository.getTargetTypeForAG(assetGroup,
                 domain);
 
         List<Map<String, Object>> policyIdsFromDb;
-      try{
-        policyIdsFromDb= repository
-                .getPoliciesFromDB(ttypes);
-      }catch(DataException e){
-          throw new ServiceException(e);
-      }
+        try{
+            policyIdsFromDb= repository
+                    .getPoliciesFromDB(ttypes);
+        }catch(DataException e){
+            throw new ServiceException(e);
+        }
         noDataFoundCheck(emptyAssetCount, policyIdsFromDb);
 
         policyIdsFromDb.parallelStream().forEach(policy -> {
@@ -131,10 +131,10 @@ public class FilterServiceImpl implements FilterService, Constants {
         Map<String, Long> regionsMap;
 
         List<Map<String, Object>> regions = new ArrayList<>();
-       try{ regionsMap = repository.getRegionsFromES(assetGroup,filter);
-       }catch(DataException e){
-           throw new ServiceException(e);
-       }
+        try{ regionsMap = repository.getRegionsFromES(assetGroup,filter);
+        }catch(DataException e){
+            throw new ServiceException(e);
+        }
         if (regionsMap.isEmpty()) {
             throw new ServiceException(NO_DATA_FOUND);
         }
@@ -161,10 +161,10 @@ public class FilterServiceImpl implements FilterService, Constants {
     public List<Map<String, Object>> getAccounts(String assetGroup)
             throws ServiceException {
         List<Map<String, Object>> accounts;
-       try{ accounts = repository.getAccountsFromES(assetGroup);
-       }catch(DataException e){
-           throw new ServiceException(e);
-       }
+        try{ accounts = repository.getAccountsFromES(assetGroup);
+        }catch(DataException e){
+            throw new ServiceException(e);
+        }
         List<Map<String, Object>> accountDetails = new ArrayList<>();
         noDataFoundCheck(emptyAssetCount, accounts);
         accounts.parallelStream().forEach(account -> {
@@ -193,11 +193,11 @@ public class FilterServiceImpl implements FilterService, Constants {
                 domain);
         List<Map<String, Object>> ruleIdsFromDb;
         try{
-        ruleIdsFromDb = complianceRepository
-                .getPolicyIdWithDisplayNameQuery(ttypes);
-      }catch(DataException e){
-          throw new ServiceException(e);
-      }
+            ruleIdsFromDb = complianceRepository
+                    .getPolicyIdWithDisplayNameQuery(ttypes);
+        }catch(DataException e){
+            throw new ServiceException(e);
+        }
         noDataFoundCheck(emptyAssetCount, ruleIdsFromDb);
         ruleIdsFromDb.parallelStream().forEach(policy -> {
             Map<String, Object> ruleMap = new HashMap<>();
@@ -221,15 +221,15 @@ public class FilterServiceImpl implements FilterService, Constants {
      * @see com.tmobile.pacman.api.compliance.service.FilterService#getApplications(java.lang.String, java.lang.String)
      */
     public List<Map<String, Object>> getApplications(String assetGroup,
-            String domain) throws ServiceException {
+                                                     String domain) throws ServiceException {
         AssetCountDTO[] assetCountByApps;
-       
+
         try{assetCountByApps = repository.getListOfApplications(assetGroup, domain);
         }catch(DataException e){
             throw new ServiceException(e);
-        }        
+        }
         noDataFoundCheck(assetCountByApps, emptyList);
-     
+
         return getAssetCountByAppOrEnv(assetCountByApps);
     }
 
@@ -240,12 +240,12 @@ public class FilterServiceImpl implements FilterService, Constants {
             String assetGroup, String application, String domain)
             throws ServiceException {
         AssetCountDTO[] assetCountByEnvs;
-      try{
-        assetCountByEnvs = repository.getListOfEnvironments(assetGroup,
-                application, domain);
-      }catch(DataException e){
-          throw new ServiceException(e);
-      }
+        try{
+            assetCountByEnvs = repository.getListOfEnvironments(assetGroup,
+                    application, domain);
+        }catch(DataException e){
+            throw new ServiceException(e);
+        }
         noDataFoundCheck(assetCountByEnvs, null);
         return getAssetCountByAppOrEnv(assetCountByEnvs);
     }
@@ -258,8 +258,8 @@ public class FilterServiceImpl implements FilterService, Constants {
         AssetCountDTO[] assetCountByResourceTypes;
         try{
             assetCountByResourceTypes= repository
-                .getListOfTargetTypes(assetGroup, domain);
-        noDataFoundCheck(assetCountByResourceTypes, emptyList);
+                    .getListOfTargetTypes(assetGroup, domain);
+            noDataFoundCheck(assetCountByResourceTypes, emptyList);
         }catch(DataException e){
             throw new ServiceException(e);
         }
@@ -283,7 +283,7 @@ public class FilterServiceImpl implements FilterService, Constants {
                 assetMap.put(ID, assetCount.getType());
                 assetList.add(assetMap);
             }
-        } 
+        }
         return assetList;
     }
 
@@ -316,7 +316,7 @@ public class FilterServiceImpl implements FilterService, Constants {
      * @throws ServiceException the service exception
      */
     private void noDataFoundCheck(AssetCountDTO[] emptyAssetCount,
-            List<Map<String, Object>> emptyList) throws ServiceException {
+                                  List<Map<String, Object>> emptyList) throws ServiceException {
         if (null == emptyAssetCount && null == emptyList) {
             throw new ServiceException(NO_DATA_FOUND);
         }
@@ -324,79 +324,79 @@ public class FilterServiceImpl implements FilterService, Constants {
     }
 
     /**
-         * Gets the severities for asset group.
-         *
-         * @param assetGroup the asset group
-         * @param domain the domain
-         * @return List<Map<String, Object>>
-         * @throws ServiceException the service exception
-         */
-        public List<Map<String, Object>> getSeveritiesForAssetGroup(
-                String assetGroup, String domain, Map<String,Object> filter) throws ServiceException {
+     * Gets the severities for asset group.
+     *
+     * @param assetGroup the asset group
+     * @param domain the domain
+     * @return List<Map<String, Object>>
+     * @throws ServiceException the service exception
+     */
+    public List<Map<String, Object>> getSeveritiesForAssetGroup(
+            String assetGroup, String domain,Map<String,Object> filter) throws ServiceException {
 
-            Map<String, Long> severityMap;
+        Map<String, Long> severityMap;
 
-            List<Map<String, Object>> severities = new ArrayList<>();
-            try {
-                severityMap = repository.getSeveritiesFromES(assetGroup);
-            } catch (DataException e) {
-                throw new ServiceException(e);
-            }
-            if (severityMap.isEmpty()) {
-                throw new ServiceException(NO_DATA_FOUND);
-            }
-            severityMap.entrySet().parallelStream().forEach(severity -> {
-                Map<String, Object> severity_Map = new HashMap<>();
-                if (StringUtils.isNotBlank(severity.getKey())) {
-                    String key=severity.getKey();
-                    severity_Map.put(NAME, key.substring(0,1).toUpperCase()+key.substring(1).toLowerCase());
-                    severity_Map.put(ID, key);
-                    synchronized (severities) {
-                        severities.add(severity_Map);
-                    }
-                }
-            });
-            if (severities.isEmpty()) {
-                throw new ServiceException(NO_DATA_FOUND);
-            }
-            return severities;
+        List<Map<String, Object>> severities = new ArrayList<>();
+        try {
+            severityMap = repository.getSeveritiesFromES(assetGroup,filter);
+        } catch (DataException e) {
+            throw new ServiceException(e);
         }
+        if (severityMap.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        severityMap.entrySet().parallelStream().forEach(severity -> {
+            Map<String, Object> severity_Map = new HashMap<>();
+            if (StringUtils.isNotBlank(severity.getKey())) {
+                String key=severity.getKey();
+                severity_Map.put(NAME, key.substring(0,1).toUpperCase()+key.substring(1).toLowerCase());
+                severity_Map.put(ID, key);
+                synchronized (severities) {
+                    severities.add(severity_Map);
+                }
+            }
+        });
+        if (severities.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        return severities;
+    }
 
-        /**
-         * Gets the categories for asset group.
-         *
-         * @param assetGroup the asset group
-         * @param domain the domain
-         * @return List<Map<String, Object>>
-         * @throws ServiceException the service exception
-         */
-        public List<Map<String, Object>> getCategoriesForAssetGroup(
-                String assetGroup, String domain) throws ServiceException {
-                    Map<String, Long> categoryMap;
-                    List<Map<String, Object>> categories = new ArrayList<>();
-                    try {
-                        categoryMap = repository.getCategoriesFromES(assetGroup);
-                    } catch (DataException e) {
-                        throw new ServiceException(e);
-                    }
-                    if (categoryMap.isEmpty()) {
-                        throw new ServiceException(NO_DATA_FOUND);
-                    }
-                    categoryMap.entrySet().parallelStream().forEach(severity -> {
-                        Map<String, Object> category_Map = new HashMap<>();
-                        if (StringUtils.isNotBlank(severity.getKey())) {
-                            category_Map.put(NAME, severity.getKey());
-                            category_Map.put(ID, severity.getKey());
-                            synchronized (categories) {
-                                categories.add(category_Map);
-                            }
-                        }
-                    });
-                    if (categories.isEmpty()) {
-                        throw new ServiceException(NO_DATA_FOUND);
-                    }
-                    return categories;      
-                        }
+    /**
+     * Gets the categories for asset group.
+     *
+     * @param assetGroup the asset group
+     * @param domain the domain
+     * @return List<Map<String, Object>>
+     * @throws ServiceException the service exception
+     */
+    public List<Map<String, Object>> getCategoriesForAssetGroup(
+            String assetGroup, String domain) throws ServiceException {
+        Map<String, Long> categoryMap;
+        List<Map<String, Object>> categories = new ArrayList<>();
+        try {
+            categoryMap = repository.getCategoriesFromES(assetGroup);
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        if (categoryMap.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        categoryMap.entrySet().parallelStream().forEach(severity -> {
+            Map<String, Object> category_Map = new HashMap<>();
+            if (StringUtils.isNotBlank(severity.getKey())) {
+                category_Map.put(NAME, severity.getKey());
+                category_Map.put(ID, severity.getKey());
+                synchronized (categories) {
+                    categories.add(category_Map);
+                }
+            }
+        });
+        if (categories.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        return categories;
+    }
 
     public List<Map<String, Object>> getIssueStatusForAssetGroup(
             String assetGroup, String domain) throws ServiceException {
@@ -428,70 +428,70 @@ public class FilterServiceImpl implements FilterService, Constants {
 
         return getAssetCountByAppOrEnv(assetCountByApps);
     }
-    
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
-	 * )
-	 */
-	public List<Map<String, Object>> getNotificationTypes() throws ServiceException {
-		Map<String, Long> notificationMap;
-		try {
-			notificationMap = repository.getNotificationTypesFromES();
-		} catch (DataException e) {
-			throw new ServiceException(e);
-		}
-		return convertESResponseToMap(notificationMap);
 
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
+     * )
+     */
+    public List<Map<String, Object>> getNotificationTypes() throws ServiceException {
+        Map<String, Long> notificationMap;
+        try {
+            notificationMap = repository.getNotificationTypesFromES();
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        return convertESResponseToMap(notificationMap);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
-	 * )
-	 */
-	public List<Map<String, Object>> getNotificationSource() throws ServiceException {
-		Map<String, Long> sourceMap;
-		try {
-			sourceMap = repository.getNotificationSourceFromES();
-		} catch (DataException e) {
-			throw new ServiceException(e);
-		}
-		return convertESResponseToMap(sourceMap);
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
+     * )
+     */
+    public List<Map<String, Object>> getNotificationSource() throws ServiceException {
+        Map<String, Long> sourceMap;
+        try {
+            sourceMap = repository.getNotificationSourceFromES();
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        return convertESResponseToMap(sourceMap);
 
-	public List<Map<String, Object>> convertESResponseToMap(Map<String, Long> regionsMap) throws ServiceException {
-		List<Map<String, Object>> map = new ArrayList<>();
-		if (regionsMap.isEmpty()) {
-			throw new ServiceException(NO_DATA_FOUND);
-		}
-		regionsMap.entrySet().parallelStream().forEach(region -> {
-			Map<String, Object> regMap = new HashMap<>();
-			if (StringUtils.isNotBlank(region.getKey())) {
-				regMap.put(NAME, region.getKey());
-				regMap.put(ID, region.getKey());
-				synchronized (map) {
-					map.add(regMap);
-				}
-			}
-		});
-		if (map.isEmpty()) {
-			throw new ServiceException(NO_DATA_FOUND);
-		}
-		return map;
-	}
+    }
+
+    public List<Map<String, Object>> convertESResponseToMap(Map<String, Long> regionsMap) throws ServiceException {
+        List<Map<String, Object>> map = new ArrayList<>();
+        if (regionsMap.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        regionsMap.entrySet().parallelStream().forEach(region -> {
+            Map<String, Object> regMap = new HashMap<>();
+            if (StringUtils.isNotBlank(region.getKey())) {
+                regMap.put(NAME, region.getKey());
+                regMap.put(ID, region.getKey());
+                synchronized (map) {
+                    map.add(regMap);
+                }
+            }
+        });
+        if (map.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        return map;
+    }
 
     public List<Map<String, Object>> getAttributeValuesForAssetGroup(
             String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName) throws ServiceException {
         Map<String, Long> valueMap;
         List<Map<String, Object>> valueList = new ArrayList<>();
         try {
-            valueMap = repository.getAttributeValuesFromES(assetGroup,attributeName, entityType);
+            valueMap = repository.getAttributeValuesFromES(assetGroup,filter, entityType,attributeName);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -598,6 +598,6 @@ public class FilterServiceImpl implements FilterService, Constants {
         }
         return rangeMap;
     }
-    
+
 
 }

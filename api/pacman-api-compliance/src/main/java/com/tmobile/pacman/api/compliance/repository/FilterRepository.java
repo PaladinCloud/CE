@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -80,7 +80,7 @@ public interface FilterRepository {
      */
     public Map<String, Long> getRegionsFromES(String assetGroup,Map<String,Object> filter)
             throws DataException;
-            
+
     /**
      * Gets the map of all the severities and its count from the ES.
      *
@@ -88,11 +88,11 @@ public interface FilterRepository {
      * @return Map<String, Long>.
      * @throws DataException the data exception
      */
-    public Map<String, Long> getSeveritiesFromES(String assetGroup)
-                    throws DataException;
-            
+    public Map<String, Long> getSeveritiesFromES(String assetGroup,Map<String,Object> filter)
+            throws DataException;
 
-     /**
+
+    /**
      * Gets the map of all the categories and its count from the ES.
      *
      * @param assetGroup the asset group
@@ -100,7 +100,7 @@ public interface FilterRepository {
      * @throws DataException the data exception
      */
     public Map<String, Long> getCategoriesFromES(String assetGroup)
-    throws DataException;
+            throws DataException;
 
     /**
      * Gets the rules from ES.
@@ -120,7 +120,7 @@ public interface FilterRepository {
      * @throws DataException the data exception
      */
     public AssetCountDTO[] getListOfApplications(String assetGroup,
-            String domain) throws DataException;
+                                                 String domain) throws DataException;
 
     /**
      * Gets the list of environments.
@@ -132,7 +132,7 @@ public interface FilterRepository {
      * @throws DataException the data exception
      */
     public AssetCountDTO[] getListOfEnvironments(String assetGroup,
-            String application, String domain) throws DataException;
+                                                 String application, String domain) throws DataException;
 
     /**
      * Gets the list of target types.
@@ -146,7 +146,7 @@ public interface FilterRepository {
             throws DataException;
 
     public AssetCountDTO[] getValueListforTag(String assetGroup, String tag, String type) throws DataException;
-    
+
     /**
      * Gets the list of Notification types.
      *
@@ -154,7 +154,7 @@ public interface FilterRepository {
      * @throws DataException the data exception
      */
     public Map<String, Long> getNotificationTypesFromES() throws DataException;
-    
+
     /**
      * Gets the list of Notification source.
      *
@@ -165,6 +165,6 @@ public interface FilterRepository {
     public Map<String, Long> getNotificationEventNamesFromES() throws DataException;
 
 
-    public Map<String, Long> getAttributeValuesFromES(String assetGroup, String attributeName, String entityType) throws DataException;
+    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName) throws DataException;
 
 }

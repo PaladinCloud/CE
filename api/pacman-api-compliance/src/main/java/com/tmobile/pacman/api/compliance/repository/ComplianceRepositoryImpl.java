@@ -111,13 +111,29 @@ import static com.tmobile.pacman.api.compliance.util.Constants.*;
 @Repository
 public class ComplianceRepositoryImpl implements ComplianceRepository, Constants {
 
+    public static final String ACTION_TEMPLATE_AUDIT =
+            "{\"index\":{ \"_index\" : \"%s\", \"routing\" : \"%s\"}}%n";
+    public static final String ACTION_TEMPLATE_EXCEPTION =
+            "{\"index\":{\"_index\":\"%s\", \"routing\" : \"%s\"} }%n";
+    public static final String ACTION_TEMPLATE_ISSUE = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", " +
+            " \"routing\" : \"%s\"} }%n";
+
+    public static final String UTC = "UTC";
+
+    private static final String ISSUE_IS_IN_EXEMPTED_MSG = "Issue is in exempted state";
+
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
     private List<String> filterCustomHandler = Arrays.asList(DOMAIN,INCLUDE_EXEMPT);
 
+    private static final String UNABLE_TO_ADD_EXEMPTION_MSG = "Unable to add exemption after approving request";
+
     public static final String YYYY_MM_DD_T="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private static final String ENABLED_STATUS_FOR_SQL = "STATUS = 'ENABLED' AND";
+
+    private static final String UNABLE_TO_PERFORM_MSG = "Unable to perform any operation for this issue. ";
+    private static final String CURRENT_STATUS_MSG = "Current issue status is %s ";
     /**
      * The Constant PROTOCOL.
      */
@@ -457,6 +473,34 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         if(!issueStatus.isEmpty()) mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
         mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), policyIdOrder);
+        Boolean isAutofixPlanned = false;
+        if(filters.get(AUTOFIX_PLANNED+ KEYWORD) == null){
+            isAutofixPlanned = null;
+        }
+        else if(filters.get(AUTOFIX_PLANNED+ KEYWORD) instanceof String || filters.get(AUTOFIX_PLANNED+ KEYWORD) instanceof Boolean){
+            isAutofixPlanned = Boolean.parseBoolean((String)filters.get(AUTOFIX_PLANNED+ KEYWORD));
+        }
+        else{
+            List<String> ls = (List<String>) filters.get(AUTOFIX_PLANNED+ KEYWORD);
+            isAutofixPlanned = ls.size() == 1 ? Boolean.parseBoolean(ls.get(0)) : null;
+        }
+
+        if(isAutofixPlanned!=null){
+            if(isAutofixPlanned){
+                mustFilter.put(AUTOFIX_PLANNED, true);
+            }else{
+                List<Map<String,Object>> mustNotList=new ArrayList<>();
+                Map<String,Object> existMap=new HashMap<>();
+                existMap.put("field", AUTOFIX_PLANNED);
+                Map<String,Object> mustNotCondition=new HashMap<>();
+                mustNotCondition.put("exists", existMap);
+                mustNotList.add(mustNotCondition);
+                Map<String,Object> mustNotMap=new HashMap<>();
+                mustNotMap.put("must_not",mustNotList);
+                shouldFilter.put("bool", mustNotMap);
+                shouldFilter.put(AUTOFIX_PLANNED,"false");
+            }
+        }
 
         try {
             if (!Strings.isNullOrEmpty(policyId) && policyId.contains(CATEGORY_TAGGING)) {
@@ -565,13 +609,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     private List<Map<String, Object>> addSortOrderValues(Map<String, Object> sortFilters, ArrayList<String> policyIdOrder, String targetTypes) {
         List<Map<String,Object>> sortFilterList=new ArrayList<>();
         if(sortFilters!=null) {
-            String sortBy = ((String) sortFilters.get("fieldName")).replaceAll(KEYWORD, "");
+            String sortBy = ((String) sortFilters.get(FIELD_NAME)).replaceAll(KEYWORD, "");
             if (sortBy.equals("policyId")) {
                 sortFilters.put("sortOrder", policyIdOrder);
                 sortFilterList.add(sortFilters);
             } else if(rdsAttributeList.contains(sortBy)) {
                 String sortByAttribute = Constants.RESOURCE_TYPE.equalsIgnoreCase(sortBy) ? Constants.TARGET_TYPE : sortBy;
-                sortFilters.put("fieldName", sortByAttribute + KEYWORD);
+                sortFilters.put(FIELD_NAME, sortByAttribute + KEYWORD);
                 String sortOrder = (String) sortFilters.get("order");
                 List<Map<String, Object>> policyDetails = getPolicyDetailsSortByColumn(targetTypes, sortByAttribute, sortOrder);
                 Set<String> orderList = new LinkedHashSet<>();
@@ -581,7 +625,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             }else if(sortBy.equalsIgnoreCase("severity")){
                 //in case of default sort order add violation age as secondary sort, display latest violation first
                 Map<String, Object> ageSortCriteria=new HashMap<>();
-                ageSortCriteria.put("fieldName",CREATED_DATE);
+                ageSortCriteria.put(FIELD_NAME,CREATED_DATE);
                 ageSortCriteria.put(ORDER, DESC);
                 sortFilterList.add(sortFilters);
                 sortFilterList.add(ageSortCriteria);
@@ -640,7 +684,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             }
             body = body.substring(0, body.length() - 1);
             body = body + "]";
-            body = body + ",\"minimum_should_match\":1}}";
+            body = body + ",\"minimum_should_match\":\"1\"}}";
             body = body + ",\"aggs\":{\"distinct_resourceids\":{\"cardinality\":{\"field\":\"_resourceid.keyword\"}}}";
         }
         body = body + "}";
@@ -854,14 +898,16 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     public List<LinkedHashMap<String, Object>> getIssueAuditLog(String datasource, String annotationId, String targetType, int from,
                                                                 int size, String searchText) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
-        mustFilter.put(CommonUtils.convertAttributetoKeyword("annotationid"), annotationId);
         String type = ISSUE_UNDERSCORE + targetType + "_audit";
+        mustFilter.put(CommonUtils.convertAttributetoKeyword("annotationid"), annotationId);
+        mustFilter.put("docType.keyword",type);
         ArrayList<String> fields = new ArrayList<>();
         fields.add(STATUS);
         fields.add(AUDIT_DATE);
         fields.add(DATA_SOURCE);
+        fields.add(CREATED_BY);
         try {
-            return elasticSearchRepository.getDetailsFromESBySize(datasource, type, mustFilter, null, null, fields, from,
+            return elasticSearchRepository.getDetailsFromESBySize(datasource, "", mustFilter, null, null, fields, from,
                     size, null, null);
         } catch (Exception e) {
             throw new DataException(e);
@@ -959,8 +1005,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             Boolean status = true;
             for (Map<String, Object> issueDetail : issueDetails) {
                 if (status) {
-                    String dataSource = issueDetail.get(PAC_DS) + "_" + issueDetail.get(TARGET_TYPE);
-                    String targetType = issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE);
+                    String dataSource = String.valueOf(issueDetail.get(PAC_DS)) + "_" + issueDetail.get(TARGET_TYPE);
+                    String targetType = String.valueOf(issueDetail.get(TYPE)) + "_" + issueDetail.get(TARGET_TYPE);
                     String id = String.valueOf(issueDetail.get(ES_DOC_ID_KEY));
                     String routing = String.valueOf(issueDetail.get(ES_DOC_ROUTING_KEY));
                     String parent = String.valueOf(issueDetail.get(ES_DOC_PARENT_KEY));
@@ -1068,10 +1114,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         List<Map<String, Object>> exceptionDetails = getIssueDetails(issueId, null);
                         Map<String, Object> exceptionDetail = exceptionDetails.get(0);
                         String exceptionId = String.valueOf(exceptionDetail.get(ES_DOC_ID_KEY));
-                        String esQueryUrl = esUrl + "/" + dataSource + "/" + targetType + "_exception/" +
-                                exceptionId + "?routing=" + routing;
+                        StringBuilder esQueryUrl = new StringBuilder(esUrl);
+                        esQueryUrl.append("/").append(dataSource).append("/" + targetType).append("_exception/")
+                                .append(exceptionId).append("?routing=" + routing);
                         HttpClient client = HttpClientBuilder.create().build();
-                        HttpDelete httpdelete = new HttpDelete(esQueryUrl);
+                        HttpDelete httpdelete = new HttpDelete(esQueryUrl.toString());
                         httpdelete.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
                         client.execute(httpdelete);
                     } catch (Exception exception) {
@@ -1237,11 +1284,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         AssetCountDTO[] targetTypes = data.getTargettypes();
         for (AssetCountDTO name : targetTypes) {
             if (!Strings.isNullOrEmpty(name.getType())) {
-                ttypesTemp = '\'' + name.getType() + '\'';
+                ttypesTemp = new StringBuilder().append('\'').append(name.getType()).append('\'').toString();
                 if (Strings.isNullOrEmpty(ttypes)) {
                     ttypes = ttypesTemp;
                 } else {
-                    ttypes = ttypes + "," + ttypesTemp;
+                    ttypes = new StringBuilder(ttypes).append(",").append(ttypesTemp).toString();
                 }
             }
         }
@@ -1446,7 +1493,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 }
                 body = body.substring(0, body.length() - 1);
                 body = body + "]";
-                body = body + ",\"minimum_should_match\":1";
+                body = body + ",\"minimum_should_match\":\"1\"";
             }
             body = body
                     + "}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000000}}}}";
@@ -1460,7 +1507,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                                 + policyId
                                 + "\"}}},{\"term\":{\"tags.Application.keyword\":{\"value\":\""
                                 + application
-                                + "\"}}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":1}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
+                                + "\"}}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":\"1\"}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
             } else {
                 requestBody = new StringBuilder(
                         "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
@@ -1469,7 +1516,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                                 + application
                                 + "\"}}},{\"match_phrase_prefix\":{\"_all\":\""
                                 + searchText
-                                + "\"}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":1}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
+                                + "\"}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":\"1\"}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
             }
         }
         try {
@@ -1501,7 +1548,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyDescriptionFromDb(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyDescriptionFromDb(String policyId) throws DataException {
-        String policyDescQuery = "SELECT policyDisplayName,resolutionUrl,resolution,policyDesc, targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE status = 'ENABLED' AND policyId ='"
+        String policyDescQuery = "SELECT policyDisplayName,resolutionUrl,resolution,policyDesc,policyParams,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE status = 'ENABLED' AND policyId ='"
                 + policyId + "'";
         return rdsepository.getDataFromPacman(policyDescQuery);
     }
@@ -1541,17 +1588,16 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             issue.put(SEVERITY_DISPALY_NAME, sourceMap.get(SEVERITY));
             issue.put(POLICYCATEGORY_DISPALY_NAME, sourceMap.get(POLICY_CATEGORY));
 
+            if(sourceMap.get(AUTOFIX_PLANNED)!=null){
+                issue.put(AUTOFIX_PLANNED,sourceMap.get(AUTOFIX_PLANNED));
+            }else{
+                issue.put(AUTOFIX_PLANNED,"false");
+            }
+
             if (domain.equals(INFRA_AND_PLATFORMS)) {
                 issue.put(ACCOUNT_DISPALY_NAME, sourceMap.get(ACCOUNT_NAME));
                 issue.put(ACCOUNT_DISPLAYI_D, sourceMap.get(ACCOUNT_ID));
                 issue.put(REGION_DISPALY_NAME, sourceMap.get(REGION));
-                if (issueDetail != null) {
-                    issue.put(APPLICATION, "");
-                    issue.put(ENVIRONMENT, "");
-                } else {
-                    issue.put(APPLICATION, sourceMap.get(TAGS_APPLICATION));
-                    issue.put(ENVIRONMENT, sourceMap.get(TAGS_ENVIRONMENT));
-                }
             }
             issue.put(CREATED_DISPLAY_DATE, sourceMap.get(CREATED_DATE));
             issue.put(MODIFIED_DISPLAY_DATE, sourceMap.get(MODIFIED_DATE));
@@ -1560,6 +1606,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             issue.put(DESCRIPTION, sourceMap.get(DESC));
             if (domain.equals(SOX)) {
                 issue.put(ENV, sourceMap.get(ENV));
+            }
+
+            if(mandatoryTags!=null && !mandatoryTags.isEmpty()){
+                List<String> mandatoryTagList = Arrays.stream(mandatoryTags.split(",")).map(String::trim).collect(Collectors.toList());
+                for(String mandatoryTag:mandatoryTagList){
+                    issue.put(mandatoryTag, sourceMap.get("tags."+mandatoryTag));
+                }
             }
 
             nonDisplayable.put(POLICY_DISPLAY_ID, sourceMap.get(POLICYID));
@@ -1618,9 +1671,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 } else {
                     String instanceIdSearchQuery = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":{\"value\":\"true\"}}},{\"term\":{\"instanceid.keyword\":{\"value\":\""
                             + kernelVersion.getInstanceId() + "\"}}}]}}}";
-                    String urlToQueryinstanceId = esUrl + "/" + "aws_ec2/ec2" +
-                            "/" + UNDERSCORE_COUNT;
-                    String instanceDetails = PacHttpUtils.doHttpPost(urlToQueryinstanceId,
+                    StringBuilder urlToQueryinstanceId = new StringBuilder(esUrl).append("/").append("aws_ec2/ec2")
+                            .append("/").append(UNDERSCORE_COUNT);
+                    String instanceDetails = PacHttpUtils.doHttpPost(urlToQueryinstanceId.toString(),
                             instanceIdSearchQuery);
                     Gson serializer = new GsonBuilder().create();
                     Map<String, Object> instanceDetailsMap = (Map<String, Object>) serializer.fromJson(instanceDetails,
@@ -1777,7 +1830,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             }
             body = body.substring(0, body.length() - 1);
             body = body + "]";
-            body = body + ",\"minimum_should_match\":1";
+            body = body + ",\"minimum_should_match\":\"1\"";
         }
         body = body + "}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"targetType.keyword\",\"size\":"
                 + targetTypeList.size() + "}}}}";
@@ -2165,7 +2218,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     private StringBuilder formatURL(String assetGroup, String resourcetype, String apiType) {
         StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(
                 assetGroup);
-        urlToQuery.append("/").append(resourcetype);
+        if(!StringUtils.isEmpty(resourcetype))
+            urlToQuery.append("/").append(resourcetype);
         if ("noncompliancepolicy".equals(apiType) || "policydetailsbyenvironment".equals(apiType)) {
             urlToQuery.append("/").append("_count");
         } else if ("policydetailsbyapplication".equals(apiType)) {
@@ -2173,13 +2227,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         return urlToQuery;
     }
-
-    private  String createAuditTrail(String ds, String type, String status, String id,String createdBy, String docType, Map<String, Object> parentDetMap, String target) {
-        String date = CommonUtils.getCurrentDateStringWithFormat("UTC",YYYY_MM_DD_T);
+    private  String createAuditTrail(String ds, String type, String status, String id,String createdBy, String _type, Map<String, Object> parentDetMap, String target) {
+        String date = CommonUtils.getCurrentDateStringWithFormat("UTC","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Map<String, Object> auditTrail = new LinkedHashMap<>();
         auditTrail.put("datasource", ds);
-        if(!StringUtils.isEmpty(docType))
-            auditTrail.put("docType", docType);
+        if(!StringUtils.isEmpty(_type))
+            auditTrail.put("docType", _type);
         auditTrail.put("targetType", type);
         auditTrail.put("annotationid", id);
         auditTrail.put(Constants.DOCID, id);
@@ -2455,7 +2508,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             }
 
             failedIssueIds.addAll(revokeException(assetGroup,issueIds));
-            notificationService.triggerRevokeExemptionNotification(issueDetails, failedIssueIds, REVOKE_EXEMPTION_SUBJECT, revokedBy);
+            notificationService.triggerRevokeExemptionNotification(issueDetails, failedIssueIds, revokedBy);
         } else {
             failedIssueIds.addAll(issueIds);
         }
@@ -2485,13 +2538,15 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         try {
             if (mustFilter.isEmpty()) {
-                StringBuilder urlToQuery = new StringBuilder(esUrl).append("/" + assetGroup + "/_search");
+                StringBuilder urlToQuery = new StringBuilder(esUrl).append("/"+assetGroup+"/_search");
                 String responseJson = "";
                 try {
-                    String requestBody = "{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"terms\":{\"issueId.keyword\":[" + "\"" + StringUtils.join(issueIds, "\", \"") + "\"" +
-                            "]}}]}}}";
+                    StringBuilder requestBody = new StringBuilder(
+                            "{\"size\":"+ES_PAGE_SIZE+",\"query\":{\"bool\":{\"must\":[{\"terms\":{\"issueId.keyword\":[");
+                    requestBody.append("\"" + StringUtils.join(issueIds, "\", \"") + "\"");
+                    requestBody.append("]}}]}}}");
                     responseJson = PacHttpUtils.doHttpPost(urlToQuery.toString(),
-                            requestBody);
+                            requestBody.toString());
                     elasticSearchRepository.processResponseAndSendTheScrollBack(
                             responseJson, resourceDetList);
                 } catch (Exception e) {
@@ -2507,9 +2562,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return resourceDetList;
     }
 
-    private List<String> revokeException(String assetGroup, List<String> issueIds) throws DataException {
+    private List<String> revokeException(String assetGroup,List<String> issueIds) throws DataException {
 
-        String actionTemplateException = "{ \"index\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\"} }%n";
+        String actionTemplateException = "{ \"index\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"routing\" : \"%s\"} }%n";
         StringBuilder bulkRequest = new StringBuilder();
 
         List<String> errors = new ArrayList<>();
@@ -2518,13 +2573,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<Map<String, Object>> exceptionDetails = new ArrayList<>();
 
         try {
-            exceptionDetails = getMultipleIssueDetails(assetGroup, issueIds, null);
+            exceptionDetails = getMultipleIssueDetails(assetGroup,issueIds, null);
         } catch (DataException e) {
             logger.error("Error while fetching exemption details ", e);
             failedIssueIds.addAll(issueIds);
             return failedIssueIds;
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat(YYYY_MM_DD, Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Map<String, String> idMapping = new HashMap<>();
@@ -2538,6 +2593,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String id = String.valueOf(exceptionDetail.get(ES_DOC_ID_KEY));
                         String routing = String.valueOf(exceptionDetail.get(ES_DOC_ROUTING_KEY));
                         exceptionDetail.put("exceptionEndDate", sdf.format(yesterday()));
+                        exceptionDetail.put("docType", targetType);
                         exceptionDetail.remove(ES_DOC_ID_KEY);
                         exceptionDetail.remove(ES_DOC_ROUTING_KEY);
                         idMapping.put(id, exceptionDetail.get("issueId").toString());
@@ -2545,7 +2601,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         StringBuilder doc = new StringBuilder(createESDoc(exceptionDetail));
                         if (doc != null) {
                             bulkRequest.append(
-                                    String.format(actionTemplateException, id, dataSource, targetType, routing));
+                                    String.format(actionTemplateException, id, dataSource, routing));
                             bulkRequest.append(doc + "\n");
                         }
                         i++;
@@ -2575,7 +2631,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     private void bulkUpload(List<String> errors, String bulkRequest) {
-        System.out.println("bulkRequest" + bulkRequest);
         try {
             Response resp = invokeAPI("POST", "/_bulk?refresh=true", bulkRequest);
             String responseStr = EntityUtils.toString(resp.getEntity());
@@ -2609,7 +2664,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         if (payLoad != null)
             entity = new NStringEntity(payLoad, ContentType.APPLICATION_JSON);
 
-        return getRestClient().performRequest(method, uri, Collections.emptyMap(), entity);
+        return getRestClient().performRequest(method, uri, Collections.<String, String>emptyMap(), entity);
     }
 
     private RestClient getRestClient() {
@@ -2788,6 +2843,247 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return ls.get(0);
     }
 
+    @Override
+    public ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest)
+            throws DataException {
+        StringBuilder builderRequestAudit = new StringBuilder();
+        ExemptionResponse issueExceptionResponse = new ExemptionResponse();
+        List<String> issueIds = exemptionRequest.getIssueIds();
 
+        StringBuilder bulkRequest = new StringBuilder();
+        Map<String, String> exemptions = new HashMap<>();
+        Map<String, String> exemptionReasons = new HashMap<>();
+        List<String> failedIssueIds = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+        List<String> auditErrors = new ArrayList<>();
+        Map<String, IssuesException> approvedIssuesExemptionMap = new HashMap<>();
 
+        List<Map<String, Object>> issueDetails;
+        try {
+            issueDetails = getMultipleIssueDetails(exemptionRequest.getAssetGroup(), issueIds, Constants.OPEN);
+        } catch (DataException e) {
+            logger.error(OPEN_ISSUE_FETCH_ERROR_MESSAGE, e);
+            issueExceptionResponse.setStatus(STATUS_FAILED);
+            issueExceptionResponse.setFailedIssueIds(issueIds);
+            return issueExceptionResponse;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat(YYYY_MM_DD, Locale.US);
+        sdf.setTimeZone(TimeZone.getTimeZone(UTC));
+
+        if (!issueDetails.isEmpty()) {
+            int i = 0;
+            for (Map<String, Object> issueDetail : issueDetails) {
+                Map<String, Object> issueExceptionDetails = Maps.newHashMap();
+                Map<String, Object> partialDocument = Maps.newHashMap();
+                String target = String.valueOf(issueDetail.get(TARGET_TYPE));
+                Map<String, Object> parentDetMap = Maps.newHashMap();
+                parentDetMap.put("parent", issueDetail.get(target+"_relations.parent"));
+                parentDetMap.put("name", issueDetail.get(target+"_relations.name"));
+                partialDocument.put(target+"_relations", parentDetMap);
+                try {
+                    String id = String.valueOf(issueDetail.get(ES_DOC_ID_KEY));
+                    if (String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPT)) {
+                        failedIssueIds.add(id);
+                        exemptionReasons.put(id, ISSUE_IS_IN_EXEMPTED_MSG);
+                        continue;
+                    }
+                    Date today = new Date();
+                    String currentDate = sdf.format(today);
+                    if (exemptionRequest.getAction().toString()
+                            .equalsIgnoreCase(Actions.REVOKE_EXEMPTION_REQUEST.toString()) &&
+                            String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
+                        /*for notification*/
+                        issueDetail.put(STATUS, EXEMPTION_REQUEST_REVOKED);
+                        /*for auditing*/
+                        issueExceptionDetails.put(EXEMPTION_REQUEST_REVOKED_ON, currentDate);
+                        /*for issue*/
+                        partialDocument.put(STATUS, EXEMPTION_REQUEST_REVOKED);
+                        partialDocument.put(EXEMPTION_REQUEST_REVOKED_BY, exemptionRequest.getCreatedBy());
+                        partialDocument.put(EXEMPTION_REQUEST_REVOKED_ON, currentDate);
+
+                    } else if (exemptionRequest.getAction().toString()
+                            .equalsIgnoreCase(Actions.CREATE_EXEMPTION_REQUEST.toString()) &&
+                            !String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
+                        /*for notification*/
+                        issueDetail.put(STATUS, EXEMPTION_REQUEST_RAISED);
+                        /*for auditing*/
+                        issueExceptionDetails.put(EXEMPTION_START_DATE, currentDate);
+                        issueExceptionDetails.put(EXEMPTION_END_DATE,
+                                sdf.format(exemptionRequest.getExceptionEndDate()));
+                        /*for issue*/
+                        partialDocument.put(STATUS, EXEMPTION_REQUEST_RAISED);
+                        partialDocument.put(REASON_TO_EXEMPT_KEY, exemptionRequest.getExceptionReason());
+                        partialDocument.put(Constants.EXEMPTION_RAISED_EXPIRING_ON,
+                                sdf.format(exemptionRequest.getExceptionEndDate()));
+                        partialDocument.put(Constants.EXEMPTION_RAISED_BY, exemptionRequest.getCreatedBy());
+                        partialDocument.put(Constants.EXEMPTION_RAISED_ON, currentDate);
+                    } else if (exemptionRequest.getAction().toString()
+                            .equalsIgnoreCase(Actions.CANCEL_EXEMPTION_REQUEST.toString()) &&
+                            String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
+                        /*for notification*/
+                        issueDetail.put(STATUS, EXEMPTION_REQUEST_CANCELLED);
+                        /*for auditing*/
+                        issueExceptionDetails.put(EXEMPTION_REQUEST_CANCELLED_ON, currentDate);
+                        /*for issue*/
+                        partialDocument.put(STATUS, EXEMPTION_REQUEST_CANCELLED);
+                        partialDocument.put(EXEMPTION_REQUEST_CANCELLED_BY, exemptionRequest.getCreatedBy());
+                        partialDocument.put(EXEMPTION_REQUEST_CANCELLED_ON, currentDate);
+                    } else if (exemptionRequest.getAction().toString()
+                            .equalsIgnoreCase(Actions.APPROVE_EXEMPTION_REQUEST.toString()) &&
+                            String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
+                        /*for notification*/
+                        issueDetail.put(STATUS, EXEMPTION_REQUEST_APPROVED);
+                        /*for auditing*/
+                        issueExceptionDetails.put(EXEMPTION_REQUEST_APPROVED_ON, currentDate);
+                        /*for issue*/
+                        partialDocument.put(STATUS, EXEMPTION_REQUEST_APPROVED);
+                        partialDocument.put(EXEMPTION_REQUEST_APPROVED_BY, exemptionRequest.getApprovedBy());
+                        partialDocument.put(EXEMPTION_REQUEST_APPROVED_ON, currentDate);
+                        /*for creating exemption*/
+                        IssuesException issuesExemption = new IssuesException();
+                        issuesExemption.setCreatedBy(exemptionRequest.getCreatedBy());
+                        issuesExemption.setExceptionReason(exemptionRequest.getExceptionReason());
+                        issuesExemption.setExceptionEndDate(exemptionRequest.getExceptionEndDate());
+                        issuesExemption.setExceptionGrantedDate(today);
+                        issuesExemption.setIssueIds(exemptionRequest.getIssueIds());
+                        approvedIssuesExemptionMap.put(id, issuesExemption);
+                    } else {
+                        failedIssueIds.add(id);
+                        exemptionReasons.put(id, UNABLE_TO_PERFORM_MSG +
+                                String.format(CURRENT_STATUS_MSG, issueDetail.get(STATUS)));
+                        continue;
+                    }
+                    String dataSource = issueDetail.get(PAC_DS) + DELIMITER_UNDERSCORE + issueDetail.get(TARGET_TYPE);
+                    String targetType = issueDetail.get(TYPE) + DELIMITER_UNDERSCORE + issueDetail.get(TARGET_TYPE);
+                    String routing = String.valueOf(issueDetail.get(ES_DOC_ROUTING_KEY));
+                    String parent = String.valueOf(issueDetail.get(ES_DOC_PARENT_KEY));
+
+                    issueExceptionDetails.put(ISSUE_EXEMPTION_REASON, exemptionRequest.getExceptionReason());
+                    issueExceptionDetails.put(TARGET_TYPE, String.valueOf(issueDetail.get(TARGET_TYPE)));
+                    issueExceptionDetails.put(ISSUE_ID, issueDetail.get(ES_DOC_ID_KEY));
+                    issueExceptionDetails.put(SOURCE, ISSUE_EXCEPTION);
+                    issueExceptionDetails.put(ISSUE_RESOURCE_ID, String.valueOf(issueDetail.get(RESOURCEID)));
+                    issueExceptionDetails.put(CREATED_BY, exemptionRequest.getCreatedBy());
+
+                    partialDocument.put(ISSUE_STATUS, OPEN);
+                    partialDocument.put(MODIFIED_DATE, currentDate);
+                    partialDocument.put(Constants.REASON_TO_EXEMPT_KEY, exemptionRequest.getExceptionReason());
+                    partialDocument.put(DOC_TYPE, targetType);
+                    /* Updating fields for new User Exemption request*/
+
+                    /**/
+                    String exemptionDoc = createESDoc(issueExceptionDetails);
+                    String exemptionTarget = String.format(ACTION_TEMPLATE_EXCEPTION, dataSource, routing) +
+                            exemptionDoc + NEW_LINE;
+                    exemptions.put(id, exemptionTarget);
+
+                    Map<String, Object> issueDocument = Maps.newHashMap();
+                    issueDocument.put(DOC, partialDocument);
+                    /**/
+                    String doc = createESDoc(issueDocument);
+
+                    bulkRequest.append(String.format(ACTION_TEMPLATE_ISSUE, id, dataSource, routing));
+                    bulkRequest.append(doc).append(NEW_LINE);
+
+                    String _type = targetType + AUDIT;
+                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, routing))
+                            .append(createAuditTrail(exemptionRequest.getAssetGroup(), targetType, EXEMPT, id,
+                                    exemptionRequest.getCreatedBy(), targetType, parentDetMap, target)).append(NEW_LINE);
+
+                    i++;
+                    if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
+                        logger.info(LOG_UPLOADING + i);
+                        bulkUpload(errors, bulkRequest.toString());
+                        bulkUpload(auditErrors, builderRequestAudit.toString());
+
+                        bulkRequest = new StringBuilder();
+                        builderRequestAudit = new StringBuilder();
+                    }
+                } catch (Exception e) {
+                    throw new DataException(e);
+                }
+            }
+            if (bulkRequest.length() > 0) {
+                logger.info(LOG_UPLOADING + i);
+                bulkUpload(errors, bulkRequest.toString());
+                bulkUpload(auditErrors, builderRequestAudit.toString());
+
+            }
+
+            if (!errors.isEmpty()) {
+                failedIssueIds.addAll(fetchIdFromErrors(errors));
+                issueIds.removeAll(failedIssueIds);
+            }
+            if (failedIssueIds.isEmpty()) {
+                System.out.println(EXCEPTION_SIZE + failedIssueIds);
+                i = 0;
+                for (Map.Entry<String, String> entry : exemptions.entrySet()) {
+                    bulkRequest.append(entry.getValue());
+                    i++;
+                    if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
+                        logger.info(LOG_UPLOADING + i);
+                        bulkUpload(errors, bulkRequest.toString());
+                        bulkRequest = new StringBuilder();
+                    }
+                }
+            } else {
+                errors = new ArrayList<>();
+                i = 0;
+                for (Map.Entry<String, String> entry : exemptions.entrySet()) {
+                    if (!failedIssueIds.contains(entry.getKey())) {
+                        bulkRequest.append(entry.getValue());
+                        i++;
+                        if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
+                            logger.info(LOG_UPLOADING + i);
+                            bulkUpload(errors, bulkRequest.toString());
+                            bulkRequest = new StringBuilder();
+                        }
+                    }
+                }
+            }
+            if (bulkRequest.length() > 0) {
+                logger.info(LOG_UPLOADING + i);
+                bulkUpload(errors, bulkRequest.toString());
+            }
+
+            fetchIdFromErrors(errors).parallelStream().forEach(id -> {
+                if (!failedIssueIds.contains(id)) {
+                    synchronized (failedIssueIds) {
+                        failedIssueIds.add(id);
+                    }
+                }
+            });
+            notificationService.triggerCreateExemptionNotification(issueDetails, failedIssueIds, exemptionRequest);
+
+        } else {
+            failedIssueIds.addAll(issueIds);
+            issueIds.forEach(id -> {
+                exemptionReasons.put(id, ISSUE_IS_IN_EXEMPTED_MSG);
+            });
+        }
+
+        if (failedIssueIds.isEmpty()) {
+            issueExceptionResponse.setStatus(STATUS_SUCCESS_CAPS);
+        } else if (exemptionRequest.getIssueIds().size() == failedIssueIds.size()) {
+            issueExceptionResponse.setStatus(STATUS_FAILED);
+        } else {
+            issueExceptionResponse.setStatus(STATUS_PARTIAL_SUCCESS);
+        }
+        approvedIssuesExemptionMap.forEach((approvedIssueId, issuesExceptionRequest) -> {
+            try {
+                if (!failedIssueIds.contains(approvedIssueId)) {
+                    exemptAndUpdateMultipleIssueDetails(exemptionRequest.getAssetGroup(),
+                            approvedIssuesExemptionMap.get(approvedIssueId));
+                }
+            } catch (Exception ex) {
+                logger.error(ex.getMessage(), ex.fillInStackTrace());
+                issueExceptionResponse.setStatus(STATUS_PARTIAL_SUCCESS);
+                exemptionReasons.put(approvedIssueId, UNABLE_TO_ADD_EXEMPTION_MSG);
+            }
+        });
+        issueExceptionResponse.setFailureReason(exemptionReasons);
+        issueExceptionResponse.setFailedIssueIds(failedIssueIds);
+        return issueExceptionResponse;
+    }
 }

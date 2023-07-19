@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -39,8 +39,8 @@ public interface IssueTrendService {
      * @throws ServiceException the service exception
      */
     public Map<String, Long> getTrendForIssues(String assetGroup,
-            String fromDate, String toDate, String severity,
-            String policyId, String app, String env) throws ServiceException;
+                                               String fromDate, String toDate, String severity,
+                                               String policyId, String app, String env) throws ServiceException;
 
     /**
      * Gets the compliance trend progress.
@@ -52,7 +52,7 @@ public interface IssueTrendService {
      * @throws ServiceException the service exception
      */
     public Map<String, Object> getComplianceTrendProgress(String assetGroup,
-            LocalDate fromDate, String domain) throws ServiceException;
+                                                          LocalDate fromDate, LocalDate toDate, String domain) throws ServiceException;
 
     /**
      * Gets the trend progress.
@@ -66,7 +66,7 @@ public interface IssueTrendService {
      * @throws ServiceException the service exception
      */
     Map<String, Object> getTrendProgress(String assetGroup, String ruleId,
-            LocalDate startDate, LocalDate endDate, String ruleCategory)
+                                         LocalDate startDate, LocalDate endDate, String ruleCategory)
             throws ServiceException;
 
     /**
@@ -81,7 +81,7 @@ public interface IssueTrendService {
      * @throws ServiceException the service exception
      */
     Map<String, Object> getTrendIssues(String assetGroup, LocalDate from,
-            LocalDate to, Map<String, String> filter, String domain)
+                                       LocalDate to, Map<String, String> filter, String domain)
             throws ServiceException;
 
     /**
@@ -95,7 +95,7 @@ public interface IssueTrendService {
      * @throws ServiceException the service exception
      */
     void useRealTimeDataForLatestDate(List<Map<String, Object>> trendList,
-            String ag, String trendCategory, String ruleId, String domain)
+                                      String ag, String trendCategory, String ruleId, String domain)
             throws ServiceException;
 
 }

@@ -38,10 +38,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * The Class ComplianceController.
@@ -688,7 +685,7 @@ public class ComplianceController implements Constants {
     })
     @ResponseBody
     public ResponseEntity<Object> addIssuesException(@RequestParam("ag") String assetGroup,
-             @ApiParam(value = "Provide Issue Exception Details", required = true) @RequestBody(required = true) IssuesException issuesException) {
+                                                     @ApiParam(value = "Provide Issue Exception Details", required = true) @RequestBody(required = true) IssuesException issuesException) {
         try {
 
             if (issuesException.getExceptionGrantedDate() == null) {
@@ -711,6 +708,31 @@ public class ComplianceController implements Constants {
                 return ResponseUtils.buildFailureResponse(new Exception("Atleast one issue id is required"));
             }
             return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(assetGroup,issuesException));
+        } catch (ServiceException | ParseException exception) {
+            return ResponseUtils.buildFailureResponse(exception);
+        }
+    }
+
+    /**
+     * Create or Destroys the user exemption request.
+     *
+     * @param exemptionRequest exemption request
+     * @return response
+     */
+    @PreAuthorize("@securityService.hasPermissionForIssueExemption(authentication, #exemptionRequest.action)")
+    @ApiOperation(httpMethod = "POST", value = "Adding exemption to the corresponding issueIds")
+    @RequestMapping(path = "/v2/issue/create-revoke-user-exemption", method = RequestMethod.POST)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully Added Issue Exception"),
+            @ApiResponse(code = 401, message = "You are not authorized to Add Issue Exception"),
+            @ApiResponse(code = 403, message = "Add Issue Exception is forbidden")})
+    public ResponseEntity<Object> createOrRevokeUserExemptionRequest(@RequestBody ExemptionRequest exemptionRequest) {
+        try {
+            ResponseEntity<Object> validationResult = complianceService.validateIssuesExemptionRequest(exemptionRequest);
+            if (!Objects.isNull(validationResult)) {
+                return validationResult;
+            }
+            return ResponseUtils.buildSucessResponse(complianceService.createOrRevokeUserExemptionRequest(
+                    exemptionRequest));
         } catch (ServiceException | ParseException exception) {
             return ResponseUtils.buildFailureResponse(exception);
         }
@@ -761,7 +783,6 @@ public class ComplianceController implements Constants {
             return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
         }
     }
-
     /**
      * API to get policy by UUID
      *

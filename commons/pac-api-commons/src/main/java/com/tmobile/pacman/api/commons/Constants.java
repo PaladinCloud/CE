@@ -36,6 +36,20 @@ public interface Constants {
     String EXEMPTION_CREATED_BY = "exemption-created-by";
     String EXEMPTION_RAISED_BY = "exemption-raised-by";
     String EXEMPTION_CREATED_ON = "exemption-created-on";
+
+    String STATUS_SUCCESS_CAPS = "Success";
+    String STATUS_PARTIAL_SUCCESS = "Partial Success";
+    String LOG_UPLOADING = "Uploading ";
+    String NEW_LINE = "\n";
+    String TARGET_EXEMPTION = "_exemption";
+    String TARGET_ISSUE = "issue_";
+    String AUDIT = "_audit";
+
+    String OPEN_ISSUE_FETCH_ERROR_MESSAGE = "Error while fetching open issue details ";
+
+    String STATUS_FAILED = "Failed";
+    String DOC = "doc";
+    String EXCEPTION_SIZE = "exception size";
     String EXEMPTION_RAISED_ON = "exemption-raised-on";
     String EXEMPTION_EXPIRING_ON = "exemption-expiring-on";
     String EXEMPTION_RAISED_EXPIRING_ON = "exemption-raised-expiring-on";
@@ -429,6 +443,7 @@ public interface Constants {
     String AUTOFIX = "autofix";
     String AQUA = "aqua";
     String ISSUE_ID_UI_PATH  = "#pl#compliance#issue-listing#issue-details#".replace("#","/");
+    String FIELD_NAME = "FIELD_NAME";
 
     String POLICY_DETAILS_UI_PATH  = "#pl#compliance#policy-knowledgebase-details#".replace("#","/");
 
@@ -439,7 +454,9 @@ public interface Constants {
 
     String RELATIONS = "_relations";
 
-  enum NotificationTypes {
+    String AUTOFIX_PLANNED = "isAutofixPlanned";
+
+    enum NotificationTypes {
         @SerializedName("exemption")
         EXEMPTION("exemption"),
         @SerializedName("violation")
@@ -467,6 +484,14 @@ public interface Constants {
     enum Actions {
         @SerializedName("create")
         CREATE,
+        @SerializedName("create_exemption_request")
+        CREATE_EXEMPTION_REQUEST,
+        @SerializedName("revoke_exemption_request")
+        REVOKE_EXEMPTION_REQUEST,
+        @SerializedName("cancel_exemption_request")
+        CANCEL_EXEMPTION_REQUEST,
+        @SerializedName("approve_exemption_request")
+        APPROVE_EXEMPTION_REQUEST,
         @SerializedName("revoke")
         REVOKE,
         @SerializedName("delete")

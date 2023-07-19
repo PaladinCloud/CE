@@ -157,7 +157,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
      */
     @Override
     public Map<String, Object> getComplianceTrendProgress(String assetGroup,
-                                                          LocalDate fromDate, String domain) throws ServiceException {
+                                                          LocalDate fromDate, LocalDate toDate, String domain) throws ServiceException {
         Map<String, Object> parentMap = new HashMap<>();
         parentMap.put("ag", assetGroup);
         // get list of targetypes mapped
@@ -193,7 +193,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
 
         try {
             inputList = repository
-                    .getComplianceTrendProgress(assetGroup, fromDate, domain,
+                    .getComplianceTrendProgress(assetGroup, fromDate, toDate, domain,
                             ruleCat);
         } catch (DataException e) {
             throw new ServiceException(e);
@@ -222,15 +222,10 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                             outputMap.put(key, value);
                         }
                     });
-                    if (!outputMap.containsKey("overall")) {
-                        Double weightedAvgSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.containsKey(str)).map(catStr -> (Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString()))).reduce(0d, (a, b) -> a + b);
-                        Double weightedSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.containsKey(str)).map(catStr -> Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString())).reduce(0d, (a, b) -> a + b);
-                        if (weightedSum.doubleValue() != 0) {
-                            outputMap.put("overall", weightedAvgSum / weightedSum);
-                        }
-                    }
+
                     complianceInfoList.add(outputMap);
                 });
+
                 Collections.sort(complianceInfoList, comp);
 
             }
@@ -437,10 +432,10 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         trendList.parallelStream().forEach(
                 trend -> {
                     if (trend.get(COMPLIANCE_PERCENT) == null) {
-                        double total = Double.parseDouble(trend.get(TOTAL)
-                                .toString());
-                        double compliant = Double.parseDouble(trend.get(COMPLAINT)
-                                .toString());
+                        double total = trend.get(TOTAL) != null ? Double.parseDouble(trend.get(TOTAL)
+                                .toString()) : 0.0;
+                        double compliant = trend.get(COMPLAINT) != null ? Double.parseDouble(trend.get(COMPLAINT)
+                                .toString()) : 0.0;
                         double compliancePercent = HUNDRED;
                         if (total > 0) {
                             compliancePercent = Math.floor(compliant * HUNDRED
@@ -801,8 +796,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             issueInfoList.parallelStream().forEach(
                     issuemap -> {
                         issuemap.remove("_id");
-                        double total = Double.parseDouble(issuemap.get(TOTAL)
-                                .toString());
+                        double total = issuemap.get(TOTAL) != null ? Double.parseDouble(issuemap.get(TOTAL)
+                                .toString()) : 0.0;
                         if (total == 0) {
                             for (Map.Entry<String, Object> issue : issuemap
                                     .entrySet()) {
@@ -819,6 +814,11 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                             }
                         }
 
+                        ruleSev.stream().forEach(sev -> {
+                            if(!issuemap.containsKey(sev)){
+                                issuemap.put(sev,0);
+                            }
+                        });
                     });
             // Sort the list by the date in ascending order
             Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
