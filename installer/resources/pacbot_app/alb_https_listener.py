@@ -4,6 +4,7 @@ from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.pacbot_app import alb_target_groups as tg
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service
 from core.mixins import MsgMixin
+from resources.sslcertifcate import AcmCertificate
 import sys
 # PATH_PREFIX = '/api/'
 
@@ -13,7 +14,7 @@ class PacBotHttpsListener(ALBListenerResource):
     port = 443
     protocol = "HTTPS"
     ssl_policy = "ELBSecurityPolicy-2016-08"
-    certificate_arn = Settings.get('SSL_CERTIFICATE_ARN')
+    certificate_arn = Settings.get('SSL_CERTIFICATE_ARN') if Settings.ALB_PROTOCOL == 'HTTPS' else AcmCertificate.get_output_attr()
     default_action_target_group_arn = tg.NginxALBTargetGroup.get_output_attr('arn')
     default_action_type = "forward"
    
