@@ -338,7 +338,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
 
     this.adminService.executeHttpAction(url, method, payload, queryParams).subscribe(
       (reponse) => {
-        const data = reponse[0];
+        const data = reponse[0].data;
         if (data.content !== undefined) {
           this.tableDataLoaded = true;
           if (data.content.length == 0) {
