@@ -103,8 +103,8 @@ class AppCLient(UserPoolClientResources):
     allowed_oauth_flows_user_pool_client = True
     supported_identity_providers = [provider]
     allowed_oauth_scopes = ["email", "openid","profile"]
-    callback_urls = [ApplicationLoadBalancer.get_pacbot_domain_url() + "/callback"]
-    logout_urls = [ApplicationLoadBalancer.get_pacbot_domain_url() + "/home"]
+    callback_urls = [ApplicationLoadBalancer.get_pacbot_domain_url_cognito() + "/callback"]
+    logout_urls = [ApplicationLoadBalancer.get_pacbot_domain_url_cognito() + "/home"]
     write_attributes = ['email', 'family_name', 'gender', 'given_name', 'name','custom:defaultAssetGroup', 'custom:userRole']
     read_attributes = ['address', 'birthdate','custom:defaultAssetGroup', 'custom:userRole', 'email', 'email_verified', 'family_name', 'gender', 'given_name', 'locale', 'middle_name', 'name', 'nickname', 'phone_number' ,'phone_number_verified', 'picture' ,'preferred_username', 'profile' ,'updated_at' ,'website' ,'zoneinfo']
     allowed_oauth_flows = ["code", "implicit"]
@@ -176,102 +176,7 @@ class CognitoUi(UiCognito):
         converted_string = str(base64.b64encode(image2string.read()))
     string = converted_string[2:-1]
     user_pool_id = UserPool.get_output_attr('id')
-    css = '''
-    .logo-customizable {
-	max-width: 50%;
-	max-height: 40%;
-}
-.banner-customizable {
-    padding: 25px 0px 0px 0px;
-    background-color: white;
-}
-.label-customizable {
-	display: none;
-	font-weight: 400;
-}
-.textDescription-customizable {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	display: block;
-	font-size: 16px;
-}
-.idpDescription-customizable {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	display: block;
-	font-size: 16px;
-}
-.legalText-customizable {
-	color: #747474;
-	font-size: 11px;
-}
-.submitButton-customizable {
-	font-size: 14px;
-	font-weight: bold;
-	margin: 20px 0px 10px 0px;
-	height: 40px;
-	width: 100%;
-	color: #fff;
-	background-color: #337ab7;
-}
-.submitButton-customizable:hover {
-	color: #fff;
-	background-color: #286090;
-}
-.errorMessage-customizable {
-	padding: 5px;
-	font-size: 14px;
-	width: 100%;
-	background: #F5F5F5;
-	border: 2px solid #D64958;
-	color: #D64958;
-}
-.inputField-customizable {
-	width: 100%;
-	height: 34px;
-	color: #555;
-	background-color: #fff;
-	border: 1px solid #ccc;
-	margin: 12px 0px;
-}
-.inputField-customizable:focus {
-	border-color: #66afe9;
-	outline: 0;
-}
-.idpButton-customizable {
-	height: 40px;
-	width: 100%;
-	width: 100%;
-	text-align: center;
-	margin-bottom: 15px;
-	color: #fff;
-	background-color: #5bc0de;
-	border-color: #46b8da;
-}
-.idpButton-customizable:hover {
-	color: #fff;
-	background-color: #31b0d5;
-}
-.socialButton-customizable {
-	border-radius: 2px;
-	height: 40px;
-	margin-bottom: 15px;
-	padding: 1px;
-	text-align: left;
-	width: 100%;
-}
-.redirect-customizable {
-	text-align: center;
-}
-.passwordCheck-notValid-customizable {
-	color: #DF3312;
-}
-.passwordCheck-valid-customizable {
-	color: #19BF00;
-}
-.background-customizable {
-	background-color: #fff;
-}'''
+    css = ".label-customizable {font-weight: 28px;}"
     image_file = string
     DEPENDS_ON = [UserPool,PoolDomain]
 

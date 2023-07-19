@@ -56,6 +56,7 @@ PROCESS_RESOURCES = {
     'pacbot_app.import_db': {'tags': ["deploy", "app-import-db", "infra"]},
     'pacbot_app.ecs_task_defintions': {'tags': ["deploy", "task-definitions", "infra"]},
     'pacbot_app.ecs_services': {'tags': ["deploy", "ecs-services", "infra"]},
+    'pacbot_app.alb_https_listener' :{'tags': ["deploy"]},
     'pacbot_app.create_template': {'tags': ["deploy", "infra"]},
     's3.bucket': {'tags': ["s3"]},
     'batch.env': {'tags': ["batch"]},
@@ -83,7 +84,7 @@ PROVISIONER_FILES_DIR_TO_COPY = os.path.join(BASE_APP_DIR, 'files')
 ALB_PROTOCOL = "HTTP"
 
 DESTROY_NUM_ATTEMPTS = 3
-SKIP_RESOURCE_EXISTENCE_CHECK = False
+SKIP_RESOURCE_EXISTENCE_CHECK = True
 RESOURCE_NAME_PREFIX = "paladincloud"
 DEFAULT_RESOURCE_TAG = {"Application": "PaladinCloud"}
 CUSTOM_RESOURCE_TAGS = []
@@ -136,6 +137,7 @@ JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules
 VULNERABILITY_SCHEDULE_INTERVAL = 24 #in hours
 VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY = 5 #in minutes
 VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY = 30 #in minutes
+VULNERABILITY_SHIPPER_INITIAL_DELAY = 30 #in minutes
 VULNERABILITY_SHIPPER_INITIAL_DELAY = 30  #in minutes
 
 
@@ -183,8 +185,8 @@ try:
 except:
     pass
 
-if ALB_PROTOCOL == "HTTPS":
-    PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
+# if ALB_PROTOCOL == "HTTPS":
+#     PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
 
 
 

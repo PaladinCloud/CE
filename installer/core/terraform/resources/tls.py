@@ -13,7 +13,6 @@ class TlsSelfSignedCert(TerraformResource):
     resource_instance_name = "tls_self_signed_cert"
     available_args = {
         'allowed_uses': {'required': False},
-        'key_algorithm': {'required': False},
         'private_key_pem': {'required': False},
         'subject': {'required': False},
         'validity_period_hours': {'required': False},

@@ -7,12 +7,13 @@ class SslPrivateKey(TlsPrivateKey):
 
 class TlsSelfSignedCert(TlsSelfSignedCert):
     allowed_uses = [ "key_encipherment","digital_signature","server_auth"]
-    key_algorithm = SslPrivateKey.get_output_attr('algorithm')
     private_key_pem = SslPrivateKey.get_output_attr('private_key_pem')
-    subject = '''{
-                    common_name  = "*.amazonaws.com" # Replace with the domain name you want for the certificate
-                    organization = "paladincloud"    # Replace with your organization name
-                }'''
+    subject = [
+        {
+            "common_name": "*.amazonaws.com",
+            "organization": "paladincloud"
+        }
+    ]
     validity_period_hours = 8760
     
 class PrivateKey(PrivateKeyFile):
@@ -24,9 +25,9 @@ class SelfSignedCert(PrivateKeyFile):
     content = TlsSelfSignedCert.get_output_attr('cert_pem')
 
 class AcmCertificate(AcmCertificate):
-    certificate_body       = TlsSelfSignedCert.SelfSignedCert('content')
+    certificate_body       = SelfSignedCert.get_output_attr('content')
     private_key            = PrivateKey.get_output_attr('content')
-    certificate_chain      = TlsSelfSignedCert.SelfSignedCert('content')
+    certificate_chain      = SelfSignedCert.get_output_attr('content')
     
     
 
