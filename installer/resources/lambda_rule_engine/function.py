@@ -259,7 +259,7 @@ class RuleEngineCloudWatchEventTargetsPlugin(CloudWatchEventTargetResource):
     target_id = RuleEngineLambdaFunction.get_input_attr('function_name') + '-target'
     target_input = RulesListVariablePlugin.lookup('policyParams')
     event_bus_name = CloudWatchEventBusPlugin.get_output_attr('arn')
-    DEPENDS_ON = [CloudWatchEventBusPlugin]
+    DEPENDS_ON = [RuleEngineEventRulesPlugin]
 
 class EventRulesLambdaPermissions(LambdaPermission):
     statement_id = "sid-" + Settings.AWS_ACCOUNT_ID

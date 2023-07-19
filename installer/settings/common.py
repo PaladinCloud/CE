@@ -136,6 +136,8 @@ JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules
 VULNERABILITY_SCHEDULE_INTERVAL = 24 #in hours
 VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY = 5 #in minutes
 VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY = 30 #in minutes
+VULNERABILITY_SHIPPER_INITIAL_DELAY = 30  #in minutes
+
 
 # Azure AD integration 
 AUTHENTICATION_TYPE = "COGNITO"	# login type value any one of this "AZURE_AD or DB "
@@ -174,7 +176,7 @@ AQUA_PASSWORD = "" # Aqua Client password
 AQUA_API_DEFAULT_PAGE_SIZE=1000
 AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS= "include_vpatch_info=true&show_negligible=true&hide_base_image=false&severities=critical,high,medium,low,negligible"
 GOOGLE_ANALYTICS = ""
-
+ECS_CPU = 1024
 
 try:
     from settings.local import *

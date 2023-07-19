@@ -35,9 +35,9 @@ class ESCloudWatchLogResourcePolicy(CloudWatchLogResourcePolicy):
 
 class ESDomain(ElasticsearchDomainResource):
     domain_name = "data"
-    elasticsearch_version = "5.5"
+    elasticsearch_version = "OpenSearch_2.5"
     instance_type = Settings.get('ES_INSTANCE_TYPE', "m5.large.elasticsearch")
-    instance_count =  Settings.get('ES_NODE_COUNT',3)
+    instance_count =  Settings.get('ES_NODE_COUNT',2)
     dedicated_master_enabled = Settings.get('ES_DEDICATED_MASTER_ENABLED',False)
     dedicated_master_count = Settings.get('ES_MASTER_NODE_COUNT', 3)
     dedicated_master_type = Settings.get('ES_MASTER_INSTANCE_TYPE', "m5.large.elasticsearch")
