@@ -33,7 +33,6 @@ public class GCPFirewallUtils {
                 .get(PacmanRuleConstants.SOURCE);
 
         logger.debug("Validating the data item: {}", vpcFirewall.toString());
-
         if (!Objects.isNull(vpcFirewall.getAsJsonObject()) &&
                 !Objects.isNull(vpcFirewall.getAsJsonObject().get(PacmanRuleConstants.DISABLED)) &&
                 vpcFirewall.getAsJsonObject().get(PacmanRuleConstants.DISABLED).getAsBoolean()) {
@@ -48,6 +47,8 @@ public class GCPFirewallUtils {
                 .getAsJsonArray();
         JsonArray allow = vpcFirewall.getAsJsonObject().get(PacmanRuleConstants.ALLOW.toLowerCase())
                 .getAsJsonArray();
+        if(ports.length==1 && ports[0].equals(PacmanRuleConstants.ICMP))
+            return checkIfICMPisPublic(sourceRanges,allow,vpcFirewall.getAsJsonObject().get(PacmanRuleConstants.DIRECTION).getAsString());
         if (!validateSourceRanges(sourceRanges)) {
             return true;
         }
@@ -63,6 +64,16 @@ public class GCPFirewallUtils {
                     Arrays.toString(ports), resourceProtocol, portsJson);
             if (checkPorts(ports, portsJson)) {
                 return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkIfICMPisPublic(JsonArray sourceRanges, JsonArray allow,String direction) {
+        for (JsonElement jsonElement : allow) {
+            String resourceProtocol = jsonElement.getAsJsonObject().get(PacmanRuleConstants.PROTOCOL).getAsString();
+            if (resourceProtocol.equalsIgnoreCase(PacmanRuleConstants.ICMP)) {
+                return false && !validateSourceRanges(sourceRanges) && !(direction.equalsIgnoreCase(PacmanRuleConstants.INGRESS));
             }
         }
         return true;
