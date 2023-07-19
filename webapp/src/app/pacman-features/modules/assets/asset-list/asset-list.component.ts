@@ -937,29 +937,27 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   changeFilterType(value) {
     return new Promise((resolve) => {
-      try {
+    try {
       this.currentFilterType = find(this.filterTypeOptions, {
         optionName: value,
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
-      
-        if(urlObj.url.includes("attribute")){
-          let filtersToBePassed = {};       
-          if(this.isMultiValuedFilterEnabled){
-            Object.keys(this.filterText).map(key => {
-              key = key.replace(".keyword", "");
-              if(key=="domain" || key==urlObj.params["attribute"]) return;
-              filtersToBePassed[key] = this.filterText[key+".keyword"].split(",");
-            })
-          }
-          const payload = {
-            type: "asset",
-            attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
-            ag: this.selectedAssetGroup,
-            domain: this.selectedDomain,
-            filter: filtersToBePassed
-          }
-          this.issueFilterSubscription = this.issueFilterService
+
+      if(urlObj.url.includes("attribute")){
+      let filtersToBePassed = {};       
+      Object.keys(this.filterText).map(key => {
+        key = key.replace(".keyword", "");
+        if(key=="domain" || key==urlObj.params["attribute"]) return;
+        filtersToBePassed[key] = this.filterText[key+".keyword"].split(",");
+      })
+      const payload = {
+        type: "asset",
+        attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
+        ag: this.selectedAssetGroup,
+        domain: this.selectedDomain,
+        filter: filtersToBePassed
+      }
+        this.issueFilterSubscription = this.issueFilterService
         .getFilters(
           {},
           environment.base +
@@ -987,52 +985,51 @@ export class AssetListComponent implements OnInit, OnDestroy {
               },
           };
           if(value.toLowerCase()=="age"){
-            const filterValues = this.filterTagLabels[value].splice(1);            
+            const filterValues = this.filterTagLabels[value].splice(1);
             filterValues.sort((a, b) => a-b);
             this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
           }
           resolve(this.filterTagOptions[value]);
           this.storeState();
         });
-        }else{
-          const queryParams = {
-            ...urlObj.params,
-            ag: this.selectedAssetGroup,
-            domain: this.selectedDomain,
-          }
-          this.issueFilterSubscription = this.issueFilterService
-        .getFilters(
-          queryParams,
-          environment.base +
-          urlObj.url,
-          "GET"
-        )
-        .subscribe((response) => {
-          if(value.toLowerCase()=="asset type"){
-            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-              response[0].response.map(filterOption => filterOption["name"] = assetTypeMap.get(filterOption["name"]));
-            });
-          }
-          this.filterTagOptions[value] = response[0].response;
-          this.filterTagLabels = {
-              ...this.filterTagLabels,
-              ...{
-                  [value]: map(response[0].response, 'name').sort((a, b) =>
-                      a.localeCompare(b),
-                  ),
-              },
-          };
-          resolve(this.filterTagOptions[value]);
-          this.storeState();
-        });
+      }else{
+        const queryParams = {
+          ...urlObj.params,
+          ag: this.selectedAssetGroup,
+          domain: this.selectedDomain,
         }
-    } catch (error) {
+        this.issueFilterSubscription = this.issueFilterService
+      .getFilters(
+        queryParams,
+        environment.base +
+        urlObj.url,
+        "GET"
+      )
+      .subscribe((response) => {
+        if(value.toLowerCase()=="asset type"){
+          this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+            response[0].response.map(filterOption => filterOption["name"] = assetTypeMap.get(filterOption["name"]));
+          });
+        }
+        this.filterTagOptions[value] = response[0].response;
+        this.filterTagLabels = {
+            ...this.filterTagLabels,
+            ...{
+                [value]: map(response[0].response, 'name').sort((a, b) =>
+                    a.localeCompare(b),
+                ),
+            },
+        };
+        resolve(this.filterTagOptions[value]);
+        this.storeState();
+      });
+      }
+      } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
     });
   }
-
   changeFilterTags(event) {
     let filterValues = event.filterValue;
     if(!filterValues){
@@ -1043,20 +1040,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
     try {
       if (this.currentFilterType) {
-        let filterTags;
-        if(this.isMultiValuedFilterEnabled){
-          filterTags = filterValues.map(value => {
-            const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
-            return v;
-          });
-        }else{
-          filterTags = filterValues;
-        }
+        const filterTags = filterValues.map(value => {
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
+          return v;
+        });
         this.utils.addOrReplaceElement(
           this.filters,
           {
             keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: filterTags,
+            filterValue: filterValues,
             key: this.currentFilterType.optionName,
             value: this.isMultiValuedFilterEnabled?filterTags:filterValues,
             filterkey: this.currentFilterType.optionValue.trim(),
