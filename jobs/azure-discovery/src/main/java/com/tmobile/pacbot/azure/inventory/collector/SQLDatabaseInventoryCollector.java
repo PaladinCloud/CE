@@ -86,6 +86,11 @@ public class SQLDatabaseInventoryCollector {
 					}
 
 					firewallRule(sqlServer, sqlDatabaseVH);
+					//Set assetIdDisplayName
+					String resourceGrpName = sqlDatabaseVH.getResourceGroupName()!=null? sqlDatabaseVH.getResourceGroupName():" ";
+					String assetName       = sqlDatabaseVH.getName()!=null?sqlDatabaseVH.getName():" ";
+					String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+					sqlDatabaseVH.setAssetIdDisplayName(assetIdDisplayName);
 					sqlDatabaseList.add(sqlDatabaseVH);
 				}
 

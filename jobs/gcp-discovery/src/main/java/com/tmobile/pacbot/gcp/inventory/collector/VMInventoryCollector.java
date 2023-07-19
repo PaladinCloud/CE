@@ -72,6 +72,7 @@ public class VMInventoryCollector {
                         virtualMachineVH.setProjectNumber(project.getProjectNumber().toString());
                         virtualMachineVH.setConfidentialComputing(instance.getConfidentialInstanceConfigOrBuilder().getEnableConfidentialCompute());
                         virtualMachineVH.setCanIPForward(instance.getCanIpForward());
+
                         logger.info("can IP Forward {}",instance.getCanIpForward());
                         this.setShieldedConfig(instance,virtualMachineVH);
                         this.setItemList(instance,virtualMachineVH);

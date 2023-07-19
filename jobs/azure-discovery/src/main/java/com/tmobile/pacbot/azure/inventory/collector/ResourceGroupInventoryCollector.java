@@ -40,6 +40,12 @@ public class ResourceGroupInventoryCollector {
 			resourceGroupVH.setRegion(Util.getRegionValue(subscription,resourceGroup.regionName()));
 			resourceGroupVH.setTags(resourceGroup.tags());
 			resourceGroupVH.setName(resourceGroup.name());
+			//Set AssetIdDisplayName
+
+			String resourceGrpName = resourceGroupVH.getResourceGroupName()!=null? resourceGroupVH.getResourceGroupName():" ";
+			String assetName       = resourceGroupVH.getName()!=null?resourceGroupVH.getName():" ";
+			String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+			resourceGroupVH.setAssetIdDisplayName(assetIdDisplayName);
 			resourceGroupList.add(resourceGroupVH);
 		}
 		log.info("Target Type : {}  Total: {} ","ResourceGroup",resourceGroupList.size());

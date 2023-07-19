@@ -53,6 +53,11 @@ public class SecurityContactsCollector {
                 HashMap<String, Object> propertiesMap = new Gson().fromJson(propertiesJson.toString(), HashMap.class);
                 securityContactsVH.setProperties(propertiesMap);
                 securityContactsVH.setAutoProvisioningSettingsList(fetchAutoProvisioningSettingsList(subscription));
+                //Set AssetIdDisplayName
+                String resourceGrpName = securityContactsVH.getResourceGroupName()!=null? securityContactsVH.getResourceGroupName():" ";
+                String assetName       = securityContactsVH.getName()!=null?securityContactsVH.getName():" ";
+                String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+                securityContactsVH.setAssetIdDisplayName(assetIdDisplayName);
                 securityContactsList.add(securityContactsVH);
             }
 

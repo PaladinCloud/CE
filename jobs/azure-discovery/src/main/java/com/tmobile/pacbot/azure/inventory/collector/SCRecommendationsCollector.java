@@ -84,6 +84,12 @@ public class SCRecommendationsCollector {
 						recommendation.setName(recommendationName);
 						recommendation.setRegion(Util.getRegionValue(subscription,region));
 						recommendation.setRecommendation(recommendationMap);
+						//Set AssetIdDisplayName
+
+						String resourceGrpName = recommendation.getResourceGroupName()!=null? recommendation.getResourceGroupName():" ";
+						String assetName       = recommendation.getName()!=null?recommendation.getName():" ";
+						String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+						recommendation.setAssetIdDisplayName(assetIdDisplayName);
 						recommendations.add(recommendation);
 					}
 					

@@ -79,6 +79,11 @@ public class MySQLFlexibleInventoryCollector {
                         mySQLFlexibleVH.setResourceGroupName(resourceGroupName);
                         mySQLFlexibleVH.setId(id);
                         mySQLFlexibleVH.setName(serverName);
+                        //Set AssetIdDisplayName
+                        String resourceGrpName = mySQLFlexibleVH.getResourceGroupName()!=null? mySQLFlexibleVH.getResourceGroupName():" ";
+                        String assetName       = mySQLFlexibleVH.getName()!=null?mySQLFlexibleVH.getName():" ";
+                        String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+                        mySQLFlexibleVH.setAssetIdDisplayName(assetIdDisplayName);
                         mySQLFlexibleVH.setSubscriptionName(subscription.getSubscriptionName());
                         mySQLFlexibleVH.setSubscription(subscription.getSubscriptionId());
                         break;

@@ -44,6 +44,11 @@ public class LoadBalancerInventoryCollector {
 			loadBalancerVH.setType(loadBalancer.type());
 			loadBalancerVH.setSubscription(subscription.getSubscriptionId());
 			loadBalancerVH.setSubscriptionName(subscription.getSubscriptionName());
+			//Set AssetIdDisplayName
+			String resourceGrpName = loadBalancerVH.getResourceGroupName()!=null? loadBalancerVH.getResourceGroupName():" ";
+			String assetName       = loadBalancerVH.getName()!=null?loadBalancerVH.getName():" ";
+			String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+			loadBalancerVH.setAssetIdDisplayName(assetIdDisplayName);
 			loadBalancerList.add(loadBalancerVH);
 
 		}

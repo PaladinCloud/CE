@@ -35,6 +35,11 @@ public class FunctionAppInventoryCollector {
             functionAppVH.setClientCertEnabled(functionApp.clientCertEnabled());
             functionAppVH.setRegion(Util.getRegionValue(subscription,functionApp.regionName()));
             functionAppVH.setTags(functionApp.tags());
+            //Set AssetIdDisplayName
+            String resourceGrpName = functionAppVH.getResourceGroupName()!=null? functionAppVH.getResourceGroupName():" ";
+            String assetName       = functionAppVH.getName()!=null?functionAppVH.getName():" ";
+            String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+            functionAppVH.setAssetIdDisplayName(assetIdDisplayName);
             functionAppList.add(functionAppVH);
 
         }

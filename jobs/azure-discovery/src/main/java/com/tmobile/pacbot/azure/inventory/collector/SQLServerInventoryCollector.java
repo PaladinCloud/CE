@@ -64,6 +64,12 @@ public class SQLServerInventoryCollector {
 			getFailoverGroupList(sqlServer.failoverGroups().list(), sqlServerVH);
 			setVulnerabilityAssessment(sqlServerVH,subscription,sqlServer);
 			setRetentionDays(sqlServerVH,subscription,sqlServer);
+			//Set assetIdDisplayName
+			String resourceGrpName = sqlServerVH.getResourceGroupName()!=null? sqlServerVH.getResourceGroupName():" ";
+			String assetName       = sqlServerVH.getName()!=null?sqlServerVH.getName():" ";
+			String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+			sqlServerVH.setAssetIdDisplayName(assetIdDisplayName);
+
 			sqlServerList.add(sqlServerVH);
 		}
 		log.info("Target Type : {}  Total: {} ","SqlServer",sqlServerList.size());

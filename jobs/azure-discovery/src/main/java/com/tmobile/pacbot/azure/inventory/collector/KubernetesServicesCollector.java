@@ -64,6 +64,7 @@ public class KubernetesServicesCollector {
                     String kubernatesClusterName = kubernetesClusterObject.get("name").getAsString()!=null && !kubernetesClusterObject.get("name").getAsString().isEmpty()?kubernetesClusterObject.get("name").getAsString():"";
                     logger.info("kubernatesClusterName: {}", kubernatesClusterName);
                     kubernetesClustersVH.setName(kubernatesClusterName);
+
                     if(kubernetesCluster.addonProfiles().get("kubeDashboard")!=null) {
                         kubernetesClustersVH.setDashBoardEnabled( kubernetesCluster.addonProfiles().get("kubeDashboard").enabled());
                     }
@@ -81,7 +82,11 @@ public class KubernetesServicesCollector {
                                 HashMap.class);
                         kubernetesClustersVH.setProperties(propertiesMap);
                     }
-
+                    //Set AssetIdDisplayName
+                    String resourceGrpName = kubernetesClustersVH.getResourceGroupName()!=null? kubernetesClustersVH.getResourceGroupName():" ";
+                    String assetName       = kubernetesClustersVH.getName()!=null?kubernetesClustersVH.getName():" ";
+                    String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+                    kubernetesClustersVH.setAssetIdDisplayName(assetIdDisplayName);
                     kubernetesClustersVHList.add(kubernetesClustersVH);
                 }
 

@@ -57,6 +57,11 @@ public class WebAppInventoryCollector {
                 log.info("web app client cert {}", webApp.clientCertEnabled());
                 webAppVH.setTags(webApp.tags());
                 webAppVH.setSystemAssignedManagedServiceIdentityPrincipalId(webApp.systemAssignedManagedServiceIdentityPrincipalId());
+                //Set AssetIdDisplayName
+                String resourceGrpName = webAppVH.getResourceGroupName()!=null? webAppVH.getResourceGroupName():" ";
+                String assetName       = webAppVH.getName()!=null?webAppVH.getName():" ";
+                String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+                webAppVH.setAssetIdDisplayName(assetIdDisplayName);
                 webAppList.add(webAppVH);
 
             } catch (Exception e) {

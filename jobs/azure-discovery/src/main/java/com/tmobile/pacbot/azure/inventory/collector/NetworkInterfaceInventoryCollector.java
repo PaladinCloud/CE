@@ -46,6 +46,7 @@ public class NetworkInterfaceInventoryCollector {
 			networkInterfaceVH.setKey(networkInterface.key());
 			networkInterfaceVH.setMacAddress(networkInterface.macAddress());
 			networkInterfaceVH.setName(networkInterface.name());
+
 			networkInterfaceVH.setNetworkSecurityGroupId(networkInterface.networkSecurityGroupId());
 			networkInterfaceVH.setPrimaryPrivateIP(networkInterface.primaryPrivateIP());
 			networkInterfaceVH
@@ -55,6 +56,11 @@ public class NetworkInterfaceInventoryCollector {
 			networkInterfaceVH.setSubscriptionName(subscription.getSubscriptionName());
 			networkInterfaceVH.setIPForwardingEnabled(networkInterface.isIPForwardingEnabled());
 			networkInterfaceVH.setResourceGroupName(networkInterface.resourceGroupName());
+			//Set AssetIdDisplayName
+			String resourceGrpName = networkInterfaceVH.getResourceGroupName()!=null? networkInterfaceVH.getResourceGroupName():" ";
+			String assetName       = networkInterfaceVH.getName()!=null?networkInterfaceVH.getName():" ";
+			String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+			networkInterfaceVH.setAssetIdDisplayName(assetIdDisplayName);
 			setipConfigurations(networkInterface.ipConfigurations(), networkInterfaceVH);
 			networkInterfaceList.add(networkInterfaceVH);
 

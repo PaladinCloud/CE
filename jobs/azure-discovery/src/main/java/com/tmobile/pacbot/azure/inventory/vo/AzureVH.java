@@ -12,6 +12,16 @@ public class AzureVH {
 	private String resourceGroupName;
 	private String id;
 
+	private String assetIdDisplayName;
+
+	public String getAssetIdDisplayName() {
+		return assetIdDisplayName;
+	}
+
+	public void setAssetIdDisplayName(String assetIdDisplayName) {
+		this.assetIdDisplayName = assetIdDisplayName;
+	}
+
 
 	private String name;
 

@@ -63,6 +63,11 @@ public class BlobContainerInventoryCollector {
 					blobContainerVH.setHasImmutabilityPolicy(properties.get("hasImmutabilityPolicy").getAsBoolean());
 					blobContainerVH.setHasLegalHold(properties.get("hasLegalHold").getAsBoolean());
 					blobContainerVH.setTags(Util.tagsList(tagMap, storageAccount.resourceGroupName(), tags));
+					//Set AssetIdDisplayName
+					String resourceGrpName = blobContainerVH.getResourceGroupName()!=null? blobContainerVH.getResourceGroupName():" ";
+					String assetName       = blobContainerVH.getName()!=null?blobContainerVH.getName():" ";
+					String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+					blobContainerVH.setAssetIdDisplayName(assetIdDisplayName);
 					if (properties != null) {
 						HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
 								HashMap.class);
