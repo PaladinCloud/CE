@@ -33,10 +33,10 @@ public class UserManagementController {
     @ApiOperation(httpMethod = "GET", value = "API to get user details from AWS cognito UserPool ", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping( produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getUsers(@RequestParam(defaultValue = "1", required = false) Integer cursor,
-                                           @RequestParam(defaultValue = "50", required = false)  Integer limit,
-                                           @RequestParam(required = false) String filter){
+                                           @RequestParam(required = false)  Integer limit,
+                                           @RequestParam (required = false) String filter){
         try {
-            if(cursor<1 || limit<1){
+            if(cursor<1 || (limit!=null && limit<1)){
                 String errorMsg="Cursor and limit can't be less than 1";
                 return ResponseUtils.buildFailureResponse(new IllegalArgumentException(errorMsg),errorMsg, HttpStatus.BAD_REQUEST);
             }

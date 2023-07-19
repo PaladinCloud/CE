@@ -34,6 +34,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
     public static final String FAILURE = "FAILURE";
     public static final String SUCCESS = "SUCCESS";
     public static final String QUALYS_CONNECTOR = "Qualys-Connector";
+    public static final String QUALYS_ENABLED = "qualys.enabled";
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
@@ -96,7 +97,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
         }
         String accountId = UUID.randomUUID().toString();
         String roleName= System.getenv(PALADINCLOUD_RO);
-        validateResponse = createAccountInDb(accountId, QUALYS_CONNECTOR, Constants.QUALYS);
+        validateResponse = createAccountInDb(accountId, QUALYS_CONNECTOR, Constants.QUALYS,accountData.getCreatedBy());
         if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
             LOGGER.info("Account already exists");
             return validateResponse;
@@ -115,7 +116,10 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
 
             CreateSecretResult createResponse = secretClient.createSecret(createRequest);
             LOGGER.info("Create secret response: {}", createResponse);
+            updateConfigProperty(QUALYS_ENABLED,TRUE,JOB_SCHEDULER);
             validateResponse.setValidationStatus(SUCCESS);
+            validateResponse.setQualysApiUrl(accountData.getQualysApiUrl());
+            validateResponse.setQualysUser(accountData.getQualysApiUser());
         }catch (ResourceExistsException e){
             LOGGER.error(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
             validateResponse.setValidationStatus(FAILURE);
@@ -183,7 +187,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
 
         //delete entry from db
         response=deleteAccountFromDB(accountId);
-
+        updateConfigProperty(QUALYS_ENABLED,FALSE,JOB_SCHEDULER);
         response.setType(Constants.QUALYS);
         response.setAccountId(accountId);
 

@@ -91,13 +91,15 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	private ObjectMapper mapper;
 
 	@Autowired
+	private AssetGroupTargetDetailsRepository assetGroupTargetDetailsRepository;
+
+	@Autowired
 	private AssetGroupTargetDetailsService assetGroupTargetDetailsService;
 
 	@Autowired
-	private AssetGroupCriteriaDetailsRepository assetGroupCriteriaDetailsRepository;
-
-	@Autowired
 	ElasticSearchRepository esRepository;
+	@Autowired
+	private AssetGroupCriteriaDetailsRepository assetGroupCriteriaDetailsRepository;
 
 	@Autowired
 	private CreateAssetGroupService createAssetGroupService;
@@ -137,6 +139,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				assetGroupView.setCriteriaDetails(assetGroup.getCriteriaDetails());
 				assetGroupView.setType(assetGroup.getGroupType());
 				assetGroupView.setGroupName(assetGroup.getGroupName());
+				assetGroupView.setDisplayName(assetGroup.getDisplayName());
 				assetGroupView.setCreatedBy(assetGroup.getCreatedBy());
 				assetGroupView.setType(assetGroup.getGroupType());
 				allAssetGroupList.add(assetGroupView);
@@ -156,6 +159,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 					.stream().map(x -> Long.valueOf(x.toString())).collect(Collectors.summingLong(Long::longValue));
 			assetGroupView.setAssetCount(sum);
 			assetGroupView.setGroupId(assetGroup.getGroupId());
+			assetGroupView.setCreatedBy(assetGroup.getCreatedBy());
+			assetGroupView.setDisplayName(assetGroup.getDisplayName());
 			assetGroupView.setCriteriaDetails(assetGroup.getCriteriaDetails());
 			assetGroupView.setType(assetGroup.getGroupType());
 			assetGroupView.setGroupName(assetGroup.getGroupName());
@@ -188,7 +193,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	public List<Map<String, Object>> getAssetCountByAssetGroup(String assetGroup, String type, String domain,
 															   String application, String provider) {
 		log.debug("Fetch counts from elastic search");
-
 		// ES query may possibly return other types as well.
 		Map<String, Long> countMap = esRepository.getAssetCountByAssetGroup(assetGroup, type, application);
 		List<String> validTypes = Lists.newArrayList();
@@ -234,9 +238,20 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public String updateAssetGroupDetails(final CreateAssetGroup updateAssetGroupDetails, final String userId) throws PacManException {
-		AssetGroupDetails isAssetGroupExits = assetGroupRepository.findByGroupName(updateAssetGroupDetails.getGroupName());
+		AssetGroupDetails isAssetGroupExits = assetGroupRepository.findByGroupId(updateAssetGroupDetails.getGroupId());
 		if (isAssetGroupExits != null) {
-			boolean isDeletedSuccess = deleteAssetGroupAliasFromUpdation(updateAssetGroupDetails);
+			updateAssetGroupDetails.setDisplayName(isAssetGroupExits.getDisplayName());
+			String grpName = updateAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ","-");
+			if(!isAssetGroupExits.getGroupName().equals(grpName)){
+				String aliasName = updateAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ","-");
+				AssetGroupDetails ifAssetPresentWithUpdatedGrpName = assetGroupRepository.findByGroupName(aliasName);
+				if(ifAssetPresentWithUpdatedGrpName != null){
+					throw new PacManException(AdminConstants.ASSET_GROUP_ALREADY_EXISTS);
+				}
+				updateAssetGroupDetails.setDisplayName(updateAssetGroupDetails.getGroupName());
+				updateAssetGroupDetails.setGroupName(aliasName);
+			}
+			boolean isDeletedSuccess = deleteAssetGroupAliasFromUpdation(isAssetGroupExits);
 			if(isDeletedSuccess) {
 				try {
 					CreateAssetGroup createAssetGroup = createAssetGroupService.createAliasForAssetGroup(updateAssetGroupDetails);
@@ -256,6 +271,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			throw new PacManException(ASSET_GROUP_NOT_EXITS);
 		}
 	}
+
 
 	@Override
 	public String createAssetGroupDetails(final CreateAssetGroup createAssetGroupDetails, final String userId) throws PacManException{
@@ -319,14 +335,41 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	}
 
 	@Override
+	public String updateAssetGroupStatus (final String assetGroupName, final boolean status, final String userId) throws PacManException {
+
+		AssetGroupDetails assetGroupObj = assetGroupRepository.findByGroupName(assetGroupName);
+		if( assetGroupObj != null ){
+			if( status != assetGroupObj.getVisible()) {
+				assetGroupObj.setVisible(status);
+				assetGroupObj.setModifiedDate(new Date().toString());
+				assetGroupObj.setModifiedUser(userId);
+				assetGroupRepository.saveAndFlush(assetGroupObj);
+			}
+
+			if(status) {
+				return AdminConstants.ASSET_GROUP_ENABLED;
+			}
+			return AdminConstants.ASSET_GROUP_DISABLED;
+
+		} else {
+			log.error("Asset  group does not exists");
+			throw new PacManException(AdminConstants.ASSET_GROUP_NOT_EXITS);
+		}
+
+	}
+
+
+	@Override
 	public String deleteAssetGroup(final DeleteAssetGroupRequest assetGroupDetails, final String userId) throws PacManException {
 		return deleteAssetGroupDetails(assetGroupDetails);
 	}
 
 	private String processUpdateAssetGroupDetails(final CreateAssetGroup updateAssetGroupDetails, final Map<String, Object> assetGroupAlias, String userId) throws PacManException {
 		try {
-			AssetGroupDetails existingAssetGroupDetails = assetGroupRepository.findByGroupName(updateAssetGroupDetails.getGroupName());
-			existingAssetGroupDetails.setDisplayName(updateAssetGroupDetails.getGroupName());
+			AssetGroupDetails existingAssetGroupDetails = assetGroupRepository.findByGroupId(updateAssetGroupDetails.getGroupId());
+			String aliasName = updateAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ","-");
+			existingAssetGroupDetails.setDisplayName(updateAssetGroupDetails.getDisplayName());
+			existingAssetGroupDetails.setGroupName(aliasName);
 			if(!org.apache.commons.lang.StringUtils.isEmpty(updateAssetGroupDetails.getType()))
 				existingAssetGroupDetails.setGroupType(updateAssetGroupDetails.getType());
 			if(!org.apache.commons.lang.StringUtils.isEmpty(updateAssetGroupDetails.getDescription()))
@@ -348,8 +391,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		}
 	}
 
-	private boolean deleteAssetGroupAliasFromUpdation(CreateAssetGroup updateAssetGroupDetails) throws PacManException {
-		AssetGroupDetails assetGroupDetails = assetGroupRepository.findByGroupName(updateAssetGroupDetails.getGroupName());
+	private boolean deleteAssetGroupAliasFromUpdation(AssetGroupDetails updateAssetGroupDetails) throws PacManException {
+		AssetGroupDetails assetGroupDetails = assetGroupRepository.findByGroupId(updateAssetGroupDetails.getGroupId());
 		boolean isDeleted = deleteAssetGroupAlias(assetGroupDetails);
 		if(isDeleted) {
 			Set<AssetGroupCriteriaDetails> allDeletedCriteria = assetGroupDetails.getCriteriaDetails();
@@ -486,9 +529,19 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			Map<String, Object> alias = Maps.newHashMap();
 			List<Object> action = Lists.newArrayList();
 			final String aliasName = assetGroupDetails.getGroupName().toLowerCase().trim().replace(" ", "-");
+			if (!esCommonService.isDataStreamOrIndexOrAliasExists(aliasName)) {
+				/*Alias doesn't exist or already deleted*/
+				log.error(UNEXPECTED_ERROR_OCCURRED + String.format(AdminConstants.ALIAS_NOT_FOUND_ERR_MSG, aliasName));
+				return true;
+			}
 			JSONArray jsonArray = new JSONObject(assetGroupDetails.getAliasQuery()).getJSONArray(AdminConstants.ACTIONS);
 			for (int i=0; i < jsonArray.length(); i++) {
 				String index = jsonArray.getJSONObject(i).getJSONObject("add").getString(AdminConstants.INDEX);
+				if (!esCommonService.isDataStreamOrIndexOrAliasExists(index)) {
+					/*Alias doesn't exist, we need to continue alias creation for rest of the indexes*/
+					log.error(UNEXPECTED_ERROR_OCCURRED + String.format(AdminConstants.ALIAS_NOT_FOUND_ERR_MSG, aliasName));
+					continue;
+				}
 				Map<String, Object> addObj = Maps.newHashMap();
 				addObj.put(AdminConstants.INDEX, index);
 				addObj.put("alias", aliasName);
@@ -594,7 +647,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				}
 				Map<String, Object> shouldObj = Maps.newHashMap();
 				shouldObj.put("should", shouldArray);
-				shouldObj.put("minimum_should_match", 1);
+				shouldObj.put("minimum_should_match", "1");
 				Map<String, Object> innerboolObj = Maps.newHashMap();
 				innerboolObj.put("bool", shouldObj);
 				mustArray.add(innerboolObj);
@@ -627,16 +680,16 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	}
 
 	private String deleteAssetGroupDetails(final DeleteAssetGroupRequest deleteAssetGroupRequest) throws PacManException {
-		log.info("To delete the provided asset group");
+		log.info("To delete the provided asset group ");
 		if(assetGroupRepository.existsById(deleteAssetGroupRequest.getGroupId())) {
 			AssetGroupDetails assetGroupDetails = assetGroupRepository.findById(deleteAssetGroupRequest.getGroupId()).get();
 			log.info("Provided asset group exits in database ");
 			boolean isDeleted = deleteAssetGroupAlias(assetGroupDetails);
-			log.info("Provided asset group deleted from es");
+			log.info("Provided asset group deleted from es ");
 			if(isDeleted) {
 				try {
 					assetGroupRepository.delete(assetGroupDetails);
-					log.info("Provided asset group deleted from es and db");
+					log.info("Provided asset group deleted from es and db ");
 					return ASSET_GROUP_DELETE_SUCCESS;
 				} catch(Exception exception) {
 					commonService.invokeAPI("POST", ALIASES, assetGroupDetails.getAliasQuery());
@@ -646,12 +699,12 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				return ASSET_GROUP_DELETE_FAILED;
 			}
 		} else {
-			log.info("Provided asset group does not exits in database");
+			log.info("Provided asset group does not exits in database ");
 			throw new PacManException(ASSET_GROUP_NOT_EXITS);
 		}
 	}
 	public List<String> getFilterKeyValues(String key) throws  PacManException{
-		log.info("Inside method to fetch filterkeyvalues for input");
+		log.info("Inside method to fetch filterkeyvalues for input ");
 		if(StringUtils.isEmpty(key))
 			return new ArrayList<>();
 		if(key.toLowerCase().equalsIgnoreCase("type"))

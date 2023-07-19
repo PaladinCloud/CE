@@ -149,7 +149,5 @@ public class UserRolesController {
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
 		}
 	}
-
 }
-
 

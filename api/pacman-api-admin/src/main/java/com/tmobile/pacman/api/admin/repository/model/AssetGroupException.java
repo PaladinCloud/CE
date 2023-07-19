@@ -44,6 +44,10 @@ public class AssetGroupException {
 	private String exceptionName;
 	private String exceptionReason;
 	private String dataSource;
+	private String createdBy;
+	private Date createdOn;
+	private String modifiedBy;
+	private String modifiedOn;
 
 	public long getId() {
 		return id;
@@ -116,4 +120,37 @@ public class AssetGroupException {
 	public void setDataSource(String dataSource) {
 		this.dataSource = dataSource;
 	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public String getModifiedOn() {
+		return modifiedOn;
+	}
+
+	public void setModifiedOn(String modifiedOn) {
+		this.modifiedOn = modifiedOn;
+	}
+
 }

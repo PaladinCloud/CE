@@ -184,4 +184,12 @@ public class AssetGroupDetails {
 	public void setTargetTypes(Set<AssetGroupTargetDetails> targetTypes) {
 		this.targetTypes = targetTypes;
 	}
+
+	public Boolean getVisible() {
+		return isVisible;
+	}
+
+	public void setVisible(Boolean visible) {
+		isVisible = visible;
+	}
 }

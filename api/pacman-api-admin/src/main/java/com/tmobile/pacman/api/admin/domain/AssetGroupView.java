@@ -26,6 +26,9 @@ import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
  */
 public class AssetGroupView {
 
+	private String groupId;
+	private String groupName;
+	private String displayName;
 	private String description;
 	private String type;
 
@@ -34,31 +37,41 @@ public class AssetGroupView {
 	private Long assetCount;
 
 	private String groupType;
-	private Set<AssetGroupCriteriaDetails> criteriaDetails;
 
-	public String getDescription() {
-		return description;
+	public String getGroupType() {
+		return groupType;
 	}
 
-	public Set<AssetGroupCriteriaDetails> getCriteriaDetails() {
-		return criteriaDetails;
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
 	}
 
-	public void setCriteriaDetails(Set<AssetGroupCriteriaDetails> criteriaDetails) {
-		this.criteriaDetails = criteriaDetails;
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
-
 
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public String getType() {
-		return type;
+	public String getDisplayName() {
+		return displayName;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public String getDescription() {
+		return description;
+	}
+
+	private Set<AssetGroupCriteriaDetails> criteriaDetails;
+
+	private Set<AssetGroupTargetDetails> targetTypes;
+
+	public Set<AssetGroupTargetDetails> getTargetTypes() {
+		return targetTypes;
+	}
+
+	public void setTargetTypes(Set<AssetGroupTargetDetails> targetTypes) {
+		this.targetTypes = targetTypes;
 	}
 
 	public String getCreatedBy() {
@@ -77,26 +90,29 @@ public class AssetGroupView {
 		this.assetCount = assetCount;
 	}
 
-	public String getGroupType() {
-		return groupType;
+	public AssetGroupView() {
 	}
 
-	public void setGroupType(String groupType) {
-		this.groupType = groupType;
+	public String getType() {
+		return type;
 	}
 
-	private String groupId;
-	private String groupName;
-
-	private Set<AssetGroupTargetDetails> targetTypes;
-
-	public AssetGroupView() {	
+	public void setType(String type) {
+		this.type = type;
 	}
-	
+
+
+	public Set<AssetGroupCriteriaDetails> getCriteriaDetails() {
+		return criteriaDetails;
+	}
+
+	public void setCriteriaDetails(Set<AssetGroupCriteriaDetails> criteriaDetails) {
+		this.criteriaDetails = criteriaDetails;
+	}
+
 	public AssetGroupView(AssetGroupDetails assetGroupDetails) {
 		this.groupId = assetGroupDetails.getGroupId();
 		this.groupName = assetGroupDetails.getGroupName();
-		this.targetTypes = assetGroupDetails.getTargetTypes();
 	}
 
 	public String getGroupId() {
@@ -107,19 +123,11 @@ public class AssetGroupView {
 		return groupName;
 	}
 
-	public Set<AssetGroupTargetDetails> getTargetTypes() {
-		return targetTypes;
-	}
-
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
-	}
-
-	public void setTargetTypes(Set<AssetGroupTargetDetails> targetTypes) {
-		this.targetTypes = targetTypes;
 	}
 }

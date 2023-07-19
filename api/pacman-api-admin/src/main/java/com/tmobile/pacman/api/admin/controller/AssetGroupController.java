@@ -155,7 +155,7 @@ public class AssetGroupController {
 	}
 
 	@ApiOperation(httpMethod = "POST", value = "API to filte asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@PostMapping(path = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/list",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAllAssetGroupDetailsFilter(
 			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
@@ -234,23 +234,22 @@ public class AssetGroupController {
 		}
 	}
 
-
-	@GetMapping(value = "/getFilterKeyValues", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getFilterKeyValues(@AuthenticationPrincipal Principal user,
-													 @RequestParam(defaultValue = "", name = "key", required = true) String key) {
+	@ApiOperation(httpMethod = "GET", value = "API to get Drop Down Key-Value pair from all CloudProviders", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/cloud-type-object", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> createObjectForCloudType() {
 		try {
-			return ResponseUtils.buildSucessResponse(assetGroupService.getFilterKeyValues(key));
+			return ResponseUtils.buildSucessResponse(assetGroupService.getCloudTypeObject());
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
 		}
 	}
 
-	@ApiOperation(httpMethod = "GET", value = "API to get Drop Down Key-Value pair from all CloudProviders", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@GetMapping(path = "/cloud-type-object", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> createObjectForCloudType() {
+	@GetMapping(value = "/getFilterKeyValues", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getFilterKeyValues(@AuthenticationPrincipal Principal user,
+													 @RequestParam(defaultValue = "", name = "key", required = true) String key) {
 		try {
-			return ResponseUtils.buildSucessResponse(assetGroupService.getCloudTypeObject());
+			return ResponseUtils.buildSucessResponse(assetGroupService.getFilterKeyValues(key));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());

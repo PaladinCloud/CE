@@ -35,6 +35,7 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
     public static final String FAILURE = "FAILURE";
     public static final String SUCCESS = "SUCCESS";
+    public static final String AQUA_ENABLED = "aqua.enabled";
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
@@ -78,12 +79,12 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
             httpPost.setEntity(input);
             CloseableHttpResponse response = httpClient.execute(httpPost);
             if(response.getEntity() != null && response.getStatusLine().getStatusCode()==200){
-                    validateResponse.setValidationStatus(SUCCESS);
-                    validateResponse.setMessage("Aqua validation successful");
+                validateResponse.setValidationStatus(SUCCESS);
+                validateResponse.setMessage("Aqua validation successful");
             }
             else{
-                    validateResponse.setValidationStatus(FAILURE);
-                    validateResponse.setErrorDetails("API returned status code : "+response.getStatusLine().getStatusCode());
+                validateResponse.setValidationStatus(FAILURE);
+                validateResponse.setErrorDetails("API returned status code : "+response.getStatusLine().getStatusCode());
             }
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("Failed to validate the aqua account ",e);
@@ -119,9 +120,14 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
         LOGGER.info("Create secret response: {}",createResponse);
         String accountId = UUID.randomUUID().toString();
-        createAccountInDb(accountId,"Aqua-Connector", Constants.AQUA);
-
+        createAccountInDb(accountId,"Aqua-Connector", Constants.AQUA,validateResponse.getCreatedBy());
+        updateConfigProperty(AQUA_ENABLED,TRUE,JOB_SCHEDULER);
         validateResponse.setValidationStatus(SUCCESS);
+        validateResponse.setAccountId(accountId);
+        validateResponse.setAccountName("Aqua-Connector");
+        validateResponse.setAquaApiUrl(accountData.getAquaApiUrl());
+        validateResponse.setAquaUser(accountData.getAquaApiUser());
+        validateResponse.setType(Constants.AQUA);
         validateResponse.setMessage("Account added successfully. Account id: "+accountId);
         return validateResponse;
     }
@@ -133,6 +139,7 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
         String aquaClientDomainUrl= accountData.getAquaClientDomainUrl();
         String aquaApiUser=accountData.getAquaApiUser();
         String aquaApiPassword= accountData.getAquaApiPassword();
+        String createdBy=accountData.getCreatedBy();
         if(StringUtils.isEmpty(aquaApiUrl)){
             validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" Aqua API URL\n");
         }
@@ -144,6 +151,9 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
         }
         if(aquaApiPassword==null){
             validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" Aqua API password\n");
+        }
+        if(StringUtils.isEmpty(createdBy)){
+            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" createdBy\n");
         }
         String validationError=validationErrorDetails.toString();
         if(!validationError.isEmpty()){
@@ -177,7 +187,7 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
 
         //delete entry from db
         deleteAccountFromDB(accountId);
-
+        updateConfigProperty(AQUA_ENABLED,FALSE,JOB_SCHEDULER);
         response.setType(Constants.AQUA);
         response.setAccountId(accountId);
         response.setValidationStatus(SUCCESS);

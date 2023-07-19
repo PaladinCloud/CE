@@ -37,8 +37,6 @@ public interface AssetGroupTargetDetailsService {
      */
 	public List<TargetTypePolicyDetails> getTargetTypesByAssetGroupName(String assetGroupName);
 
-	public List<Map<String, Object>> getTargetTypesByAssetGroupNameFromES(String assetGroupName);
-
 	/**
      * Service to get target types by assetGroup Id and target type not in list
      *
@@ -50,8 +48,9 @@ public interface AssetGroupTargetDetailsService {
      */
 	public List<TargetTypePolicyViewDetails> getTargetTypesByAssetGroupIdAndTargetTypeNotIn(String assetGroupName, Set<String> targetTypeNames) throws PacManException;
 
+	public List<Map<String, Object>> getTargetTypesByAssetGroupNameFromES(String assetGroupName);
+
 	public  String getGcpFlagValueFromDB();
 
 	public  String getAzureFlagValueFromDB();
 }
-

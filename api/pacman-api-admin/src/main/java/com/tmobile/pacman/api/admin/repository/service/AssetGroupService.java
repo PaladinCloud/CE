@@ -111,4 +111,6 @@ public interface AssetGroupService {
 
 	public List<Map<String,Object>> getCloudTypeObject() throws Exception;
 
+	public String updateAssetGroupStatus (final String assetGroupName, final boolean status, final String userId) throws PacManException;
+
 }

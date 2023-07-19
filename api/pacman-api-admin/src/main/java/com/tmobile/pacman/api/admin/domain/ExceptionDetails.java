@@ -25,6 +25,8 @@ public class ExceptionDetails {
 	private String expiryDate;
 	private String assetGroup;
 	private String dataSource;
+	private String createdBy;
+	private String createdOn;
 
 	public String getExceptionName() {
 		return exceptionName;
@@ -65,4 +67,22 @@ public class ExceptionDetails {
 	public void setDataSource(String dataSource) {
 		this.dataSource = dataSource;
 	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(String createdOn) {
+		this.createdOn = createdOn;
+	}
+
+
 }

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -34,6 +35,12 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     public static final String SECRET_ALREADY_EXIST_FOR_ACCOUNT = "Secret already exist for account";
     public static final String PALADINCLOUD_RO = "PALADINCLOUD_RO";
     public static final String ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE = "Error in assuming sts role, check permission configured for base account role";
+
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
+    public static final String JOB_SCHEDULER = "job-scheduler";
+    public static final String STATUS_CONFIGURED = "configured";
+
 
     private static final Logger logger=LoggerFactory.getLogger(AbstractAccountServiceImpl.class);
     @Override
@@ -80,27 +87,6 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
                 search, accountName, accountId, createdBy, asset, violations, status, platform));
     }
 
-    @Override
-    public List<String> getPluginFilterVal(String attribute){
-        try{
-            switch (attribute) {
-                case AdminConstants.ACCOUNT_ID:
-                    List<String> accountList= accountsRepository.findDistinctAccountId();
-                    accountList.addAll(azureAccountRepository.findSubscriptions());
-                    return accountList;
-                case AdminConstants.ACCOUNT_NAME:  return accountsRepository.findDistinctAccountName();
-                case AdminConstants.ASSET:  return accountsRepository.findDistinctAssets();
-                case AdminConstants.VIOLATIONS:  return accountsRepository.findDistinctViolations();
-                case AdminConstants.STATUS:  return accountsRepository.findDistinctAccountStatus();
-                case AdminConstants.CREATED_BY: return accountsRepository.findDistinctCreatedBy();
-                case AdminConstants.PLATFORM: return accountsRepository.findDistinctPlatform();
-                default: return new ArrayList<String>();
-            }
-        }catch (Exception e){
-            return new ArrayList<>();
-        }
-    }
-
     private AccountList convertToMap(Page<AccountDetails> entities) {
         AccountList accountList=new AccountList();
         List accountDetailsList= entities.getContent();
@@ -116,23 +102,13 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             accountMap.put("violations",ob[3].toString());
             accountMap.put("accountStatus",ob[4].toString());
             accountMap.put("platform",ob[5].toString());
+            accountMap.put("createdBy",ob[6]!=null?ob[6].toString():"");
+            accountMap.put("createdTime",ob[6]!=null?ob[7].toString():"");
             convertAccountDetails.add(accountMap);
         }
         accountList.setResponse(convertAccountDetails);
         accountList.setTotal(elements);
         return accountList;
-    }
-    @Override
-    public AccountList getAllAccountsByFilter(Integer page, Integer size, String filterName, String filterValue) {
-        switch (filterName) {
-            case "accountId":  return convertToMap(accountsRepository.findById(PageRequest.of(page, size), filterValue));
-            case "accountName":  return convertToMap(accountsRepository.findByName(PageRequest.of(page, size), filterValue));
-            case "assets":  return convertToMap(accountsRepository.findByAssets(PageRequest.of(page, size), filterValue));
-            case "violations":  return convertToMap(accountsRepository.findByViolations(PageRequest.of(page, size), filterValue));
-            case "accountStatus":  return convertToMap(accountsRepository.findByStatus(PageRequest.of(page, size), filterValue));
-            case "platform":  return convertToMap(accountsRepository.findByPlatform(PageRequest.of(page, size), filterValue));
-            default: return new AccountList();
-        }
     }
 
     public AccountValidationResponse deleteAccountFromDB(String accountId) {
@@ -151,7 +127,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
          return response;
     }
 
-    public AccountValidationResponse createAccountInDb(String accountId, String accountName, String platform) {
+    public AccountValidationResponse createAccountInDb(String accountId, String accountName, String platform,String createdBy) {
         AccountDetails accountDetails=new AccountDetails();
         accountDetails.setAccountId(accountId);
         accountDetails.setViolations("0");
@@ -159,9 +135,14 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         accountDetails.setAccountName(accountName);
         accountDetails.setPlatform(platform);
         accountDetails.setAccountStatus("configured");
-
+        accountDetails.setCreatedBy(createdBy);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        accountDetails.setCreatedTime(formatter.format(date));
         AccountValidationResponse response=new AccountValidationResponse();
         response.setType(platform);
+        response.setAccountId(accountId);
+        response.setAccountName(accountName);
 
         Optional<AccountDetails> account = accountsRepository.findById(accountId);
         if(account.isPresent()){
@@ -191,6 +172,32 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     public String getSecretData(String secret){
         String jsonTemplate="{\"secretdata\": \"%s\"}";
         return String.format(jsonTemplate,secret);
+    }
+
+    @Override
+    public List<String> getPluginFilterVal(String attribute){
+        try{
+            switch (attribute) {
+                case AdminConstants.ACCOUNT_ID:
+                    List<String> accountList= accountsRepository.findDistinctAccountId();
+                    accountList.addAll(azureAccountRepository.findSubscriptions());
+                    return accountList;
+                case AdminConstants.ACCOUNT_NAME:  return accountsRepository.findDistinctAccountName();
+                case AdminConstants.ASSET:  return accountsRepository.findDistinctAssets();
+                case AdminConstants.VIOLATIONS:  return accountsRepository.findDistinctViolations();
+                case AdminConstants.STATUS:  return accountsRepository.findDistinctAccountStatus();
+                case AdminConstants.CREATED_BY: return accountsRepository.findDistinctCreatedBy();
+                case AdminConstants.PLATFORM: return accountsRepository.findDistinctPlatform();
+                default: return new ArrayList<String>();
+            }
+        }catch (Exception e){
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<AccountDetails> findOnlineAccounts(String status, String platform){
+        return accountsRepository.findByAccountStatusAndPlatform(status,platform);
     }
 
 

@@ -17,6 +17,7 @@ package com.tmobile.pacman.api.admin.repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,5 +68,7 @@ public interface TargetTypesRepository extends JpaRepository<TargetTypes, String
 	
 	@Query("SELECT dataSourceName FROM TargetTypes WHERE targetName = (:targetType) ")
 	public String findDataSourceByTargetType(@Param("targetType") String targetType);
+	@Query("SELECT DISTINCT dataSourceName FROM TargetTypes")
+	public Optional<List<String>> findDistinctDataSources();
 
 }

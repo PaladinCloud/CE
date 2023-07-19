@@ -63,11 +63,7 @@ public class PolicyController {
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
 			@ApiParam(value = "provide valid search term", required = false) @RequestParam(defaultValue="", name = "searchTerm", required = false) String searchTerm) {
 		try {
-			if(searchTerm != null && AdminConstants.AUTO_FIX_KEYWORD.equalsIgnoreCase(searchTerm)) {
-				searchTerm = AdminConstants.AUTO_FIX_KEY;
-			} else {
-				searchTerm = searchTerm != null ? searchTerm.trim() : "";
-			}
+			searchTerm = searchTerm != null ? searchTerm.trim() : "";
 			return ResponseUtils.buildSucessResponse(policyService.getPolicies(searchTerm, page, size));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
