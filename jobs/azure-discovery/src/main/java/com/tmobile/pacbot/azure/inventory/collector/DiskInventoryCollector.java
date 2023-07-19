@@ -44,6 +44,12 @@ public class DiskInventoryCollector {
 			dataDiskVH.setVirtualMachineId(dataDisk.virtualMachineId());
 			dataDiskVH.setSubscription(subscription.getSubscriptionId());
 			dataDiskVH.setSubscriptionName(subscription.getSubscriptionName());
+			//Set AssetIdDisplayName
+			String resourceGrpName = dataDiskVH.getResourceGroupName()!=null? dataDiskVH.getResourceGroupName():" ";
+			String assetName       = dataDiskVH.getName()!=null?dataDiskVH.getName():" ";
+			String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+			dataDiskVH.setAssetIdDisplayName(assetIdDisplayName);
+
 			dataDiskList.add(dataDiskVH);
 		}
 		log.info("Target Type : {}  Total: {} ","Disc",dataDiskList.size());

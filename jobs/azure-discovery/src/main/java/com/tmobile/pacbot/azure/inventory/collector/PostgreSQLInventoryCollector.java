@@ -54,6 +54,11 @@ public class PostgreSQLInventoryCollector {
 				postgreSQLServerVH.setRegion(Util.getRegionValue(subscription,postgreSQLServerObject.get("location").getAsString()));
 				postgreSQLServerVH.setResourceGroupName(Util.getResourceGroupNameFromId(postgreSQLServerObject.get("id").getAsString()));
 				postgreSQLServerVH.setName(postgreSQLServerObject.get("name").getAsString());
+				//Set AssetIdDisplayName
+				String resourceGrpName = postgreSQLServerVH.getResourceGroupName()!=null? postgreSQLServerVH.getResourceGroupName():" ";
+				String assetName       = postgreSQLServerVH.getName()!=null?postgreSQLServerVH.getName():" ";
+				String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+				postgreSQLServerVH.setAssetIdDisplayName(assetIdDisplayName);
 				postgreSQLServerVH.setType(postgreSQLServerObject.get("type").getAsString());
 				JsonObject tags=postgreSQLServerObject.get("tags").getAsJsonObject();
 				if (tags != null) {

@@ -55,6 +55,12 @@ public class BatchAccountInventoryCollector {
 					batchAccountVH.setRegion(Util.getRegionValue(subscription,batchAccountObject.get("location").getAsString()));
 					batchAccountVH.setName(batchAccountObject.get("name").getAsString());
 					batchAccountVH.setType(batchAccountObject.get("type").getAsString());
+					//Set AssetIdDisplayName
+					String resourceGrpName = batchAccountVH.getResourceGroupName()!=null?batchAccountVH.getResourceGroupName():" ";
+					String assetName       = batchAccountVH.getName()!=null?batchAccountVH.getName():" ";
+					String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+					batchAccountVH.setAssetIdDisplayName(assetIdDisplayName);
+
 					JsonObject properties = batchAccountObject.getAsJsonObject("properties");
 					JsonObject tags = batchAccountObject.getAsJsonObject("tags");
 					if (properties != null) {

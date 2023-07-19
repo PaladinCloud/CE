@@ -151,6 +151,11 @@ public class VaultInventoryCollector {
 				for (JsonElement vaultElement : vaultObjects) {
 					JsonObject vaultObject = vaultElement.getAsJsonObject();
 					VaultVH vault=fetchVaultDetailsById(vaultObject.get("id").getAsString(),subscription);
+					//Set assetIdDisplayName
+					String resourceGrpName = vault.getResourceGroupName()!=null? vault.getResourceGroupName():" ";
+					String assetName       = vault.getName()!=null?vault.getName():" ";
+					String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+					vault.setAssetIdDisplayName(assetIdDisplayName);
 					if(!vault.isEnableRbacAuthorization()) {
 						vaultList.add(vault);
 					}else {

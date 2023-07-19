@@ -77,6 +77,12 @@ public class StorageAccountInventoryCollector {
 			}
 
 			storageAccountVH.setBlobPublicAccessAllowed(storageAccount.isBlobPublicAccessAllowed());
+			//Set assetIdDisplay Name
+
+			String resourceGrpName = storageAccountVH.getResourceGroupName()!=null? storageAccountVH.getResourceGroupName():" ";
+			String assetName       = storageAccountVH.getName()!=null?storageAccountVH.getName():" ";
+			String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+			storageAccountVH.setAssetIdDisplayName(assetIdDisplayName);
 			storageAccountList.add(storageAccountVH);
 		}
 		log.info("Target Type : {}  Total: {} ", "Storage Account", storageAccountList.size());

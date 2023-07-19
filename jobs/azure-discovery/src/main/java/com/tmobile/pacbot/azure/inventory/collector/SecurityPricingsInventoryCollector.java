@@ -55,6 +55,11 @@ public class SecurityPricingsInventoryCollector {
 					HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
 					securityPricingsVH.setPropertiesMap(propertiesMap);
 				}
+				//Set AssetIdDisplayName
+				String resourceGrpName = securityPricingsVH.getResourceGroupName()!=null? securityPricingsVH.getResourceGroupName():" ";
+				String assetName       = securityPricingsVH.getName()!=null?securityPricingsVH.getName():" ";
+				String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+				securityPricingsVH.setAssetIdDisplayName(assetIdDisplayName);
 				securityPricingsList.add(securityPricingsVH);
 			}
 		} catch (Exception e) {

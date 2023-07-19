@@ -58,6 +58,10 @@ public class BlobServiceInventoryCollector {
                                 HashMap.class);
                         blobServiceVH.setPropertiesMap(propertiesMap);
                     }
+                    String resourceGrpName = blobServiceVH.getResourceGroupName()!=null? blobServiceVH.getResourceGroupName():" ";
+                    String assetName       = blobServiceVH.getName()!=null?blobServiceVH.getName():" ";
+                    String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+                    blobServiceVH.setAssetIdDisplayName(assetIdDisplayName);
                     blobServiceVHList.add(blobServiceVH);
                 }
             } catch (Exception e) {

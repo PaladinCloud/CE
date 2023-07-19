@@ -52,6 +52,11 @@ public class MySQLInventoryCollector {
                 mySQLServerVH.setId(sqlServerObject.get("id").getAsString());
                 mySQLServerVH.setLocation(sqlServerObject.get("location").getAsString());
                 mySQLServerVH.setName(sqlServerObject.get("name").getAsString());
+				//Set AssetIdDisplayName
+				String resourceGrpName = mySQLServerVH.getResourceGroupName()!=null? mySQLServerVH.getResourceGroupName():" ";
+				String assetName       = mySQLServerVH.getName()!=null?mySQLServerVH.getName():" ";
+				String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+				mySQLServerVH.setAssetIdDisplayName(assetIdDisplayName);
                 mySQLServerVH.setType(sqlServerObject.get("type").getAsString());
                 if (sku != null) {
                     HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);

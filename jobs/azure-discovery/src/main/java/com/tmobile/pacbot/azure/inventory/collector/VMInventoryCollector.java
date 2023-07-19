@@ -113,7 +113,11 @@ public class VMInventoryCollector {
 				vmVH.setTags(Util.tagsList(tagMap, virtualMachine.resourceGroupName(), virtualMachine.tags()));
 				vmVH.setPrimaryNetworkIntefaceId(virtualMachine.primaryNetworkInterfaceId());
 				vmVH.setPrimaryNCIMacAddress(virtualMachine.getPrimaryNetworkInterface().macAddress());
-
+				//assetID Display Name
+				String resourceGrpName = vmVH.getResourceGroupName()!=null? vmVH.getResourceGroupName():" ";
+				String assetName       = vmVH.getName()!=null?vmVH.getName():" ";
+				String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+				vmVH.setAssetIdDisplayName(assetIdDisplayName);
 				setVmDisks(virtualMachine, vmVH);
 				setNsgs(virtualMachine, vmVH, networkInterfaces);
 				setVnetInfo(virtualMachine, vmVH);

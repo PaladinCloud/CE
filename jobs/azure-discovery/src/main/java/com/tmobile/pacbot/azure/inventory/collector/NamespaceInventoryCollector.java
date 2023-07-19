@@ -51,6 +51,11 @@ public class NamespaceInventoryCollector {
                     namespaceVH.setId(namespaceObject.get("id").getAsString());
                     namespaceVH.setLocation(namespaceObject.get("location").getAsString());
                     namespaceVH.setName(namespaceObject.get("name").getAsString());
+					//Set AssetIdDisplayName
+					String resourceGrpName = namespaceVH.getResourceGroupName()!=null? namespaceVH.getResourceGroupName():" ";
+					String assetName       = namespaceVH.getName()!=null?namespaceVH.getName():" ";
+					String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+					namespaceVH.setAssetIdDisplayName(assetIdDisplayName);
                     namespaceVH.setType(namespaceObject.get("type").getAsString());
                     JsonObject properties = namespaceObject.getAsJsonObject("properties");
                     JsonObject tags = namespaceObject.getAsJsonObject("tags");

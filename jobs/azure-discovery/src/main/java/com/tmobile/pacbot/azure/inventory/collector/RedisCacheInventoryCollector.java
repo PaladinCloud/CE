@@ -36,6 +36,11 @@ public class RedisCacheInventoryCollector {
             redisCacheVH.setRegion(Util.getRegionValue(subscription,redisCache.regionName()));
             redisCacheVH.setResourceGroupName(redisCache.resourceGroupName());
             redisCacheVH.setTags(redisCache.tags());
+            //Set AssetIdDisplayName
+            String resourceGrpName = redisCacheVH.getResourceGroupName()!=null? redisCacheVH.getResourceGroupName():" ";
+            String assetName       = redisCacheVH.getName()!=null?redisCacheVH.getName():" ";
+            String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+            redisCacheVH.setAssetIdDisplayName(assetIdDisplayName);
             redisCacheList.add(redisCacheVH);
         }
         log.info("Target Type : {}  Total: {} ","redis cache",redisCacheList.size());

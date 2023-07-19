@@ -53,6 +53,11 @@ public class NSGInventoryCollector {
 			securityGroupVH.setNetworkInterfaceIds(securityGroup.networkInterfaceIds());
 			securityGroupVH.setSubscription(subscription.getSubscriptionId());
 			securityGroupVH.setSubscriptionName(subscription.getSubscriptionName());
+			//Set AssetIdDisplayName
+			String resourceGrpName = securityGroupVH.getResourceGroupName()!=null? securityGroupVH.getResourceGroupName():" ";
+			String assetName       = securityGroupVH.getName()!=null?securityGroupVH.getName():" ";
+			String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+			securityGroupVH.setAssetIdDisplayName(assetIdDisplayName);
 			securityGroupVH.setNetworkWatcher(networkWatcherInventoryCollector.fetchNetworkWatcherLogsBySecurityGroupId(subscription,securityGroup.id()));
 			setSecurityRules(securityGroup, securityGroupVH);
 

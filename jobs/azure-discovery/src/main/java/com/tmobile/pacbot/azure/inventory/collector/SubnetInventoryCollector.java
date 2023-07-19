@@ -72,6 +72,11 @@ public class SubnetInventoryCollector {
 								propertiesMap.get("privateEndpointNetworkPolicies").toString());
 
 					}
+					//Set AssetId displayName
+					String resourceGrpName = subnetVH.getResourceGroupName()!=null? subnetVH.getResourceGroupName():" ";
+					String assetName       = subnetVH.getName()!=null?subnetVH.getName():" ";
+					String assetIdDisplayName =  resourceGrpName+ "/" + assetName;
+					subnetVH.setAssetIdDisplayName(assetIdDisplayName);
 					subnetList.add(subnetVH);
 				}
 			} catch (Exception e) {

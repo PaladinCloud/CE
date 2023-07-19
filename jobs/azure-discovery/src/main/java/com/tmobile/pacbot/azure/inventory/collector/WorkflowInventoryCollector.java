@@ -63,7 +63,11 @@ public class WorkflowInventoryCollector {
 						HashMap<String, Object> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
 						workflowVH.setTags(tagsMap);
 					}
-
+					//Set assetIdDIsplayName
+					String resourceGrpName = workflowVH.getResourceGroupName()!=null? workflowVH.getResourceGroupName():" ";
+					String assetName       = workflowVH.getName()!=null?workflowVH.getName():" ";
+					String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+					workflowVH.setAssetIdDisplayName(assetIdDisplayName);
 					workflowList.add(workflowVH);
 				}
 			}

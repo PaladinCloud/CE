@@ -46,6 +46,11 @@ public class NetworkInventoryCollector {
 			networkVH.setTags(Util.tagsList(tagMap, network.resourceGroupName(), network.tags()));
 			networkVH.setSubscription(subscription.getSubscriptionId());
 			networkVH.setSubscriptionName(subscription.getSubscriptionName());
+			//Set assetId DisplayName
+			String resourceGrpName = networkVH.getResourceGroupName()!=null? networkVH.getResourceGroupName():" ";
+			String assetName       = networkVH.getName()!=null?networkVH.getName():" ";
+			String assetIdDisplayName =  resourceGrpName + "/" + assetName;
+			networkVH.setAssetIdDisplayName(assetIdDisplayName);
 			networkList.add(networkVH);
 		}
 		log.info("Target Type : {}  Total: {} ","vnet",networkList.size());
