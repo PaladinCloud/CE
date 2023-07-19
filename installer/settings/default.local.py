@@ -21,6 +21,8 @@ RESOURCE_NAME_PREFIX = "paladincloud"
 # Possibble values db.m5.large, db.t3.large etc
 RDS_INSTANCE_TYPE = "db.t3.medium"
 
+#ECS Configuration
+ECS_CPU = 1024
 
 # ElasticSearch Related Configurations
 # Possibble values m5.xlarge.elasticsearch  etc

@@ -4,6 +4,7 @@ from resources.pacbot_app.task_def_variables import ContainerDefinitions
 from resources.pacbot_app.ecr import APIDockerImageBuild, UIDockerImageBuild
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service
 from resources.cognito.userpool import AppCLient
+from core.config import Settings
 
 container_def = ContainerDefinitions()
 
@@ -11,7 +12,7 @@ container_def = ContainerDefinitions()
 class BaseTaskDefinition:
     requires_compatibilities = ["FARGATE"]
     network_mode = "awsvpc"
-    cpu = 2048
+    cpu = Settings.ECS_CPU
     memory = 4096
     execution_role_arn = ECSRole.get_output_attr('arn')
     task_role_arn = ECSRole.get_output_attr('arn')

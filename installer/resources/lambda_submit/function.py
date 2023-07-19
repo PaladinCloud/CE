@@ -297,6 +297,7 @@ class QualysKBCollectorEventRuleLambdaPermission(LambdaPermission):
 class QualysKBCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = QualysKBCollectorEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusPlugin.get_output_attr('arn')
     target_id = 'QualysKBCollectorTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "qualys-kb-collector",
