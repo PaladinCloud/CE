@@ -93,7 +93,7 @@ public interface ComplianceRepository {
      */
     public Map<String, Long> getTagging(String assetGroup, String targetType)
 
-    throws DataException;
+            throws DataException;
 
     /**
      * Gets count of expiredCertificates with in 60days and totalCertificates
@@ -116,7 +116,7 @@ public interface ComplianceRepository {
      * @return the map
      */
     public Map<String, Object> formatUnpatchedMustFilter(String targetType,
-            String policyId);
+                                                         String policyId);
 
     /**
      * asssetGroup is mandatory and targetType is optional. If method receives
@@ -133,7 +133,7 @@ public interface ComplianceRepository {
      * @throws DataException the data exception
      */
     public List<Map<String, Object>> getRecommendations(String assetGroup,
-            String targetType) throws DataException;
+                                                        String targetType) throws DataException;
 
     /**
      * Gets the resource details from ES.
@@ -249,7 +249,7 @@ public interface ComplianceRepository {
      * @return Long
      */
     public Long getTotalAssetCountForAnytargetType(String assetGroup,
-            String targetType);
+                                                   String targetType);
 
     /**
      * Gets the policy id with display name.
@@ -324,7 +324,7 @@ public interface ComplianceRepository {
      * @return String
      */
     public String getScanDate(String policyId,
-            Map<String, String> rulidwithScanDate);
+                              Map<String, String> rulidwithScanDate);
 
 
     /**
@@ -349,7 +349,7 @@ public interface ComplianceRepository {
      * @throws DataException the data exception
      */
     public JsonArray getPolicyDetailsByApplicationFromES(String assetGroup,
-            String policyId, String searchText) throws DataException;
+                                                         String policyId, String searchText) throws DataException;
 
     /**
      * Gets the target type by policy id which is in enabled status from the DB.
@@ -371,7 +371,7 @@ public interface ComplianceRepository {
      * @return Long
      */
     public Long getTotalAssetCountForEnvironment(String assetGroup,
-            String application, String environment, String targetType);
+                                                 String application, String environment, String targetType);
 
     /**
      * Gets the array of environment tags and its issue count of the policyId for
@@ -388,7 +388,7 @@ public interface ComplianceRepository {
      */
 
     public JsonArray getPolicyDetailsByEnvironmentFromES(String assetGroup,
-            String policyId, String application, String searchText,String targetType)
+                                                         String policyId, String application, String searchText,String targetType)
             throws DataException;
 
     /**
@@ -503,7 +503,7 @@ public interface ComplianceRepository {
      */
 
     public Map<String, Long> getPatchableAssetsByApplication(String assetGroup,
-            String application, String resourceType) throws DataException;
+                                                             String application, String resourceType) throws DataException;
 
     /**
      * Gets the policy id with display name with policy category query.
@@ -516,7 +516,7 @@ public interface ComplianceRepository {
     public List<Map<String, Object>> getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
             String targetTypes, String policyCategory, boolean includeDisabled) throws DataException;
 
-  
+
     /**
      * Gets the patchabe assets count.
      *
@@ -539,7 +539,7 @@ public interface ComplianceRepository {
      *
      * @param assetGroup the asset group
      * @param targetType the target type
-     * @param application 
+     * @param application
      * @return Long
      * @throws DataException the data exception
      */
@@ -622,18 +622,18 @@ public interface ComplianceRepository {
      * @throws DataException the data exception
      */
     public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup, List<String> issueIds, String revokedBy) throws DataException;
-    
+
     /**
- 	 * Gets the total asset count by environment.
- 	 *
- 	 * @param assetGroup the asset group
- 	 * @param application the application
- 	 * @param targetType the target type
- 	 * @return the total asset count by environment
- 	 */
- 	public Map<String,Long> getTotalAssetCountByEnvironment(String assetGroup, String application,String targetType);
- 	
- 	/**
+     * Gets the total asset count by environment.
+     *
+     * @param assetGroup the asset group
+     * @param application the application
+     * @param targetType the target type
+     * @return the total asset count by environment
+     */
+    public Map<String,Long> getTotalAssetCountByEnvironment(String assetGroup, String application,String targetType);
+
+    /**
      * Gets the datasource for the target type.
      *
      * @param assetGroup
@@ -645,20 +645,19 @@ public interface ComplianceRepository {
      * @return String
      */
     public List<Map<String,String>> getDataSourceForTargetTypeForAG(String assetGroup, String domain, String targetType);
-    
+
     /**
-	 * Gets the exempted assets count by policy.
-	 *
-	 * @param assetGroup the asset group
-	 * @return the exempted assets count by policy
-	 * @throws DataException the data exception
-	 */
-	public Map<String, Integer> getExemptedAssetsCountByPolicy(String assetGroup, String application,String type)
-			throws DataException;
+     * Gets the exempted assets count by policy.
+     *
+     * @param assetGroup the asset group
+     * @return the exempted assets count by policy
+     * @throws DataException the data exception
+     */
+    public Map<String, Integer> getExemptedAssetsCountByPolicy(String assetGroup, String application,String type)
+            throws DataException;
 
     public Map<String, Object> getSupportedFilters(String filterName, String filterAttribute);
 
-
-
+    ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest) throws DataException;
 
 }

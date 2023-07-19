@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -167,7 +167,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         totalMap.put("untaggedList", unTagsList);
         totalMap.put("overallCompliance", tagMap.get("compliance"));
 
-        return totalMap; 
+        return totalMap;
     }
 
     /* (non-Javadoc)
@@ -181,7 +181,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         double compliancePercentage;
         String type;
 
-        
+
         List<Map<String, Object>> targetTypes;
         try {
             targetTypes = repository.getRuleTargetTypesFromDbByPolicyId(request.getCategory());
@@ -198,9 +198,9 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         Map<String, Long> assetCountByTypes = complainceRepository.getTotalAssetCount(request.getAg(), null,null,null);
         List<String> tagsList =  new ArrayList<>();
         if(CATEGORY_TAGGING.equals( request.getCategory())) {
-        	tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
+            tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
         }
-        
+
         Map<String, Long> nonComplicanceCountMap = getCategoryWiseTargetTypeIssue(request, tagsList);
         // process records to format the response
         for (Map<String, Object> targetType : targetTypes) {
@@ -223,8 +223,8 @@ public class TaggingServiceImpl implements TaggingService, Constants {
                 compliancePercentage = Math.floor(compliancePercentage);
 
                 data.put("name", type);
-                data.put("compliance", complianceCount);
-                data.put("nonCompliance", nonComplianceCount);
+                data.put("compliance", nonComplianceCount);
+                data.put("nonCompliance", complianceCount);
                 data.put("assetCount", assetCount);
                 data.put(COMP_PERCENTAGE, compliancePercentage);
                 unTagsList.add(data);
@@ -258,7 +258,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         Map<String, Long> assetWithoutTag;
         Map<String, Long> emptyOrUnkownAssets;
         Long emptyOrUnkownAssetsLong;
-        Long assetWithoutTagLong = 0l; 
+        Long assetWithoutTagLong = 0l;
         String type = null;
         if (!StringUtils.isEmpty(targetType)) {
             type = "'" + targetType + "'";
@@ -284,7 +284,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
             } catch (Exception e) {
                 throw new ServiceException(e);
             }
-           getNoTagsData(tagsMap, targetTypesList, assetWithoutTag, emptyOrUnkownAssets);
+            getNoTagsData(tagsMap, targetTypesList, assetWithoutTag, emptyOrUnkownAssets);
         }
         taggsApplication.add(tagsMap);
         return taggsApplication;
@@ -335,7 +335,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
             }
         } else {
             if(resultJson.has(COUNT)){
-            assetWithoutTagsMap.put(targetType, resultJson.get(COUNT).getAsLong());
+                assetWithoutTagsMap.put(targetType, resultJson.get(COUNT).getAsLong());
             }
         }
         return assetWithoutTagsMap;
@@ -370,7 +370,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         }
         return untaggedCountMap;
     }
-    
+
     /**
      * Gets the untagged target type issues.
      *
@@ -400,7 +400,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         }
         return untaggedCountMap;
     }
-    
+
     /**
      * Gets the total assets.
      *
@@ -416,7 +416,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         }
         return totalAssets;
     }
-    
+
     /**
      * Gets the un tagged list data.
      *
@@ -434,15 +434,15 @@ public class TaggingServiceImpl implements TaggingService, Constants {
             Map<String, Object> data = new HashMap<>();
             Long totalAssets = getTotalAssets(tagMap);
             try {
-            	unTagged = repository.getUntaggedIssues(assetGroup, mandatoryTag);
+                unTagged = repository.getUntaggedIssues(assetGroup, mandatoryTag);
             } catch (DataException e) {
                 throw new ServiceException(e);
             }
-            
+
             if (unTagged > totalAssets) {
-            	unTagged = totalAssets;
+                unTagged = totalAssets;
             }
-            
+
             tagged = totalAssets - unTagged;
             data.put("name", mandatoryTag);
             data.put("untagged", unTagged);
@@ -466,7 +466,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         }
         return unTagsList;
     }
-    
+
     /**
      * Gets the no tags data.
      *
@@ -488,7 +488,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
                 emptyOrUnkownAssetsLong = emptyOrUnkownAssets.get(resourceType);
             }
             tagsMap.put(resourceType, emptyOrUnkownAssetsLong + assetWithoutTagLong);
-        } 
+        }
         return tagsMap;
     }
 }

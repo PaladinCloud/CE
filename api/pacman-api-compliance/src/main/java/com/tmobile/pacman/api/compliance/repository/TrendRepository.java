@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -38,7 +38,7 @@ public interface TrendRepository {
      * @throws DataException the data exception
      */
     List<Map<String, Object>> getComplianceTrendProgress(String assetGroup,
-            LocalDate fromDate, String domain, Set<String> ruleSev)
+                                                         LocalDate fromDate, LocalDate toDate, String domain, Set<String> ruleSev)
             throws DataException;
 
     /**
@@ -53,8 +53,8 @@ public interface TrendRepository {
      * @throws DataException the data exception
      */
     List<Map<String, Object>> getTrendProgress(String assetGroup,
-            String ruleId, LocalDate startDate, LocalDate endDate,
-            String trendCategory) throws DataException;
+                                               String ruleId, LocalDate startDate, LocalDate endDate,
+                                               String trendCategory) throws DataException;
 
     /**
      * Gets the trend issues.
@@ -68,7 +68,7 @@ public interface TrendRepository {
      * @throws DataException the data exception
      */
     List<Map<String, Object>> getTrendIssues(String assetGroup,
-            LocalDate startDate, LocalDate endDate, Map<String, String> filter,
-            Set<String> ruleSev) throws DataException;
+                                             LocalDate startDate, LocalDate endDate, Map<String, String> filter,
+                                             Set<String> ruleSev) throws DataException;
 
 }

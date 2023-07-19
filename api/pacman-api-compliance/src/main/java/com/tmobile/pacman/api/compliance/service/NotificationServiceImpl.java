@@ -2,11 +2,11 @@ package com.tmobile.pacman.api.compliance.service;
 
 import com.google.gson.Gson;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
+import com.tmobile.pacman.api.compliance.domain.ExemptionRequest;
 import com.tmobile.pacman.api.compliance.dto.IndividualExNotificationRequest;
 import com.tmobile.pacman.api.commons.dto.NotificationBaseRequest;
 import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
-import com.tmobile.pacman.api.compliance.domain.IssuesException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class NotificationServiceImpl implements NotificationService{
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
     @Async
-    public void triggerCreateExemptionNotification(List<Map<String, Object>> issueDetails, List<String> failedIssueIds, IssuesException issuesException){
+    public void triggerCreateExemptionNotification(List<Map<String, Object>> issueDetails, List<String> failedIssueIds, ExemptionRequest issuesException){
         try {
             Gson gson = new Gson();
             List<String> exemptedPoliciesList = issueDetails.stream().map(obj -> (String)obj.get(POLICYID)).map(obj -> "'"+obj+"'").collect(Collectors.toList());
@@ -49,11 +49,32 @@ public class NotificationServiceImpl implements NotificationService{
 
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
             for(Map<String,Object> issueDetail : issueDetails){
-                if(!failedIssueIds.contains(issueDetail.get(ES_DOC_ID_KEY))){
-                    notificationDetailsList.add(getNotifyBaseReqForExemption( issueDetail, issuesException, CREATE_EXEMPTION_SUBJECT, hostName, policyIdPolicyNameMap, true, CREATE_EXEMPTION_EVENT_NAME));
+                if (!failedIssueIds.contains(issueDetail.get(ES_DOC_ID_KEY))) {
+                    switch (String.valueOf(issueDetail.get(STATUS))) {
+                        case EXEMPTION_REQUEST_REVOKED:
+                            notificationDetailsList.add(getNotifyBaseReqForExemption(issueDetail, issuesException, hostName,
+                                    policyIdPolicyNameMap, Actions.REVOKE_EXEMPTION_REQUEST));
+                            break;
+                        case EXEMPTION_REQUEST_RAISED:
+                            notificationDetailsList.add(getNotifyBaseReqForExemption(issueDetail, issuesException, hostName,
+                                    policyIdPolicyNameMap, Actions.CREATE_EXEMPTION_REQUEST));
+                            break;
+                        case EXEMPTION_REQUEST_CANCELLED:
+                            notificationDetailsList.add(getNotifyBaseReqForExemption(issueDetail, issuesException, hostName,
+                                    policyIdPolicyNameMap, Actions.CANCEL_EXEMPTION_REQUEST));
+                            break;
+                        case EXEMPTION_REQUEST_APPROVED:
+                            notificationDetailsList.add(getNotifyBaseReqForExemption(issueDetail, issuesException, hostName,
+                                    policyIdPolicyNameMap, Actions.APPROVE_EXEMPTION_REQUEST));
+                            break;
+                        case EXEMPT:
+                        default:
+                            notificationDetailsList.add(getNotifyBaseReqForExemption(issueDetail, issuesException, hostName,
+                                    policyIdPolicyNameMap, Actions.CREATE));
+                            break;
+                    }
                 }
             }
-
             if (!notificationDetailsList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationDetailsList);
                 PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr);
@@ -66,18 +87,20 @@ public class NotificationServiceImpl implements NotificationService{
             LOGGER.error("Error triggering lambda function url, notification request not sent for create exemption. Error message - {}",e.getMessage());
         }
     }
-    private NotificationBaseRequest getNotifyBaseReqForExemption(Map<String,Object> issueDetail, IssuesException issuesException, String subject, String hostName, Map<String, String> policyIdPolicyNameMap, boolean isCreate, String eventName){
+
+    private NotificationBaseRequest getNotifyBaseReqForExemption(Map<String,Object> issueDetail,
+                                                                 ExemptionRequest issuesException, String hostName,
+                                                                 Map<String, String> policyIdPolicyNameMap,
+                                                                 Actions action){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         if(issueDetail.get(POLICYID)!=null && policyIdPolicyNameMap.get(issueDetail.get(POLICYID))!=null) {
             NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
             notificationBaseRequest.setEventCategory(NotificationTypes.EXEMPTION);
             notificationBaseRequest.setEventCategoryName(NotificationTypes.EXEMPTION.getValue());
-            notificationBaseRequest.setEventName(String.format(eventName, issueDetail.get(RESOURCEID)));
-            notificationBaseRequest.setEventDescription(String.format(eventName, issueDetail.get(RESOURCEID)));
-            notificationBaseRequest.setSubject(subject);
             IndividualExNotificationRequest request = new IndividualExNotificationRequest();
             request.setIssueId((String) issueDetail.get(ES_DOC_ID_KEY));
+            request.setDocid((String) issueDetail.get(ES_DOC_ID_KEY));
             request.setResourceId((String)issueDetail.get(RESOURCEID));
             request.setPolicyName(policyIdPolicyNameMap.get(issueDetail.get(POLICYID)));
             request.setIssueIdLink(hostName + ISSUE_ID_UI_PATH + issueDetail.get(ES_DOC_ID_KEY) + "?ag=" + issueDetail.get(DATA_SOURCE_KEY));
@@ -89,15 +112,69 @@ public class NotificationServiceImpl implements NotificationService{
             request.getAdditionalInfo().put(TAG_DETAILS,tagsKeyAndValueMap);
             request.getAdditionalInfo().put(CLOUD_TYPE,issueDetail.get(DATA_SOURCE_KEY));
             request.getAdditionalInfo().put(TARGET_TYPE,issueDetail.get(TARGET_TYPE));
-            if(isCreate){
-                request.setExemptionGrantedDate(sdf.format(issuesException.getExceptionGrantedDate()));
-                request.setExemptionReason(issuesException.getExceptionReason());
-                request.setCreatedBy(issuesException.getCreatedBy());
-                request.setExemptionExpiringOn(sdf.format(issuesException.getExceptionEndDate()));
-                request.setAction(Actions.CREATE);
-            }
-            else{
-                request.setAction(Actions.REVOKE);
+            switch (action) {
+                case CREATE:
+                    notificationBaseRequest.setEventName(String.format(
+                            CREATE_EXEMPTION_EVENT_NAME, issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setEventDescription(String.format(
+                            CREATE_EXEMPTION_EVENT_NAME, issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setSubject(CREATE_EXEMPTION_SUBJECT);
+                    request.setExemptionGrantedDate(sdf.format(issuesException.getExceptionGrantedDate()));
+                    request.setExemptionReason(issuesException.getExceptionReason());
+                    request.setCreatedBy(issuesException.getCreatedBy());
+                    request.setExemptionExpiringOn(sdf.format(issuesException.getExceptionEndDate()));
+                    request.setAction(action);
+                    break;
+                case REVOKE:
+                    notificationBaseRequest.setEventName(String.format(REVOKE_EXEMPTION_EVENT_NAME,
+                            issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setEventDescription(String.format(REVOKE_EXEMPTION_EVENT_NAME,
+                            issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setSubject(REVOKE_EXEMPTION_SUBJECT);
+                    request.setCreatedBy(issuesException.getCreatedBy());
+                    request.setAction(action);
+                    break;
+                case CREATE_EXEMPTION_REQUEST:
+                    notificationBaseRequest.setEventName(String.format(CREATE_EXEMPTION_REQUEST_EVENT_NAME,
+                            issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setEventDescription(String.format(CREATE_EXEMPTION_REQUEST_EVENT_NAME,
+                            issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setSubject(CREATE_EXEMPTION_REQUEST_SUBJECT);
+                    request.setExemptionReason(issuesException.getExceptionReason());
+                    request.setCreatedBy(issuesException.getCreatedBy());
+                    request.setExemptionExpiringOn(sdf.format(issuesException.getExceptionEndDate()));
+                    request.setAction(action);
+                    break;
+                case REVOKE_EXEMPTION_REQUEST:
+                    notificationBaseRequest.setEventName(String.format(
+                            REVOKE_EXEMPTION_REQUEST_EVENT_NAME, issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setEventDescription(String.format(
+                            REVOKE_EXEMPTION_REQUEST_EVENT_NAME, issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setSubject(REVOKE_EXEMPTION_REQUEST_SUBJECT);
+                    request.setCreatedBy(issuesException.getCreatedBy());
+                    request.setAction(action);
+                    break;
+                case CANCEL_EXEMPTION_REQUEST:
+                    notificationBaseRequest.setEventName(String.format(
+                            CANCEL_EXEMPTION_REQUEST_EVENT_NAME, issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setEventDescription(String.format(
+                            CANCEL_EXEMPTION_REQUEST_EVENT_NAME, issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setSubject(CANCEL_EXEMPTION_REQUEST_SUBJECT);
+                    request.setCreatedBy(issuesException.getCreatedBy());
+                    request.setAction(action);
+                    break;
+                case APPROVE_EXEMPTION_REQUEST:
+                    notificationBaseRequest.setEventName(String.format(
+                            APPROVE_EXEMPTION_REQUEST_EVENT_NAME, issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setEventDescription(String.format(
+                            APPROVE_EXEMPTION_REQUEST_EVENT_NAME, issueDetail.get(RESOURCEID)));
+                    notificationBaseRequest.setSubject(APPROVE_EXEMPTION_REQUEST_SUBJECT);
+                    /*In email, createdBy field is used to show approvedBy*/
+                    request.setCreatedBy(issuesException.getApprovedBy());
+                    request.setAction(action);
+                    break;
+                default:
+                    break;
             }
             notificationBaseRequest.setPayload(request);
             return notificationBaseRequest;
@@ -108,7 +185,8 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Async
-    public void triggerRevokeExemptionNotification(List<Map<String, Object>> issueDetails, List<String> failedIssueIds, String subject, String revokedBy){
+    public void triggerRevokeExemptionNotification(List<Map<String, Object>> issueDetails, List<String> failedIssueIds,
+                                                   String revokedBy){
         try {
             Gson gson = new Gson();
             List<String> exemptedPoliciesList = issueDetails.stream().map(obj -> (String)obj.get(POLICYID)).map(obj -> "'"+obj+"'").collect(Collectors.toList());
@@ -119,7 +197,10 @@ public class NotificationServiceImpl implements NotificationService{
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
             for(Map<String,Object> issueDetail : issueDetails){
                 if(!failedIssueIds.contains(issueDetail.get(ES_DOC_ID_KEY))){
-                    NotificationBaseRequest nbRequest = getNotifyBaseReqForExemption( issueDetail, null, REVOKE_EXEMPTION_SUBJECT, hostName, policyIdPolicyNameMap,false, REVOKE_EXEMPTION_EVENT_NAME);
+                    ExemptionRequest exemptionRequest = new ExemptionRequest();
+                    exemptionRequest.setCreatedBy(revokedBy);
+                    NotificationBaseRequest nbRequest = getNotifyBaseReqForExemption(issueDetail, exemptionRequest,
+                            hostName, policyIdPolicyNameMap,Actions.REVOKE);
                     IndividualExNotificationRequest individualExNotificationRequest = (IndividualExNotificationRequest)nbRequest.getPayload();
                     individualExNotificationRequest.setCreatedBy(revokedBy);
                     notificationDetailsList.add(nbRequest);

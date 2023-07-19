@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -42,18 +42,18 @@ public class PolicyAssetRepositoryImpl implements PolicyAssetRepository,
     /** The es host. */
     @Value("${elastic-search.host}")
     private String esHost;
-    
+
     /** The es port. */
     @Value("${elastic-search.port}")
     private int esPort;
-    
+
     /** The Constant PROTOCOL. */
     static final String PROTOCOL = "http";
-    
+
     /** The elastic search repository. */
     @Autowired
     private ElasticSearchRepository elasticSearchRepository;
-    
+
     /** The rdsepository. */
     @Autowired
     private PacmanRdsRepository rdsepository;
@@ -67,7 +67,7 @@ public class PolicyAssetRepositoryImpl implements PolicyAssetRepository,
     @Override
     public List<Map<String, Object>> fetchRuleDetails(String targetType) {
 
-        String query = "SELECT  policyId ,policyDisplayName,policyFrequency,policyParams,category  FROM cf_PolicyTable where status ='ENABLED' and  targetType ='"
+        String query = "SELECT  policyId ,policyDisplayName,policyFrequency,policyParams,category,severity  FROM cf_PolicyTable where status ='ENABLED' and  targetType ='"
                 + targetType + "' order by policyId";
         return rdsepository.getDataFromPacman(query);
     }
@@ -77,27 +77,41 @@ public class PolicyAssetRepositoryImpl implements PolicyAssetRepository,
      */
     @Override
     public List<Map<String, Object>> fetchOpenIssues(String ag,
-            String resourceType, String resourceId, boolean includeExempted) throws DataException {
+                                                     String resourceType, String resourceId, boolean includeExempted) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put("type", "issue");
         mustFilter.put("targetType.keyword", resourceType);
         mustFilter.put("_resourceid.keyword", resourceId);
-        
+
         Map<String, Object> mustTermsFilter = new HashMap<>();
         List<Object> issueStatusList = new ArrayList<>();
         issueStatusList.add("open");
-        
+
         if(includeExempted) {
-        	issueStatusList.add("exempted");
+            issueStatusList.add("exempted");
         }
-        
+
         mustTermsFilter.put("issueStatus", issueStatusList);
-        
+
+        Map<String, Object> sortOrder = new HashMap<>();
+        sortOrder.put(ORDER, DESC);
+        sortOrder.put(UNMAPPED_TYPE, LONG);
+
+        Map<String, Object> sortKeyDoc = new HashMap<>();
+        sortKeyDoc.put(DOCID+".keyword", sortOrder);
+
+        Map<String, Object> sortKeyAnnotation = new HashMap<>();
+        sortKeyAnnotation.put(ANNOTATIONID+".keyword", "desc");
+
+        List<Map<String, Object>> sortList = new ArrayList<>();
+        sortList.add(sortKeyDoc);
+        sortList.add(sortKeyAnnotation);
+
         List<String> fields = Arrays.asList("_resourceid", DOCID, "policyId",
                 "createdDate", "modifiedDate", "issueStatus");
         try {
             return elasticSearchRepository.getSortedDataFromES(ag, "issue_"
-                    + resourceType, mustFilter, null, null, fields, mustTermsFilter, null);
+                    + resourceType, mustFilter, null, null, fields, mustTermsFilter, sortList);
         } catch (Exception e) {
             throw new DataException("Error fetching issue from ES for "+resourceId,e);
         }
