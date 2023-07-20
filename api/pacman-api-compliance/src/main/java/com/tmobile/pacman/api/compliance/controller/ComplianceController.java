@@ -784,6 +784,29 @@ public class ComplianceController implements Constants {
         }
     }
     /**
+     * API to get policy by id
+     *
+     * @author
+     * @param policyId - valid policy Id
+     * @param ag - valid Asset Group
+     * @return Policies details
+     */
+    @ApiOperation(httpMethod = "GET", value = "API to get policy by id",  produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/v1/policy-details-with-exemption", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getPoliciesById(
+            @ApiParam(value = "provide valid policy id", required = true) @RequestParam(defaultValue = "", name = "policyId", required = true) String policyId,
+            @ApiParam(value = "provide valid asset group", required = true) @RequestParam(defaultValue = "", name = "ag", required = true) String ag) {
+        try {
+            if (Strings.isNullOrEmpty(ag) || Strings.isNullOrEmpty(policyId)) {
+                return ResponseUtils.buildFailureResponse(new Exception("Policy ID and Assetgroup is required"));
+            }
+            return ResponseUtils.buildSucessResponse(policyTableService.getPolicyDetailsWithExemption(ag,policyId));
+        } catch (Exception exception) {
+            log.error("Unexpected error occurred!!", exception);
+            return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+        }
+    }
+    /**
      * API to get policy by UUID
      *
      * @param policyUUID - valid policy UUID
