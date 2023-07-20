@@ -25,7 +25,7 @@ TOOLS_REQUIRED = {
     'Terraform': "terraform --version",
     'Nodejs': "node --version",
     'npm': "npm --version",
-    'Angular': "ng --version",
+    'Angular': "ng version",
     'Yarn': 'yarn --version',
     'Docker': "docker --version"
 }

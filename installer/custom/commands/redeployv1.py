@@ -122,7 +122,7 @@ class RedeployV1(BaseCommand):
             return
 
         for resource in resources_to_process:
-            if self.terraform_thread.isAlive():
+            if self.terraform_thread.is_alive():
                 resource_base_classes = inspect.getmro(resource.__class__)
 
                 if ECSTaskDefinitionResource in resource_base_classes:
@@ -139,7 +139,7 @@ class RedeployV1(BaseCommand):
                 return
 
         for i in range(3):
-            if self.terraform_thread.isAlive():
+            if self.terraform_thread.is_alive():
                 try:
                     stop_all_tasks_in_a_cluster(
                         cluster_name,

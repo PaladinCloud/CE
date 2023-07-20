@@ -260,7 +260,7 @@ class Install(BaseAction):
         """Show the status of terraform init command execution"""
         start_time = datetime.now()
         self.show_step_heading(K.TERRAFORM_INIT_STARTED, write_log=False)
-        while self.install_statuses.get('tf_init_complete') >= self.current_install_status and self.terraform_thread.isAlive():
+        while self.install_statuses.get('tf_init_complete') >= self.current_install_status and self.terraform_thread.is_alive():
             self.show_progress_message(K.TERRAFORM_INIT_RUNNING, 0.5)
 
         self._render_step_trail_message(K.TERRAFORM_INIT_COMPLETED, K.EXECUTED_WITH_ERROR, start_time)
@@ -268,10 +268,10 @@ class Install(BaseAction):
     def render_terraform_plan_progress(self):
         """Show status of terraform plan command execution"""
         # If Init doesn't end up in error
-        if not self.executed_with_error and self.terraform_thread.isAlive():
+        if not self.executed_with_error and self.terraform_thread.is_alive():
             start_time = datetime.now()
             self.show_step_heading(K.TERRAFORM_PLAN_STARTED, write_log=False)
-            while self.install_statuses.get('tf_plan_complete') >= self.current_install_status and self.terraform_thread.isAlive():
+            while self.install_statuses.get('tf_plan_complete') >= self.current_install_status and self.terraform_thread.is_alive():
                 self.show_progress_message(K.TERRAFORM_PLAN_RUNNING, 0.7)
 
             self._render_step_trail_message(K.TERRAFORM_PLAN_COMPLETED, K.EXECUTED_WITH_ERROR, start_time)
@@ -286,13 +286,13 @@ class Install(BaseAction):
         """
         counter = False
         # If Plan doesn't end up in error
-        if not self.executed_with_error and self.terraform_thread.isAlive():
+        if not self.executed_with_error and self.terraform_thread.is_alive():
             start_time = datetime.now()
             self.show_step_heading(K.TERRAFORM_APPLY_STARTED, write_log=False)
             py_terraform = PyTerraform()
             output_count = prev_output_count = 0
 
-            while self.install_statuses.get('execution_finished') > self.current_install_status and self.terraform_thread.isAlive():
+            while self.install_statuses.get('execution_finished') > self.current_install_status and self.terraform_thread.is_alive():
                 counter = False if counter else True
                 duration = self.CYAN_ANSI + self.get_duration(datetime.now() - start_time) + self.END_ANSI
                 if counter:
