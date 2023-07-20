@@ -47,7 +47,7 @@ export class TableFiltersComponent implements OnInit {
             }, {});
             return;
         }
-        this.appliedFiltersDict = merge({}, {}, optionDict);
+        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, optionDict);
     }
 
     get appliedFilters() {
@@ -56,6 +56,12 @@ export class TableFiltersComponent implements OnInit {
 
     @Input() set categories(values) {
         this._categories = values;
+        const appliedFilterKeys = this.appliedFilters.map(filter => filter.keyDisplayValue);
+        Object.keys(this.appliedFiltersDict).map(key => {
+            if(!appliedFilterKeys.includes(key)){
+                this.appliedFiltersDict[key] = {};
+            }
+        });
         this.appliedFiltersDict = merge(
             {},
             this.appliedFiltersDict,
