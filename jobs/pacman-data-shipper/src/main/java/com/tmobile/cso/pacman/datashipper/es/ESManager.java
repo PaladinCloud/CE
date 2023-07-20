@@ -109,6 +109,24 @@ public class ESManager implements Constants {
             for (Map<String, Object> doc : docs) {
 
                 String id = (String)doc.get("_docid");
+                //JIRA[CUS-144] fix adding assetIdDisplayName
+                String cloudType = (String)doc.get("_cloudType");
+                if(cloudType!=null && !cloudType.isEmpty() && cloudType.equalsIgnoreCase("Azure")){
+                    String assetIdDisplayName = null;
+                    String resourceGroupName = (String)doc.get("resourceGroupName")!=null?(String)doc.get("resourceGroupName"):"";
+                    String assetName         =  (String)doc.get("resourceGroupName")!=null?(String)doc.get("resourceGroupName"):"";
+                    if(!resourceGroupName.isEmpty() && !assetName.isEmpty())
+                        assetIdDisplayName  = resourceGroupName + "/" + assetName;
+                    else if(resourceGroupName.isEmpty())
+                        assetIdDisplayName = assetName;
+                    else
+                        assetIdDisplayName = resourceGroupName;
+                    LOGGER.info("printing assetIdDIsplayName:  {}",assetIdDisplayName);
+                    //set in doc
+                    doc.put("assetIdDisplayName",assetIdDisplayName);
+
+                }
+               // String assetIdDisplayName = (String)doc.get("_cloudType");
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
                 _doc.deleteCharAt(_doc.length() - 1);
                 _doc.append(",\"latest\":true,\"_loaddate\":\"" + loaddate + "\" }");
