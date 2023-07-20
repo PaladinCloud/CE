@@ -59,7 +59,7 @@ public class RemoveUnusedLoadBalancer extends BasePolicy {
                 LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION,"Ensure Network Security Group Flow Log retention for more than 90 days");
+                annotation.put(PacmanSdkConstants.DESCRIPTION,"Every Unused load balancer should be deleted for cost optimization and better management of your cloud resources");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 annotation.put(PacmanRuleConstants.NAME,resourceAttributes.get(PacmanRuleConstants.NAME));
@@ -94,7 +94,7 @@ public class RemoveUnusedLoadBalancer extends BasePolicy {
                 JsonObject source = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
                 JsonArray backendPoolInstances =source.get("backendPoolInstances").getAsJsonArray();
-                if(backendPoolInstances.isEmpty()){
+                if(backendPoolInstances!=null && backendPoolInstances.isEmpty()){
                     validationResult=true;
                 }
             }
