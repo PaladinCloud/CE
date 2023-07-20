@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.cloud.compute.v1.InstancesClient;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.collector.*;
 import com.tmobile.pacbot.gcp.inventory.util.CloudSqlFilter;
 import com.tmobile.pacbot.gcp.inventory.util.DataBaseTypeEnum;
 import com.tmobile.pacbot.gcp.inventory.vo.CloudSqlVH;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
+import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +80,9 @@ public class AssetFileGenerator {
 	@Autowired
 	APIKeysInventoryCollector apiKeysInventoryCollector;
 
+	@Autowired
+	RDSDBManager rdsdbManager;
+
 	/*@Autowired
 	CloudFunctionCollector cloudFunctionCollector;
 	@Autowired
@@ -93,6 +98,16 @@ public class AssetFileGenerator {
 
 		for (ProjectVH project : projects) {
 			log.info("Started Discovery for project {}", project);
+
+			try {
+				InstancesClient instancesClient = gcpCredentialsProvider.getInstancesClient(project.getProjectId());
+				log.info("updating account status of gcp account- {} to online.",project.getProjectId());
+				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='online' WHERE accountId=?",Arrays.asList(project.getProjectId()));
+			} catch (IOException e) {
+				log.info("updating account status of gcp account- {} to offline.",project.getProjectId());
+				rdsdbManager.executeUpdate("UPDATE cf_Accounts set accountStatus='offline' WHERE accountId=?",Arrays.asList(project.getProjectId()));
+				continue;
+			}
 
 			ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -327,6 +342,7 @@ public class AssetFileGenerator {
 			while (!executor.isTerminated()) {
 			}
 
+			gcpCredentialsProvider.nullifyAllGcpClients();
 			log.debug("Finished Discovery for sub {}", project);
 
 			//Below logger message is used by datadog to create notification in slack

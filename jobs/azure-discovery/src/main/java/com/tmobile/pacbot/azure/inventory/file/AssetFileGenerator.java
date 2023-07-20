@@ -14,6 +14,7 @@ import com.google.gson.JsonParser;
 import com.tmobile.pacbot.azure.inventory.collector.*;
 import com.tmobile.pacbot.azure.inventory.vo.VaultVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
+import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,6 +164,9 @@ public class AssetFileGenerator {
 	@Autowired
 	KubernetesServicesCollector kubernetesServicesCollector;
 
+	@Autowired
+	RDSDBManager rdsdbManager;
+
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
 		try {
@@ -171,7 +175,7 @@ public class AssetFileGenerator {
 			e1.printStackTrace();
 		}
 
-
+		List<String> connectedSubscriptions = new ArrayList<>();
 		for (SubscriptionVH subscription : subscriptions) {
 			log.info("Started Discovery for sub {}", subscription);
 
@@ -181,8 +185,13 @@ public class AssetFileGenerator {
 						subscription.getSubscriptionId());
 				azureCredentialProvider.putClient(subscription.getTenant(), subscription.getSubscriptionId(), azure);
 				azureCredentialProvider.putToken(subscription.getTenant(), accessToken);
+				rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='online' WHERE tenant=? AND subscription=?",Arrays.asList(subscription.getTenant(),subscription.getSubscriptionId()));
+				log.info("updating account status of azure subscription- {} to online.",subscription.getSubscriptionId());
+				connectedSubscriptions.add(subscription.getSubscriptionId());
 			} catch (Exception e) {
 				log.error("Error authenticating for {}", subscription, e);
+				rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE tenant=? AND subscription=?",Arrays.asList(subscription.getTenant(),subscription.getSubscriptionId()));
+				log.info("updating account status of azure subscription- {} to offline.",subscription.getSubscriptionId());
 				continue;
 			}
 			subscription.setRegions(getRegionsFromAzure(subscription));
@@ -777,7 +786,12 @@ public class AssetFileGenerator {
 		if(Util.eCount.get()>0){
 			log.error("Error occurred in atleast one collector for jobId : Azure-Data-Collector-Job");
 		}
-
+		if(connectedSubscriptions.isEmpty()){
+			rdsdbManager.executeQuery("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline'");
+		}
+		else{
+			rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE subscription NOT IN (?)",Arrays.asList(String.join(",",connectedSubscriptions)));
+		}
 		try {
 			FileManager.finalise();
 		} catch (IOException e) {

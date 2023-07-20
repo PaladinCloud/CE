@@ -368,4 +368,27 @@ public class GCPCredentialsProvider {
             instancesClient.close();
         }
     }
+
+    public void nullifyAllGcpClients(){
+        this.clusterManagerClient=null;
+        this.apiKeysClient=null;
+        this.firewallsClient=null;
+        this.instancesClient=null;
+        this.networksClient=null;
+        this.kmsKeyServiceClient=null;
+        this.bigQueryBuilder=null;
+        this.topicAdminClient=null;
+        this.storageClient=null;
+        this.zonesClient=null;
+        this.sqlAdmin=null;
+        this.dns=null;
+        this.cloudResourceManager=null;
+        this.iamService=null;
+        this.urlMap=null;
+        this.targetHttpProxiesClient=null;
+        this.targetSslProxiesClient=null;
+        this.backendService=null;
+        this.targetHttpsProxiesClient=null;
+        this.sslPoliciesClient=null;
+    }
 }
