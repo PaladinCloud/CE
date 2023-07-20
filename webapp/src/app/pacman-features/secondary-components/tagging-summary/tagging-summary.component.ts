@@ -239,21 +239,22 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
             const localObjKeys = Object.keys(event);
             const apiTarget = {'TypeAsset' : 'taggable'};
 
+            const tempFilters = {tempFilters: true};
                 if ( event[localObjKeys[1]].toLowerCase() === 'total assets' ) {
                     const eachParams = {};
                     let newParams = this.utils.makeFilterObj(eachParams);
                     newParams = Object.assign(newParams, apiTarget);
-                        this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge' });
+                        this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams, ...tempFilters}, queryParamsHandling: 'merge' });
                 } else if ( event[localObjKeys[1]].toLowerCase() === 'tagged' ) {
                     const eachParams = {'tagged': true};
                     let newParams = this.utils.makeFilterObj(eachParams);
                     newParams = Object.assign(newParams, apiTarget);
-                        this.router.navigate(['../../', 'assets', 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
+                        this.router.navigate(['../../', 'assets', 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams, ...tempFilters}, queryParamsHandling: 'merge'});
                 } else if ( event[localObjKeys[1]].toLowerCase() === 'untagged' ) {
                     const eachParams = {'tagged': false};
                     let newParams = this.utils.makeFilterObj(eachParams);
                     newParams = Object.assign(newParams, apiTarget);
-                        this.router.navigate(['../../assets/asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge' });
+                        this.router.navigate(['../../assets/asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams, ...tempFilters}, queryParamsHandling: 'merge' });
                 }
         } catch (error) {
             this.errorMessage = this.errorHandling.handleJavascriptError(error);
