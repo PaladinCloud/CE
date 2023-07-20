@@ -18,7 +18,8 @@ public interface AccountsRepository extends JpaRepository<AccountDetails, String
             "CASE WHEN a.platform='azure' THEN azure.subscriptionName ELSE a.accountName END AS accountName, " +
             "CASE WHEN a.platform='azure' THEN azure.assets ELSE a.assets END AS assets, " +
             "CASE WHEN a.platform='azure' THEN azure.violations ELSE a.violations END AS violations , " +
-            "a.accountStatus, a.platform, a.createdBy, a.createdTime  FROM AccountDetails a LEFT OUTER JOIN AzureAccountDetails azure " +
+            "CASE WHEN a.platform='azure' THEN azure.subscriptionStatus ELSE a.accountStatus END AS accountStatus," +
+            "a.platform, a.createdBy, a.createdTime  FROM AccountDetails a LEFT OUTER JOIN AzureAccountDetails azure " +
             "ON azure.tenant=a.accountId WHERE "+
             "(LOWER(a.accountId) LIKE %:searchTerm% OR "
             + "LOWER(azure.subscription) LIKE %:searchTerm%) AND "
@@ -54,7 +55,8 @@ public interface AccountsRepository extends JpaRepository<AccountDetails, String
             "CASE WHEN a.platform='azure' THEN azure.subscriptionName ELSE a.accountName END AS accountName, " +
             "CASE WHEN a.platform='azure' THEN azure.assets ELSE a.assets END AS assets, " +
             "CASE WHEN a.platform='azure' THEN azure.violations ELSE a.violations END AS violations , " +
-            "a.accountStatus, a.platform, a.createdBy, a.createdTime  FROM AccountDetails a LEFT OUTER JOIN AzureAccountDetails azure " +
+            "CASE WHEN a.platform='azure' THEN azure.subscriptionStatus ELSE a.accountStatus END AS accountStatus," +
+            "a.platform, a.createdBy, a.createdTime  FROM AccountDetails a LEFT OUTER JOIN AzureAccountDetails azure " +
             "ON azure.tenant=a.accountId WHERE "+
             "(a.accountId IN (:accountId) OR "
             + "azure.subscription IN (:accountId)) AND "

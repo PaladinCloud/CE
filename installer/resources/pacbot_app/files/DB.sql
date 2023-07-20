@@ -1082,6 +1082,13 @@ CREATE TABLE IF NOT EXISTS `CloudNotification_mapping` (
                                     COLUMN_NAME = 'violations') THEN
           ALTER TABLE cf_AzureTenantSubscription ADD COLUMN violations int(20) DEFAULT 0;
       END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+                                    WHERE TABLE_SCHEMA = database() AND
+                                          TABLE_NAME = 'cf_AzureTenantSubscription' AND
+                                          COLUMN_NAME = 'subscriptionStatus') THEN
+            ALTER TABLE cf_AzureTenantSubscription ADD COLUMN subscriptionStatus varchar(25) DEFAULT ' ';
+      END IF;
  END $$
  DELIMITER ;
 

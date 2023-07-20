@@ -17,6 +17,16 @@ public class AzureAccountDetails {
     private Integer violations;
     private String subscriptionName;
 
+    private String subscriptionStatus;
+
+    public String getSubscriptionStatus() {
+        return subscriptionStatus;
+    }
+
+    public void setSubscriptionStatus(String subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
+    }
+
     public String getSubscription() {
         return subscription;
     }

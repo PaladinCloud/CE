@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,9 @@ public class AssetFileGenerator {
 	@Value("${ec2.statenames:running,stopped,stopping}")
 	private  String ec2StatenameFilters;
 
+	@Autowired
+	RDSDBManager rdsdbManager;
+
 
 	/**
 	 * Generate files.
@@ -94,9 +98,13 @@ public class AssetFileGenerator {
 			BasicSessionCredentials tempCredentials = null;
 			try{
 				tempCredentials = credProvider.getCredentials(accountId,roleName);
+				log.info("updating account status of aws account- {} to online.",accountId);
+				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='online' WHERE accountId=?",Arrays.asList(accountId));
 			}catch(Exception e){
 				log.error("{\"errcode\":\"NO_CRED\" , \"account\":\""+accountId +"\", \"Message\":\"Error getting credentials for account "+accountId +"\" , \"cause\":\"" +e.getMessage()+"\"}");
 				ErrorManageUtil.uploadError(accountId, "all", "all", e.getMessage());
+				rdsdbManager.executeUpdate("UPDATE cf_Accounts set accountStatus='offline' WHERE accountId=?",Arrays.asList(accountId));
+				log.info("updating account status of aws account- {} to offline.",accountId);
 				continue;
 			}
 			final BasicSessionCredentials temporaryCredentials = tempCredentials;
