@@ -785,7 +785,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             this.routerParam();
             // this.deleteFilters();
             this.getFilterArray();
-            this.getData();
           });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
