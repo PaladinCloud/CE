@@ -25,7 +25,7 @@ class CreateTemplate(NullResource):
                 'environment': {
                     'TENANT_BASE_ROLE_ARN': BaseRole.get_output_attr('arn'),
                     'TEMPLATE_FILE_PATH': self.dest_file,
-                    'TENANT_ROLE_NAME':str(Settings.RESOURCE_NAME_PREFIX + "_ro") 
+                    'TENANT_ROLE_NAME': "PaladinCloudIntegrationRole"
                 },
                 'interpreter': [Settings.PYTHON_INTERPRETER]
             }
