@@ -114,14 +114,14 @@ public class ESManager implements Constants {
                 if(cloudType!=null && !cloudType.isEmpty() && cloudType.equalsIgnoreCase("Azure")){
                     String assetIdDisplayName = null;
                     String resourceGroupName = (String)doc.get("resourceGroupName")!=null?(String)doc.get("resourceGroupName"):"";
-                    String assetName         =  (String)doc.get("resourceGroupName")!=null?(String)doc.get("resourceGroupName"):"";
+                    String assetName         =  (String)doc.get("name")!=null?(String)doc.get("name"):"";
                     if(!resourceGroupName.isEmpty() && !assetName.isEmpty())
                         assetIdDisplayName  = resourceGroupName + "/" + assetName;
                     else if(resourceGroupName.isEmpty())
                         assetIdDisplayName = assetName;
                     else
                         assetIdDisplayName = resourceGroupName;
-                    LOGGER.info("printing assetIdDIsplayName:  {}",assetIdDisplayName);
+                    LOGGER.info("printing assetIdDisplayName:  {}",assetIdDisplayName);
                     //set in doc
                     doc.put("assetIdDisplayName",assetIdDisplayName);
 
