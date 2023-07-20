@@ -121,7 +121,6 @@ public class ESManager implements Constants {
                         assetIdDisplayName = assetName;
                     else
                         assetIdDisplayName = resourceGroupName;
-                    LOGGER.info("printing assetIdDisplayName:  {}",assetIdDisplayName);
                     //set in doc
                     doc.put("assetIdDisplayName",assetIdDisplayName);
 
