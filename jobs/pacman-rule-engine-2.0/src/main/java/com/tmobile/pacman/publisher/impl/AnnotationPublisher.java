@@ -187,7 +187,9 @@ public class AnnotationPublisher {
         String typeIssue = ESUtils.getIssueTypeFromAnnotation(sampleAnnotation);
         String targetType= sampleAnnotation.get(TARGET_TYPE);
         List<Map<String, String>> typeList = RDSDBManager.executeQuery("SELECT displayName FROM cf_Target WHERE targetName ='"+targetType+"'");
-        String targetTypeDisplayName=typeList.get(0).get("displayName");
+        String targetTypeDisplayName="";
+        if(typeList!=null){
+         targetTypeDisplayName=typeList.get(0).get("displayName");}
         sampleAnnotation = null;
         Gson serializer = new GsonBuilder().create();
 
