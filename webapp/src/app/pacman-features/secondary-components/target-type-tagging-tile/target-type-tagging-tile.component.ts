@@ -36,8 +36,8 @@ export class TargetTypeTaggingTileComponent implements OnInit {
   ngOnInit() {
     try {
 
-      this.untagged = ((parseInt(this.awsResourceDetails.untagged, 10) / parseInt(this.awsResourceDetails.assetCount , 10)) * 100) + '%';
-      this.tagged = ((parseInt(this.awsResourceDetails.tagged, 10) / parseInt(this.awsResourceDetails.assetCount, 10)) * 100) + '%';
+      this.untagged = ((parseInt(this.awsResourceDetails?.nonCompliance, 10) / parseInt(this.awsResourceDetails.assetCount , 10)) * 100) + '%';
+      this.tagged = ((parseInt(this.awsResourceDetails?.compliance, 10) / parseInt(this.awsResourceDetails.assetCount, 10)) * 100) + '%';
 
       // Check if the icon mapped to the AWS resource type exists
       if (ICONS.awsResources[this.awsResourceDetails.name] !== undefined) {
