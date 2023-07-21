@@ -549,6 +549,7 @@ public class AssetServiceImpl implements AssetService {
         }
 
         Map<String, Object> resourceData = resourceDataList.get(0);
+        String cloudType = (String) resourceData.get("_cloudType");
 
         List<Map<String, Object>> attributesList = new ArrayList<>();
         Map<String, String> tagsKvPairs = new LinkedHashMap<>();
@@ -564,7 +565,8 @@ public class AssetServiceImpl implements AssetService {
 
                 String tagsPrefix = "tags.";
                 if (key.startsWith(tagsPrefix)) {
-                    tagsKvPairs.put(key.substring(tagsPrefix.length(), key.length()), value.toString());
+                    String tagKey = key.substring(tagsPrefix.length(), key.length());
+                    tagsKvPairs.put("gcp".equalsIgnoreCase(cloudType)?tagKey.toLowerCase():tagKey, value.toString());
                 } else {
 
                     Map<String, Object> attribute = new LinkedHashMap<>();

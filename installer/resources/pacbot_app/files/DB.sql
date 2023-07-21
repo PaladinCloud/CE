@@ -2985,8 +2985,6 @@ update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"na
 update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('functionapp','kubernetes', 'mysqlflexible', 'resourcegroup', 'securitycenter', 'subscription');
 
 
-delete from pac_v2_ui_options where optionValue like 'tags.%';
-
 update pac_config_properties set value = 'role/PaladinCloudIntegrationRole' where cfkey = 'pacman.auto.fix.role.name';
 
 CREATE TABLE IF NOT EXISTS `cf_AssetGroupCriteriaDetails` (
