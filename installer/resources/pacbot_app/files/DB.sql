@@ -2757,7 +2757,7 @@ Update cf_Target set displayName = 'VM' where targetName = 'vminstance';
 Update cf_Target set status = 'finding' where targetName in ( 'checks','phd','securityhub','activitylogalert','policydefinitions','policyevaluationresults' );
 
 
-update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,tags.Environment,_entitytype,accountid,accountname,region,_cloudType' where resourceType='all_list';
+update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,tags.Environment,_entitytype,accountid,accountname,region,_cloudType,assetIdDisplayName' where resourceType='all_list';
 
 
 UPDATE `pacmandata`.`pac_config_properties` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
@@ -2810,7 +2810,7 @@ LOOP
 
 END LOOP;
 
-update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId") where resourceType='all_list';
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName") where resourceType='all_list';
 
 END $$
 
