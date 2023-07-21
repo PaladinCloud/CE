@@ -188,6 +188,9 @@ public class ElasticSearchRepository implements Constants {
 	@Value("${elastic-search.port}")
 	private int esPort;
 
+	@Value("${tagging.mandatoryTags}")
+	private String mandatoryTags;
+
 	final static String protocol = "http";
 
 	private String esUrl;
@@ -1115,6 +1118,18 @@ public class ElasticSearchRepository implements Constants {
 							Map<String, Object> sortAttribute = new HashMap<>();
 							sortAttribute.put(fieldName, mappedSort);
 							list.add(sortAttribute);
+						} else if(fieldName.startsWith("tags.") && fieldName.endsWith(".keyword") && Arrays.asList(mandatoryTags.split(",")).contains(((String[])(fieldName.split("\\.")))[1])){
+							String returnValueForMissingTag = sortOrder.equalsIgnoreCase("asc") ? "~" : " ";
+							Map<String, Object> innerScriptMap1 = new HashMap<>();
+							Map<String, Object> innerScriptMap2 = new HashMap<>();
+							innerScriptMap2.put("lang", "painless");
+							String mTag = ((String[])(fieldName.split("\\.")))[1];
+							innerScriptMap2.put("source", "if(!doc.containsKey('tags."+mTag+"') || doc['tags."+mTag+".keyword'].size()==0) return '" + returnValueForMissingTag + "'; else return doc['tags."+mTag+".keyword'].value.toLowerCase()");
+							innerScriptMap1.put("script", innerScriptMap2);
+							innerScriptMap1.put("type", "string");
+							innerScriptMap1.put("order", sortOrder);
+							sortMap.put("_script",innerScriptMap1);
+							list.add(sortMap);
 						}else{
 							Map<String, Object> sortOrderMap = new HashMap<>();
 							sortOrderMap.put(ORDER, sortOrder);

@@ -247,6 +247,15 @@ public class EntityManager implements Constants {
                     override(entityInfo, overridesMap.get(id), overridableInfo);
                 }
             }
+
+            if("gcp".equalsIgnoreCase(entityInfo.get("_cloudType").toString()) && entityInfo.containsKey("tags") && entityInfo.get("tags") instanceof Map){
+                Map<String,Object> tagMap = (Map<String, Object>) entityInfo.get("tags");
+                if(!tagMap.isEmpty()){
+                    tagMap.entrySet().stream().forEach(tagEntry -> {
+                        entityInfo.put("tags."+tagEntry.getKey().substring(0,1).toUpperCase()+tagEntry.getKey().substring(1), tagEntry.getValue());
+                    });
+                }
+            }
         });
     }
 
