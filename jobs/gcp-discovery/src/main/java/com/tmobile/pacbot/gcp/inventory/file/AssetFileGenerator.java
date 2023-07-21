@@ -102,7 +102,7 @@ public class AssetFileGenerator {
 			try {
 				InstancesClient instancesClient = gcpCredentialsProvider.getInstancesClient(project.getProjectId());
 				log.info("updating account status of gcp account- {} to online.",project.getProjectId());
-				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='online' WHERE accountId=?",Arrays.asList(project.getProjectId()));
+				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='configured' WHERE accountId=?",Arrays.asList(project.getProjectId()));
 			} catch (IOException e) {
 				log.info("updating account status of gcp account- {} to offline.",project.getProjectId());
 				rdsdbManager.executeUpdate("UPDATE cf_Accounts set accountStatus='offline' WHERE accountId=?",Arrays.asList(project.getProjectId()));

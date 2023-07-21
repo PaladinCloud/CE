@@ -185,7 +185,7 @@ public class AssetFileGenerator {
 						subscription.getSubscriptionId());
 				azureCredentialProvider.putClient(subscription.getTenant(), subscription.getSubscriptionId(), azure);
 				azureCredentialProvider.putToken(subscription.getTenant(), accessToken);
-				rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='online' WHERE tenant=? AND subscription=?",Arrays.asList(subscription.getTenant(),subscription.getSubscriptionId()));
+				rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='configured' WHERE tenant=? AND subscription=?",Arrays.asList(subscription.getTenant(),subscription.getSubscriptionId()));
 				log.info("updating account status of azure subscription- {} to online.",subscription.getSubscriptionId());
 				connectedSubscriptions.add(subscription.getSubscriptionId());
 			} catch (Exception e) {

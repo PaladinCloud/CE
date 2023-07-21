@@ -99,7 +99,7 @@ public class AssetFileGenerator {
 			try{
 				tempCredentials = credProvider.getCredentials(accountId,roleName);
 				log.info("updating account status of aws account- {} to online.",accountId);
-				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='online' WHERE accountId=?",Arrays.asList(accountId));
+				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='configured' WHERE accountId=?",Arrays.asList(accountId));
 			}catch(Exception e){
 				log.error("{\"errcode\":\"NO_CRED\" , \"account\":\""+accountId +"\", \"Message\":\"Error getting credentials for account "+accountId +"\" , \"cause\":\"" +e.getMessage()+"\"}");
 				ErrorManageUtil.uploadError(accountId, "all", "all", e.getMessage());
