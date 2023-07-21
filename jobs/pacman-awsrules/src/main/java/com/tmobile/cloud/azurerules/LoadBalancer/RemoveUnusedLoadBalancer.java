@@ -94,7 +94,7 @@ public class RemoveUnusedLoadBalancer extends BasePolicy {
                 JsonObject source = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
                 JsonArray backendPoolInstances =source.get("backendPoolInstances").getAsJsonArray();
-                if(backendPoolInstances!=null && backendPoolInstances.isEmpty()){
+                if(backendPoolInstances==null || backendPoolInstances.isEmpty()){
                     validationResult=true;
                 }
             }
