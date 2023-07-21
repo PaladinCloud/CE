@@ -125,7 +125,7 @@ public class ESManager implements Constants {
                     doc.put("assetIdDisplayName",assetIdDisplayName);
 
                 }
-               // String assetIdDisplayName = (String)doc.get("_cloudType");
+
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
                 _doc.deleteCharAt(_doc.length() - 1);
                 _doc.append(",\"latest\":true,\"_loaddate\":\"" + loaddate + "\" }");
