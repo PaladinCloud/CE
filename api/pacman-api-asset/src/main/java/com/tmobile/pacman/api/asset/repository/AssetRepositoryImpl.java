@@ -3175,7 +3175,7 @@ public class AssetRepositoryImpl implements AssetRepository {
     public Map<String, Object> getAssetExemptedFilterValue(FilterRequest request, String attribute){
         int totalCount = getListAssetsCount(request.getAg(), request.getFilter());
         Map<String, Object> response = new HashMap<>();
-        List<String> resList = new ArrayList<>();
+        Map<String,String> resList = new HashMap<>();
         if(request.getFilter() == null){
             request.setFilter(new HashMap<String, Object>());
         }
@@ -3183,23 +3183,27 @@ public class AssetRepositoryImpl implements AssetRepository {
             request.getFilter().put(AssetConstants.FILTER_EXEMPTED, AssetConstants.TRUE);
             int exemptAssetCount = getListAssetsCount(request.getAg(), request.getFilter());
             if(exemptAssetCount > 0){
-                resList.add(AssetConstants.TRUE);
+                resList.put("name",AssetConstants.TRUE);
+                resList.put("id",AssetConstants.TRUE);
             }
             if(totalCount -exemptAssetCount > 0){
-                resList.add(AssetConstants.FALSE);
+                resList.put("name",AssetConstants.FALSE);
+                resList.put("id",AssetConstants.FALSE);
             }
         }
         else{
             request.getFilter().put(AssetConstants.FILTER_TAGGED, AssetConstants.TRUE);
             int taggedAssetCount = getListAssetsCount(request.getAg(), request.getFilter());
             if(taggedAssetCount > 0){
-                resList.add(AssetConstants.TRUE);
+                resList.put("name",AssetConstants.TRUE);
+                resList.put("id",AssetConstants.TRUE);
             }
             if(totalCount - taggedAssetCount > 0){
-                resList.add(AssetConstants.FALSE);
+                resList.put("name",AssetConstants.FALSE);
+                resList.put("id",AssetConstants.FALSE);
             }
         }
-        response.put(attribute, resList);
+        response.put("response", resList);
         return response;
     }
 

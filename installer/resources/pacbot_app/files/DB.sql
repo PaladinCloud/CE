@@ -1501,7 +1501,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (32,8,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_cloudType&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (33,8,'Region','region.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=region&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,'Asset Name','_resourcename.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourcename&type=asset');
-
+UPDATE pac_v2_ui_options SET optionURL = '/asset/v1/getAssetFilterValue/exempted?ag=aws' WHERE optionId = '23';
 /* Notification filters */
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (34,10,'Event','eventName','/compliance/v1/filters/eventname');
 
