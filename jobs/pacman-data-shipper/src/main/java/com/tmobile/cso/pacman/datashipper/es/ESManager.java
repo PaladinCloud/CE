@@ -109,7 +109,7 @@ public class ESManager implements Constants {
             for (Map<String, Object> doc : docs) {
 
                 String id = (String)doc.get("_docid");
-                //JIRA[CUS-144] fix adding assetIdDisplayName
+
                 String cloudType = (String)doc.get("_cloudType");
                 if(cloudType!=null && !cloudType.isEmpty() && cloudType.equalsIgnoreCase("Azure")){
                     String assetIdDisplayName = null;
