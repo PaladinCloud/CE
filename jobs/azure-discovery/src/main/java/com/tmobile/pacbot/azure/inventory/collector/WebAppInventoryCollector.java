@@ -57,6 +57,7 @@ public class WebAppInventoryCollector {
                 log.info("web app client cert {}", webApp.clientCertEnabled());
                 webAppVH.setTags(webApp.tags());
                 webAppVH.setSystemAssignedManagedServiceIdentityPrincipalId(webApp.systemAssignedManagedServiceIdentityPrincipalId());
+                webAppVH.setName(webApp.name());
                 webAppList.add(webAppVH);
 
             } catch (Exception e) {
