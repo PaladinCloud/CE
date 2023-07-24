@@ -943,7 +943,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
 
-      if(urlObj.url.includes("attribute") || value=="Exempted"){
+      if(urlObj.url.includes("attribute") || value=="Exempted" || value=="Tagged"){
       let filtersToBePassed = {};       
       Object.keys(this.filterText).map(key => {
         key = key.replace(".keyword", "");
