@@ -948,7 +948,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
       Object.keys(this.filterText).map(key => {
         key = key.replace(".keyword", "");
         if(key=="domain" || key==urlObj.params["attribute"]) return;
-        filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
+        if(key=="resourceType"){
+          filtersToBePassed["_entitytype"] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
+        }else{
+          filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
+        }
       })
       const payload = {
         type: "asset",
@@ -983,7 +987,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
                       a.localeCompare(b),
                   ),
               },
-          };
+          };          
           if(value.toLowerCase()=="age"){
             const filterValues = this.filterTagLabels[value].splice(1);
             filterValues.sort((a, b) => a-b);
@@ -1079,12 +1083,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       "filterkey",
       "value"
     ); // <-- TO update the queryparam which is passed in the filter of the api
-    Object.entries(this.filterText).forEach(([key,value]) => {
-      if (key == "resourceType" && Array.isArray(value) && value.length>1) {
-          delete this.filterText[key];
-          this.filterText["_entitytype.keyword"] = value;
-      }
-    });
     this.filterText = this.utils.makeFilterObj(this.filterText);
 
     /**
