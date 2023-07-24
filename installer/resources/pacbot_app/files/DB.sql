@@ -2817,7 +2817,7 @@ LOOP
 
 END LOOP;
 
-update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId") where resourceType='all_list';
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,targettypedisplayname") where resourceType='all_list';
 
 END $$
 
@@ -3011,3 +3011,5 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Policy','name','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Severity','severity','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Source','provider','/compliance/v1/filters/policyCompliance',"");
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (16,'policyknowledgebase');
