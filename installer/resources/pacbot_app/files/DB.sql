@@ -3011,3 +3011,5 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Policy','name','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Severity','severity','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Source','provider','/compliance/v1/filters/policyCompliance',"");
+
+update cf_AssetGroupDetails set createdBy = 'Cloud Security' where groupName = 'azure';
