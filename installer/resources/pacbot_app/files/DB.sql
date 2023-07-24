@@ -2817,7 +2817,7 @@ LOOP
 
 END LOOP;
 
-update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName") where resourceType='all_list';
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname") where resourceType='all_list';
 
 END $$
 
@@ -3016,3 +3016,4 @@ UPDATE pac_v2_ui_options SET optionURL = '/asset/v1/getAssetFilterValue/tagged?a
 update pac_v2_ui_options set optionValue="resourcetType" where optionValue='resourceType' and filterId=16;
 
 update cf_AssetGroupDetails set createdBy = 'Cloud Security' where groupName = 'azure';
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (16,'policyknowledgebase');
