@@ -804,7 +804,19 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         let filtersToBePassed = {};       
         Object.keys(this.filterText).map(key => {
           if(key=="domain" || this.currentFilterType.optionValue == key) return;
-          filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
+          if(key=="failed"){
+            filtersToBePassed[key] = this.filterText[key].split(",").map(filterVal => {
+              const [min, max] = filterVal.split("-");
+              return {min, max}
+            })
+          }else if(key=="compliance_percent"){
+            filtersToBePassed[key] = this.filterText[key].split(",").map(filterVal => {
+              const [min, max] = filterVal.split("-");
+              return {min, max}
+            })
+          }else{
+            filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
+          }
         })
         const payload = {
           attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
@@ -838,19 +850,33 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
               const min = response[0].data.optionRange.min;
               const max = response[0].data.optionRange.max;
               const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
-              intervals.forEach(interval => {
-                filterTagsData.push({id: interval.lowerBound + "-" + interval.upperBound, name: interval.lowerBound + "-" + interval.upperBound});
-              })
+              if(value.toLowerCase()=="violations"){
+                intervals.forEach(interval => {
+                  const lb = Math.round(interval.lowerBound);
+                  const up = Math.round(interval.upperBound);
+                  filterTagsData.push({id: lb + "-" + up, name: lb + "-" + up});
+                })
+              }else{
+                intervals.forEach(interval => {
+                  const lb = (interval.lowerBound);
+                  const up = (interval.upperBound);
+                  filterTagsData.push({id: lb + "-" + up, name: lb + "-" + up});
+                })
+              }
             }
             this.filterTagOptions[value] = filterTagsData;
-            this.filterTagLabels = {
-                ...this.filterTagLabels,
-                ...{
-                    [value]: map(filterTagsData, 'name').sort((a, b) =>
-                        a.localeCompare(b),
-                    ),
-                },
-            };
+            if(value=="Compliance" || value=="Violations"){
+              this.filterTagLabels[value] = filterTagsData.map(label => label.name); 
+            }else{
+              this.filterTagLabels = {
+                  ...this.filterTagLabels,
+                  ...{
+                      [value]: map(filterTagsData, 'name').sort((a, b) =>
+                          a.localeCompare(b),
+                      ),
+                  },
+              };
+            }
             resolve(this.filterTagOptions[value]);
             this.storeState();
           });
@@ -1144,18 +1170,23 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         return;
       }
       const filterToBePassed = {...this.filterText};
-  
+
       Object.keys(filterToBePassed).forEach(filterKey => {
         if(filterKey=="domain") return;
         filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-        if(filterKey=="failed" || filterKey=="compliance_percent"){
+        if(filterKey=="failed"){
+          filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
+            const [min, max] = filterVal.split("-");
+            return {min, max}
+          })
+        }else if(filterKey=="compliance_percent"){
           filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
             const [min, max] = filterVal.split("-");
             return {min, max}
           })
         }
       })
-  
+
       const filters = {domain: this.selectedDomain};
   
       const payload = {
