@@ -210,6 +210,41 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           this.selectAccount({name: selectedAcc});
         }
         this.selectedAccount = selectedAcc??"";
+        if(this.selectedAccount.toLowerCase()=="gcp"){
+          this.stepperData = [
+            {
+              id: 1,
+              name: "Add Details"
+            },
+            {
+              id: 2,
+              name: "Connect"
+            },
+            {
+              id: 3,
+              name: "Configure Access"
+            },
+            {
+              id: 4,
+              name: "Review"
+            }
+          ]
+        }else{
+          this.stepperData = [
+            {
+              id: 1,
+              name: "Add Details"
+            },
+            {
+              id: 2,
+              name: "Configure Access"
+            },
+            {
+              id: 3,
+              name: "Review"
+            }
+          ]
+        }
       })
     }
 
@@ -255,12 +290,18 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       case 1:
         if(currentAccount=="aws")
             this.currentTemplateRef = this.configureAccountRef;
-        else
+        else if(currentAccount == "gcp"){
+             this.currentTemplateRef = this.connectRef;
+        } else
             this.currentTemplateRef = this.addDetailsRef;
         break;
       case 2:
+        if(currentAccount=="gcp"){
+          this.currentTemplateRef = this.addDetailsRef;
+        }else{
           this.currentTemplateRef = this.reviewRef;
         break;
+    }
     }
   }
   

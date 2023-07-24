@@ -406,6 +406,8 @@
 
 .connector-container{
     height: 100%;
+    overflow: auto;
+    padding-right: 24px;
 }
 
 .commands-container{
