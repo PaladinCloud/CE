@@ -947,7 +947,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       let filtersToBePassed = {};       
       Object.keys(this.filterText).map(key => {
         key = key.replace(".keyword", "");
-        if(key=="domain" || key==urlObj.params["attribute"]) return;
+        if(key==this.currentFilterType["optionValue"] || key=="domain" || key.replace(".keyword", "")==urlObj.params["attribute"]) return;
           filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
       })
       const payload = {

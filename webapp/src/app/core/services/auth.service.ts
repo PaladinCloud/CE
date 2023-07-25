@@ -176,19 +176,24 @@
  
      getAssetsList() : Promise<any[]> {
          return new Promise(resolve => {
-             const assetGroupsList = this.dataStore.getListOfAssetGroups();
-             if(!assetGroupsList){
-                 const assetUrl = environment.assetTiles.url;
-                     const assetMethod = environment.assetTiles.method;
-                     this.assetTilesSubscription = this.assetGroupsService.getAssetTiles(assetUrl, assetMethod).subscribe(
-                         response => {
-                             resolve(response[0]);
-                         },
-                         error => {
-                             this.logger.log('error', error);
-                         });
-             }else{
-                 resolve(assetGroupsList);
+             try{
+                const assetGroupsList = this.dataStore.getListOfAssetGroups();
+                if(!assetGroupsList){
+                    const assetUrl = environment.assetTiles.url;
+                        const assetMethod = environment.assetTiles.method;
+                        this.assetTilesSubscription = this.assetGroupsService.getAssetTiles(assetUrl, assetMethod).subscribe(
+                            response => {
+                                resolve(response[0]);
+                            },
+                            error => {
+                                this.logger.log('error', error);
+                            });
+                }else{
+                    resolve(JSON.parse(assetGroupsList));
+                }
+             }catch(e){
+                resolve([]);
+                this.logger.log("jsError", e);
              }
          })
      }
@@ -199,12 +204,13 @@
          if (redirectUrl && redirectUrl !== '') {
              const redirect = this.utilService.getContextUrlExceptDomain(redirectUrl);
  
-             if (redirect && this.redirectIsNotHomePage(redirect)) {
+
+             const assetGroupsList = await this.getAssetsList();
+             if (redirect && this.redirectIsNotHomePage(redirect) && assetGroupsList) {
                  // check if redirectUrl containing ag exists in list of ags and if does not exist then redirect to one of system ag's if doesn't exist
-                 const assetGroupsList = await this.getAssetsList();
                  const savedUrlObj = this.utilService.getParamsFromUrlSnippet(redirectUrl);
                  const savedAG = savedUrlObj?.params["ag"];
-                 const isAgPresent = assetGroupsList.map(item => item.name).some(ag => ag==savedAG);
+                 const isAgPresent = assetGroupsList?.map(item => item.name).some(ag => ag==savedAG);
                  let queryParams = {};
                  if(!isAgPresent){
                      const newAg = assetGroupsList.find(item => item.type=="system");
