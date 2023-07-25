@@ -28,12 +28,12 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/material-theme.scss",
               "node_modules/offline-js/themes/offline-theme-chrome.css",
               "node_modules/offline-js/themes/offline-language-english.css",
               "node_modules/ag-grid-community/styles/ag-grid.min.css",
               "node_modules/ag-grid-community/styles/ag-theme-material-no-font.min.css",
-              "node_modules/shepherd.js/dist/css/shepherd.css"
+              "node_modules/shepherd.js/dist/css/shepherd.css",
+              "src/material-theme.scss"
             ],
             "scripts": [
               "node_modules/offline-js/offline.js"

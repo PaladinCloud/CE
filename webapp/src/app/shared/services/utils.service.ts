@@ -240,7 +240,7 @@ export class UtilsService {
     let object = {};
 
     if (data.filter !== '' && data.filter !== undefined  ) {
-      const eachFilterObj = data.filter.split('*');
+      const eachFilterObj = data.filter.split('**');
       each(eachFilterObj, (element, index) => {
         const eachFilterParam = element.split('=');
         const key = eachFilterParam[0];
@@ -276,7 +276,7 @@ export class UtilsService {
             localArray.push(localObj);
           }
         });
-        object = { filter: localArray.join('*') };
+        object = { filter: localArray.join('**') };
         return object;
       }
     } catch (error) {
