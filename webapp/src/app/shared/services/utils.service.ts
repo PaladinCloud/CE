@@ -467,7 +467,7 @@ export class UtilsService {
       return this.datePipe.transform(new Date(date).toUTCString(), this.utcDateFormat);
     }
 
-    generateIntervals(minimum, maximum, numIntervals) {
+    generateIntervals(minimum, maximum, numIntervals) : {lowerBound: number, upperBound: number}[]{
       const range = maximum - minimum;
       const intervalSize = range / numIntervals;
     
@@ -478,6 +478,9 @@ export class UtilsService {
         const upperBound = Math.min(lowerBound + intervalSize, maximum);
         intervals.push({ lowerBound, upperBound });
         lowerBound = upperBound;
+        if(lowerBound>=maximum){
+          return intervals;
+        }
       }
     
       return intervals;
