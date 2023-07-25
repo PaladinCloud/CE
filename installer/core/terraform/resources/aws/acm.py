@@ -5,7 +5,7 @@ from core.config import Settings
 
 class AcmCertificate(TerraformResource):
     """
-    Base resource class for Terraform AWS appsync resource
+    Base resource class for Terraform ACM Certificate resource
 
     Attributes:
         resource_instance_name (str): Type of resource instance
