@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { LoggerService } from '../../services/logger.service';
 
 export interface FilterChipUpdateEvent {
     category: string;
@@ -45,7 +46,7 @@ export class TableFilterChipComponent implements OnInit {
     private _appliedFilters: { name: string; value: boolean }[] = [];
     private _appliedFiltersDict: { [key: string]: boolean } = {};
 
-    constructor() {}
+    constructor(private logger: LoggerService) {}
 
     ngOnInit(): void {}
 
@@ -68,8 +69,13 @@ export class TableFilterChipComponent implements OnInit {
     }
 
     filterOptionsByQuery() {
-        return this.options?.filter((f) =>
-            f.toLowerCase().includes(this.optionFilterQuery.toLowerCase()),
+        try{
+            return this.options?.filter((f) =>
+            f?.toLowerCase()?.includes(this.optionFilterQuery?.toLowerCase()),
         );
+        }catch(e){
+            this.logger.log('jsError', e);
+            return [];
+        }
     }
 }
