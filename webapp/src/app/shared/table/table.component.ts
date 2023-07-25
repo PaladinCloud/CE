@@ -143,11 +143,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         severity: (a, b, isAsc) => {
             const severeness = { low: 1, medium: 2, high: 3, critical: 4, default: 5 * (isAsc ? 1 : -1) };
       
-            const ASeverity = a["Severity"].valueText??"default";
-            const BSeverity = b["Severity"].valueText??"default";
-            if(severeness[ASeverity] == severeness[BSeverity]){
-              return a['Violations'].valueText<b['Violations'].valueText ? 1: -1
-            }
+            const ASeverity = a["Severity"].valueText?.toLowerCase()??"default";
+            const BSeverity = b["Severity"].valueText?.toLowerCase()??"default";
+            
             return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
           },
           category: (a, b, isAsc) => {
