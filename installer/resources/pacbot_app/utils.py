@@ -19,6 +19,13 @@ def need_to_use_fed_identity_provider():
 
     return feature_status
 
+def need_self_signed_ssl():
+    feature_status = Settings.get('ALB_PROTOCOL', 'HTTP')
+
+    if feature_status == 'HTTP':
+        return True
+    else:
+        return False
 
 def need_to_enable_azure():
     feature_status = Settings.get('ENABLE_AZURE', False)

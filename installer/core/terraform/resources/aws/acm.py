@@ -13,7 +13,7 @@ class AcmCertificate(TerraformResource):
     """
     resource_instance_name = "aws_acm_certificate"
     available_args = {
-        'certificate_body': {'required': True, 'prefix': True, 'sep': '-'},
+        'certificate_body': {'required': True},
         'private_key':{'required': True},
         'certificate_chain' : {'required':True},
         'tags': {'required': False},
