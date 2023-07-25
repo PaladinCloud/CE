@@ -539,6 +539,6 @@ public interface AssetService {
 
     public Set<String> getSupportedFilters(String filterName);
 
-    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
+    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
 
 }

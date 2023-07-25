@@ -566,6 +566,8 @@ public class AssetListController {
         if (request == null || Strings.isNullOrEmpty(request.getAg())) {
             return ResponseUtils.buildFailureResponse(new Exception("Asset group is Mandatory"));
         }
-        return ResponseUtils.buildSucessResponse(assetService.getAssetExemptedFilterValue(request, attribute));
+        Map<String,Object> response=new HashMap<>();
+        response.put("response",assetService.getAssetExemptedFilterValue(request, attribute));
+        return ResponseUtils.buildSucessResponse(response);
     }
 }
