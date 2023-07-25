@@ -123,10 +123,10 @@ public class EntityAssociationManager implements Constants {
 
                         LOGGER.info("Collected :  {}", entities.size());
                         if (!entities.isEmpty()) {
-                            ErrorManager.getInstance(dataSource).handleError(indexName, childTypeES, loaddate, errorList, false);
-                            ESManager.uploadData(indexName,type, childTypeES, entities, key.split(","), dataSource);
                             ESManager.deleteOldDocuments(indexName, childTypeES, "_loaddate.keyword",
                                     loaddate);
+                            ErrorManager.getInstance(dataSource).handleError(indexName, childTypeES, loaddate, errorList, false);
+                            ESManager.uploadData(indexName,type, childTypeES, entities, key.split(","), dataSource);
                         }
                     }
                 }
