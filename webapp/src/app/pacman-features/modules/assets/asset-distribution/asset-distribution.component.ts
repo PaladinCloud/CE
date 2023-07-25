@@ -322,7 +322,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     redirect(tagetType: any) {
         const selectedTargetType = tagetType.type;
         const queryParams = {
-            filter: 'resourceType=' + selectedTargetType,
+            filter: '_entitytype.keyword=' + selectedTargetType,
             tempFilters: true
         };
         this.workflowService.addRouterSnapshotToLevel(

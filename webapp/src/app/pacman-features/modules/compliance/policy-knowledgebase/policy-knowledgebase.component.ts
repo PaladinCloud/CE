@@ -461,7 +461,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     try {
       this.issueFilterSubscription = this.issueFilterService
         .getFilters(
-          { filterId: 13, domain: this.selectedDomain },
+          { filterId: 16, domain: this.selectedDomain },
           environment.issueFilter.url,
           environment.issueFilter.method
         )
