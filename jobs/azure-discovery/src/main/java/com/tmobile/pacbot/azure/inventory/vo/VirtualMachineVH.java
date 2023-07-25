@@ -53,6 +53,8 @@ public class VirtualMachineVH extends AzureVH {
 	private String osType;
 
 	private Map<String, Object> properties;
+
+	private List<VirtualMachineScaleSetVH> virtualMachineScaleSetVHList;
 	
 	public String getOsType() {
 		return osType;
@@ -347,7 +349,11 @@ public class VirtualMachineVH extends AzureVH {
 		this.status = status;
 
 	}
+	public List<VirtualMachineScaleSetVH> getVirtualMachineScaleSetVHList() {
+		return virtualMachineScaleSetVHList;
+	}
 
-	
-
+	public void setVirtualMachineScaleSetVHList(List<VirtualMachineScaleSetVH> virtualMachineScaleSetVHList) {
+		this.virtualMachineScaleSetVHList = virtualMachineScaleSetVHList;
+	}
 }

@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.microsoft.azure.SubResource;
+import com.microsoft.azure.management.compute.*;
+import com.tmobile.pacbot.azure.inventory.vo.VirtualMachineScaleSetVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
-import com.microsoft.azure.management.compute.DataDisk;
-import com.microsoft.azure.management.compute.OSDisk;
-import com.microsoft.azure.management.compute.VirtualMachine;
-import com.microsoft.azure.management.compute.VirtualMachineExtension;
 import com.microsoft.azure.management.network.NetworkInterface;
 import com.microsoft.azure.management.network.NicIPConfiguration;
 import com.microsoft.azure.management.network.Subnet;
@@ -44,6 +43,7 @@ public class VMInventoryCollector {
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 
 		List<NetworkInterface> networkInterfaces = azure.networkInterfaces().list();
+		PagedList<VirtualMachineScaleSet> vmss=azure.virtualMachineScaleSets().list();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
 
 		PagedList<VirtualMachine> vms = azure.virtualMachines().list();
@@ -118,6 +118,7 @@ public class VMInventoryCollector {
 				setNsgs(virtualMachine, vmVH, networkInterfaces);
 				setVnetInfo(virtualMachine, vmVH);
 				setOtherVnets(virtualMachine, vmVH, networkInterfaces);
+				setVirtualMachineScaleSet(vmVH,vmss);
 
 				if (virtualMachine.osProfile() != null) {
 					if (virtualMachine.osProfile().linuxConfiguration() != null) {
@@ -285,6 +286,32 @@ public class VMInventoryCollector {
 		}
 		vmVH.setDisks(vmDisks);
 
+	}
+	private void setVirtualMachineScaleSet(VirtualMachineVH vmVH,PagedList<VirtualMachineScaleSet>vmss){
+		List<VirtualMachineScaleSetVH>virtualMachineScaleSetVHList=new ArrayList<>();
+		VirtualMachineScaleSetVH virtualMachineScaleSetVH=new VirtualMachineScaleSetVH();
+		for(VirtualMachineScaleSet virtualMachineScaleSet:vmss){
+			List<VirtualMachineScaleSetVM> instanceList=virtualMachineScaleSet.virtualMachines().list();
+			List<String>vmIds=new ArrayList<>();
+			for(VirtualMachineScaleSetVM instance:instanceList){
+				vmIds.add(instance.id());
+			}
+			virtualMachineScaleSetVH.setVirtualMachineIds(vmIds);
+			List<VirtualMachineScaleSetNetworkConfiguration> networkConfigurationList=virtualMachineScaleSet.networkProfile().networkInterfaceConfigurations();
+			for(VirtualMachineScaleSetNetworkConfiguration networkConfiguration:networkConfigurationList){
+				 List<VirtualMachineScaleSetIPConfiguration> ipConfigurations=networkConfiguration.ipConfigurations();
+				 for(VirtualMachineScaleSetIPConfiguration ipConfiguration:ipConfigurations){
+					 List<SubResource> backendAddressPools= ipConfiguration.loadBalancerBackendAddressPools();
+					 List<String>lbIds=new ArrayList<>();
+					 for(SubResource resource:backendAddressPools){
+						 lbIds.add(resource.id());
+					 }
+					 virtualMachineScaleSetVH.setLoadBalancerIds(lbIds);
+				 }
+			}
+			virtualMachineScaleSetVHList.add(virtualMachineScaleSetVH);
+		}
+		vmVH.setVirtualMachineScaleSetVHList(virtualMachineScaleSetVHList);
 	}
 
 	@SuppressWarnings("unused")
