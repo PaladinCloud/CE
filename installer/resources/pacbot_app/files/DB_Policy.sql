@@ -2704,3 +2704,5 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Remove Unused AMI' WHERE policyId
 UPDATE cf_PolicyTable SET policyDisplayName = 'Check Underutilized EBS Volume' WHERE policyId = 'Underutilized-Amazon-EBS-Volumes_version-1_Underutilized-EBS-Volumes_volume';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Update EC2 Generation' WHERE policyId = 'AWSEC2InstanceGeneration_version-1_InstanceGeneration_ec2';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Assign Standard Region to KMS CMK' WHERE policyId = 'NonStandardRegionRule_version-1_KmsWithNonStandardRule_kms';
+
+DELETE FROM cf_PolicyTable WHERE policyId='AWS_eks_cluster_encryption_enabled_version-1_enable_cluster_encryption_eks';
