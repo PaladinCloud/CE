@@ -1239,7 +1239,7 @@ public class AssetServiceImpl implements AssetService {
         return repository.getSupportedFilters(filterName);
     }
 
-    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest filter, String attribute){
+    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute){
         return repository.getAssetExemptedFilterValue(filter, attribute);
     }
 
