@@ -2214,3 +2214,12 @@ g.arc .bubble-text {
 .shepherd-paladincloud-theme .cancel-button {
     background: transparent;
 }
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background, 
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: var(--primary-400) !important;
+}
+
+.mat-checkbox-ripple .mat-ripple-element {
+  background-color: var(--primary-400) !important;
+}
