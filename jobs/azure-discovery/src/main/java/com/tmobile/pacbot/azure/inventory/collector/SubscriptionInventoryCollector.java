@@ -77,7 +77,7 @@ public class SubscriptionInventoryCollector {
                 JsonObject  storageObject = storageObjElement.getAsJsonObject();
                 JsonObject properties = storageObject.getAsJsonObject("properties");
                 log.debug("Properties data{}",properties);
-                if(properties!=null) {
+                if(properties!=null && properties.get("storageAccountId")!=null) {
                     String storageAccountId=properties.get("storageAccountId").getAsString();
                     storageAccountActivityLogVH.setStorageAccountActivityLogContainerId(storageAccountId);
                     storageAccountActivityLogVH.setStorageAccountEncryptionKeySource(checkStorageAccountEncryptionKeySource(storageAccountId,storageAccounts));
