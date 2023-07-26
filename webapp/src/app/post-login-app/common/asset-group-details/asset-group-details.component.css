@@ -1,99 +1,58 @@
-/*
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-.asset-details-wrapper {
-    /* padding: 2.3em; */
-    min-width: 10em;
-}
-
-.desc-detail {
-    margin-bottom: 1.5em;
-    font-size: 1.1em;
-}
 
 .keyword {
-    font-family: var(--text-font-family);
-    padding-right: 0.3em;
-    animation: fadein 0.3s;
-    color: #333;
-}
-
-.key-value {
-    font-family: var(--text-medium-font-family);
-    padding-left: 0.3em;
-    animation: fadein 0.5s;
-}
-
-.dotted-line {
-    flex-grow: 2;
-    border-bottom: 1px dotted #d9d9d9;
-    animation: fadein 0.3s;
-}
-
-.name-title {
-    /*white-space: nowrap;*/
-    font-family: var(--text-medium-font-family);
-    font-size: 1.4em;
-    margin-bottom: 1em;
-    line-height: 1.3;
-    animation: fadein 0.3s;
-    text-transform: capitalize;
-}
-
-.desc-title {
-    white-space: normal;
-    font-size: 1.05em;
-    padding-bottom: 2.4em;
-    line-height: 1.25;
-    border-bottom: 1px solid #aaa;
-    animation: fadein 0.3s;
-    font-family: var(--text-light-font-family);
-    color: #111;
-}
-
-@keyframes fadein {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-article.detail-desc {
-    padding: 2em 6px 1.3em;
-    text-transform: capitalize;
-    max-width: 55%;
-    min-width: 20em;
-    border-bottom: 1px solid #aaa;
-}
-
-.error-msg {
-    /* color: #fff; */
-    text-transform: initial;
-    line-height: 1.3;
-    text-align: center;
-}
-
-.link-text-secondary {
-    text-decoration: underline;
-}
-
-.height100 {
-    height: 100%;
-}
-
-.each-cloud {
-    margin: 0 1em;
-}
+    min-width: 80px;
+    font: var(--text-caption-1);
+    color: var(--text-medium-emphasis);
+ }
+ 
+ .key-value {
+     font: var(--text-body-2);
+     color: var(--text-high-emphasis);
+     text-transform: capitalize;
+ }
+ 
+ .desc-title {
+    font: var(--text-body-2);
+    color: var(--text-low-emphasis);
+ }
+ 
+ article.detail-desc {
+     display: flex;
+     flex-direction: column;
+     gap: 16px;
+     padding: 24px 0px;
+     height: calc(100% - 65px);
+     overflow: auto;
+ }
+ 
+ .error-msg {
+     /* color: #fff; */
+     text-transform: initial;
+     line-height: 1.3;
+     text-align: center;
+ }
+ 
+ .asset-details-wrapper, .details-section-content{
+     height: 100%;
+ }
+ 
+ .asset-name{
+     font: var(--text-subtitle-2);
+     color: var(--text-high-emphasis);
+ }
+ 
+ .desc-detail{
+     width: 100%;
+     align-items: center;
+     gap: 8px;
+ }
+ 
+ .mandatory-tag-wrapper{
+     padding: 12px;
+     border: 1px solid var(--border-200);
+     border-radius: 8px;
+ }
+ 
+ .mandatory-list{
+   padding-top: 12px;
+ }

@@ -12,51 +12,72 @@
  * limitations under the License.
  */
 
-import { Component, Input, EventEmitter, Output, OnChanges } from '@angular/core';
-import { AssetTilesService } from '../../../core/services/asset-tiles.service';
-
-@Component({
-  selector: 'app-asset-group-details',
-  templateUrl: './asset-group-details.component.html',
-  styleUrls: ['./asset-group-details.component.css'],
-  providers: [AssetTilesService]
-})
-
-export class AssetGroupDetailsComponent implements OnChanges {
-
-    @Input() selectedValue: any;
-    @Input() detailsVal: any = {};
-    @Input() assetDetailsState = 0;
-
-    public errorMessage: any;
-    @Output() navigatePage: EventEmitter<any> = new EventEmitter();
-    provider = [];
-    constructor () {
+ import { Component, Input, EventEmitter, Output, OnChanges } from '@angular/core';
+ import { AssetTilesService } from '../../../core/services/asset-tiles.service';
+ 
+ @Component({
+   selector: 'app-asset-group-details',
+   templateUrl: './asset-group-details.component.html',
+   styleUrls: ['./asset-group-details.component.css'],
+   providers: [AssetTilesService]
+ })
+ 
+ export class AssetGroupDetailsComponent implements OnChanges {
+ 
+     @Input() selectedValue: any;
+     @Input() detailsVal: any = {};
+     @Input() assetDetailsState = 0;
+     accounts = 0;
+ 
+     public errorMessage: any;
+     @Output() navigatePage: EventEmitter<any> = new EventEmitter();
+     provider = [];
+     constructor () {
+     }
+ 
+     ngOnChanges() {
+       this.createProviderArray();
+     }
+ 
+     capitalizeFirstLetter(string): any {
+       return string.charAt(0).toUpperCase() + string.slice(1);
+     }
+ 
+     createProviderArray() {
+       this.provider = [];
+       const order = ["AWS", "Azure", "GCP"];
+       const providerMap = {
+         "aws": "AWS",
+         "azure": "Azure",
+         "gcp": "GCP"
+       }
+       let curr_provider = "";
+       if (this.detailsVal && this.detailsVal.providers) {
+         this.detailsVal.providers.forEach(element => {
+           curr_provider = providerMap[element.provider.toLowerCase()];
+           if(curr_provider)
+           this.provider.push(curr_provider);
+           else
+           this.provider.push(element.provider);
+         });
+       }
+ 
+       this.provider.sort((a, b) => {
+         return order.indexOf(a) - order.indexOf(b);
+       });
+     }
+ 
+     instructParentToNavigate (data, agDetails) {
+       const obj = {
+         data: data,
+         agDetails: agDetails
+       };
+       this.navigatePage.emit(obj);
     }
-
-    ngOnChanges() {
-      this.createProviderArray();
+ 
+    getDisplayName(assertName:string){
+      return assertName.replace(/,/g, " ");
     }
-
-    capitalizeFirstLetter(string): any {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-
-    createProviderArray() {
-      this.provider = [];
-      if (this.detailsVal && this.detailsVal.providers) {
-        this.detailsVal.providers.forEach(element => {
-          this.provider.push(element.provider);
-        });
-      }
-    }
-
-    instructParentToNavigate (data, agDetails) {
-      const obj = {
-        data: data,
-        agDetails: agDetails
-      };
-      this.navigatePage.emit(obj);
-   }
-
-}
+ 
+ }
+ 
