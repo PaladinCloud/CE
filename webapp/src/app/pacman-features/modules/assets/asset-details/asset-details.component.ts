@@ -548,6 +548,14 @@
        if (Object.keys(this.genericAttributes).length > 0) {
          this.filteredData = true;
        }
+       Object.keys(this.genericAttributes).map(key => {
+        const values = this.genericAttributes[key];
+        const assetIdDisplayNameObject = values.find(item => item.name === 'assetIdDisplayName');
+
+        if (assetIdDisplayNameObject) {
+          this.decodedResourceId = assetIdDisplayNameObject.value;
+        }
+      })
      }catch(e){
        this.loggerService.log("jsError", e);
      }
