@@ -71,32 +71,79 @@
            break;
          }
         }
-      }
-
-      return data;
-
-    } catch (error) {
-
-    }
-
-  /**
-   * This function navigates the page mentioned  with a ruleID
-   */
-  navigatePage(event) {
-    try {
-          let resourceType = '';
-          const resourceID = event;
-          if(resourceID.includes("vol")){
-             resourceType = 'volume'
-          }else{
-            resourceType = 'sg'
-          }
-        this.router.navigate(['../../', resourceType, resourceID],
-          {relativeTo: this.activatedRoute, queryParamsHandling: "merge"}
-          );
-    } catch (error) {
-      this.logger.log('error', error);
-    }
-  }
-  /* navigatePage function ends here */
-}
+       obj = {
+         'name': keys[i],
+         'values': keyValues
+       };
+ 
+       this.assetCloudType.emit(cloudType);
+       dataObjContainer.push(obj);
+     }
+ 
+     dataObjContainer = this.testData(dataObjContainer);
+     this.dataObjArray = dataObjContainer;
+   }
+ 
+ /* Function for removing non-array values from the data
+    and massaging the raw date as well*/
+ 
+   testData(data) {
+     try {
+ 
+       let dateData;
+ 
+       for (let i = 0; i < data.length; i++ ) {
+         const listData = data[i].values;
+ 
+         for (let j = 0; j < listData.length; j++) {
+           if (!Array.isArray(listData[j].value)) {
+             listData.splice(j, 1);
+           }
+           if (listData[j] !== undefined) {
+             if ((listData[j].name === 'Load Date') || (listData[j].name === 'Instance create time') || (listData[j].name === 'Snapshot createtime') || (listData[j].name === 'latestrestorabletime') || (listData[j].name === 'createtime') || (listData[j].name.toLowerCase() === 'starttime')) {
+               dateData = listData[j].value;
+               dateData = this.utilityService.calculateDate(dateData);
+               listData[j].value = [dateData];
+             }
+             if ((listData[j].name.toLowerCase() === 'last vuln scan')) {
+               dateData = listData[j].value;
+               dateData = this.utilityService.calculateDateAndTime(dateData);
+               listData[j].value = [dateData];
+             }
+             if (listData[j].name.toLowerCase() === 'list') {
+               const value = JSON.parse(listData[j].value[0]);
+               listData[j].value = value;
+             }
+           }
+         }
+       }
+ 
+       return data;
+ 
+     } catch (error) {
+ 
+     }
+ 
+   }
+   /**
+    * This function navigates the page mentioned  with a ruleID
+    */
+   navigatePage(event) {
+     try {
+           let resourceType = '';
+           const resourceID = event;
+           if(resourceID.includes("vol")){
+              resourceType = 'volume'
+           }else{
+             resourceType = 'sg'
+           }
+         this.router.navigate(['../../', resourceType, resourceID],
+           {relativeTo: this.activatedRoute, queryParamsHandling: "merge"}
+           );
+     } catch (error) {
+       this.logger.log('error', error);
+     }
+   }
+   /* navigatePage function ends here */
+ }
+ 

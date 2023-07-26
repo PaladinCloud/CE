@@ -60,8 +60,8 @@
  
    headerColName;
    direction;
-   columnNamesMap = {"policyDisplayName": "Policy","targetType": "Asset Type",  "severity": "Severity", "category":"Category", "status": "Status"};
-   columnWidths = {"Policy": 2.4, "Asset Type": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8}
+   columnNamesMap = {"policyDisplayName": "Policy","targetType": "Asset Type",  "severity": "Severity", "category":"Category", "status": "Status", "assetGroup":"Source"};
+   columnWidths = {"Policy": 2.4, "Asset Type": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8, "Source":0.7}
    whiteListColumns;
    isStatePreserved = false;
    tableScrollTop = 0;
@@ -127,6 +127,18 @@
            image: "violations-critical-icon",
            imageOnly: true
        },
+       aws:{
+        image: "aws-color",
+        imageOnly: true
+      },
+      azure:{
+        image: "azure-color",
+        imageOnly: true
+      },
+      gcp:{
+        image: "gcp-color",
+        imageOnly: true
+      }
    }
  
    paginatorSize: number = 1000;
@@ -310,7 +322,8 @@
        }else{
          const set = new Set();
          data.forEach(row => {
-           set.add(row[column].valueText);
+          if(row[column] && row[column].valueText) 
+               set.add(row[column].valueText);
          });
          filterTags = Array.from(set);
          filterTags.sort();

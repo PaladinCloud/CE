@@ -66,6 +66,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   currentTemplateRef : TemplateRef<ElementRef>;
   @ViewChild('accountForm', {static: false}) accountForm: NgForm;
   @ViewChild('supportInfoRef') supportInfoRef: TemplateRef<any>;
+  @ViewChild("connectRef") connectRef: TemplateRef<any>;
 
 
   private currentPluginForm: FormGroup;
@@ -114,6 +115,33 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       name: "Review"
     }
   ]
+
+  commands = [
+    {
+      command: 'gcloud services enable',
+      service: 'cloudresourcemanager.googleapis.com'
+    },
+    {
+      command: 'gcloud services enable',
+      service: 'cloudtasks.googleapis.com'
+    },
+    {
+      command: 'gcloud services enable',
+      service: 'compute.googleapis.com'
+    },
+    {
+      command: 'gcloud services enable',
+      service: 'cloudkms.googleapis.com'
+    },
+    {
+      command: 'gcloud services enable',
+      service: 'dataproc.googleapis.com'
+    },
+    {
+      command: 'gcloud services enable',
+      service: 'cloudasset.googleapis.com'
+    },
+  ];
 
   accountsList = [{
     name: "AWS",
@@ -232,7 +260,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         break;
       case 2:
           this.currentTemplateRef = this.reviewRef;
-          break;
+        break;
     }
   }
   
@@ -618,7 +646,9 @@ redirectTo(){
   });
 }
 
-copyToClipboard(text: string) {
+copyToClipboard(commands) {
+  let text = ""; 
+  commands?.map(command => text+=command.command + " " + command.service+"\n");
   this.clipboard.copy(text);
 }
 

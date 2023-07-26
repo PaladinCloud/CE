@@ -30,8 +30,8 @@
                             <button class="button btn" [class.hide]="currentStepperIndex<1 || currentStepperIndex>1"
                                 (click)="validateAccount()" [class.isDisabled]="selectedAccount && currentPluginForm?.invalid">
                                 Validate</button>
-                         <button class="button btn" [class.hide]="currentStepperIndex>0" (click)="pageCounter('next')"
-                                 [class.isDisabled]="selectedAccount && (selectedAccount.toLowerCase() == 'aws' && currentPluginForm?.invalid)">
+                            <button class="button btn" [class.hide]="currentStepperIndex>0" (click)="pageCounter('next')"
+                                [class.isDisabled]="selectedAccount && (selectedAccount.toLowerCase() == 'aws' && currentPluginForm?.invalid)">
                                 Next</button>
                             <button class=" button back-btn" [class.hide]="currentStepperIndex==0"
                                 (click)="pageCounter('back')">Back</button>
@@ -143,6 +143,7 @@
                         </div>
                     </div>
                 </div>
+                <ng-container [ngTemplateOutlet]="connectRef"></ng-container>
             </div>
             <div class="configure-wrapper" *ngIf="pluginSelected===('azure')">
                 <div class="steps-wrapper" >
@@ -333,5 +334,65 @@
         <span class="supporting-info-text">Please to reach out to Paladin Cloud for assistance in this matter
             <a href="mailto:Support@paladincloud.io">Support@paladincloud.io</a>
         </span>
+    </div>
+</ng-template>
+
+<ng-template #connectRef>
+    <div class="connector-container flex flex-col gap-16">
+        <div class="header-container">
+            <div class="header-description flex flex-col gap-4">
+                <app-text text="Connect" classNames="body-2"></app-text>
+                <app-text classNames="body-3" text="Copy and execute the below commands in GCP Cloud Shell for the project"></app-text>
+            </div>
+        </div>
+        <div class="commands-container border-200">
+            <div class="commands-header-container">
+                <div class="commands-header-wrapper flex flex-between flex-align-center ">
+                    <div class="body-1">Code</div>
+                    <div class="copy-button">
+                        <button mat-button (click)="copyToClipboard(commands)">
+                            <img src="/assets/icons/copy-content.svg" alt="copy icon">
+                            <span style="font: var(--text-body-3)">Copy</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="commands-body-container flex">
+                <div class="commands-number-container flex flex-col gap-4">
+                    <section>
+                        <ul>
+                            <li *ngFor="let command of commands; let i=index" style="color: grey;"> {{ i+1 }} </li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="commands-body-wrapper flex flex-row gap-4">
+                    <section>
+                        <ul>
+                          <li *ngFor="let command of commands">{{ command.command }} <span class="command-service-name">{{ command.service }}</span></li>
+                        </ul>
+                    </section>
+                      
+                </div>
+            </div>
+        </div>
+        <div class="note-container">
+            <div class="note-wrapper flex flex gap-8 padding-20">
+                <div class="icon-indent">
+                    <mat-icon style="font-size: 20px;">info</mat-icon>
+                </div>
+                <div class="note-body">
+                    <app-text classNames="body-2" text="Note"></app-text>
+                    <div style="font: var(--text-body-3)">
+                        For the discovery of GCP resources and the authentication process, you must enable the following APIs: 
+                        <span *ngFor="let command of commands;let i=index">
+                            <span class="command-service-name">{{ command.service }}</span>
+                            <span *ngIf="i<commands.length-2">, </span>
+                            <span *ngIf="i==commands.length-2"> and </span>
+                        </span>.
+                        If you don’t enable these APIs, we’ll enable them during the onboarding process by running the GCloud script.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </ng-template>

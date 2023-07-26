@@ -198,6 +198,7 @@
     height: calc(100% - 56px);
     overflow: auto;
     padding-top: 24px;
+    padding-right: 24px;
     gap: 20px;
     display: flex;
     flex-direction: column;
@@ -402,3 +403,64 @@
 .supporting-info-text a {
     color: #003DA1;
   }
+
+.connector-container{
+    height: 100%;
+}
+
+.commands-container{
+    border-radius: 12px;
+    /* max-width: 750px; */
+}
+
+.commands-header-container{
+    border-radius: 12px 12px 0 0;
+    background-color: #fcfcfd;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border-200);
+}
+
+.commands-number-container{
+    border-right: 1px solid var(--border-200); 
+    background-color: #fcfcfd;
+    padding: 16px 24px;
+    border-radius: 0 0 0 12px;
+}
+
+.commands-body-container{
+    font: 500 16px/130% 'roboto-mono-medium';
+}
+
+.commands-body-wrapper{
+    padding: 16px 24px;
+}
+
+.commands-body-container ul li{
+    padding-bottom: 8px;
+}
+
+.note-container{
+    border-radius: 6px;
+    border: 1px solid #CFD6DD;
+    background-color: #F5F7F9;
+}
+
+.command-service-name{
+    color: crimson;
+}
+
+.copy-button button{
+    background-color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 16px 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid var(--border-200);
+}
+
+::ng-deep .mat-button-wrapper{
+    display: flex;
+    gap: 8px;
+}
