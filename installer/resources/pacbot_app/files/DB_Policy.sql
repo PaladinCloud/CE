@@ -2700,7 +2700,7 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Idle RDS Database' WHERE p
 UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused ALB' WHERE policyId = 'UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused EBS Volume' WHERE policyId = 'UnusedEBSRule_version-1_UnusedEbsRule_volume';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused Elastic IP' WHERE policyId = 'UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip';
-UPDATE cf_PolicyTable SET policyDisplayName = 'Remove Unused AMI' WHERE policyId = 'AWSAMIUnused_version-1_Unused_ami';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused AMI' WHERE policyId = 'AWSAMIUnused_version-1_Unused_ami';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Check Underutilized EBS Volume' WHERE policyId = 'Underutilized-Amazon-EBS-Volumes_version-1_Underutilized-EBS-Volumes_volume';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Update EC2 Generation' WHERE policyId = 'AWSEC2InstanceGeneration_version-1_InstanceGeneration_ec2';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Assign Standard Region to KMS CMK' WHERE policyId = 'NonStandardRegionRule_version-1_KmsWithNonStandardRule_kms';
