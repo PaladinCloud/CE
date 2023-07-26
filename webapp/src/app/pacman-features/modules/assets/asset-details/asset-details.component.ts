@@ -262,7 +262,6 @@
        this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
        this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
      }
-     this.breadcrumbPresent = 'Asset Details';
      this.userEmail = new FormGroup({
        ename: new FormControl('', [Validators.required, Validators.minLength(6)])
      });
@@ -349,6 +348,7 @@
        this.urlParams = params; // <<-- This urlParams is used while calling the api
        this.resourceId = this.urlParams.resourceId; // Encoded asset id is used everywhere to pass to api's
        this.decodedResourceId = decodeURIComponent(this.resourceId); // This is used only for Title of the page
+       this.breadcrumbPresent = this.decodedResourceId ?? "Asset Details";
        this.resourceType = this.urlParams.resourceType;
        this.updateComponent();
      });
@@ -374,7 +374,7 @@
    }
  
    assignCloudType(event:string){
-     const cloudType = event.toLowerCase();
+     const cloudType = event?.toLowerCase();
      this.tiles["Source"].value = DATA_MAPPING[cloudType];
      this.tiles["Source"].img = cloudType;
      this.cdRef.detectChanges();

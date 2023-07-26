@@ -32,6 +32,7 @@
    @Input() data: any;
    @Input() pageLevel: number;
    @Input() dataObj: any;
+   @Input() breadcrumbPresent;
    @Output() assetCloudType = new EventEmitter();
    urlToRedirect: any = '';
  
@@ -137,6 +138,7 @@
            }else{
              resourceType = 'sg'
            }
+           this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
          this.router.navigate(['../../', resourceType, resourceID],
            {relativeTo: this.activatedRoute, queryParamsHandling: "merge"}
            );

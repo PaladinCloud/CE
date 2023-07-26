@@ -60,7 +60,7 @@
                 <li class="widget-wrapper" *ngIf="filteredData == true">
                     <div class="widget">
                         <div class="attribute-wrapper">
-                            <app-attribute [pageLevel]="pageLevel" [dataObj]='genericAttributes' (assetCloudType)=assignCloudType($event)></app-attribute>
+                            <app-attribute [breadcrumbPresent]="breadcrumbPresent" [pageLevel]="pageLevel" [dataObj]='genericAttributes' (assetCloudType)=assignCloudType($event)></app-attribute>
                         </div>
                     </div>
                 </li>
