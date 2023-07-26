@@ -886,6 +886,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
               filterValue: [policyCategory],
             })
           })
+      }else{
+        this.changeFilterType(key).then(() => {
+          this.changeFilterTags({
+            filterKeyDisplayValue: key,
+            filterValue: [PolicyCategory.COST, PolicyCategory.OPERATIONS, PolicyCategory.SECURITY, PolicyCategory.TAGGING],
+          })
+        })
       }
   }
 
