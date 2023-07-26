@@ -191,7 +191,7 @@ public class AssetFileGenerator {
 			} catch (Exception e) {
 				log.error("Error authenticating for {}", subscription, e);
 				rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE tenant=? AND subscription=?",Arrays.asList(subscription.getTenant(),subscription.getSubscriptionId()));
-				log.info("updating account status of azure subscription- {} to offline.",subscription.getSubscriptionId());
+				log.error("updating account status of azure subscription- {} to offline.",subscription.getSubscriptionId());
 				continue;
 			}
 			subscription.setRegions(getRegionsFromAzure(subscription));

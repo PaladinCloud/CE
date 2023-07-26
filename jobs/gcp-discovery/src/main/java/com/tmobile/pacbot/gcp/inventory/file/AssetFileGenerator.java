@@ -104,7 +104,7 @@ public class AssetFileGenerator {
 				log.info("updating account status of gcp account- {} to online.",project.getProjectId());
 				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='configured' WHERE accountId=?",Arrays.asList(project.getProjectId()));
 			} catch (IOException e) {
-				log.info("updating account status of gcp account- {} to offline.",project.getProjectId());
+				log.error("updating account status of gcp account- {} to offline.",project.getProjectId());
 				rdsdbManager.executeUpdate("UPDATE cf_Accounts set accountStatus='offline' WHERE accountId=?",Arrays.asList(project.getProjectId()));
 				continue;
 			}
