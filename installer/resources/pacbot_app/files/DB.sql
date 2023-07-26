@@ -3014,3 +3014,5 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 
 UPDATE pac_v2_ui_options SET optionURL = '/asset/v1/getAssetFilterValue/tagged?ag=aws' WHERE optionId = '22';
 update pac_v2_ui_options set optionValue="resourcetType" where filterId=16;
+
+update cf_AssetGroupDetails set createdBy = 'Cloud Security' where groupName = 'azure';
