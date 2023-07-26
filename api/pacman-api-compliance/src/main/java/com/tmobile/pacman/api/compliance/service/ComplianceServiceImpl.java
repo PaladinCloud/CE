@@ -374,6 +374,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             long issueAuditCount = repository.getIssueAuditLogCount(annotationId, targetType);
             issueAuditLogList = repository.getIssueAuditLog(dataSource, annotationId, targetType, from, size, searchText);
 
+            for(Map<String,Object> auditMap:issueAuditLogList){
+                if(auditMap.get(STATUS).equals("open") || auditMap.get(STATUS).equals("closed") ){
+                    auditMap.put(CREATED_BY,"system");
+                }
+            }
+
             if (issueAuditLogList.isEmpty()) {
                 throw new ServiceException(NO_DATA_FOUND);
             }
