@@ -163,8 +163,15 @@ public class Util {
 	}
 	public static String getResourceGroupNameFromId(String id)
 	{
+		//only if "resourceGroups" is part of id attribute fetch from it
+		if(id.indexOf("resourceGroups")!=-1){
 		int beginningIndex=id.indexOf("resourceGroups")+15;
 		return id.substring(beginningIndex,id.indexOf('/',beginningIndex+2));
+		}
+		else
+		return null;
+
+
 	}
 	public static String getRegionValue(SubscriptionVH subscription,String region)
 	{
