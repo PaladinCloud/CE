@@ -554,6 +554,10 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
 
                     executor.shutdown();
 
+                    while (!executor.isTerminated()) {
+
+                    }
+
                     policies.forEach(policyIdDetails -> {
                         Map<String, String> policyIdwithsScanDateMap = new HashMap<>();
                         LinkedHashMap<String, Object> openIssuesByPolicy = new LinkedHashMap<>();
