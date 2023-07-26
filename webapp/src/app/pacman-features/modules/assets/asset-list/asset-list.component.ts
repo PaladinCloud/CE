@@ -281,8 +281,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   storeState(data?){
-    const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
-    if(isTempFilter) return;
     const state = {
       totalRows: this.totalRows,
       data: data,
@@ -417,15 +415,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
           let filterKey = dataArray[i].filterkey;
 
           if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
-            const eachObj = {
-              keyDisplayValue: keyDisplayValue,
-              filterValue: filterValueObj?filterValueObj["name"]:undefined,
-              key: keyDisplayValue, // <-- displayKey-- Resource Type
-              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
-              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
-              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-            };
-            this.filters.push(eachObj);
+            if(filterValueObj && filterValueObj["name"]){
+              const eachObj = {
+                keyDisplayValue: keyDisplayValue,
+                filterValue: filterValueObj?filterValueObj["name"]:undefined,
+                key: keyDisplayValue, // <-- displayKey-- Resource Type
+                value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
+                filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
+                compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+              };
+              this.filters.push(eachObj);
+            }
             this.filters = [...this.filters];
             this.storeState();
           }
