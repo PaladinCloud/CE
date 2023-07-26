@@ -491,7 +491,8 @@ public class FilterServiceImpl implements FilterService, Constants {
         Map<String, Long> valueMap;
         List<Map<String, Object>> valueList = new ArrayList<>();
         try {
-            valueMap = repository.getAttributeValuesFromES(assetGroup,filter, entityType,attributeName);
+            String targetTypes=complianceRepository.getTargetTypeForAG(assetGroup,domain);
+            valueMap = repository.getAttributeValuesFromES(assetGroup,filter, entityType,attributeName,targetTypes);
         } catch (DataException e) {
             throw new ServiceException(e);
         }

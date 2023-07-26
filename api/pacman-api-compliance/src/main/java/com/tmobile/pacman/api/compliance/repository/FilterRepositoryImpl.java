@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import com.tmobile.pacman.api.commons.Constants;
@@ -36,10 +37,8 @@ import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
 import com.tmobile.pacman.api.compliance.domain.AssetApi;
 import com.tmobile.pacman.api.compliance.domain.AssetApiData;
 import com.tmobile.pacman.api.compliance.domain.AssetCountDTO;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+
+import java.util.stream.Collectors;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -51,6 +50,9 @@ import java.util.concurrent.TimeUnit;
  */
 @Repository
 public class FilterRepositoryImpl implements FilterRepository, Constants {
+
+    @Value("${tagging.mandatoryTags}")
+    private String mandatoryTags;
 
     /** The rdsepository. */
     @Autowired
@@ -326,25 +328,14 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
             throw new DataException(e);
         }
     }
-    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName)
+    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName,String targetTypes)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter=new HashMap<>();
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-        if(entityType.equalsIgnoreCase("asset")){
-            mustFilter.put(UNDERSCORE_ENTITY, Constants.TRUE);
-            mustFilter.put(LATEST, Constants.TRUE);
-        }else if(entityType.equalsIgnoreCase("issue")){
-            mustFilter.put(Constants.TYPE, "issue");
-        }
-        if(filter.keySet().size()!=0)
-        {
-            for(String key: filter.keySet())
-            {
-                mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(key),filter.get(key));
-            }
-        }
+        checkEntityType(mustFilter,mustTermsFilter,entityType,targetTypes);
+        setFilters(filter,mustFilter,shouldFilter,mustTermsFilter,mustNotFilter, assetGroup);
         String aggsFilter=attributeName;
         try {
             if(attributeName.equalsIgnoreCase(CREATED_DATE)){
@@ -397,6 +388,109 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         }
     }
 
+    private void setFilters(Map<String, Object> filter, Map<String, Object> mustFilter, HashMultimap<String, Object> shouldFilter,
+                            Map<String, Object> mustTermsFilter, Map<String, Object> mustNotFilter, String assetGroup) {
+        Iterator it = filter.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String key = (String) entry.getKey();
+            if(key.equalsIgnoreCase(FILTER_TAGGED)){
+                Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
+                ArrayList<String> tagList=tagsSet.stream().map(tag->"tags."+tag).collect(Collectors.toCollection(ArrayList::new));
+                String filterTagged = "";
+                if(filter.get(key) instanceof String){
+                    filterTagged = filter.get(key).toString();
+                }
+                else{
+                    filterTagged = ((List<String>) filter.get(key)).get(0);
+                }
+                if(filterTagged.equalsIgnoreCase(FALSE)){
+                    mustFilter.put(FILTER_UNTAGGED, tagList);
+                }
+                else if (filterTagged.equalsIgnoreCase(TRUE)){
+                    mustFilter.put(FILTER_TAGGED, tagList);
+                }
+            }
+            else if(key.equalsIgnoreCase(EXEMPTED)){
+                List<Map<String, Object>> masterList;
+                List<String> exemptedResourceIds=new ArrayList<>();
+                try {
+                    masterList = getAssetsExempted(assetGroup);
+                    for(Map<String,Object>asset:masterList){
+                        if(asset.containsKey(RESOURCEID)){
+                            Object resourceId=asset.get(RESOURCEID);
+                            exemptedResourceIds.add((String) resourceId);
+                        }
+                    }
+                    if(filter.get(key) instanceof String){
+                        if(((String) filter.get(key)).equalsIgnoreCase(TRUE)){
+                            mustFilter.put((String) key,exemptedResourceIds);
+                        } else{
+                            mustNotFilter.put((String) key,exemptedResourceIds);
+                        }
+                    }
+                    else{
+                        List<String> exemptInp = (List<String>) filter.get(key);
+                        if(exemptInp != null && exemptInp.size() == 1){
+                            if(exemptInp.get(0).equalsIgnoreCase(TRUE)){
+                                mustFilter.put((String) key,exemptedResourceIds);
+                            } else{
+                                mustNotFilter.put((String) key,exemptedResourceIds);
+                            }
+                        }
+                    }
+
+                } catch (Exception e){
+                    logger.error("Error in fetching attributes ",e);
+                }
+            }
+            else if(key.equalsIgnoreCase(AUTOFIX_PLANNED)){
+                Boolean isAutofixPlanned = false;
+                if(filter.get(key) == null){
+                    isAutofixPlanned = null;
+                }
+                else if(filter.get(key) instanceof String || filter.get(key) instanceof Boolean){
+                    isAutofixPlanned = Boolean.parseBoolean((String)filter.get(key));
+                }
+                else{
+                    List<String> ls = (List<String>) filter.get(key);
+                    isAutofixPlanned = ls.size() == 1 ? Boolean.parseBoolean(ls.get(0)) : null;
+                }
+
+                if(isAutofixPlanned!=null){
+                    if(isAutofixPlanned){
+                        mustFilter.put(AUTOFIX_PLANNED, true);
+                    }else{
+                        List<Map<String,Object>> mustNotList=new ArrayList<>();
+                        Map<String,Object> existMap=new HashMap<>();
+                        existMap.put("field", AUTOFIX_PLANNED);
+                        Map<String,Object> mustNotCondition=new HashMap<>();
+                        mustNotCondition.put("exists", existMap);
+                        mustNotList.add(mustNotCondition);
+                        Map<String,Object> mustNotMap=new HashMap<>();
+                        mustNotMap.put("must_not",mustNotList);
+                        shouldFilter.put("bool", mustNotMap);
+                        shouldFilter.put(AUTOFIX_PLANNED,"false");
+                    }
+                }
+            }
+            else
+                mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(key),filter.get(key));
+        }
+
+
+    }
+
+    private void checkEntityType(Map<String, Object> mustFilter, Map<String, Object> mustTermsFilter, String entityType,String targetTypes) {
+        if(entityType.equalsIgnoreCase("asset")){
+            mustFilter.put(UNDERSCORE_ENTITY, Constants.TRUE);
+            mustFilter.put(LATEST, Constants.TRUE);
+            mustTermsFilter.put("_entitytype.keyword",Arrays.asList(targetTypes.replace("'","").split(",")));
+        }else if(entityType.equalsIgnoreCase("issue")){
+            mustFilter.put(Constants.TYPE, "issue");
+        }
+    }
+
     private void updateFinalMap(Map<String, Long> totalDistributionForIndexAndType) {
         Map<String, Long> tempMap = new HashMap<>();
         totalDistributionForIndexAndType.entrySet().forEach(entry -> {
@@ -425,4 +519,23 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         }
     }
 
+    private List<Map<String, Object>> getAssetsExempted(String assetGroup)
+    {
+        logger.info("Inside getListAssetsExempted");
+        List<Map<String, Object>> assetList = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.EXEMPTED);
+        try {
+            assetList = elasticSearchRepository.getDataFromES(assetGroup, null,
+                    mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
+            return assetList;
+        } catch (Exception e) {
+            logger.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+        }
+        return assetList;
+    }
 }

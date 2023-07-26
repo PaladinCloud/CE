@@ -699,6 +699,8 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         Map<String, Object> filter = request.getReqFilter();
         Map<String, Object> sortFilter = request.getSortFilter() == null ? new HashMap<>() : request.getSortFilter();
         if(MapUtils.isNotEmpty(filter)){
+            List<String> provider = filter.containsKey(PolicyComplianceFilter.PROVIDER.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.PROVIDER.filter) : new ArrayList<>();
             List<String> policyName = filter.containsKey(PolicyComplianceFilter.POLICY_NAME.filter) ?
                     (List<String>) filter.get(PolicyComplianceFilter.POLICY_NAME.filter) : new ArrayList<>();
             List<String> severity = filter.containsKey(PolicyComplianceFilter.SEVERITY.filter) ?
@@ -709,10 +711,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     (List<String>) filter.get(PolicyComplianceFilter.ASSET_TYPE.filter) : new ArrayList<>();
             List<Map<String, String>> violations = filter.containsKey(PolicyComplianceFilter.VIOLATIONS.filter) ?
                     (List<Map<String, String>>) filter.get(PolicyComplianceFilter.VIOLATIONS.filter) : new ArrayList<>();
-            List<Map<String, Double>> compliance = filter.containsKey(PolicyComplianceFilter.COMPLIANCE.filter) ?
-                    (List<Map<String, Double>>) filter.get(PolicyComplianceFilter.COMPLIANCE.filter) : new ArrayList<>();
+            List<Map<String, Object>> compliance = filter.containsKey(PolicyComplianceFilter.COMPLIANCE.filter) ?
+                    (List<Map<String, Object>>) filter.get(PolicyComplianceFilter.COMPLIANCE.filter) : new ArrayList<>();
 
             openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.stream()
+                    .filter(x -> provider.size() == 0 || provider.contains(x.get(PolicyComplianceFilter.PROVIDER.filter)))
                     .filter(x -> policyName.isEmpty() || policyName.contains(x.get(PolicyComplianceFilter.POLICY_NAME.filter)))
                     .filter(x -> severity.isEmpty() || severity.contains(x.get(PolicyComplianceFilter.SEVERITY.filter)))
                     .filter(x -> category.isEmpty() || category.contains(x.get(PolicyComplianceFilter.CATEGORY.filter)))
@@ -739,16 +742,15 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         return res;
     }
 
-    private boolean isComplianceInRange(double percent, List<Map<String, Double>> rangeList){
-        boolean res = false;
-        for(Map<String, Double> map: rangeList){
-            double min = map.get(Constants.MIN);
-            double max = map.get(Constants.MAX);
+    private boolean isComplianceInRange(double percent, List<Map<String, Object>> rangeList){
+        for(Map<String, Object> map: rangeList){
+            double min = Double.parseDouble(map.get(Constants.MIN).toString());
+            double max = Double.parseDouble(map.get(Constants.MAX).toString());
             if(percent >= min && percent <= max){
-                res =  true;
+                return true;
             }
         }
-        return res;
+        return false;
     }
 
     private List<LinkedHashMap<String, Object>> sortPolicyComplianceData(List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal, Map<String, Object> sortFilter){
