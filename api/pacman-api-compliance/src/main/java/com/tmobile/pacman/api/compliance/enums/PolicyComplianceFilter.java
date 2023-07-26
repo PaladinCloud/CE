@@ -2,6 +2,7 @@ package com.tmobile.pacman.api.compliance.enums;
 
 public enum PolicyComplianceFilter {
 
+    PROVIDER("provider"),
     POLICY_NAME("name"),
     CATEGORY("policyCategory"),
     SEVERITY("severity"),
