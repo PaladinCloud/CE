@@ -152,7 +152,7 @@ class Destroy(BaseAction):
             terraform_with_targets (boolean): If partial destroy is to be done (if --tags is supplied)
         """
         sleep(1)  # To sleep initaially for pre-destroy to process
-        while self.destroy_statuses.get('execution_finished') != self.current_destroy_status and self.terraform_thread.isAlive():
+        while self.destroy_statuses.get('execution_finished') != self.current_destroy_status and self.terraform_thread.is_alive():
             duration = self.CYAN_ANSI + self.get_duration(datetime.now() - self.destroy_start_time) + self.END_ANSI
             message = "Time elapsed: %s" % duration
             self.show_progress_message(message, 1.5)

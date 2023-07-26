@@ -3172,10 +3172,9 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
-    public Map<String, Object> getAssetExemptedFilterValue(FilterRequest request, String attribute){
+    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest request, String attribute){
         int totalCount = getListAssetsCount(request.getAg(), request.getFilter());
-        Map<String, Object> response = new HashMap<>();
-        List<String> resList = new ArrayList<>();
+        List<Map<String,String>>  response = new ArrayList<>();
         if(request.getFilter() == null){
             request.setFilter(new HashMap<String, Object>());
         }
@@ -3183,23 +3182,34 @@ public class AssetRepositoryImpl implements AssetRepository {
             request.getFilter().put(AssetConstants.FILTER_EXEMPTED, AssetConstants.TRUE);
             int exemptAssetCount = getListAssetsCount(request.getAg(), request.getFilter());
             if(exemptAssetCount > 0){
-                resList.add(AssetConstants.TRUE);
+                Map<String,String> resList = new HashMap<>();
+                resList.put("name",AssetConstants.TRUE);
+                resList.put("id",AssetConstants.TRUE);
+                response.add(resList);
             }
             if(totalCount -exemptAssetCount > 0){
-                resList.add(AssetConstants.FALSE);
+                Map<String,String> resList = new HashMap<>();
+                resList.put("name",AssetConstants.FALSE);
+                resList.put("id",AssetConstants.FALSE);
+                response.add(resList);
             }
         }
         else{
             request.getFilter().put(AssetConstants.FILTER_TAGGED, AssetConstants.TRUE);
             int taggedAssetCount = getListAssetsCount(request.getAg(), request.getFilter());
             if(taggedAssetCount > 0){
-                resList.add(AssetConstants.TRUE);
+                Map<String,String> resList = new HashMap<>();
+                resList.put("name",AssetConstants.TRUE);
+                resList.put("id",AssetConstants.TRUE);
+                response.add(resList);
             }
             if(totalCount - taggedAssetCount > 0){
-                resList.add(AssetConstants.FALSE);
+                Map<String,String> resList = new HashMap<>();
+                resList.put("name",AssetConstants.FALSE);
+                resList.put("id",AssetConstants.FALSE);
+                response.add(resList);
             }
         }
-        response.put(attribute, resList);
         return response;
     }
 

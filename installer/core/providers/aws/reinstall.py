@@ -115,7 +115,7 @@ class ReInstall(Install):  # Do not inherit Destroy
         """Show the status of terraform init command execution"""
         self.show_step_heading(K.TERRAFORM_REDEPLOY_DESTROY_STARTED, write_log=False)
         start_time = datetime.now()
-        while self.destroy is False and self.terraform_thread.isAlive():
+        while self.destroy is False and self.terraform_thread.is_alive():
             duration = self.CYAN_ANSI + self.get_duration(datetime.now() - start_time) + self.END_ANSI
             message = "Time elapsed: %s" % duration
             self.show_progress_message(message, 1.5)

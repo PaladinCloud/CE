@@ -25,7 +25,7 @@ TOOLS_REQUIRED = {
     'Terraform': "terraform --version",
     'Nodejs': "node --version",
     'npm': "npm --version",
-    'Angular': "ng --version",
+    'Angular': "ng version",
     'Yarn': 'yarn --version',
     'Docker': "docker --version"
 }
@@ -47,6 +47,7 @@ PROCESS_RESOURCES = {
     'vpc.security_group': {'tags': ["security"]},
     'datastore.db': {'tags': ["rds", "datastore"]},
     'datastore.es': {'tags': ["es", "datastore"]},
+    'sslcertifcate.tls' : {'tags' : ["Certificate"]},
     'pacbot_app.alb': {'tags': ["infra"]},
     'pacbot_app.alb_target_groups': {'tags': ["infra", "deploy"]},
     'pacbot_app.alb_listener_rules': {'tags': ["infra", "deploy"]},
@@ -56,6 +57,7 @@ PROCESS_RESOURCES = {
     'pacbot_app.import_db': {'tags': ["deploy", "app-import-db", "infra"]},
     'pacbot_app.ecs_task_defintions': {'tags': ["deploy", "task-definitions", "infra"]},
     'pacbot_app.ecs_services': {'tags': ["deploy", "ecs-services", "infra"]},
+    'pacbot_app.alb_https_listener' :{'tags': ["deploy"]},
     'pacbot_app.create_template': {'tags': ["deploy", "infra"]},
     's3.bucket': {'tags': ["s3"]},
     'batch.env': {'tags': ["batch"]},
@@ -136,6 +138,7 @@ JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules
 VULNERABILITY_SCHEDULE_INTERVAL = 24 #in hours
 VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY = 5 #in minutes
 VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY = 30 #in minutes
+VULNERABILITY_SHIPPER_INITIAL_DELAY = 30 #in minutes
 VULNERABILITY_SHIPPER_INITIAL_DELAY = 30  #in minutes
 
 
@@ -154,7 +157,7 @@ METADATA_XML_FILE = ""  #metadatafile
 JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event" #please do not change these, as this may stop scheduling of jobs
 JOB_SOURCE = "paladincloud.jobs-scheduler"
 
-CURRENT_RELEASE = "v2.0.0"
+CURRENT_RELEASE = "v3.0.0"
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
@@ -183,8 +186,8 @@ try:
 except:
     pass
 
-if ALB_PROTOCOL == "HTTPS":
-    PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
+# if ALB_PROTOCOL == "HTTPS":
+#     PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
 
 
 

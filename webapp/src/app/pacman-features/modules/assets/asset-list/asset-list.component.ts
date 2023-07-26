@@ -228,7 +228,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
     if(!isTempFilter && state.filters){
       this.filters = state.filters || [];
-      this.getUpdatedUrl();
+      setTimeout(() => this.getUpdatedUrl(), 0);
     }
   }
 
@@ -943,12 +943,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
 
-      if(urlObj.url.includes("attribute")){
+      if(urlObj.url.includes("attribute") || value=="Exempted" || value=="Tagged"){
       let filtersToBePassed = {};       
       Object.keys(this.filterText).map(key => {
         key = key.replace(".keyword", "");
-        if(key=="domain" || key==urlObj.params["attribute"]) return;
-        filtersToBePassed[key] = this.filterText[key+".keyword"].split(",");
+        if(key==this.currentFilterType["optionValue"] || key=="domain" || key.replace(".keyword", "")==urlObj.params["attribute"]) return;
+          filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
       })
       const payload = {
         type: "asset",
@@ -967,7 +967,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           payload
         )
         .subscribe((response) => {
-          const filterTagsData = response[0].data.response;
+          const filterTagsData = response[0].data.response;          
           if(value.toLowerCase()=="asset type"){
             this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
               filterTagsData.map(filterOption => {
@@ -983,7 +983,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
                       a.localeCompare(b),
                   ),
               },
-          };
+          };          
           if(value.toLowerCase()=="age"){
             const filterValues = this.filterTagLabels[value].splice(1);
             filterValues.sort((a, b) => a-b);
@@ -1080,7 +1080,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       "value"
     ); // <-- TO update the queryparam which is passed in the filter of the api
     Object.entries(this.filterText).forEach(([key,value]) => {
-      if (key == "resourceType" && Array.isArray(value) && value.length>1) {
+      if (key == "resourceType") {
           delete this.filterText[key];
           this.filterText["_entitytype.keyword"] = value;
       }

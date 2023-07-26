@@ -443,7 +443,7 @@ public interface Constants {
     String AUTOFIX = "autofix";
     String AQUA = "aqua";
     String ISSUE_ID_UI_PATH  = "#pl#compliance#issue-listing#issue-details#".replace("#","/");
-    String FIELD_NAME = "FIELD_NAME";
+    String FIELD_NAME = "fieldName";
 
     String POLICY_DETAILS_UI_PATH  = "#pl#compliance#policy-knowledgebase-details#".replace("#","/");
 

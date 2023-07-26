@@ -21,12 +21,12 @@
         <div class="bar untagged" [ngStyle]="{'width': untagged}"></div>
     </div>
     <div class="tagging-info-wrapper">
-        <div class="left-wrapper" [ngClass]="{'pointer': awsResourceDetails.tagged > 0}" (click)="awsResourceDetails.tagged > 0 && instructParentToNavigate(awsResourceDetails.name,'tagged')">
-            <span class="count" [ngClass]="{'link-text pointer underline-link-num': awsResourceDetails.tagged > 0}">{{awsResourceDetails.tagged}}</span>
+        <div class="left-wrapper" [ngClass]="{'pointer': awsResourceDetails.compliance > 0}" (click)="awsResourceDetails.compliance > 0 && instructParentToNavigate(awsResourceDetails.name,'tagged')">
+            <span class="count" [ngClass]="{'link-text pointer underline-link-num': awsResourceDetails.compliance > 0}">{{awsResourceDetails.compliance}}</span>
             <span class="type">Tagged</span>
         </div>
-        <div class="right-wrapper" [ngClass]="{'pointer': awsResourceDetails.untagged > 0}" (click)="awsResourceDetails.untagged > 0 &&  instructParentToNavigate(awsResourceDetails.name,'untagged')">
-            <span class="count" [ngClass]="{'link-text underline-link-num': awsResourceDetails.untagged > 0}">{{awsResourceDetails.untagged}}</span>
+        <div class="right-wrapper" [ngClass]="{'pointer': awsResourceDetails.nonCompliance > 0}" (click)="awsResourceDetails.nonCompliance > 0 &&  instructParentToNavigate(awsResourceDetails.name,'untagged')">
+            <span class="count" [ngClass]="{'link-text underline-link-num': awsResourceDetails.nonCompliance > 0}">{{awsResourceDetails.nonCompliance}}</span>
             <span class="type">Untagged</span>
         </div>
     </div>

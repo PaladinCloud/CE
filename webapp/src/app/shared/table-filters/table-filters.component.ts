@@ -39,6 +39,7 @@ export class TableFiltersComponent implements OnInit {
             return prev;
         }, {});
 
+        this.syncFiltersDictWithFiltersArray();
         // TODO: REMOVE IF STATEMENT WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
         if (Object.keys(this.appliedFiltersDict).length && !this.enableMultiValuedFilter) {
             this.appliedFiltersDict = Object.keys(this.appliedFiltersDict).reduce((acc, next) => {
@@ -47,7 +48,7 @@ export class TableFiltersComponent implements OnInit {
             }, {});
             return;
         }
-        this.appliedFiltersDict = merge({}, {}, optionDict);
+        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, optionDict);
     }
 
     get appliedFilters() {
@@ -55,6 +56,7 @@ export class TableFiltersComponent implements OnInit {
     }
 
     @Input() set categories(values) {
+        this.syncFiltersDictWithFiltersArray();
         this._categories = values;
         this.appliedFiltersDict = merge(
             {},
@@ -190,5 +192,28 @@ export class TableFiltersComponent implements OnInit {
 
     trackByAppliedFilter(index: number, item: FilterItem) {
         return item.key || index;
+    }
+
+    syncFiltersDictWithFiltersArray(){
+        const appliedFilterKeys = this.appliedFilters.map(filter => filter.keyDisplayValue);
+        
+        Object.keys(this.appliedFiltersDict).map(key => {
+            if(!appliedFilterKeys.includes(key)){                
+                this.appliedFiltersDict[key] = {};
+            }
+        });
+
+        this.appliedFilters.reduce((dict, filterItem) => {
+            const { keyDisplayValue, filterValue } = filterItem;
+          
+            if (filterValue && typeof filterValue != "string") {
+              dict[keyDisplayValue] = filterValue.reduce((innerDict, value) => {
+                innerDict[value] = true;
+                return innerDict;
+              }, {});
+            }
+          
+            return dict;
+          }, this.appliedFiltersDict);
     }
 }

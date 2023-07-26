@@ -154,12 +154,12 @@ export class TaggingAcrossTargetTypeComponent implements OnInit , OnDestroy {
           const eachParams = {'tagged': true , resourceType: currentApp.toLowerCase()};
           let newParams = this.utils.makeFilterObj(eachParams);
           newParams = Object.assign(newParams, apiTarget);
-          this.router.navigate(['../../', 'assets' , 'asset-list'] , {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
+          this.router.navigate(['../../', 'assets' , 'asset-list'] , {relativeTo: this.activatedRoute, queryParams: {...newParams, tempFilters:true}, queryParamsHandling: 'merge'});
         } else if (intanceType === 'untagged') {
           const eachParams = {'tagged': false, resourceType: currentApp.toLowerCase()};
           let newParams = this.utils.makeFilterObj(eachParams);
           newParams = Object.assign(newParams, apiTarget);
-          this.router.navigate(['../../', 'assets' , 'asset-list'] , {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
+          this.router.navigate(['../../', 'assets' , 'asset-list'] , {relativeTo: this.activatedRoute, queryParams: {...newParams, tempFilters:true}, queryParamsHandling: 'merge'});
         }
       }
     } catch (error) {

@@ -1082,6 +1082,13 @@ CREATE TABLE IF NOT EXISTS `CloudNotification_mapping` (
                                     COLUMN_NAME = 'violations') THEN
           ALTER TABLE cf_AzureTenantSubscription ADD COLUMN violations int(20) DEFAULT 0;
       END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+                                    WHERE TABLE_SCHEMA = database() AND
+                                          TABLE_NAME = 'cf_AzureTenantSubscription' AND
+                                          COLUMN_NAME = 'subscriptionStatus') THEN
+            ALTER TABLE cf_AzureTenantSubscription ADD COLUMN subscriptionStatus varchar(25) DEFAULT ' ';
+      END IF;
  END $$
  DELIMITER ;
 
@@ -1494,7 +1501,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (32,8,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_cloudType&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (33,8,'Region','region.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=region&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,'Asset Name','_resourcename.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourcename&type=asset');
-
+UPDATE pac_v2_ui_options SET optionURL = '/asset/v1/getAssetFilterValue/exempted?ag=aws' WHERE optionId = '23';
 /* Notification filters */
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (34,10,'Event','eventName','/compliance/v1/filters/eventname');
 
@@ -3004,3 +3011,6 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Policy','name','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Severity','severity','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Source','provider','/compliance/v1/filters/policyCompliance',"");
+
+UPDATE pac_v2_ui_options SET optionURL = '/asset/v1/getAssetFilterValue/tagged?ag=aws' WHERE optionId = '22';
+update pac_v2_ui_options set optionValue="resourcetType" where filterId=16;
