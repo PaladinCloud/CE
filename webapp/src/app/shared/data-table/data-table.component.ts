@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import {
+ import {
   Component,
   OnInit,
   Input,

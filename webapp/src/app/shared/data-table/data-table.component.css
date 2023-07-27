@@ -240,7 +240,7 @@ app-filtered-selector{
 }
 
 .row-cells div:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .row-cells a {
@@ -276,7 +276,7 @@ app-filtered-selector{
 } */
 
 .table-cells:first-letter {
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .data-table-inner-content {
