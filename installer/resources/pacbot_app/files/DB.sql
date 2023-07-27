@@ -3015,6 +3015,3 @@ update pac_v2_ui_options set optionValue="resourcetType" where optionValue='reso
 
 update cf_AssetGroupDetails set createdBy = 'Cloud Security' where groupName = 'azure';
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (16,'policyknowledgebase');
-
-
-delete from role_permissions where role_id = 3 and permission_id = 22;
