@@ -549,6 +549,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     executor.shutdown();
 
                     while (!executor.isTerminated()) {
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            logger.info("exception in Thread.sleep for policyCompliance");
+                        }
 
                     }
 
