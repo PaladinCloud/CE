@@ -2769,7 +2769,7 @@ update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,t
 
 UPDATE `pacmandata`.`pac_config_properties` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
 
-update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category' and filterId not in (select filterId from pac_v2_ui_filters where filterName ="policyComplianceFilter") ;
+update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category' and filterId not in (select filterId from pac_v2_ui_filters where filterName in ("policyComplianceFilter","policyknowledgebase")) ;
 
 update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
 
