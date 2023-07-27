@@ -51,7 +51,7 @@
      readonly innerRadius = 70;
      readonly outerRadius = 50;
      readonly currentDate = new Date();
-     companyIcon = '/assets/icons/company-icon.svg';
+     companyIcon = '/assets/images/Paladin_Logo.svg';
  
      @ViewChild('statisticsContainer') statisticsContainer: ElementRef<HTMLDivElement>;
  
