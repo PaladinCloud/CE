@@ -16,6 +16,17 @@
 	color: var(--primary-500);
 }
 
+.breadcrumb{
+	max-width: 200px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.primary-500{
+	color: var(--primary-500);
+}
+
 .breadcrumb-slash{
 	margin: 0 0.8em;
 	color: #999;
