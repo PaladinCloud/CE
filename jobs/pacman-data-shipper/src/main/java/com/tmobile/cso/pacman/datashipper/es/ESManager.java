@@ -122,7 +122,7 @@ public class ESManager implements Constants {
                     else
                         assetIdDisplayName = resourceGroupName;
                     //set in doc
-                    doc.put("assetIdDisplayName",assetIdDisplayName);
+                    doc.put("assetIdDisplayName",assetIdDisplayName.toLowerCase());
 
                 }
 
