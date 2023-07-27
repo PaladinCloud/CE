@@ -914,7 +914,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
             environment.issueFilter.url,
             environment.issueFilter.method
           )
-          .subscribe((response) => {
+          .subscribe((response) => {            
+            response[0].response.forEach(item => {
+              item.optionValue = item.optionValue === "resourceType" ? "_entitytype.keyword" : item.optionValue;
+            });
+            
             this.filterTypeOptions = response[0].response;
             resolve(true);
             this.trimStringsInArrayOfObjs(this.filterTypeOptions);
@@ -946,8 +950,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
       if(urlObj.url.includes("attribute") || value=="Exempted" || value=="Tagged"){
       let filtersToBePassed = {};       
       Object.keys(this.filterText).map(key => {
-        if(key==this.currentFilterType["optionValue"] || key=="domain" || key.replace(".keyword", "")==urlObj.params["attribute"]) return;
-          filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
+        key = key.replace(".keyword", "");
+        if(key==this.currentFilterType["optionValue"]?.replace(".keyword", "") || key=="domain" || key.replace(".keyword", "")==urlObj.params["attribute"]) return;
+        filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
       })
       const payload = {
         type: "asset",
@@ -1078,12 +1083,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       "filterkey",
       "value"
     ); // <-- TO update the queryparam which is passed in the filter of the api
-    Object.entries(this.filterText).forEach(([key,value]) => {
-      if (key == "resourceType") {
-          delete this.filterText[key];
-          this.filterText["_entitytype.keyword"] = value;
-      }
-    });
     this.filterText = this.utils.makeFilterObj(this.filterText);
 
     /**
