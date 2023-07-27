@@ -22,11 +22,10 @@
  **/
 package com.tmobile.pacman.api.compliance.client;
 
+import com.tmobile.pacman.api.compliance.domain.Request;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.tmobile.pacman.api.compliance.domain.AssetApi;
 import com.tmobile.pacman.api.compliance.domain.AssetCount;
@@ -153,4 +152,7 @@ public interface AssetServiceClient {
 
     @GetMapping(value = "/v1/list/valueByTag")
     AssetApi getValuesByTag(@RequestParam("ag") String assetGroup,@RequestParam("tagValue") String tag, @RequestParam("type") String type);
+
+    @PostMapping(value = "/v1/list/assets")
+    ResponseEntity<Object> getTaggedAssetCount(@RequestBody(required = true) Request request, @RequestParam(name = "domain", required = false) String domain);
 }

@@ -77,6 +77,7 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
@@ -657,48 +658,31 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         long totalTagged;
         double compliance;
         String type;
-        String responseDetails = null;
-        JsonParser parser = new JsonParser();
         List<Map<String, Object>> policyIdwithTargetType;
         String policyIdWithTargetTypeQuery = null;
         AssetCountData data;
         AssetCount assetCount;
         AssetCountByAppEnvDTO[] assetcountCount;
-        StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
-                .append(SEARCH);
-        StringBuilder requestBody = null;
-        List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
-
-        String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyCategory.keyword\":{\"value\":\""
-                + CATEGORY_TAGGING + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+        Request request = new Request();
+        request.setAg(assetGroup);
+        request.setFrom(0);
+        request.setSize(0);
+        Map<String, String> filter = new HashMap<>();
+        filter.put("tagged","false");
         if (!Strings.isNullOrEmpty(targetType)) {
-            body = body + ",{\"term\":{\"targetType.keyword\":{\"value\":\"" + targetType + "\"}}}";
+            filter.put("_entitytype.keyword",targetType);
         }
-
-        body = body + "]";
-        if (!tagsList.isEmpty()) {
-            body = body + ",\"should\":[";
-
-            for (String tag : tagsList) {
-                body = body + "{\"match_phrase_prefix\":{\"missingTags\":\"" + tag + "\"}},";
-            }
-            body = body.substring(0, body.length() - 1);
-            body = body + "]";
-            body = body + ",\"minimum_should_match\":\"1\"}}";
-            body = body + ",\"aggs\":{\"distinct_resourceids\":{\"cardinality\":{\"field\":\"_resourceid.keyword\"}}}";
-        }
-        body = body + "}";
-        requestBody = new StringBuilder(body);
+        request.setFilter(filter);
         try {
-            responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
+            ResponseEntity<Object> response =  assetServiceClient.getTaggedAssetCount(request, null);
+            LinkedHashMap<String, Object> responseData = (LinkedHashMap<String, Object>) response.getBody();
+            LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) responseData.get("data");
+            totaluntagged = Long.parseLong(result.get("total").toString());
         } catch (Exception e) {
-            throw new DataException(e);
+            logger.error(e);
+            totaluntagged = 0L;
         }
-        JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
-        JsonObject aggs = responseJson.get(AGGREGATIONS).getAsJsonObject();
-        JsonObject resourceids = aggs.get("distinct_resourceids").getAsJsonObject();
-        totaluntagged = resourceids.get("value").getAsLong();
-        policyIdWithTargetTypeQuery = "SELECT p.targetType FROM cf_PolicyTable p WHERE p.status = 'ENABLED' AND p.category = '" + Constants.CATEGORY_TAGGING + "'";
+        policyIdWithTargetTypeQuery = "SELECT distinct p.targetType FROM cf_PolicyTable p WHERE p.status = 'ENABLED'";
         policyIdwithTargetType = rdsepository.getDataFromPacman(policyIdWithTargetTypeQuery);
         if (Strings.isNullOrEmpty(targetType)) {
             assetCount = assetServiceClient.getTotalAssetsCount(assetGroup, targetType, null, null, "");
