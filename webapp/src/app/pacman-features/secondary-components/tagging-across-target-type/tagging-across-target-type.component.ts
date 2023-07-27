@@ -146,17 +146,17 @@ export class TaggingAcrossTargetTypeComponent implements OnInit , OnDestroy {
       const localObjKeys = Object.keys(event);
       const currentApp = this.uppercasefirst(event[localObjKeys[0]]);
       const intanceType = event[localObjKeys[1]].toLowerCase();
-      const apiTarget = {'TypeAsset' : 'taggable'};
+      const apiTarget = {};
 
       if ( (intanceType !== undefined) && (currentApp !== undefined) ) {
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, 'Tagging Compliance');
         if (intanceType === 'tagged') {
-          const eachParams = {'tagged': true , resourceType: currentApp.toLowerCase()};
+          const eachParams = {'tagged': true , "_entitytype.keyword": currentApp.toLowerCase()};
           let newParams = this.utils.makeFilterObj(eachParams);
           newParams = Object.assign(newParams, apiTarget);
           this.router.navigate(['../../', 'assets' , 'asset-list'] , {relativeTo: this.activatedRoute, queryParams: {...newParams, tempFilters:true}, queryParamsHandling: 'merge'});
         } else if (intanceType === 'untagged') {
-          const eachParams = {'tagged': false, resourceType: currentApp.toLowerCase()};
+          const eachParams = {'tagged': false, "_entitytype.keyword": currentApp.toLowerCase()};
           let newParams = this.utils.makeFilterObj(eachParams);
           newParams = Object.assign(newParams, apiTarget);
           this.router.navigate(['../../', 'assets' , 'asset-list'] , {relativeTo: this.activatedRoute, queryParams: {...newParams, tempFilters:true}, queryParamsHandling: 'merge'});

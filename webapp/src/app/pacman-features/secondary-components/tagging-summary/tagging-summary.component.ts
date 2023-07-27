@@ -61,6 +61,8 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
     private urlToRedirect: any = '';
     @Input() pageLevel: number;
     @Input() breadcrumbPresent;
+    taggedTileDataSubscription: Subscription;
+    unTaggedTileDataSubscription: Subscription;
 
   constructor(
     private commonResponseService: CommonResponseService,
@@ -111,43 +113,68 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
   }
     getProgressData() {
 
-        if (this.dataSubscriber) {
-          this.dataSubscriber.unsubscribe();
-        }
 
-        const queryParams = {
-                'ag': this.selectedAssetGroup
+        const assetListUrl = environment.assetList.url;
+        const assetListMethod = environment.assetList.method;
+        let data = {
+          "compliance": "0",
+          "tagged": 0,
+          "untagged": 0,
+          "assets": 0
         };
 
-        const taggingSummaryUrl = environment.taggingSummary.url;
-        const taggingSummaryMethod = environment.taggingSummary.method;
+          const payloadForTaggedTrue = {
+            ag: this.selectedAssetGroup,
+            filter: {
+                "tagged": "true",
+            },
+            from: 0,
+            size: 0
+           };
 
-        try {
-            this.dataSubscriber = this.commonResponseService.getData( taggingSummaryUrl, taggingSummaryMethod, {}, queryParams).subscribe(
-            response => {
-                try {
+          const payloadForTaggedFalse = {
+              ag: this.selectedAssetGroup,
+              filter: {
+                  "tagged": "false",
+              },
+              from: 0,
+              size: 0
+          };
 
-                    this.apiData = response.output;
-                    this.progressDataProcess(this.apiData);
+        this.taggedTileDataSubscription = this.commonResponseService
+                .getData(assetListUrl, assetListMethod, payloadForTaggedTrue, {})
+                .subscribe((response) => {
+                    const tagged = response.data.total;
+                    data.tagged = tagged;
+                    data.assets = data.tagged + data.untagged;
                     this.showLoader = false;
                     this.seekdata = false;
                     this.dataComing = true;
-                } catch (e) {
-                    this.logger.log('error', e);
-                        this.errorMessage = this.errorHandling.handleJavascriptError(e);
-                        this.getErrorValues();
-                }
+                    if(data.assets>0)
+                      data.compliance = ((data.tagged/data.assets)*100).toFixed(2); 
+                    this.progressDataProcess(data);
+
+                },
+                error => {
+                    this.logger.log("apiError", error);
+                });
+
+        this.unTaggedTileDataSubscription =  this.commonResponseService
+            .getData(assetListUrl, assetListMethod, payloadForTaggedFalse, {})
+            .subscribe((response) => {
+                const untagged = response.data.total;
+                data.untagged = untagged;
+                data.assets = data.tagged + data.untagged;
+                if(data.assets>0)
+                    data.compliance = ((data.tagged/data.assets)*100).toFixed(2); 
+                this.progressDataProcess(data);
+                this.showLoader = false;
+                this.seekdata = false;
+                this.dataComing = true;
             },
             error => {
-                this.logger.log('error', error);
-                this.errorMessage = error;
-                this.getErrorValues();
+                this.logger.log("apiError", error);
             });
-        } catch (error) {
-          this.logger.log('error', error);
-            this.errorMessage = this.errorHandling.handleJavascriptError(error);
-            this.getErrorValues();
-        }
     }
     // assign error values...
 
@@ -237,7 +264,7 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
         try {
             this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
             const localObjKeys = Object.keys(event);
-            const apiTarget = {'TypeAsset' : 'taggable'};
+            const apiTarget = {};
 
             const tempFilters = {tempFilters: true};
                 if ( event[localObjKeys[1]].toLowerCase() === 'total assets' ) {
@@ -265,7 +292,8 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     try {
       this.subscriptionToAssetGroup.unsubscribe();
-      this.dataSubscriber.unsubscribe();
+      this.taggedTileDataSubscription.unsubscribe();
+      this.unTaggedTileDataSubscription.unsubscribe();
       clearInterval(this.autorefreshInterval);
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
