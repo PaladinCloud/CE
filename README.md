@@ -23,6 +23,9 @@ Paladin Cloud is an enterprise-grade holistic cloud security platform that can b
 
 Paladin Cloud's plugin-based connector architecture allows for data ingestion from multiple sources. Plugins allow you to pull data from various cloud-based enterprise systems, such as Kubernetes management, API gateways and threat intelligence systems in order to holistically manage cloud security. Examples include, Qualys Vulnerability Assessment Platform, Bitbucket, TrendMicro Deep Security, Tripwire, Venafi Certificate Management, and Redhat. You can write rules based on data collected by these plugins to get a complete picture of your cloud security posture.
 
+# Try Paladin Cloud Now
+Try Paladin Cloud now in a [live interactive environment](signup.paladincloud.io)
+
 # Installation
 
 Detailed installation instructions are available [here](https://paladincloud.io/docs/Paladin-Cloud-Installation-(On-AWS-Cloud))
