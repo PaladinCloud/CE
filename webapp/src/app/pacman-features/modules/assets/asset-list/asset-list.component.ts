@@ -74,7 +74,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   tableScrollTop=0;
   selectedRowIndex;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Asset ID': 2, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Cloud Type': 0.5};
+  columnWidths = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Cloud Type': 0.5};
   columnNamesMap = {};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -216,7 +216,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     this.tableData = state?.data ?? [];
     this.tableDataLoaded = true;
-    this.displayedColumns = ['Asset ID', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Cloud Type'];
+    this.displayedColumns = ['Asset ID', 'Asset Name', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Cloud Type'];
     this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
     this.tableScrollTop = state?.tableScrollTop;
 
@@ -228,7 +228,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
     if(!isTempFilter && state.filters){
       this.filters = state.filters || [];
-      setTimeout(() => this.getUpdatedUrl(), 0);
+      this.getUpdatedUrl();
     }
   }
 
@@ -923,7 +923,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           )
           .subscribe((response) => {            
             response[0].response.forEach(item => {
-              item.optionValue = item.optionValue === "resourceType" ? "_entitytype.keyword" : item.optionValue;
+              item.optionValue = item.optionValue.includes("resourceType") ? "_entitytype.keyword" : item.optionValue;
             });
             
             this.filterTypeOptions = response[0].response;
