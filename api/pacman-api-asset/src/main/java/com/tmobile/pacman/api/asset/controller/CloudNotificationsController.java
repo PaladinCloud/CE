@@ -4,6 +4,7 @@
 package com.tmobile.pacman.api.asset.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -70,13 +71,16 @@ public class CloudNotificationsController {
 				return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FROM_NEGATIVE));
 			}
 
+			Date startDate=request.getFromDate();
+			Date endDate=request.getToDate();
+
 			String searchText = request.getSearchtext();
 			Map<String, String> filter = request.getFilter();
 			Map<String,Object> sortFilter=request.getSortFilter();
 			List<Map<String, Object>> masterList;
 			
 			try {
-				masterList = cloudService.getNotifications(assetGroup, filter, size, from,sortFilter);
+				masterList = cloudService.getNotifications(assetGroup, filter, size, from,sortFilter,startDate,endDate);
 			} catch (Exception e) {
 				LOGGER.error("Error in getlistOfCloudNotifications ", e);
 				return ResponseUtils.buildFailureResponse(e);
