@@ -554,6 +554,7 @@
 
         if (assetIdDisplayNameObject) {
           this.decodedResourceId = assetIdDisplayNameObject.value;
+          this.breadcrumbPresent = this.decodedResourceId ?? "Asset Details";
         }
       })
      }catch(e){
