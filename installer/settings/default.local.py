@@ -40,9 +40,11 @@ AWS_REGION = ""
 AWS_ASSUME_ROLE_ARN = ""
 
 # Add your first ACCOUNT_ID,ACCOUNT_NAME  here
+# Flag to turn on/off aws by default
 AWS_ENABLED = "true"
 ACCOUNT_ID = ""
 ACCOUNT_NAME = ""
+ACCOUNT_PLATFORM = "aws"
 
 # RDS Related Configurations
 # Possibble values db.m5.large, db.t3.large etc
@@ -83,9 +85,6 @@ JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules
 
 #mandatory tags for tagging polices
 MANDATORY_TAGS = "Application,Environment"
-
-# Flag to turn on/off aws by default
-AWS_ENABLED = "true"
 
 
 #BATCH CONFIGURATION 
