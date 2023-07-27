@@ -34,6 +34,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
@@ -146,18 +147,48 @@ public class AWSErrorManager implements Constants {
 		String parentType = index.replace(dataSource+"_", "");
 		Map<String,Long> errorUpdateInfo = new HashMap<>();
 		if(errorInfo.containsKey(parentType) || errorInfo.containsKey("all")) {
-			List<Map<String,String>> errorByType = errorInfo.get(parentType);
-			if(errorByType==null){
+			List<Map<String, String>> errorByType = errorInfo.get(parentType);
+			if (errorByType == null) {
 				errorByType = errorInfo.get("all");
 			}
-			errorByType.forEach(errorData ->  {
-					String accountId = errorData.get("accountid");
-					String region = errorData.get("region");
-					long updateCount = ESManager.updateLoadDate(index, type, accountId, region, loaddate,checkLatest);
-		    		errorUpdateInfo.put(accountId+":"+region, updateCount);
-				}
-	    	);
-	     }
+			StringBuilder updateJson = new StringBuilder("{\"script\":{\"inline\":\"ctx._source._loaddate= '");
+			updateJson.append(loaddate).append("'\"},\"query\":{\"bool\":{\"should\":[");
+			errorByType.forEach(errorData -> {
+						String accountId = errorData.get("accountid");
+						String region = errorData.get("region");
+
+
+						updateJson.append("{\r\n"
+								+ "          \"bool\": {\r\n"
+								+ "            \"must\": [\r\n"
+								+ "              {\r\n"
+								+ "                \"term\": {\r\n"
+								+ "                  \"accountid.keyword\": \"" + accountId + "\"\r\n"
+								+ "                }\r\n"
+								+ "              },\r\n"
+								+ "              {\r\n"
+								+ "                \"term\": {\r\n"
+								+ "                  \"region.keyword\": \"" + region + "\"\r\n"
+								+ "                }\r\n"
+								+ "              }\r\n"
+								+ "            ]\r\n"
+								+ "          }\r\n"
+								+ "        },");
+
+					}
+			);
+			if (!Strings.isNullOrEmpty(type)) {
+				updateJson.deleteCharAt(updateJson.length() - 1);
+				updateJson.append("], \"minimum_should_match\": 1,\"must\":[{\"match\":{\"docType.keyword\":\"");
+				updateJson.append(type);
+				updateJson.append("\"}}");
+			}
+			if (checkLatest) {
+				updateJson.append(",{\"match\":{\"latest\":true }}");
+
+			}
+			updateJson.append("]}}}");
+		}
 		return errorUpdateInfo;
 	}
 

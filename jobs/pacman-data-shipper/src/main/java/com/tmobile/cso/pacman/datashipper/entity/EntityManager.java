@@ -112,17 +112,23 @@ public class EntityManager implements Constants {
 
                     String keys = ConfigManager.getKeyForType(datasource, type);
                     String idColumn = ConfigManager.getIdForType(datasource, type);
-	                String[] keysArray = keys.split(",");
-	                
-	                prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type,datasource,displayName);
-	                Map<String,Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName,type,loaddate,errorList,true);
-	                Map<String, Object> uploadInfo = ESManager.uploadData(indexName, type, entities, loaddate);
+                    String[] keysArray = keys.split(",");
+
+                    prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type, datasource, displayName);
+                    Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
+                    Map<String, Object> uploadInfo = ESManager.uploadData(indexName, type, entities, loaddate);
                     //ESManager.removeViolationForDeletedAssets(entities, indexName);
                     stats.putAll(uploadInfo);
-	                stats.put("errorUpdates", errUpdateInfo);
-	                errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type)) ;
-	                
-                } 
+                    stats.put("errorUpdates", errUpdateInfo);
+                    errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
+
+                } else {
+                    Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
+                    ESManager.refresh(indexName);
+                    ESManager.updateLatestStatus(indexName, type, loaddate);
+                    errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
+                    stats.put("errorUpdates", errUpdateInfo);
+                }
                 stats.put("total_docs", entities.size());
                 stats.put("end_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
                 stats.put("newly_discovered",entities.stream().filter(entity->entity.get(DISCOVERY_DATE).equals(entity.get(FIRST_DISCOVERED))).count());
@@ -308,9 +314,9 @@ public class EntityManager implements Constants {
                     String originalField = _strOverrideField.replace(PAC_OVERRIDE, "");
                     String finalField = _strOverrideField.replace(PAC_OVERRIDE, "final_");
                     if (entity.containsKey(originalField)) { // Only if the
-                                                             // field exists in
-                                                             // source, we need
-                                                             // to add
+                        // field exists in
+                        // source, we need
+                        // to add
                         String originalValue = entity.get(originalField).toString();
                         if ("".equals(value)) {
                             entity.put(finalField, originalValue);
@@ -323,8 +329,4 @@ public class EntityManager implements Constants {
             }
         }
     }
-
-   
-    
-    
 }
