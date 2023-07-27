@@ -548,4 +548,8 @@ public interface Constants {
             throw new IllegalArgumentException(ACTION_ILLEGAL_ARG_ERR_MSG);
         }
     }
+
+    String FILTER_TAGGED = "tagged";
+    String FILTER_UNTAGGED = "untagged";
+    String FALSE = "false";
 }

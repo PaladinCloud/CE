@@ -15,7 +15,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
-import { CustomValidators } from 'src/app/shared/custom-validators';
 
 
 @Component({
@@ -229,7 +228,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.emailID = null;
       this.firstName = null;
       this.lastName = null;
-      this.selectedRoles = ["ReadOnly"];
+      this.selectedRoles = ["ROLE_USER"];
     }
     this.buildForm();
     const dialogRef = this.dialog.open(DialogBoxComponent,

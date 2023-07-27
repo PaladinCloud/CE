@@ -102,6 +102,16 @@
   src: url("./assets/fonts/mark-pro/MarkPro.otf") format("opentype");
 }
 
+@font-face {
+  font-family: "roboto-mono-medium";
+  src: url("./assets/fonts/roboto-mono/RobotoMono-Medium.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "roboto-mono-regular";
+  src: url("./assets/fonts/roboto-mono/RobotoMono-Regular.ttf") format("opentype");
+}
+
 body {
   overflow: hidden;
 }

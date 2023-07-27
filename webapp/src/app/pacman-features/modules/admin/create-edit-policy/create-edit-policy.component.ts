@@ -202,7 +202,7 @@
    assetTypeSubscription: Subscription;
    updateButtonClicked: boolean = false;
    exemptionDetails = [];
-
+ 
    constructor(
      private datePipe: DatePipe,
      private activatedRoute: ActivatedRoute,
@@ -366,15 +366,15 @@
    }
  
    createOrUpdatepolicy(PolicyModel: any) {
-     this.updateButtonClicked = true;
        const url =  environment.updatePolicy.url;
        const method = environment.updatePolicy.method;
        this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
          this.policyLoader = false;
          this.ispolicyCreationSuccess = true;
-         const notificationMessage = "Policy " + this.policyDisplayName + " updated successfully!!";
+         this.enableUpdate = false;
+         const notificationMessage = "Policy updated successfully!!";
          this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
-         this.navigateBack();
+        //  this.navigateBack();
        },
        error => {
          this.ispolicyCreationFailed = true;
@@ -566,9 +566,8 @@
          }
        this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
        this.paramsList = [];
-
        for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
-         if (JSON.parse(this.allPolicyParams[i]["isEdit"])){
+         if (this.allPolicyParams[i].isEdit && JSON.parse(this.allPolicyParams[i]["isEdit"])){
            this.hasEditableParams++;
           }
          if(this.allPolicyParams[i]["key"].toLowerCase() == "policycategory" || this.allPolicyParams[i]["key"].toLowerCase() == "severity")
@@ -777,4 +776,5 @@
      }
    }
  }
+ 
  

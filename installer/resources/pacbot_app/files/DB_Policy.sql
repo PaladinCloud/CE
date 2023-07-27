@@ -2692,3 +2692,17 @@ update cf_PolicyParams set description = 'Restrict these permissions from IAM ro
 update cf_PolicyParams set description = 'Restrict these permissions from IAM roles' where policyid='UnapprovedIamRoleWithLambdaAccess_version-1_UnapprovedIamRoleLambdaAccess_iamrole' and displayName='Unapproved IAM actions';
 update cf_PolicyParams set description = 'Restrict these permissions from IAM roles' where policyid='core-networking-iam-user-with-unapproved-access_version-1_core-networking-iam-user-with-unapproved-access_iamuser' and displayName='Unapproved IAM actions';
 update cf_PolicyParams set paramValue = 'disable-enable-database-flags-for-cloudsql-server' where paramValue='disable-contained-database-Auth-flag-for-sql-server';
+
+UPDATE cf_PolicyTable SET policyDisplayName = 'Check Underutilized Redshift Cluster' WHERE policyId ='UnderutilizedAmazonRedshiftClustersRule_version-1_UnderutilizedAmazonRedshiftClustersRule_redshift';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Check Underutilized EC2' WHERE policyId = 'LowUtilizationAmazonEC2InstancesRule_version-1_LowUtilizationAmazonEC2InstancesRule_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused CLB' WHERE policyId = 'UnusedClassicElbRule_version-1_UnusedClassicElbRule_classicelb';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Idle RDS Database' WHERE policyId = 'AmazonRDSIdleDBInstancesRule_version-1_AmazonRDSIdleDBInstancesRule_rdsdb';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused ALB' WHERE policyId = 'UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused EBS Volume' WHERE policyId = 'UnusedEBSRule_version-1_UnusedEbsRule_volume';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused Elastic IP' WHERE policyId = 'UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused AMI' WHERE policyId = 'AWSAMIUnused_version-1_Unused_ami';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Check Underutilized EBS Volume' WHERE policyId = 'Underutilized-Amazon-EBS-Volumes_version-1_Underutilized-EBS-Volumes_volume';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Update EC2 Generation' WHERE policyId = 'AWSEC2InstanceGeneration_version-1_InstanceGeneration_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Assign Standard Region to KMS CMK' WHERE policyId = 'NonStandardRegionRule_version-1_KmsWithNonStandardRule_kms';
+
+DELETE FROM cf_PolicyTable WHERE policyId='AWS_eks_cluster_encryption_enabled_version-1_enable_cluster_encryption_eks';

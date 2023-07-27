@@ -104,7 +104,7 @@ public class AssetFileGenerator {
 				log.error("{\"errcode\":\"NO_CRED\" , \"account\":\""+accountId +"\", \"Message\":\"Error getting credentials for account "+accountId +"\" , \"cause\":\"" +e.getMessage()+"\"}");
 				ErrorManageUtil.uploadError(accountId, "all", "all", e.getMessage());
 				rdsdbManager.executeUpdate("UPDATE cf_Accounts set accountStatus='offline' WHERE accountId=?",Arrays.asList(accountId));
-				log.info("updating account status of aws account- {} to offline.",accountId);
+				log.error("updating account status of aws account- {} to offline.",accountId);
 				continue;
 			}
 			final BasicSessionCredentials temporaryCredentials = tempCredentials;

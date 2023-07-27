@@ -2817,7 +2817,7 @@ LOOP
 
 END LOOP;
 
-update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName") where resourceType='all_list';
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname") where resourceType='all_list';
 
 END $$
 
@@ -2985,8 +2985,6 @@ update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"na
 update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('functionapp','kubernetes', 'mysqlflexible', 'resourcegroup', 'securitycenter', 'subscription');
 
 
-delete from pac_v2_ui_options where optionValue like 'tags.%';
-
 update pac_config_properties set value = 'role/PaladinCloudIntegrationRole' where cfkey = 'pacman.auto.fix.role.name';
 
 CREATE TABLE IF NOT EXISTS `cf_AssetGroupCriteriaDetails` (
@@ -3013,6 +3011,7 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Source','provider','/compliance/v1/filters/policyCompliance',"");
 
 UPDATE pac_v2_ui_options SET optionURL = '/asset/v1/getAssetFilterValue/tagged?ag=aws' WHERE optionId = '22';
-update pac_v2_ui_options set optionValue="resourcetType" where filterId=16;
+update pac_v2_ui_options set optionValue="resourcetType" where optionValue='resourceType' and filterId=16;
 
 update cf_AssetGroupDetails set createdBy = 'Cloud Security' where groupName = 'azure';
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (16,'policyknowledgebase');

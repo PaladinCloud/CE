@@ -258,7 +258,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.selectedOrder = this.direction;
     const sortColName = this.headerColName.toLowerCase();
     this.sortOrder = null;
-    if (sortColName === "asset type") {
+    if(this.selectedAssetGroup?.toLowerCase()=="azure" && sortColName==="asset id"){
+      this.fieldName = "assetIdDisplayName.keyword";
+      this.fieldType = "string";
+    } else if (sortColName === "asset type") {
       this.fieldName = "_entitytype.keyword";
       this.fieldType = "string";
     } else{
@@ -651,10 +654,14 @@ export class AssetListComponent implements OnInit, OnDestroy {
             isLink: false
           }
           if(col.toLowerCase()=="asset id"){
+            const displayValue = getData[row]["assetIdDisplayName"];
             cellObj = {
               ...cellObj,
+              text: displayValue?displayValue:cellData,
+              titleText:  cellData, // text to show on hover
+              valueText:  cellData,
               isLink: true
-            };
+            };            
           } else if(col.toLowerCase()=="asset type"){
             const currentAssetType = this.assetTypeMap.get(cellData);
               cellObj = {
