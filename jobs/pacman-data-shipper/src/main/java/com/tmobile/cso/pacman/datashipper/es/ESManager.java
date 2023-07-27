@@ -283,20 +283,17 @@ public class ESManager implements Constants {
     /**
      * Update latest status.
      *
-     * @param index
-     *            the index
-     * @param type
-     *            the type
-     * @param loaddate
-     *            the loaddate
+     * @param index    the index
+     * @param type     the type
+     * @param loaddate the loaddate
      */
-    private static void updateLatestStatus(String index, String type, String loaddate) {
-        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=false\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":true}},{ \"match\": {\"docType\":\""+type+"\"}}], \"must_not\": [{\"match\": {\"_loaddate.keyword\":\""
+    public static void updateLatestStatus(String index, String type, String loaddate) {
+        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=false\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":true}},{ \"match\": {\"docType\":\"" + type + "\"}}], \"must_not\": [{\"match\": {\"_loaddate.keyword\":\""
                 + loaddate + "\"}}]}}}";
         try {
-            invokeAPI("POST", index  + "/" + "_update_by_query", updateJson);
+            invokeAPI("POST", index + "/" + "_update_by_query", updateJson);
         } catch (IOException e) {
-            LOGGER.error("Error in updateLatestStatus",e);
+            LOGGER.error("Error in updateLatestStatus", e);
         }
     }
 
@@ -850,40 +847,17 @@ public class ESManager implements Constants {
      * Update load date.
      *
      * @param index the index
-     * @param type the type
-     * @param accountId the account id
-     * @param region the region
-     * @param loaddate the loaddate
-     * @param checkLatest the check latest
+     * @param query the query
      */
-    public static long updateLoadDate(String index, String type, String accountId, String region, String loaddate,boolean checkLatest) {
-    	LOGGER.info("Error records are handled for Account : {} Type : {} Region: {} ",accountId,type,region );
-    	StringBuilder updateJson = new StringBuilder("{\"script\":{\"inline\":\"ctx._source._loaddate= '");
-    	updateJson.append(loaddate).append("'\"},\"query\":{\"bool\":{\"must\":[");
-    	updateJson.append("{\"match\":{\"accountid\":\"");
-    	updateJson.append(accountId);
-    	updateJson.append("\"}}");
-    	if(!Strings.isNullOrEmpty(region)) {
-    		updateJson.append(",{\"match\":{\"region.keyword\":\"");
-    		updateJson.append(region);
-    		updateJson.append("\"}}");
-    	}
-    	if(!Strings.isNullOrEmpty(type)) {
-    		updateJson.append(",{\"match\":{\"docType.keyword\":\"");
-    		updateJson.append(type);
-    		updateJson.append("\"}}");
-    	}
-    	if(checkLatest){
-    		updateJson.append(",{\"match\":{\"latest\":true }}");
-   
-    	}
-    	updateJson.append("]}}}");
+    public static long updateLoadDate(String index, String query) {
+        LOGGER.info("Error records processed for {} ", index);
+
         try {
-        	Response updateInfo = invokeAPI("POST", index + "/" + "_update_by_query", updateJson.toString());
-        	String updateInfoJson = EntityUtils.toString(updateInfo.getEntity());
-        	return new JsonParser().parse(updateInfoJson).getAsJsonObject().get("updated").getAsLong();
+            Response updateInfo = invokeAPI("POST", index + "/" + "_update_by_query", query);
+            String updateInfoJson = EntityUtils.toString(updateInfo.getEntity());
+            return new JsonParser().parse(updateInfoJson).getAsJsonObject().get("updated").getAsLong();
         } catch (IOException e) {
-            LOGGER.error("Error in updateLoadDate",e);
+            LOGGER.error("Error in updateLoadDate", e);
         }
         return 0l;
     }
