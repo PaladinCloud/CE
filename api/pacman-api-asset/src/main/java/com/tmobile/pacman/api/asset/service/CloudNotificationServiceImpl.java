@@ -1,5 +1,6 @@
 package com.tmobile.pacman.api.asset.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +20,8 @@ public class CloudNotificationServiceImpl implements CloudNotificationService {
 
 	@Override
 	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter,
-			 int size, int from,Map<String,Object> sortFilter) {
-		return repository.getNotifications(assetGroup, filter, size, from,sortFilter);
+													  int size, int from, Map<String,Object> sortFilter, Date startDate, Date endDate) {
+		return repository.getNotifications(assetGroup, filter, size, from,sortFilter,startDate,endDate);
 	}
 
 	@Override

@@ -1,15 +1,9 @@
 package com.tmobile.pacman.api.asset.repository;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -71,6 +65,8 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	private String esUrl;
 	private static final String _SOURCE = "_source";
 	private static final String _COUNT = "_count";
+	private static final String ESQUERY_RANGE = ",{ \"range\": {\"_loaddate.keyword\": {";
+	private static final String ESQUERY_RANGE_CLOSE = "}}}";
 	List<Map<String, Object>> notifications = new ArrayList<>();
 	String autoFixQuery = "";
 
@@ -81,12 +77,12 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 
 	@Override
 	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter, int size,
-			int from,Map<String,Object> sortFilter) {
+													  int from, Map<String,Object> sortFilter, Date startDate, Date endDate) {
 		LOGGER.info("Inside getNotifications");
 		notifications = new ArrayList<>();
 		try {
 
-			getCloudNotifications(INDEX, TYPE, filter, size, from,sortFilter).forEach(notification -> {
+			getCloudNotifications(INDEX, TYPE, filter, size, from,sortFilter,startDate,endDate).forEach(notification -> {
 				notifications.add(notification);
 			});
 
@@ -407,7 +403,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getCloudNotifications(String index, String type, Map<String, String> filter,
-			int size, int from,Map<String,Object> sortFilter) throws DataException {
+			int size, int from,Map<String,Object> sortFilter, Date startDate, Date endDate) throws DataException {
 		Map<String, Object> eventMap = new HashMap<>();
 		int docSize=0;
 		eventMap.put("scheduledChange", "Scheduled Change");
@@ -433,7 +429,27 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			if (!Strings.isNullOrEmpty(eventName)) {
 				body = body + ",{\"terms\":{\"eventName.keyword\":" + eventName + "}}";
 			}
+
+			String gte = null;
+			String lte = null;
+
+			if ( startDate!= null) {
+				gte = "\"gte\": \"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate) + "\"";
+			}
+			if ( endDate != null) {
+				lte = "\"lte\": \"" + new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\"";
+			}
+
+			if (gte != null && lte != null) {
+				body= body + (ESQUERY_RANGE + gte + "," + lte + ESQUERY_RANGE_CLOSE);
+			} else if (gte != null) {
+				body= body +(ESQUERY_RANGE + gte + ESQUERY_RANGE_CLOSE);
+			} else if(lte != null) {
+				body= body + (ESQUERY_RANGE + lte + ESQUERY_RANGE_CLOSE);
+			}
+
 			body = body + "]}},";
+
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			if(null != sortFilter && !sortFilter.isEmpty()) {
 				Map<String, Object> sortMap = new HashMap<>();

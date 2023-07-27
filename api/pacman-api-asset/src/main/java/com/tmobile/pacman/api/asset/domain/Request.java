@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.domain;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,10 @@ public class Request {
     private Map<String, Object> sortFilter;
     
     private String ag;
+
+    private Date fromDate;
+    private Date toDate;
+
 
     /**
      * this is used to cache the response.
@@ -164,5 +169,21 @@ public class Request {
 
     public void setReqFilter(Map<String, Object> reqFilter) {
         this.reqFilter = reqFilter;
+    }
+
+    public Date getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Date getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
     }
 }
