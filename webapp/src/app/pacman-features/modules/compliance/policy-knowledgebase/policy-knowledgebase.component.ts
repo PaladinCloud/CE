@@ -878,7 +878,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   applyFilterByCategory(policyCategory: PolicyCategory) {
       const key = 'Category';
-      const newFilters = this.filters.filter((f) => f.key !== key);
       if (policyCategory !== PolicyCategory.ALL_POLICIES) {
           this.changeFilterType(key).then(() => {
             this.changeFilterTags({
@@ -887,10 +886,10 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             })
           })
       }else{
-        this.changeFilterType(key).then(() => {
+        this.changeFilterType(key).then(() => {          
           this.changeFilterTags({
             filterKeyDisplayValue: key,
-            filterValue: [PolicyCategory.COST, PolicyCategory.OPERATIONS, PolicyCategory.SECURITY, PolicyCategory.TAGGING],
+            filterValue: this.filterTagOptions[key].map(item => item.id),
           })
         })
       }
