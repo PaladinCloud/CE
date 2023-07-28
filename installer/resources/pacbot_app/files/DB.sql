@@ -650,7 +650,8 @@ CREATE TABLE IF NOT EXISTS `pac_v2_ui_filters` (
 
 /*Table structure for table `pac_v2_ui_options` */
 
-drop table pac_v2_ui_options;
+
+DROP TABLE IF EXISTS pac_v2_ui_options;
 
 CREATE TABLE IF NOT EXISTS `pac_v2_ui_options` (
   `optionId` int(25) NOT NULL AUTO_INCREMENT,
