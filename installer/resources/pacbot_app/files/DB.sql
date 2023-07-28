@@ -650,6 +650,8 @@ CREATE TABLE IF NOT EXISTS `pac_v2_ui_filters` (
 
 /*Table structure for table `pac_v2_ui_options` */
 
+drop table pac_v2_ui_options;
+
 CREATE TABLE IF NOT EXISTS `pac_v2_ui_options` (
   `optionId` int(25) NOT NULL AUTO_INCREMENT,
   `filterId` int(25) NOT NULL,
@@ -1475,7 +1477,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (12,4,'Resource Type','targetType.keyword','/compliance/v1/filters/targettype?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (13,8,'Application ','application','/compliance/v1/filters/application?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (14,8,'Environment  ','environment','/compliance/v1/filters/environment?ag=aws&application=aws');
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (15,8,'Resource Type','resourceType','/compliance/v1/filters/targettype?ag=aws');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (15,8,'Resource Type','resourceType','/compliance/v1/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (16,9,'Application','tags.Application.keyword','/compliance/v1/filters/application?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (17,1,'Severity','severity.keyword','/compliance/v1/filters/severities?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (18,1,'Category','category.keyword','/compliance/v1/filters/categories?ag=aws');
