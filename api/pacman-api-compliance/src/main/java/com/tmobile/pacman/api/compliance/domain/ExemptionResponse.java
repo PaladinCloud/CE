@@ -10,4 +10,28 @@ public class ExemptionResponse {
     private List<String> failedIssueIds;
     private String Status;
     private Map<String, String> failureReason;
+
+    public List<String> getFailedIssueIds() {
+        return failedIssueIds;
+    }
+
+    public void setFailedIssueIds(List<String> failedIssueIds) {
+        this.failedIssueIds = failedIssueIds;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
+    }
+
+    public Map<String, String> getFailureReason() {
+        return failureReason;
+    }
+
+    public void setFailureReason(Map<String, String> failureReason) {
+        this.failureReason = failureReason;
+    }
 }
