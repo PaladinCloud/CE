@@ -552,4 +552,5 @@ public interface Constants {
     String FILTER_TAGGED = "tagged";
     String FILTER_UNTAGGED = "untagged";
     String FALSE = "false";
+    String TARGET_TYPE_DISPLAY_NAME="targetTypeDisplayName";
 }

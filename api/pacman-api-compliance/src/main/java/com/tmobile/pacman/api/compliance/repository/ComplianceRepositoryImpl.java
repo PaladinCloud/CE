@@ -417,6 +417,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         fields.add(ENV);
         fields.add(PAC_DS);
         fields.add(POLICYID);
+        fields.add(AUTOFIX_PLANNED);
+        fields.add(TARGET_TYPE_DISPLAY_NAME);
         fields.addAll(Arrays.stream(mandatoryTags.split(",")).map(String::trim).map(str -> "tags." + str).collect(Collectors.toList()));
         // for sox domain
 
@@ -614,12 +616,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 sortFilters.put("sortOrder", policyIdOrder);
                 sortFilterList.add(sortFilters);
             } else if(rdsAttributeList.contains(sortBy)) {
-                String sortByAttribute = Constants.RESOURCE_TYPE.equalsIgnoreCase(sortBy) ? Constants.TARGET_TYPE : sortBy;
+                String sortByAttribute = Constants.RESOURCE_TYPE.equalsIgnoreCase(sortBy) ? Constants.TARGET_TYPE_DISPLAY_NAME : sortBy;
                 sortFilters.put(FIELD_NAME, sortByAttribute + KEYWORD);
                 String sortOrder = (String) sortFilters.get("order");
                 List<Map<String, Object>> policyDetails = getPolicyDetailsSortByColumn(targetTypes, sortByAttribute, sortOrder);
                 Set<String> orderList = new LinkedHashSet<>();
-                policyDetails.forEach(policy -> orderList.add((String) policy.get(sortByAttribute)));
+                policyDetails.forEach(policy -> orderList.add((String) policy.get("displayName")));
                 sortFilters.put("sortOrder", orderList);
                 sortFilterList.add(sortFilters);
             }else if(sortBy.equalsIgnoreCase("severity")){
@@ -2827,8 +2829,14 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             //default asc sort order
             sortOrder="asc";
         }
-        String policyDetails = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled, autoFixAvailable FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
-                + targetType + ")  ORDER BY "+sortByColumn+" "+sortOrder;
+        if(sortByColumn.equalsIgnoreCase("targetTypeDisplayName")){
+            sortByColumn="displayName";
+        }
+        String policyDetails = "SELECT P.policyId, P.policyDisplayName, P.targetType, P.severity, P.category, P.autoFixEnabled, P.autoFixAvailable, T.displayName "
+                + "FROM cf_PolicyTable P "
+                + "JOIN cf_Target T ON P.targetType = T.targetName "
+                + "WHERE P.STATUS = 'ENABLED' AND P.targetType IN (" + targetType + ") "
+                + "ORDER BY LOWER (" + sortByColumn + ") ASC";
         return rdsepository.getDataFromPacman(policyDetails);
     }
 

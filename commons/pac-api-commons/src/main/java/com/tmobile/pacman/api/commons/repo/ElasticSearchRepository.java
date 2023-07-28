@@ -1118,6 +1118,19 @@ public class ElasticSearchRepository implements Constants {
 							Map<String, Object> sortAttribute = new HashMap<>();
 							sortAttribute.put(fieldName, mappedSort);
 							list.add(sortAttribute);
+						}
+						else if(fieldName.equalsIgnoreCase("_entitytype.keyword")){
+							fieldName="targettypedisplayname.keyword";
+							Map<String, Object> scriptMap = new HashMap<>();
+							scriptMap.put("source", "doc['"+fieldName+"'].value.toLowerCase()");
+							scriptMap.put( "lang", "painless");
+							Map<String, Object> scriptOrderMap = new HashMap<>();
+							scriptOrderMap.put("script",scriptMap);
+							scriptOrderMap.put("order", sortOrder);
+							scriptOrderMap.put("type","string");
+							Map<String, Object> finalOrderMap = new HashMap<>();
+							finalOrderMap.put("_script",scriptOrderMap);
+							list.add(finalOrderMap);
 						} else if(fieldName.startsWith("tags.") && fieldName.endsWith(".keyword") && Arrays.asList(mandatoryTags.split(",")).contains(((String[])(fieldName.split("\\.")))[1])){
 							String returnValueForMissingTag = sortOrder.equalsIgnoreCase("asc") ? "~" : " ";
 							Map<String, Object> innerScriptMap1 = new HashMap<>();
