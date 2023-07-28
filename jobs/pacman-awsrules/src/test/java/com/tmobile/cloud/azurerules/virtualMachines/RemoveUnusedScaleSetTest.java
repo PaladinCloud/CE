@@ -33,13 +33,13 @@ public class RemoveUnusedScaleSetTest {
     @InjectMocks
     RemoveUnusedScaleSet removeUnusedScaleSet;
 
-    public JsonObject getFailureJsonArrayForUnusedScaleSet(){
+    public JsonObject getHitJsonArrayForUnusedScaleSet(){
         Gson gson=new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("hits", gson.fromJson("{\"hits\":[{\"_source\":{\"discoverydate\":\"2022-07-03 11:00:00+0000\",\"_cloudType\":\"Azure\",\"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\"region\":\"centralus\",\"subscriptionName\":\"dev-paladincloud\",\"resourceGroupName\":\"dev-paladincloud\",\"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/DEV-PALADINCLOUD/providers/Microsoft.Compute/virtualMachines/testing\",\"networkInterfaceIds\":[\"/subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-paladincloud/providers/Microsoft.Network/networkInterfaces/testing243\"],\"key\":\"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\"virtualMachineScaleSetVHList\":[{\"virtualMachineIds\":[\"f4d319d8-7eac-4e15-a561-400f7744aa81\"],\"loadBalancerIds\":[]}]}}]}", JsonElement.class));
         return jsonObject;
     }
-    public  JsonObject getHitJsonArrayForUnusedScaleSet() {
+    public  JsonObject getFailureJsonArrayForUnusedScaleSet() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("hits", gson.fromJson("{\"hits\":[{\"_source\":{\"discoverydate\":\"2022-07-03 11:00:00+0000\",\"_cloudType\":\"Azure\",\"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\"region\":\"centralus\",\"subscriptionName\":\"dev-paladincloud\",\"resourceGroupName\":\"dev-paladincloud\",\"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/DEV-PALADINCLOUD/providers/Microsoft.Compute/virtualMachines/testing\",\"networkInterfaceIds\":[\"/subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-paladincloud/providers/Microsoft.Network/networkInterfaces/testing243\"],\"key\":\"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\"virtualMachineScaleSetVHList\":[{\"virtualMachineIds\":[],\"loadBalancerIds\":[]}]}}]}", JsonElement.class));

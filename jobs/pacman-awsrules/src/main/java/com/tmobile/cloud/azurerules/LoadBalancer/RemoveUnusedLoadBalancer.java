@@ -54,7 +54,7 @@ public class RemoveUnusedLoadBalancer extends BasePolicy {
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
 
-            if (!isLoadBalancerUnused) {
+            if (isLoadBalancerUnused) {
                 List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                 LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
                 Annotation annotation = null;
@@ -67,13 +67,13 @@ public class RemoveUnusedLoadBalancer extends BasePolicy {
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                logger.debug("Load Balancer is considered used and cannot be removed");
+                logger.debug("Load Balancer is considered unused and can be safely removed from your cloud account.");
                 return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
-        logger.debug("Load Balancer is considered unused and can be safely removed from your cloud account.");
+        logger.debug("Load Balancer is considered used and cannot be removed");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
