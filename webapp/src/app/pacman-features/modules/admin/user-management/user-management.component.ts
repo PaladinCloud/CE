@@ -89,7 +89,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   mandatory: any;
   onScrollDataLoader: Subject<any> = new Subject<any>();
   action: any;
-  updatedRoles = ["ReadOnly"];
+  updatedRoles = ["ROLE_USER"];
 
   private userForm: FormGroup;
   public userFormErrors : any = {
