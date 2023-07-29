@@ -590,8 +590,9 @@ public class AssetServiceImpl implements AssetService {
 
         Set<String> mandatoryTags = getMandatoryTagsNames(AssetConstants.ASSETLISTING);
         for(String mandatoryTag : mandatoryTags){
-            if(!tagsKvPairs.containsKey(mandatoryTag)){
-                tagsKvPairs.put(mandatoryTag, AssetConstants.UNKNOWN);
+            String mTag = "gcp".equalsIgnoreCase(cloudType)?mandatoryTag.toLowerCase():mandatoryTag;
+            if(!tagsKvPairs.containsKey(mTag)) {
+                tagsKvPairs.put(mTag, AssetConstants.UNKNOWN);
             }
         }
         assetDetailMap.put("tags", tagsKvPairs);
