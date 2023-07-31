@@ -113,68 +113,43 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
   }
     getProgressData() {
 
+      if (this.dataSubscriber) {
+        this.dataSubscriber.unsubscribe();
+      }
 
-        const assetListUrl = environment.assetList.url;
-        const assetListMethod = environment.assetList.method;
-        let data = {
-          "compliance": "0",
-          "tagged": 0,
-          "untagged": 0,
-          "assets": 0
-        };
+      const queryParams = {
+              'ag': this.selectedAssetGroup
+      }
 
-          const payloadForTaggedTrue = {
-            ag: this.selectedAssetGroup,
-            filter: {
-                "tagged": "true",
-            },
-            from: 0,
-            size: 0
-           };
-
-          const payloadForTaggedFalse = {
-              ag: this.selectedAssetGroup,
-              filter: {
-                  "tagged": "false",
-              },
-              from: 0,
-              size: 0
-          };
-
-        this.taggedTileDataSubscription = this.commonResponseService
-                .getData(assetListUrl, assetListMethod, payloadForTaggedTrue, {})
-                .subscribe((response) => {
-                    const tagged = response.data.total;
-                    data.tagged = tagged;
-                    data.assets = data.tagged + data.untagged;
-                    this.showLoader = false;
+      const taggingSummaryUrl = environment.taggingSummary.url;
+      const taggingSummaryMethod = environment.taggingSummary.method;
+  
+          try {
+              this.dataSubscriber = this.commonResponseService.getData( taggingSummaryUrl, taggingSummaryMethod, {}, queryParams).subscribe(
+              response => {
+                  try {
+  
+                      this.apiData = response.output;
+                      this.progressDataProcess(this.apiData);
+                      this.showLoader = false;
                     this.seekdata = false;
                     this.dataComing = true;
-                    if(data.assets>0)
-                      data.compliance = ((data.tagged/data.assets)*100).toFixed(2); 
-                    this.progressDataProcess(data);
-
-                },
-                error => {
-                    this.logger.log("apiError", error);
-                });
-
-        this.unTaggedTileDataSubscription =  this.commonResponseService
-            .getData(assetListUrl, assetListMethod, payloadForTaggedFalse, {})
-            .subscribe((response) => {
-                const untagged = response.data.total;
-                data.untagged = untagged;
-                data.assets = data.tagged + data.untagged;
-                if(data.assets>0)
-                    data.compliance = ((data.tagged/data.assets)*100).toFixed(2); 
-                this.progressDataProcess(data);
-                this.showLoader = false;
-                this.seekdata = false;
-                this.dataComing = true;
-            },
-            error => {
-                this.logger.log("apiError", error);
-            });
+                  }catch (e) {
+                    this.logger.log('error', e);
+                        this.errorMessage = this.errorHandling.handleJavascriptError(e);
+                        this.getErrorValues();
+                }
+                }, error => {
+                  this.logger.log('error', error);
+                  this.errorMessage = error;
+                  this.getErrorValues();
+                  this.logger.log("apiError", error);
+              });
+          } catch (error) {
+            this.logger.log('error', error);
+              this.errorMessage = this.errorHandling.handleJavascriptError(error);
+              this.getErrorValues();
+          }  
     }
     // assign error values...
 
@@ -268,7 +243,7 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
 
             const tempFilters = {tempFilters: true};
                 if ( event[localObjKeys[1]].toLowerCase() === 'total assets' ) {
-                    const eachParams = {};
+                    const eachParams = {'tagged': "true, false"};
                     let newParams = this.utils.makeFilterObj(eachParams);
                     newParams = Object.assign(newParams, apiTarget);
                         this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams, ...tempFilters}, queryParamsHandling: 'merge' });
