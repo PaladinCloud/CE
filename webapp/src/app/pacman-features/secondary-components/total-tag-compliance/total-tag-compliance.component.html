@@ -21,7 +21,7 @@
     </div>
     <div class="tag-compliance-details">
         <app-list-table *ngIf="contValue && loaded && !seekdata" [tableData]="complianceTableData"
-        [tableHeaderData]="complianceTableHeaderData" (navigatePage)="navigatePage($event)"></app-list-table>
+        [tableHeaderData]="complianceTableHeaderData" [disableLinks]="true"></app-list-table>
     </div>    
     <div class="error_msg">
         <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
