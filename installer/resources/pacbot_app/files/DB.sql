@@ -2966,10 +2966,10 @@ LOOP
   SET _value = TRIM(tag);
 
   -- insert the filters metadata for mandatory tags  compliance/v1/filters/tag?ag=aws&tag=tags.Environment.keyword
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/attribute?attribute=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value),'/compliance/v1/filters/attribute');
   INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&type=issue&tag=tags.',_value,'.keyword'));
   INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (3,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/attribute?attribute=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,_value,concat('tags.',_value),'/compliance/v1/filters/attribute');
   INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (9,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
 
   INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/attribute'),'String');

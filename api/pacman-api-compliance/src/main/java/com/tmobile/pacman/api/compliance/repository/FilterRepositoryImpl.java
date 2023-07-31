@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.HashMultimap;
+import com.google.gson.Gson;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -334,8 +336,13 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         Map<String, Object> mustNotFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter=new HashMap<>();
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-        checkEntityType(mustFilter,mustTermsFilter,entityType,targetTypes);
-        setFilters(filter,mustFilter,shouldFilter,mustTermsFilter,mustNotFilter, assetGroup);
+        List<String> taggingTargetTypesList = new ArrayList<>();
+        List<String> validTypes = Arrays.asList(targetTypes.replace("'","").split(","));
+        setFilters(filter,mustFilter,shouldFilter,mustTermsFilter,mustNotFilter, assetGroup, taggingTargetTypesList);
+        if(!taggingTargetTypesList.isEmpty()){
+            validTypes.retainAll(taggingTargetTypesList);
+        }
+        checkEntityType(mustFilter,mustTermsFilter,entityType,validTypes);
         String aggsFilter=attributeName;
         try {
             if(attributeName.equalsIgnoreCase(CREATED_DATE)){
@@ -389,26 +396,48 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
     }
 
     private void setFilters(Map<String, Object> filter, Map<String, Object> mustFilter, HashMultimap<String, Object> shouldFilter,
-                            Map<String, Object> mustTermsFilter, Map<String, Object> mustNotFilter, String assetGroup) {
+                            Map<String, Object> mustTermsFilter, Map<String, Object> mustNotFilter, String assetGroup, List<String> taggingTargetTypesList) {
         Iterator it = filter.entrySet().iterator();
+        Gson gson = new Gson();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             String key = (String) entry.getKey();
             if(key.equalsIgnoreCase(FILTER_TAGGED)){
-                Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
-                ArrayList<String> tagList=tagsSet.stream().map(tag->"tags."+tag).collect(Collectors.toCollection(ArrayList::new));
                 String filterTagged = "";
-                if(filter.get(key) instanceof String){
-                    filterTagged = filter.get(key).toString();
+                if(entry.getValue() instanceof String){
+                    filterTagged = entry.getValue().toString();
                 }
-                else{
-                    filterTagged = ((List<String>) filter.get(key)).get(0);
+                else {
+                    List<String> filterTaggedList = (List<String>) entry.getValue();
+                    filterTagged = filterTaggedList.size()==1?filterTaggedList.get(0):"";
                 }
+                List<String> untaggedAssets = new ArrayList<>();
+                try{
+                    untaggedAssets = getUntaggedAssets(assetGroup);
+                }catch(Exception e){
+                    logger.error("Error occured while fetching untagged assets");
+                }
+
                 if(filterTagged.equalsIgnoreCase(FALSE)){
-                    mustFilter.put(FILTER_UNTAGGED, tagList);
+                    mustTermsFilter.put("_resourceid.keyword", untaggedAssets);
                 }
-                else if (filterTagged.equalsIgnoreCase(TRUE)){
-                    mustFilter.put(FILTER_TAGGED, tagList);
+                else {
+                    List<Map<String,Object>> targetTypesForTaggingList = rdsepository.getDataFromPacman("SELECT p.targetType FROM cf_PolicyTable p WHERE p.status = 'ENABLED' AND p.category = '" + Constants.CATEGORY_TAGGING + "'");
+                    taggingTargetTypesList = targetTypesForTaggingList.stream().map(obj -> (String)obj.get("targetType")).collect(Collectors.toList());
+                    if(filterTagged.equalsIgnoreCase(TRUE)){
+                        if(!untaggedAssets.isEmpty()){
+                            String excludeAssetsString = "{\"must_not\": [\n" +
+                                    "                        {\"terms\":\n" +
+                                    "                            {\n" +
+                                    "                                \"_resourceid.keyword\":[ %s ]\n" +
+                                    "                            }\n" +
+                                    "                        }\n" +
+                                    "                       ]}";
+                            excludeAssetsString = String.format(excludeAssetsString,untaggedAssets.stream().map(obj -> "\""+obj+"\"").collect(Collectors.joining(",")));
+                            Map<String,Object> excludedAssetsMap = gson.fromJson(excludeAssetsString,Map.class);
+                            mustFilter.put("bool",excludedAssetsMap);
+                        }
+                    }
                 }
             }
             else if(key.equalsIgnoreCase(EXEMPTED)){
@@ -481,11 +510,11 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
 
     }
 
-    private void checkEntityType(Map<String, Object> mustFilter, Map<String, Object> mustTermsFilter, String entityType,String targetTypes) {
+    private void checkEntityType(Map<String, Object> mustFilter, Map<String, Object> mustTermsFilter, String entityType,List<String> targetTypes) {
         if(entityType.equalsIgnoreCase("asset")){
             mustFilter.put(UNDERSCORE_ENTITY, Constants.TRUE);
             mustFilter.put(LATEST, Constants.TRUE);
-            mustTermsFilter.put("_entitytype.keyword",Arrays.asList(targetTypes.replace("'","").split(",")));
+            mustTermsFilter.put("_entitytype.keyword",targetTypes);
         }else if(entityType.equalsIgnoreCase("issue")){
             mustFilter.put(Constants.TYPE, "issue");
         }
@@ -538,4 +567,19 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         }
         return assetList;
     }
+
+    private List<String> getUntaggedAssets(String assetGroup) throws Exception {
+        Map<String,Object> mustFilter = new HashMap<>();
+        Map<String,Object> missingTagsMap = new HashMap<>();
+        mustFilter.put("type.keyword","issue");
+        mustFilter.put("policyCategory.keyword","tagging");
+        mustFilter.put("issueStatus.keyword","open");
+        mustFilter.put("match",missingTagsMap);
+        Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
+        String mandatoryTagMatchClause = tagsSet.stream().collect(Collectors.joining(" "));
+        missingTagsMap.put("missingTags",mandatoryTagMatchClause);
+        List<Map<String, Object>> untaggedAssetList= elasticSearchRepository.getDataFromES(assetGroup, null, mustFilter,null, null,Arrays.asList(RESOURCEID), null);
+        return untaggedAssetList.stream().map(obj -> (String)obj.get(RESOURCEID)).collect(Collectors.toList());
+    }
+
 }
