@@ -8,7 +8,8 @@
 
         <span class="tfc-value" [title]="appliedFilters.length === 1 ? appliedFilters[0].name : ''">
             <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
-                {{ appliedFilters[0].name | slice : 0 : maxOptionChars | celldatacase }}
+                <span *ngIf="!filtersToExcludeFromCasing.includes(category)">{{ appliedFilters[0].name | slice : 0 : maxOptionChars | celldatacase }}</span>
+                <span *ngIf="filtersToExcludeFromCasing.includes(category)">{{ appliedFilters[0].name | slice : 0 : maxOptionChars }}</span>
             </ng-container>
 
             <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
@@ -34,7 +35,8 @@
                     [checked]="appliedFiltersDict[option]"
                     (change)="updateFilterOption(option, $event.checked)"
                 >
-                    {{ option | slice : 0 : maxOptionChars | celldatacase}}
+                    <span *ngIf="!filtersToExcludeFromCasing.includes(category)">{{ option | slice : 0 : maxOptionChars | celldatacase }}</span>
+                    <span *ngIf="filtersToExcludeFromCasing.includes(category)">{{ option | slice : 0 : maxOptionChars }}</span>
                 </mat-checkbox>
             </li>
         </ul>

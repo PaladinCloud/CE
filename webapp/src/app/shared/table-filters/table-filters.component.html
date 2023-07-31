@@ -8,6 +8,7 @@
         (clear)="clearFilter($event)"
         (update)="updateFilter($event)"
         (click)="openFilterCategory(appliedFilter.keyDisplayValue)"
+        [filtersToExcludeFromCasing]="filtersToExcludeFromCasing"
     ></app-table-filter-chip>
 
     <button
@@ -57,7 +58,8 @@
                         [checked]="appliedFiltersDict[selectedCategory!][option]"
                         (change)="applyFilter(option, $event)"
                     >
-                        {{ option | slice : 0 : maxOptionChars | celldatacase }}
+                        <span *ngIf="!filtersToExcludeFromCasing.includes(selectedCategory)">{{ option | slice : 0 : maxOptionChars | celldatacase }}</span>
+                        <span *ngIf="filtersToExcludeFromCasing.includes(selectedCategory)">{{ option | slice : 0 : maxOptionChars }}</span>
                     </mat-checkbox>
                 </li>
             </ul>

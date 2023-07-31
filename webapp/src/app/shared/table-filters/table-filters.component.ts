@@ -23,6 +23,7 @@ export interface OptionChange {
 })
 export class TableFiltersComponent implements OnInit {
     @Input() enableMultiValuedFilter = false;
+    @Input() filtersToExcludeFromCasing = [];
     @Input() set appliedFilters(filters: FilterItem[] | undefined) {
         this._appliedFilters = filters || [];
         const optionDict = this._appliedFilters.reduce((prev, next) => {
