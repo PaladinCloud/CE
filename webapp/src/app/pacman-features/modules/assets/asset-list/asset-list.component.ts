@@ -411,17 +411,20 @@ export class AssetListComponent implements OnInit, OnDestroy {
         }
 
         this.changeFilterType(keyDisplayValue).then(() => {
-          let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
-            id: this.filterText[formattedFilters[i].filterkey],
+          const filterKey = dataArray[i].filterkey;
+          
+          const filterValueObj = this.filterText[filterKey]?.split(',').map(val => {
+            const valObj:any = find(this.filterTagOptions[keyDisplayValue], {
+              id: val,
+            });
+            return valObj.name;
           });
-
-          let filterKey = dataArray[i].filterkey;
-
+                    
           if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
-            if(filterValueObj && filterValueObj["name"]){
+            if(filterValueObj){
               const eachObj = {
                 keyDisplayValue: keyDisplayValue,
-                filterValue: filterValueObj?filterValueObj["name"]:undefined,
+                filterValue: filterValueObj??undefined,
                 key: keyDisplayValue, // <-- displayKey-- Resource Type
                 value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
                 filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
