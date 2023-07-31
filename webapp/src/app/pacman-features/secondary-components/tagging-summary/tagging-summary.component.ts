@@ -243,7 +243,7 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
 
             const tempFilters = {tempFilters: true};
                 if ( event[localObjKeys[1]].toLowerCase() === 'total assets' ) {
-                    const eachParams = {'tagged': "true, false"};
+                    const eachParams = {'tagged': "true,false"};
                     let newParams = this.utils.makeFilterObj(eachParams);
                     newParams = Object.assign(newParams, apiTarget);
                         this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams, ...tempFilters}, queryParamsHandling: 'merge' });
@@ -268,8 +268,8 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
     try {
       if(this.dataSubscriber) this.dataSubscriber.unsubscribe();
       this.subscriptionToAssetGroup.unsubscribe();
-      this.taggedTileDataSubscription.unsubscribe();
-      this.unTaggedTileDataSubscription.unsubscribe();
+      if(this.taggedTileDataSubscription) this.taggedTileDataSubscription.unsubscribe();
+      if(this.unTaggedTileDataSubscription) this.unTaggedTileDataSubscription.unsubscribe();
       clearInterval(this.autorefreshInterval);
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);

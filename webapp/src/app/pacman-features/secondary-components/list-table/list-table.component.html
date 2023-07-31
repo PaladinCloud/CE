@@ -26,7 +26,7 @@
                 {{tableValue.AppName}}
             </div>
             <ul class="flex list-table-value">
-                <li class="list-table-count-each count-color nowrap-ellipsis center pointer" *ngFor="let tableRow of tableValue.AppDetails; let j = index " title = {{tableRow.count}} (click)="tableRow.count > 0 && instructParentToNavigate(tableValue.AppName,tableHeaderData[j+1])" [ngClass]="{'link-text pointer underline-link-num': tableRow.count > 0 && !tableRow.noLink}">
+                <li class="list-table-count-each count-color nowrap-ellipsis center pointer" *ngFor="let tableRow of tableValue.AppDetails; let j = index " title = {{tableRow.count}} (click)="tableRow.count > 0 && instructParentToNavigate(tableValue.AppName,tableHeaderData[j+1])" [ngClass]="{'link-text pointer underline-link-num': tableRow.count > 0 && !tableRow.noLink && !disableLinks}">
                     {{tableRow.count | number}}
                 </li>
             </ul>

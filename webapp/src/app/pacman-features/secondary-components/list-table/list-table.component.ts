@@ -25,6 +25,7 @@ export class ListTableComponent implements OnInit, OnChanges {
     @Input() searchText: any = '';
     @Input() orderByConfig;
     @Input() orderByProperty;
+    @Input() disableLinks = false;
     @Output() error: EventEmitter<any> = new EventEmitter();
     @Output() navigatePage: EventEmitter<any> = new EventEmitter();
     public tableBodyData: any;
