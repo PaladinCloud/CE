@@ -61,6 +61,7 @@
             (selectedFilter)="changeFilterTags($event)"
             (selectedFilterType)="changeFilterType($event)"
             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+            [columnsAndFiltersToExcludeFromCasing]="columnsToExcludeFromCasing"
         >
         </app-table>
     </div>

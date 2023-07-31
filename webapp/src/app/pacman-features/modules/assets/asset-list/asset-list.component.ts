@@ -85,6 +85,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   };
+  columnsToExcludeFromCasing = [];
   tableImageDataMap = {
       security:{
           image: "category-security",
@@ -417,7 +418,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
             const valObj:any = find(this.filterTagOptions[keyDisplayValue], {
               id: val,
             });
-            return valObj.name;
+            return valObj?.name;
           });
                     
           if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
@@ -926,6 +927,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
           )
           .subscribe((response) => {            
             response[0].response.forEach(item => {
+              if(item.optionValue.includes("tags.")){
+                this.columnsToExcludeFromCasing.push(item.optionName);
+              }
               item.optionValue = item.optionValue.includes("resourceType") ? "_entitytype.keyword" : item.optionValue;
             });
             
@@ -959,7 +963,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
       if(urlObj.url.includes("attribute") || value=="Exempted" || value=="Tagged"){
       let filtersToBePassed = {};       
-      Object.keys(this.filterText).map(key => {
+      Object.keys(this.filterText).forEach(key => {
         key = key.replace(".keyword", "");
         if(key==this.currentFilterType["optionValue"]?.replace(".keyword", "") || key=="domain" || key.replace(".keyword", "")==urlObj.params["attribute"]) return;
         filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
@@ -984,7 +988,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           const filterTagsData = response[0].data.response;          
           if(value.toLowerCase()=="asset type"){
             this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-              filterTagsData.map(filterOption => {
+              filterTagsData.forEach(filterOption => {
                 filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
               });
             });

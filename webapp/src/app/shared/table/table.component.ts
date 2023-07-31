@@ -36,6 +36,7 @@ export interface FilterItem {
     styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+    @Input() columnsAndFiltersToExcludeFromCasing = [];
     @Input() centeredColumns: { [key: string]: boolean } = {};
     @Input() columnsSortFunctionMap;
     @Input() filterFunctionMap;
@@ -182,7 +183,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             });
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(changes: SimpleChanges): void {        
         if (this.customTable) {
             if (changes.tableScrollTop && changes.tableScrollTop.currentValue != undefined) {
                 this.customTable.nativeElement.scrollTop = this.tableScrollTop;
