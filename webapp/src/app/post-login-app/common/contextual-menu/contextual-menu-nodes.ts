@@ -76,7 +76,6 @@ export const MENU_NODES: MenuItem[] = [
                 name: 'Notifications',
                 parent: 'Fix Central',
                 route: '/pl/notifications/notifications-list',
-                notDisplayIfAzure: true,
             },
             {
                 id: 'Recommendations',
