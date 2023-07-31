@@ -266,6 +266,7 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
+      if(this.dataSubscriber) this.dataSubscriber.unsubscribe();
       this.subscriptionToAssetGroup.unsubscribe();
       this.taggedTileDataSubscription.unsubscribe();
       this.unTaggedTileDataSubscription.unsubscribe();
