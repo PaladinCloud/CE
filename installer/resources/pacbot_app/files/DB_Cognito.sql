@@ -89,4 +89,4 @@ INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,20);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,22);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,23);
 
-delete from role_permissions where role_id = 3 and permission_id = 22;
+delete from 'role_permissions' where role_id = 3 and permission_id = 22;
