@@ -158,7 +158,12 @@ public class DownloadFileService implements Constants {
 
             for (String clm : columns) {
                 if (issueDetail.has(clm) && !issueDetail.get(clm).isJsonNull()) {
-                    rows.add(issueDetail.get(clm).getAsString());
+                    if(issueDetail.get(clm) instanceof JsonObject){
+                        rows.add(issueDetail.get(clm).toString());
+                    }
+                    else{
+                        rows.add(issueDetail.get(clm).getAsString());
+                    }
                 } else {
                     rows.add(null);
                 }
