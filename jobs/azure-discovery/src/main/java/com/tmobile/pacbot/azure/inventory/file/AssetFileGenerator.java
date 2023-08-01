@@ -790,7 +790,8 @@ public class AssetFileGenerator {
 			rdsdbManager.executeQuery("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline'");
 		}
 		else{
-			rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE subscription NOT IN (?)",Arrays.asList(String.join(",",connectedSubscriptions)));
+			String combinedConnectedSubsStr = connectedSubscriptions.stream().map(sub -> "'"+sub+"'").collect(Collectors.joining(","));
+			rdsdbManager.executeQuery("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE subscription NOT IN ("+combinedConnectedSubsStr+")");
 		}
 		try {
 			FileManager.finalise();
