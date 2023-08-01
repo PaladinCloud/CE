@@ -503,7 +503,7 @@ public class FilterServiceImpl implements FilterService, Constants {
             Map<String, Object> values = new HashMap<>();
             if (StringUtils.isNotBlank(dataValue.getKey())) {
                 String key=dataValue.getKey();
-                values.put(NAME, key.substring(0,1).toUpperCase()+key.substring(1).toLowerCase());
+                values.put(NAME, key);
                 values.put(ID, key);
                 synchronized (valueList) {
                     valueList.add(values);
