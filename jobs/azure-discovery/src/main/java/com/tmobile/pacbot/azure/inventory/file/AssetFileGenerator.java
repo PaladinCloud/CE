@@ -787,11 +787,11 @@ public class AssetFileGenerator {
 			log.error("Error occurred in atleast one collector for jobId : Azure-Data-Collector-Job");
 		}
 		if(connectedSubscriptions.isEmpty()){
-			rdsdbManager.executeQuery("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline'");
+			rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline'",Collections.emptyList());
 		}
 		else{
 			String combinedConnectedSubsStr = connectedSubscriptions.stream().map(sub -> "'"+sub+"'").collect(Collectors.joining(","));
-			rdsdbManager.executeQuery("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE subscription NOT IN ("+combinedConnectedSubsStr+")");
+			rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE subscription NOT IN ("+combinedConnectedSubsStr+")",Collections.emptyList());
 		}
 		try {
 			FileManager.finalise();
