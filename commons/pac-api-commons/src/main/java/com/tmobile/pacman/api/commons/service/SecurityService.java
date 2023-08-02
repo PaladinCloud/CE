@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.commons.service;
 
+import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.RoleMappingLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 @Service
 public class SecurityService {
 
+	private static final String ADMIN_PERMISSION = "rule-admin";
 	@Autowired
 	private RoleMappingLoader roleMappingLoader;
 
@@ -55,5 +57,33 @@ public class SecurityService {
 		return Arrays.asList(permissions).stream().map(String::toLowerCase)
 				.anyMatch( allowedPermissions.stream().map(String::toLowerCase)
 								.collect(Collectors.toSet())::contains);
+	}
+
+	public boolean hasPermissionForIssueExemption(Authentication authentication, Constants.ExemptionActions action) {
+		List<String> allowedPermissions = getAllowedPermissions(authentication);
+		switch (action) {
+			/*for admin*/
+			case APPROVE_EXEMPTION_REQUEST:
+			case CANCEL_EXEMPTION_REQUEST:
+				return allowedPermissions.contains(ADMIN_PERMISSION);
+			/*for user*/
+			case CREATE_EXEMPTION_REQUEST:
+			case REVOKE_EXEMPTION_REQUEST:
+			default:
+				return !allowedPermissions.contains(ADMIN_PERMISSION);
+		}
+	}
+
+	private List<String> getAllowedPermissions(Authentication authentication) {
+		final Set<String> userRoles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+		Map<String, List<String>> rolePermissionMappings = roleMappingLoader.getRoleList();
+		List<String> allowedPermissions = new ArrayList<>();
+		userRoles.forEach(role -> {
+			List<String> permissionList = rolePermissionMappings.get(role);
+			if (permissionList != null) {
+				allowedPermissions.addAll(permissionList);
+			}
+		});
+		return allowedPermissions;
 	}
 }
