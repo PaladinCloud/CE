@@ -327,7 +327,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       }
       if(state.filters){
         this.filters = state.filters;
-        setTimeout(()=>this.getUpdatedUrl(),0);
+        Promise.resolve().then(() => this.getUpdatedUrl());
       }
     }
   
