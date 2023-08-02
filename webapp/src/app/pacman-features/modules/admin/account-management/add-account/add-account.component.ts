@@ -374,7 +374,10 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     }
 
   selectAccount(account:any){
-    if(account.name.toLowerCase() == "red hat" || account.name.toLowerCase() == "tenable"){
+    if(account.name.toLowerCase() == "red hat"
+        || account.name.toLowerCase() == "tenable"
+        || account.name.toLowerCase() == "aqua"
+      ){
           this.openSupportInfoDialog(account.name);
           return;
     }
