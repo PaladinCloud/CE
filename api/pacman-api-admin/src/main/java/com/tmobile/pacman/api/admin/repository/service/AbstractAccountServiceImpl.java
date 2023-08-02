@@ -80,8 +80,8 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
                 ? (List<String>) reqBody.getFilter().get(AdminConstants.ASSET) : getPluginFilterVal(AdminConstants.ASSET);
         List<String> violations = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.VIOLATIONS) != null))
                 ? (List<String>) reqBody.getFilter().get(AdminConstants.VIOLATIONS) : getPluginFilterVal(AdminConstants.VIOLATIONS);
-        List<String> status = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.STATUS) != null))
-                ?  (List<String>) reqBody.getFilter().get(AdminConstants.STATUS) : getPluginFilterVal(AdminConstants.STATUS);
+        List<String> status = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.ACCOUNT_STATUS) != null))
+                ?  (List<String>) reqBody.getFilter().get(AdminConstants.ACCOUNT_STATUS) : getPluginFilterVal(AdminConstants.STATUS);
         List<String> platform = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.PLATFORM) != null))
                 ?  (List<String>) reqBody.getFilter().get(AdminConstants.PLATFORM) : getPluginFilterVal(AdminConstants.PLATFORM);
 
