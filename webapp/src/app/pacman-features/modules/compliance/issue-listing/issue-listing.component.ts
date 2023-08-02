@@ -657,50 +657,40 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   processData(data) {
     try {
-      var innerArr = {};
-      var totalVariablesObj = {};
-      var cellObj = {};
-      let processedData = [];
-      var getData = data;
+      const processedData = [];
       
-      let cellData;
-      for (var row = 0; row < getData.length; row++) {
-        const keynames = Object.keys(getData[row]);
-        innerArr = {};
-        keynames.forEach(col => {
-          cellData = getData[row][col];
-          cellObj = {
-            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
-            titleText: cellData, // text to show on hover
-            valueText: cellData,
-            hasPostImage: false,
-            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
-            postImgSrc: "",
-            isChip: "",
-            isMenuBtn: false,
-            properties: "",
-            isLink: false,
-            imageTitleText: ""
+      for (const row of data) {
+          const innerArr = {};
+          for (const col in row) {
+              const cellData = row[col];
+              const tableImageData = this.tableImageDataMap[typeof cellData === "string" ? cellData.toLowerCase() : cellData];
+              
+              const cellObj = {
+                  text: tableImageData?.imageOnly ? "" : cellData,
+                  titleText: cellData,
+                  valueText: cellData,
+                  hasPostImage: false,
+                  imgSrc: tableImageData?.image || "",
+                  postImgSrc: "",
+                  isChip: "",
+                  isMenuBtn: false,
+                  properties: "",
+                  isLink: col.toLowerCase() === "policy",
+                  imageTitleText: ""
+              };
+
+              innerArr[col] = cellObj;
           }
-          if(col.toLowerCase()=="policy"){
-            cellObj = {
-              ...cellObj,
-              isLink: true
-            };
-          }
-          innerArr[col] = cellObj;
-          totalVariablesObj[col] = "";
-        });
-        processedData.push(innerArr);
+          
+          processedData.push(innerArr);
       }
-      if (processedData.length > getData.length) {
-        var halfLength = processedData.length / 2;
-        processedData = processedData.splice(halfLength);
-      }
-      return processedData;
+      
+      const halfLength = Math.floor(processedData.length / 2);
+      return processedData.slice(halfLength);
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+        return [];
     }
   }
 
