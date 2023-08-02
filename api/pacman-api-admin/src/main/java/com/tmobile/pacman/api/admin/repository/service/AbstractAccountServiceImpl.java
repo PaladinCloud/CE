@@ -215,7 +215,6 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             Date date = inputFormat.parse(createdTimeString);
             return outputFormat.format(date);
         } catch (ParseException e) {
-            e.printStackTrace();
             return "Error in FormatCreatedTime";
         }
     }
