@@ -580,6 +580,9 @@ public class ElasticSearchRepository implements Constants {
 			if (RANGE.equals(entry.getKey())) {
 				term.put(RANGE, entry.getValue());
 			}
+			else if(Arrays.asList("match","bool").contains(entry.getKey())){
+				term.put(entry.getKey(), entry.getValue());
+			}
 			else if(entry.getKey().equalsIgnoreCase("tagged") || entry.getKey().equalsIgnoreCase("exempted") || entry.getKey().equalsIgnoreCase("untagged") ){
 				continue;
 			}

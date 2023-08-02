@@ -50,7 +50,7 @@
      treeControl = new NestedTreeControl<MenuItem>((node) => node.children);
      dataSource = new ArrayDataSource(MENU_NODES);
  
-     currentNode: MenuItem;
+     parentNode: MenuItem;
      current_version = '';
      agAndDomain = {};
      theme: string;
@@ -129,7 +129,6 @@
                  this.showPacLoader.pop();
              }
          });
-         // this.currentNode = this.getCurrentParentNodeFromRoute();
      }
  
      ngAfterViewInit() {
@@ -162,12 +161,13 @@
      selectNode(node) {
          this.workflowService.clearAllLevels();
          this.tableStateService.clearAll();
-         this.router.navigate([node.route], {queryParams: this.agAndDomain});
+        this.router.navigate([node.route], {queryParams: this.agAndDomain});
      }
  
      private selectCurrentNode() {
-         if (!this.treeControl.isExpanded(this.currentNode)) {
-             this.treeControl.expand(this.currentNode);
+        this.parentNode = this.getCurrentParentNodeFromRoute();         
+         if (this.parentNode && !this.treeControl.isExpanded(this.parentNode)) {
+             this.treeControl.expand(this.parentNode);
          }
      }
  
@@ -203,12 +203,11 @@
                  return parent;
              }
          }
-         return ['', ''];
+         return null;
      }
  
      // selectNode(node: TreeNode, event: Event) {
      //     this.workflowService.clearAllLevels();
-     //     node.toggleExpanded();
      //     this.currentNodeId = node.id;
      //     this.currentParentId = node.parent.id;
      //     if (node.hasChildren) {

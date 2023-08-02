@@ -33,6 +33,7 @@
                     (categoryChange)="selectFilterCategory($event)"
                     (categoryClear)="removeFilterCategory($event)"
                     (optionChange)="selectFilterCategoryOption($event)"
+                    [filtersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing"
                 ></app-table-filters>
                 <div class="flex flex-align-center table-right-items">
                     <app-text
@@ -195,7 +196,9 @@
                                                     !element[column].isNumber
                                                 "
                                             >
-                                                {{ element[column].text | celldatacase }}
+                                                <span *ngIf="!columnsAndFiltersToExcludeFromCasing.includes(column)">{{ element[column].text | celldatacase }}</span>
+                                                <span *ngIf="columnsAndFiltersToExcludeFromCasing.includes(column)">{{ element[column].text }}</span>
+                                           
                                             </span>
                                             <span *ngIf="element[column].isDate">
                                                 {{ element[column].text | date : 'medium' }}

@@ -14,6 +14,7 @@ export interface FilterChipUpdateEvent {
 })
 export class TableFilterChipComponent implements OnInit {
     @Input() isDisabled = false;
+    @Input() filtersToExcludeFromCasing = [];
     @Input() category: string;
     @Input() options: string[] = [];
     @Input() set appliedFiltersDict(values: { [key: string]: boolean }) {

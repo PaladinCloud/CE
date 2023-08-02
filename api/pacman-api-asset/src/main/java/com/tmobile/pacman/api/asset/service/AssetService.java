@@ -188,7 +188,7 @@ public interface AssetService {
      * @return list of assets and its some details.
      */
     public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
-                                                   String searchText, Map<String, Object> sortFilter);
+                                                   String searchText, Map<String, Object> sortFilter) throws Exception;
 
     /**
      * Fetches the total asset count for the given asset group.

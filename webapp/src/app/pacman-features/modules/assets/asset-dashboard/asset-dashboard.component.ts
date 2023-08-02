@@ -94,6 +94,7 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
     isCustomSelected = false;
     fromDate: Date = new Date(2022, 0, 1);
     toDate: Date = new Date();
+    dataSubscriber: Subscription;
 
     constructor(
         private dataStore: DataCacheService,
@@ -147,50 +148,28 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     getAssetsTileData() {
-        const assetListUrl = environment.assetList.url;
-        const assetListMethod =environment.assetList.method;
+        const queryParams = {
+            'ag': this.assetGroupName
+    }
 
-        const payloadForTaggedTrue = {
-            ag: this.assetGroupName,
-            filter: {
-                "tagged": "true",
-                "domain": this.domainName
-            },
-            from: 0,
-            size: 0
-        };
-
-        const payloadForTaggedFalse = {
-            ag: this.assetGroupName,
-            filter: {
-                "tagged": "false",
-                "domain": this.domainName
-            },
-            from: 0,
-            size: 0
-        };
+    const taggingSummaryUrl = environment.taggingSummary.url;
+    const taggingSummaryMethod = environment.taggingSummary.method;
 
         try {
-            this.taggedTileDataSubscription = this.commonResponseService
-                .getData(assetListUrl, assetListMethod, payloadForTaggedTrue, {})
-                .subscribe((response) => {
-                    this.tiles[2].subContent[0].count = response.data.total;
-                },
-                error => {
-                    this.logger.log("apiError", error);
-                });
-
-            this.unTaggedTileDataSubscription =  this.commonResponseService
-                .getData(assetListUrl, assetListMethod, payloadForTaggedFalse, {})
-                .subscribe((response) => {
-                    this.tiles[2].mainContent.count = response.data.total;
-                },
-                error => {
-                    this.logger.log("apiError", error);
-                });
-        } catch (e) {
-            this.logger.log("jsError", e);
-        }
+            this.dataSubscriber = this.commonResponseService.getData( taggingSummaryUrl, taggingSummaryMethod, {}, queryParams).subscribe(
+            response => {
+                try {
+                    this.tiles[2].mainContent.count = response.output.untagged;
+                    this.tiles[2].subContent[0].count = response.output.tagged;                    
+                }catch (e) {
+                  this.logger.log('jserror', e);
+              }
+              }, error => {
+                this.logger.log("apiError", error);
+            });
+        } catch (error) {
+          this.logger.log('jsError', error);
+        } 
     }
 
     massageAssetTrendGraphData(graphData) {

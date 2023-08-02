@@ -25,7 +25,9 @@ Paladin Cloud's plugin-based connector architecture allows for data ingestion fr
 
 # Installation
 
-Detailed installation instructions are available [here](https://paladincloud.io/docs/Paladin-Cloud-Installation-(On-AWS-Cloud))
+Our [Standard Installation Guide](https://paladincloud.io/docs/Standard-Installation-Guide#standard-installation-guide) offers detailed installation instructions.
+
+Our [Quick Install Guide](https://paladincloud.io/docs/quick-installation-guide/) covers installation without step-by-step instructions for advanced AWS users or those looking for a refresher.
 
 ## Documentation
 

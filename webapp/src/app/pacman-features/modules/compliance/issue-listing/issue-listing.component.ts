@@ -118,6 +118,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   displayedColumns;
   tableData = [];
   isStatePreserved = false;
+  columnsToExcludeFromCasing = [];
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -426,17 +427,20 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         }
 
         this.changeFilterType(keyDisplayValue).then(() => {
-          let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
-            id: this.filterText[formattedFilters[i].filterkey],
+          const filterKey = dataArray[i].filterkey;
+          
+          const filterValueObj = this.filterText[filterKey]?.split(',').map(val => {
+            const valObj:any = find(this.filterTagOptions[keyDisplayValue], {
+              id: val,
+            });
+            return valObj?.name;
           });
 
-          let filterKey = dataArray[i].filterkey;
-
           if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
-            if(filterValueObj && filterValueObj["name"]){
+            if(filterValueObj){
               const eachObj = {
                 keyDisplayValue: keyDisplayValue,
-                filterValue: filterValueObj?filterValueObj["name"]:undefined,
+                filterValue: filterValueObj??undefined,
                 key: keyDisplayValue, // <-- displayKey-- Resource Type
                 value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
                 filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
@@ -475,6 +479,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTypeLabels = map(response[0].response, "optionName");
           resolve(true);
           this.filterTypeOptions = response[0].response;
+          this.filterTypeOptions.forEach(item => {            
+            if(item.optionValue.includes("tags")){
+              this.columnsToExcludeFromCasing.push(item.optionName);
+            }
+          });
 
           this.filterTypeLabels.sort();
           if(this.filterTypeLabels.length==0){
@@ -505,7 +514,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
       let filtersToBePassed = {};       
-      Object.keys(this.filterText).map(key => {        
+      Object.keys(this.filterText).forEach(key => {        
         if(key==this.currentFilterType["optionValue"] || key=="domain" || key=="include_exempt" || key.replace(".keyword", "")==urlObj.params["attribute"] || urlObj.url.includes(key)) return;
         filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
       })
@@ -532,7 +541,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           const filterTagsData = response[0].data.response;
           if(value.toLowerCase()=="asset type"){
             this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-              filterTagsData.map(filterOption => {
+              filterTagsData.forEach(filterOption => {
                 filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
               });
             });

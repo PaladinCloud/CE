@@ -85,6 +85,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   };
+  columnsToExcludeFromCasing = [];
   tableImageDataMap = {
       security:{
           image: "category-security",
@@ -411,17 +412,20 @@ export class AssetListComponent implements OnInit, OnDestroy {
         }
 
         this.changeFilterType(keyDisplayValue).then(() => {
-          let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
-            id: this.filterText[formattedFilters[i].filterkey],
+          const filterKey = dataArray[i].filterkey;
+          
+          const filterValueObj = this.filterText[filterKey]?.split(',').map(val => {
+            const valObj:any = find(this.filterTagOptions[keyDisplayValue], {
+              id: val,
+            });
+            return valObj?.name;
           });
-
-          let filterKey = dataArray[i].filterkey;
-
+                    
           if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
-            if(filterValueObj && filterValueObj["name"]){
+            if(filterValueObj){
               const eachObj = {
                 keyDisplayValue: keyDisplayValue,
-                filterValue: filterValueObj?filterValueObj["name"]:undefined,
+                filterValue: filterValueObj??undefined,
                 key: keyDisplayValue, // <-- displayKey-- Resource Type
                 value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
                 filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
@@ -923,6 +927,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
           )
           .subscribe((response) => {            
             response[0].response.forEach(item => {
+              if(item.optionValue.includes("tags.")){
+                this.columnsToExcludeFromCasing.push(item.optionName);
+              }
               item.optionValue = item.optionValue.includes("resourceType") ? "_entitytype.keyword" : item.optionValue;
             });
             
@@ -956,7 +963,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
       if(urlObj.url.includes("attribute") || value=="Exempted" || value=="Tagged"){
       let filtersToBePassed = {};       
-      Object.keys(this.filterText).map(key => {
+      Object.keys(this.filterText).forEach(key => {
         key = key.replace(".keyword", "");
         if(key==this.currentFilterType["optionValue"]?.replace(".keyword", "") || key=="domain" || key.replace(".keyword", "")==urlObj.params["attribute"]) return;
         filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
@@ -981,7 +988,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           const filterTagsData = response[0].data.response;          
           if(value.toLowerCase()=="asset type"){
             this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-              filterTagsData.map(filterOption => {
+              filterTagsData.forEach(filterOption => {
                 filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
               });
             });
