@@ -118,7 +118,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   displayedColumns;
   tableData = [];
   isStatePreserved = false;
-  columnsToExcludeFromCasing = [];
+  columnsToExcludeFromCasing = ["Account Name"];
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -558,6 +558,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         "domain",
         "include_exempt",
         urlObj.params["attribute"],
+        this.currentFilterType["optionValue"]?.replace(".keyword", "")
       ];
   
       const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
