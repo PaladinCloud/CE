@@ -792,7 +792,12 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
           "GET"
         )
         .subscribe((response) => {
-          const filtersData = response[0].map(item => { return {id: item, name: item} });
+          let filtersData;
+          if(value=="Status"){
+            filtersData = response[0].map(item => { return {id: item, name: item=="configured"?"online":item} });
+          }else{
+            filtersData = response[0].map(item => { return {id: item, name: item} });
+          }
           this.filterTagOptions[value] = filtersData;
           this.filterTagLabels = {
               ...this.filterTagLabels,
