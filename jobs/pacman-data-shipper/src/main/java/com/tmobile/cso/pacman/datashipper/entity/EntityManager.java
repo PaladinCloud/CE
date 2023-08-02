@@ -194,7 +194,7 @@ public class EntityManager implements Constants {
             String id = entityInfo.get(idColumn).toString();
             String docId = Util.concatenate(entityInfo, _keys, "_");
             String resourceName = ConfigManager.getResourceNameType(dataSource, _type);
-            if(entityInfo.containsKey(resourceName)) {
+            if(entityInfo.containsKey(resourceName) && entityInfo.get(resourceName).toString()!=null) {
             	entityInfo.put("_resourcename", entityInfo.get(resourceName).toString());
             } else {
             	entityInfo.put("_resourcename", id);
