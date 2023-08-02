@@ -24,6 +24,7 @@ export interface OptionChange {
 export class TableFiltersComponent implements OnInit {
     @Input() enableMultiValuedFilter = false;
     @Input() filtersToExcludeFromCasing = [];
+    isDateFilter: boolean = false;
     @Input() set appliedFilters(filters: FilterItem[] | undefined) {
         this._appliedFilters = filters || [];
         const optionDict = this._appliedFilters.reduce((prev, next) => {
@@ -109,17 +110,29 @@ export class TableFiltersComponent implements OnInit {
     openFilterCategory(filterCategory: string) {
         this.isCategoryOptionsMenuOpen = true;
         this.selectedCategory = filterCategory;
+        if(this.selectedCategory == "Created Date"){
+            this.isDateFilter = true;
+        }else{
+            this.isDateFilter = false;
+        }
         this.categoryChange.emit(filterCategory);
     }
 
-    applyFilter(filterOption: string, event: MatCheckboxChange) {
+    dateIntervalSelected(from?, to?){
+        const toDate = new Date(to).toLocaleDateString('en-CA');
+        const fromDate = new Date(from).toLocaleDateString('en-CA');
+        this.isCategoryMenuOpen = false;
+        this.applyFilter(fromDate+' - '+toDate);
+    }
+
+    applyFilter(filterOption: string, event?: MatCheckboxChange) {
         if (!this.selectedCategory) {
             return;
         }
         this.updateFilter({
             category: this.selectedCategory,
             filterName: filterOption,
-            filterValue: event.checked,
+            filterValue: event? event.checked : true,
         });
     }
 
