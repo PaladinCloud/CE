@@ -209,7 +209,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
       if(state.filters){
         this.filters = state.filters;
-        setTimeout(()=>this.getUpdatedUrl(),0);
+        Promise.resolve().then(() => this.getUpdatedUrl());
       }
   }
 

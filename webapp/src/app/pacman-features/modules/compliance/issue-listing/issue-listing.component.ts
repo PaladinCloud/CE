@@ -684,9 +684,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           
           processedData.push(innerArr);
       }
-      
-      const halfLength = Math.floor(processedData.length / 2);
-      return processedData.slice(halfLength);
+      return processedData;
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
@@ -756,19 +754,18 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 this.tableData = processData;
               }
             } catch (e) {
-              this.tableErrorMessage = 'apiResponseError';
-              this.tableData = [];
-              this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
+              this.tableErrorMessage = !isNextPageCalled?'jsError':'';
+              this.logger.log("error", e);
             }
           },
           (error) => {
             this.tableDataLoaded = true;
-            this.tableErrorMessage = "apiResponseError";
+            this.tableErrorMessage = !isNextPageCalled?'apiResponseError':'';
             this.logger.log("error", error);
           }
         );
     } catch (error) {
-      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
+      this.tableErrorMessage = !isNextPageCalled?'jsError':'';
       this.logger.log("error", error);
     }
   }
@@ -888,7 +885,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
 
-  nextPg(e) {
+  nextPg(e) {    
     try {
       this.tableScrollTop = e;
         this.bucketNumber++;

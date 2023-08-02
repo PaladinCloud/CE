@@ -229,7 +229,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
     if(!isTempFilter && state.filters){
       this.filters = state.filters || [];
-      setTimeout(() => this.getUpdatedUrl(), 0);
+      Promise.resolve().then(() => this.getUpdatedUrl());
     }
   }
 
