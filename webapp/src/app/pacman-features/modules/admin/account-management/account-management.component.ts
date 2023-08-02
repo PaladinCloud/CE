@@ -483,7 +483,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
             }
             cellObj = {
               ...cellObj,
-              chipList: getData[row][col].toLowerCase() === "configured"?["Online"]:["Offline"],
+              chipList: getData[row][col].toLowerCase() === "configured"?["Configured"]:["Offline"],
               text: getData[row][col].toLowerCase(),
               isChip: true,
               chipBackgroundColor: chipBackgroundColor,
