@@ -7,7 +7,7 @@ from resources.datastore.db import MySQLDatabase
 from resources.iam.lambda_role import LambdaRole
 from resources.iam.base_role import BaseRole
 from resources.s3.bucket import BucketStorage
-from resources.batch.job import SubmitAndRuleEngineJobDefinition, BatchJobsQueue
+from resources.batch.job import SubmitAndRuleEngineJobDefinition, BatchJobsQueue, SubmitAndQualysJobDefinition
 from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
@@ -30,11 +30,12 @@ class SubmitJobLambdaFunction(LambdaFunctionResource):
             'JOB_DEFINITION': SubmitAndRuleEngineJobDefinition.get_output_attr('arn'),
             'CONFIG_URL': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,inventory/prd/latest",
             'CONFIG_CREDENTIALS': "dXNlcjpwYWNtYW4=",
-            'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"
+            'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest",
+            'QUALYS_JOB_DEFINATION': SubmitAndQualysJobDefinition.get_output_attr('arn')
         }
     }
 
-    DEPENDS_ON = [SubmitAndRuleEngineJobDefinition, BatchJobsQueue]
+    DEPENDS_ON = [SubmitAndRuleEngineJobDefinition, BatchJobsQueue,SubmitAndQualysJobDefinition]
 
 
 class DataCollectorEventRule(CloudWatchEventRuleResource):

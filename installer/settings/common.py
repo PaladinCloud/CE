@@ -78,7 +78,7 @@ PROCESS_RESOURCES = {
 }
 
 
-LAMBDA_PATH = "V6"
+LAMBDA_PATH = "V7"
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
 LOG_DIR = os.path.join(BASE_APP_DIR, 'log')
 PROVISIONER_FILES_DIR_TO_COPY = os.path.join(BASE_APP_DIR, 'files')
@@ -180,6 +180,8 @@ AQUA_API_DEFAULT_PAGE_SIZE=1000
 AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS= "include_vpatch_info=true&show_negligible=true&hide_base_image=false&severities=critical,high,medium,low,negligible"
 GOOGLE_ANALYTICS = ""
 ECS_CPU = 1024
+QUALYS_JOB_MEMORY = 8196
+QUALYS_JOB_VCPU = 2
 
 try:
     from settings.local import *
