@@ -340,7 +340,7 @@ public class JobScheduler {
             ConfigUtil.setConfigProperties();
             qualysEnabled = Boolean.parseBoolean(System.getProperty(QUALYS_ENABLED));
             if (qualysEnabled) {
-                addPluginShipperEvent(putEventsRequestEntries, awsBusDetails, PLUGIN_TYPE_QUALYS);
+                addPluginShipperEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_QUALYS);
             }
             if (!putEventsRequestEntries.isEmpty()) {
                 PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
