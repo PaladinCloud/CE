@@ -206,6 +206,7 @@ public final class AdminConstants {
 	public static final String ASSET			=	"asset";
 	public static final String VIOLATIONS			=	"violations";
 	public static final String STATUS			=	"status";
+	public static final String ACCOUNT_STATUS			=	"accountStatus";
 	public static final String ASC			=	"ASC";
 	public static final String SORT_ELEMENT = "sortElement";
 	public static final String SORT_ORDER = "sortOrder";
