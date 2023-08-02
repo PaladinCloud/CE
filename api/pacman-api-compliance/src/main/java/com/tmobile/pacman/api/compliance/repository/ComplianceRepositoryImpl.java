@@ -124,7 +124,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
-    private List<String> filterCustomHandler = Arrays.asList(DOMAIN,INCLUDE_EXEMPT);
+    private List<String> filterCustomHandler = Arrays.asList(DOMAIN,INCLUDE_EXEMPT,AUTOFIX_PLANNED+KEYWORD);
 
     private static final String UNABLE_TO_ADD_EXEMPTION_MSG = "Unable to add exemption after approving request";
 
