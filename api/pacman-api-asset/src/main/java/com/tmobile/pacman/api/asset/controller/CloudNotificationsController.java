@@ -3,10 +3,9 @@
  */
 package com.tmobile.pacman.api.asset.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import org.apache.commons.logging.Log;
@@ -71,12 +70,25 @@ public class CloudNotificationsController {
 				return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FROM_NEGATIVE));
 			}
 
-			Date startDate=request.getFromDate();
-			Date endDate=request.getToDate();
+			Date startDate=null;
+			Date endDate=null;
 
 			String searchText = request.getSearchtext();
 			Map<String, String> filter = request.getFilter();
 			Map<String,Object> sortFilter=request.getSortFilter();
+
+			if(filter.get("_loaddate")!=null) {
+				String dateRange = filter.get("_loaddate");
+				String[] dates = dateRange.split(" - ");
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+				try {
+					startDate = dateFormat.parse(dates[0]);
+					endDate = dateFormat.parse(dates[1]);
+				} catch (ParseException e) {
+					LOGGER.error("Error in Date Format");
+				}
+			}
 			List<Map<String, Object>> masterList;
 			
 			try {

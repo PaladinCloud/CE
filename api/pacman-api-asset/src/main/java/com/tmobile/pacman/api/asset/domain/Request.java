@@ -40,8 +40,6 @@ public class Request {
     
     private String ag;
 
-    private Date fromDate;
-    private Date toDate;
 
 
     /**
@@ -169,21 +167,5 @@ public class Request {
 
     public void setReqFilter(Map<String, Object> reqFilter) {
         this.reqFilter = reqFilter;
-    }
-
-    public Date getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public Date getToDate() {
-        return toDate;
-    }
-
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
     }
 }
