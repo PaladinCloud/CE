@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -103,7 +105,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             accountMap.put("accountStatus",ob[4].toString());
             accountMap.put("platform",ob[5].toString());
             accountMap.put("createdBy",ob[6]!=null?ob[6].toString():"");
-            accountMap.put("createdTime",ob[6]!=null?ob[7].toString():"");
+            accountMap.put("createdTime",ob[6]!=null?formatCreatedTime(ob[7]):"");
             convertAccountDetails.add(accountMap);
         }
         accountList.setResponse(convertAccountDetails);
@@ -198,6 +200,23 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     @Override
     public List<AccountDetails> findOnlineAccounts(String status, String platform){
         return accountsRepository.findByAccountStatusAndPlatform(status,platform);
+    }
+
+    private String formatCreatedTime(Object createdTimeObject) {
+        if (createdTimeObject == null) {
+            return "";
+        }
+        String createdTimeString = createdTimeObject.toString();
+        SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        inputFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Set the input time zone to UTC
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        outputFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Set the output time zone to UTC
+        try {
+            Date date = inputFormat.parse(createdTimeString);
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            return "Error in FormatCreatedTime";
+        }
     }
 
 
