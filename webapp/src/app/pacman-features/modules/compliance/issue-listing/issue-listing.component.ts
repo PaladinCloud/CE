@@ -141,30 +141,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
-    .subscribe((assetGroupName) => {
+    .subscribe(async(assetGroupName) => {
         this.getPreservedState();
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
-        this.getFilters().then(() => {
-          this.filterTypeLabels.forEach(label => {
-            if(label=="Exempted" || label=="Tagged"){
-              return;
-            }
-            if(!Object.keys(this.columnWidths).includes(label)){
-              this.columnWidths[label] = 0.7;
-            }
-            if(!Object.values(this.columnNamesMap).includes(label)){
-              const apiColName =  find(this.filterTypeOptions, {
-                optionName: label,
-              })["optionValue"];
-              if(apiColName) this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
-            }
-          })
-          this.columnNamesMap = {...this.columnNamesMap};
-          this.columnWidths = {...this.columnWidths};
-
-        });
+        await this.getFilters();
+        this.getUpdatedColumnWidthsAndNamesMap();
       });
 
     this.domainSubscription = this.domainObservableService
@@ -172,6 +155,32 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .subscribe((domain) => {
         this.selectedDomain = domain;
       });
+  }
+
+  getUpdatedColumnWidthsAndNamesMap(){
+    const excludedColumnNames = new Set(["Exempted", "Tagged"]);
+    this.filterTypeLabels.forEach(label => {
+        if (!excludedColumnNames.has(label)) {
+            if (!Object.keys(this.columnWidths).includes(label)) {
+                this.columnWidths[label] = 0.7;
+            }
+
+            const columnName = Object.entries(this.columnNamesMap)
+                .find(([_, value]) => value === label)?.[0];
+
+            if (!columnName) {
+                const apiColName = this.filterTypeOptions
+                    .find(option => option.optionName === label)?.optionValue;
+
+                if (apiColName) {
+                    this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
+                }
+            }
+        }
+    });
+
+    this.columnNamesMap = { ...this.columnNamesMap };
+    this.columnWidths = { ...this.columnWidths };
   }
 
   getPreservedState(){
@@ -265,11 +274,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldType = "number";
       this.fieldName = "resourcetType.keyword";
     }else{
-      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
+      let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
       if(!apiColName){
         apiColName =  find(this.filterTypeOptions, {
           optionName: this.headerColName,
         })["optionValue"];
+      }else{
+        apiColName = apiColName+".keyword";
       }
       this.fieldType = "string";
       this.fieldName = apiColName;
