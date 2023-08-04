@@ -153,10 +153,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     columnsSortFunctionMap = {
         Severity: (a, b, isAsc) => {
             const severeness = {
-                low: 4,
-                medium: 3,
-                high: 2,
-                critical: 1,
+                low: 1,
+                medium: 2,
+                high: 3,
+                critical: 4,
                 default: 5 * (isAsc ? 1 : -1),
             };
 
