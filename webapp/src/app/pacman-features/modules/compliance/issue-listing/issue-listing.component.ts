@@ -274,7 +274,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldType = "number";
       this.fieldName = "resourcetType.keyword";
     }else{
-      let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
+      let apiColName:any;// = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
       if(!apiColName){
         apiColName =  find(this.filterTypeOptions, {
           optionName: this.headerColName,
