@@ -183,54 +183,35 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.columnWidths = { ...this.columnWidths };
   }
 
-  getPreservedState(){
+  getPreservedState() {
     const state = this.tableStateService.getState(this.pageTitle) ?? {};
-    if(state){
-      this.headerColName = state.headerColName ?? 'Severity';
-      this.direction = state.direction ?? 'desc';
-      this.bucketNumber = state.bucketNumber ?? 0;
-      this.totalRows = state.totalRows ?? 0;
-      this.searchTxt = state?.searchTxt ?? '';
+  
+    this.headerColName = state.headerColName || 'Severity';
+    this.direction = state.direction || 'desc';
+    this.bucketNumber = state.bucketNumber || 0;
+    this.totalRows = state.totalRows || 0;
+    this.searchTxt = state.searchTxt || '';
+    this.tableDataLoaded = true;
+    this.tableData = state.data || [];
+    this.displayedColumns = ['Policy', 'Asset ID', 'Severity', 'Category'];
+    this.whiteListColumns = state.whiteListColumns || this.displayedColumns;
+    this.tableScrollTop = state.tableScrollTop;
+    this.selectedRowIndex = state.selectedRowIndex;
+    
+    if (this.tableData && this.tableData.length > 0) {
+      this.isStatePreserved = true;
+    } else {
+      this.isStatePreserved = false;
+    }
 
-      this.tableDataLoaded = true;
+    this.preApplyStatusFilter(state);
 
-      this.tableData = state?.data ?? [];
-      this.displayedColumns = ['Policy', 'Asset ID', 'Severity', 'Category'];
-      this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
-      this.tableScrollTop = state?.tableScrollTop;
-      this.selectedRowIndex = state?.selectedRowIndex;
-      // this.filterText = state.filterText??"";
-
-      if(this.tableData && this.tableData.length>0){
-        this.isStatePreserved = true;
-      }else{
-        this.isStatePreserved = false;
-      }
-
-      const isStateFiltersArray = Array.isArray(state.filters);
-      const statusFilterExists = isStateFiltersArray ? state.filters.some(item => item.keyDisplayValue === "Status") : false;
-
-      if (!statusFilterExists) {
-        state.filters = isStateFiltersArray ? state.filters : [];
-        state.filters.push({
-          "keyDisplayValue": "Status",
-          "filterValue": ["Open", "Exempt"],
-          "key": "Status",
-          "value": ["open", "exempt"],
-          "filterkey": "issueStatus.keyword",
-          "compareKey": "issuestatus.keyword"
-        });
-      }
-
-      const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
-
-      if (!isTempFilter && state.filters) {
-        this.filters = state.filters;
-        Promise.resolve().then(() => this.getUpdatedUrl());
-      }
-
+    if (!this.activatedRoute.snapshot.queryParamMap.has("filter") && state.filters) {
+      this.filters = state.filters;
+      Promise.resolve().then(() => this.getUpdatedUrl());
     }
   }
+  
 
   ngOnInit() {
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
@@ -244,47 +225,37 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.adminAccess = this.permissions.checkAdminPermission();
   }
 
+  preApplyStatusFilter(state){
+    const isStateFiltersArray = Array.isArray(state.filters);
+    const statusFilterExists = isStateFiltersArray ? state.filters.some(item => item.keyDisplayValue === "Status") : false;
+
+    if (!statusFilterExists) {
+      state.filters = isStateFiltersArray ? state.filters : [];
+      state.filters.push({
+        "keyDisplayValue": "Status",
+        "filterValue": ["Open", "Exempt", "Exempted"],
+        "key": "Status",
+        "value": ["open", "exempt", "exempted"],
+        "filterkey": "issueStatus.keyword",
+        "compareKey": "issuestatus.keyword"
+      });
+    }
+  }
+
   handlePaginatorSizeSelection(event) {
     this.paginatorSize = event;
     this.getData();
   }
 
   updateSortFieldName(){
-    const sortColName = this.headerColName.toLowerCase();
     this.selectedOrder = this.direction;
     this.sortOrder = null;
-    if (sortColName === "severity") {
-      this.fieldName = "severity.keyword";
-      this.fieldType = "number";
-      this.sortOrder = ["low", "medium", "high", "critical"]
-    } else if (sortColName === "violation id") {
-      this.fieldName = "_id";
-      this.fieldType = "string";
-    } else if (sortColName === "asset id") {
-      this.fieldName = "_resourceid.keyword";
-      this.fieldType = "string";
-    } else if (sortColName === "category") {
-      this.fieldName = "policyCategory.keyword";
-      this.fieldType = "number";
-      this.sortOrder = ["tagging", "cost", "operations", "security"]
-    } else if (sortColName === "policy") {
-      this.fieldType = "number";
-      this.fieldName = "policyId.keyword";
-    }else if (sortColName === "asset type") {
-      this.fieldType = "number";
-      this.fieldName = "resourcetType.keyword";
-    }else{
-      let apiColName:any;// = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
-      if(!apiColName){
-        apiColName =  find(this.filterTypeOptions, {
-          optionName: this.headerColName,
-        })["optionValue"];
-      }else{
-        apiColName = apiColName+".keyword";
-      }
-      this.fieldType = "string";
-      this.fieldName = apiColName;
-    }
+    
+    let apiColName =  find(this.filterTypeOptions, {
+      optionName: this.headerColName,
+    })["optionValue"];
+    this.fieldType = "string";
+    this.fieldName = apiColName;
   }
 
   handleHeaderColNameSelection(event: any) {
@@ -413,7 +384,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   async getFilterArray() {
     try {
       const dataArray = Object.keys(this.filterText).map(filterKey => {
-        const keyDisplayValue = this.filterTypeOptions.find(option => option.optionValue === filterKey)?.optionName;
+      const keyDisplayValue = this.filterTypeOptions.find(option => option.optionValue === filterKey)?.optionName;
         return {
           keyDisplayValue,
           filterkey: filterKey,
@@ -458,31 +429,38 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
     const filterTagLabelsForKey = this.filterTagLabels[keyDisplayValue];
 
-    const validFilterValues = filterValues
-      .map(val => filterTagOptionsForKey?.find(obj => obj.id === val))
-      .filter(valObj => valObj && filterTagLabelsForKey?.includes(valObj.name));
+    
+    const validFilterValues = filterValues.reduce((result, val) => {
+      const valObj = filterTagOptionsForKey?.find(obj => obj.id === val);
+      if (valObj && filterTagLabelsForKey?.includes(valObj.name)) {
+        result.push(valObj);
+      }
+      return result;
+    }, []);
+      
+    const existingFilterObjIndex = this.filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
 
     if (validFilterValues.length > 0) {
-      const existingFilterObj = this.filters.find(filter => filter.keyDisplayValue === keyDisplayValue);
+      const eachObj = {
+        keyDisplayValue: keyDisplayValue,
+        filterValue: validFilterValues.map(valObj => valObj.name),
+        key: keyDisplayValue,
+        value: validFilterValues.map(valObj => valObj.id),
+        filterkey: filterKey?.trim(),
+        compareKey: filterKey?.toLowerCase().trim(),
+      };
 
-      if (!existingFilterObj) {
-        const eachObj = {
-          keyDisplayValue: keyDisplayValue,
-          filterValue: validFilterValues.map(valObj => valObj.name),
-          key: keyDisplayValue,
-          value: validFilterValues.map(valObj => valObj.id),
-          filterkey: filterKey?.trim(),
-          compareKey: filterKey?.toLowerCase().trim(),
-        };
-        this.filters.push(eachObj);
+      if (existingFilterObjIndex >= 0) {
+        this.filters[existingFilterObjIndex] = eachObj;
       } else {
-        existingFilterObj.value = validFilterValues.map(valObj => valObj.id);
-        existingFilterObj.filterValue = validFilterValues.map(valObj => valObj.name);
+        this.filters.push(eachObj);
       }
 
-      this.filters = [...this.filters];
-      this.storeState();
+    } else if (existingFilterObjIndex >= 0) {
+      this.filters.splice(existingFilterObjIndex, 1);
     }
+    this.filters = [...this.filters];
+    this.storeState();
   }
 
   /**
@@ -782,10 +760,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  refreshDataTable($event) {
-    this.updateComponent();
-  }
-
   async massageData(data) {
     const refactoredService = this.refactorFieldsService;
     const columnNamesMap = this.columnNamesMap;
@@ -824,8 +798,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         newData.push(newObj);
     });
     return newData;
-}
-
+  }
 
   goToDetails(event) {
     const row = event.rowSelected;
