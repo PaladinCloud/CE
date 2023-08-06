@@ -878,6 +878,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   applyFilterByCategory(policyCategory: PolicyCategory) {
       const key = 'Category';
+      this.filters = [];
       if (policyCategory !== PolicyCategory.ALL_POLICIES) {
           this.changeFilterType(key).then(() => {
             this.changeFilterTags({
