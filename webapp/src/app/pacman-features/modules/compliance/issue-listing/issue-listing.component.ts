@@ -248,14 +248,36 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   updateSortFieldName(){
+    const sortColName = this.headerColName.toLowerCase();
     this.selectedOrder = this.direction;
     this.sortOrder = null;
-    
-    let apiColName =  find(this.filterTypeOptions, {
-      optionName: this.headerColName,
-    })["optionValue"];
-    this.fieldType = "string";
-    this.fieldName = apiColName;
+    if (sortColName === "severity") {
+      this.fieldName = "severity.keyword";
+      this.fieldType = "number";
+      this.sortOrder = ["low", "medium", "high", "critical"]
+    } else if (sortColName === "violation id") {
+      this.fieldName = "_id";
+      this.fieldType = "string";
+    } else if (sortColName === "asset id") {
+      this.fieldName = "_resourceid.keyword";
+      this.fieldType = "string";
+    } else if (sortColName === "category") {
+      this.fieldName = "policyCategory.keyword";
+      this.fieldType = "number";
+      this.sortOrder = ["tagging", "cost", "operations", "security"]
+    } else if (sortColName === "policy") {
+      this.fieldType = "number";
+      this.fieldName = "policyId.keyword";
+    } else if (sortColName === "asset type") {
+      this.fieldType = "number";
+      this.fieldName = "resourcetType.keyword";
+    } else{
+      let apiColName =  find(this.filterTypeOptions, {
+        optionName: this.headerColName,
+      })["optionValue"];
+      this.fieldType = "string";
+      this.fieldName = apiColName;
+    }
   }
 
   handleHeaderColNameSelection(event: any) {
