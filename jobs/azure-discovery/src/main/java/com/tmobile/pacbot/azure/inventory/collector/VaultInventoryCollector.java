@@ -132,42 +132,29 @@ public class VaultInventoryCollector {
 		return  vaultVH;
 	}
 
-	public HashMap<String,List<VaultVH>> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
+	public List<VaultVH> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
 
 		List<VaultVH> vaultList = new ArrayList();
-		List<VaultVH> vaultRBACList=new ArrayList();
-		HashMap<String,List<VaultVH>> vaults=new HashMap();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
 		String vaultListTemplate = "https://management.azure.com/subscriptions/" + subscription.getSubscriptionId() + "/resources?$filter=resourceType%20eq%20'Microsoft.KeyVault/vaults'&api-version=2015-11-01";
-
-
 		try {
-
 			String response = CommonUtils.doHttpGet(vaultListTemplate, "Bearer", accessToken);
 			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
-
 			JsonArray vaultObjects = responseObj.getAsJsonArray("value");
 			if (vaultObjects != null) {
 				for (JsonElement vaultElement : vaultObjects) {
 					JsonObject vaultObject = vaultElement.getAsJsonObject();
 					VaultVH vault=fetchVaultDetailsById(vaultObject.get("id").getAsString(),subscription);
-					if(!vault.isEnableRbacAuthorization()) {
-						vaultList.add(vault);
-					}else {
-						vaultRBACList.add(vault);
-					}
+					vaultList.add(vault);
 				}
-
 			}
-			vaults.put("vaultList",vaultList);
-			vaults.put("vaultRBACList",vaultRBACList);
 		} catch (Exception e) {
 			log.error("Error Colectting vaults ",e);
 			Util.eCount.getAndIncrement();
 		}
 
 		log.info("Target Type : {}  Total: {} ","Vault",vaultList.size());
-		return vaults;
+		return vaultList;
 	}
 
 }

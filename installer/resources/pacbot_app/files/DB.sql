@@ -2741,7 +2741,7 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `categ
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('diagnosticsetting','Diagnostic Setting','Azure diagnosticsetting','','azure','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_diagnosticsetting/diagnosticsetting'),'2019-09-26','2022-09-26','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('vaultsrbac','Vaults with role base access control','Azure vaultsrbac','','azure','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_vaultsrbac/vaultsrbac'),'2019-11-10','2022-11-10','Infra & Platforms');
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('recommendation.categories','fault_tolerance, cost_optimizing, security, performance','application','prd','latest','admin@pacbot.org','09/06/2019 06:07:43','','');
-
+DELETE from cf_Target  where targetName = 'vaultsrbac';
 /* Update DisplayName  to TargetName if the value is null in Target table */
 update cf_Target set displayName = targetName where displayName is null;
 
