@@ -113,22 +113,26 @@ export class CardComponent implements OnInit {
         this.graphIntervalSelected.emit(queryParamObj);
     }
 
-    navigateToViolationsByCategory(category: string) {
-        this.workflowService.addRouterSnapshotToLevel(
-            this.router.routerState.snapshot.root,
-            0,
-            this.breadcrumbPresent,
-        );
-
-        const filterParam = this.utils.makeFilterObj({
-            'policyCategory.keyword': category.toLowerCase(),
-        });
-
-        this.router.navigate(['/pl/compliance/issue-listing'], {
-            relativeTo: this.activatedRoute,
-            queryParams: {...filterParam, 'tempFilters': true},
-            queryParamsHandling: 'merge',
-        });
+    navigateToViolationsByCategory(bar) {
+        const category = bar?.title;
+        const percent = bar?.val;
+        if(typeof percent === "number" && percent>0){
+            this.workflowService.addRouterSnapshotToLevel(
+                this.router.routerState.snapshot.root,
+                0,
+                this.breadcrumbPresent,
+            );
+    
+            const filterParam = this.utils.makeFilterObj({
+                'policyCategory.keyword': category.toLowerCase(),
+            });
+    
+            this.router.navigate(['/pl/compliance/issue-listing'], {
+                relativeTo: this.activatedRoute,
+                queryParams: {...filterParam, 'tempFilters': true},
+                queryParamsHandling: 'merge',
+            });
+        }
     }
 
     navigateDataTable(event) {

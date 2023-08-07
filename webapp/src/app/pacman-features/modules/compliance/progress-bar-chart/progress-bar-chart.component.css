@@ -55,6 +55,6 @@ mat-progress-bar {
     color: var(--text-low-emphasis);
 }
 
-.navigate-to-icon:hover {
+.link:hover {
     cursor: pointer;
 }
