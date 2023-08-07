@@ -19,11 +19,7 @@
 
 package com.tmobile.cloud.awsrules.iam;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,10 +100,10 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 			throw new InvalidInputException(e.toString());
 		}
 
-		GetAccountPasswordPolicyResult result = iamClient.getAccountPasswordPolicy();
-		PasswordPolicy passwordPolicy = result.getPasswordPolicy();
+		Optional<PasswordPolicy> pwdPolicyOptional = Optional.ofNullable(iamClient).map(obj -> (GetAccountPasswordPolicyResult)obj.getAccountPasswordPolicy()).map(obj -> (PasswordPolicy)obj.getPasswordPolicy());
 
-		if (null != passwordPolicy) {
+		if (pwdPolicyOptional.isPresent()) {
+			PasswordPolicy passwordPolicy = pwdPolicyOptional.get();
 			if (!isPasswordPolicyCompliant(passwordPolicy, ruleParam)) {
 
 				logger.warn("Password Policy not compliant");
