@@ -11,8 +11,6 @@
 # Introduction
 Paladin Cloud is a free open source cloud security platform focused on enabling you to find blindspots in your cloud security. It enables you to identify and visualize your cyber assets and security controls, while monitoring your multi and hybrid cloud environments for vulnerabilities, misconfigurations and security risks. 
 
-[![Try out Paladin Cloud nowin a live interactive environment](https://paladincloud.io/wp-content/uploads/2023/07/Screenshot-2023-07-26-at-6.17.55-PM.png)](https://signup.paladincloud.io)
-
 Our extensible, Security-as-Code (SaC) platform is designed to help developers and security teams reduce risks in their cloud environments. It functions as a policy management plane across multi-cloud and enterprise systems, protecting applications and data. The platform contains best practice security policies and performs continuous monitoring of cloud assets, prioritizing security violations based on severity levels to help you focus on the events that matter.
 
 Its resource discovery capability creates an asset inventory, then evaluates security policies against each asset. Powerful visualization enables developers to quickly identify and remediate violations on a risk-adjusted basis. An auto-fix framework provides the ability to automatically respond to policy violations by taking predefined actions.
