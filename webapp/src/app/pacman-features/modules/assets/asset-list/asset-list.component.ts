@@ -75,7 +75,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
   selectedRowIndex;
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnWidths = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Cloud Type': 0.5};
-  columnNamesMap = {};
+  columnNamesMap = {
+    targettypedisplayname: 'Asset Type',
+    _entitytype: 'assetTypeValue'
+  };
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
@@ -188,7 +191,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
               optionName: label,
             })["optionValue"];
             if(apiColName) this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
-          }
+          }  
         })
         this.columnNamesMap = {...this.columnNamesMap};
         this.columnWidths = {...this.columnWidths}
@@ -666,23 +669,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
               valueText:  cellData,
               isLink: true
             };            
-          } else if(col.toLowerCase()=="asset type"){
-            const currentAssetType = this.assetTypeMap.get(cellData);
-              cellObj = {
-              ...cellObj,
-              text: currentAssetType?currentAssetType:cellData,
-              titleText:  currentAssetType?currentAssetType:cellData, // text to show on hover
-              valueText:  currentAssetType?currentAssetType:cellData
-            };
-          }
+          } 
           innerArr[col] = cellObj;
           totalVariablesObj[col] = "";
         });
         processedData.push(innerArr);
-      }
-      if (processedData.length > getData.length) {
-        var halfLength = processedData.length / 2;
-        processedData = processedData.splice(halfLength);
       }
       return processedData;
     } catch (error) {
@@ -724,7 +715,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
             }else{
               this.tableData = processedData;
             }
-            // this.processData(updatedResponse);
           } catch (e) {
             this.tableDataLoaded = true;
             this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
@@ -738,9 +728,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
   massageData(data){
     const refactoredService = this.refactorFieldsService;
-    const columnNamesMap = this.columnNamesMap;
+    const columnNamesMap = this.columnNamesMap;    
     const newData = [];
-    data.map(function (row) {
+    data.forEach((row) => {
       const KeysTobeChanged = Object.keys(row);
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
@@ -780,22 +770,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
       );
-      let resourceType;
-      for (const [key, value] of this.assetTypeMap) {
-        if(row["Asset Type"].valueText == value){
-          resourceType = key;
-          break;
-        }
-      }
+      const resourceType = row?.assetTypeValue.valueText;      
+      
 
-      if (
-        this.urlID &&
-        (this.urlID.toLowerCase() === "pull-request-trend" ||
-          this.urlID.toLowerCase() === "pull-request-age" ||
-          this.urlID.toLowerCase() === "branching-strategy")
-      ) {
-        resourceType = this.filterText.resourceType;
-      }
       const resourceID = encodeURIComponent(row["Asset ID"].valueText);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       // updatedQueryParams["searchValue"] = undefined;
