@@ -3069,6 +3069,8 @@ UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'Azure_Check_Public_
 UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'Disable_Remote_Debugging_For_WebApp';
 UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail';
 UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'Attached-EBS-volumes-are-encrypted_version-1_Attached_EBS_volumes_should_be_encrypted';
+UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'AWSRdsUnencryptedPublicInstances_version-1_AwsRdsUnencryptedPublicAccess_rdsdb';
+UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting';
 
 UPDATE cf_PolicyTable SET severity ='critical' WHERE policyId = 'S3ObjectLevelReadLogging_version-1_ObjectLevelReadLogging_s3';
 UPDATE cf_PolicyTable SET severity ='critical' WHERE policyId = 'S3ObjectLevelWriteLogging_version-1_ObjectLevelWriteLogging_s3';
@@ -3166,6 +3168,9 @@ UPDATE cf_PolicyTable SET policyDisplayName ='Secure Your SQL Database with Tran
 UPDATE cf_PolicyTable SET policyDisplayName ='Enhance Security with Specific API Restrictions for Google Cloud API Keys',policyDesc ='Enhance security by restricting Google Cloud API keys to specific APIs like Cloud Key Management Service (KMS), Cloud Storage, Cloud Monitoring, and Cloud Logging. Applying API restrictions for production applications is essential to follow cloud security best practices and minimize potential risks. By doing so, you protect your application and data from unauthorized access and potential attacks.' WHERE policyId ='Enable_API_Key_Restrictions';
 UPDATE cf_PolicyTable SET policyDisplayName ='Secure Google Cloud API Keys with Application Restrictions',policyDesc ='Secure Google Cloud API keys with application restrictions to limit access to trusted hosts, HTTP referrers, and specific Android/iOS applications. This prevents unauthorized usage and reduces the risk of compromising sensitive data. Implementing these restrictions is essential for following cloud security best practices and protecting your applications effectively.' WHERE policyId ='Enable_API_Key_Application_Restrictions';
 UPDATE cf_PolicyTable SET policyDisplayName ='Enable Automatic CMK Rotation' WHERE policyId ='AWSKMSKeyRotationEnabled_version-1_KeyRotationEnabled_kms';
+UPDATE cf_PolicyTable SET policyDisplayName ='Deny Public Access to Security Group on SSH Port 22' WHERE policyId ='SGWithAnywhereAccess_version-1_SgWithSshPort22OpenToInternetAccess_sg';
+
+UPDATE cf_PolicyTable SET category='cost',severity ='high' WHERE policyId IN ('remove_unused_load_balancer','remove_unused_scale_set','remove_unused_vm_disk');
 
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Assign-Mandatory-Tags-to-Blob-Container' where policyId='TaggingRule_version-1_BlobcontainerTaggingRule_blobcontainer';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Assign-Mandatory-Tags-to-Databricks' where policyId='TaggingRule_version-1_DatabricksTaggingRule_databricks';
