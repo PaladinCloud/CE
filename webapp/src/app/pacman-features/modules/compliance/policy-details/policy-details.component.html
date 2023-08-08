@@ -54,6 +54,37 @@
         <div class="compliance-issues-container">
             <app-policy-summary [breadcrumbPresent]="breadcrumbPresent" [ruleID]="ruleID" [pageLevel]="pageLevel"></app-policy-summary>
             <!-- <app-policy-across-application [ruleID]="ruleID" [pageLevel]="pageLevel"></app-policy-across-application> -->
+            <div class="params-wrapper">
+                <div class="params-header body-2 high-emphasis">
+                   Policy Parameters
+                </div>
+                <div class="params-content">
+                    <app-error-message *ngIf="paramErrorMessage" [selectedValue]="paramErrorMessage"></app-error-message>
+                    <ng-container *ngIf="!paramErrorMessage">
+                        <div class="content-header">
+                            <div class="column-wrapper-header">
+                                <div class="col">
+                                    <span class="col-header body-2 low-emphasis">Key</span>
+                                </div>
+                                <div class="col">
+                                    <span class="col-header body-2 low-emphasis">Value</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-wrapper">
+                                <div class="column-wrapper" *ngFor="let param of paramsArray">
+                                    <div class="col">
+                                        <span class="param-name nowrap-ellipsis" title="{{param.key}}">{{ param.key }}</span>
+                                    </div>
+                                    <div class="col">
+                                        <span class="param-value nowrap-ellipsis" title="{{param.value}}">{{ param.value == '' ? 'Unknown' : param.value }}</span>
+                                    </div>
+                                </div>
+                        
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
         </div>
     </div>
 </div>

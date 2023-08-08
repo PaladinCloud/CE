@@ -22,6 +22,7 @@ import { IssueFilterService } from './../../../services/issue-filter.service';
 import {LoggerService} from '../../../../shared/services/logger.service';
 import {ErrorHandlingService} from '../../../../shared/services/error-handling.service';
 import {WorkflowService} from '../../../../core/services/workflow.service';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 
 @Component({
   selector: 'app-policy-details',
@@ -55,10 +56,14 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   errorMessage: any;
   public pageLevel = 0;
   public backButtonRequired;
+  policyParamsDataSubscription: Subscription;
+  paramsArray = [];
+  paramErrorMessage: string;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
     private selectComplianceDropdown: SelectComplianceDropdown,
+    private commonResponseService: CommonResponseService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private issueFilterService: IssueFilterService,
@@ -98,6 +103,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   updateComponent() {
     this.getRuleId();
     this.getFilters();
+    this.getPolicyParamData();
   }
 
   getFilters() {
@@ -184,6 +190,35 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
       this.currentObj = {};
       this.selectComplianceDropdown.updateCompliance(this.currentObj);
       this.filterArr = [];
+    }
+
+    getPolicyParamData(){
+      const policyID = this.ruleID;
+      if (!policyID) {
+        return;
+      }
+      if (this.policyParamsDataSubscription) {
+          this.policyParamsDataSubscription.unsubscribe();
+      }
+      const queryParams = {
+          policyId: policyID,
+      };
+    const getPolicyByIdUrl = environment.getPolicyById.url;
+    const getPolicyByIdMethod = environment.getPolicyById.method;
+      this.policyParamsDataSubscription = this.commonResponseService.getData(getPolicyByIdUrl, getPolicyByIdMethod, {}, queryParams).subscribe(
+        response => {
+          try{
+            this.paramsArray = JSON.parse(response.policyParams).params.map(item => {return {key: item.key, value: item.value}});
+            if(this.paramsArray.length==0){
+              this.paramErrorMessage = 'noDataAvailable';
+            }else{
+              this.paramErrorMessage = '';
+            }
+          }catch(err){
+            this.paramErrorMessage = 'jsError';
+            this.logger.log("jsError", err);
+          }
+        });
     }
 
   ngOnDestroy() {
