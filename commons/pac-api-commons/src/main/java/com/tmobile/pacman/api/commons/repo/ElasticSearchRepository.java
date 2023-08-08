@@ -100,7 +100,8 @@ public class ElasticSearchRepository implements Constants {
 	/**
 	 *
 	 */
-	private static final String QUERY_STRING = "query_string";
+	private static final String QUERY_STRING = "simple_query_string";
+	private static final String MULTI_MATCH = "multi_match";
 	/**
 	 *
 	 */
@@ -474,6 +475,7 @@ public class ElasticSearchRepository implements Constants {
 			List<Map<String, Object>> must = getFilter(mustFilter, mustTermsFilter,matchPhrasePrefix);
 			Map<String, Object> match = Maps.newHashMap();
 			Map<String, Object> all = Maps.newHashMap();
+			all.put("default_operator","AND");
 			// If the string is enclosed in quotes, do a match phrase instead of
 			// match
 			if (searchText.startsWith("\"") && searchText.endsWith("\"")) {
@@ -2017,6 +2019,78 @@ public class ElasticSearchRepository implements Constants {
 			urlToQueryBuffer.append(FORWARD_SLASH).append(targetType);
 		}
 		urlToQueryBuffer.append(FORWARD_SLASH).append(_SEARCH);
-		return prepareResultsUsingPagination(dataSource,requestBody,0,totalDocs);
+		return prepareResultsUsingPagination(dataSource, requestBody, 0, totalDocs);
+	}
+	public Map<String, Object> buildQuery(final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
+										  final HashMultimap<String, Object> shouldFilter, final String searchText,
+										  final Map<String, Object> mustTermsFilter,Map<String, List<String>> matchPhrasePrefix, List<String> fieldsForSearch) {
+
+		Map<String, Object> queryFilters = Maps.newHashMap();
+		Map<String, Object> boolFilters = Maps.newHashMap();
+
+		Map<String, Object> hasChildObject = null;
+		Map<String, Object> hasParentObject = null;
+
+		if (isNotNullOrEmpty(mustFilter)) {
+			if (mustFilter.containsKey(HAS_CHILD)) {
+				hasChildObject = (Map<String, Object>) mustFilter.get(HAS_CHILD);
+				mustFilter.remove(HAS_CHILD);
+			}
+			if (mustFilter.containsKey(HAS_PARENT)) {
+				hasParentObject = (Map<String, Object>) mustFilter.get(HAS_PARENT);
+				mustFilter.remove(HAS_PARENT);
+			}
+		}
+
+		if (isNotNullOrEmpty(mustFilter) && (!Strings.isNullOrEmpty(searchText))) {
+
+			List<Map<String, Object>> must = getFilter(mustFilter, mustTermsFilter,matchPhrasePrefix);
+			Map<String, Object> match = Maps.newHashMap();
+			Map<String, Object> all = Maps.newHashMap();
+			// If the string is enclosed in quotes, do a match phrase instead of
+			// match
+			match.put("multi_match",all);
+			all.put("type","phrase_prefix");
+			all.put("fields",fieldsForSearch);
+
+			if (searchText.startsWith("\"") && searchText.endsWith("\"")) {
+				all.put(QUERY, searchText.substring(1, searchText.length() - 1));
+			} else {
+				all.put(QUERY, searchText);
+			}
+			must.add(match);
+			boolFilters.put(MUST, must);
+		} else if (isNotNullOrEmpty(mustFilter)) {
+			boolFilters.put(MUST, getFilter(mustFilter, mustTermsFilter,matchPhrasePrefix));
+		}
+
+		if (isNotNullOrEmpty(mustFilter)) {
+
+			Map<String, Object> hasChildMap = Maps.newHashMap();
+			Map<String, Object> hasParentMap = Maps.newHashMap();
+
+			List<Map<String, Object>> must = (List<Map<String, Object>>) boolFilters.get(MUST);
+
+			if (null != hasChildObject) {
+				hasChildMap.put(HAS_CHILD, hasChildObject);
+				must.add(hasChildMap);
+			}
+			if (null != hasParentObject) {
+				hasParentMap.put(HAS_PARENT, hasParentObject);
+				must.add(hasParentMap);
+			}
+
+		}
+		if (isNotNullOrEmpty(mustNotFilter)) {
+
+			boolFilters.put(MUST_NOT, getFilter(mustNotFilter, null,null));
+		}
+		if (isNotNullOrEmpty(shouldFilter)) {
+
+			boolFilters.put(SHOULD, getFilter(shouldFilter));
+			boolFilters.put(MINIMUM_SHOULD_MATCH, "1");
+		}
+		queryFilters.put(BOOL, boolFilters);
+		return queryFilters;
 	}
 }
