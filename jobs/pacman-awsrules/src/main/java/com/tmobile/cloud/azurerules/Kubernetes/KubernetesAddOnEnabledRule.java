@@ -2,6 +2,7 @@ package com.tmobile.cloud.azurerules.Kubernetes;
 
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -85,32 +86,16 @@ public class KubernetesAddOnEnabledRule extends BasePolicy {
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
             String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
             logger.debug("hit content in result json: {}", hitsString);
-            JsonObject hitsJson = (JsonObject) parser.parse(hitsString);
-            JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
-            if (hitsJsonArray.size() > 0) {
-                JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                        .get(PacmanRuleConstants.SOURCE);
-                logger.debug("Validating the data item: {}", jsonDataItem);
+            Gson gson = new Gson();
+            Map<String,Object> hitsMap = gson.fromJson(hitsString, Map.class);
+            Optional<Boolean> isAddonEnabledOptional = Optional.ofNullable(hitsMap.get(PacmanRuleConstants.HITS)).map(obj -> (List<Map<String, Object>>) obj).map(obj -> obj.get(0))
+                    .map(obj -> (Map<String, Object>) obj.get(PacmanRuleConstants.SOURCE)).map(obj -> (Map<String, Object>) obj.get(PacmanRuleConstants.PROPERTIES))
+                    .map(obj -> (Map<String, Object>) obj.get(PacmanRuleConstants.ADDON_PROFILES)).map(obj -> (Map<String, Object>) obj.get(PacmanRuleConstants.AZURE_POLICY))
+                    .map(obj -> (Boolean) obj.get(PacmanRuleConstants.ENABLED));
 
-                JsonObject properties=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.PROPERTIES).getAsJsonObject();
-                logger.debug("Validating the properties: {}",properties);
-
-                    JsonObject addonProfiles=properties.getAsJsonObject().get(PacmanRuleConstants.ADDON_PROFILES).getAsJsonObject();
-                    logger.debug("Validating the addon Profiles: {}",addonProfiles);
-
-                    if(addonProfiles!=null) {
-                        JsonObject azurePolicy = addonProfiles.getAsJsonObject().get(PacmanRuleConstants.AZURE_POLICY).getAsJsonObject();
-                        logger.debug("Validating the azurePolicy: {}", azurePolicy);
-
-                        if (azurePolicy != null) {
-                            boolean isAddonEnabled = azurePolicy.get(PacmanRuleConstants.ENABLED).getAsBoolean();
-
-                            if (isAddonEnabled) {
-                                validationResult = true;
-                            }
-                        }
-                    }
-               }
+            if(isAddonEnabledOptional.isPresent()){
+                validationResult = isAddonEnabledOptional.get();
+            }
         }
         return validationResult;
     }
