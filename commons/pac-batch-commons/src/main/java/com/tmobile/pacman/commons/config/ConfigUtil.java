@@ -14,7 +14,7 @@ public class ConfigUtil {
 
     private static Logger log = LoggerFactory.getLogger(ConfigUtil.class);
     
-    private static String configUrl = System.getenv("CONFIG_URL");
+    private static String configUrl = System.getenv("CONFIG_URL")!=null?System.getenv("CONFIG_URL"):System.getenv("CONFIG_SERVICE_URL");
     private static final String NAME = "name";
 
     private static final String SOURCE = "source";

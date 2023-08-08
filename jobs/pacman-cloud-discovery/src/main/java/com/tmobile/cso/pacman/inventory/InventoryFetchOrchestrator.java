@@ -84,7 +84,7 @@ public class InventoryFetchOrchestrator {
 	 */
 	
 	private void fetchAccountInfo() {
-		String accountQuery = "SELECT accountId,accountName,accountStatus FROM cf_Accounts where platform = 'aws' and accountStatus='configured'";
+		String accountQuery = "SELECT accountId,accountName,accountStatus FROM cf_Accounts where platform = 'aws'";
 			accounts = rDSDBManager.executeQuery(accountQuery);
 	}
 
