@@ -12,7 +12,76 @@
  * limitations under the License.
  */
 
- .exemption-banner{
+ .page-layout{
+  overflow: auto;
+}
+
+.page-title{
+  white-space: nowrap;
+}
+
+.sg-rules-wrapper{
+  background-color: white;
+  height: 500px;
+}
+
+.tile-content-wrapper{
+  padding: 20px 0px 20px 24px;
+  background: var(--background-white);
+  border-right: 1px solid var(--border-100);
+}
+
+.tile-content-wrapper .tile-name{
+  color: var(--text-high-emphasis);
+  font: var(--text-body-3);
+}
+
+.tile-content-wrapper .tile{
+  font: var(--text-body-2);
+  color: var(--text-high-emphasis);
+}
+
+.tile-container{
+  padding: 20px 0px;
+}
+
+.tile-content-wrapper{
+  flex-grow: 1;
+}
+
+.content-wrapper{
+  height: calc(100% - 166px);
+  width: 100%;
+}
+
+.left-wrapper{
+  height: 100%;
+  width: calc(100% - 350px);
+  min-width: 600px;
+  gap: 20px;
+}
+
+.right-wrapper{
+  height: 100%;
+  width: 350px;
+  gap: 20px;
+}
+
+.content-wrapper{
+ display: flex;
+ height: 450px;
+ padding-bottom: 24px;
+}
+
+.violation-desc-wrapper{
+  width: 70%;
+  height: 100%;
+  background-color: var(--background-white);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.exemption-banner{
   padding: 12px 28px;
 }
 
@@ -241,14 +310,14 @@ app-issue-blocks {
   margin: 0 0.6em 0 2em;
   perspective: 800px;
   position: relative;
+  width: 40%;
+  background-color: var(--background-white);
 }
 
 .actions-wrapper {
   position: absolute;
+  overflow: auto;
   padding: 2em;
-  background-color: rgba(239, 243, 246, 0.5);
-  border-radius: 0.3em;
-  border: 0.5px solid #c3cbd7;
   transition: 0.5s ease;
   backface-visibility: hidden;
   transform-style: preserve-3d;
@@ -261,10 +330,47 @@ app-issue-blocks {
 }
 
 .recommend {
-  text-align: left;
-  font-size: 1.1em;
-  color: #555;
-  margin-bottom: 1.5em;
+  font: var(--text-body-3);
+  color: var(--text-high-emphasis);
+  padding-bottom: 24px;
+}
+
+.details-header-wrapper{
+  padding: 20px 0px 20px 24px;
+  border-bottom: 1px solid var(--border-100);
+}
+
+.detail-header{
+   color: var(--text-low-emphasis);
+}
+
+.details-body{
+  padding: 24px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.detail-wrapper{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 45%;
+}
+
+.reason{
+  width: 100%;
+}
+
+.link{
+  font: var(--text-body-2);
+  color: var(--primary-400);
+  cursor: pointer;
+}
+
+.detail-value{
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-text {
@@ -390,6 +496,7 @@ app-issue-blocks {
 .text-wrapper {
   margin: 2em 0;
   font-size: 1.1em;
+  height: 280px;
 }
 
 .text-wrapper-header {
@@ -405,7 +512,7 @@ app-issue-blocks {
 .textarea-container {
   width: 100% !important;
   margin-bottom: 2em;
-  height: 16vh;
+  height: 70px;
   border-radius: 0.3em;
   border: 1px solid #aaa;
   padding: 0.2em 0.5em;
