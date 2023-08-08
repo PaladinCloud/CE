@@ -458,13 +458,13 @@ import {
                         this.issueBlocks.policyCategory === 'Governance'
                       ) {
                         obj = {
-                          header: 'Rule Category',
+                          header: 'Policy Category',
                           footer: this.issueBlocks.policyCategory,
                           img: '../assets/icons/Governance.svg'
                         };
                       } else {
                         obj = {
-                          header: 'Rule Category',
+                          header: 'Policy Category',
                           footer: this.issueBlocks.policyCategory,
                           img: '../assets/icons/Security.svg'
                         };
@@ -1305,7 +1305,7 @@ import {
                     severityFooter: this.issueBlocks.severity,
                     targetTypeName: 'Asset Type',
                     targetTypeFooter: this.issueBlocks.resourceType,
-                    policyCategoryName: 'Rule Category',
+                    policyCategoryName: 'Policy Category',
                     policyCategoryFooter: this.issueBlocks.policyCategory,
                     policyViolated: this.issueBlocks.policyViolated,
                     policyDescription: this.issueBlocks.policyDescription,
