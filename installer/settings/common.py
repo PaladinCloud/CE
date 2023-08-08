@@ -44,6 +44,8 @@ PROCESS_RESOURCES = {
     'iam.base_role_policy': {'tags': ["roles"]},
     'iam.post_auth' : {'tags': ["roles"]},
     'iam.all_read_role': {'tags': ["roles", "all_read_role"]},
+    'iam.acs_lambda_role' : {'tags': ["roles"]},
+    'iam.acs_lambda_policy' : {'tags': ["roles"]},
     'vpc.security_group': {'tags': ["security"]},
     'datastore.db': {'tags': ["rds", "datastore"]},
     'datastore.es': {'tags': ["es", "datastore"]},
@@ -74,7 +76,8 @@ PROCESS_RESOURCES = {
     'cognito.userpool' : {'tags' : ["cognito"]},
     'notification.s3_upload' : {'tags' : ["notification"]},
     'notification.function' : {'tags' : ["notification"]},
-    'notification.appsync' : {'tags' : ["notification"]}
+    'notification.appsync' : {'tags' : ["notification"]},
+    'notification.apigateway' : {'tags' : ["notification"]}
 }
 
 

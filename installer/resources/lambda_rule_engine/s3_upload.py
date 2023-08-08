@@ -6,11 +6,11 @@ import os
 
 
 RULE_ENGINE_JOB_FILE_NAME = "paladincloud-submitRuleExecutionJob"
-
+PATH = "/"+Settings.LAMBDA_PATH+"/"
 
 class UploadLambdaRuleEngineZipFile(S3BucketObject):
     bucket = BucketStorage.get_output_attr('bucket')
-    key = Settings.RESOURCE_NAME_PREFIX + "/v2/" + RULE_ENGINE_JOB_FILE_NAME + ".zip"
+    key = Settings.RESOURCE_NAME_PREFIX + PATH + RULE_ENGINE_JOB_FILE_NAME + ".zip"
     source = os.path.join(
         get_terraform_scripts_and_files_dir(),
         RULE_ENGINE_JOB_FILE_NAME + ".zip")
