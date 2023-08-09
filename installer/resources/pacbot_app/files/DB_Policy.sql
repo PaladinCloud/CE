@@ -2995,6 +2995,10 @@ update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Rotate-Key-Management-Service-Encryption-Keys-Every-90-Days' where policyId='kms_keys_rotation_period_within_90_days';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Deny-Public-Access-to-SSH-Port-22' where policyId='VPC_firewall_SSH_port_22_should_not_be_publicly_accessible';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Enable-Log_connections-DB-Flag-for-PostgreSQL' where policyId='Enable_Log_connections_for_Postgres_Server_DB_Instances';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Enable-Auto-Repair-for-GKE-Nodes' where policyId='Enable_Auto_Repair_for_GKE_nodes';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Enhance-Security-with-Specific-API-Restrictions-for-Google-Cloud-API-Keys' where policyId='Enable_API_Key_Restrictions';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Secure-Google-Cloud-API-Keys-with-Application-Restrictions' where policyId='Enable_API_Key_Application_Restrictions';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Secure-Your-Google-Cloud-Load-Balancers-with-HTTPS-and-SSL/TLS-Certificates' where policyId='Enable_HTTPS_For_LoadBalancer';
 
 UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'Azure_Enable_Network_Security_for_UDP';
 UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'Disable_Local_infile_for_MySQL_Server_DB_Instances';
