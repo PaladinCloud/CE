@@ -377,6 +377,11 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
                 }else{
                     aggsFilter=CommonUtils.convertAttributetoKeyword(attributeName);
                 }
+                //ignore "Unknown Status" while fetching for violation
+                if(attributeName.equalsIgnoreCase("issueStatus") && aggsFilter.equalsIgnoreCase("issueStatus.keyword")){
+                    mustNotFilter.put("issueStatus.keyword","unknown");
+                     }
+
                 Map<String, Long> totalDistributionForIndexAndType = elasticSearchRepository.getTotalDistributionForIndexAndType(
                         assetGroup, null, mustFilter, mustNotFilter, shouldFilter, aggsFilter,
                         THOUSAND, mustTermsFilter);
