@@ -172,6 +172,7 @@ import {
     public GLOBAL_CONFIG;
     fromEmailID: any;
     private policyViolationId;
+    violationModifiedDate: any;
   
     /*Subscription variables*/
     private getRuleDescSubscription: Subscription;
@@ -395,6 +396,7 @@ import {
                   this.showLoader = false;
                   if (!this.utilityService.isObjectEmpty(response)) {
                     this.issueBlocks = response;
+                    this.violationModifiedDate = this.issueBlocks?.violationModifiedDate;
                     this.exemptionDetails = response["exemption"];
                     this.exemptionRaisedBy = this.exemptionDetails.exemptionRaisedBy.split('.')[0];
                     this.exemptionRaisedBy = this.exemptionRaisedBy.charAt(0).toUpperCase() + this.exemptionRaisedBy.slice(1);
@@ -1314,7 +1316,7 @@ import {
                     resourceUrl: window.location.origin+'/pl/assets/asset-list/'+resourceType+'/'+resourceId+'?ag='+assetGroup+'&domain='+domainName,
                     policyUrl: window.location.origin+'/pl/compliance/policy-knowledgebase-details/'+ruleID+'/false?ag='+assetGroup+'&domain='+domainName,
                     createdOn: this.issueBlocks.violationCreatedDate,
-                    lastModifiedDate: this.issueBlocks.violationModifiedDate,
+                    lastModifiedDate: this.violationModifiedDate??"",
                     templatePath: this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL
                 },
                 subject: 'Issue Details',
