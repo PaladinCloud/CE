@@ -2903,6 +2903,8 @@ update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Aqua-Found-High-ECR-Vulnerabilities' where policyId='HighImageVulnerabilitiesScannedByAqua';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Aqua-Found-Critical-ECR-Vulnerabilities' where policyId='CriticalImageVulnerabilitiesScannedByAqua';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Aqua-Found-Medium-ECR-Vulnerabilities' where policyId='MediumImageVulnerabilitiesScannedByAqua';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Assign-Standard-Region-to-Security-Groups' where policyId='NonStandardRegionRule_version-1_version-1_SgWithNonStandardRegion_sg';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Encrypt-DocumentDB' where policyId='Aws_DocumentDB_should_be_encrypted_version-1_aws_enable_cluster_encryption_documentdb';
 
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Assign-Mandatory-Tags-to-BigQueryDataset' where policyId='TaggingRule_version-1_BigQueryDatasetTagging_bigquerydataset';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Assign-Mandatory-Tags-with-BigQueryTable' where policyId='TaggingRule_version-1_BigQueryTableTagging_bigquerytable';
