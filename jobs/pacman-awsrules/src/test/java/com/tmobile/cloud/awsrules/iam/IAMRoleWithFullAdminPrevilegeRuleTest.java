@@ -77,7 +77,7 @@ public class IAMRoleWithFullAdminPrevilegeRuleTest {
 		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAttachedPolicyOfIAMRole(anyString(),anyObject())).thenReturn(mockAttachedRolePolicies());
-		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenReturn(mockCustomerMgedPolicyArns());
+		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString(), anyString())).thenReturn(mockCustomerMgedPolicyArns());
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
 		mockStatic(Annotation.class);
 		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
@@ -105,7 +105,7 @@ public class IAMRoleWithFullAdminPrevilegeRuleTest {
 		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAttachedPolicyOfIAMRole(anyString(),anyObject())).thenReturn(mockAttachedRolePolicies());
-		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenReturn(mockCustomerMgedPolicyArns());
+		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString(), anyString())).thenReturn(mockCustomerMgedPolicyArns());
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(false);
 		
 		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
@@ -151,7 +151,7 @@ public class IAMRoleWithFullAdminPrevilegeRuleTest {
 		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 
 		when(IAMUtils.getAttachedPolicyOfIAMRole(anyString(),anyObject())).thenReturn(mockAttachedRolePolicies());
-		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenThrow(new RuleExecutionFailedExeption());
+		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString(), anyString())).thenThrow(new RuleExecutionFailedExeption());
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(false);
 		assertThatThrownBy(() -> spy.execute(ruleParam, resourceAttribute)).isInstanceOf(RuleExecutionFailedExeption.class);
 

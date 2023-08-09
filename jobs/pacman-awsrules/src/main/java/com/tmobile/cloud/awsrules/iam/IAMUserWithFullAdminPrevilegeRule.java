@@ -32,6 +32,8 @@ import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ACCOUNT_ID;
+
 @PacmanPolicy(key = "iam-user-with-admin-privilege-policy", desc = "Checks if any iam cutomer managed policy with full admin previlege is attached to an iam user", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
 public class IAMUserWithFullAdminPrevilegeRule extends BasePolicy {
 
@@ -116,6 +118,7 @@ public class IAMUserWithFullAdminPrevilegeRule extends BasePolicy {
 
 		String userName = resourceAttributes.get(USER_NAME);
 		String groups = resourceAttributes.get(USER_GROUPS);
+		String accountId = resourceAttributes.get("accountid");
 
 		try {
 			map = getClientFor(AWSService.IAM, ruleParamforIAM.get(PacmanSdkConstants.Role_IDENTIFYING_STRING), ruleParamforIAM);
@@ -132,7 +135,7 @@ public class IAMUserWithFullAdminPrevilegeRule extends BasePolicy {
 				groupList = Arrays.asList(org.apache.commons.lang3.StringUtils.split(groups, ":;"));
 				String formattedGroupUrl = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_IAM_GROUP_URL);
 				String esIamGroupUrl = !StringUtils.isNullOrEmpty(formattedGroupUrl) ? formattedGroupUrl : "";
-				policies = PacmanUtils.getPolicyByGroup(groupList, esIamGroupUrl);
+				policies = PacmanUtils.getPolicyByGroup(groupList, esIamGroupUrl,accountId);
 				
 			}
 			
@@ -146,7 +149,7 @@ public class IAMUserWithFullAdminPrevilegeRule extends BasePolicy {
 				String formattedIamPolicyUrl = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_CUSTOMER_MGD_POLICY_URL);
 				String esIamPoliciesUrl = !StringUtils.isNullOrEmpty(formattedIamPolicyUrl) ? formattedIamPolicyUrl : "";
 
-				Set<String> policyArns = PacmanUtils.getIamCustManagedPolicyByName(policyNames, esIamPoliciesUrl);
+				Set<String> policyArns = PacmanUtils.getIamCustManagedPolicyByName(policyNames, esIamPoliciesUrl, accountId);
 
 				if (!CollectionUtils.isNullOrEmpty(policyArns)) {
 					for (String policyArn : policyArns) {

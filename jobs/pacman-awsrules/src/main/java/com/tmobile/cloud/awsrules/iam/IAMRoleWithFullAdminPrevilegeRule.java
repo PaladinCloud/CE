@@ -31,6 +31,8 @@ import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ACCOUNT_ID;
+
 @PacmanPolicy(key = "iam-role-with-admin-privilege-policy", desc = "Checks if any iam cutomer managed policy with full admin previlege is attached to an iam role", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
 public class IAMRoleWithFullAdminPrevilegeRule extends BasePolicy {
 
@@ -64,7 +66,6 @@ public class IAMRoleWithFullAdminPrevilegeRule extends BasePolicy {
 
 		MDC.put("executionId", ruleParam.get("executionId"));
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
-		
 		Optional.ofNullable(ruleParam)
 				.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY),
 						param.get(PacmanRuleConstants.CATEGORY), param.get(PacmanSdkConstants.Role_IDENTIFYING_STRING),
@@ -91,10 +92,7 @@ public class IAMRoleWithFullAdminPrevilegeRule extends BasePolicy {
 	/**
 	 * @param ruleParam
 	 * @param resourceAttributes
-	 * @return
-	 * 
-	 * Validate the inline and attached policies to the role for the statement {Effect:*,Action:*,Resource:*}
-	 * 
+	 * @return Validate the inline and attached policies to the role for the statement {Effect:*,Action:*,Resource:*}
 	 */
 	private String checkValidation(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
@@ -106,7 +104,7 @@ public class IAMRoleWithFullAdminPrevilegeRule extends BasePolicy {
 
 		ruleParamforIAM.putAll(ruleParam);
 		ruleParamforIAM.put("region", "us-east-1");
-
+		String accountId = resourceAttributes.get(ACCOUNT_ID);
 		String roleName = resourceAttributes.get(ROLE_NAME);
 
 		try {
@@ -123,7 +121,7 @@ public class IAMRoleWithFullAdminPrevilegeRule extends BasePolicy {
 					String formattedIamPolicyUrl = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_CUSTOMER_MGD_POLICY_URL);
 					String esIamPoliciesUrl = !StringUtils.isNullOrEmpty(formattedIamPolicyUrl) ? formattedIamPolicyUrl : "";
 
-					Set<String> policies = PacmanUtils.getIamCustManagedPolicyByName(policyNames, esIamPoliciesUrl);
+					Set<String> policies = PacmanUtils.getIamCustManagedPolicyByName(policyNames, esIamPoliciesUrl, accountId);
 
 					if (!CollectionUtils.isNullOrEmpty(policies)) {
 						for (String policyArn : policies) {

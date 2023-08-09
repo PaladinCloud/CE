@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anySetOf;
@@ -78,9 +77,9 @@ public class IAMUserWithFullAdminPrevilegeRuleTest {
 		IAMUserWithFullAdminPrevilegeRule spy = Mockito.spy(new IAMUserWithFullAdminPrevilegeRule());
 		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
-		when(PacmanUtils.getPolicyByGroup(anyListOf(String.class), anyString())).thenReturn(mockGroupPolicies());
+		when(PacmanUtils.getPolicyByGroup(anyListOf(String.class), anyString(), anyString())).thenReturn(mockGroupPolicies());
 		when(IAMUtils.getAttachedPolicyOfIAMUser(anyString(),anyObject())).thenReturn(mockAttachedUserPolicies());
-		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenReturn(mockCustomerMgedPolicyArns());
+		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString(), anyString())).thenReturn(mockCustomerMgedPolicyArns());
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
 		when(IAMUtils.isInlineUserPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
 		when(IAMUtils.isInlineGroupPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
@@ -109,9 +108,9 @@ public class IAMUserWithFullAdminPrevilegeRuleTest {
 		IAMUserWithFullAdminPrevilegeRule spy = Mockito.spy(new IAMUserWithFullAdminPrevilegeRule());
 		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
-		when(PacmanUtils.getPolicyByGroup(anyListOf(String.class), anyString())).thenReturn(mockGroupPolicies());
+		when(PacmanUtils.getPolicyByGroup(anyListOf(String.class), anyString(), anyString())).thenReturn(mockGroupPolicies());
 		when(IAMUtils.getAttachedPolicyOfIAMUser(anyString(),anyObject())).thenReturn(mockAttachedUserPolicies());
-		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenReturn(mockCustomerMgedPolicyArns());
+		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString(), anyString())).thenReturn(mockCustomerMgedPolicyArns());
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(false);
 		when(IAMUtils.isInlineUserPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(false);
 		when(IAMUtils.isInlineGroupPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(false);
@@ -159,7 +158,7 @@ public class IAMUserWithFullAdminPrevilegeRuleTest {
 		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 
 		when(IAMUtils.getAttachedPolicyOfIAMUser(anyString(),anyObject())).thenReturn(mockAttachedUserPolicies());
-		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenThrow(new RuleExecutionFailedExeption());
+		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString(), anyString())).thenThrow(new RuleExecutionFailedExeption());
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(false);
 		assertThatThrownBy(() -> spy.execute(ruleParam, resourceAttribute)).isInstanceOf(RuleExecutionFailedExeption.class);
 
