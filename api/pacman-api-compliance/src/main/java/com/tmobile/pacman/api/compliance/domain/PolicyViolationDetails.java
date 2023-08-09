@@ -39,7 +39,7 @@ public class PolicyViolationDetails {
     String severity;
 
     /** The rule category. */
-    String ruleCategory;
+    String policyCategory;
 
     /** The resouce violated policy. */
     String resouceViolatedPolicy;
@@ -91,7 +91,7 @@ public class PolicyViolationDetails {
      * @param violationDetails the violation details
      */
     public PolicyViolationDetails(String resourceType, String status,
-                                  String severity, String ruleCategory, String resouceViolatedPolicy,
+                                  String severity, String policyCategory, String resouceViolatedPolicy,
                                   String policyViolated, String policyDescription,
                                   String violationReason, String violationCreatedDate,
                                   String violationModifiedDate, String ruleId,
@@ -102,7 +102,7 @@ public class PolicyViolationDetails {
         this.resourceType = resourceType;
         this.status = status;
         this.severity = severity;
-        this.ruleCategory = ruleCategory;
+        this.policyCategory = policyCategory;
         this.resouceViolatedPolicy = resouceViolatedPolicy;
         this.policyViolated = policyViolated;
         this.policyDescription = policyDescription;
@@ -144,9 +144,9 @@ public class PolicyViolationDetails {
     }
 
     /**
-     * Sets the rule id.
+     * Sets the policy id.
      *
-     * @param ruleId the new rule id
+     * @param policyId the new rule id
      */
     public void setPolicyId(String policyId) {
         this.policyId = policyId;
@@ -218,17 +218,17 @@ public class PolicyViolationDetails {
      *
      * @return the rule category
      */
-    public String getRuleCategory() {
-        return ruleCategory;
+    public String getPolicyCategory() {
+        return policyCategory;
     }
 
     /**
      * Sets the rule category.
      *
-     * @param ruleCategory the new rule category
+     * @param policyCategory the new rule category
      */
-    public void setRuleCategory(String ruleCategory) {
-        this.ruleCategory = ruleCategory;
+    public void setPolicyCategory(String policyCategory) {
+        this.policyCategory = policyCategory;
     }
 
     /**
