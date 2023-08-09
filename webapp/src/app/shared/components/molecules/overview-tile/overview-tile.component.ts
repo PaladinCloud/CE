@@ -26,7 +26,8 @@ export class OverviewTileComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    redirectTo(title: string) {
+    redirectTo(title: string, count: number) {
+        if(count==0) return;
         this.navigateTo.emit(title);
     }
 }

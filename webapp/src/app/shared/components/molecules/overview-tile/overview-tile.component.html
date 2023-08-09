@@ -3,10 +3,10 @@
         <img class="tile-header-img" src="/assets/icons/{{ tile.mainContent.image }}.svg" alt="" />
         <div class="tile-header-content flex flex-align-center gap-8">
             <div class="tile-header-title capitalize">{{ tile.mainContent.title }}</div>
-            <div class="tile-header-count" (click)="redirectTo(tile.mainContent.title)">
+            <div class="tile-header-count" (click)="redirectTo(tile.mainContent.title, tile.mainContent.count)">
                 <app-text-with-icon
                     [text]="tile.mainContent.count | number"
-                    textVariant="subtitle-1 primary-400"
+                    [textVariant]="tile.mainContent.count === 0?'subtitle-1' : 'subtitle-1 primary-400 pointer'"
                     postImagePath="/assets/icons/Path.svg"
                     gap="8"
                 ></app-text-with-icon>
@@ -16,10 +16,10 @@
     <div class="flex gap-16">
         <div class="tile-details flex gap-8" *ngFor="let data of tile.subContent">
             <div class="tile-details-name">{{ data.title }}</div>
-            <div class="tile-header-count" *ngIf="data.title.toLowerCase()=='tagged assets'; else displayCount" (click)="redirectTo(data.title)">
+            <div class="tile-header-count" *ngIf="data.title.toLowerCase()=='tagged assets'; else displayCount" (click)="redirectTo(data.title, data.count)">
                 <app-text-with-icon
                     [text]="data.count"
-                    textVariant="caption primary-400"
+                    [textVariant]="data.count === 0?'caption' : 'caption primary-400 pointer'"
                     gap="8"
                 ></app-text-with-icon>
             </div>
