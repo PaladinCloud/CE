@@ -1468,7 +1468,7 @@ INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (10,'notificat
 
 /* UI Filter Options */
 
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (3,1,'Region','region.keyword','/compliance/v1/filters/regions?ag=aws');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (3,1,'Region','region.keyword','/compliance/v1/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (4,1,'AccountName','accountid.keyword','/compliance/v1/filters/accounts?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (5,1,'Application','tags.Application.keyword','/compliance/v1/filters/application?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (6,1,'Environment','tags.Environment.keyword','/compliance/v1/filters/environment?ag=aws&application=aws');
