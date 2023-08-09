@@ -100,14 +100,7 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.Annotation;
 
-import static com.tmobile.cloud.constants.PacmanRuleConstants.BOOL;
-import static com.tmobile.cloud.constants.PacmanRuleConstants.DOC_TYPE;
-import static com.tmobile.cloud.constants.PacmanRuleConstants.FORWARD_SLASH;
-import static com.tmobile.cloud.constants.PacmanRuleConstants.GET_NO_OF_ACCOUNT_ERROR_MESSAGE;
-import static com.tmobile.cloud.constants.PacmanRuleConstants.MATCH;
-import static com.tmobile.cloud.constants.PacmanRuleConstants.MUST;
-import static com.tmobile.cloud.constants.PacmanRuleConstants.TERM;
-import static com.tmobile.cloud.constants.PacmanRuleConstants.TERMS;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.*;
 
 public class PacmanUtils {
     private static final Logger logger = LoggerFactory.getLogger(PacmanUtils.class);
@@ -1146,17 +1139,15 @@ public class PacmanUtils {
 	}
     
 	/**
-	 * @param iamPolicyNameSet
-	 * @param esIamPoliciesUrl
-	 * @return
-	 * @throws Exception
-	 * 
-	 * Return the list of policy arns from the iam customer
-	 * managed policies es index, if the input policy names are
-	 * present
-	 * 
-	 */
-    public static Set<String> getIamCustManagedPolicyByName(Set<String> iamPolicyNameSet, String esIamPoliciesUrl) throws Exception {
+     * @param iamPolicyNameSet
+     * @param esIamPoliciesUrl
+     * @param accountId
+     * @return
+     * @throws Exception Return the list of policy arns from the iam customer
+     *                   managed policies es index, if the input policy names are
+     *                   present
+     */
+    public static Set<String> getIamCustManagedPolicyByName(Set<String> iamPolicyNameSet, String esIamPoliciesUrl, String accountId) throws Exception {
 		
 		Set<String> filteredArns = new HashSet<>();
 		Map<String, Object> mustFilter = new HashMap<>();
@@ -1165,6 +1156,8 @@ public class PacmanUtils {
 		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
 		
 		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_ATTRIBUTE_POLICYNAME), iamPolicyNameSet);
+        mustFilter.put(PacmanSdkConstants.ACCOUNT_ID,accountId);
+        mustFilter.put(LATEST,true);
 		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esIamPoliciesUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
 		
 		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
@@ -1183,15 +1176,13 @@ public class PacmanUtils {
 	}
     
 	/**
-	 * @param groupList
-	 * @param esIamGroupUrl
-	 * @return
-	 * @throws Exception
-	 * 
-	 * Return the list of policy names from iam group es index based on the group name
-	 * 
-	 */
-	public static Set<String> getPolicyByGroup(List<String> groupList, String esIamGroupUrl) throws Exception {
+     * @param groupList
+     * @param esIamGroupUrl
+     * @param accountId
+     * @return
+     * @throws Exception Return the list of policy names from iam group es index based on the group name
+     */
+	public static Set<String> getPolicyByGroup(List<String> groupList, String esIamGroupUrl, String accountId) throws Exception {
 
 		Set<String> filteredArns = new HashSet<>();
 		Map<String, Object> mustFilter = new HashMap<>();
@@ -1200,6 +1191,8 @@ public class PacmanUtils {
 		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
 
 		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_NAME), groupList);
+        mustFilter.put(PacmanSdkConstants.ACCOUNT_ID, accountId);
+        mustFilter.put(LATEST,true);
 		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esIamGroupUrl, mustFilter,
 				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
 
