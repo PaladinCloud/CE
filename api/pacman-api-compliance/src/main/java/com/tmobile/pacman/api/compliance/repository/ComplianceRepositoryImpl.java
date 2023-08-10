@@ -466,13 +466,14 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), Constants.ISSUE);
 
-        if (null == filters.get("issueStatus.keyword")) {
+        /*if (null == filters.get("issueStatus.keyword")) {
             issueStatus.add(OPEN);
-        }
+        }*/
 
         if (null != filters.get("include_exempt") && ("yes".equalsIgnoreCase((String) filters.get(INCLUDE_EXEMPT)))) {
             issueStatus.add(EXEMPTED);
         }
+        mustNotFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), "unknown");
         if(!issueStatus.isEmpty()) mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
         mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), policyIdOrder);
         Boolean isAutofixPlanned = false;
