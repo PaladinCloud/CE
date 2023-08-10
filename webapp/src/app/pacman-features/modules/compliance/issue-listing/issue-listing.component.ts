@@ -119,6 +119,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   tableData = [];
   isStatePreserved = false;
   columnsToExcludeFromCasing = ["Account Name"];
+  filterOrder: any;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -142,7 +143,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
     .subscribe(async(assetGroupName) => {
-        this.getPreservedState();
+        await this.getPreservedState();
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
@@ -183,7 +184,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.columnWidths = { ...this.columnWidths };
   }
 
-  getPreservedState() {
+  async getPreservedState() {
     const state = this.tableStateService.getState(this.pageTitle) ?? {};
   
     this.headerColName = state.headerColName || 'Severity';
@@ -205,7 +206,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
 
     this.preApplyStatusFilter(state);
+    // below code is to apply filters which are in saved state and update the URL (just to keep URL in sync and also getData method is dependent) 
+    // and it does this only if URL doesn't contain filter attribute.
+    // if url contains filter attribute, below code is not executed and thus they are overridden with the filters
+    // by the filters present in URL. This overriding is being done in routerParam() method which basically updates filterText
+    // based on filterQueryParams and later when getFilterArray is called, they are added to filters array.
 
+    // however, one thing to note here is that getData method does not depend on filters array directly
+    // but rather it depends on filterText object which is build on URL queryParams.
     if (!this.activatedRoute.snapshot.queryParamMap.has("filter") && state.filters) {
       this.filters = state.filters;
       Promise.resolve().then(() => this.getUpdatedUrl());
@@ -333,6 +341,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.queryParamsWithoutFilter = JSON.parse(
           JSON.stringify(this.FullQueryParams)
         );
+        this.getSortedOrderFromURL(this.FullQueryParams.filter);
         delete this.queryParamsWithoutFilter["filter"];
         /**
          * The below code is added to get URLparameter and queryparameter
@@ -346,6 +355,31 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.logger.log("error", error);
     }
   }
+
+  getSortedOrderFromURL(filterString){
+    try{
+      // Split the string by '**'
+      const splitByDoubleAsterisk = filterString.split('**');
+
+      // Initialize an array to hold the keys
+      const keys = [];
+
+      // Iterate through the substrings obtained from the split
+      splitByDoubleAsterisk.forEach(substring => {
+        // Split each substring by '=' to get key-value pairs
+        const keyValuePair = substring.split('=');
+        if (keyValuePair.length === 2) {
+          // Extract the key from the key-value pair and add it to the keys array
+          keys.push(decodeURIComponent(keyValuePair[0]).replace(".keyword", ""));
+        }
+      });
+
+      this.filterOrder = keys;
+    }catch(e){
+      this.logger.log("jsError",e);
+    }
+  }
+
   getUpdatedUrl() {
     let updatedQueryParams = {};
       this.filterText = this.utils.arrayToObject(
@@ -428,7 +462,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       }
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-        await this.processFilterItem(formattedFilters[i]);
+        await this.processFilterItem(formattedFilters[i], i);
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -436,7 +470,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  async processFilterItem(formattedFilterItem){
+  async processFilterItem(formattedFilterItem, index){
 
     let keyDisplayValue = formattedFilterItem.keyDisplayValue;
     if(!keyDisplayValue){
@@ -445,7 +479,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       })["optionName"];
     }
 
-    await this.changeFilterType(keyDisplayValue);
+    await this.changeFilterType(keyDisplayValue, index);
     const filterKey = formattedFilterItem.filterkey;
     const filterValues = this.filterText[filterKey]?.split(',') || [];
     const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
@@ -557,7 +591,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .then(response => response[0].data.response);
   }
   
-  async changeFilterType(value) {
+  async changeFilterType(value, index=-1) {
     this.filterErrorMessage = '';
   
     try {
@@ -571,23 +605,30 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         urlObj.params["attribute"],
         this.currentFilterType["optionValue"]?.replace(".keyword", "")
       ];
-  
+      
       const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
   
       const filtersToBePassed = Object.keys(this.filterText).reduce((result, key) => {
         const normalizedKey = key.replace(".keyword", "");
-        if (!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) {
-          result[normalizedKey] = this.filterText[key].split(",");
+        if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) || index>=0) {
+        result[normalizedKey] = this.filterText[key].split(",");
         }
         return result;
       }, {});
+      
+      const sortedFiltersToBePassed = this.filterOrder?.slice(0, index)?.reduce((result, key) => {
+        if (filtersToBePassed.hasOwnProperty(key)) {
+          result[key] = filtersToBePassed[key];
+        }
+        return result;
+      }, {});      
   
       const payload = {
         type: "issue",
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
         ag: this.selectedAssetGroup,
         domain: this.selectedDomain,
-        filter: filtersToBePassed,
+        filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
       };
   
       const filterTagsData = await this.getFilterTagsData(payload);
