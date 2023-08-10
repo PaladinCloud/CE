@@ -12,543 +12,538 @@
  * limitations under the License.
  */
 
- import { Component, OnInit, ElementRef, OnDestroy, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
- import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
- import { Subscription } from 'rxjs';
- import { environment } from './../../../../../environments/environment';
- import { ActivatedRoute, Router } from '@angular/router';
- import { DataCacheService } from '../../../../core/services/data-cache.service';
- import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
- import { CommonResponseService } from '../../../../shared/services/common-response.service';
- import { PolicyViolationSummaryService } from '../../../services/policy-violation-summary.service';
- import { CpuUtilizationService } from '../../../services/cpu-utilization.service';
- import { DiskUtilizationService } from '../../../services/disk-utilization.service';
- import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
- import { UtilsService } from '../../../../shared/services/utils.service';
- import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
- import { AssetCostService } from '../../../services/asset-cost.service';
- import { WorkflowService } from '../../../../core/services/workflow.service';
- import { HostVulnerabilitiesSummaryService } from '../../../services/host-vulnerabilities-summary.service';
- import { LoggerService } from '../../../../shared/services/logger.service';
- import { CONFIGURATIONS } from '../../../../../config/configurations';
- import { Clipboard } from '@angular/cdk/clipboard';
- import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
- import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
- 
- 
- @Component({
-   selector: 'app-asset-details',
-   templateUrl: './asset-details.component.html',
-   styleUrls: ['./asset-details.component.css'],
-   providers: [CommonResponseService, PolicyViolationSummaryService, HostVulnerabilitiesSummaryService, CpuUtilizationService, DiskUtilizationService, AssetCostService]
- })
- export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
- 
-   tiles = {
-     Policies: {
-       value: 0
-     },
-     Violations: {
-       value: 0
-     },
-     Compliance: {
-       value: 0
-     },
-     Source: {
-       value: "",
-       img: ""
-     },
-     "Asset Type":{
-       value:"",
-       img: ""
-     }
-   };
- 
-   tileList = [];
- 
-   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-   resourceId: string;
-   resourceType: string;
-   public decodedResourceId: string;
-   public emailArray = [];
-   public users;
-   widgetWidth = 200;
-   widgetHeight = 200;
-   violationErrorMessage="";
-   widgetWidth1 = 120;
-   widgetHeight1 = 125;
-   userEmail: FormGroup;
-   public elementRef;
-   public queryValue = '';
-   public filteredList = [];
-   public idDetailsName = [];
-   widgetWidth2 = 500;
-   widgetHeight2 = 270;
-   policyValue = false;
-   hostValue = false;
-   private routeSubscription: Subscription;
- 
-   /*variables for breadcrumb data*/
-   breadcrumbArray: any = [];
-   breadcrumbLinks: any = [];
-   breadcrumbPresent: any;
- 
-   filteredData = false;
-   tagsVariable = false;
-   buttonDisable = false;
-   showCpuData = false;
-   unCategorizedDataVisible = false;
-   showUnCategorizedData = false;
-   showIpAddress = false;
-   hidePolicyViolations: boolean;
-   hideHostVulnerabilities: boolean;
-   hideOpenPorts: boolean;
-   installedSoftwares: boolean;
-   showOppositeEmail = false;
-   showNone = false;
-   showTransactionEmail = false;
-   showLoadcompleteEmail = false;
-   invalid = true;
-   arrowkeyLocation = 0;
-   checkEmail = false;
-   complianceDropdowns: any = [];
-   searchDropdownData: any = {};
-   selectedDD = '';
-   currentObj: any = {};
-   filterArr: any = [];
-   tagsArray: any = {};
-   labels: any;
-   dataObj: any = {};
-   genericAttributes: any = {};
-   showEmail = false;
-   private subscriptionToAssetGroup: Subscription;
-   private getPolicyDataSubscription: Subscription;
-   private getHostDataSubscription: Subscription;
-   private getCpuDataSubscription: Subscription;
-   private getDiskDataSubscription: Subscription;
-   private assetDetailsSubscription: Subscription;
-   private awsNotificationSubscription: Subscription;
-   private getEmailSubscription: Subscription;
-   private getSummaryData: Subscription;
-   private assetCostSubscription: Subscription;
-   private accessGroupSubscription: Subscription;
-   private getUserSubscription: Subscription;
-   selectedAssetGroup: string;
-   selectedComplianceDropdown: any;
- 
-   policyData: any;
-   hostData: any;
-   cpuData: any;
-   diskData: any;
-   detailsData: any;
-   systemInfo: any;
-   relatedAssets: any;
-   awsDetailsData: any;
-   installedSoftwaresData: any;
-   assetSummaryData: any;
-   costData: any;
-   accessGroupData: any;
- 
-   policyAvailable: any = [false, false, false, false];
-   showLoader: any = [false, false, false, false, false, false, false, false, false, false, false, false];
-   hideContainer: any = [false, false, false, false, false, false, false, false];
-   summary: any = {
-     'violation': false,
-     'vulnerabilities': false
-   };
-   errorMessage: any = [];
-   public targetType: any = '';
-   strokeColor = '#fff';
-   innerRadius: any = 65;
-   outerRadius: any = 50;
-   innerRadius1 = 60;
-   outerRadius1 = 47;
-   colorSetCpu = ['#26ba9d', '#26ba9d', '#645ec5'];
-   MainTextcolor = '#000';
-   filterText: any = {};
-   private urlParams: any;
-   urlToRedirect: any = '';
-   private previousUrl: any = '';
-   public pageLevel = 0;
-   public backButtonRequired;
-   configurations;
-   tagErrorMessage: string;
-   outboundRulesData = [];
-   inboundRulesData = [];
-   columnNamesMap = {"fromport": "From Port","toport": "To Port",  "cidrip": "CidrIp"};
-   sgRulesColumnWidths = {"From Port": 1, "To Port": 1, "CidrIp": 1};
-   sgRulesColumns = [];
-   centeredColumns = {
-     "From Port": true,
-     "To Port": true,
-     "CidrIp": true
-   }
-   sgRulesTableErrorMessage: string;
-   headerColName = "";
-   direction = "";
-   sgRulesTableDataLoaded: boolean = false;
-   assetTypeMap: any;
- 
-   @HostListener('document:click', ['$event']) handleClick(event) {
-     let clickedComponent = event.target;
-     let inside = false;
-     do {
-       if (clickedComponent === this.elementRef.nativeElement) {
-         inside = true;
-       }
-       clickedComponent = clickedComponent.parentNode;
-     } while (clickedComponent);
-     if (!inside) {
-       this.filteredList = [];
-     }
-   }
- 
-   @HostListener('window:resize', ['$event']) onResize(event) {
-     const element_cpuUtilization = document.getElementById('cpuUtilization');
-     if (element_cpuUtilization) {
-       this.widgetWidth2 = parseInt((window.getComputedStyle(element_cpuUtilization, null).getPropertyValue('width')).split('px')[0], 10);
-     }
-     const element_statsDoughnut = document.getElementById('statsDoughnut');
-     if (element_statsDoughnut) {
-       let widthValue = parseInt((window.getComputedStyle(element_statsDoughnut, null).getPropertyValue('width')).split('px')[0], 10);
-       widthValue = widthValue - 155;
-       if (widthValue > 150) {
-         this.widgetWidth = widthValue;
-       }
-     }
-     // this.widgetWidth = 100;
-   }
- 
-   constructor(private assetGroupObservableService: AssetGroupObservableService,
-     private cdRef: ChangeDetectorRef,
-     private assetTypeMapService: AssetTypeMapService,
-     private activatedRoute: ActivatedRoute,
-     private commonResponseService: CommonResponseService,
-     private router: Router,
-     private utilityService: UtilsService,
-     private dataStore: DataCacheService,
-     private policyViolationSummaryService: PolicyViolationSummaryService,
-     private cpuUtilizationService: CpuUtilizationService,
-     private diskUtilizationService: DiskUtilizationService,
-     private errorHandling: ErrorHandlingService,
-     private assetCostService: AssetCostService,
-     private refactorFieldsService: RefactorFieldsService,
-     private workflowService: WorkflowService,
-     private hostVulnerabilitiesSummaryService: HostVulnerabilitiesSummaryService,
-     private loggerService: LoggerService,
-     private clipboard: Clipboard,
-     myElement: ElementRef) {
- 
-       this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-         this.assetTypeMap = assetTypeMap;
-       });
-     this.configurations = CONFIGURATIONS;
- 
-     this.elementRef = myElement;
-     this.getAssetGroup();
-   }
- 
-   ngAfterViewInit() {
-     this.sgRulesColumns = Object.keys(this.sgRulesColumnWidths);
-   }
- 
-   ngOnInit() {
-     this.urlToRedirect = this.router.routerState.snapshot.url;
-     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];   
-     
-     this.tileList = Object.keys(this.tiles);
-     
-     if(breadcrumbInfo){
-       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
-       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
-     }
-     this.userEmail = new FormGroup({
-       ename: new FormControl('', [Validators.required, Validators.minLength(6)])
-     });
-   }
- 
-   getUsers(): any {
-     const userUrl = environment.users.url;
-     const userMethod = environment.users.method;
-     const queryparams = {};
-     this.getUserSubscription = this.commonResponseService.getData(userUrl, userMethod, {}, queryparams).subscribe(
-       response => {
-         this.users = response.values;
-         for (let i = 0; i < this.users.length; i++) {
-           const userdetails = this.users[i].displayName + ' ' + '(' + this.users[i].userEmail + ')';
-           this.idDetailsName.push(userdetails);
-         }
-       },
-       error => {
-         this.loggerService.log('error', error);
-       });
-   }
- 
-   getAllData() {
-     this.getUsers();
-     this.getAssetSummary();
-     this.getPolicyData();
-     this.getHostData();
-     this.getcpuData();
-     this.getdiskData();
-     this.getAssetDetailsData();
-     this.getAwsNotificationData();
-     this.getAssetCostData();
-     this.getAccessGroupData();
-   }
- 
-   updateComponent() {
-     try {
-       this.getAllData();
-       this.assetSummaryData = undefined;
-       this.awsDetailsData = undefined;
-       this.costData = undefined;
-       this.accessGroupData = undefined;
-       this.dataObj.Creators = undefined;
-       this.dataObj['AWS Metadata'] = undefined;
-       this.dataObj['IP Address'] = undefined;
-       this.showLoader = [false, false, false, false, false, false, false, false, false, false, false, false];
-       this.policyAvailable = [false, false, false, false];
-       this.summary = {
-         'violation': false,
-         'vulnerabilities': false
-       };
-       this.filteredData = false;
-       this.tagsVariable = false;
-       this.hostValue = false;
-       this.policyValue = false;
-       this.hideContainer = [false, false, false, false, false, false, false, false];
-       this.unCategorizedDataVisible = false;
-       this.showUnCategorizedData = false;
-       this.showIpAddress = false;
-       this.hidePolicyViolations = true;
-       this.hideHostVulnerabilities = true;
-       this.hideOpenPorts = true;
-       this.installedSoftwares = true;
-       this.invalid = true;
-       this.checkEmail = false;
-       setTimeout(() => {
-         this.hidePolicyViolations = false;
-         this.hideHostVulnerabilities = false;
-         this.hideOpenPorts = false;
-         this.installedSoftwares = false;
-       }, 10);
-       if (this.activatedRoute.snapshot.queryParams) {
-         this.filterText = this.activatedRoute.snapshot.queryParams; /* <-- filterText is used to hit the api filter object */
-       }
-     } catch (error) {
-       this.loggerService.log('errro', 'js error - ' + error);
-     }
-   }
-   getRuleId() {
-     /*
-     * this funtion stores the URL params
+import { Component, OnInit, ElementRef, OnDestroy, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
+import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
+import { Subscription } from 'rxjs';
+import { environment } from './../../../../../environments/environment';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DataCacheService } from '../../../../core/services/data-cache.service';
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { CommonResponseService } from '../../../../shared/services/common-response.service';
+import { PolicyViolationSummaryService } from '../../../services/policy-violation-summary.service';
+import { CpuUtilizationService } from '../../../services/cpu-utilization.service';
+import { DiskUtilizationService } from '../../../services/disk-utilization.service';
+import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
+import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
+import { AssetCostService } from '../../../services/asset-cost.service';
+import { WorkflowService } from '../../../../core/services/workflow.service';
+import { HostVulnerabilitiesSummaryService } from '../../../services/host-vulnerabilities-summary.service';
+import { LoggerService } from '../../../../shared/services/logger.service';
+import { CONFIGURATIONS } from '../../../../../config/configurations';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
+
+
+@Component({
+  selector: 'app-asset-details',
+  templateUrl: './asset-details.component.html',
+  styleUrls: ['./asset-details.component.css'],
+  providers: [CommonResponseService, PolicyViolationSummaryService, HostVulnerabilitiesSummaryService, CpuUtilizationService, DiskUtilizationService, AssetCostService]
+})
+export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  tiles = {
+    Policies: {
+      value: 0
+    },
+    Violations: {
+      value: 0
+    },
+    Compliance: {
+      value: 0
+    },
+    "Asset":{
+      value:"",
+      img: ""
+    }
+  };
+
+  tileList = [];
+
+  emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  resourceId: string;
+  resourceType: string;
+  public decodedResourceId: string;
+  public emailArray = [];
+  public users;
+  widgetWidth = 200;
+  widgetHeight = 200;
+  violationErrorMessage="";
+  widgetWidth1 = 120;
+  widgetHeight1 = 125;
+  userEmail: FormGroup;
+  public elementRef;
+  public queryValue = '';
+  public filteredList = [];
+  public idDetailsName = [];
+  widgetWidth2 = 500;
+  widgetHeight2 = 270;
+  policyValue = false;
+  hostValue = false;
+  private routeSubscription: Subscription;
+
+  /*variables for breadcrumb data*/
+  breadcrumbArray: any = [];
+  breadcrumbLinks: any = [];
+  breadcrumbPresent: any;
+
+  filteredData = false;
+  tagsVariable = false;
+  buttonDisable = false;
+  showCpuData = false;
+  unCategorizedDataVisible = false;
+  showUnCategorizedData = false;
+  showIpAddress = false;
+  hidePolicyViolations: boolean;
+  hideHostVulnerabilities: boolean;
+  hideOpenPorts: boolean;
+  installedSoftwares: boolean;
+  showOppositeEmail = false;
+  showNone = false;
+  showTransactionEmail = false;
+  showLoadcompleteEmail = false;
+  invalid = true;
+  arrowkeyLocation = 0;
+  checkEmail = false;
+  complianceDropdowns: any = [];
+  searchDropdownData: any = {};
+  selectedDD = '';
+  currentObj: any = {};
+  filterArr: any = [];
+  tagsArray: any = {};
+  labels: any;
+  dataObj: any = {};
+  genericAttributes: any = {};
+  showEmail = false;
+  private subscriptionToAssetGroup: Subscription;
+  private getPolicyDataSubscription: Subscription;
+  private getHostDataSubscription: Subscription;
+  private getCpuDataSubscription: Subscription;
+  private getDiskDataSubscription: Subscription;
+  private assetDetailsSubscription: Subscription;
+  private awsNotificationSubscription: Subscription;
+  private getEmailSubscription: Subscription;
+  private getSummaryData: Subscription;
+  private assetCostSubscription: Subscription;
+  private accessGroupSubscription: Subscription;
+  private getUserSubscription: Subscription;
+  selectedAssetGroup: string;
+  selectedComplianceDropdown: any;
+
+  policyData: any;
+  hostData: any;
+  cpuData: any;
+  diskData: any;
+  detailsData: any;
+  systemInfo: any;
+  relatedAssets: any;
+  awsDetailsData: any;
+  installedSoftwaresData: any;
+  assetSummaryData: any;
+  costData: any;
+  accessGroupData: any;
+
+  policyAvailable: any = [false, false, false, false];
+  showLoader: any = [false, false, false, false, false, false, false, false, false, false, false, false];
+  hideContainer: any = [false, false, false, false, false, false, false, false];
+  summary: any = {
+    'violation': false,
+    'vulnerabilities': false
+  };
+  errorMessage: any = [];
+  public targetType: any = '';
+  strokeColor = '#fff';
+  innerRadius: any = 65;
+  outerRadius: any = 50;
+  innerRadius1 = 60;
+  outerRadius1 = 47;
+  colorSetCpu = ['#26ba9d', '#26ba9d', '#645ec5'];
+  MainTextcolor = '#000';
+  filterText: any = {};
+  private urlParams: any;
+  urlToRedirect: any = '';
+  private previousUrl: any = '';
+  public pageLevel = 0;
+  public backButtonRequired;
+  configurations;
+  tagErrorMessage: string;
+  outboundRulesData = [];
+  inboundRulesData = [];
+  columnNamesMap = {"fromport": "From Port","toport": "To Port",  "cidrip": "CidrIp"};
+  sgRulesColumnWidths = {"From Port": 1, "To Port": 1, "CidrIp": 1};
+  sgRulesColumns = [];
+  centeredColumns = {
+    "From Port": true,
+    "To Port": true,
+    "CidrIp": true
+  }
+  sgRulesTableErrorMessage: string;
+  headerColName = "";
+  direction = "";
+  sgRulesTableDataLoaded: boolean = false;
+  assetTypeMap: any;
+
+  @HostListener('document:click', ['$event']) handleClick(event) {
+    let clickedComponent = event.target;
+    let inside = false;
+    do {
+      if (clickedComponent === this.elementRef.nativeElement) {
+        inside = true;
+      }
+      clickedComponent = clickedComponent.parentNode;
+    } while (clickedComponent);
+    if (!inside) {
+      this.filteredList = [];
+    }
+  }
+
+  @HostListener('window:resize', ['$event']) onResize(event) {
+    const element_cpuUtilization = document.getElementById('cpuUtilization');
+    if (element_cpuUtilization) {
+      this.widgetWidth2 = parseInt((window.getComputedStyle(element_cpuUtilization, null).getPropertyValue('width')).split('px')[0], 10);
+    }
+    const element_statsDoughnut = document.getElementById('statsDoughnut');
+    if (element_statsDoughnut) {
+      let widthValue = parseInt((window.getComputedStyle(element_statsDoughnut, null).getPropertyValue('width')).split('px')[0], 10);
+      widthValue = widthValue - 155;
+      if (widthValue > 150) {
+        this.widgetWidth = widthValue;
+      }
+    }
+    // this.widgetWidth = 100;
+  }
+
+  constructor(private assetGroupObservableService: AssetGroupObservableService,
+    private cdRef: ChangeDetectorRef,
+    private assetTypeMapService: AssetTypeMapService,
+    private activatedRoute: ActivatedRoute,
+    private commonResponseService: CommonResponseService,
+    private router: Router,
+    private utilityService: UtilsService,
+    private dataStore: DataCacheService,
+    private policyViolationSummaryService: PolicyViolationSummaryService,
+    private cpuUtilizationService: CpuUtilizationService,
+    private diskUtilizationService: DiskUtilizationService,
+    private errorHandling: ErrorHandlingService,
+    private assetCostService: AssetCostService,
+    private refactorFieldsService: RefactorFieldsService,
+    private workflowService: WorkflowService,
+    private hostVulnerabilitiesSummaryService: HostVulnerabilitiesSummaryService,
+    private loggerService: LoggerService,
+    private clipboard: Clipboard,
+    myElement: ElementRef) {
+
+      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+        this.assetTypeMap = assetTypeMap;
+      });
+    this.configurations = CONFIGURATIONS;
+
+    this.elementRef = myElement;
+    this.getAssetGroup();
+  }
+
+  ngAfterViewInit() {
+    this.sgRulesColumns = Object.keys(this.sgRulesColumnWidths);
+  }
+
+  ngOnInit() {
+    this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];   
+    
+    this.tileList = Object.keys(this.tiles);
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
+    this.userEmail = new FormGroup({
+      ename: new FormControl('', [Validators.required, Validators.minLength(6)])
+    });
+  }
+
+  getUsers(): any {
+    const userUrl = environment.users.url;
+    const userMethod = environment.users.method;
+    const queryparams = {};
+    this.getUserSubscription = this.commonResponseService.getData(userUrl, userMethod, {}, queryparams).subscribe(
+      response => {
+        this.users = response.values;
+        for (let i = 0; i < this.users.length; i++) {
+          const userdetails = this.users[i].displayName + ' ' + '(' + this.users[i].userEmail + ')';
+          this.idDetailsName.push(userdetails);
+        }
+      },
+      error => {
+        this.loggerService.log('error', error);
+      });
+  }
+
+  getAllData() {
+    this.getUsers();
+    this.getAssetSummary();
+    this.getPolicyData();
+    this.getHostData();
+    this.getcpuData();
+    this.getdiskData();
+    this.getAssetDetailsData();
+    this.getAwsNotificationData();
+    this.getAssetCostData();
+    this.getAccessGroupData();
+  }
+
+  updateComponent() {
+    try {
+      this.getAllData();
+      this.assetSummaryData = undefined;
+      this.awsDetailsData = undefined;
+      this.costData = undefined;
+      this.accessGroupData = undefined;
+      this.dataObj.Creators = undefined;
+      this.dataObj['AWS Metadata'] = undefined;
+      this.dataObj['IP Address'] = undefined;
+      this.showLoader = [false, false, false, false, false, false, false, false, false, false, false, false];
+      this.policyAvailable = [false, false, false, false];
+      this.summary = {
+        'violation': false,
+        'vulnerabilities': false
+      };
+      this.filteredData = false;
+      this.tagsVariable = false;
+      this.hostValue = false;
+      this.policyValue = false;
+      this.hideContainer = [false, false, false, false, false, false, false, false];
+      this.unCategorizedDataVisible = false;
+      this.showUnCategorizedData = false;
+      this.showIpAddress = false;
+      this.hidePolicyViolations = true;
+      this.hideHostVulnerabilities = true;
+      this.hideOpenPorts = true;
+      this.installedSoftwares = true;
+      this.invalid = true;
+      this.checkEmail = false;
+      setTimeout(() => {
+        this.hidePolicyViolations = false;
+        this.hideHostVulnerabilities = false;
+        this.hideOpenPorts = false;
+        this.installedSoftwares = false;
+      }, 10);
+      if (this.activatedRoute.snapshot.queryParams) {
+        this.filterText = this.activatedRoute.snapshot.queryParams; /* <-- filterText is used to hit the api filter object */
+      }
+    } catch (error) {
+      this.loggerService.log('errro', 'js error - ' + error);
+    }
+  }
+  getRuleId() {
+    /*
+    * this funtion stores the URL params
+    */
+    this.routeSubscription = this.activatedRoute.params.subscribe(params => {
+      this.urlParams = params; // <<-- This urlParams is used while calling the api
+      this.resourceId = this.urlParams.resourceId; // Encoded asset id is used everywhere to pass to api's
+      this.decodedResourceId = decodeURIComponent(this.resourceId); // This is used only for Title of the page
+      this.breadcrumbPresent = this.decodedResourceId ?? "Asset Details";
+      this.resourceType = this.urlParams.resourceType;
+      this.updateComponent();
+    });
+  }
+
+  getAssetGroup() {
+    this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
+      assetGroupName => {
+        this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+        this.selectedAssetGroup = assetGroupName;
+        this.dataStore.setCurrentSelectedAssetGroup(this.selectedAssetGroup);
+        this.getRuleId();
+      });
+  }
+
+  handleHeaderColNameSelection(event) {
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+  }
+
+  fetchPolicyCount(event){
+    this.tiles["Policies"].value = event;
+  }
+
+  assignCloudType(event:string){
+    const cloudType = event?.toLowerCase();
+    this.tiles["Asset"].img = cloudType;
+    this.cdRef.detectChanges();
+  }
+
+  replaceUrl(url) {
+    let replacedUrl = url.replace('{resourceId}', this.resourceId.toString());
+    /*
+     * Added by Trinanjan on 01/03/2018
+     * When user navigates in the same page ,Only the router subscription gets called not the asset subscription
+     * so assetgroup was going empty
+     * Now asset group is taken from the localstorage when only router subscription is called
      */
-     this.routeSubscription = this.activatedRoute.params.subscribe(params => {
-       this.urlParams = params; // <<-- This urlParams is used while calling the api
-       this.resourceId = this.urlParams.resourceId; // Encoded asset id is used everywhere to pass to api's
-       this.decodedResourceId = decodeURIComponent(this.resourceId); // This is used only for Title of the page
-       this.breadcrumbPresent = this.decodedResourceId ?? "Asset Details";
-       this.resourceType = this.urlParams.resourceType;
-       this.updateComponent();
-     });
-   }
- 
-   getAssetGroup() {
-     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
-       assetGroupName => {
-         this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
-         this.selectedAssetGroup = assetGroupName;
-         this.dataStore.setCurrentSelectedAssetGroup(this.selectedAssetGroup);
-         this.getRuleId();
-       });
-   }
- 
-   handleHeaderColNameSelection(event) {
-     this.headerColName = event.headerColName;
-     this.direction = event.direction;
-   }
- 
-   fetchPolicyCount(event){
-     this.tiles["Policies"].value = event;
-   }
- 
-   assignCloudType(event:string){
-     const cloudType = event?.toLowerCase();
-     this.tiles["Source"].value = DATA_MAPPING[cloudType];
-     this.tiles["Source"].img = cloudType;
-     this.cdRef.detectChanges();
-   }
- 
-   replaceUrl(url) {
-     let replacedUrl = url.replace('{resourceId}', this.resourceId.toString());
-     /*
-      * Added by Trinanjan on 01/03/2018
-      * When user navigates in the same page ,Only the router subscription gets called not the asset subscription
-      * so assetgroup was going empty
-      * Now asset group is taken from the localstorage when only router subscription is called
-      */
-     this.selectedAssetGroup = this.dataStore.getCurrentSelectedAssetGroup();
-     replacedUrl = replacedUrl.replace('{assetGroup}', this.selectedAssetGroup.toString());
-     replacedUrl = replacedUrl.replace('{resourceType}', this.resourceType.toString());
-     return replacedUrl;
-   }
- 
-   getAssetSummary() {
-     const url = environment.assetSummary.url;
-     const method = environment.assetSummary.method;
-     const newUrl = this.replaceUrl(url);
-     this.getSummaryData = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
-       response => {
-         try {
-           if (response.attributes.length > 0) {
-             this.assetSummaryData = response.attributes;
-             this.tiles["Compliance"].value = this.assetSummaryData[1].value;
-             this.showLoader[4] = true;
-           } else {
-             this.hideContainer[0] = true;
-             this.showLoader[4] = true;
-           }
-         } catch (error) {
-           this.showLoader[4] = false;
-           this.hideContainer[0] = true;
-         }
-       },
-       error => {
-         this.hideContainer[0] = true;
-         this.errorMessage[0] = 'apiResponseError';
-       }
-     );
-   }
- 
-   getAwsNotificationData() {
-     const url = environment.awsNotifications.url;
-     const method = environment.awsNotifications.method;
-     const newUrl = this.replaceUrl(url);
-     this.awsNotificationSubscription = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
-       response => {
-         try {
-           if (response.distribution.length > 0) {
-             this.awsDetailsData = response.distribution;
-             this.showLoader[5] = true;
-           } else {
-             this.hideContainer[1] = true;
-             this.showLoader[5] = true;
-           }
-         } catch (error) {
-           this.showLoader[5] = false;
-           this.hideContainer[1] = true;
-         }
-       },
-       error => {
-         this.hideContainer[1] = true;
-         this.errorMessage[0] = 'apiResponseError';
-       }
-     );
-   }
- 
-   processSgRulesData(sgRules:any){
-     const sgRulesData = this.utilityService.massageTableData(sgRules,this.columnNamesMap);
-     const processedSgRulesData = this.utilityService.processTableData(sgRulesData);
-       for(let i=0;i<processedSgRulesData.length;i++){
-         const sgRule = processedSgRulesData[i];
-         if(sgRule["CidrIp"].text==""){
-           sgRule["CidrIp"].text = "-";
-           sgRule["CidrIp"].titleText = "-";
-           sgRule["CidrIp"].valueText = "-";
-         }
-         if(sgRule.type.text=="inbound"){
-           this.inboundRulesData.push(sgRule);
-         }else{
-           this.outboundRulesData.push(sgRule);
-         }
-       }
-       this.inboundRulesData = [...this.inboundRulesData];
-       this.outboundRulesData = [...this.outboundRulesData];
-   }
- 
-   getAssetDetailsData() {
-     this.sgRulesTableDataLoaded = false;
-     const url = environment.assetDetails.url;
-     const method = environment.assetDetails.method;
-     const newUrl = this.replaceUrl(url);
-     // check if this is fine
-     this.assetDetailsSubscription = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
-       response => {
-         try {
-           this.sgRulesTableDataLoaded = true;
-           this.detailsData = response;
-           if(this.resourceType=="sg"){
-             if(response.sg_rules){
-               this.processSgRulesData(response.sg_rules);
-             }else{
-               this.sgRulesTableErrorMessage = "noDataAvailable";
-             }
-           }
-           if (response.attributes.length > 0) {
-             const attributes = response.attributes;
-             const refactoredService = this.refactorFieldsService;
-             const formattedAttributes = attributes.map(function (attribute) {
-               attribute.name = refactoredService.getDisplayNameForAKey(attribute.name) || attribute.name;
-               return attribute;
-             });
-             this.relatedData(formattedAttributes);
-             this.showLoader[6] = true;
-             this.showLoader[7] = true;
-             this.showLoader[9] = true;
-           } else {
-             this.hideContainer[2] = true;
-             this.hideContainer[3] = true;
-             this.hideContainer[4] = true;
-             this.hideContainer[5] = true;
-             this.showLoader[6] = true;
-             this.showLoader[7] = true;
-             this.showLoader[9] = true;
-           }
-           const keys = Object.keys(response.tags);
-           if (keys.length > 0) {
-             this.tagsData(response.tags);
-             this.showLoader[8] = true;
-           } else {
-             this.tagErrorMessage = "noDataAvailable";
-             this.showLoader[8] = true;
-             this.hideContainer[4] = true;
-           }
-         } catch (error) {
-           this.hideContainer[2] = true;
-           this.hideContainer[3] = true;
-           this.hideContainer[4] = true;
-           this.hideContainer[5] = true;
-           this.showLoader[6] = true;
-           this.showLoader[7] = true;
-           this.showLoader[8] = true;
-           this.showLoader[9] = true;
-         }
-       },
-       error => {
-         this.showLoader[6] = true;
-         this.showLoader[7] = true;
-         this.showLoader[9] = true;
-         this.hideContainer[2] = true;
-         this.hideContainer[3] = true;
-         this.hideContainer[4] = true;
-         this.hideContainer[5] = true;
-         this.errorMessage[0] = 'apiResponseError';
-       }
-     );
-   }
- 
-   relatedData(data) {
-     try{
-       const assetType = data.find(item  => item.name=="docType")?.value[0];
-       this.tiles["Asset Type"].value = this.assetTypeMap.get(assetType) || assetType;
-       this.dataObj = this.filterAttributesByCategories(data);
-       this.genericAttributes = this.filterGenericAttributes(this.dataObj);
- 
-       if (Object.keys(this.genericAttributes).length > 0) {
-         this.filteredData = true;
-       }
-       Object.keys(this.genericAttributes).map(key => {
+    this.selectedAssetGroup = this.dataStore.getCurrentSelectedAssetGroup();
+    replacedUrl = replacedUrl.replace('{assetGroup}', this.selectedAssetGroup.toString());
+    replacedUrl = replacedUrl.replace('{resourceType}', this.resourceType.toString());
+    return replacedUrl;
+  }
+
+  getAssetSummary() {
+    const url = environment.assetSummary.url;
+    const method = environment.assetSummary.method;
+    const newUrl = this.replaceUrl(url);
+    this.getSummaryData = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
+      response => {
+        try {
+          if (response.attributes.length > 0) {
+            this.assetSummaryData = response.attributes;
+            this.tiles["Compliance"].value = this.assetSummaryData[1].value;
+            this.showLoader[4] = true;
+          } else {
+            this.hideContainer[0] = true;
+            this.showLoader[4] = true;
+          }
+        } catch (error) {
+          this.showLoader[4] = false;
+          this.hideContainer[0] = true;
+        }
+      },
+      error => {
+        this.hideContainer[0] = true;
+        this.errorMessage[0] = 'apiResponseError';
+      }
+    );
+  }
+
+  getAwsNotificationData() {
+    const url = environment.awsNotifications.url;
+    const method = environment.awsNotifications.method;
+    const newUrl = this.replaceUrl(url);
+    this.awsNotificationSubscription = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
+      response => {
+        try {
+          if (response.distribution.length > 0) {
+            this.awsDetailsData = response.distribution;
+            this.showLoader[5] = true;
+          } else {
+            this.hideContainer[1] = true;
+            this.showLoader[5] = true;
+          }
+        } catch (error) {
+          this.showLoader[5] = false;
+          this.hideContainer[1] = true;
+        }
+      },
+      error => {
+        this.hideContainer[1] = true;
+        this.errorMessage[0] = 'apiResponseError';
+      }
+    );
+  }
+
+  processSgRulesData(sgRules:any){
+    const sgRulesData = this.utilityService.massageTableData(sgRules,this.columnNamesMap);
+    const processedSgRulesData = this.utilityService.processTableData(sgRulesData);
+      for(let i=0;i<processedSgRulesData.length;i++){
+        const sgRule = processedSgRulesData[i];
+        if(sgRule["CidrIp"].text==""){
+          sgRule["CidrIp"].text = "-";
+          sgRule["CidrIp"].titleText = "-";
+          sgRule["CidrIp"].valueText = "-";
+        }
+        if(sgRule.type.text=="inbound"){
+          this.inboundRulesData.push(sgRule);
+        }else{
+          this.outboundRulesData.push(sgRule);
+        }
+      }
+      this.inboundRulesData = [...this.inboundRulesData];
+      this.outboundRulesData = [...this.outboundRulesData];
+  }
+
+  getAssetDetailsData() {
+    this.sgRulesTableDataLoaded = false;
+    const url = environment.assetDetails.url;
+    const method = environment.assetDetails.method;
+    const newUrl = this.replaceUrl(url);
+    // check if this is fine
+    this.assetDetailsSubscription = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
+      response => {
+        try {
+          this.sgRulesTableDataLoaded = true;
+          this.detailsData = response;
+          if(this.resourceType=="sg"){
+            if(response.sg_rules){
+              this.processSgRulesData(response.sg_rules);
+            }else{
+              this.sgRulesTableErrorMessage = "noDataAvailable";
+            }
+          }
+          if (response.attributes.length > 0) {
+            const attributes = response.attributes;
+            const refactoredService = this.refactorFieldsService;
+            const formattedAttributes = attributes.map(function (attribute) {
+              attribute.name = refactoredService.getDisplayNameForAKey(attribute.name) || attribute.name;
+              return attribute;
+            });
+            this.relatedData(formattedAttributes);
+            this.showLoader[6] = true;
+            this.showLoader[7] = true;
+            this.showLoader[9] = true;
+          } else {
+            this.hideContainer[2] = true;
+            this.hideContainer[3] = true;
+            this.hideContainer[4] = true;
+            this.hideContainer[5] = true;
+            this.showLoader[6] = true;
+            this.showLoader[7] = true;
+            this.showLoader[9] = true;
+          }
+          const keys = Object.keys(response.tags);
+          if (keys.length > 0) {
+            this.tagsData(response.tags);
+            this.showLoader[8] = true;
+          } else {
+            this.tagErrorMessage = "noDataAvailable";
+            this.showLoader[8] = true;
+            this.hideContainer[4] = true;
+          }
+        } catch (error) {
+          this.hideContainer[2] = true;
+          this.hideContainer[3] = true;
+          this.hideContainer[4] = true;
+          this.hideContainer[5] = true;
+          this.showLoader[6] = true;
+          this.showLoader[7] = true;
+          this.showLoader[8] = true;
+          this.showLoader[9] = true;
+        }
+      },
+      error => {
+        this.showLoader[6] = true;
+        this.showLoader[7] = true;
+        this.showLoader[9] = true;
+        this.hideContainer[2] = true;
+        this.hideContainer[3] = true;
+        this.hideContainer[4] = true;
+        this.hideContainer[5] = true;
+        this.errorMessage[0] = 'apiResponseError';
+      }
+    );
+  }
+
+  relatedData(data) {
+    try{
+      const assetType = data.find(item  => item.name=="docType")?.value[0];
+      this.tiles["Asset"].value = this.assetTypeMap.get(assetType) || assetType;
+      this.dataObj = this.filterAttributesByCategories(data);
+      this.genericAttributes = this.filterGenericAttributes(this.dataObj);
+
+      if (Object.keys(this.genericAttributes).length > 0) {
+        this.filteredData = true;
+      }
+      Object.keys(this.genericAttributes).map(key => {
         const values = this.genericAttributes[key];
         const assetIdDisplayNameObject = values.find(item => item.name === 'assetIdDisplayName');
 
