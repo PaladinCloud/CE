@@ -10,7 +10,7 @@
     </div>
     <div [class]="'flex ' + bar.class">
         <mat-progress-bar mode="determinate" value="{{ bar.val }}"></mat-progress-bar>
-        <mat-icon [class]="bar.val>0?'link navigate-to-icon':'navigate-to-icon'" (click)="navigateTo.emit(bar)">
+        <mat-icon [class]="(bar.val!=100 && bar.val!='NR')?'link navigate-to-icon':'navigate-to-icon'" (click)="navigateTo.emit(bar)">
             chevron_right
         </mat-icon>
     </div>
