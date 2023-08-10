@@ -1135,12 +1135,34 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                 violation = new HashMap<>();
                 violation.put(QUALYS_VIOLATION_DETAILS, violationTitle);
                 violationList.add(violation);
-            } else if (null != issueDetails) {
+            } else if (!StringUtils.isEmpty(issueDetails)) {
                 issueDetails = issueDetails.substring(TWO, issueDetails.length() - TWO);
-                violation = Arrays.stream(issueDetails.trim().split(", "))
-                        .map(s -> s.split("="))
-                        .collect(Collectors.toMap(a -> a[0],    // key
-                                a -> a[1]                       // value
+                List<String> issueList = new ArrayList<String>();
+                int startPosition = 0;
+                boolean isOpenParanthesis = false;
+                for (int currentPosition = 0; currentPosition < issueDetails.length(); currentPosition++) {
+                    if (issueDetails.charAt(currentPosition) == '{') {
+                        isOpenParanthesis = !isOpenParanthesis;
+                    }
+                    else if (issueDetails.charAt(currentPosition) == '}') {
+                        isOpenParanthesis = !isOpenParanthesis;
+                    }
+                    else if(issueDetails.charAt(currentPosition) == ',' && !isOpenParanthesis){
+                        issueList.add(issueDetails.substring(startPosition, currentPosition).trim());
+                        startPosition = currentPosition + 1;
+                    }
+                }
+                String lastToken = issueDetails.substring(startPosition);
+                if (lastToken.equals(",")) {
+                    issueList.add("");
+                } else {
+                    issueList.add(lastToken);
+                }
+
+                violation = issueList.stream().map(s -> s.split("="))
+                        .filter(obj -> obj.length == 2)
+                        .collect(Collectors.toMap(a -> a[0], // key
+                                a -> a[1] // value
                         ));
 
                 violation.remove(VIOLATION_REASON);
