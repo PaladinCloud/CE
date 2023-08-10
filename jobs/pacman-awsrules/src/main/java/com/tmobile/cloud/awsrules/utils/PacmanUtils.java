@@ -4145,10 +4145,9 @@ public class PacmanUtils {
                 vulnerabilityinfo.setTitle(title);
                 String hostInstanceVulnId=source.get("hostInstanceVulnId").getAsBigDecimal().toPlainString();
                 vulnerabilityinfo.setVulnerabilityUrl(vulnerabityDetailurl+hostInstanceVulnId);
-
-                JsonObject cveList = source.get("cvelist").getAsJsonObject();
                 List<CveDetails> cveDeytailsList=new ArrayList<>();
-                if(cveList!=null){
+                if(!source.get("cvelist").isJsonNull()){
+                    JsonObject cveList = source.get("cvelist").getAsJsonObject();
                     populateCveList(cveList, cveDeytailsList);
                 }
                 vulnerabilityinfo.setCveList(cveDeytailsList);
@@ -4165,8 +4164,8 @@ public class PacmanUtils {
     }
 
     private static void populateCveList(JsonObject cveList, List<CveDetails> cveDeytailsList) {
-        JsonArray cveArray= cveList.get("cve").getAsJsonArray();
-        if(cveArray!=null){
+        if(!cveList.get("cve").isJsonNull()){
+            JsonArray cveArray= cveList.get("cve").getAsJsonArray();
             for (int j = 0; j < cveArray.size(); j++) {
                 String id = cveArray.get(j).getAsJsonObject().get(PacmanRuleConstants.ID).getAsString();
                 String url = NIST_VULN_DETAILS_URL +id;
