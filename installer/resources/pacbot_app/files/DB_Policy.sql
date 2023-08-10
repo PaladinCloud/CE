@@ -3319,6 +3319,10 @@ update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-poli
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Trusted-Microsoft-Services-to-Access-Storage-Account' where policyId='trusted_ms_services_access_storage_account';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-MySQL-Database' where policyId='Enable_Azure_Account_Delete_MySQLDatabase_log_alert';
 update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-policy/#Enable-Vulnerability-Assessment-(VA)-Setting-'Also-Send-Email-Notifications-to-Admins-and-Subscription-Owners'" where policyId="Enable_Email_Subscription_Admin";
+update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-policy/#Enable-Azure-Defender-for-SQL-Database" where policyId="Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing";
+update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-policy/#Enable-log-Alert-for-Delete-Policy-Assignment" where policyId="Enable_Azure_Account_Delete_Policy_Assignment_Event_log_alert";
+update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-policy/#Enable-log-Alert-for-Create/Update-Security-Solution" where policyId="Enable_Azure_Account_Security_Solution_log_alert";
+update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-policy/#Secure-Your-SQL-Database-with-Transparent-Data-Encryption-(TDE)" where policyId="Enable_transparent_data_encryption_for_sql_db";
 
 update cf_PolicyParams set paramValue='paladin-cloud-trail' where policyId='Centralized_CloudTrail_version-1_Centralized_Cloudtrail_account' and paramKey='inputCloudTrailName';
 update cf_PolicyParams set paramValue='paladin-cloudfront-bucket' where policyId='CloudFront_AccessLogs_version-1_CloudFront_AccessLogs_cloudfront' and paramKey='accessLogBucketName';
