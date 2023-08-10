@@ -216,7 +216,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     // but rather it depends on filterText object which is build on URL queryParams.
     if (!this.activatedRoute.snapshot.queryParamMap.has("filter") && state.filters) {
       this.filters = state.filters;
-      Promise.resolve().then(() => this.getUpdatedUrl());
+      await Promise.resolve().then(() => this.getUpdatedUrl());
     }
   }
   
@@ -241,9 +241,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       state.filters = isStateFiltersArray ? state.filters : [];
       state.filters.push({
         "keyDisplayValue": "Status",
-        "filterValue": ["Open", "Exempt", "Exempted"],
+        "filterValue": ["open", "exempted"],
         "key": "Status",
-        "value": ["open", "exempt", "exempted"],
+        "value": ["open", "exempted"],
         "filterkey": "issueStatus.keyword",
         "compareKey": "issuestatus.keyword"
       });
@@ -446,20 +446,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           filterkey: filterKey,
         };
       });
-      const state = this.tableStateService.getState(this.pageTitle) ?? {};
-      const filters = state?.filters;
-
-      if (filters) {
-        const dataArrayFilterKeys = new Set(dataArray.map(obj => obj.keyDisplayValue));
-        filters.forEach(filter => {
-          if (!dataArrayFilterKeys.has(filter.keyDisplayValue)) {
-            dataArray.push({
-              filterkey: filter.filterkey,
-              keyDisplayValue: filter.key,
-            });
-          }
-        });
-      }
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
         await this.processFilterItem(formattedFilters[i], i);
@@ -535,7 +521,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           environment.issueFilter.url,
           environment.issueFilter.method
         )
-        .subscribe((response) => {
+        .subscribe(async(response) => {
           this.filterTypeLabels = map(response[0].response, "optionName");
           resolve(true);
           this.filterTypeOptions = response[0].response;
@@ -552,7 +538,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           isApiError = false;
           this.routerParam();
           // this.deleteFilters();
-          this.getFilterArray();
+          await this.getFilterArray();
+          await Promise.resolve().then(() => this.getUpdatedUrl());
           this.updateComponent();
         });
     } catch (error) {
