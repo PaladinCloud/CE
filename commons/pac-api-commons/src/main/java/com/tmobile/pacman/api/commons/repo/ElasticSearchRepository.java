@@ -1104,6 +1104,18 @@ public class ElasticSearchRepository implements Constants {
 						inlineScript = "doc['_uid'].value.substring(doc['_uid'].value.indexOf('#')+1)";
 					}
 					String inlineScriptString = String.format(inlineScript, fieldName);
+					if (sortFieldMapList.get("fieldName").equals("targetTypeDisplayName.keyword")) {
+						inlineScript = "if(doc['%s'].empty) { return %s } else { return params.sortOrder.indexOf(doc['%s'].value)}";
+						int customOrderSize = -1;
+						if("asc".equalsIgnoreCase((String) sortFieldMapList.get("order"))){
+							if(sortFieldMapList.get("sortOrder") instanceof LinkedHashSet){
+								customOrderSize =((LinkedHashSet<Object>) sortFieldMapList.get("sortOrder")).size();
+							} else if (sortFieldMapList.get("sortOrder") instanceof List) {
+								customOrderSize =((List<Object>) sortFieldMapList.get("sortOrder")).size();
+							}
+						}
+						inlineScriptString = String.format(inlineScript, fieldName, customOrderSize, fieldName);
+					}
 					script.put("inline", inlineScriptString);
 					sortScript.put("script", script);
 					sortScript.put(ORDER, sortFieldMapList.get(ORDER));
