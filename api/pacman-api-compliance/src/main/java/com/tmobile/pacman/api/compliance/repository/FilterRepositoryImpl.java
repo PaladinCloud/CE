@@ -400,6 +400,9 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         Iterator it = filter.entrySet().iterator();
         List<String> taggingTargetTypesList = new ArrayList<String>();
         Gson gson = new Gson();
+        if(entityType.equalsIgnoreCase("issue")){
+            mustNotFilter.put("issueStatus.keyword", "unknown");
+        }
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             String key = (String) entry.getKey();
