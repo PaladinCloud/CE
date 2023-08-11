@@ -21,6 +21,7 @@ package com.tmobile.cloud.awsrules.iam;
 
 import java.util.*;
 
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -43,7 +44,7 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 public class CheckIamPasswordPolicyRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(CheckIamPasswordPolicyRule.class);
-	private StringBuilder policyIssues;
+	private StringBuilder policyIssues=new StringBuilder();
 	
 	/**
 	 * The method will get triggered from Rule Engine with following parameters
@@ -71,7 +72,6 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 		temp.put("region", "us-west-2");
 
 		Map<String, Object> map = null;
-		Annotation annotation = null;
 		AmazonIdentityManagementClient iamClient = null;
 		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
 		
@@ -100,32 +100,42 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 			throw new InvalidInputException(e.toString());
 		}
 
-		Optional<PasswordPolicy> pwdPolicyOptional = Optional.ofNullable(iamClient).map(obj -> (GetAccountPasswordPolicyResult)obj.getAccountPasswordPolicy()).map(obj -> (PasswordPolicy)obj.getPasswordPolicy());
+		try{
+			Optional<PasswordPolicy> pwdPolicyOptional = Optional.ofNullable(iamClient).map(obj -> (GetAccountPasswordPolicyResult)obj.getAccountPasswordPolicy()).map(obj -> (PasswordPolicy)obj.getPasswordPolicy());
+			if (pwdPolicyOptional.isPresent()) {
+				PasswordPolicy passwordPolicy = pwdPolicyOptional.get();
+				if (!isPasswordPolicyCompliant(passwordPolicy, ruleParam)) {
+					logger.warn("Password Policy not compliant");
+					return getPolicyResult(ruleParam, severity, category, issue, issueList);
 
-		if (pwdPolicyOptional.isPresent()) {
-			PasswordPolicy passwordPolicy = pwdPolicyOptional.get();
-			if (!isPasswordPolicyCompliant(passwordPolicy, ruleParam)) {
-
-				logger.warn("Password Policy not compliant");
-				annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
-				annotation.put(PacmanSdkConstants.DESCRIPTION,policyIssues.toString().trim());
-				annotation.put(PacmanRuleConstants.SEVERITY, severity);
-				annotation.put(PacmanRuleConstants.CATEGORY, category);
-				
-				issue.put(PacmanRuleConstants.VIOLATION_REASON, policyIssues.toString().trim());
-				issueList.add(issue);
-				annotation.put("issueDetails",issueList.toString());
-				logger.debug("========CheckIamPasswordPolicyRule ended with an annotation {} :=========",annotation); 
-				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-
+				} else {
+					logger.info("Password policy ok");
+				}
 			} else {
-				logger.info("Password policy ok");
+				logger.warn("No password policy defined for the account");
 			}
-		} else {
+		}
+		catch(NoSuchEntityException exception){
 			logger.warn("No password policy defined for the account");
+			policyIssues.append("No password policy defined for the account");
+			return getPolicyResult(ruleParam, severity, category, issue, issueList);
 		}
 		logger.debug("========CheckIamPasswordPolicyRule ended=========");
 		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+	}
+
+	private PolicyResult getPolicyResult(Map<String, String> ruleParam, String severity, String category, LinkedHashMap<String, Object> issue, List<LinkedHashMap<String, Object>> issueList) {
+		Annotation annotation=null;
+		annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+		annotation.put(PacmanSdkConstants.DESCRIPTION,policyIssues.toString().trim());
+		annotation.put(PacmanRuleConstants.SEVERITY, severity);
+		annotation.put(PacmanRuleConstants.CATEGORY, category);
+
+		issue.put(PacmanRuleConstants.VIOLATION_REASON, policyIssues.toString().trim());
+		issueList.add(issue);
+		annotation.put("issueDetails", issueList.toString());
+		logger.debug("========CheckIamPasswordPolicyRule ended with an annotation {} :=========",annotation);
+		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 	}
 
 	private boolean isPasswordPolicyCompliant(PasswordPolicy passwordPolicy,Map<String, String> ruleParam) {
