@@ -876,22 +876,21 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-  applyFilterByCategory(policyCategory: PolicyCategory) {
+  async applyFilterByCategory(policyCategory: PolicyCategory) {
       const key = 'Category';
       this.filters = [];
+      await Promise.resolve().then(() => this.getUpdatedUrl());
       if (policyCategory !== PolicyCategory.ALL_POLICIES) {
-          this.changeFilterType(key).then(() => {
-            this.changeFilterTags({
-              filterKeyDisplayValue: key,
-              filterValue: [policyCategory],
-            })
-          })
+        await this.changeFilterType(key)
+        this.changeFilterTags({
+          filterKeyDisplayValue: key,
+          filterValue: [policyCategory],
+        })
       }else{
-        this.changeFilterType(key).then(() => {          
-          this.changeFilterTags({
-            filterKeyDisplayValue: key,
-            filterValue: this.filterTagOptions[key].map(item => item.id),
-          })
+        await this.changeFilterType(key)
+        this.changeFilterTags({
+          filterKeyDisplayValue: key,
+          filterValue: this.filterTagOptions[key].map(item => item.id),
         })
       }
   }
