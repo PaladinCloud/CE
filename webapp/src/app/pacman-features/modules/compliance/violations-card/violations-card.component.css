@@ -33,8 +33,11 @@
 }
 
 .violations-content .violations-count{
-  color: var(--primary-400);
   font: var(--text-body-2);
+}
+
+.link{
+  color: var(--primary-400);
   cursor: pointer;
 }
 
