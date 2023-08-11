@@ -32,13 +32,15 @@ export class ViolationsCardComponent implements OnInit, OnChanges {
         return Object.keys(obj);
     }
 
-  redirect(name) {
-    name = name.toLowerCase();
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
-      let eachParams:any = { 'severity.keyword': this.card.name.toLowerCase(), "issueStatus.keyword": "open" };
-      if(eachParams){
-        const newParams = this.utils.makeFilterObj(eachParams);
-        this.router.navigate(['../', this.ISSUE_LISTING_ROUTE], { relativeTo: this.activatedRoute, queryParams: {"tempFilters":true, ...newParams}, queryParamsHandling: 'merge' });
+  redirect(name, count) {
+    if(count>0){
+      name = name.toLowerCase();
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
+        let eachParams:any = { 'severity.keyword': this.card.name.toLowerCase(), "issueStatus.keyword": "open" };
+        if(eachParams){
+          const newParams = this.utils.makeFilterObj(eachParams);
+          this.router.navigate(['../', this.ISSUE_LISTING_ROUTE], { relativeTo: this.activatedRoute, queryParams: {"tempFilters":true, ...newParams}, queryParamsHandling: 'merge' });
+        }
       }
     }
 }
