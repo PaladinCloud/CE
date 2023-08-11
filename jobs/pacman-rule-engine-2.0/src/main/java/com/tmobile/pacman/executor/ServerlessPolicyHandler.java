@@ -124,7 +124,10 @@ public class ServerlessPolicyHandler implements PolicyHandler {
             // overwrite the resource as sent in
                                          // case it was overwritten
             return result;
-        }  catch (Exception e) {
+        } catch(ServerlessPolicyFailedException e) {
+        	logger.error("serverless policy excpetion- got invalid http response code {}", e);
+        	return null;
+        } catch (Exception e) {
             Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
             annotation.put("reason".intern(), "policy was unable to evaluvate");
             annotation.put("errorMessage".intern(), e.getMessage());
@@ -143,7 +146,7 @@ public class ServerlessPolicyHandler implements PolicyHandler {
      * @return the integer
      * @throws ServerlessPolicyFailedException the serverless rule failed exception
      */
-    private String doHttpPost(String url, String requestBody, Map<String, String> headers) {
+    private String doHttpPost(String url, String requestBody, Map<String, String> headers) throws Exception {
 
         PostMethod httppost = null;
         Gson gson = new GsonBuilder().create();
@@ -156,28 +159,11 @@ public class ServerlessPolicyHandler implements PolicyHandler {
             httppost.setRequestHeader("Content-Type", "application/json");
             httppost.setRequestEntity(new StringRequestEntity(requestBody, null, null));
             int responsecode = httpClient.executeMethod(httppost);
-
-            // ******remove this block of code after sererless issue is solved:
-            // issue about not able to send the appropriate http response code
-            // Map<String,String> resp=null;
-            // try{
-            // resp =
-            // gson.fromJson(httppost.getResponseBodyAsString(),HashMap.class);
-            // }catch(Exception e){
-            // logger.error("unexpected response");
-            // throw new ServerlessRuleFailedException("{\"unexpected
-            // response\"}",-1);
-            // }
-            // if(resp!=null && !resp.isEmpty()){
-            // throw new
-            // ServerlessRuleFailedException(httppost.getResponseBodyAsString(),responsecode);
-            // }
-            // ******remove this block of code after sererless issue is solved:
-            // issue about not able to send the appropriate http response code
-
             if (HttpStatus.SC_OK == responsecode) {
                 return httppost.getResponseBodyAsString();
-            } 
+            }  else {
+            	throw new ServerlessPolicyFailedException(httppost.getResponseBodyAsString(),responsecode);
+            }
         } catch (org.apache.http.ParseException parseException) {
             logger.error("ParseException : " + parseException.getMessage());
         } catch (IOException ioException) {
