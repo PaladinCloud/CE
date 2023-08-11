@@ -52,6 +52,7 @@
 .content-wrapper{
   height: calc(100% - 166px);
   width: 100%;
+  gap: 20px;
 }
 
 .left-wrapper{
@@ -307,10 +308,10 @@ app-issue-blocks {
 
 .right-details-container {
   flex: 3;
-  margin: 0 0.6em 0 2em;
   perspective: 800px;
   position: relative;
   width: 40%;
+  border-radius: 8px;
   background-color: var(--background-white);
 }
 
@@ -336,7 +337,7 @@ app-issue-blocks {
 }
 
 .details-header-wrapper{
-  padding: 20px 0px 20px 24px;
+  padding: 16px 0px 16px 24px;
   border-bottom: 1px solid var(--border-100);
 }
 
@@ -349,6 +350,8 @@ app-issue-blocks {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 20px;
+  max-height: calc(100% - 52px);
+  overflow: auto;
 }
 
 .detail-wrapper{
