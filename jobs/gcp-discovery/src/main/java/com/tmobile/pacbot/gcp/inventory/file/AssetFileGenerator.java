@@ -174,7 +174,7 @@ public class AssetFileGenerator {
 				}
 			});
 			executor.execute(() -> {
-				if (!(isTypeInScope("computestorage"))) {
+				if (!(isTypeInScope("cloudstorage"))) {
 					return;
 				}
 				try {
@@ -315,7 +315,7 @@ public class AssetFileGenerator {
 				}
 			});
 			executor.execute(() -> {
-				if (!(isTypeInScope("loadbalancer"))) {
+				if (!(isTypeInScope("gcploadbalancer"))) {
 					return;
 				}
 				try {
