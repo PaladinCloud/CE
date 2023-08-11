@@ -1135,7 +1135,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                 violation = new HashMap<>();
                 violation.put(QUALYS_VIOLATION_DETAILS, violationTitle);
                 violationList.add(violation);
-            } else if (!StringUtils.isEmpty(issueDetails)) {
+            } else if (!StringUtils.isEmpty(issueDetails) && issueDetails.length() >= 4) {
                 issueDetails = issueDetails.substring(TWO, issueDetails.length() - TWO);
                 List<String> issueList = new ArrayList<String>();
                 int startPosition = 0;
