@@ -1158,6 +1158,12 @@ public class ElasticSearchRepository implements Constants {
 							innerScriptMap1.put("order", sortOrder);
 							sortMap.put("_script",innerScriptMap1);
 							list.add(sortMap);
+						}else if(fieldName.equalsIgnoreCase("region.keyword")){
+							Map<String,String> mappedSort=new HashMap<>();
+							mappedSort.put("unmapped_type","string");
+							mappedSort.put("order", sortOrder);
+							sortMap.put(fieldName, mappedSort);
+							list.add(sortMap);
 						}else{
 							Map<String, Object> sortOrderMap = new HashMap<>();
 							sortOrderMap.put(ORDER, sortOrder);

@@ -466,10 +466,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), Constants.ISSUE);
 
-        /*if (null == filters.get("issueStatus.keyword")) {
-            issueStatus.add(OPEN);
-        }*/
-
         if (null != filters.get("include_exempt") && ("yes".equalsIgnoreCase((String) filters.get(INCLUDE_EXEMPT)))) {
             issueStatus.add(EXEMPTED);
         }
