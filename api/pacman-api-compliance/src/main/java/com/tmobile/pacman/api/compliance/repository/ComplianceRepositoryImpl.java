@@ -1588,7 +1588,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             issue.put(POLICYCATEGORY_DISPALY_NAME, sourceMap.get(POLICY_CATEGORY));
 
             if(sourceMap.get(AUTOFIX_PLANNED)!=null){
-                issue.put(AUTOFIX_PLANNED,sourceMap.get(AUTOFIX_PLANNED));
+                issue.put(AUTOFIX_PLANNED,sourceMap.get(AUTOFIX_PLANNED).toString());
             }else{
                 issue.put(AUTOFIX_PLANNED,"false");
             }
