@@ -208,7 +208,9 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
       this.policyParamsDataSubscription = this.commonResponseService.getData(getPolicyByIdUrl, getPolicyByIdMethod, {}, queryParams).subscribe(
         response => {
           try{
-            this.paramsArray = JSON.parse(response.policyParams).params.map(item => {return {key: item.key, value: item.value}});
+            this.paramsArray = JSON.parse(response.policyParams).params
+            .filter(item => item.isEdit && item.isEdit=="true")
+            .map(item => {return {key: item.key, value: item.value}});
             if(this.paramsArray.length==0){
               this.paramErrorMessage = 'noDataAvailable';
             }else{
