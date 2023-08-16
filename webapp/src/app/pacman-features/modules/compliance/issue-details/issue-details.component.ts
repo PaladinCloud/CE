@@ -185,7 +185,6 @@
       }
     };
 
-
     /*Subscription variables*/
     private getRuleDescSubscription: Subscription;
     private getEmailSubscription: Subscription;

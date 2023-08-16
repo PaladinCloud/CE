@@ -1480,7 +1480,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (14,8,'Environment  ','environment','/compliance/v1/filters/environment?ag=aws&application=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (15,8,'Resource Type','resourceType','/compliance/v1/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (16,9,'Application','tags.Application.keyword','/compliance/v1/filters/application?ag=aws');
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (17,1,'Severity','severity.keyword','/compliance/v1/filters/severities?ag=aws');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (17,1,'Severity','severity.keyword','/compliance/v1/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (18,1,'Category','category.keyword','/compliance/v1/filters/categories?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (19,1,'Status','issueStatus.keyword','/compliance/v1/filters/issuestatus?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (20,10,'Type','eventCategoryName','/compliance/v1/filters/eventtype');
@@ -1531,7 +1531,7 @@ INSERT IGNORE INTO pac_v2_ui_download_filters (serviceId,serviceName,serviceEndp
  (4,'TaggingDetailsByApplication','/api/compliance/v1/tagging/summarybyapplication'),
  (5,'CertificateDetails','/api/compliance/v1/certificates/detail'),
  (6,'VulnerabilitiesDetails','/api/compliance/v1/vulnerabilities/detail'),
- (7,'Assets','/api/asset/v1//list/assets'),
+ (7,'Assets','/api/asset/v1/list/assets'),
  (8,'PatchableAssets','/api/asset/v1/list/assets/patchable'),
  (9,'ScannedAssets','/api/asset/v1/list/assets/scanned'),
  (10,'TaggableAssets','/api/asset/v1/list/assets/taggable'),
@@ -3022,3 +3022,5 @@ update cf_AssetGroupDetails set createdBy = 'Cloud Security' where groupName = '
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (16,'policyknowledgebase');
 UPDATE pac_v2_ui_options SET optionURL = '/compliance/v1/filters/attribute?attribute=issueStatus' WHERE optionId = '19';
 UPDATE pac_v2_ui_options SET optionURL = '/compliance/v1/filters/attribute?attribute=policyCategory' WHERE optionId = '18';
+
+update pac_v2_ui_download_filters set serviceEndpoint='/api/asset/v1/list/assets' where serviceId=7;

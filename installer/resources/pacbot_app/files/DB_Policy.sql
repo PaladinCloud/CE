@@ -2905,6 +2905,11 @@ update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Aqua-Found-Medium-ECR-Vulnerabilities' where policyId='MediumImageVulnerabilitiesScannedByAqua';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Assign-Standard-Region-to-Security-Groups' where policyId='NonStandardRegionRule_version-1_version-1_SgWithNonStandardRegion_sg';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Encrypt-DocumentDB' where policyId='Aws_DocumentDB_should_be_encrypted_version-1_aws_enable_cluster_encryption_documentdb';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Enable-Automatic-CMK-Rotation' where policyId='AWSKMSKeyRotationEnabled_version-1_KeyRotationEnabled_kms';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Enable-Tenable-EC2-Vulnerability-Scan' where policyId='AWSVMScannedByTenable';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Tenable-Found-Critical-Vulnerabilities-On-EC2-Instance' where policyId='CriticalVMVulnerabilitiesScannedByTenable';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Tenable-Found-High-Vulnerabilities-On-EC2-Instance' where policyId='HighVMVulnerabilitiesScannedByTenable';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#Tenable-Found-Medium-Vulnerabilities-On-EC2-Instance' where policyId='MediumVMVulnerabilitiesScannedByTenable';
 
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Assign-Mandatory-Tags-to-BigQueryDataset' where policyId='TaggingRule_version-1_BigQueryDatasetTagging_bigquerydataset';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Assign-Mandatory-Tags-with-BigQueryTable' where policyId='TaggingRule_version-1_BigQueryTableTagging_bigquerytable';
@@ -3001,6 +3006,10 @@ update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Enhance-Security-with-Specific-API-Restrictions-for-Google-Cloud-API-Keys' where policyId='Enable_API_Key_Restrictions';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Secure-Google-Cloud-API-Keys-with-Application-Restrictions' where policyId='Enable_API_Key_Application_Restrictions';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Secure-Your-Google-Cloud-Load-Balancers-with-HTTPS-and-SSL/TLS-Certificates' where policyId='Enable_HTTPS_For_LoadBalancer';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Check-Permission-of-Ingress-Setting-of-GCP-cloud-Function' where policyId='Check_permission_of_Ingress_Setting_of_GCP_cloud_Function';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Configure-HTTPS-Target-Proxy-with-Quic-Protocol-for-Google-Cloud-Load-Balancers' where policyId='Enable_Quic_Protocol_For_Load_Balancer';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#Enable-HTTPS-for-Cloud-Functions' where policyId='Enable_Https_For_Cloudfunc';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/gcp-policy/#GCP-Cloud-Function-not-Enabled-with-VPC-Connector' where policyId='GCP_Cloud_Function_not_enabled_with_VPC_connector';
 
 UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'Azure_Enable_Network_Security_for_UDP';
 UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'Disable_Local_infile_for_MySQL_Server_DB_Instances';
@@ -3323,10 +3332,16 @@ update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-poli
 update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-policy/#Enable-log-Alert-for-Delete-Policy-Assignment" where policyId="Enable_Azure_Account_Delete_Policy_Assignment_Event_log_alert";
 update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-policy/#Enable-log-Alert-for-Create/Update-Security-Solution" where policyId="Enable_Azure_Account_Security_Solution_log_alert";
 update cf_PolicyTable set resolutionUrl="https://paladincloud.io/docs/azure-policy/#Secure-Your-SQL-Database-with-Transparent-Data-Encryption-(TDE)" where policyId="Enable_transparent_data_encryption_for_sql_db";
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Delete-Unused-Scale-Set' where policyId='remove_unused_scale_set';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Delete-Unused-VM-Disk' where policyId='remove_unused_vm_disk';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Delete-Unused-Load-Balancer' where policyId='remove_unused_load_balancer';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-Create/Update-Network-Security-Group' where policyId='Azure_Create_Network_Security_Group_log_alert';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-Create/Update-SQL-DB' where policyId='Enable_Create_or_Update_SQL_Database_Log_Alert';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-PostgreSQL-DB' where policyId='Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert';
 
 update cf_PolicyParams set paramValue='paladin-cloud-trail' where policyId='Centralized_CloudTrail_version-1_Centralized_Cloudtrail_account' and paramKey='inputCloudTrailName';
 update cf_PolicyParams set paramValue='paladin-cloudfront-bucket' where policyId='CloudFront_AccessLogs_version-1_CloudFront_AccessLogs_cloudfront' and paramKey='accessLogBucketName';
 update cf_PolicyParams set paramValue='paladin-appelb-bucket' where policyId='ELB_Access_Logs_version-1_AppLB_Access_Logs_appelb' and paramKey='accessLogBucketName';
 update cf_PolicyParams set paramValue='paladin-classicelb-bucket' where policyId='ELB_Access_Logs_version-1_ClassicLB_Access_Logs_classicelb' and paramKey='accessLogBucketName';
 update cf_PolicyParams set paramValue='paladin-s3-region' where policyId='S3AccessLogsRule_version-1_S3AccessLogsRule_s3' and paramKey='accessLogsEnabledRegions';
-
+update cf_PolicyTable set policyDesc="EC2 instances are considered underutilized when there is low utilization for 14 consecutive days, CPU usage is below 10% for four days, and network usage is under 5 MB for four days. Downsizing unused EC2 instances can result in cost savings, improved performance, and enhanced scalability. Paying only for necessary resources frees up CPU, memory, and storage, making other apps run better and using resources more efficiently" where policyId="LowUtilizationAmazonEC2InstancesRule_version-1_LowUtilizationAmazonEC2InstancesRule_ec2";

@@ -116,7 +116,7 @@ export class CardComponent implements OnInit {
     navigateToViolationsByCategory(bar) {
         const category = bar?.title;
         const percent = bar?.val;
-        if(typeof percent === "number" && percent>0){
+        if(typeof percent === "number" && percent!=100){
             this.workflowService.addRouterSnapshotToLevel(
                 this.router.routerState.snapshot.root,
                 0,
