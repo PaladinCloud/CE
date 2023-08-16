@@ -51,7 +51,7 @@ export class StatisticsComponent implements OnInit {
     readonly innerRadius = 70;
     readonly outerRadius = 50;
     readonly currentDate = new Date();
-    companyIcon = CONFIGURATIONS.optional.general.logo.CustomerLogo || '/assets/images/Paladin_Logo.svg'; 
+    companyIcon = '/assets/images/Paladin_Logo.svg'; 
 
     @ViewChild('statisticsContainer') statisticsContainer: ElementRef<HTMLDivElement>;
 
