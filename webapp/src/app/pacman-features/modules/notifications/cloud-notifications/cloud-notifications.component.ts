@@ -707,12 +707,19 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 'fileType': fileType
             };
 
+            const sortFilter = {
+                fieldName: this.fieldName,
+                fieldType: this.fieldType,
+                order: this.selectedOrder,
+            }
+
             const downloadRequest = {
                 'ag': this.selectedAssetGroup,
-                'filter': this.filter,
+                'filter': this.filterText,
                 'from': 0,
                 'searchtext': this.searchTxt,
-                'size': this.totalRows
+                'size': this.totalRows,
+                sortFilter
             };
 
             const downloadUrl = environment.download.url;

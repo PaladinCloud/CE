@@ -824,6 +824,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
         fileType: fileType,
       };
 
+      const sortFilter = {
+        fieldName: this.fieldName,
+        fieldType: this.fieldType,
+        order: this.selectedOrder,
+        sortOrder: this.sortOrder
+      }
+
       // temp code to send download domain filters only for dev page assets landing
 
       if (
@@ -840,7 +847,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
-        filter: this.filterText,
+        reqFilter: this.filterText,
+        sortFilter: sortFilter,
         from: 0,
         searchtext: this.searchTxt,
         size: this.totalRows,
