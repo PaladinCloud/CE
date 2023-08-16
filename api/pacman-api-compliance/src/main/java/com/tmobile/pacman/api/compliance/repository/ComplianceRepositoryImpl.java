@@ -466,10 +466,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), Constants.ISSUE);
 
-        /*if (null == filters.get("issueStatus.keyword")) {
-            issueStatus.add(OPEN);
-        }*/
-
         if (null != filters.get("include_exempt") && ("yes".equalsIgnoreCase((String) filters.get(INCLUDE_EXEMPT)))) {
             issueStatus.add(EXEMPTED);
         }
@@ -1592,7 +1588,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             issue.put(POLICYCATEGORY_DISPALY_NAME, sourceMap.get(POLICY_CATEGORY));
 
             if(sourceMap.get(AUTOFIX_PLANNED)!=null){
-                issue.put(AUTOFIX_PLANNED,sourceMap.get(AUTOFIX_PLANNED));
+                issue.put(AUTOFIX_PLANNED,sourceMap.get(AUTOFIX_PLANNED).toString());
             }else{
                 issue.put(AUTOFIX_PLANNED,"false");
             }
