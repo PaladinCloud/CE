@@ -3344,4 +3344,4 @@ update cf_PolicyParams set paramValue='paladin-cloudfront-bucket' where policyId
 update cf_PolicyParams set paramValue='paladin-appelb-bucket' where policyId='ELB_Access_Logs_version-1_AppLB_Access_Logs_appelb' and paramKey='accessLogBucketName';
 update cf_PolicyParams set paramValue='paladin-classicelb-bucket' where policyId='ELB_Access_Logs_version-1_ClassicLB_Access_Logs_classicelb' and paramKey='accessLogBucketName';
 update cf_PolicyParams set paramValue='paladin-s3-region' where policyId='S3AccessLogsRule_version-1_S3AccessLogsRule_s3' and paramKey='accessLogsEnabledRegions';
-
+update cf_PolicyTable set policyDesc="EC2 instances are considered underutilized when there is low utilization for 14 consecutive days, CPU usage is below 10% for four days, and network usage is under 5 MB for four days. Downsizing unused EC2 instances can result in cost savings, improved performance, and enhanced scalability. Paying only for necessary resources frees up CPU, memory, and storage, making other apps run better and using resources more efficiently" where policyId="LowUtilizationAmazonEC2InstancesRule_version-1_LowUtilizationAmazonEC2InstancesRule_ec2";
