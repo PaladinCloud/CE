@@ -205,7 +205,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.isStatePreserved = false;
     }
 
-    this.preApplyStatusFilter(state);
+    if(!this.isStatePreserved) this.preApplyStatusFilter(state);
     // below code is to apply filters which are in saved state and update the URL (just to keep URL in sync and also getData method is dependent) 
     // and it does this only if URL doesn't contain filter attribute.
     // if url contains filter attribute, below code is not executed and thus they are overridden with the filters
@@ -892,12 +892,20 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         fileType: fileType,
       };
 
+      const sortFilters = {
+        fieldName: this.fieldName,
+        fieldType: this.fieldType,
+        order: this.selectedOrder,
+        sortOrder: this.sortOrder
+      }
+
       const filterToBePassed = this.filterText;
       filterToBePassed.domain = this.selectedDomain;
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
         filter: filterToBePassed,
+        sortFilter: sortFilters,
         from: 0,
         searchtext: this.searchTxt,
         size: this.totalRows,

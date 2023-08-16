@@ -139,7 +139,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     handleSearch(event) {
-        let searchTxt = event.target.value.toLowerCase();
+        let searchTxt = event.target.value;
         this.searchQuery = searchTxt;
 
         if (event.keyCode === 13) {
