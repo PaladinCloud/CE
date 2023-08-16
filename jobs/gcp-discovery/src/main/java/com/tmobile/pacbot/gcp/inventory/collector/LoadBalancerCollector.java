@@ -83,6 +83,19 @@ public class LoadBalancerCollector {
            {
                loadBalancerVH.setLogConfigEnabled(true);
            }
+
+           try{
+               BackendService backendService=gcpCredentialsProvider.getBackendServiceClient(project.getProjectId()).get(project.getProjectId(), backendServiceName);
+               if(backendService.getBackendsList() == null || backendService.getBackendsList().isEmpty()){
+                   loadBalancerVH.setUnusedBackendService(true);
+               }
+               else {
+                   loadBalancerVH.setUnusedBackendService(false);
+               }
+           }catch (Exception e)
+           {
+               loadBalancerVH.setUnusedBackendService(true);
+           }
            loadBalancerVHList.add(loadBalancerVH);
        }
 
