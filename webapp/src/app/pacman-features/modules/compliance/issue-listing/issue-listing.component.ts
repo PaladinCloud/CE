@@ -899,8 +899,24 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         sortOrder: this.sortOrder
       }
 
-      const filterToBePassed = this.filterText;
+      const filterToBePassed = { ...this.filterText };
       filterToBePassed.domain = this.selectedDomain;
+      if(filterToBePassed["slaEndDate"]){
+        if(filterToBePassed["slaEndDate"].toLowerCase().includes("in sla") && filterToBePassed["slaEndDate"].toLowerCase().includes("out sla")){
+          filterToBePassed["out_of_sla"] = "yes,no";
+        }else if(filterToBePassed["slaEndDate"].toLowerCase().includes("in sla")){
+          filterToBePassed["out_of_sla"] = "no";
+        }else{
+          filterToBePassed["out_of_sla"] = "yes";
+        }
+        delete filterToBePassed["slaEndDate"];
+      }
+
+      Object.keys(filterToBePassed).forEach(filterKey => {
+        if (filterKey !== "domain") {
+          filterToBePassed[filterKey] = filterToBePassed[filterKey]?.split(",") || [];
+        }
+      });
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
