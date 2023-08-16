@@ -18,6 +18,8 @@ public class LoadBalancerVH extends GCPVH{
 
     List<SslPolicyVH> sslPolicyList;
 
+    boolean unusedBackendService;
+
     public List<HttpsProxyVH> getHttpProxyDetailList() {
         return httpProxyDetailList;
     }
@@ -66,4 +68,10 @@ public class LoadBalancerVH extends GCPVH{
         this.sslPolicyList = sslPolicyList;
     }
 
+    public boolean getUnusedBackendService() {
+        return unusedBackendService;
+    }
+    public void setUnusedBackendService(boolean unusedBackendService) {
+        this.unusedBackendService = unusedBackendService;
+    }
 }

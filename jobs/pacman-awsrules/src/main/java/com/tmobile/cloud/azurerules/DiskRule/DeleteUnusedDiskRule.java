@@ -62,7 +62,7 @@ public class DeleteUnusedDiskRule extends BasePolicy {
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "The selected disk volume is attached to a Microsoft Azure virtual machine");
+                        "The selected disk volume is unattached to a Microsoft Azure virtual machine");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
