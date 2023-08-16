@@ -1531,7 +1531,7 @@ INSERT IGNORE INTO pac_v2_ui_download_filters (serviceId,serviceName,serviceEndp
  (4,'TaggingDetailsByApplication','/api/compliance/v1/tagging/summarybyapplication'),
  (5,'CertificateDetails','/api/compliance/v1/certificates/detail'),
  (6,'VulnerabilitiesDetails','/api/compliance/v1/vulnerabilities/detail'),
- (7,'Assets','/api/asset/v1//list/assets'),
+ (7,'Assets','/api/asset/v1/list/assets'),
  (8,'PatchableAssets','/api/asset/v1/list/assets/patchable'),
  (9,'ScannedAssets','/api/asset/v1/list/assets/scanned'),
  (10,'TaggableAssets','/api/asset/v1/list/assets/taggable'),
@@ -3022,3 +3022,5 @@ update cf_AssetGroupDetails set createdBy = 'Cloud Security' where groupName = '
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (16,'policyknowledgebase');
 UPDATE pac_v2_ui_options SET optionURL = '/compliance/v1/filters/attribute?attribute=issueStatus' WHERE optionId = '19';
 UPDATE pac_v2_ui_options SET optionURL = '/compliance/v1/filters/attribute?attribute=policyCategory' WHERE optionId = '18';
+
+update pac_v2_ui_download_filters set serviceEndpoint='/api/asset/v1/list/assets' where serviceId=7;
