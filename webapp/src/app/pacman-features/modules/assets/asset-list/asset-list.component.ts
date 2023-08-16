@@ -845,9 +845,18 @@ export class AssetListComponent implements OnInit, OnDestroy {
         this.filterText["domain"] = this.selectedDomain;
       }
 
+      const filterToBePassed = {...this.filterText};
+
+      if(this.isMultiValuedFilterEnabled){
+        Object.keys(filterToBePassed).forEach(filterKey => {
+          if(filterKey=="domain") return;
+          filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+        })
+      }
+      
       const downloadRequest = {
         ag: this.selectedAssetGroup,
-        reqFilter: this.filterText,
+        reqFilter: filterToBePassed,
         sortFilter: sortFilter,
         from: 0,
         searchtext: this.searchTxt,
