@@ -41,7 +41,7 @@ export class PropValueLinkDirective implements OnInit {
                 prop,
                 this.appPropValueLink.replace(
                     this.LINK_REGEX,
-                    '<a href="$&" class="primary-400" target="_blank">$&</a>',
+                    '<a href="$&" class="primary-400" target="_self">$&</a>',
                 ),
             );
         } else if (this.appPropValueLink.startsWith('/')) {

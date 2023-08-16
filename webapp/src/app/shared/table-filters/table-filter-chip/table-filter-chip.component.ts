@@ -17,6 +17,7 @@ export class TableFilterChipComponent implements OnInit {
     @Input() filtersToExcludeFromCasing = [];
     @Input() category: string;
     @Input() options: string[] = [];
+    isDateFilter: boolean;
     @Input() set appliedFiltersDict(values: { [key: string]: boolean }) {
         this._appliedFilters = Object.entries(values || {})
             .filter(([, value]) => value)
@@ -52,7 +53,15 @@ export class TableFilterChipComponent implements OnInit {
     ngOnInit(): void {}
 
     toggleOptionsMenu() {
+        this.isDateFilter =this.category.toLowerCase() == "created date" ?  true : false;
         this.isOptionsMenuOpen = !this.isOptionsMenuOpen;
+    }
+
+    dateIntervalSelected(from?, to?){
+        const toDate = new Date(to).toLocaleDateString('en-CA');
+        const fromDate = new Date(from).toLocaleDateString('en-CA');
+        this.isOptionsMenuOpen = false;
+        this.updateFilterOption(fromDate+' - '+toDate,true);
     }
 
     updateFilterOption(filterName: string, filterValue: boolean) {

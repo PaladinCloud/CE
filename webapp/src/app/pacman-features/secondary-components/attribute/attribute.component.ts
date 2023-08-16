@@ -41,6 +41,7 @@
    showData = false;
  
    dataObjArray = [];
+   relatedAssetList = [];
    constructor(
      private logger: LoggerService, private errorHandling: ErrorHandlingService, private router: Router,
      private activatedRoute: ActivatedRoute,
@@ -76,9 +77,12 @@
          'name': keys[i],
          'values': keyValues
        };
- 
-       this.assetCloudType.emit(cloudType);
-       dataObjContainer.push(obj);
+       if(keys[i].toLowerCase()=="related assets"){
+           this.relatedAssetList.push(obj);
+       }else{
+         this.assetCloudType.emit(cloudType);
+         dataObjContainer.push(obj);
+       }
      }
  
      dataObjContainer = this.testData(dataObjContainer);
@@ -126,7 +130,7 @@
      }
  
    }
-   /**
+    /**
     * This function navigates the page mentioned  with a ruleID
     */
    navigatePage(event) {
@@ -148,4 +152,4 @@
    }
    /* navigatePage function ends here */
  }
- 
+
