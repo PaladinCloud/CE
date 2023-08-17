@@ -2754,20 +2754,24 @@ delete from cf_AssetGroupTargetDetails where targetType in ( 'policydefinitions'
 
 
 /* Updating display name can be removed in future  */
-Update cf_Target set displayName = 'Subnet (Aws)' where targetName = 'subnet';
+Update cf_Target set displayName = 'Subnet (AWS)' where targetName = 'subnet';
 Update cf_Target set displayName = 'Databricks' where targetName = 'databricks';
 Update cf_Target set displayName = 'AKS' where targetName = 'kubernetes';
 Update cf_Target set displayName = 'MySQL Server (Azure)' where targetName = 'mysqlserver';
-Update cf_Target set displayName = 'MySQL Server (Gcp)' where targetName = 'cloudsql_mysqlserver';
+Update cf_Target set displayName = 'MySQL Server (GCP)' where targetName = 'cloudsql_mysqlserver';
 Update cf_Target set displayName = 'Subnet (Azure)' where targetName = 'subnets';
 Update cf_Target set displayName = 'VM (Azure)' where targetName = 'virtualmachine';
 Update cf_Target set displayName = 'PostgreSQL' where targetName = 'cloudsql_postgres';
 Update cf_Target set displayName = 'GKE Cluster' where targetName = 'gkecluster';
-Update cf_Target set displayName = 'VM (Gcp)' where targetName = 'vminstance';
+Update cf_Target set displayName = 'VM (GCP)' where targetName = 'vminstance';
 Update cf_Target set displayName = 'KMS Key (AWS)' where targetName = 'kms';
-Update cf_Target set displayName = 'KMS Key (Gcp)' where targetName = 'kmskey';
+Update cf_Target set displayName = 'KMS Key (GCP)' where targetName = 'kmskey';
 Update cf_Target set displayName = 'SQL Server (Azure)' where targetName = 'sqlserver';
-Update cf_Target set displayName = 'SQL Server (Gcp)' where targetName = 'cloudsql_sqlserver';
+Update cf_Target set displayName = 'SQL Server (GCP)' where targetName = 'cloudsql_sqlserver';
+Update cf_Target set displayName = 'IAM User (AWS)' where targetName = 'iamuser';
+Update cf_Target set displayName = 'IAM User (GCP)' where targetName = 'iamusers';
+Update cf_Target set displayName = 'Load Balancer (Azure)' where targetName = 'loadbalancer';
+Update cf_Target set displayName = 'Load Balancer (GCP)' where targetName = 'gcploadbalancer';
 
 /* Updating  status field, can be removed in future   */
 Update cf_Target set status = 'finding' where targetName in ( 'checks','phd','securityhub','activitylogalert','policydefinitions','policyevaluationresults' );
