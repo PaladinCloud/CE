@@ -326,7 +326,7 @@
                set.add(row[column].valueText);
          });
          filterTags = Array.from(set);
-         filterTags.sort();
+         filterTags.sort((a, b) => a.localeCompare(b));
        }
  
        this.filterTagLabels[column] = filterTags;
