@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tmobile.pacman.api.compliance.domain.DownloadRequest;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +136,7 @@ public class DownloadController implements Constants {
             final HttpServletResponse servletResponse,
             @ApiParam(value = "Provide Download File Format (excel or csv). Default is csv", required = false) @RequestParam(name = "fileFormat", required = false) String fileFormat,
             @ApiParam(value = "Provide serviceId 1-policyViolationList,2-policyOverviewList,3-patchingList,4-taggingList,5-certificateList,6-vulnerabilitiesList", required = false) @RequestParam("serviceId") int serviceId,
-            @ApiParam(value = "Provide Service Search Filter", required = false) @RequestBody(required = false) Request request)
+            @ApiParam(value = "Provide Service Search Filter", required = false) @RequestBody(required = false) DownloadRequest request)
             throws Exception {
         try {
             String assetGroup = request.getAg();

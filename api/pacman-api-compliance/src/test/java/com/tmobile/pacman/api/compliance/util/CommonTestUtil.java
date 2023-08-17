@@ -248,6 +248,10 @@ public class CommonTestUtil {
         return new Request();
     }
 
+    public static DownloadRequest geDownloadRequestEmpty() {
+        return new DownloadRequest();
+    }
+
     public static APIRequest getApiRequestEmpty() {
         return new APIRequest();
     }
@@ -514,6 +518,32 @@ public class CommonTestUtil {
        Map<String,Map<String,Object>> map = new HashMap<>();
        map.put("test", getMapObject());
        return map;
+    }
+
+    public static DownloadRequest getDownloadRequest() {
+        DownloadRequest request = new DownloadRequest();
+        request.setAg("aws-all");
+        request.setSearchtext("low");
+        request.setFilter(getDownloadFilters());
+        request.setSize(7);
+        return request;
+    }
+
+    public static Map<String, Object> getDownloadFilters() {
+        Map<String, Object> filter = new HashMap<>();
+        filter.put("domain", "Infra & Platforms");
+        filter.put("policyCategory.keyword", "security");
+        filter.put("policyCategory", "security");
+        filter.put("targetType.keyword", "ec2");
+        return filter;
+    }
+
+    public static DownloadRequest getWithoutSizeDownloadRequest() {
+        DownloadRequest request = new DownloadRequest();
+        request.setAg("aws-all");
+        request.setSearchtext("low");
+        request.setFilter(getDownloadFilters());
+        return request;
     }
     
 }
