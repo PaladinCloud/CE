@@ -52,11 +52,10 @@ export class DownloadService {
                   'The requested data isn\'t available'
                 );
                 return;
-            } else if (dataLength > 50000) {
-                const message = 'We are sorry, only 100k records can be downloaded at this time.\nPlease filter your results and try again.';
+            } else if (dataLength > 100000) {
+                const message = 'We regret to inform you that the download limit is currently set at 100,000 records. To proceed, please refine your filters and try again. Thank you for your understanding.';
                 this.showDialog(message, "Information");
-                
-                  return;
+                return;
             } else {
                 this.toastObservableService.postMessage(
                   'The download has been requested'
