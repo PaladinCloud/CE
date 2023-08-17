@@ -94,6 +94,9 @@ public abstract class ErrorManager implements Constants {
 					errorManager.dataSource ="gcp";
 					break;
 				default:
+					errorManager = new DefaultErrorManager();
+					errorManager.dataSource = dataSource;
+					
 			}
 			
 		}
