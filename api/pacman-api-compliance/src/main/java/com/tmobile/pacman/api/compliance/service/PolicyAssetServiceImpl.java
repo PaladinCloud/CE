@@ -136,8 +136,7 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
             policies.forEach(policy -> {
                 policySevMap.put(
                         policy.get(POLICYID).toString(),
-                        CommonUtil.getPolicySeverityFromParms(policy.get(
-                                "policyParams").toString()));
+                        policy.get("severity").toString());
             });
 
             issueList = issueList

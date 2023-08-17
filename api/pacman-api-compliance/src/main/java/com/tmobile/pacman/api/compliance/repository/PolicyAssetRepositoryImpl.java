@@ -108,7 +108,7 @@ public class PolicyAssetRepositoryImpl implements PolicyAssetRepository,
         sortList.add(sortKeyAnnotation);
 
         List<String> fields = Arrays.asList("_resourceid", DOCID, "policyId",
-                "createdDate", "modifiedDate", "issueStatus");
+                "createdDate", "modifiedDate", "issueStatus","severity");
         try {
             return elasticSearchRepository.getSortedDataFromES(ag, "issue_"
                     + resourceType, mustFilter, null, null, fields, mustTermsFilter, sortList);
