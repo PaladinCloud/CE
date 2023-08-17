@@ -3038,4 +3038,4 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
  /* RedHat Index*/
  INSERT IGNORE INTO `cf_AssetGroupDetails` (`groupId`, `groupName`, `dataSource`, `displayName`, `groupType`, `createdBy`, `createdUser`, `createdDate`, `modifiedUser`, `modifiedDate`, `description`, `aliasQuery`, `isVisible`) 
  values('e0008397-f74e-4deb-9066-10bdf11202ae','redhat','redhat','RedHat ACS','Admin','Cloud Security','admin@paladincloud.io','08/17/2023 06:13','admin@paladincloud.io','08/17/2023 06:13','All GCP','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}
-','0');
+','1');
