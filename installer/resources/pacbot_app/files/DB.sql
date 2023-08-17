@@ -3033,3 +3033,18 @@ UPDATE pac_v2_ui_options SET optionURL = '/compliance/v1/filters/attribute?attri
 UPDATE pac_v2_ui_options SET optionURL = '/compliance/v1/filters/attribute?attribute=policyCategory' WHERE optionId = '18';
 
 update pac_v2_ui_download_filters set serviceEndpoint='/api/asset/v1/list/assets' where serviceId=7;
+
+/* RedHat Plugin Asset configuration */
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
+ VALUES ('s3.data','redhatacs-inventory','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
+ VALUES ('s3.processed','backup-redhatacs','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
+ insert into cf_Accounts values ('RedHat ACS','acs-cgcv4rlkik9vj0kg0rk0','0','0','configured','redhat','admin@paladicloud.io','07/08/2023 10:51:33');
+ INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+ VALUES('deployment','Deployment','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
+ concat(@eshost,':',@esport,'/redhat_deployment'),'2023-08-07','2023-08-07','Infra & Platforms','Deployment');
+ 
+ /* RedHat Index*/
+ INSERT IGNORE INTO `cf_AssetGroupDetails` (`groupId`, `groupName`, `dataSource`, `displayName`, `groupType`, `createdBy`, `createdUser`, `createdDate`, `modifiedUser`, `modifiedDate`, `description`, `aliasQuery`, `isVisible`) 
+ values('e0008397-f74e-4deb-9066-10bdf11202ae','redhat','redhat','RedHat ACS','Admin','Cloud Security','admin@paladincloud.io','08/17/2023 06:13','admin@paladincloud.io','08/17/2023 06:13','All GCP','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}
+','0');
