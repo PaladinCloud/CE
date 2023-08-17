@@ -17,12 +17,11 @@ package com.tmobile.cloud.awsrules.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.identitymanagement.model.*;
+import com.tmobile.pacman.commons.PacmanSdkConstants;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,35 +32,6 @@ import com.amazonaws.auth.policy.Statement;
 import com.amazonaws.auth.policy.Statement.Effect;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
-import com.amazonaws.services.identitymanagement.model.AccessKeyMetadata;
-import com.amazonaws.services.identitymanagement.model.AttachedPolicy;
-import com.amazonaws.services.identitymanagement.model.GetGroupPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.GetGroupPolicyResult;
-import com.amazonaws.services.identitymanagement.model.GetPolicyVersionRequest;
-import com.amazonaws.services.identitymanagement.model.GetPolicyVersionResult;
-import com.amazonaws.services.identitymanagement.model.GetRolePolicyRequest;
-import com.amazonaws.services.identitymanagement.model.GetRolePolicyResult;
-import com.amazonaws.services.identitymanagement.model.GetUserPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.GetUserPolicyResult;
-import com.amazonaws.services.identitymanagement.model.ListAccessKeysRequest;
-import com.amazonaws.services.identitymanagement.model.ListAccessKeysResult;
-import com.amazonaws.services.identitymanagement.model.ListAttachedRolePoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListAttachedRolePoliciesResult;
-import com.amazonaws.services.identitymanagement.model.ListAttachedUserPoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListAttachedUserPoliciesResult;
-import com.amazonaws.services.identitymanagement.model.ListEntitiesForPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.ListEntitiesForPolicyResult;
-import com.amazonaws.services.identitymanagement.model.ListGroupPoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListGroupPoliciesResult;
-import com.amazonaws.services.identitymanagement.model.ListPoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListPoliciesResult;
-import com.amazonaws.services.identitymanagement.model.ListPolicyVersionsRequest;
-import com.amazonaws.services.identitymanagement.model.ListRolePoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListRolePoliciesResult;
-import com.amazonaws.services.identitymanagement.model.ListUserPoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListUserPoliciesResult;
-import com.amazonaws.services.identitymanagement.model.PolicyScopeType;
-import com.amazonaws.services.identitymanagement.model.PolicyVersion;
 import com.amazonaws.util.CollectionUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -259,7 +229,7 @@ public class IAMUtils {
 	 * @param iamClient
 	 * @return Set of actions
 	 */
-	public static Set<String> getAllowedActionsByRolePolicy(AmazonIdentityManagementClient iamClient, String roleName) {
+	public static Set<String> getAllowedActionsByRolePolicy(AmazonIdentityManagementClient iamClient, String roleName) throws Exception {
 		Set<String> actionSet = new HashSet<>();
 		actionSet.addAll(getAttachedRolePolicyActionSet(roleName, iamClient));
 		actionSet.addAll(getInlineRolePolicyActionSet(roleName, iamClient));
@@ -279,14 +249,33 @@ public class IAMUtils {
 	 * @return the attached policy
 	 */
 	private static Set<String> getAttachedRolePolicyActionSet(String roleName,
-			AmazonIdentityManagementClient iamClient) {
+			AmazonIdentityManagementClient iamClient) throws AmazonIdentityManagementException, InterruptedException {
 		Set<String> actionSet = new HashSet<>();
 		String docVersion = null;
 		List<AttachedPolicy> attachedPolicies = getAttachedPolicyOfIAMRole(roleName, iamClient);
+		List<PolicyVersion> policyVersions = new ArrayList<>();
 		for (AttachedPolicy attachedPolicy : attachedPolicies) {
-			List<PolicyVersion> policyVersions = iamClient
-					.listPolicyVersions(new ListPolicyVersionsRequest().withPolicyArn(attachedPolicy.getPolicyArn()))
-					.getVersions();
+			for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+				try {
+					policyVersions = iamClient
+							.listPolicyVersions(new ListPolicyVersionsRequest().withPolicyArn(attachedPolicy.getPolicyArn()))
+							.getVersions();
+				} catch (AmazonIdentityManagementException e) {
+					if (e.getMessage().startsWith("Rate exceeded")) {
+						Thread.sleep(5000);
+						if (i == 2) {
+							logger.error(e.getMessage());
+							throw e;
+						}
+						logger.info("Retrying inside getAttachedRolePolicyActionSet for policy arn -{}", attachedPolicy.getPolicyArn());
+						continue;
+					}
+					else{
+						throw e;
+					}
+				}
+				break;
+			}
 
 			for (PolicyVersion policyVersion : policyVersions) {
 				if (policyVersion.getIsDefaultVersion()) {
@@ -294,7 +283,26 @@ public class IAMUtils {
 						GetPolicyVersionRequest versionRequest = new GetPolicyVersionRequest();
 						versionRequest.setPolicyArn(attachedPolicy.getPolicyArn());
 						versionRequest.setVersionId(policyVersion.getVersionId());
-						GetPolicyVersionResult versionResult = iamClient.getPolicyVersion(versionRequest);
+						GetPolicyVersionResult versionResult=new GetPolicyVersionResult();
+						for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+							try {
+								versionResult = iamClient.getPolicyVersion(versionRequest);
+							} catch (AmazonIdentityManagementException e) {
+								if (e.getMessage().startsWith("Rate exceeded")) {
+									Thread.sleep(5000);
+									if (i == 2) {
+										logger.error(e.getMessage());
+										throw e;
+									}
+									logger.info("Retrying inside getAttachedRolePolicyActionSet for policy version-{}", policyVersion.getVersionId());
+									continue;
+								}
+								else{
+									throw e;
+								}
+							}
+							break;
+						}
 						try {
 							docVersion = URLDecoder.decode(versionResult.getPolicyVersion().getDocument(), "UTF-8");
 						} catch (UnsupportedEncodingException e) {
@@ -325,7 +333,7 @@ public class IAMUtils {
 	 * @return the inline role policy
 	 */
 	private static Set<String> getInlineRolePolicyActionSet(String roleName,
-			AmazonIdentityManagementClient amazonIdentityManagement) {
+			AmazonIdentityManagementClient amazonIdentityManagement) throws AmazonIdentityManagementException, InterruptedException, UnsupportedEncodingException {
 		Set<String> actionSet = new HashSet<>();
 
 		List<String> inlineRolePolicyNameList = new ArrayList<>();
@@ -333,7 +341,25 @@ public class IAMUtils {
 		listRolePoliciesRequest.setRoleName(roleName);
 		ListRolePoliciesResult listRolePoliciesResult = null;
 		do {
-			listRolePoliciesResult = amazonIdentityManagement.listRolePolicies(listRolePoliciesRequest);
+			for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+				try {
+					listRolePoliciesResult = amazonIdentityManagement.listRolePolicies(listRolePoliciesRequest);
+				} catch (AmazonIdentityManagementException e) {
+					if (e.getMessage().startsWith("Rate exceeded")) {
+						Thread.sleep(5000);
+						if (i == 2) {
+							logger.error(e.getMessage());
+							throw e;
+						}
+						logger.info("Retrying inside getInlineRolePolicyActionSet for roleName-{}", roleName);
+						continue;
+					}
+					else{
+						throw e;
+					}
+				}
+				break;
+			}
 			inlineRolePolicyNameList.addAll(listRolePoliciesResult.getPolicyNames());
 			listRolePoliciesRequest.setMarker(listRolePoliciesResult.getMarker());
 		} while (listRolePoliciesResult.isTruncated());
@@ -353,12 +379,29 @@ public class IAMUtils {
 	 * @return list of AttachedPolicy
 	 */
 	public static List<AttachedPolicy> getAttachedPolicyOfIAMRole(final String roleName,
-			AmazonIdentityManagementClient iamClient) throws RuleExecutionFailedExeption {
+			AmazonIdentityManagementClient iamClient) throws AmazonIdentityManagementException, InterruptedException {
 		ListAttachedRolePoliciesRequest attachedUserPoliciesRequest = new ListAttachedRolePoliciesRequest();
 		attachedUserPoliciesRequest.setRoleName(roleName);
-		ListAttachedRolePoliciesResult rolePoliciesResult = iamClient
-				.listAttachedRolePolicies(attachedUserPoliciesRequest);
-		return rolePoliciesResult.getAttachedPolicies();
+		for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+			try {
+				ListAttachedRolePoliciesResult rolePoliciesResult = iamClient
+						.listAttachedRolePolicies(attachedUserPoliciesRequest);
+				return rolePoliciesResult.getAttachedPolicies();
+			} catch (AmazonIdentityManagementException e) {
+				if (e.getMessage().startsWith("Rate exceeded")) {
+					Thread.sleep(5000);
+					if (i == 2) {
+						logger.error(e.getMessage());
+						throw e;
+					}
+					logger.info("Retrying inside getInlineRolePolicyActionSet for roleName-{}", roleName);
+				}
+				else{
+					throw e;
+				}
+			}
+		}
+		return Collections.EMPTY_LIST;
 	}
 	
 	/**
@@ -373,21 +416,33 @@ public class IAMUtils {
 	 * @return the inline role policy
 	 */
 	private static Policy getInlineRolePolicy(String roleName, String policyName,
-			AmazonIdentityManagement amazonIdentityManagement) {
+			AmazonIdentityManagement amazonIdentityManagement) throws AmazonIdentityManagementException, InterruptedException, UnsupportedEncodingException {
 		Policy policy = new Policy();
-		try {
-			GetRolePolicyRequest policyRequest = new GetRolePolicyRequest();
-			policyRequest.setRoleName(roleName);
-			policyRequest.setPolicyName(policyName);
-			GetRolePolicyResult policyResult = amazonIdentityManagement.getRolePolicy(policyRequest);
-			String policyAsString = policyResult.getPolicyDocument();
-
-			policyAsString = java.net.URLDecoder.decode(policyAsString, "UTF-8");
-			policy = Policy.fromJson(policyAsString);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
+		for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++){
+			try {
+				GetRolePolicyRequest policyRequest = new GetRolePolicyRequest();
+				policyRequest.setRoleName(roleName);
+				policyRequest.setPolicyName(policyName);
+				GetRolePolicyResult policyResult = amazonIdentityManagement.getRolePolicy(policyRequest);
+				String policyAsString = policyResult.getPolicyDocument();
+				policyAsString = java.net.URLDecoder.decode(policyAsString, "UTF-8");
+				policy = Policy.fromJson(policyAsString);
+			} catch (AmazonIdentityManagementException e) {
+				if(e.getMessage().startsWith("Rate exceeded")){
+					Thread.sleep(5000);
+					if(i==2){
+						logger.error(e.getMessage());
+						throw e;
+					}
+					logger.info("Retrying inside getInlineRolePolicy for policyName-{} and roleName-{}",policyName,roleName);
+					continue;
+				}
+				else{
+					throw e;
+				}
+			}
+			break;
 		}
-
 		return policy;
 	}
 	
@@ -486,20 +541,56 @@ public class IAMUtils {
 	 * @param iamClient
 	 * @return
 	 */
-	public static boolean isPolicyWithFullAdminAccess(String policyArn, AmazonIdentityManagementClient iamClient) {
-
-		List<PolicyVersion> policyVersions = iamClient.listPolicyVersions(new ListPolicyVersionsRequest().withPolicyArn(policyArn)).getVersions();
+	public static boolean isPolicyWithFullAdminAccess(String policyArn, AmazonIdentityManagementClient iamClient) throws AmazonIdentityManagementException,InterruptedException {
+		List<PolicyVersion> policyVersions = new ArrayList<>();
+		for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+			try {
+				policyVersions = iamClient.listPolicyVersions(new ListPolicyVersionsRequest().withPolicyArn(policyArn)).getVersions();
+			} catch (AmazonIdentityManagementException e) {
+				if (e.getMessage().startsWith("Rate exceeded")) {
+					Thread.sleep(5000);
+					if (i == 2) {
+						logger.error(e.getMessage());
+						throw e;
+					}
+					logger.info("Retrying inside isPolicyWithFullAdminAccess for policy arn -{}", policyArn);
+					continue;
+				}
+				else{
+					throw e;
+				}
+			}
+			break;
+		}
 
 		for (PolicyVersion policyVersion : policyVersions) {
 			if (policyVersion.isDefaultVersion()) {
-
 				String docVersion = null;
 				Policy policy = new Policy();
+				GetPolicyVersionResult versionResult=new GetPolicyVersionResult();
 				try {
 					GetPolicyVersionRequest versionRequest = new GetPolicyVersionRequest();
 					versionRequest.setPolicyArn(policyArn);
 					versionRequest.setVersionId(policyVersion.getVersionId());
-					GetPolicyVersionResult versionResult = iamClient.getPolicyVersion(versionRequest);
+					for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+						try {
+							versionResult = iamClient.getPolicyVersion(versionRequest);
+						} catch (AmazonIdentityManagementException e) {
+							if (e.getMessage().startsWith("Rate exceeded")) {
+								Thread.sleep(5000);
+								if (i == 2) {
+									logger.error(e.getMessage());
+									throw e;
+								}
+								logger.info("Retrying inside isPolicyWithFullAdminAccess for policy arn,versionid -{}, {}", policyArn, policyVersion.getVersionId());
+								continue;
+							}
+							else{
+								throw e;
+							}
+						}
+						break;
+					}
 					try {
 						docVersion = URLDecoder.decode(versionResult.getPolicyVersion().getDocument(), "UTF-8");
 						policy = Policy.fromJson(docVersion);
@@ -560,14 +651,32 @@ public class IAMUtils {
 	 * 
 	 */
 	public static boolean isInlineRolePolicyWithFullAdminAccess(String roleName,
-			AmazonIdentityManagementClient amazonIdentityManagement) {
+			AmazonIdentityManagementClient amazonIdentityManagement) throws AmazonIdentityManagementException, InterruptedException, UnsupportedEncodingException {
 
 		List<String> inlineRolePolicyNameList = new ArrayList<>();
 		ListRolePoliciesRequest listRolePoliciesRequest = new ListRolePoliciesRequest();
 		listRolePoliciesRequest.setRoleName(roleName);
 		ListRolePoliciesResult listRolePoliciesResult = null;
 		do {
-			listRolePoliciesResult = amazonIdentityManagement.listRolePolicies(listRolePoliciesRequest);
+			for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+				try {
+					listRolePoliciesResult = amazonIdentityManagement.listRolePolicies(listRolePoliciesRequest);
+				} catch (AmazonIdentityManagementException e) {
+					if (e.getMessage().startsWith("Rate exceeded")) {
+						Thread.sleep(5000);
+						if (i == 2) {
+							logger.error(e.getMessage());
+							throw e;
+						}
+						logger.info("Retrying inside isInlineRolePolicyWithFullAdminAccess for rolename -{}", roleName);
+						continue;
+					}
+					else{
+						throw e;
+					}
+				}
+				break;
+			}
 			listRolePoliciesRequest.setMarker(listRolePoliciesResult.getMarker());
 		} while (listRolePoliciesResult.isTruncated());
 
