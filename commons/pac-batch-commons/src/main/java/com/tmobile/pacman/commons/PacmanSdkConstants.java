@@ -318,4 +318,6 @@ public interface PacmanSdkConstants {
 	String APPLICATION_PREFIX = "application.prefix";
 	String ROLE_PREFIX = "role/";
 	String ROLE_SUFFIX = "_ro";
+	Integer MAX_RETRY_COUNT=3;
+
 }
