@@ -230,7 +230,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         if (!StringUtils.isEmpty(provider)) {
             query = query + " and lower(dataSourceName) = '" + provider.toLowerCase().trim() + "'";
         }
-        query = query+" and dataSourceName in (select distinct platform from cf_Accounts where accountStatus='configured') ";
+        query = query+" and dataSourceName in (select distinct platform from cf_Accounts where accountStatus='configured') ORDER BY LOWER (displayName) ASC ";
         return rdsRepository.getDataFromPacman(query);
 	}
 
@@ -243,7 +243,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         }else {
             query = query + " where status = 'active' or status = 'enabled'";
         }
-        query = query+" and dataSourceName in (select distinct platform from cf_Accounts where accountStatus='configured') ";
+        query = query+" and dataSourceName in (select distinct platform from cf_Accounts where accountStatus='configured') ORDER BY LOWER (displayName) ASC ";
         return rdsRepository.getDataFromPacman(query);
 
 	}
