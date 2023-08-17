@@ -105,6 +105,8 @@ export class TableFiltersComponent implements OnInit {
     openMenu() {
         this.isCategoryMenuOpen = !this.isCategoryMenuOpen;
         this.isCategoryOptionsMenuOpen = false;
+        this.categoryOptionFilterQuery = '';
+        this.categoryFilterQuery = '';
     }
 
     openFilterCategory(filterCategory: string) {
@@ -179,6 +181,7 @@ export class TableFiltersComponent implements OnInit {
 
     overlayKeyDown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
+            this.categoryFilterQuery = '';
             this.isCategoryMenuOpen = false;
         }
     }
