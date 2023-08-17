@@ -11,7 +11,7 @@ from resources.batch.job import SubmitAndRuleEngineJobDefinition, BatchJobsQueue
 from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
-from resources.eventbus.custom_event_bus import CloudWatchEventBusPlugin, CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
+from resources.eventbus.custom_event_bus import CloudWatchEventBusPlugin, CloudWatchEventBusRedHat, CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
 from resources.pacbot_app.utils import  get_azure_tenants,  get_gcp_project_ids, get_aws_account_details
 import json
 from core.config import Settings
@@ -743,3 +743,57 @@ class TenableVMVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTarget
             {'encrypt': False, 'key': "days", 'value': "7"}
         ]
     })
+
+
+
+class RedHatDataShipperEventRule(CloudWatchEventRuleResource):
+    name = "data-shipper-redhat"
+    event_bus_name = CloudWatchEventBusRedHat.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["aws"],
+        "isCollector": [False],
+        "isShipper": [True],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
+    DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
+    # PROCESS = need_to_enable_redhat()
+
+
+class RedHatDataShipperEventRuleLambdaPermission(LambdaPermission):
+    statement_id = "AllowExecutionFromRedhatDataShipper"
+    action = "lambda:InvokeFunction"
+    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+    principal = "events.amazonaws.com"
+    source_arn = RedHatDataShipperEventRule.get_output_attr('arn')
+    # PROCESS = need_to_enable_redhat()
+
+
+class RedHatDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
+    rule = RedHatDataShipperEventRule.get_output_attr('name')
+    arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusRedHat.get_output_attr('arn')
+    target_id = 'RedHatDataShipperTarget'  # Unique identifier
+    target_input = json.dumps({
+        'jobName': "data-shipper-redhat",
+        'jobUuid': "data-shipper-redhat",
+        'jobType': "jar",
+        'jobDesc': "Ship RedHat Data from S3 to PaladinCloud ES",
+        'environmentVariables': [
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,redhat-discovery/prd/latest"},
+        ],
+        'params': [
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.cso.pacman"},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "datasource", 'value': "redhat"},
+            {'encrypt': False, 'key': "s3.data", 'value': "redhatacs-inventory"}
+        ]
+    })
+    # PROCESS = need_to_enable_gcp()

@@ -14,3 +14,6 @@ class CloudWatchEventBusgcp(CloudWatchEventBusResource):
 
 class CloudWatchEventBusPlugin(CloudWatchEventBusResource):
     name = "vulnerability-plugins"
+
+class CloudWatchEventBusRedHat(CloudWatchEventBusResource):
+    name = "redhat"
