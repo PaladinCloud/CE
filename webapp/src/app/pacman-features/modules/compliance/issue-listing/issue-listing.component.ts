@@ -241,9 +241,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       state.filters = isStateFiltersArray ? state.filters : [];
       state.filters.push({
         "keyDisplayValue": "Status",
-        "filterValue": ["open", "exempted"],
+        "filterValue": ["open"],
         "key": "Status",
-        "value": ["open", "exempted"],
+        "value": ["open"],
         "filterkey": "issueStatus.keyword",
         "compareKey": "issuestatus.keyword"
       });
