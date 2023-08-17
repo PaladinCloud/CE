@@ -347,7 +347,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.queryParamsWithoutFilter = JSON.parse(
           JSON.stringify(this.FullQueryParams)
         );
-        this.getFiltersAppliedOrderFromURL(this.FullQueryParams.filter);
         delete this.queryParamsWithoutFilter["filter"];
         /**
          * The below code is added to get URLparameter and queryparameter
@@ -456,7 +455,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       });
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-        await this.processFilterItem(formattedFilters[i], i);
+        await this.processFilterItem(formattedFilters[i]);
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -464,7 +463,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  async processFilterItem(formattedFilterItem, index){
+  async processFilterItem(formattedFilterItem){
 
     let keyDisplayValue = formattedFilterItem.keyDisplayValue;
     if(!keyDisplayValue){
@@ -473,7 +472,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       })["optionName"];
     }
 
-    await this.changeFilterType(keyDisplayValue, index);
+    await this.changeFilterType(keyDisplayValue);
     const filterKey = formattedFilterItem.filterkey;
     const filterValues = this.filterText[filterKey]?.split(',') || [];
     const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
@@ -584,10 +583,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .then(response => response[0].data.response);
   }
   
-  async changeFilterType(value, index=-1) {
+  async changeFilterType(value) {
     this.filterErrorMessage = '';
   
     try {
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
+      this.getFiltersAppliedOrderFromURL(currentQueryParams.filter);
       this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
   
@@ -599,6 +603,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.currentFilterType["optionValue"]?.replace(".keyword", "")
       ];
       
+      const index = this.filterOrder.indexOf(this.currentFilterType.optionValue?.replace(".keyword", ""));
       const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
   
       const filtersToBePassed = Object.keys(this.filterText).reduce((result, key) => {
@@ -614,7 +619,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           result[key] = filtersToBePassed[key];
         }
         return result;
-      }, {});      
+      }, {});
   
       const payload = {
         type: "issue",
