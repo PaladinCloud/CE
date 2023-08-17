@@ -101,11 +101,11 @@ public class AdministrativeLevelPermisionsRule extends BasePolicy {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
 
-                JsonArray permissionForKeys = jsonDataItem.get("permissionForKeys").getAsJsonArray();
+                JsonArray permissionForKeys = (jsonDataItem.get("permissionForKeys").isJsonNull())? new JsonArray():jsonDataItem.get("permissionForKeys").getAsJsonArray();
                 logger.info("permissionForKeys : {}",permissionForKeys);
-                JsonArray permissionForSecrets = jsonDataItem.get("permissionForSecrets").getAsJsonArray();
+                JsonArray permissionForSecrets = (jsonDataItem.get("permissionForSecrets").isJsonNull())? new JsonArray():jsonDataItem.get("permissionForSecrets").getAsJsonArray();
                 logger.info("permissionForSecrets : {}",permissionForSecrets);
-                JsonArray permissionForCertificates = jsonDataItem.get("permissionForCertificates").getAsJsonArray();
+                JsonArray permissionForCertificates =(jsonDataItem.get("permissionForCertificates").isJsonNull())? new JsonArray(): jsonDataItem.get("permissionForCertificates").getAsJsonArray();
                 logger.info("permissionForCertificates : {}",permissionForCertificates);
 
                 for (JsonElement permissionForKey:permissionForKeys)

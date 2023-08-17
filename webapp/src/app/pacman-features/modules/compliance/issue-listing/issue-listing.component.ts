@@ -205,7 +205,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.isStatePreserved = false;
     }
 
-    this.preApplyStatusFilter(state);
+    if(!this.isStatePreserved) this.preApplyStatusFilter(state);
     // below code is to apply filters which are in saved state and update the URL (just to keep URL in sync and also getData method is dependent) 
     // and it does this only if URL doesn't contain filter attribute.
     // if url contains filter attribute, below code is not executed and thus they are overridden with the filters
@@ -241,9 +241,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       state.filters = isStateFiltersArray ? state.filters : [];
       state.filters.push({
         "keyDisplayValue": "Status",
-        "filterValue": ["open", "exempted"],
+        "filterValue": ["open"],
         "key": "Status",
-        "value": ["open", "exempted"],
+        "value": ["open"],
         "filterkey": "issueStatus.keyword",
         "compareKey": "issuestatus.keyword"
       });
@@ -892,12 +892,36 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         fileType: fileType,
       };
 
-      const filterToBePassed = this.filterText;
+      const sortFilters = {
+        fieldName: this.fieldName,
+        fieldType: this.fieldType,
+        order: this.selectedOrder,
+        sortOrder: this.sortOrder
+      }
+
+      const filterToBePassed = { ...this.filterText };
       filterToBePassed.domain = this.selectedDomain;
+      if(filterToBePassed["slaEndDate"]){
+        if(filterToBePassed["slaEndDate"].toLowerCase().includes("in sla") && filterToBePassed["slaEndDate"].toLowerCase().includes("out sla")){
+          filterToBePassed["out_of_sla"] = "yes,no";
+        }else if(filterToBePassed["slaEndDate"].toLowerCase().includes("in sla")){
+          filterToBePassed["out_of_sla"] = "no";
+        }else{
+          filterToBePassed["out_of_sla"] = "yes";
+        }
+        delete filterToBePassed["slaEndDate"];
+      }
+
+      Object.keys(filterToBePassed).forEach(filterKey => {
+        if (filterKey !== "domain") {
+          filterToBePassed[filterKey] = filterToBePassed[filterKey]?.split(",") || [];
+        }
+      });
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
         filter: filterToBePassed,
+        sortFilter: sortFilters,
         from: 0,
         searchtext: this.searchTxt,
         size: this.totalRows,

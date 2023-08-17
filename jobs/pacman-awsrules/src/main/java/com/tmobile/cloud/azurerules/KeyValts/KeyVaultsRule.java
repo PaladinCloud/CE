@@ -106,19 +106,19 @@ public class KeyVaultsRule extends BasePolicy {
             JsonObject hitsJson = JsonParser.parseString(hitsString).getAsJsonObject();
             JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
             if (hitsJsonArray.size() > 0) {
-                JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                        .get(PacmanRuleConstants.SOURCE);
+                    JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                            .get(PacmanRuleConstants.SOURCE);
 
-                String resourceName = jsonDataItem.get(PacmanRuleConstants.NAME).getAsString();
-                JsonObject propertiesMap = jsonDataItem.get(PacmanRuleConstants.TAGS).getAsJsonObject();
+                    String resourceName = (jsonDataItem.get(PacmanRuleConstants.NAME).isJsonNull())?new String():jsonDataItem.get(PacmanRuleConstants.NAME).getAsString();
+                    JsonObject propertiesMap = (jsonDataItem.get(PacmanRuleConstants.TAGS).isJsonNull())?new JsonObject():jsonDataItem.get(PacmanRuleConstants.TAGS).getAsJsonObject();
 
-                if (ArrayUtils.contains(keyValutName, resourceName) && propertiesMap.get(keyValutKey) != null) {
-                    return validationResult = true;
+                    if (ArrayUtils.contains(keyValutName, resourceName) && !propertiesMap.get(keyValutKey).isJsonNull()) {
+                        return validationResult = true;
 
-                } else {
-                    logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+                    } else {
+                        logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
 
-                }
+                    }
 
             } else {
                 logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);

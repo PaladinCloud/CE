@@ -503,6 +503,17 @@ public class FilterServiceImpl implements FilterService, Constants {
             Map<String, Object> values = new HashMap<>();
             if (StringUtils.isNotBlank(dataValue.getKey())) {
                 String key=dataValue.getKey();
+                if(key!=null && key.equalsIgnoreCase("exempted")){
+                    values.put(NAME, "exempt");
+                }
+                //conversion of cloudType to Upper case for Aws/Gcp
+                else  if(null!=attributeName && attributeName.equalsIgnoreCase("_cloudType")){
+                    if(key.equalsIgnoreCase("aws")|| key.equalsIgnoreCase("gcp"))
+                        values.put(NAME,key.toUpperCase());
+                    else
+                        values.put(NAME,key);
+                }
+                else
                 values.put(NAME, key);
                 values.put(ID, key);
                 synchronized (valueList) {

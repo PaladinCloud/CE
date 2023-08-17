@@ -459,6 +459,9 @@ public class ESManager implements Constants {
             ESManager.createIndex("azure_info", errorList);
             invokeAPI("PUT", "/" + "azure_info" + "/_alias/" + "azure", null);
             invokeAPI("PUT", "/" + "azure_info" + "/_alias/" + "ds-all", null);
+            ESManager.createIndex("redhat_info", errorList);
+            invokeAPI("PUT", "/" + "redhat_info" + "/_alias/" + "redhat", null);
+            invokeAPI("PUT", "/" + "redhat_info" + "/_alias/" + "ds-all", null);
         }
         catch(Exception exception){
             LOGGER.error("Index creation Error: {}", exception.getMessage());

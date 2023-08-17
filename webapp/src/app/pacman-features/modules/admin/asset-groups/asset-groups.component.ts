@@ -490,12 +490,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
             properties: "",
             isLink: false
           }
-          if(col.toLowerCase()=="name"){
-            cellObj = {
-              ...cellObj,
-              isLink: true
-            };
-          } else if(col.toLowerCase()=="number of assets"){
+         if(col.toLowerCase()=="number of assets"){
             cellObj = {
               ...cellObj,
               isNumber: true

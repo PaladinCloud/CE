@@ -2992,9 +2992,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     bulkRequest.append(doc).append(NEW_LINE);
 
                     String _type = targetType + AUDIT;
-                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, routing))
-                            .append(createAuditTrail(exemptionRequest.getAssetGroup(), targetType, EXEMPT, id,
-                                    exemptionRequest.getCreatedBy(), targetType, parentDetMap, target)).append(NEW_LINE);
+                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id))
+                            .append(createAuditTrail(exemptionRequest.getAssetGroup(), targetType,exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST)?REQUEST_EXEMPT:REVOKE_EXEMPT, id,
+                                    exemptionRequest.getCreatedBy(), _type, parentDetMap, target)+"\n");
 
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {

@@ -4,6 +4,9 @@
       <img class="x-icon" src="../assets/icons/x-icon.svg" (click)=onNoClick($event)>
   </div>
   <div mat-dialog-content class="content">
+    <div class="body-2 high-emphasis" [class.hide]="data.message == null">
+      {{ data.message }}
+    </div>
   <ng-container [ngTemplateOutlet]="data.template"></ng-container>
   </div>
   <div mat-dialog-actions *ngIf="data.yesButtonLabel || data.noButtonLabel">

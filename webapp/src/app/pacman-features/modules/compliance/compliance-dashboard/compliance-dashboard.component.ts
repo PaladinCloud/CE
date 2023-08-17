@@ -1329,39 +1329,58 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
 
     handlePopClick(event) {
-        const fileType = 'csv';
-
-        try {
-            const queryParams = {
-                fileFormat: fileType,
-                serviceId: 2,
-                fileType,
-            };
-
-            const downloadRequest = {
-                ag: this.selectedAssetGroup,
-                filter: {
-                    domain: this.selectedDomain,
-                },
-                from: 0,
-                searchtext: event.searchTxt,
-                size: this.totalRows,
-            };
-
-            const downloadUrl = environment.download.url;
-            const downloadMethod = environment.download.method;
-
-            this.downloadService.requestForDownload(
-                queryParams,
-                downloadUrl,
-                downloadMethod,
-                downloadRequest,
-                'Policy Compliance Overview',
-                this.totalRows,
-            );
-        } catch (error) {
-            this.logger.log('error', error);
-        }
+      const fileType = "csv";
+  
+      try {
+        const queryParams = {
+          fileFormat: fileType,
+          serviceId: 2,
+          fileType,
+        };
+  
+        const filterToBePassed = {...this.filterText};
+  
+        Object.keys(filterToBePassed).forEach(filterKey => {
+          if(filterKey=="domain") return;
+          filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+          if(filterKey=="failed"){
+            filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
+              const [min, max] = filterVal.split("-");
+              return {min, max}
+            })
+          }else if(filterKey=="compliance_percent"){
+            filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
+              const [min, max] = filterVal.split("-");
+              return {min, max}
+            })
+          }
+        })
+  
+        const downloadRequest = {
+          ag: this.selectedAssetGroup,
+          filter: {
+            domain: this.selectedDomain,
+          },
+          reqFilter: filterToBePassed,
+          from: 0,
+          searchtext: event.searchTxt,
+          size: this.totalRows,
+        };
+  
+        const downloadUrl = environment.download.url;
+        const downloadMethod = environment.download.method;
+  
+        this.downloadService.requestForDownload(
+          queryParams,
+          downloadUrl,
+          downloadMethod,
+          downloadRequest,
+          "Policy Compliance Overview",
+          this.totalRows
+        );
+      } catch (error) {
+        this.logger.log("error", error);
+      }
     }
 
     dropDashboardItem({

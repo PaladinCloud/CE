@@ -2754,15 +2754,24 @@ delete from cf_AssetGroupTargetDetails where targetType in ( 'policydefinitions'
 
 
 /* Updating display name can be removed in future  */
-Update cf_Target set displayName = 'Subnet' where targetName = 'subnet';
+Update cf_Target set displayName = 'Subnet (AWS)' where targetName = 'subnet';
 Update cf_Target set displayName = 'Databricks' where targetName = 'databricks';
 Update cf_Target set displayName = 'AKS' where targetName = 'kubernetes';
-Update cf_Target set displayName = 'MySQL Server' where targetName = 'mysqlserver';
-Update cf_Target set displayName = 'Subnet' where targetName = 'subnets';
-Update cf_Target set displayName = 'VM' where targetName = 'virtualmachine';
+Update cf_Target set displayName = 'MySQL Server (Azure)' where targetName = 'mysqlserver';
+Update cf_Target set displayName = 'MySQL Server (GCP)' where targetName = 'cloudsql_mysqlserver';
+Update cf_Target set displayName = 'Subnet (Azure)' where targetName = 'subnets';
+Update cf_Target set displayName = 'VM (Azure)' where targetName = 'virtualmachine';
 Update cf_Target set displayName = 'PostgreSQL' where targetName = 'cloudsql_postgres';
 Update cf_Target set displayName = 'GKE Cluster' where targetName = 'gkecluster';
-Update cf_Target set displayName = 'VM' where targetName = 'vminstance';
+Update cf_Target set displayName = 'VM (GCP)' where targetName = 'vminstance';
+Update cf_Target set displayName = 'KMS Key (AWS)' where targetName = 'kms';
+Update cf_Target set displayName = 'KMS Key (GCP)' where targetName = 'kmskey';
+Update cf_Target set displayName = 'SQL Server (Azure)' where targetName = 'sqlserver';
+Update cf_Target set displayName = 'SQL Server (GCP)' where targetName = 'cloudsql_sqlserver';
+Update cf_Target set displayName = 'IAM User (AWS)' where targetName = 'iamuser';
+Update cf_Target set displayName = 'IAM User (GCP)' where targetName = 'iamusers';
+Update cf_Target set displayName = 'Load Balancer (Azure)' where targetName = 'loadbalancer';
+Update cf_Target set displayName = 'Load Balancer (GCP)' where targetName = 'gcploadbalancer';
 
 /* Updating  status field, can be removed in future   */
 Update cf_Target set status = 'finding' where targetName in ( 'checks','phd','securityhub','activitylogalert','policydefinitions','policyevaluationresults' );
@@ -3024,3 +3033,20 @@ UPDATE pac_v2_ui_options SET optionURL = '/compliance/v1/filters/attribute?attri
 UPDATE pac_v2_ui_options SET optionURL = '/compliance/v1/filters/attribute?attribute=policyCategory' WHERE optionId = '18';
 
 update pac_v2_ui_download_filters set serviceEndpoint='/api/asset/v1/list/assets' where serviceId=7;
+
+/* RedHat Plugin Asset configuration */
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
+ VALUES ('s3.data','redhatacs-inventory','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
+ VALUES ('s3.processed','backup-redhatacs','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
+ 
+ /* This recored need to be inseted using plugin screen. We need to remove this insert statement in next release */
+ INSERT IGNORE INTO cf_Accounts values ('RedHat ACS','acs-cgcv4rlkik9vj0kg0rk0','0','0','configured','redhat','admin@paladicloud.io','07/08/2023 10:51:33');
+ 
+ INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+ VALUES('deployment','Deployment','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
+ concat(@eshost,':',@esport,'/redhat_deployment'),'2023-08-07','2023-08-07','Infra & Platforms','Deployment');
+ 
+ /* RedHat Index*/
+ INSERT IGNORE INTO `cf_AssetGroupDetails` (`groupId`, `groupName`, `dataSource`, `displayName`, `groupType`, `createdBy`, `createdUser`, `createdDate`, `modifiedUser`, `modifiedDate`, `description`, `aliasQuery`, `isVisible`)  
+ values('e0008397-f74e-4deb-9066-10bdf11202ae','redhat','redhat','RedHat ACS','Admin','Cloud Security','admin@paladincloud.io','08/17/2023 06:13','admin@paladincloud.io','08/17/2023 06:13','All GCP','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}','1');

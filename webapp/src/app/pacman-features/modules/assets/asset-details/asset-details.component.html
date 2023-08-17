@@ -11,10 +11,10 @@
     <div class="tile-container">
         <div class="tile-wrapper flex flex-row" >
                 <div class="tile-content-wrapper flex flex-row flex-align-center gap-12" *ngFor="let tile of tileList">
-                    <div class="tile-name capitalize nowrap-ellipsis">{{tile}}</div>
+                    <div class="tile-name capitalize nowrap-ellipsis">{{tile}} :</div>
                     <div class="tile-value-wrapper flex flex-row gap-8 flex-align-center">
                         <img *ngIf="tiles[tile].img" style="height: 12px;" src="/assets/icons/{{tiles[tile].img}}-color.svg">
-                        <div class="tile">{{ tile.toLowerCase() == "source" || tile.toLowerCase() == "asset type" ? tiles[tile].value  : (tiles[tile].value | number )}}</div>
+                        <div class="tile">{{ tile.toLowerCase() == "source" || tile.toLowerCase() == "asset" ? tiles[tile].value  : (tiles[tile].value | number )}}</div>
 						<span class="percent" *ngIf='tile.toLowerCase() == "compliance"'>%</span>
                     </div>
                 </div>
@@ -24,7 +24,77 @@
         <div class="left-wrapper flex flex-col">
             <app-pacman-policy-violations *ngIf="resourceId" [breadcrumbPresent]="breadcrumbPresent" [resourceId]='resourceId' [resourceType]='resourceType'
             [pageLevel]="pageLevel" (policyCount)="fetchPolicyCount($event)"></app-pacman-policy-violations>
-            <div *ngIf="resourceType=='sg'" class="sg-rules-wrapper" style="height: calc(100% - 48px);">
+            <div class="right-wrapper flex flex-row">
+                <div class="violations-summary-wrapper">
+                    <div class="violations-summary-header body-2 high-emphasis">
+                        Policy Violation Summary
+                    </div>
+                    <div class="violations-summary-content">
+                        <div class="chart">
+                            <div [class.loader]="!policyData && violationErrorMessage==''"></div>
+                            <app-error-message *ngIf="violationErrorMessage" [selectedValue]="violationErrorMessage"></app-error-message>
+                            <div class="graph-chart-cont relative" id="statsDoughnut">
+                              <app-doughnut-chart *ngIf="violationErrorMessage=='' && policyData?.totalCount"
+                                [chartContId]="'statsDoughnut'"
+                                [displayLegendText]="false"
+                                [flexTrue]="true"
+                                [graphData]="policyData"
+                                [graphHeight]="widgetHeight"
+                                [graphWidth]="widgetWidth"   
+                                [innerRadius]="innerRadius"
+                                [MainTextcolor]="MainTextcolor"
+                                [outerRadius]="outerRadius" 
+                                [showFlexGrow] = "true"
+                                [strokeColor]="strokeColor"
+                                (navigatePage)="navigateDataTable($event)">
+                              </app-doughnut-chart>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mandatory-tags-wrapper">
+                    <div class="mandatory-tags-header body-2 high-emphasis">
+                       Tags
+                    </div>
+                    <div class="mandatory-tags-content">
+                        <app-error-message *ngIf="tagErrorMessage" [selectedValue]="tagErrorMessage"></app-error-message>
+                        <ng-container *ngIf="!tagErrorMessage">
+                            <div class="content-header">
+                                <div class="column-wrapper-header">
+                                    <div class="col-1" (click)="sortAssets('col-1')">
+                                        <span class="col-header body-2 low-emphasis">Tag Name</span>
+                                        <img
+                                            class="sort-img"
+                                            [class.sorted]="isSortedByName"
+                                            src="/assets/icons/arrow-down-2.svg"
+                                        />
+                                    </div>
+                                    <div class="col-2" (click)="sortAssets('col-2')">
+                                        <span class="col-header body-2 low-emphasis">Tag Value</span>
+                                        <img
+                                            class="sort-img"
+                                            [class.sorted]="isSortedByAssetNo"
+                                            src="/assets/icons/arrow-down-2.svg"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tags-content-wrapper">
+                                    <div class="column-wrapper" *ngFor="let tag of tagsArray | keyvalue">
+                                        <div class="col-1 body-2 high-emphasis">
+                                            <span class="tag-name nowrap-ellipsis" title="{{tag.key}}">{{ tag.key }}</span>
+                                        </div>
+                                        <div class="col-2 body-2 high-emphasis">
+                                            <span class="tag-value nowrap-ellipsis" title="{{tag.value}}">{{ tag.value == 'unknown' ? 'Unknown' : tag.value }}</span>
+                                        </div>
+                                    </div>
+                            
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="resourceType=='sg' && (outboundRulesData.length>0 || inboundRulesData.length>0)" class="sg-rules-wrapper" style="height: calc(100% - 48px);">
                 <mat-tab-group class="height-100" animationDuration="0ms">
                     <mat-tab label="Inbound Rules">
                         <div class="wrapper sg-rules-table">
@@ -53,88 +123,9 @@
                     </mat-tab>
                 </mat-tab-group>
             </div>
-            <div class="attributes-wrapper">
-                <div class="attributes-header body-2 high-emphasis">
-                    Attributes
-                </div>
-                <li class="widget-wrapper" *ngIf="filteredData == true">
-                    <div class="widget">
-                        <div class="attribute-wrapper">
+                    <div class="widget"  *ngIf="filteredData">
                             <app-attribute [breadcrumbPresent]="breadcrumbPresent" [pageLevel]="pageLevel" [dataObj]='genericAttributes' (assetCloudType)=assignCloudType($event)></app-attribute>
-                        </div>
                     </div>
-                </li>
-            </div>
-        </div>
-        <div class="right-wrapper flex flex-col">
-            <div class="violations-summary-wrapper">
-                <div class="violations-summary-header body-2 high-emphasis">
-                    Policy Violation Summary
-                </div>
-                <div class="violations-summary-content">
-                    <div class="chart">
-                        <div [class.loader]="!policyData && violationErrorMessage==''"></div>
-                        <app-error-message *ngIf="violationErrorMessage" [selectedValue]="violationErrorMessage"></app-error-message>
-                        <div class="graph-chart-cont relative" id="statsDoughnut">
-                          <app-doughnut-chart *ngIf="violationErrorMessage=='' && policyData?.totalCount"
-                            [chartContId]="'statsDoughnut'"
-                            [displayLegendText]="false"
-                            [flexTrue]="true"
-                            [graphData]="policyData"
-                            [graphHeight]="widgetHeight"
-                            [graphWidth]="widgetWidth"   
-                            [innerRadius]="innerRadius"
-                            [MainTextcolor]="MainTextcolor"
-                            [outerRadius]="outerRadius" 
-                            [showFlexGrow] = "true"
-                            [strokeColor]="strokeColor"
-                            (navigatePage)="navigateDataTable($event)">
-                          </app-doughnut-chart>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mandatory-tags-wrapper">
-                <div class="mandatory-tags-header body-2 high-emphasis">
-                   Tags
-                </div>
-                <div class="mandatory-tags-content">
-                    <app-error-message *ngIf="tagErrorMessage" [selectedValue]="tagErrorMessage"></app-error-message>
-                    <ng-container *ngIf="!tagErrorMessage">
-                        <div class="content-header">
-                            <div class="column-wrapper-header">
-                                <div class="col" (click)="sortAssets('col-1')">
-                                    <span class="col-header body-2 low-emphasis">Tag Name</span>
-                                    <img
-                                        class="sort-img"
-                                        [class.sorted]="isSortedByName"
-                                        src="/assets/icons/arrow-down-2.svg"
-                                    />
-                                </div>
-                                <div class="col" (click)="sortAssets('col-2')">
-                                    <span class="col-header body-2 low-emphasis">Tag Value</span>
-                                    <img
-                                        class="sort-img"
-                                        [class.sorted]="isSortedByAssetNo"
-                                        src="/assets/icons/arrow-down-2.svg"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="content-wrapper">
-                                <div class="column-wrapper" *ngFor="let tag of tagsArray | keyvalue">
-                                    <div class="col">
-                                        <span class="tag-name nowrap-ellipsis" title="{{tag.key}}">{{ tag.key }}</span>
-                                    </div>
-                                    <div class="col">
-                                        <span class="tag-value nowrap-ellipsis" title="{{tag.value}}">{{ tag.value == 'unknown' ? 'Unknown' : tag.value }}</span>
-                                    </div>
-                                </div>
-                        
-                        </div>
-                    </ng-container>
-                </div>
-            </div>
         </div>
     </div>
 </div>

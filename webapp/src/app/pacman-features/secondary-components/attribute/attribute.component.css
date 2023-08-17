@@ -12,7 +12,13 @@
  * limitations under the License.
  */
 
- .attribute-parent-wrapper {
+ .attribute-wrapper{
+     background-color: var(--background-white);
+     margin-bottom: 24px;
+     border: 1px solid var(--border-200);
+     border-radius: 4px;
+ }
+.attribute-parent-wrapper {
     padding: 1.5em 1em 1em 2em;
     max-height: 33em;
     overflow: hidden;
@@ -23,7 +29,6 @@
 }
 
 section.system-info {
-    padding: 20px 0px;
     border-bottom: 1px solid #ddd;
 }
 
@@ -34,6 +39,8 @@ section.system-info {
 }
 
 .header {
+    border-bottom: 2px solid var(--border-200);
+    padding: 20px 24px;
     font: var(--text-body-2);
     color: var(--text-high-emphasis);
 }
@@ -129,6 +136,10 @@ section.access-groups {
 
 .attribute-parent-wrapper .system-info:nth-last-child(1){
     border: none;
+}
+
+.sub-header{
+    padding: 0px;
 }
 
 /* css for edge browser */

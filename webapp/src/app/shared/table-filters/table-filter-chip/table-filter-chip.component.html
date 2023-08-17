@@ -26,7 +26,7 @@
     (overlayOutsideClick)="isOptionsMenuOpen = false"
     (overlayKeydown)="overlayKeyDown($event)"
 >
-    <div class="filters-menu-container flex flex-col">
+    <div class="filters-menu-container flex flex-col" *ngIf="isOptionsMenuOpen && !isDateFilter">
         <app-table-filter-search [(text)]="optionFilterQuery"></app-table-filter-search>
         <ul class="filters-chip-menu">
             <li *ngFor="let option of filterOptionsByQuery()" class="fcm-item" [title]="option">
@@ -41,4 +41,11 @@
             </li>
         </ul>
     </div>
+    <ng-container *ngIf="isOptionsMenuOpen && isDateFilter">
+        <div class="date-selection-modal">
+            <app-date-selection
+                (datesSelected)="dateIntervalSelected($event.from, $event.to)"
+            ></app-date-selection>
+        </div>
+    </ng-container>
 </ng-template>

@@ -95,22 +95,22 @@ public class DownloadControllerTest {
         servletResponse = mock(HttpServletResponse.class);
         servletRequest = mock(HttpServletRequest.class);
         assertThat(downloadController.getIssuesDownload(servletRequest,servletResponse, "csv",
-                1, CommonTestUtil.getRequest()), is(notNullValue()));
+                1, CommonTestUtil.getDownloadRequest()), is(notNullValue()));
         assertThat(downloadController.getIssuesDownload(servletRequest,servletResponse, "", 1,
-                CommonTestUtil.getRequestEmpty()), is(notNullValue()));
+                CommonTestUtil.geDownloadRequestEmpty()), is(notNullValue()));
         
         assertThat(downloadController.getIssuesDownload(servletRequest,servletResponse, "", 1,
-                CommonTestUtil.getWithoutSizeRequest()), is(notNullValue()));
+                CommonTestUtil.getWithoutSizeDownloadRequest()), is(notNullValue()));
         
         when(downloadRepository.getFiltersFromDb(anyInt())).thenReturn(new ArrayList<Map<String,Object>>());
         assertThat(downloadController.getIssuesDownload(servletRequest,servletResponse, "csv", 1,
-                CommonTestUtil.getRequest()), is(notNullValue()));
+                CommonTestUtil.getDownloadRequest()), is(notNullValue()));
         
         when(downloadRepository.getFiltersFromDb(anyInt())).thenThrow(
                 new DataException());
         ResponseEntity<Object> responseObj = downloadController
                 .getIssuesDownload(servletRequest,servletResponse, "csv", 1,
-                        CommonTestUtil.getRequest());
+                        CommonTestUtil.getDownloadRequest());
         assertTrue(responseObj.getStatusCode() == HttpStatus.FORBIDDEN);
     }
 
@@ -123,7 +123,7 @@ public class DownloadControllerTest {
         servletResponse = mock(HttpServletResponse.class);
         servletRequest = mock(HttpServletRequest.class);
         assertThat(downloadController.getIssuesDownload(servletRequest,servletResponse, "csv",
-                1, CommonTestUtil.getRequest()), is(notNullValue()));
+                1, CommonTestUtil.getDownloadRequest()), is(notNullValue()));
     }
 
     @Test
@@ -132,6 +132,6 @@ public class DownloadControllerTest {
         when(downloadRepository.getFiltersFromDb(anyInt())).thenReturn(
                 emptyList);
         assertThat(downloadController.getIssuesDownload(servletRequest,servletResponse, "csv",
-                1, CommonTestUtil.getRequest()), is(notNullValue()));
+                1, CommonTestUtil.getDownloadRequest()), is(notNullValue()));
     }
 }
