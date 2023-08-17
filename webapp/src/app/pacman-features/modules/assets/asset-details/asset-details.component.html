@@ -62,7 +62,7 @@
                             <div class="content-header">
                                 <div class="column-wrapper-header">
                                     <div class="col-1" (click)="sortAssets('col-1')">
-                                        <span class="col-header body-2 low-emphasis">Tag Name</span>
+                                        <span class="col-header body-2 low-emphasis">Name</span>
                                         <img
                                             class="sort-img"
                                             [class.sorted]="isSortedByName"
@@ -70,7 +70,7 @@
                                         />
                                     </div>
                                     <div class="col-2" (click)="sortAssets('col-2')">
-                                        <span class="col-header body-2 low-emphasis">Tag Value</span>
+                                        <span class="col-header body-2 low-emphasis">Value</span>
                                         <img
                                             class="sort-img"
                                             [class.sorted]="isSortedByAssetNo"
@@ -104,7 +104,7 @@
                                 [showAddRemoveCol]="false" [showSearchBar]="false" 
                                 [tableErrorMessage]='sgRulesTableErrorMessage'
                                 [tableDataLoaded]="sgRulesTableDataLoaded" [doNotSort]="false"
-                                [centeredColumns]="sgRulesColumns">
+                                [centeredColumns]="centeredColumns">
                             </app-table>
                         </div>
                     </mat-tab>

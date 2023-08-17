@@ -1385,6 +1385,31 @@ body {
   gap: 4px;
 }
 
+.tile-content-wrapper {
+  flex: 1;
+  gap: 10px;
+  padding: 20px 16px;
+  background: var(--background-white);
+}
+
+.tile-content-wrapper:hover {
+  cursor: pointer;
+}
+
+.tile-content-wrapper:not(:last-child) {
+  border-right: 1px solid var(--border-100);
+}
+
+.tile-content-wrapper:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.tile-content-wrapper:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
 ::-webkit-scrollbar {
   max-width: 7px;
   background-color: transparent;
