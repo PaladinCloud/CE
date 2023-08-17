@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 interface DialogData {
+  message?:string;
   title: string;
   template: TemplateRef<any>;
   noButtonLabel: string;
