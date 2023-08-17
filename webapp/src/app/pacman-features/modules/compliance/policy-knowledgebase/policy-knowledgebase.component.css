@@ -46,31 +46,6 @@
     border: 1px solid var(--border-100);
 }
 
-.policy-category-item {
-    flex: 1;
-    gap: 10px;
-    padding: 20px 16px;
-    background: var(--background-white);
-}
-
-.policy-category-item:hover {
-    cursor: pointer;
-}
-
-.policy-category-item:not(:last-child) {
-    border-right: 1px solid var(--border-100);
-}
-
-.policy-category-item:first-child {
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-}
-
-.policy-category-item:last-child {
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-
 .policy-category-name {
     color: var(--text-medium-emphasis);
     font: var(--text-body-2);

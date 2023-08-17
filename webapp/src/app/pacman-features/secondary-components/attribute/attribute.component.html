@@ -17,13 +17,13 @@
 		<section class="system-info" *ngFor='let data of dataObjArray'>
 			<div class="system-info-topic" *ngIf="data.name != ''">
 				<header class="sub-header body-2 high-emphasis">
-					{{data.name}}
+					{{data.name}} :
 				</header>
 			</div>
-			<div class="system-values flex flex-wrap">
+			<div class="system-values flex flex-wrap gap-20">
 				<div class="values-wrapper widthWrapper" *ngFor='let tiles of data.values'>
 					<div *ngIf='tiles.value.length > 0'>
-						<div class="tile-wrapper flex flex-col gap-12">
+						<div class="tile-wrapper flex flex-col">
 							<div class="values-wrapper-field nowrap-ellipsis uncategorizedWrapper" title="{{tiles.name}}">
 							{{tiles.name}}
 							</div>

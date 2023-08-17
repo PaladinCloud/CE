@@ -741,18 +741,18 @@
           issueId = params['issueId'];
         });
 
-        const email = this.dataStore.getUserDetailsValue().getEmail();
+       const email = this.dataStore.getUserDetailsValue().getEmail();
 
-        const payload = {
-          user: email,
-          dataSource: this.issueAssetGroup,
-          from: this.bucketNumber * this.paginatorSize,
-          issueId: issueId,
-          size: this.paginatorSize,
-          targetType: this.issueBlocks.resourceType,
-          searchtext: this.searchTxt,
-          filter: { domain: this.selectedDomain }
-        };
+      const payload = {
+        user: email,
+        dataSource: this.issueAssetGroup,
+        from: this.bucketNumber * this.paginatorSize,
+        issueId: issueId,
+        size: this.paginatorSize,
+        targetType: this.issueBlocks.resourceType,
+        searchtext: this.searchTxt,
+        filter: { domain: this.selectedDomain }
+      };
         this.errorValue = 0;
         const issueAuditUrl = environment.issueAudit.url;
         const issueAuditMethod = environment.issueAudit.method;
@@ -764,7 +764,6 @@
               this.tableDataLoaded = true;
               this.issueAudit = response.data.response;
               this.dataTableData = this.issueAudit;
-              this.totalRows = response.data.total;
               this.firstPaginator = this.bucketNumber * this.paginatorSize + 1;
               this.lastPaginator =
                 this.bucketNumber * this.paginatorSize + this.paginatorSize;
@@ -780,7 +779,7 @@
             }
           );
       } catch (e) {
-        this.logger.log('error', e);
+          this.logger.log('error', e);
       }
     }
 
