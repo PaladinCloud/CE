@@ -1134,10 +1134,12 @@ public class ElasticSearchRepository implements Constants {
 							sortAttribute.put(fieldName, mappedSort);
 							list.add(sortAttribute);
 						}
-						else if(fieldName.equalsIgnoreCase("_entitytype.keyword")){
+						else if(fieldName.equalsIgnoreCase("_entitytype.keyword") || fieldName.equalsIgnoreCase("accountname.keyword")){
+							if(fieldName.equalsIgnoreCase("_entitytype.keyword"))
 							fieldName="targettypedisplayname.keyword";
 							Map<String, Object> scriptMap = new HashMap<>();
-							scriptMap.put("source", "doc['"+fieldName+"'].value.toLowerCase()");
+							//ignore space for fieldName for proper soring
+							scriptMap.put("source", "doc['"+fieldName+"'].value.trim().toLowerCase()");
 							scriptMap.put( "lang", "painless");
 							Map<String, Object> scriptOrderMap = new HashMap<>();
 							scriptOrderMap.put("script",scriptMap);
