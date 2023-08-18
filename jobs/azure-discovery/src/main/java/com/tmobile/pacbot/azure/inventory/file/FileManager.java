@@ -46,6 +46,7 @@ public class FileManager {
 		new File(folderName).mkdirs();
 
 		FileGenerator.writeToFile("azure-virtualmachine.data", "[", false);
+		FileGenerator.writeToFile("azure-virtualmachinescaleset.data", "[", false);
 		FileGenerator.writeToFile("azure-storageaccount.data", "[", false);
 		FileGenerator.writeToFile("azure-sqldatabase.data", "[", false);
 		FileGenerator.writeToFile("azure-nsg.data", "[", false);
@@ -93,6 +94,7 @@ public class FileManager {
 	public static void finalise() throws IOException {
 
 		FileGenerator.writeToFile("azure-virtualmachine.data", "]", true);
+		FileGenerator.writeToFile("azure-virtualmachinescaleset.data", "]", true);
 		FileGenerator.writeToFile("azure-storageaccount.data", "]", true);
 		FileGenerator.writeToFile("azure-sqldatabase.data", "]", true);
 		FileGenerator.writeToFile("azure-nsg.data", "]", true);
@@ -141,6 +143,10 @@ public class FileManager {
 
 		FileGenerator.generateJson(vmMap, "azure-virtualmachine.data");
 
+	}
+
+	public static void generateVMSSFiles(List<VirtualMachineScaleSetVH> vmssMap) throws IOException {
+		FileGenerator.generateJson(vmssMap, "azure-virtualmachinescaleset.data");
 	}
 
 	public static void generateSubscriptionFiles(List<SubscriptionVH> subscriptionVHList) throws IOException {
