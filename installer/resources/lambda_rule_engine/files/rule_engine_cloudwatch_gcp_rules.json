@@ -96,5 +96,6 @@
 	"VPC_firewall_SMTP_port_should_not_be_publicly_accessible",
 	"VPC_firewall_SQLSERVER_port_should_not_be_publicly_accessible",
 	"VPC_firewall_SSH_port_22_should_not_be_publicly_accessible",
-	"kms_keys_rotation_period_within_90_days"
+	"kms_keys_rotation_period_within_90_days",
+	"delete_unused_load_balancer"
 ]
