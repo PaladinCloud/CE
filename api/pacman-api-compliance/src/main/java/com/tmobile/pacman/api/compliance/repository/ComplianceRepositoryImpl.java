@@ -2993,7 +2993,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
                     String _type = targetType + AUDIT;
                     builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id))
-                            .append(createAuditTrail(exemptionRequest.getAssetGroup(), targetType,exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST)?REQUEST_EXEMPT:REVOKE_EXEMPT, id,
+                            .append(createAuditTrail(exemptionRequest.getAssetGroup(), targetType,exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST)?REQUEST_EXEMPT:exemptionRequest.getAction().equals(ExemptionActions.REVOKE_EXEMPTION_REQUEST)?REVOKE_EXEMPT:exemptionRequest.getAction().equals(ExemptionActions.CANCEL_EXEMPTION_REQUEST)?DENY_EXEMPT:GRANT_EXEMPT, id,
                                     exemptionRequest.getCreatedBy(), _type, parentDetMap, target)+"\n");
 
                     i++;
