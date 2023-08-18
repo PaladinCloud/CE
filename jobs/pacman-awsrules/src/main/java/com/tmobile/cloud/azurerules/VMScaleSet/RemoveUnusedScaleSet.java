@@ -1,4 +1,4 @@
-package com.tmobile.cloud.azurerules.VirtualMachine;
+package com.tmobile.cloud.azurerules.VMScaleSet;
 
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
@@ -41,7 +41,7 @@ public class RemoveUnusedScaleSet extends BasePolicy {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
 
         if (!StringUtils.isNullOrEmpty(esUrl)) {
-            esUrl = esUrl + "/azure_virtualmachine/_search";
+            esUrl = esUrl + "/azure_virtualmachinescaleset/_search";
         }
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
@@ -90,32 +90,21 @@ public class RemoveUnusedScaleSet extends BasePolicy {
                 HashMultimap.create(), null, 0, new HashMap<>(), null, null);
         logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson.toString());
 
-        if(resultJson !=null && resultJson.has(PacmanRuleConstants.HITS)){
+        if(resultJson.has(PacmanRuleConstants.HITS)){
             String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
             logger.debug("hit content in result json: {}", hitsString);
             JsonObject hitsJson = (JsonObject) parser.parse(hitsString);
             JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
-            if (hitsJsonArray.size() > 0) {
+            if (!hitsJsonArray.isEmpty()) {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
                 logger.debug("Validating the data item: {}", jsonDataItem);
-                JsonArray scaleSetList = jsonDataItem.getAsJsonObject()
-                        .get("virtualMachineScaleSetVHList").getAsJsonArray();
-                if(scaleSetList.size()>0) {
-                    for (int i = 0; i < scaleSetList.size(); i++) {
-                        JsonObject scaleSetDataItem = ((JsonObject) scaleSetList
-                                .get(i));
-                        JsonArray virtualMachineIds=scaleSetDataItem.getAsJsonObject().get("virtualMachineIds").getAsJsonArray();
-                        JsonArray loadBalancerIds=scaleSetDataItem.getAsJsonObject().get("loadBalancerIds").getAsJsonArray();
 
-                        if(virtualMachineIds.isEmpty() && loadBalancerIds.isEmpty()){
-                            validationResult=true;
-                            break;
-                        }
-                    }
-                }
-                else {
-                    logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+                JsonArray virtualMachineIds=jsonDataItem.getAsJsonObject().get("virtualMachineIds").getAsJsonArray();
+                JsonArray loadBalancerIds=jsonDataItem.getAsJsonObject().get("loadBalancerIds").getAsJsonArray();
+
+                if(virtualMachineIds.isEmpty() && loadBalancerIds.isEmpty()){
+                    validationResult=true;
                 }
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);

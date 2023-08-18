@@ -163,6 +163,8 @@ public class AssetFileGenerator {
 
 	@Autowired
 	KubernetesServicesCollector kubernetesServicesCollector;
+	@Autowired
+	VirtualMachineScaleSetCollector virtualMachineScaleSetCollector;
 
 	@Autowired
 	RDSDBManager rdsdbManager;
@@ -214,6 +216,18 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateVMFiles(vmInventoryCollector.fetchVMDetails(subscription, tagMap));
+				} catch (Exception e) {
+					e.printStackTrace();
+					Util.eCount.getAndIncrement();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("virtualmachinescaleset"))) {
+					return;
+				}
+				try {
+					FileManager.generateVMSSFiles(virtualMachineScaleSetCollector.fetchVMScaleSetDetails(subscription, tagMap));
 				} catch (Exception e) {
 					e.printStackTrace();
 					Util.eCount.getAndIncrement();
