@@ -361,6 +361,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
+  // TODO: getting order from url might sometimes lead to inconsistency because
+  // the filter might be present (say at 2nd position) with 0 selected but since it
+  // is 0 selected, it might not be present in the URL.
+  // Thus, filter order cannot be derived from url.
   getFiltersAppliedOrderFromURL(filterString){
     try{
       if(filterString){
@@ -444,7 +448,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   /*
    * this functin passes query params to filter component to show filter
    */
-  async getFilterArray() {
+  async getFilterArray(removeFilterIfNotPresent=true) {
     try {
       const dataArray = Object.keys(this.filterText).map(filterKey => {
       const keyDisplayValue = this.filterTypeOptions.find(option => option.optionValue === filterKey)?.optionName;
@@ -455,7 +459,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       });
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-        await this.processFilterItem(formattedFilters[i]);
+        await this.processFilterItem(formattedFilters[i], removeFilterIfNotPresent);
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -463,7 +467,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  async processFilterItem(formattedFilterItem){
+  async processFilterItem(formattedFilterItem, removeFilterIfNotPresent){
 
     let keyDisplayValue = formattedFilterItem.keyDisplayValue;
     if(!keyDisplayValue){
@@ -506,7 +510,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       }
 
     } else if (existingFilterObjIndex >= 0) {
-      this.filters.splice(existingFilterObjIndex, 1);
+      if(!removeFilterIfNotPresent){
+        this.filters[existingFilterObjIndex].filterValue = [];
+        this.filters[existingFilterObjIndex].value = [];
+      }else{
+        this.filters.splice(existingFilterObjIndex, 1);
+      }
     }
     this.filters = [...this.filters];
     this.storeState();
@@ -640,7 +649,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
   
 
-  changeFilterTags(event) {
+  async changeFilterTags(event) {
     let filterValues = event.filterValue;
     if(!filterValues){
       return;
@@ -674,6 +683,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         );
       }
       this.storeState();
+      this.getUpdatedUrl();
+      await this.getFilterArray(false);
       this.getUpdatedUrl();
       this.utils.clickClearDropdown();
       this.updateComponent();
@@ -753,7 +764,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       Object.keys(filterToBePassed).forEach(filterKey => {
         if (filterKey !== "domain") {
-          filterToBePassed[filterKey] = filterToBePassed[filterKey]?.split(",") || [];
+          if(filterToBePassed[filterKey]?.length>0){
+            filterToBePassed[filterKey] = filterToBePassed[filterKey]?.split(",") || [];
+          }else{
+            delete filterToBePassed[filterKey];
+          }
         }
       });
 
