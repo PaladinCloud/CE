@@ -1,4 +1,4 @@
-package com.tmobile.cloud.gcprules.vminstance;
+package com.tmobile.cloud.gcprules.Disks;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
@@ -40,7 +40,7 @@ public class DeleteUnusedVMDisk extends BasePolicy {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_vminstance/_search";
+            vmEsURL = vmEsURL + "/gcp_gcpdisks/_search";
         }
         logger.debug("========vmEsURL URL after concatenation param {}  =========", vmEsURL);
         boolean isVMDiskUnused = false;
@@ -86,23 +86,15 @@ public class DeleteUnusedVMDisk extends BasePolicy {
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = false;
         if (!hitsJsonArray.isEmpty()) {
-            JsonObject vmInstanceObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+            JsonObject disksObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", vmInstanceObject);
+            logger.debug("Validating the data item: {}", disksObject);
 
-            String name=vmInstanceObject.get(PacmanRuleConstants.NAME).getAsString();
+            JsonArray users=disksObject.get(PacmanRuleConstants.USERS).getAsJsonArray();
 
-            if(vmInstanceObject.get(PacmanRuleConstants.DISKS)!=null){
-                JsonArray disks=vmInstanceObject.get(PacmanRuleConstants.DISKS).getAsJsonArray();
-                for(int i=0;i<disks.size();i++){
-                    JsonObject diskDataItem = ((JsonObject) disks
-                            .get(i));
-                    String diskName=diskDataItem.get(PacmanRuleConstants.NAME).getAsString();
-                    if(!diskName.equalsIgnoreCase(name)){
-                        validationResult=true;
-                    }
-                }
+            if(users.isEmpty()){
+                validationResult=true;
             }
 
         } else {

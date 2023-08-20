@@ -81,6 +81,9 @@ public class AssetFileGenerator {
 	APIKeysInventoryCollector apiKeysInventoryCollector;
 
 	@Autowired
+	DiskInventoryCollector diskInventoryCollector;
+
+	@Autowired
 	RDSDBManager rdsdbManager;
 
 	/*@Autowired
@@ -320,6 +323,17 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateLoadBalancerFiles(loadBalancerCollector.fetchLoadBalancerInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+					Util.errorCount.getAndIncrement();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("gcpdisks"))) {
+					return;
+				}
+				try {
+					FileManager.generateDisksFiles(diskInventoryCollector.fetchDiskInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 					Util.errorCount.getAndIncrement();

@@ -1,7 +1,8 @@
-package com.tmobile.cloud.gcprules.vminstance;
+package com.tmobile.cloud.gcprules.Disks;
 
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
+import com.tmobile.cloud.gcprules.Disks.DeleteUnusedVMDisk;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
