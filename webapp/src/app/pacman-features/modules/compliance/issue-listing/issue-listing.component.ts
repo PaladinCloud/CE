@@ -427,6 +427,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       if (!event) {
         this.filters = [];
       } else if (event.removeOnlyFilterValue) {
+        this.removeFiltersOnRightOfIndex(event.index);
         this.getUpdatedUrl();
         this.updateComponent();
       } else if (event.index !== undefined && !this.filters[event.index].filterValue) {
@@ -682,16 +683,24 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           }
         );
       }
+      const index = this.filters.findIndex(filter => filter.keyDisplayValue===this.currentFilterType.optionName);
+      this.getUpdatedUrl();
+      this.removeFiltersOnRightOfIndex(index);
+      this.getUpdatedUrl();
       this.storeState();
-      this.getUpdatedUrl();
-      await this.getFilterArray(false);
-      this.getUpdatedUrl();
-      this.utils.clickClearDropdown();
       this.updateComponent();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  removeFiltersOnRightOfIndex(index: number){
+    for(let i=index+1; i<this.filters.length && i>0; i++){
+      this.filters[i].filterValue = [];
+      this.filters[i].value = [];
+    }
+    this.filters = [...this.filters];
   }
 
   updateComponent() {
