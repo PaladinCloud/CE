@@ -16,7 +16,7 @@
                 (click)="navigateTo(item.value)"
             >
                 <app-text
-                    [classNames]="item.value?.includes('https://saasdev.paladincloud.io')?'pointer primary-400':'high-emphasis'"
+                    [classNames]="item.value?.includes(windowHostName)?'pointer primary-400':'high-emphasis'"
                     [text]="item.value"
                     >
                 </app-text>

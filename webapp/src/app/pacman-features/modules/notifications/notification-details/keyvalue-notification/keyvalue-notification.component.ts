@@ -12,19 +12,21 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 export class KeyvalueNotificationComponent implements OnInit {
     @Input() details: { [key: string]: unknown };
     @Input() title = '';
+    windowHostName = '';
 
     constructor(private router: Router,
         private logger: LoggerService,
         private workflowService: WorkflowService,
         private utils: UtilsService,
-        private activatedRoute: ActivatedRoute) {}
+        private activatedRoute: ActivatedRoute) {
+            this.windowHostName = window.location.origin;
+        }
 
     ngOnInit(): void {}
 
     navigateTo(link: string) {
         try{
-            const windowOrigin = window.location.origin;
-            if (!link || !link.includes(windowOrigin)) {
+            if (!link || !link.includes(this.windowHostName)) {
                 return;
             }
             const urlObj = this.utils.getParamsFromUrlSnippet(link);
@@ -34,7 +36,7 @@ export class KeyvalueNotificationComponent implements OnInit {
                 0,
                 "Notification Details",
             );
-            const parts = urlObj.url.replace(windowOrigin, "").split('/');
+            const parts = urlObj.url.replace(this.windowHostName, "").split('/');
             const urlToNavigate = parts.slice(0, 5).join('/') + '/' + encodeURIComponent(parts.slice(5).join('/'));
             
             this.router
