@@ -29,7 +29,7 @@
             <img style="margin-right: 5px;" src="/assets/icons/violations-{{eachGraphPath.toLowerCase()}}-icon.svg" alt="">
             <span *ngIf="displayLegendText" class="legend-text" [ngStyle]="{'color':isFullScreen === true ? '#fff' : '#000' }">{{eachGraphPath}}
             </span>
-            <span class="legend-text-count"
+            <span class="legend-text-count" [title]="graphData.data[i] | number"
                 [ngStyle]="{'color':isFullScreen === true ? '#fff' : '#000' }">{{graphData.data[i] | number}}</span>
         </div>
     </div>
