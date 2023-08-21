@@ -222,6 +222,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         );
     if (state.filters && !currentQueryParams.filter) {
       this.filters = state.filters;
+      this.storeState();
       await Promise.resolve().then(() => this.getUpdatedUrl());
     }
   }
@@ -459,6 +460,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         };
       });
       const formattedFilters = dataArray;
+      const state = this.tableStateService.getState(this.pageTitle) ?? {};
+      this.filters = state.filters;
       for (let i = 0; i < formattedFilters.length; i++) {
         await this.processFilterItem(formattedFilters[i], removeFilterIfNotPresent);
       }
@@ -477,24 +480,33 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       })["optionName"];
     }
 
-    await this.changeFilterType(keyDisplayValue);
     const filterKey = formattedFilterItem.filterkey;
-    const filterValues = this.filterText[filterKey]?.split(',') || [];
-    const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
-    const filterTagLabelsForKey = this.filterTagLabels[keyDisplayValue];
-
-    
-    const validFilterValues = filterValues.reduce((result, val) => {
-      const valObj = filterTagOptionsForKey?.find(obj => obj.id === val);
-      if (valObj && filterTagLabelsForKey?.includes(valObj.name)) {
-        result.push(valObj);
-      }
-      return result;
-    }, []);
       
     const existingFilterObjIndex = this.filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
+    if(this.filters[existingFilterObjIndex]?.filterValue.length > 0){}
+    else if (existingFilterObjIndex >= 0) {
+      if(!removeFilterIfNotPresent){
+        this.filters[existingFilterObjIndex].filterValue = [];
+        this.filters[existingFilterObjIndex].value = [];
+      }else{
+        this.filters.splice(existingFilterObjIndex, 1);
+      }
+    }else{
+      await this.changeFilterType(keyDisplayValue);
+      const filterValues = this.filterText[filterKey]?.split(',') || [];
+      const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
+      const filterTagLabelsForKey = this.filterTagLabels[keyDisplayValue];
 
-    if (validFilterValues.length > 0) {
+      
+      const validFilterValues = filterValues
+      .reduce((result, val) => {
+        const valObj = filterTagOptionsForKey?.find(obj => obj.id === val);
+        if (valObj && filterTagLabelsForKey?.includes(valObj.name)) {
+          result.push(valObj);
+        }
+        return result;
+      }, []);
+
       const eachObj = {
         keyDisplayValue: keyDisplayValue,
         filterValue: validFilterValues.map(valObj => valObj.name),
@@ -504,19 +516,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         compareKey: filterKey?.toLowerCase().trim(),
       };
 
-      if (existingFilterObjIndex >= 0) {
-        this.filters[existingFilterObjIndex] = eachObj;
-      } else {
-        this.filters.push(eachObj);
-      }
-
-    } else if (existingFilterObjIndex >= 0) {
-      if(!removeFilterIfNotPresent){
-        this.filters[existingFilterObjIndex].filterValue = [];
-        this.filters[existingFilterObjIndex].value = [];
-      }else{
-        this.filters.splice(existingFilterObjIndex, 1);
-      }
+      this.filters.push(eachObj);
     }
     this.filters = [...this.filters];
     this.storeState();
@@ -613,7 +613,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.currentFilterType["optionValue"]?.replace(".keyword", "")
       ];
       
-      const index = this.filterOrder.indexOf(this.currentFilterType.optionValue?.replace(".keyword", ""));
+      const index = this.filterOrder?.indexOf(this.currentFilterType.optionValue?.replace(".keyword", ""));
       const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
   
       const filtersToBePassed = Object.keys(this.filterText).reduce((result, key) => {
