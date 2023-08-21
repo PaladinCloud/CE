@@ -3055,3 +3055,11 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
  /* RedHat Index*/
  INSERT IGNORE INTO `cf_AssetGroupDetails` (`groupId`, `groupName`, `dataSource`, `displayName`, `groupType`, `createdBy`, `createdUser`, `createdDate`, `modifiedUser`, `modifiedDate`, `description`, `aliasQuery`, `isVisible`)  
  values('e0008397-f74e-4deb-9066-10bdf11202ae','redhat','redhat','RedHat ACS','Admin','Cloud Security','admin@paladincloud.io','08/17/2023 06:13','admin@paladincloud.io','08/17/2023 06:13','All GCP','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}','1');
+ 
+ /* Red Hat asset Node, Cluster */
+ INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+ VALUES('cluster','Cluster','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
+ concat(@eshost,':',@esport,'/redhat_cluster'),'2023-08-07','2023-08-07','Infra & Platforms','Cluster');
+ INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+ VALUES('node','Node','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
+ concat(@eshost,':',@esport,'/redhat_node'),'2023-08-07','2023-08-07','Infra & Platforms','Node');
