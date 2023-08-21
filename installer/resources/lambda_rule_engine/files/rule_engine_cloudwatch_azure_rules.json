@@ -143,5 +143,8 @@
 	"Use_CMK_to_encrypt_Storage_Account_for_Activity_logs",
 	"azure_VDR_vaults",
 	"azure_WDR_workflows",
-	"trusted_ms_services_access_storage_account"
+	"trusted_ms_services_access_storage_account",
+	"remove_unused_load_balancer",
+	"remove_unused_scale_set",
+	"remove_unused_vm_disk"
 ]
