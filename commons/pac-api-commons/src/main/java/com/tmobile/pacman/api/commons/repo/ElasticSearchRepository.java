@@ -575,6 +575,12 @@ public class ElasticSearchRepository implements Constants {
 				exempt.put(TERMS,exemptDetails);
 				finalFilter.add(exempt);
 			}
+			else if (entry.getKey().equalsIgnoreCase("wildcard")) {
+				Map<String, Object> wildCardMap = Maps.newHashMap();
+				wildCardMap.put("wildcard", entry.getValue());
+				finalFilter.add(wildCardMap);
+				continue;
+			}
 			else{
 				termDetails.put(entry.getKey(), entry.getValue());
 			}
