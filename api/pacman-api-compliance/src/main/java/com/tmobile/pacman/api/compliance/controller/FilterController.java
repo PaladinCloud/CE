@@ -355,6 +355,7 @@ public class FilterController implements Constants {
         Map<String,Object> filter=filterRequest.getApiFilter();
         String entityType=filterRequest.getType();
         String attributeName=filterRequest.getAttributeName();
+        String searchText=filterRequest.getSearchText();
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
         }
@@ -365,7 +366,7 @@ public class FilterController implements Constants {
         try {
             //pass entityType as asset if we want to find attribute value of an asset, for finding attribute value
             // of issue/violation pass entityType as issue
-            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, filter, entityType,attributeName));
+            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, filter, entityType,attributeName,searchText));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
@@ -377,6 +378,7 @@ public class FilterController implements Constants {
         String assetGroup=filterRequest.getAg();
         String domain=filterRequest.getDomain();
         Map<String,Object> filter=filterRequest.getApiFilter();
+        String searchText=filterRequest.getSearchText();
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
         }
@@ -384,7 +386,7 @@ public class FilterController implements Constants {
         try {
             //pass entityType as asset if we want to find attribute value of an asset, for finding attribute value
             // of issue/violation pass entityType as issue
-            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, filter, ISSUE,CREATED_DATE));
+            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, filter, ISSUE,CREATED_DATE,searchText));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }

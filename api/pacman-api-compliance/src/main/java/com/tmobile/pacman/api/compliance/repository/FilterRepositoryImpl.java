@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
@@ -329,7 +330,7 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
             throw new DataException(e);
         }
     }
-    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName,String targetTypes)
+    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName,String targetTypes,String searchText)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
@@ -338,6 +339,9 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         List<String> validTypes = new ArrayList<String>(Arrays.asList(targetTypes.replace("'","").split(",")));
         checkEntityType(mustFilter,mustTermsFilter,entityType,validTypes);
         setFilters(filter,mustFilter,shouldFilter,mustTermsFilter,mustNotFilter, assetGroup, validTypes,entityType);
+        if (!Strings.isNullOrEmpty(searchText)) {
+            setWildCardFilter(searchText, mustFilter, attributeName);
+        }
         String aggsFilter=attributeName;
         try {
             if(attributeName.equalsIgnoreCase(CREATED_DATE)){
@@ -393,6 +397,14 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         } catch (Exception e) {
             throw new DataException(e);
         }
+    }
+    private void setWildCardFilter(String searchText, Map<String, Object> mustFilter, String attributeName) {
+        Map<String, Object> wildCardMap = new HashMap<String, Object>();
+        Map<String, Object> valueMap = new HashMap<String, Object>();
+        valueMap.put("value","*"+searchText+"*");
+        wildCardMap.put(attributeName,valueMap);
+        mustFilter.put("wildcard",wildCardMap);
+
     }
 
     private void setFilters(Map<String, Object> filter, Map<String, Object> mustFilter, HashMultimap<String, Object> shouldFilter,

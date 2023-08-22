@@ -165,6 +165,6 @@ public interface FilterRepository {
     public Map<String, Long> getNotificationEventNamesFromES() throws DataException;
 
 
-    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName, String targetTypes) throws DataException;
+    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName, String targetTypes,String searchText) throws DataException;
 
 }
