@@ -698,8 +698,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     if (to > openIssuesByPolicyListFinal.size()) {
                         to = openIssuesByPolicyListFinal.size();
                     }
+                    int totalCount = openIssuesByPolicyListFinal.size();
                     openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.subList(request.getFrom(), to);
-                    response = new ResponseWithOrder(openIssuesByPolicyListFinal, openIssuesByPolicyListFinal.size());
+                    response = new ResponseWithOrder(openIssuesByPolicyListFinal, totalCount);
                 }
             } catch (DataException e) {
                 logger.error("Error @ getPolicyCompliance while getting the data from ES", e);
@@ -716,6 +717,8 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         if(MapUtils.isNotEmpty(filter)){
             List<String> provider = filter.containsKey(PolicyComplianceFilter.PROVIDER.filter) ?
                     (List<String>) filter.get(PolicyComplianceFilter.PROVIDER.filter) : new ArrayList<>();
+            List<Boolean> autoFixAvailable = filter.containsKey(PolicyComplianceFilter.AUTOFIX.filter) ?
+                    (List<Boolean>) filter.get(PolicyComplianceFilter.AUTOFIX.filter) : new ArrayList<>();
             List<String> policyName = filter.containsKey(PolicyComplianceFilter.POLICY_NAME.filter) ?
                     (List<String>) filter.get(PolicyComplianceFilter.POLICY_NAME.filter) : new ArrayList<>();
             List<String> severity = filter.containsKey(PolicyComplianceFilter.SEVERITY.filter) ?
@@ -737,6 +740,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     .filter(x -> compliance.isEmpty() || isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance))
                     .filter(x -> violations.isEmpty() || isViolationsInRange(Long.valueOf(x.get(PolicyComplianceFilter.VIOLATIONS.filter).toString()), violations))
                     .filter(x -> assetType.isEmpty() || assetType.contains(x.get(PolicyComplianceFilter.ASSET_TYPE.filter)))
+                    .filter(x -> autoFixAvailable.size() ==0 || autoFixAvailable.size() ==2 || autoFixAvailable.contains(x.get(PolicyComplianceFilter.AUTOFIX.filter).toString()))
                     .collect(Collectors.toList());
         }
         if(!CollectionUtils.isEmpty(openIssuesByPolicyListFinal)){
