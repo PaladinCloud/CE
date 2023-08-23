@@ -102,6 +102,8 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     private _categories: string[] = [];
     private filterTextChange = new Subject<any>();
     private filterTextSubscription: Subscription;
+    private filterOptionChange = new Subject<any>();
+    private filterOptionChangeSubscription: Subscription;
 
     constructor() {}
 
@@ -110,6 +112,11 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         .pipe(debounceTime(500))
         .subscribe((event) => {
             this.filterSearchTextChange.emit(event);
+        });
+
+        this.filterOptionChangeSubscription = this.filterOptionChange.pipe(debounceTime(500))
+        .subscribe((event) => {
+            this.optionChange.emit(event);
         });
     }
 
@@ -181,7 +188,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
             }),
         });
 
-        this.optionChange.emit({
+        this.filterOptionChange.next({
             category: filterCategory,
             appliedFilterTags: Object.keys(this.appliedFiltersDict[filterCategory]).filter(filter => this.appliedFiltersDict[filterCategory][filter])
         });
@@ -260,5 +267,6 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.filterTextSubscription.unsubscribe();
+        this.filterOptionChangeSubscription.unsubscribe();
     }
 }

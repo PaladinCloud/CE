@@ -662,8 +662,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     try {
       if (this.currentFilterType) {
         const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
-          return v;
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+          return v?v["id"]:value;
         });
         this.utils.addOrReplaceElement(
           this.filters,
