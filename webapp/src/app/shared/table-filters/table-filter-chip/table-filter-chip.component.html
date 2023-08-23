@@ -27,7 +27,7 @@
     (overlayKeydown)="overlayKeyDown($event)"
 >
     <div class="filters-menu-container flex flex-col" *ngIf="isOptionsMenuOpen && !isDateFilter">
-        <app-table-filter-search [(text)]="optionFilterQuery"></app-table-filter-search>
+        <app-table-filter-search [(text)]="optionFilterQuery" (textChange)="handleSearchTextChange($event)"></app-table-filter-search>
         <ul class="filters-chip-menu">
             <li *ngFor="let option of filterOptionsByQuery()" class="fcm-item" [title]="option">
                 <mat-checkbox

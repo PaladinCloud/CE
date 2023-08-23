@@ -37,6 +37,7 @@ export class TableFilterChipComponent implements OnInit {
 
     @Output() clear = new EventEmitter<string>();
     @Output() update = new EventEmitter<FilterChipUpdateEvent>();
+    @Output() filterSearchTextChange = new EventEmitter();
 
     readonly optionsMenuOffsetY = 7;
     readonly maxOptionChars = 30;
@@ -51,6 +52,15 @@ export class TableFilterChipComponent implements OnInit {
     constructor(private logger: LoggerService) {}
 
     ngOnInit(): void {}
+
+    handleSearchTextChange(searchText){
+        const event = {
+            searchText,
+            selectedFilterCategory: this.category
+        };
+        
+        this.filterSearchTextChange.emit(event);
+    }
 
     toggleOptionsMenu() {
         this.isDateFilter =this.category.toLowerCase() == "created date" ?  true : false;

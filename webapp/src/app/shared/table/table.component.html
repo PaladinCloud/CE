@@ -35,10 +35,11 @@
                     [categories]="filterTypeLabels"
                     [categoryOptions]="filterTagLabels"
                     [enableMultiValuedFilter]="enableMultiValuedFilter"
+                    [filtersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing"
                     (categoryChange)="selectFilterCategory($event)"
                     (categoryClear)="removeFilterCategory($event)"
                     (optionChange)="selectFilterCategoryOption($event)"
-                    [filtersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing"
+                    (filterSearchTextChange)="filterSearchTextChange.emit($event)"
                 ></app-table-filters>
                 <div class="flex flex-align-center table-right-items">
                  

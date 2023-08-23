@@ -4,10 +4,11 @@
         [category]="appliedFilter.keyDisplayValue"
         [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
         [options]="categoryOptions[appliedFilter.keyDisplayValue]"
+        [filtersToExcludeFromCasing]="filtersToExcludeFromCasing"
         (clear)="clearFilter($event)"
         (update)="updateFilter($event)"
         (click)="openFilterCategory(appliedFilter.keyDisplayValue)"
-        [filtersToExcludeFromCasing]="filtersToExcludeFromCasing"
+        (filterSearchTextChange)="handleSearchTextChangeForCategory($event)"
     ></app-table-filter-chip>
 
     <button
@@ -46,7 +47,7 @@
         </ng-container>
 
         <ng-container *ngIf="isCategoryOptionsMenuOpen && !isDateFilter">
-            <app-table-filter-search [(text)]="categoryOptionFilterQuery"></app-table-filter-search>
+            <app-table-filter-search [(text)]="categoryOptionFilterQuery" (textChange)="handleSearchTextChange($event)"></app-table-filter-search>
             <ul class="filters-category-menu">
                 <li
                     *ngFor="let option of filterSelectedCategoryOptionsByQuery()"

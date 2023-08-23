@@ -19,7 +19,6 @@ import { PermissionGuardService } from "../../../../core/services/permission-gua
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
-import { first } from "rxjs/operators";
 
 @Component({
   selector: "app-issue-listing",
@@ -593,7 +592,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .then(response => response[0].data.response);
   }
   
-  async changeFilterType(value) {
+  async changeFilterType(value, searchText='') {
     this.filterErrorMessage = '';
   
     try {
@@ -636,6 +635,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
         ag: this.selectedAssetGroup,
         domain: this.selectedDomain,
+        searchText,
         filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
       };
   
@@ -998,6 +998,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.isStatePreserved = false;
     this.updateComponent();
     // this.getUpdatedUrl();
+  }
+
+  handleFilterSearchTextChange(event){
+    if(event.selectedFilterCategory=="Violation ID") this.changeFilterType(event.selectedFilterCategory, event.searchText);
   }
 
 
