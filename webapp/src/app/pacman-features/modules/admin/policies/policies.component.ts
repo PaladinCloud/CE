@@ -138,6 +138,10 @@
       gcp:{
         image: "gcp-color",
         imageOnly: true
+      },
+      "red hat":{
+        image: "redhat-color",
+        imageOnly: true
       }
    }
  
