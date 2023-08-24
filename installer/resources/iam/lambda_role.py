@@ -1,5 +1,6 @@
 from core.terraform.resources.aws import iam
 from core.config import Settings
+from resources.s3.bucket import BucketStorage
 
 
 class LambdaRolePolicyDocument(iam.IAMPolicyDocumentData):
@@ -57,3 +58,22 @@ class PaladinCloudEc2PermissionPolicy(iam.IAMRolePolicyResource):
 class PaladinCloudEc2PermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = LambdaRole.get_output_attr('name')
     policy_arn = PaladinCloudEc2PermissionPolicy.get_output_attr('arn')
+
+class PaladinClPaladinCloudS3PermissionDocument(iam.IAMPolicyDocumentData):
+    statement = [
+        {
+            "effect": "Allow",
+            "actions": ["s3:*"],
+            "resources": [BucketStorage.get_output_attr('arn')]
+        }
+    ]
+    
+
+class PaladinCloudS3PermissionPolicy(iam.IAMRolePolicyResource):
+    name = "PaladinCloudS3PermissionPolicy"
+    path = '/'
+    policy = PaladinClPaladinCloudS3PermissionDocument.get_output_attr('json')
+
+class PaladinCloudS3PermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource):
+    role = LambdaRole.get_output_attr('name')
+    policy_arn = PaladinCloudS3PermissionPolicy.get_output_attr('arn')
