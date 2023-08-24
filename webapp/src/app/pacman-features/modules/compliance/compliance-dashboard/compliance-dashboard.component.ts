@@ -833,10 +833,13 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             "POST",
             payload
           )
-          .subscribe((response) => {          
-            let filterTagsData: {[key:string]: any}[] = (response[0].data.optionList || []).map(filterTag => {
-              return {id: filterTag, name: filterTag};
-            });
+          .subscribe((response) => {  
+            let filterTagsData: {[key:string]: any}[] = [];
+            if(!response[0].data.optionRange){
+              filterTagsData = (response[0].data.optionList || []).map(filterTag => {
+                return {id: filterTag, name: filterTag};
+              });
+            }
             if(value.toLowerCase()=="asset type"){
               this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
                 filterTagsData.map(filterOption => {
