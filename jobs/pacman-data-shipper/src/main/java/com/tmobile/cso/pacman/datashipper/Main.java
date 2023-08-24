@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tmobile.cso.pacman.datashipper.entity.AssetGroupStatsCollector;
 import com.tmobile.cso.pacman.datashipper.entity.EntityManager;
+import com.tmobile.cso.pacman.datashipper.entity.ExternalPolicies;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.ErrorManageUtil;
@@ -65,6 +66,7 @@ public class Main implements Constants {
         String ds = params.get("datasource");
         ESManager.configureIndexAndTypes(ds,errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
+        new ExternalPolicies().uploadPolicyDefinition(ds);
         errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
         errorList.addAll(new IssueCountManager().populateViolationsCount());
         errorList.addAll(new AssetsCountManager().populateAssetCount());
