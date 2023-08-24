@@ -37,6 +37,10 @@ class LambdaCloudWatchFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource
     role = LambdaRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
 
+class LambdaS3FullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
+    role = LambdaRole.get_output_attr('name')
+    policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
 class PaladinClPaladinCloudEc2PermissionDocument(iam.IAMPolicyDocumentData):
     statement = [
         {
@@ -59,21 +63,3 @@ class PaladinCloudEc2PermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource)
     role = LambdaRole.get_output_attr('name')
     policy_arn = PaladinCloudEc2PermissionPolicy.get_output_attr('arn')
 
-class PaladinClPaladinCloudS3PermissionDocument(iam.IAMPolicyDocumentData):
-    statement = [
-        {
-            "effect": "Allow",
-            "actions": ["s3:*"],
-            "resources": [BucketStorage.get_output_attr('arn')]
-        }
-    ]
-    
-
-class PaladinCloudS3PermissionPolicy(iam.IAMRolePolicyResource):
-    name = "PaladinCloudS3PermissionPolicy"
-    path = '/'
-    policy = PaladinClPaladinCloudS3PermissionDocument.get_output_attr('json')
-
-class PaladinCloudS3PermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource):
-    role = LambdaRole.get_output_attr('name')
-    policy_arn = PaladinCloudS3PermissionPolicy.get_output_attr('arn')
