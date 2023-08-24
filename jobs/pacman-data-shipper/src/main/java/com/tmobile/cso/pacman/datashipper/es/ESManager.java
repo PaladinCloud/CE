@@ -794,6 +794,36 @@ public class ESManager implements Constants {
             }
         }
     }
+    
+    public static void uploadData(String index, List<Map<String, Object>> docs, String dataSource) {
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }"; // added
+                                                                                                                       // _parent
+                                                                                                                       // node
+//        String docTemplate = "%s\n%s\n";
+        LOGGER.info("*********UPLOADING*** {}:::{}", index);
+        if (null != docs && !docs.isEmpty()) {
+            StringBuilder bulkRequest = new StringBuilder();
+            int i = 0;
+            Gson gson = new GsonBuilder().create(); // create Gson instance
+            for (Map<String, Object> doc : docs) {
+
+                String _doc = new Gson().toJson(doc);
+                String parent =  (String)doc.get("_resourceid");
+                String _id =  (String)doc.get("annotationid");
+                
+                bulkRequest.append(String.format(actionTemplate, index,_id, parent)).append("\n");
+                bulkRequest.append(_doc).append("\n");
+                i++;
+                if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
+                    bulkUpload(bulkRequest);
+                    bulkRequest = new StringBuilder();
+                }
+            }
+            if (bulkRequest.length() > 0) {
+                bulkUpload(bulkRequest);
+            }
+        }
+    }
 
     private static String convertToString(Object value) {
         if (value instanceof Map) {
