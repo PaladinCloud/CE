@@ -130,26 +130,20 @@
      }
  
    }
-    /**
-    * This function navigates the page mentioned  with a ruleID
-    */
-   navigatePage(event) {
-     try {
-           let resourceType = '';
-           const resourceID = event;
-           if(resourceID.includes("vol")){
-              resourceType = 'volume'
-           }else{
-             resourceType = 'sg'
-           }
-           this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
-         this.router.navigate(['../../', resourceType, resourceID],
-           {relativeTo: this.activatedRoute, queryParamsHandling: "merge"}
-           );
-     } catch (error) {
-       this.logger.log('error', error);
-     }
-   }
-   /* navigatePage function ends here */
- }
-
+  /**
+   * This function navigates the page mentioned  with a ruleID
+   */
+  navigatePage(event) {
+    try {
+          let resourceType = event.assetType;
+          const resourceID = event.name;
+          this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
+          this.router.navigate(['../../', resourceType, resourceID],
+            {relativeTo: this.activatedRoute, queryParamsHandling: "merge"}
+            );
+    } catch (error) {
+      this.logger.log('error', error);
+    }
+  }
+  /* navigatePage function ends here */
+}
