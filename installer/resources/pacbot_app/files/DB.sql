@@ -3027,6 +3027,7 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Policy','name','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Severity','severity','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Source','provider','/compliance/v1/filters/policyCompliance',"");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Autofix','autoFixAvailable','/compliance/v1/filters/policyCompliance',"boolean");
 
 UPDATE pac_v2_ui_options SET optionURL = '/asset/v1/getAssetFilterValue/tagged?ag=aws' WHERE optionId = '22';
 update pac_v2_ui_options set optionValue="resourcetType" where optionValue='resourceType' and filterId=16;

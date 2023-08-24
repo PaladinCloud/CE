@@ -175,12 +175,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             });
         }
 
-        this.assetGroupChangeService
-            .getAssetGroup()
-            .pipe(skip(1), takeUntil(this.destroy$))
-            .subscribe(() => {
-                this.removeAllFilters();
-            });
     }
 
     ngOnChanges(changes: SimpleChanges): void {        

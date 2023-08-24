@@ -487,12 +487,12 @@ public class FilterServiceImpl implements FilterService, Constants {
     }
 
     public List<Map<String, Object>> getAttributeValuesForAssetGroup(
-            String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName) throws ServiceException {
+            String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName,String searchText) throws ServiceException {
         Map<String, Long> valueMap;
         List<Map<String, Object>> valueList = new ArrayList<>();
         try {
             String targetTypes=complianceRepository.getTargetTypeForAG(assetGroup,domain);
-            valueMap = repository.getAttributeValuesFromES(assetGroup,filter, entityType,attributeName,targetTypes);
+            valueMap = repository.getAttributeValuesFromES(assetGroup,filter, entityType,attributeName,targetTypes,searchText);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -561,13 +561,18 @@ public class FilterServiceImpl implements FilterService, Constants {
             List<LinkedHashMap<String, Object>> finalOpenIssuesByPolicyListFinal = dataList;
             if(rangeAttribute.contains(filterObj.get(Constants.OPTION_TYPE).toString().toUpperCase())){
                 filterREsponseMap.put(Constants.OPTION_RANGE, getRangeMapFromPolicyComplianceData(filterObj, finalOpenIssuesByPolicyListFinal));
+            } if(Constants.BOOLEAN_TYPE.equalsIgnoreCase(filterObj.get(Constants.OPTION_TYPE).toString())){
+                Set<Object> optionList  = finalOpenIssuesByPolicyListFinal.stream()
+                        .filter(x -> x.containsKey(request.getAttributeName())).map(x -> x.get(request.getAttributeName()).toString()).collect(Collectors.toSet());
+                filterREsponseMap.put(Constants.OPTION_LIST, optionList);
             }else{
                 Set<Object> optionList  = finalOpenIssuesByPolicyListFinal.stream()
                         .filter(x -> x.containsKey(request.getAttributeName())).map(x -> x.get(request.getAttributeName())).collect(Collectors.toSet());
                 filterREsponseMap.put(Constants.OPTION_LIST, optionList);
             }
         }
-        return new ResponseData(filterREsponseMap);
+        return new ResponseData(filterREsponseMap)
+                ;
     }
 
     private Map<String, Object> getRangeMapFromPolicyComplianceData(Map<String, Object> obj, List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal){

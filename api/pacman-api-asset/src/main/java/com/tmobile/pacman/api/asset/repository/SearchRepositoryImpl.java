@@ -16,20 +16,12 @@
 package com.tmobile.pacman.api.asset.repository;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.HashMultimap;
 import joptsimple.internal.Strings;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -45,7 +37,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -78,6 +69,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String configuredVulnTargetTypes;
     @Value("${datasource.types:aws,azure}")
     private String dataSourceTypes;
+
+    private Gson gson = new Gson();
 
     @Autowired
     ElasticSearchRepository esRepository;
@@ -188,9 +181,9 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
         long start = System.currentTimeMillis();
 
-        if (!Strings.isNullOrEmpty(searchText)) {
-            searchText = "\"" + searchText + "\"";
-        }
+//        if (!Strings.isNullOrEmpty(searchText)) {
+//            searchText = "\"" + searchText + "\"";
+//        }
         List<Map<String, Object>> results = new ArrayList<>();
         if (!AssetConstants.VULNERABILITIES.equals(searchCategory)) {
 
@@ -204,13 +197,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                 mustFilter.put(AssetConstants.DOC_TYPE_KEYWORD, esType);
             }
             urlToQuery.append("/").append("_search?from=").append(from).append("&size=").append(size);
-
-            Map<String, Object> query = new HashMap<>();
-            query.put("query", esRepository.buildQuery(mustFilter, null, null, searchText, mustTermsFilter, null));
-            query.put("_source", getReturnFieldsForSearch(targetType, searchCategory));
-            query.put("sort", resourceIdSort);
-
-            String resultJson = invokeESCall("GET", urlToQuery.toString(), new Gson().toJson(query));
+            String resultJson = null;
+            try {
+                resultJson = getSearchResults(mustFilter, searchText, mustTermsFilter, getReturnFieldsForSearch(targetType, searchCategory),ag,searchCategory,size);
+            } catch (Exception e) {
+                LOGGER.error("Exception occurred for search category {} with message - {}",searchCategory,e.getMessage());
+                throw new RuntimeException(e);
+            }
             JsonObject responseJson = null;
             if (!Objects.isNull(resultJson)) {
                 responseJson = (JsonObject) JsonParser.parseString(resultJson);
@@ -292,9 +285,164 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     }
 
+    private List<Map<String,Object>> getTokenListFromSearchText(String searchText) throws Exception {
+        StringBuilder urlToAnalyze = new StringBuilder(PROTOCOL + esHost + ":" + esPort + "/_analyze");
+        if (searchText.startsWith("\"") && searchText.endsWith("\"")) {
+            searchText= searchText.substring(1, searchText.length() - 1);
+        }
+
+        String payloadForTokens = "{\n" +
+                "  \"text\" : \""+searchText+"\"\n" +
+                "}\n";
+        String resultJson = PacHttpUtils.doHttpPost(urlToAnalyze.toString(),payloadForTokens);
+
+        Map<String,Object> tokensMap = gson.fromJson(resultJson,Map.class);
+        List<Map<String,Object>> tokenList = (List<Map<String,Object>>)tokensMap.get("tokens");
+        return tokenList;
+    }
+
+    private String getResultsFromElastic(final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
+                                         final HashMultimap<String, Object> shouldFilter, final String searchText,
+                                         final Map<String, Object> mustTermsFilter, Map<String, List<String>> matchPhrasePrefix,
+                                         List<String> fieldsForSearch, String searchType, List<String> returnFieldsForSearch, String ag, String searchCategory, int size) throws Exception {
+
+        Map<String, Object> query = new HashMap<>();
+        Map<String,Object> queryMap = "quick".equalsIgnoreCase(searchType)?esRepository.buildQuery(mustFilter, null, null, searchText,
+                mustTermsFilter, null,fieldsForSearch):esRepository.buildQuery(mustFilter, null, null, searchText,
+                mustTermsFilter, null);
+        query.put("size",String.valueOf(size));
+        query.put("query", queryMap);
+        query.put("_source", returnFieldsForSearch);
+        Map<String, Object> resourceIdSort = new HashMap<>();
+        resourceIdSort.put("_docid.keyword", "asc");
+        query.put("sort", resourceIdSort);
+        String payload = gson.toJson(query);
+        LOGGER.info("payload in data search thread for search category -{} is  {}",searchCategory,payload);
+        StringBuilder url = new StringBuilder(PROTOCOL + esHost + ":" + esPort + "/"+ag+"/_search");
+        return PacHttpUtils.doHttpPost(url.toString(),payload);
+    }
+
+    private String getSearchResults(Map<String, Object> mustFilter, String searchText, Map<String, Object> mustTermsFilter, List<String> returnFieldsForSearch, String ag, String searchCategory, int size) throws Exception {
+        long start = System.currentTimeMillis();
+        List<Map<String,Object>> tokenList = getTokenListFromSearchText(searchText);
+        List<String> fieldsForSearch = AssetConstants.ASSETS.equalsIgnoreCase(searchCategory)?
+                Arrays.asList("*","_docid","_entity","_entitytype","_cloudType","_resourcename","_resourceid"):
+                Arrays.asList("*","_docid","_resourceid");
+
+        String caseSensitiveStr="";
+        /*
+        If it is a case sensitive search, following query criteria shall be used.
+        {"query_string":{"query":"*user-provided-string-without-quotes*", "default_operator":"AND", "analyzer": "keyword"}}
+         */
+        if((searchText.startsWith("\"") && searchText.endsWith("\"")) || (tokenList.size()==0 && searchText.length()>0)){
+            if(searchText.startsWith("\"") && searchText.endsWith("\"")) {
+                caseSensitiveStr = searchText.substring(1, searchText.length() - 1);
+            }
+            StringBuilder tempStr1 = new StringBuilder();
+            for(char c: caseSensitiveStr.toCharArray()){
+                String tempStr2 = Character.toString(c);
+                //Escape the below characters to avoid tokenizing by analyzer
+                if(Arrays.asList("-"," ","/",":","*").contains(tempStr2)){
+                    tempStr1.append("\\"+tempStr2);
+                }
+                else{
+                    tempStr1.append(tempStr2);
+                }
+            }
+            caseSensitiveStr = tempStr1+"*";
+            Map<String,Object> queryMap = esRepository.buildQuery(mustFilter, null, null, caseSensitiveStr,
+                    mustTermsFilter, null);
+            Optional<Map<String,Object>> optionalQueryStringMap = Optional.ofNullable(queryMap).map(obj -> (Map<String,Object>)obj.get("bool")).map(obj -> (List<Map<String,Object>>)obj.get("must"))
+                    .map(obj -> obj.stream().filter(map1 -> map1.containsKey("simple_query_string")).findFirst()).map(obj -> {
+                        if(obj.isPresent()){
+                            return obj.get();
+                        }
+                        else return null;
+                    });
+            if(optionalQueryStringMap.isPresent()){
+                Map<String,Object> queryStringOuterMap = optionalQueryStringMap.get();
+                Map<String,Object> queryStringMap = (Map<String,Object>)queryStringOuterMap.get("simple_query_string");
+                queryStringMap.put("analyzer","keyword");
+                queryStringMap.put("fields",Arrays.asList("*.keyword"));
+                Map<String, Object> query = new HashMap<>();
+                query.put("size",String.valueOf(size));
+                query.put("query", queryMap);
+                query.put("_source", returnFieldsForSearch);
+                String payload = gson.toJson(query);
+                LOGGER.info("payload of case sensitive search in data search thread for search category -{} is  {}",searchCategory,payload);
+                StringBuilder url = new StringBuilder(PROTOCOL + esHost + ":" + esPort + "/"+ag+"/_search");
+                String caseSensitiveSearchResult = PacHttpUtils.doHttpPost(url.toString(),payload);
+                LOGGER.info("case sensitive result obtained for data search thread for search category -{}",searchCategory);
+                long end = System.currentTimeMillis();
+                LOGGER.error("Time taken in data search thread for Search Category {} is: {}", searchCategory, (end - start));
+                return caseSensitiveSearchResult;
+            }
+        }
+        else{
+            /*
+            If it is case insensitive search, first step is to find tokens of search text  by /_analyze request. If number of tokens are > 2,
+            first and second criteria are used, else  first and third criteria are used.
+            First criteria fetches accurate and quicker results whereas second and third criterias may fetch inaccurate results with time delay.
+            First criteria query is triggered initially and if 0 results are obtained, then another ES query is triggered by using second or third criteria
+            based on number of tokens. Results thus obtained will be returned. If first criteria query returns non zero results, then the same is returned.
+
+            First criteria :
+            {"multi_match":{"query":"user-provided-search-text","type":"phrase_prefix","fields":["*","_docid","_entity","_docid","_entitytype","_cloudType","_resourcename"]}
+            Second criteria :
+            {"multi_match":{"query":"user-provided-search-text","type":"phrase_prefix","fields":["*","_docid","_entity","_docid","_entitytype","_cloudType","_resourcename"]}
+            Difference between first and second criteria is first token is removed from user provided search text in second criteria.
+            Third criteria :
+            {"query_string":{"query":"*user-provided-search-text*", "default_operator":"AND"}}
+
+             */
+            String result = getResultsFromElastic(mustFilter, null, null, searchText, mustTermsFilter, null,fieldsForSearch,"quick",returnFieldsForSearch,ag,searchCategory,size);
+            int count = getResultCount(result);
+            LOGGER.info("results(1) obtained in data search thread for search category -{} , count - {}",searchCategory,count);
+            if(count==0){
+                if(tokenList.size()>2){
+                    List<String> tokensExcludingFirstTokenList = new ArrayList<>();
+                    for (int i = 1; i < tokenList.size(); i++) {
+                        tokensExcludingFirstTokenList.add(tokenList.get(i).get("token").toString());
+                    }
+                    String secondResult = getResultsFromElastic(mustFilter, null, null, String.join(" ", tokensExcludingFirstTokenList), mustTermsFilter, null,fieldsForSearch,"quick",returnFieldsForSearch,ag, searchCategory, size);
+                    LOGGER.info("results(2) obtained for data search thread for search category -{}",searchCategory);
+                    long end = System.currentTimeMillis();
+                    LOGGER.info("Time taken in data search thread for Search Category {} is: {}", searchCategory, (end - start));
+                    return secondResult;
+                }
+                else{
+                    String expandedSearchText = tokenList.stream().map(obj -> obj.get("token").toString()).collect(Collectors.joining(" "))+"*";
+                    //   String searchTextForCaseSensitive = "";
+                    String thirdResult = getResultsFromElastic(mustFilter, null, null, expandedSearchText, mustTermsFilter, null,fieldsForSearch,"slow",returnFieldsForSearch,ag, searchCategory, size);
+                    LOGGER.info("results(3) obtained for data search thread for search category -{} ",searchCategory);
+                    long end = System.currentTimeMillis();
+                    LOGGER.info("Time taken in data search thread for Search Category {} is: {}", searchCategory, (end - start));
+                    return thirdResult;
+                }
+            }
+            else{
+                long end = System.currentTimeMillis();
+                LOGGER.info("Time taken in data search thread for Search Category {} is: {}", searchCategory,(end - start));
+                return result;
+            }
+        }
+        return "{}";
+    }
+
+
+    private int getResultCount(String value) {
+        Gson gson = new Gson();
+        Map<String,Object> resultMap = gson.fromJson(value,Map.class);
+        Optional<Double> countOptional = Optional.ofNullable(resultMap).map(obj -> (Map<String,Object>)obj.get("hits")).map(obj -> (Map<String,Object>)obj.get("total")).map(obj -> (Double)obj.get("value"));
+        if(countOptional.isPresent()){
+            return countOptional.get().intValue();
+        }
+        return 0;
+    }
+
     @Override
     public List<Map<String, Object>> fetchTargetTypes(String ag, String searchText, String searchCategory,
-            String domain, boolean includeAllAssets) throws DataException {
+                                                      String domain, boolean includeAllAssets) throws DataException {
         List<Map<String, Object>> resourceTypeBucketList = new ArrayList<>();
         if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
             return resourceTypeBucketList;
@@ -320,33 +468,19 @@ public class SearchRepositoryImpl implements SearchRepository {
             aggStringForHighLevelEntities = "\"targetTypes\":{\"terms\":{\"field\":\"_index\",\"size\":10000},\"aggs\":{\"unique\":{\"cardinality\":{\"field\":\""
                     + getReturnFieldsForSearch(null, searchCategory).get(0) + "\"}}}}";
         }*/
-
-        String payLoadStr = createPayLoad(aggStringForHighLevelEntities, searchText, searchCategory, null,
-                includeAllAssets);
-
-        String firstUrl = "";
-
-        /*if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
-            firstUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.VULN_INFO + "/" + Constants.SEARCH;
-        }*/
-
-        firstUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
-
-        String responseJson = "";
-
-        try {
-            long start = System.currentTimeMillis();
-            LOGGER.debug("To get targetTypes:URL is: {} and payload is : {}", firstUrl, payLoadStr);
-            responseJson = PacHttpUtils.doHttpPost(firstUrl, payLoadStr);
-            LOGGER.debug(AssetConstants.DEBUG_RESPONSEJSON, responseJson);
-            long end = System.currentTimeMillis();
-            LOGGER.debug("Time taken for ES call(targetType) for Search Category {} is: {}", searchCategory,
-                    (end - start));
-
+        String responseJson="";
+        try{
+            responseJson = getSearchResultsForTargetTypes(searchText, searchCategory, includeAllAssets, aggStringForHighLevelEntities,ag, null);
+            if("{}".equalsIgnoreCase(responseJson)){
+                return resourceTypeBucketList;
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to retrieve high level entity types for omni search ", e);
             return resourceTypeBucketList;
         }
+        /*if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
+            firstUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.VULN_INFO + "/" + Constants.SEARCH;
+        }*/
 
         resourceTypeBucketList = getDistributionFromAggResult(responseJson, "targetTypes");
 
@@ -357,6 +491,88 @@ public class SearchRepositoryImpl implements SearchRepository {
         removeResourceTypeIfNotAttachedToDomain(ag, resourceTypeBucketList, domain);
 
         return resourceTypeBucketList;
+    }
+
+    private String getSearchResultsForTargetTypes(String searchText, String searchCategory, boolean includeAllAssets, String aggStringForHighLevelEntities, String ag, String resourceType) throws Exception {
+        String payLoadStr = createPayLoad(aggStringForHighLevelEntities, searchText, searchCategory, resourceType,
+                includeAllAssets);
+        List<Map<String,Object>> tokenListFromSearchText = getTokenListFromSearchText(searchText);
+        String firstUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
+        String searchFieldsStr = AssetConstants.ASSETS.equals(searchCategory)? "\"fields\": [\"*\",\"_docid\",\"_entity\",\"_resourcename\",\"_resourceid\",\"_entitytype\",\"_cloudType\"]\n" :
+                "\"fields\": [\"*\",\"_docid\",\"_resourceid\"]\n";
+        String multiMatchCondition = "{\"multi_match\":{\n" +
+                "                  \"query\":\"%s\",\n" +
+                "                  \"type\": \"phrase_prefix\",\n" +
+                searchFieldsStr +
+                "               }\n" +
+                "            }";
+        String queryStringCondition = "{\n" +
+                "               \"simple_query_string\":{\n" +
+                "                  \"query\":\"%s\",\n" +
+                "                  \"default_operator\": \"AND\"\n" +
+                "               }\n" +
+                "            }";
+        String queryStringCaseSensitiveCondition = "{\n" +
+                "               \"simple_query_string\":{\n" +
+                "                  \"query\":\"%s\",\n" +
+                "                  \"default_operator\": \"AND\",\n" +
+                "                   \"analyzer\":\"keyword\", \n" +
+                "                   \"fields\" : [\"*.keyword\"] \n" +
+                "               }\n" +
+                "            }";
+        if((searchText.startsWith("\"") && searchText.endsWith("\"")) || (tokenListFromSearchText.size()==0 && searchText.length()>0)) {
+            String caseSensitiveStr="";
+            if (searchText.startsWith("\"") && searchText.endsWith("\"")) {
+                caseSensitiveStr = searchText.substring(1, searchText.length() - 1);
+            }
+            StringBuilder tempStr1 = new StringBuilder();
+            for (char c : caseSensitiveStr.toCharArray()) {
+                String tempStr2 = Character.toString(c);
+                //Escape the below character to avoid tokenizing by
+                if (Arrays.asList("-", " ", "/", ":", "*").contains(tempStr2)) {
+                    tempStr1.append("\\\\" + tempStr2);
+                } else {
+                    tempStr1.append(tempStr2);
+                }
+            }
+            caseSensitiveStr = tempStr1.toString()+"*";
+            String caseSensitivePayload = String.format(payLoadStr,String.format(queryStringCaseSensitiveCondition,caseSensitiveStr));
+            LOGGER.info("case sensitive payload in outgoing filter thread for search category -{} is  {}",searchCategory,caseSensitivePayload);
+            String responseJson = PacHttpUtils.doHttpPost(firstUrl, caseSensitivePayload);
+            LOGGER.info("case sensitive response in outgoing filter thread for search category -{} ",searchCategory);
+            return responseJson;
+        }
+        else{
+            String multiMatchStr1 = String.format(multiMatchCondition,searchText);
+            LOGGER.info("payload(1) in outgoing filter thread for search category -{} is  {}",searchCategory,String.format(payLoadStr,multiMatchStr1));
+            String responseJson = PacHttpUtils.doHttpPost(firstUrl, String.format(payLoadStr,multiMatchStr1));
+            int count = getResultCount(responseJson);
+            LOGGER.info("results(1) obtained for outgoing filter thread for search category -{} count -  {}",searchCategory,count);
+            if(count>0){
+                return responseJson;
+            }
+            else{
+                if(tokenListFromSearchText.size()>2){
+                    List<String> tokensExcludingFirstTokenList = new ArrayList<>();
+                    for (int i = 1; i < tokenListFromSearchText.size(); i++) {
+                        tokensExcludingFirstTokenList.add(tokenListFromSearchText.get(i).get("token").toString());
+                    }
+                    String multiMatchStr2 = String.format(multiMatchCondition,String.join(" ",tokensExcludingFirstTokenList));
+                    LOGGER.info("payload(2) in outgoing filter thread for search category -{} is {}",searchCategory,String.format(payLoadStr,multiMatchStr2));
+                    responseJson = PacHttpUtils.doHttpPost(firstUrl, String.format(payLoadStr,multiMatchStr2));
+                    LOGGER.info("results(2) obtained for outgoing filter thread for search category -{}"+searchCategory);
+                    return responseJson;
+                }
+                else{
+                    String expandedSearchText = tokenListFromSearchText.stream().map(obj -> obj.get("token").toString()).collect(Collectors.joining(" "))+"*";
+                    String queryStr = String.format(queryStringCondition,expandedSearchText);
+                    LOGGER.info("payload(3) in outgoing filter thread for search category -{} is {}",searchCategory,String.format(payLoadStr,queryStr));
+                    responseJson = PacHttpUtils.doHttpPost(firstUrl, String.format(payLoadStr,queryStr));
+                    LOGGER.info("results(3) obtained for outgoing filter thread for search category -{} ",searchCategory);
+                    return responseJson;
+                }
+            }
+        }
     }
 
     private List<String> getTypesForDomain(String ag, String domain) {
@@ -431,16 +647,9 @@ public class SearchRepositoryImpl implements SearchRepository {
         String aggStringForLowLevelMenu = aggregationStrBuffer.toString().substring(0,
                 aggregationStrBuffer.toString().length() - 1);
 
-        String lowLevelPayLoadStr = createPayLoad(aggStringForLowLevelMenu, searchText, searchCategory, resourceType,
-                includeAllAssets);
+//        String lowLevelPayLoadStr = createPayLoad(aggStringForLowLevelMenu, searchText, searchCategory, resourceType,
+//                includeAllAssets);
 
-        String secondUrl = null;
-        if (AssetConstants.ASSETS.equals(searchCategory)) {
-            secondUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
-        }
-        if (AssetConstants.POLICY_VIOLATIONS.equals(searchCategory)) {
-            secondUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
-        }
         /*Commented because we are not using Constants.VULN_INFO index anymore*/
         /*if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
             secondUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.VULN_INFO + "/"
@@ -448,9 +657,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         }*/
 
         try {
-            LOGGER.debug("To get distribution, the URL is: {} and the payload is: {}", secondUrl, lowLevelPayLoadStr);
             long start = System.currentTimeMillis();
-            final String lowLevelResponseJson = invokeESCall("GET", secondUrl, lowLevelPayLoadStr);
+            final String lowLevelResponseJson = getSearchResultsForTargetTypes(searchText, searchCategory, includeAllAssets, aggStringForLowLevelMenu,ag,resourceType);
             LOGGER.debug(AssetConstants.DEBUG_RESPONSEJSON, lowLevelResponseJson);
             long end = System.currentTimeMillis();
             LOGGER.debug("Search Category {}", searchCategory);
@@ -502,7 +710,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             typeMap.put("count", count);
             bucketList.add(typeMap);
         }
-
         return bucketList;
     }
 
@@ -556,7 +763,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }*/
 
-        payLoad.append("{\"size\":0,\"query\":{\"bool\":{\"must\":[");
+        payLoad.append("{\"size\":1,\"query\":{\"bool\":{\"must\":[");
         payLoad.append(matchString);
         if (AssetConstants.ASSETS.equals(searchCategory) && !includeAllAssets) {
             payLoad.append(",{\"match\":{\"latest\":\"true\"}}");
@@ -564,10 +771,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (AssetConstants.VULNERABILITIES.equals(searchCategory)) {
             payLoad.append(",{\"match\":{\"latest\":\"true\"}}");
         }
-
-        payLoad.append(",{\"query_string\":{\"query\":\"");
-        payLoad.append(searchText);
-        payLoad.append("\"}}]}}");
+        payLoad.append(", %s");
+        payLoad.append("]}}");
         payLoad.append(",\"aggs\":{");
         payLoad.append(aggString);
         payLoad.append("}}");
@@ -708,5 +913,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
         return null;
     }
+
+
 
 }

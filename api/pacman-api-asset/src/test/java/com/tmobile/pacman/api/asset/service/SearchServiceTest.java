@@ -1,16 +1,12 @@
 package com.tmobile.pacman.api.asset.service;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyBoolean;
 
+import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +22,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
 import com.tmobile.pacman.api.asset.domain.SearchCriteria;
 import com.tmobile.pacman.api.asset.domain.SearchResult;
-import com.tmobile.pacman.api.asset.repository.AssetRepository;
-import com.tmobile.pacman.api.asset.repository.PacmanRedshiftRepository;
 import com.tmobile.pacman.api.asset.repository.SearchRepository;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
