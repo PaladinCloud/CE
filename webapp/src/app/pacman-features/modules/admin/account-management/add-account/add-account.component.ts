@@ -525,6 +525,14 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     })
   }
 
+  hidePassword(password:string){
+    let hiddenPassword:string = "";
+    for(let i=0;i<password.length;i++){
+      hiddenPassword+="*";
+    }
+    return hiddenPassword;
+  }
+
   validateAccount(){
     const provider = this.selectedAccount.toLowerCase();
     let payload = {};

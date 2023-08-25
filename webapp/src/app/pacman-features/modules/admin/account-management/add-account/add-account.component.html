@@ -270,7 +270,7 @@
                     </div>
                     <div class="flex flex-row gap-12">
                         <span class="key-wrapper">Password</span>
-                        <span class="value-wrapper">{{qualysApiPassword}}</span>
+                        <span class="value-wrapper">{{hidePassword(qualysApiPassword)}}</span>
                     </div>
                     <div class="flex flex-row gap-12">
                         <span class="key-wrapper">API URL</span>
@@ -284,7 +284,7 @@
                     </div>
                     <div class="flex flex-row gap-12">
                         <span class="key-wrapper">Password</span>
-                        <span class="value-wrapper">{{aquaApiPassword}}</span>
+                        <span class="value-wrapper">{{hidePassword(aquaApiPassword)}}</span>
                     </div>
                     <div class="flex flex-row gap-12">
                         <span class="key-wrapper">API URL</span>
@@ -309,7 +309,7 @@
                     <div *ngIf="pluginSelected===('azure')"> 
                         <div class="flex flex-row">
                             <span class="key-wrapper">Secret Data</span>
-                            <span class="value-wrapper">{{tenantSecretData}}</span>
+                            <span class="value-wrapper">{{hidePassword(tenantSecretData)}}</span>
                         </div>
                     </div>
                     <div *ngIf="pluginSelected===('gcp')"> 

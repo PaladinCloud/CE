@@ -228,7 +228,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         max = this.awsResources[maxIndex - 1].count;
 
         for (let j = 0; j < this.treemapData.length; j++) {
-            if (this.treemapData[j].y > 0) this.treemapData[j].y = quantile(this.treemapData[j].y);
+            if (this.treemapData[j].y > 0) this.treemapData[j].y = quantile(this.treemapData[j].y + 10);
         }
         const maxVal = this.treemapData[maxIndex - 1].y;
         const diff = maxVal / 4;

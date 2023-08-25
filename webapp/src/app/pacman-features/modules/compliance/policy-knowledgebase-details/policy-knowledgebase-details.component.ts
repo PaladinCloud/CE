@@ -80,6 +80,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     selectedSeverity: string;
     selectedCategory: string;
     assetGroup;
+    assetGroupImage:string;
     status: string = "";
     assetType: string;
     action: string;
@@ -217,14 +218,16 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
         this.status = this.uppercasefirst(data.status);
         this.bannerText = data.disableDesc;
         const policyParams = JSON.parse(this.policyDetails.policyParams);
-        this.allpolicyParams = Array.isArray(policyParams.params)
+        if(policyParams){
+            this.allpolicyParams = Array.isArray(policyParams.params)
             ? (policyParams.params as PolicyParams[]).filter(
                   (p) => p.key !== 'severity' && p.key !== 'policyCategory',
               )
             : [];
 
-        if (policyParams.autofix) {
-            this.isAutofixEnabled = policyParams.autofix;
+            if (policyParams.autofix) {
+                this.isAutofixEnabled = policyParams.autofix;
+            }
         }
 
         this.actionItems = [
@@ -241,6 +244,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
             !!this.policyDetails.assetGroup && DATA_MAPPING[this.policyDetails.assetGroup]
                 ? DATA_MAPPING[this.policyDetails.assetGroup]
                 : this.uppercasefirst(this.policyDetails.assetGroup);
+        this.assetGroupImage = this.assetGroup.replace(/\s/g, '').toLowerCase();
     }
 
     /**
