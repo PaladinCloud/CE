@@ -31,6 +31,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+import static com.tmobile.cso.pacman.inventory.InventoryConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+
 /**
  * The Class InventoryFetchOrchestrator.
  */
@@ -109,9 +112,9 @@ public class InventoryFetchOrchestrator {
 			log.info("End : Upload Files to S3");
 		    
 		}catch(Exception e){
-			log.error("Asset Discovery Failed" , e);
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "Asset Discovery Failed ", e);
+			System.exit(1);
 		}
-		
 		return ErrorManageUtil.formErrorCode();
 	}
 	

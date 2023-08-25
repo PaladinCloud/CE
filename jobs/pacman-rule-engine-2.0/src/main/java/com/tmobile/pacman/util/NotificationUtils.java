@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.*;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.POLICY_ID;
 
 public class NotificationUtils {
@@ -36,7 +37,7 @@ public class NotificationUtils {
 
 
             for (Annotation annotation : annotations) {
-                LOGGER.info("annotation policy id--"+annotation.get(POLICY_NAME)+" issueid -- "+annotation.get(PacmanSdkConstants.ANNOTATION_PK));
+                LOGGER.info("annotation policy -- "+annotation.get(POLICY_NAME)+" docid -- "+annotation.get(DOC_ID));
                 String annotationId = CommonUtils.getUniqueAnnotationId(annotation);
                 annotation.put(PacmanSdkConstants.ANNOTATION_PK, annotationId);
                 Map<String, String> issueAttributes = existingIssuesMap.get(annotationId);
@@ -57,7 +58,7 @@ public class NotificationUtils {
             }
         }
         catch (Exception e) {
-            LOGGER.error("Error triggering lambda function url, notification request not sent. Error - {}",e.getMessage());
+            LOGGER.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id  "+annotations.get(0).get(POLICY_NAME)+" Error message - Error triggering lambda function url, notification request not sent.", e);
         }
     }
 
@@ -160,7 +161,7 @@ public class NotificationUtils {
             }
         }
         catch(Exception exception){
-            LOGGER.error("exception occurred in triggerAutofixNotification with message - {}",exception.getMessage());
+            LOGGER.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " in triggerAutofixNotification with message - {}",exception.getMessage());
             return false;
         }
         return true;
@@ -226,7 +227,7 @@ public class NotificationUtils {
             }
         }
         catch(Exception exception){
-            LOGGER.error("exception occurred in triggerAutofixNotification with message - {}",exception.getMessage());
+            LOGGER.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " in triggerSilentAutofixNotification with message - {}",exception.getMessage());
         }
     }
 

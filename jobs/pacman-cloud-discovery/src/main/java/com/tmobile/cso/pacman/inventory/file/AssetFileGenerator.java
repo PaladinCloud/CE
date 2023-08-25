@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.tmobile.cso.pacman.inventory.InventoryCollectionJob;
 import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,9 @@ import com.tmobile.cso.pacman.inventory.util.ElastiCacheUtil;
 import com.tmobile.cso.pacman.inventory.util.InventoryUtil;
 import com.tmobile.cso.pacman.inventory.util.KinesisInventoryUtil;
 import com.tmobile.cso.pacman.inventory.util.SNSInventoryUtil;
+
+import static com.tmobile.cso.pacman.inventory.InventoryConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 
 /**
@@ -85,7 +89,8 @@ public class AssetFileGenerator {
 			FileManager.initialise(filePath);
 			ErrorManageUtil.initialise();
 		} catch (IOException e1) {
-			log.error("Error initialising File ",e1);
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while initialising File ", e1);
+			System.exit(1);
 		}
 		Iterator<Map<String, String>> it = accounts.iterator();
 
@@ -96,15 +101,15 @@ public class AssetFileGenerator {
 
 			log.info("Started Discovery for account {}", accountId);
 			BasicSessionCredentials tempCredentials = null;
-			try{
-				tempCredentials = credProvider.getCredentials(accountId,roleName);
-				log.info("updating account status of aws account- {} to online.",accountId);
-				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='configured' WHERE accountId=?",Arrays.asList(accountId));
-			}catch(Exception e){
-				log.error("{\"errcode\":\"NO_CRED\" , \"account\":\""+accountId +"\", \"Message\":\"Error getting credentials for account "+accountId +"\" , \"cause\":\"" +e.getMessage()+"\"}");
+			try {
+				tempCredentials = credProvider.getCredentials(accountId, roleName);
+				log.info("updating account status of aws account- {} to online.", accountId);
+				rdsdbManager.executeUpdate("UPDATE cf_Accounts SET accountStatus='configured' WHERE accountId=?", Arrays.asList(accountId));
+			} catch (Exception e) {
+				log.error("{\"errcode\":\"NO_CRED\" , \"account\":\"" + accountId + "\", \"Message\":\"Error getting credentials for account " + accountId + "\" , \"cause\":\"" + e.getMessage() + "\"}");
 				ErrorManageUtil.uploadError(accountId, "all", "all", e.getMessage());
-				rdsdbManager.executeUpdate("UPDATE cf_Accounts set accountStatus='offline' WHERE accountId=?",Arrays.asList(accountId));
-				log.error("updating account status of aws account- {} to offline.",accountId);
+				rdsdbManager.executeUpdate("UPDATE cf_Accounts set accountStatus='offline' WHERE accountId=?", Arrays.asList(accountId));
+				log.error("updating account status of aws account- {} to offline.", accountId);
 				continue;
 			}
 			final BasicSessionCredentials temporaryCredentials = tempCredentials;
@@ -1223,28 +1228,21 @@ public class AssetFileGenerator {
 			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
-
 			}
-
 			log.info("Completed Discovery for accountId " + accountId);
 		}
-
 		ErrorManageUtil.writeErrorFile();
-		try {
-			ErrorManageUtil.omitOpsAlert();
-			if (!ErrorManageUtil.getErrorMap().isEmpty()) {
-				//Below logger message is used by datadog to create notification in slack
-				log.error("Error occurred in atleast one collector for jobId : AWS-Data-Collector-Job");
-			}
-		} catch (Exception e) {
-			log.error("Error occurred during omitOpsAlert!! ");
+		ErrorManageUtil.omitOpsAlert();
+		if (!ErrorManageUtil.getErrorMap().isEmpty()) {
+			//Below logger message is used by datadog to create data alert.
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " in at least one collector.");
 		}
-
 		try {
 			FileManager.finalise();
 			ErrorManageUtil.finalise();
 		} catch (IOException e) {
-			log.error("Error Writing File", e);
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while writing data to file", e);
+			System.exit(1);
 		}
 	}
 

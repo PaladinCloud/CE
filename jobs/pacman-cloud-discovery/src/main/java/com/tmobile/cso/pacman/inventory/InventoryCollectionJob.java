@@ -23,8 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tmobile.cso.pacman.inventory.config.ConfigUtil;
-import com.tmobile.cso.pacman.inventory.file.ErrorManageUtil;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
+
+import static com.tmobile.cso.pacman.inventory.InventoryConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 /**
  * The Class InventoryCollectionJob.
@@ -61,9 +63,9 @@ public class InventoryCollectionJob {
 		try {
 			ConfigUtil.setConfigProperties();
 		} catch (Exception e) {
-			log.error("Error fetching config", e);
-			ErrorManageUtil.uploadError("all", "all", "all", "Error fetching config "+ e.getMessage());
-			return ErrorManageUtil.formErrorCode();
+			//below logger is used to create data alert
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while fetching config properties");
+			System.exit(1);
 		}
 		return InventoryFetchApplication.main( new String[]{});
 	}

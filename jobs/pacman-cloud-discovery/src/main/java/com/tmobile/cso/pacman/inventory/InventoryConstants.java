@@ -83,4 +83,5 @@ public final class InventoryConstants {
     public static final String RDS_PWD = "spring.datasource.password";
 
     public static final String REGION_GLOBAL = "global";
+    public static final String JOB_NAME = " aws-data-collector-job ";
 }

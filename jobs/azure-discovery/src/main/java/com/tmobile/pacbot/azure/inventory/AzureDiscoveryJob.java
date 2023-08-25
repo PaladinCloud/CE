@@ -25,6 +25,9 @@ import org.slf4j.LoggerFactory;
 import com.tmobile.pacbot.azure.inventory.config.ConfigUtil;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
 
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+import static com.tmobile.pacbot.azure.inventory.InventoryConstants.JOB_NAME;
+
 /**
  * The Class InventoryCollectionJob.
  */
@@ -60,9 +63,9 @@ public class AzureDiscoveryJob {
 				params.forEach((k,v) -> System.setProperty(k, v));
 			}
 		} catch (Exception e) {
-			log.error("Error fetching config", e);
-			ErrorManageUtil.uploadError("all", "all", "all", "Error fetching config "+ e.getMessage());
-			//return ErrorManageUtil.formErrorCode();
+			//below logger is used to create data alert
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while fetching config properties", e);
+			System.exit(1);
 		}
 		return AzureDiscoveryApplication.collect( new String[]{});
 	}

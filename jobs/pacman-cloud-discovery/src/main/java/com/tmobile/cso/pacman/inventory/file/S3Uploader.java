@@ -38,6 +38,9 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.tmobile.cso.pacman.inventory.InventoryFetchOrchestrator;
 import com.tmobile.cso.pacman.inventory.auth.CredentialProvider;
 
+import static com.tmobile.cso.pacman.inventory.InventoryConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+
 /**
  * The Class S3Uploader.
  */
@@ -119,8 +122,9 @@ public class S3Uploader {
 		   
 		   log.info("Transfer completed");
 		} catch (Exception e) {
-			log.error("{\"errcode\": \"S3_UPLOAD_ERR\" ,\"account\": \"ANY\",\"Message\": \"Exception in loading files to S3\", \"cause\":\"" +e.getMessage()+"\"}") ;
-			ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
+			xferMgr.shutdownNow();
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while loading files to S3. ", e);
+			System.exit(1);
 		}
 		 xferMgr.shutdownNow();
 	}
@@ -142,7 +146,7 @@ public class S3Uploader {
 				s3client.copyObject(s3Bucket,key,s3Bucket,to+"/"+fileName);
 				log.debug("    Copy "+fileName + " to backup folder");
 			}catch(Exception e){
-				log.info("    Copy "+fileName + "failed",e);
+				log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " while copying "+fileName+" failed.", e);
 				ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
 			}
 		}
@@ -159,12 +163,11 @@ public class S3Uploader {
 		
 		String[] keys = listKeys(s3client,s3Bucket,folder);
 		DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(s3Bucket).withKeys((keys));
-		
 		try{
 			DeleteObjectsResult result = s3client.deleteObjects(multiObjectDeleteRequest);
 			log.debug("Files Deleted " +result.getDeletedObjects().stream().map(obj->obj.getKey()).collect(Collectors.toList()));
 		}catch(Exception e){
-			log.error("Delete Failed",e);
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while deleting files ", e);
 			ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
 		}
 	}

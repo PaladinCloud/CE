@@ -26,7 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 
+import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
 import static com.tmobile.pacman.common.PacmanSdkConstants.TARGET_TYPE;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -65,7 +67,7 @@ public class AuditUtils {
                     try {
                         CommonUtils.doHttpPost(requestUrl, requestBody.toString());
                     } catch (Exception e) {
-                        logger.error("Audit creation failed", e);
+                        logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " Error message - Audit creation failed. ", e);
                     }
                     requestBody = new StringBuilder();
                 }
@@ -78,7 +80,7 @@ public class AuditUtils {
             try {
                 CommonUtils.doHttpPost(requestUrl, requestBody.toString());
             } catch (Exception e) {
-                logger.error("Audit creation failed", e);
+                logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "Error message - Audit creation failed.", e);
             }
         }
 

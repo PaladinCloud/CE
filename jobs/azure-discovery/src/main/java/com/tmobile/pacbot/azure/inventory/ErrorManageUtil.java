@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.tmobile.pacman.commons.dto.ErrorVH;
 import com.tmobile.pacman.commons.dto.PermissionVH;
 import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
+import com.google.api.client.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tmobile.pacbot.azure.inventory.file.FileGenerator;
@@ -36,7 +37,6 @@ public class ErrorManageUtil {
      * The log.
      */
     private static Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
-
     /**
      * The error map.
      */

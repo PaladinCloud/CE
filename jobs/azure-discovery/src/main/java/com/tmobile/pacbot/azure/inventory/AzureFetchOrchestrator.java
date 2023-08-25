@@ -16,10 +16,11 @@ import com.tmobile.pacbot.azure.inventory.file.AssetFileGenerator;
 import com.tmobile.pacbot.azure.inventory.file.S3Uploader;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import static com.tmobile.pacbot.azure.inventory.ErrorManageUtil.triggerNotificationforPermissionDenied;
+import static com.tmobile.pacbot.azure.inventory.InventoryConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 @Component
 public class AzureFetchOrchestrator {
-
     @Autowired
     AssetFileGenerator fileGenerator;
 
@@ -52,17 +53,20 @@ public class AzureFetchOrchestrator {
 
     @Value("${s3.region}")
     private String s3Region;
-
+    private static int numberOfAccounts = 0;
     /**
      * The log.
      */
     private static Logger log = LoggerFactory.getLogger(AzureFetchOrchestrator.class);
 
     public Map<String, Object> orchestrate() {
-
         try {
             List<SubscriptionVH> subscriptions = fetchSubscriptions();
             if (subscriptions.isEmpty()) {
+                if (numberOfAccounts > 0) {
+                    log.error(DATA_ALERT_ERROR_STRING + JOB_NAME+ " Not able to connect to any of azure accounts.");
+                    System.exit(1);
+                }
                 ErrorManageUtil.uploadError("all", "all", "all", "Error fetching subscription Info ");
                 return ErrorManageUtil.formErrorCode();
             }
@@ -78,23 +82,20 @@ public class AzureFetchOrchestrator {
             log.info("Start : Upload Files to S3");
             s3Uploader.uploadFiles(s3Bucket, s3Data, s3Region, filePath);
             log.info("End : Upload Files to S3");
-
-
         } catch (Exception e) {
             log.info(e.getMessage());
+            System.exit(1);
         }
-        return null;
+        return ErrorManageUtil.formErrorCode();
     }
 
     private List<SubscriptionVH> fetchSubscriptions() {
         List<SubscriptionVH> subscriptionList = new ArrayList<>();
         String accountQuery = "SELECT accountId,accountName,accountStatus FROM cf_Accounts where platform = 'azure'";
         List<Map<String, String>> accounts = rdsdbManager.executeQuery(accountQuery);
-        List<String> tenantList = new ArrayList<>();
+        numberOfAccounts = accounts.size();
         for (Map<String, String> account : accounts) {
-            tenantList.add(account.get("accountId"));
-        }
-        for (String tenant : tenantList) {
+            String tenant = account.get("accountId");
             try {
                 Authenticated azure = azureCredentialProvider.authenticate(tenant);
                 PagedList<Subscription> subscriptions = azure.subscriptions().list();
