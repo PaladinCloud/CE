@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
+import com.tmobile.pacman.util.CommonUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.slf4j.Logger;
@@ -110,10 +111,12 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                         // delta between resource in and result out
                         if(eCount==0){
                             //Below logger message will be used by datadog to create notification in slack.
-                            logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
+                            logger.error("Exception occurred in rule engine job with policyUUID:"+policyParam.get(PacmanSdkConstants.POLICY_UUID) +
+                                    ". Error message - "+String.format("unable to evaluate for this resource %s" , resource)+","+e.getMessage());
+                            PolicyExecutor.errorWhileProcessing = true;
                         }
                         eCount++;
-                        logger.error(String.format("unable to evaluvate for this resource %s" , resource), e); // this will be handled as missing evaluation at RuleEcecutor
+                        logger.error(String.format("unable to evaluate for this resource %s" , resource), e); // this will be handled as missing evaluation at RuleEcecutor
                     }
                     policyAnnotation = policyClass.getAnnotation(PacmanPolicy.class);
                 }
@@ -174,8 +177,9 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                         e);
                 if(eCount==0){
                     //Below logger message will be used by datadog to create notification in slack.
-                    logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
-                }
+                    logger.error("Exception occurred in rule engine job with policyUUID:"+policyParam.get(PacmanSdkConstants.POLICY_UUID) +
+                            ". Error message - rule execution for resource " + resource.get("id") + " failed due to " + e.getMessage());
+                    PolicyExecutor.errorWhileProcessing = true;                }
                 eCount++;
             }
         }

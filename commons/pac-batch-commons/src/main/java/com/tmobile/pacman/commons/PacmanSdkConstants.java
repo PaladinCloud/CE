@@ -320,4 +320,6 @@ public interface PacmanSdkConstants {
 	String ROLE_SUFFIX = "_ro";
 	Integer MAX_RETRY_COUNT=3;
 
+	String POLICY_UUID="policyUUID";
+
 }

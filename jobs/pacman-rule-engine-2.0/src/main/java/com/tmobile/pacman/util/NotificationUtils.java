@@ -8,6 +8,7 @@ import com.tmobile.pacman.dto.PolicyViolationNotificationRequest;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.utils.Constants;
 import com.tmobile.pacman.dto.AutofixNotificationRequest;
+import com.tmobile.pacman.executor.PolicyExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +57,8 @@ public class NotificationUtils {
         }
         catch (Exception e) {
             LOGGER.error("Error triggering lambda function url, notification request not sent. Error - {}",e.getMessage());
+            LOGGER.error("Exception occurred in rule engine job with policyUUID: "+annotations.get(0).get(POLICY_NAME)+" Error message - Error triggering lambda function url, notification request not sent, "+e.getMessage());
+            PolicyExecutor.errorWhileProcessing=true;
         }
     }
 

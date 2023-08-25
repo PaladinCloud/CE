@@ -46,6 +46,10 @@ public class InventoryCollectionJob {
 			params.put(keyValue[0], keyValue[1]);
 		});
 		execute(params);
+		if (!ErrorManageUtil.getErrorMap().isEmpty())
+			System.exit(-1);
+		else
+			System.exit(0);
 	}
 	
 	/**

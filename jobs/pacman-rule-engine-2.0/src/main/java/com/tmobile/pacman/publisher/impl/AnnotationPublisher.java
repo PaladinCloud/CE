@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.google.gson.*;
 import com.tmobile.pacman.commons.dao.RDSDBManager;
+import com.tmobile.pacman.executor.PolicyExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -258,9 +259,6 @@ public class AnnotationPublisher {
 
             // Convert the updated map object back to JSON string
             String updatedInputStr = gson.toJson(inputObj);
-
-            System.out.println(updatedInputStr);
-
             bulkRequestBody.append(updatedInputStr);
             bulkRequestBody.append("\n");
             logger.info("************************ Printing Annotation****************** : {}", updatedInputStr);
@@ -278,7 +276,7 @@ public class AnnotationPublisher {
         }
         responseList.add(serializer.fromJson(response, Map.class));
         if (responsesHasError(responseList)) {
-            processErrors(responseList);
+            processErrors(responseList,response);
         }
 
     }
@@ -486,9 +484,11 @@ public class AnnotationPublisher {
      *
      * @param responseMapList the response map list
      */
-    private void processErrors(List<Map<String, Map>> responseMapList) {
-        logger.error("some errors occured while publishing the anotation, but no error handler found to handle it",
+    private void processErrors(List<Map<String, Map>> responseMapList, String response) {
+        logger.error("some errors occurred while publishing the annotation, but no error handler found to handle it",
                 responseMapList);
+        logger.error("Exception occurred in rule engine job with policyUUID: Error message - some errors occurred while publishing the annotation, but no error handler found to handle it"+response);
+        PolicyExecutor.errorWhileProcessing=true;
         // need to implement the error handling here
     }
 

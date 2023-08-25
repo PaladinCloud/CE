@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.pacbot.azure.inventory.collector.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,10 @@ public class AzureDiscoveryJob {
 			params.put(keyValue[0], keyValue[1]);
 		});
 		execute(params);
+		if (Util.eCount.get()>0)
+			System.exit(-1);
+		else
+			System.exit(0);
 	}
 	
 	/**

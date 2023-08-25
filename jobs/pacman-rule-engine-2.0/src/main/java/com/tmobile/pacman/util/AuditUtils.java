@@ -18,6 +18,7 @@ package com.tmobile.pacman.util;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
+import com.tmobile.pacman.executor.PolicyExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.TARGET_TYPE;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.POLICY_NAME;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -66,6 +68,8 @@ public class AuditUtils {
                         CommonUtils.doHttpPost(requestUrl, requestBody.toString());
                     } catch (Exception e) {
                         logger.error("Audit creation failed", e);
+                        logger.error("Exception occurred in rule engine job with policyUUID:  Error message - Audit creation failed, "+e.getMessage());
+                        PolicyExecutor.errorWhileProcessing=true;
                     }
                     requestBody = new StringBuilder();
                 }
@@ -79,6 +83,8 @@ public class AuditUtils {
                 CommonUtils.doHttpPost(requestUrl, requestBody.toString());
             } catch (Exception e) {
                 logger.error("Audit creation failed", e);
+                logger.error("Exception occurred in rule engine job with policyUUID:  Error message - Audit creation failed, "+e.getMessage());
+                PolicyExecutor.errorWhileProcessing=true;
             }
         }
 

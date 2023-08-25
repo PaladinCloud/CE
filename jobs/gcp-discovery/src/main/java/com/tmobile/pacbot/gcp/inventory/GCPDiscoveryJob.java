@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.pacbot.gcp.inventory.collector.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,10 @@ so npm install should be run manually
 			params.put(keyValue[0], keyValue[1]);
 		});
 		execute(params);
+		if (Util.errorCount.get()>0)
+			System.exit(-1);
+		else
+			System.exit(0);
 	}
 	
 	/**

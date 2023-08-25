@@ -95,10 +95,12 @@ public class JobExecutor {
             executeMethod = ReflectionUtils.findAssociatedMethod(jobObject, methodName);
         } catch (Exception e) {
             logger.error("Please check the job class complies to implemetation contract", e);
+            logger.error("Exception occurred in job. "+jobParams);
             ProgramExitUtils.exitWithError();
         }
         if(null==executeMethod){
             logger.error("unable to find execute method");
+            logger.error("Exception occurred in job. "+jobParams);
             ProgramExitUtils.exitWithError();
         }else
         {
@@ -112,6 +114,7 @@ public class JobExecutor {
                 }
             } catch (Exception e) {
                 logger.debug("job execution failed", e);
+                logger.error("Exception occurred in job. "+jobParams);
                 ProgramExitUtils.exitWithError();
             }
             long endTime = System.nanoTime();

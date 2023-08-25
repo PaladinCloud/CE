@@ -69,6 +69,7 @@ public class PolicyExecutor {
     
     /** The is resource filter exists. */
     private Boolean isResourceFilterExists = Boolean.FALSE;
+    public static Boolean errorWhileProcessing = Boolean.FALSE;
     
     /**  Annotation Publisher *. */
     AnnotationPublisher annotationPublisher;
@@ -107,6 +108,8 @@ public class PolicyExecutor {
                         new PolicyExecutor().run(args, executionId);
                 } catch (Exception e) {
                     logger.error("error while in policy method for executionId ->" + executionId, e);
+                    logger.error("Exception occurred in rule engine job with policyUUID:"+CommonUtils.buildPolicyUUIDFromJson(args[0])+". Error message - "+e.getMessage());
+                    ProgramExitUtils.exitWithError();
                 }
         }
     }
@@ -124,7 +127,6 @@ public class PolicyExecutor {
             throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         Map<String, String> policyParam = new HashMap<String, String>();
         String policyParams = "";
-        Boolean errorWhileProcessing = Boolean.FALSE;
 
         Map<String, Object> policyEngineStats = new HashMap<>();
         
@@ -149,7 +151,9 @@ public class PolicyExecutor {
 			} catch (Exception e) {
 				logger.error(
                         "failed in closing expired exemption for policyUUID {}", policyUUID);
-			}
+                logger.error("Exception occurred in rule engine job with policyUUID:"+policyUUID+". Error message - Failed in closing expired exemption, "+e.getMessage());
+                PolicyExecutor.errorWhileProcessing = true;
+            }
             String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
             policyDetailsUrl += policyUUID;
             String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
@@ -164,6 +168,7 @@ public class PolicyExecutor {
                 logger.error(
                         "Policy details for the policyID {} not found ", policyUUID);
                 logger.error("exiting now..");
+                logger.error("Exception occurred in rule engine job with policyUUID:"+policyUUID+". Error message - Policy details not found");
                 ProgramExitUtils.exitWithError();
             }
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
@@ -176,6 +181,7 @@ public class PolicyExecutor {
                 logger.error(
                         "data source is missing, will not be able to figure out the target index to post the policy evaluvation, please check rule configuration");
                 logger.error("exiting now..");
+                logger.error("Exception occurred in rule engine job with policyUUID:"+policyUUID+". Error message - data source is missing, will not be able to figure out the target index to post the policy evaluation, please check rule configuration.");
                 ProgramExitUtils.exitWithError();
             }
             logger.debug("policy Param String " + policyParams);
@@ -184,9 +190,10 @@ public class PolicyExecutor {
         } else {
             logger.debug(
                     "No arguments available for policy execution, unable to identify the policy due to missing arguments");
-            logger.debug("atlest policy key is required to identify the policy class");
+            logger.debug("at least policy key is required to identify the policy class");
             logger.debug("returning now.");
-            return;
+            logger.error("Exception occurred in rule engine job with policyUUID:"+CommonUtils.buildPolicyUUIDFromJson(args[0])+". Error message - No arguments available for policy execution, unable to identify the policy due to missing arguments.");
+            ProgramExitUtils.exitWithError();
         }
         try{
             setLogLevel(policyParam);
@@ -242,16 +249,15 @@ public class PolicyExecutor {
             }
             resources = ESUtils.getResourcesFromEs(indexName, policyParam.get(PacmanSdkConstants.TARGET_TYPE), filter,
                     userFields);
-            logger.debug("got resources for evaluvation, total resources = " + resources.size());
+            logger.debug("got resources for evaluation, total resources = " + resources.size());
             policyEngineStats.put("timeTakenToFetchInventory", CommonUtils.getElapseTimeSince(startTime));
             if(resources.isEmpty()){
                 logger.info("no resources to evaluvate exiting now");
                 ProgramExitUtils.exitSucessfully();
             }
         } catch (Exception e) {
-            logger.error(
-                    "unable to get inventory for " + indexName + "--" + policyParam.get(PacmanSdkConstants.TARGET_TYPE),
-                    e);
+            logger.error("unable to get inventory for " + indexName + "--" + policyParam.get(PacmanSdkConstants.TARGET_TYPE),e);
+            logger.error("Exception occurred in rule engine job with policyUUID:"+CommonUtils.buildPolicyUUIDFromJson(args[0])+". Error message - unable to get inventory for "+ indexName + " + policyParam.get(PacmanSdkConstants.TARGET_TYPE), "+e.getMessage());
             policyEngineStats.put("errorMessage", "unable to fetch inventory");
             policyEngineStats.put("technicalErrorDetails", e.getMessage());
             ProgramExitUtils.exitWithError();
@@ -295,7 +301,7 @@ public class PolicyExecutor {
             policyEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
             logger.error("exiting now..", e);
             //below error message will be used by datadog to create notification in slack.
-            logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
+            logger.error("Exception occurred in rule engine job with policyUUID:"+CommonUtils.buildPolicyUUIDFromJson(args[0])+". Error message - "+e.getMessage());
             ProgramExitUtils.exitWithError();
         }
 
@@ -372,6 +378,7 @@ public class PolicyExecutor {
         } catch (Exception e) {
             logger.error("error while processing evaluations", e);
             policyEngineStats.put("error-while-processing-evaluations", e.getLocalizedMessage());
+            logger.error("Exception occurred in rule engine job with policyUUID:"+CommonUtils.buildPolicyUUIDFromJson(args[0])+". Error message - error while processing evaluations, "+e.getMessage());
             errorWhileProcessing = true;
         }
         policyEngineStats.put("timeTakenToProcessEvaluations", CommonUtils.getElapseTimeSince(startTime));
@@ -384,6 +391,8 @@ public class PolicyExecutor {
                 ESUtils.publishMetrics(policyEngineStats,type);
         }catch(Exception e) {
             logger.error("unable to publish metrics", e);
+            logger.error("Exception occurred in rule engine job with policyUUID:"+CommonUtils.buildPolicyUUIDFromJson(args[0])+". Error message - unable to publish metrics, "+e.getMessage());
+            errorWhileProcessing = true;
         }
         if (!errorWhileProcessing)
             ProgramExitUtils.exitSucessfully();
@@ -466,7 +475,7 @@ public class PolicyExecutor {
             Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
 
         Map<String, Object> metrics = new HashMap();
-        metrics.put("totalResourcesEvalauetd", evaluations.size());
+        metrics.put("totalResourcesEvaluated", evaluations.size());
         String evalDate = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
         Annotation annotation = null;
@@ -523,7 +532,7 @@ public class PolicyExecutor {
                 // annotationPublisher.publishAnnotationToEs(annotation);
                 annotationPublisher.submitToPublish(annotation);
                 issueFoundCounter++;
-                logger.info("submitted annotaiton to publisher");
+                logger.info("submitted annotation to publisher");
             }
 
         }
