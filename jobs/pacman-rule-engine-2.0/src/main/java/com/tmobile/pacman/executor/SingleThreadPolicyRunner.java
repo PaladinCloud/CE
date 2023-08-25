@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
+import com.tmobile.pacman.util.CommonUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.slf4j.Logger;
@@ -36,6 +37,9 @@ import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.util.ReflectionUtils;
 import com.tmobile.pacman.util.PolicyExecutionUtils;
+
+import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -64,11 +68,10 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                 policyKey = policyParam.get(PacmanSdkConstants.POLICY_KEY);
                 policyClass = ReflectionUtils.findAssociateClass(policyKey);
                 policyObject = policyClass.newInstance();
-                // executeMethod =
-                // ReflectionUtils.findEntryMethod(ruleObject,PacmanExecute.class);
                 executeMethod = ReflectionUtils.findAssociatedMethod(policyObject, "execute");
             } catch (Exception e) {
-                logger.error("Please check the rule class complies to implemetation contract, rule key=" + policyKey, e);
+                logger.error("Please check the rule class complies to implementation contract, rule key=" + policyKey, e);
+                logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + " execute method not found.");
                 throw e;
             }
         }
@@ -110,10 +113,11 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                         // delta between resource in and result out
                         if(eCount==0){
                             //Below logger message will be used by datadog to create notification in slack.
-                            logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
+                            logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
+                                    ". Error message - " + String.format("unable to evaluate for this resource %s", resource) + "," + e.getMessage());
                         }
                         eCount++;
-                        logger.error(String.format("unable to evaluvate for this resource %s" , resource), e); // this will be handled as missing evaluation at RuleEcecutor
+                        logger.error(String.format("unable to evaluate for this resource %s" , resource), e); // this will be handled as missing evaluation at RuleEcecutor
                     }
                     policyAnnotation = policyClass.getAnnotation(PacmanPolicy.class);
                 }
@@ -146,39 +150,39 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                     result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
                     result.getAnnotation().put(PacmanRuleConstants.ACCOUNTID,resource.get(PacmanRuleConstants.ACCOUNTID));
                     mandatoryTag.forEach(result.getAnnotation()::putIfAbsent);
-                }
-                else {
-                            Annotation annotation = Annotation.buildAnnotation(policyParam, Annotation.Type.ISSUE);
-                            annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY,
-                                    policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
-                            annotation.put(PacmanSdkConstants.TARGET_TYPE, policyParam.get(PacmanSdkConstants.TARGET_TYPE));
-                            if(null!=result){
-                                annotation.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, result.getDesc());
-                            }
-                            annotation.put(PacmanSdkConstants.POLICY_ID, policyParam.get(PacmanSdkConstants.POLICY_ID));
-                            if (policyParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
-                                annotation.put(PacmanSdkConstants.INVOCATION_ID,
-                                        policyParam.get(PacmanSdkConstants.INVOCATION_ID));
-                            }
-                            annotation.put(PacmanSdkConstants.RESOURCE_ID,
-                                    resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
-                            annotation.put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanRuleConstants.ACCOUNTID));
-                            annotation.put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
-                            annotation.put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID)); // this is important to close the issue
-                            mandatoryTag.forEach(annotation::putIfAbsent);
-                            if(null!=result){
-                                result.setAnnotation(annotation);
-                            }else{
-                                continue;
-                            }
+                } else {
+                    Annotation annotation = Annotation.buildAnnotation(policyParam, Annotation.Type.ISSUE);
+                    annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY,
+                            policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
+                    annotation.put(PacmanSdkConstants.TARGET_TYPE, policyParam.get(PacmanSdkConstants.TARGET_TYPE));
+                    if (null != result) {
+                        annotation.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, result.getDesc());
+                    }
+                    annotation.put(PacmanSdkConstants.POLICY_ID, policyParam.get(PacmanSdkConstants.POLICY_ID));
+                    if (policyParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
+                        annotation.put(PacmanSdkConstants.INVOCATION_ID,
+                                policyParam.get(PacmanSdkConstants.INVOCATION_ID));
+                    }
+                    annotation.put(PacmanSdkConstants.RESOURCE_ID,
+                            resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
+                    annotation.put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanRuleConstants.ACCOUNTID));
+                    annotation.put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
+                    annotation.put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID)); // this is important to close the issue
+                    mandatoryTag.forEach(annotation::putIfAbsent);
+                    if (null != result) {
+                        result.setAnnotation(annotation);
+                    } else {
+                        continue;
+                    }
                 }
                 evaluations.add(result);
             } catch (Exception e) {
                 logger.debug("rule execution for resource " + resource.get("id") + " failed due to " + e.getMessage(),
                         e);
                 if(eCount==0){
-                    //Below logger message will be used by datadog to create notification in slack.
-                    logger.error("Exception occurred for policy with policyId:"+policyParam.get(PacmanSdkConstants.POLICY_ID));
+                    //Below logger message will be used by datadog to create data dog alert.
+                    logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
+                            ". Error message - rule execution for resource " + resource.get("id") + " failed. ", e);
                 }
                 eCount++;
             }

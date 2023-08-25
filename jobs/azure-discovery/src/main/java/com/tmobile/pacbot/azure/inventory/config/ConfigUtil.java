@@ -28,10 +28,7 @@ public class ConfigUtil {
     
     @SuppressWarnings("unchecked")
     public static Map<String,String> fetchConfigProperties(String base64Creds) throws Exception {
-        
         Map<String,String> properties = new HashMap<>();
-       
-        
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             Map<String,String> appProps = new HashMap<>();
@@ -60,9 +57,8 @@ public class ConfigUtil {
         if(properties.isEmpty()){
         	throw new Exception("No config properties fetched from "+configUrl);
         }
-        
-        log.info("Config are feteched from {}",configUrl);
-        properties.forEach((k,v)-> log.debug("   {} : {} ",k,v));
+        log.info("Config are fetched from {}", configUrl);
+        properties.forEach((k,v)-> log.debug("{} : {}",k,v));
         return properties;
     }
 }

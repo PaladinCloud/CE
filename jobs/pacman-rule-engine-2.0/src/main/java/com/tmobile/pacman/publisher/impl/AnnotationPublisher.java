@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.google.gson.*;
 import com.tmobile.pacman.commons.dao.RDSDBManager;
+import com.tmobile.pacman.executor.PolicyExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,9 @@ import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
+
+import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -258,9 +262,6 @@ public class AnnotationPublisher {
 
             // Convert the updated map object back to JSON string
             String updatedInputStr = gson.toJson(inputObj);
-
-            System.out.println(updatedInputStr);
-
             bulkRequestBody.append(updatedInputStr);
             bulkRequestBody.append("\n");
             logger.info("************************ Printing Annotation****************** : {}", updatedInputStr);
@@ -278,9 +279,8 @@ public class AnnotationPublisher {
         }
         responseList.add(serializer.fromJson(response, Map.class));
         if (responsesHasError(responseList)) {
-            processErrors(responseList);
+            processErrors(responseList,response);
         }
-
     }
 
     /**
@@ -486,9 +486,8 @@ public class AnnotationPublisher {
      *
      * @param responseMapList the response map list
      */
-    private void processErrors(List<Map<String, Map>> responseMapList) {
-        logger.error("some errors occured while publishing the anotation, but no error handler found to handle it",
-                responseMapList);
+    private void processErrors(List<Map<String, Map>> responseMapList, String response) {
+        logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " while publishing the annotation, but no error handler found to handle it. Number of errors is "+responseMapList.size()+" "+ response);
         // need to implement the error handling here
     }
 

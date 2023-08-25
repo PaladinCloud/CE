@@ -13,6 +13,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.tmobile.pacbot.azure.inventory.AzureDiscoveryJob;
+import com.tmobile.pacbot.azure.inventory.ErrorManageUtil;
 import com.tmobile.pacbot.azure.inventory.collector.*;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import com.tmobile.pacman.commons.database.RDSDBManager;
@@ -29,6 +31,8 @@ import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
 import static com.tmobile.pacbot.azure.inventory.ErrorManageUtil.triggerNotificationforPermissionDenied;
+import static com.tmobile.pacbot.azure.inventory.InventoryConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 @Component
 public class AssetFileGenerator {
@@ -219,13 +223,13 @@ public class AssetFileGenerator {
 		try {
 			FileManager.initialise(filePath);
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME+ " Failed to create file in S3 in the given path");
+			System.exit(1);
 		}
 
 		List<String> connectedSubscriptions = new ArrayList<>();
 		for (SubscriptionVH subscription : subscriptions) {
 			log.info("Started Discovery for sub {}", subscription);
-
 			try {
 				String accessToken = azureCredentialProvider.getAuthToken(subscription.getTenant());
 				Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),
@@ -890,18 +894,17 @@ public class AssetFileGenerator {
 			}
 
 			while (!executor.isTerminated()) {
-
 			}
 
 			log.info("Finished Discovery for sub {}", subscription);
 		}
 		triggerNotificationforPermissionDenied();
-		//Below logger message is used by datadog to create notification in slack
+		//Below logger message is used by datadog to create alert.
 		if(Util.eCount.get()>0){
-			log.error("Error occurred in atleast one collector for jobId : Azure-Data-Collector-Job");
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " for at least one collector. Number of failures detected is " + Util.eCount.get());
 		}
 		if(connectedSubscriptions.isEmpty()){
-			rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline'",Collections.emptyList());
+			rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline'", Collections.emptyList());
 		}
 		else{
 			String combinedConnectedSubsStr = connectedSubscriptions.stream().map(sub -> "'"+sub+"'").collect(Collectors.joining(","));
@@ -910,6 +913,8 @@ public class AssetFileGenerator {
 		try {
 			FileManager.finalise();
 		} catch (IOException e) {
+			log.error(DATA_ALERT_ERROR_STRING + JOB_NAME+ " while adding closing bracket to data files.");
+			System.exit(1);
 		}
 	}
 

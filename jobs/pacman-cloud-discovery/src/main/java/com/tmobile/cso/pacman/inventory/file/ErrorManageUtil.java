@@ -16,6 +16,8 @@
 package com.tmobile.cso.pacman.inventory.file;
 
 import com.google.api.client.util.Strings;
+
+import com.tmobile.cso.pacman.inventory.InventoryCollectionJob;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.pacman.commons.dto.ErrorVH;
 import com.tmobile.pacman.commons.dto.PermissionVH;
@@ -30,12 +32,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static com.tmobile.cso.pacman.inventory.InventoryConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+
 public class ErrorManageUtil {
 
     public static final String OMIT_EXCEPTION = "Omit exception :{}";
     private static Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
     private static Map<String, List<ErrorVH>> errorMap = new ConcurrentHashMap<>();
-
     private ErrorManageUtil() {
     }
 
@@ -47,7 +51,7 @@ public class ErrorManageUtil {
         try {
             FileGenerator.writeToFile("aws-loaderror.data", InventoryConstants.OPEN_ARRAY, false);
         } catch (IOException e) {
-            log.error("Error in Initialise", e);
+            log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while initializing aws-loaderror.data", e);
         }
     }
 
@@ -55,7 +59,7 @@ public class ErrorManageUtil {
         try {
             FileGenerator.writeToFile("aws-loaderror.data", InventoryConstants.CLOSE_ARRAY, true);
         } catch (IOException e) {
-            log.error("Error in finalise", e);
+            log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while writing to aws-loaderror.data", e);
         }
     }
 
@@ -86,7 +90,7 @@ public class ErrorManageUtil {
         try {
             FileManager.generateErrorFile(errorMap);
         } catch (Exception e) {
-            log.error("Error in writeErrorFile", e);
+            log.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "while writing to aws-loaderror.data", e);
         }
     }
 
