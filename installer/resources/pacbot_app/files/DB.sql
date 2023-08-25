@@ -1247,6 +1247,7 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`categor
 
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunction','GCP Cloud Functions','GCP cloud functions','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunction'),'2023-01-10','2023-01-10','Infra & Platforms');
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunctiongen1','GCP Cloud Functions Generation 1','GCP cloud functions Generation 1','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunctiongen1'),'2023-01-10','2023-01-10','Infra & Platforms');
+INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('launchtemplate','EC2 Launch Template','AWS EC2 Launch Template','Compute','aws','{\"key\":\"accountid\",\"id\":\"accountid\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_launchtemplate/launchtemplate'),'2022-05-06','2022-05-06','Infra & Platforms');
 
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11501','201','ec2','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11502','201','s3','all','all');
@@ -1314,6 +1315,7 @@ INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeN
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('815024','201','securityhub','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('21501','201','backupvault','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('21502','201','sqs','all','all');
+INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('21503','201','launchtemplate','all','all');
 
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('00021aac-d0e6-4481-a1e7-8460154482ca','cdffb9cd-71de-4e29-9cae-783c2aa211ac','virtualmachine','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('cf9272ba-c423-4c81-988f-2480e3df1e27','cdffb9cd-71de-4e29-9cae-783c2aa211ac','virtualmachinescaleset','all','all');

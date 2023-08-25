@@ -249,7 +249,7 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "lambda", e.getMessage());
 				}
 			});
-			
+
 			executor.execute(() ->
 			{
 			    if(!(isTypeInScope("eks"))) {
@@ -1029,8 +1029,8 @@ public class AssetFileGenerator {
 					log.error(expPrefix+ "Cloud Trailt\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "cloudtrail", e.getMessage());
 				}
-			}); 
-			
+			});
+
 			executor.execute(() ->
 			{
 			    if(!(isTypeInScope("cloudwatchlogs"))) {
@@ -1044,8 +1044,8 @@ public class AssetFileGenerator {
 					log.error(expPrefix+ "Cloud Watch Logs\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "cloudwatchlogs", e.getMessage());
 				}
-			}); 
-			
+			});
+
 			executor.execute(() ->
 			{
 			    if(!(isTypeInScope("cloudwatchalarm"))) {
@@ -1060,7 +1060,7 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "cloudwatchalarm", e.getMessage());
 				}
 			});
-			
+
 			//****** Changes For Federated Rules End ******
 			executor.execute(() ->
 			{
@@ -1100,7 +1100,7 @@ public class AssetFileGenerator {
 					log.error(expPrefix+ "awscomprehend\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "awscomprehend", e.getMessage());
 				}
-			}); 
+			});
 			executor.execute(() ->
 			{
 			    if(!(isTypeInScope("appflow"))) {
@@ -1217,7 +1217,7 @@ public class AssetFileGenerator {
 					log.info(infoPrefix + "launchtemplate");
 					FileManager.generateLaunchTemplateFiles(InventoryUtil.fetchLaunchTemplates(temporaryCredentials, skipRegions,accountId, accountName));
 				}catch(Exception e){
-					log.error(expPrefix+ "iampolicies\", \"cause\":\"" +e.getMessage()+"\"}");
+					log.error(expPrefix+ "launchtemplate\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "launchtemplate", e.getMessage());
 				}
 			});

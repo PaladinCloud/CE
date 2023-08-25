@@ -3111,20 +3111,29 @@ public class InventoryUtil {
 			try{
 				if(!skipRegions.contains(region.getName())){
 					ec2Client = AmazonEC2ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
-					DescribeLaunchTemplateVersionsResult  descLaunchTempVersResult ;
-					String nextToken = null;
-					do{
-						descLaunchTempVersResult=ec2Client.describeLaunchTemplateVersions(new DescribeLaunchTemplateVersionsRequest().withNextToken(nextToken));
-						descLaunchTempVersResult.getLaunchTemplateVersions().forEach(version -> {
-							LaunchTemplateVH launchTemplateVH = new LaunchTemplateVH();
-							launchTemplateVH.setLaunchTemplateId(version.getLaunchTemplateId());
-							launchTemplateVH.setLaunchTemplateName(version.getLaunchTemplateName());
-							launchTemplateVH.setImageId(version.getLaunchTemplateData().getImageId());
-							launchTemplateVH.setSecurityGroupIds(version.getLaunchTemplateData().getSecurityGroupIds());
-							launchTemplateVHList.add(launchTemplateVH);
-						});
-						nextToken = descLaunchTempVersResult.getNextToken();
-					}while(nextToken!=null);
+					DescribeLaunchTemplatesRequest request = new DescribeLaunchTemplatesRequest();
+					DescribeLaunchTemplatesResult descLaunchTempResult ;
+					descLaunchTempResult=ec2Client.describeLaunchTemplates(request);
+					final AmazonEC2 finalEc2Client = ec2Client;
+					descLaunchTempResult.getLaunchTemplates().forEach(template -> {
+						try {
+							DescribeLaunchTemplateVersionsRequest versionsRequest = new DescribeLaunchTemplateVersionsRequest()
+									.withLaunchTemplateId(template.getLaunchTemplateId());
+
+							DescribeLaunchTemplateVersionsResult describeVersionsResult = finalEc2Client.describeLaunchTemplateVersions(versionsRequest);
+
+							describeVersionsResult.getLaunchTemplateVersions().forEach(version -> {
+								LaunchTemplateVH launchTemplateVH = new LaunchTemplateVH();
+								launchTemplateVH.setLaunchTemplateId(template.getLaunchTemplateId());
+								launchTemplateVH.setLaunchTemplateName(template.getLaunchTemplateName());
+								launchTemplateVH.setImageId(version.getLaunchTemplateData().getImageId());
+								launchTemplateVH.setSecurityGroupIds(version.getLaunchTemplateData().getSecurityGroupIds());
+								launchTemplateVHList.add(launchTemplateVH);
+							});
+						} catch (Exception e) {
+							log.warn("Error fetching versions for Launch Template: " + template.getLaunchTemplateName());
+						}
+					});
 
 					if (!launchTemplateVHList.isEmpty()) {
 						log.debug(InventoryConstants.ACCOUNT + accountId + " Type: Launch Template " + region.getName() + " >> " + launchTemplateVHList.size());
