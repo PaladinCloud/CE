@@ -1,5 +1,6 @@
 from core.terraform.resources.aws import iam
 from core.config import Settings
+from resources.s3.bucket import BucketStorage
 
 
 class LambdaRolePolicyDocument(iam.IAMPolicyDocumentData):
@@ -36,6 +37,10 @@ class LambdaCloudWatchFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource
     role = LambdaRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
 
+class LambdaS3FullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
+    role = LambdaRole.get_output_attr('name')
+    policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
 class PaladinClPaladinCloudEc2PermissionDocument(iam.IAMPolicyDocumentData):
     statement = [
         {
@@ -57,3 +62,4 @@ class PaladinCloudEc2PermissionPolicy(iam.IAMRolePolicyResource):
 class PaladinCloudEc2PermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = LambdaRole.get_output_attr('name')
     policy_arn = PaladinCloudEc2PermissionPolicy.get_output_attr('arn')
+

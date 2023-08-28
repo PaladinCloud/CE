@@ -67,6 +67,7 @@ public interface Constants {
     String POLICY_COMPLIANCE_FILTER = "policyComplianceFilter";
     String OPTION_LIST = "optionList";
     String OPTION_VALUE = "optionValue";
+    String BOOLEAN_TYPE  = "boolean";
 
     String MIN = "min";
 

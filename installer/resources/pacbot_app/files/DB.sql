@@ -1248,6 +1248,7 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`categor
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunction','GCP Cloud Functions','GCP cloud functions','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunction'),'2023-01-10','2023-01-10','Infra & Platforms');
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunctiongen1','GCP Cloud Functions Generation 1','GCP cloud functions Generation 1','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunctiongen1'),'2023-01-10','2023-01-10','Infra & Platforms');
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('launchtemplate','EC2 Launch Template','AWS EC2 Launch Template','Compute','aws','{\"key\":\"accountid\",\"id\":\"accountid\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_launchtemplate/launchtemplate'),'2022-05-06','2022-05-06','Infra & Platforms');
+INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('gcpdisks','Managed Disks (Gcp)','GCP Disks','security','gcp','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/gcp_gcpdisks/gcpdisks'),'2022-12-5','2022-12-5','Infra & Platforms');
 
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11501','201','ec2','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11502','201','s3','all','all');
@@ -1377,6 +1378,7 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('de364119-0f2b-4f63-8d61-81fa4d1d33fb','e0008397-f74e-4deb-9066-10bdf11202ae','iamusers','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('25e615a5-e7d3-444e-95a3-2dedaef0890e','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_apikeys','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('9b942f42-4bd0-4911-8fd3-a1661f0cbc97','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_loadbalancers','all','all');
+INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('48df4f33-62c9-42c6-8fb0-0bc69bad3e37','e0008397-f74e-4deb-9066-10bdf11202ae','gcpdisks','all','all');
 
 
 
@@ -3027,6 +3029,7 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Policy','name','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Severity','severity','/compliance/v1/filters/policyCompliance',"");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Source','provider','/compliance/v1/filters/policyCompliance',"");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Autofix','autoFixAvailable','/compliance/v1/filters/policyCompliance',"boolean");
 
 UPDATE pac_v2_ui_options SET optionURL = '/asset/v1/getAssetFilterValue/tagged?ag=aws' WHERE optionId = '22';
 update pac_v2_ui_options set optionValue="resourcetType" where optionValue='resourceType' and filterId=16;
@@ -3053,4 +3056,16 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
  
  /* RedHat Index*/
  INSERT IGNORE INTO `cf_AssetGroupDetails` (`groupId`, `groupName`, `dataSource`, `displayName`, `groupType`, `createdBy`, `createdUser`, `createdDate`, `modifiedUser`, `modifiedDate`, `description`, `aliasQuery`, `isVisible`)  
- values('e0008397-f74e-4deb-9066-10bdf11202ae','redhat','redhat','RedHat ACS','Admin','Cloud Security','admin@paladincloud.io','08/17/2023 06:13','admin@paladincloud.io','08/17/2023 06:13','All GCP','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}','1');
+ values('e0008397-f74e-4deb-9066-10bdf1120','redhat','redhat','Red Hat','System','admin@paladincloud.io','admin@paladincloud.io','08/17/2023 06:13',
+ 'admin@paladincloud.io','08/17/2023 06:13','Red Hat','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}','1');
+ 
+ /* Red Hat asset Node, Cluster */
+ INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+ VALUES('cluster','Cluster','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
+ concat(@eshost,':',@esport,'/redhat_cluster'),'2023-08-07','2023-08-07','Infra & Platforms','Cluster');
+ INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+ VALUES('node','Node','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
+ concat(@eshost,':',@esport,'/redhat_node'),'2023-08-07','2023-08-07','Infra & Platforms','Node');
+ INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+ VALUES('image','Image','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
+ concat(@eshost,':',@esport,'/redhat_image'),'2023-08-07','2023-08-07','Infra & Platforms','Image');

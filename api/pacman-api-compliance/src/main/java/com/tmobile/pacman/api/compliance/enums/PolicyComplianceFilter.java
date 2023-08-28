@@ -2,6 +2,8 @@ package com.tmobile.pacman.api.compliance.enums;
 
 public enum PolicyComplianceFilter {
 
+    AUTOFIX("autoFixAvailable"),
+
     PROVIDER("provider"),
     POLICY_NAME("name"),
     CATEGORY("policyCategory"),

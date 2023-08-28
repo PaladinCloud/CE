@@ -82,6 +82,7 @@ public class EntityManager implements Constants {
         LOGGER.info("*** Start Colleting Entity Info ***");
         List<String> filters = Arrays.asList("_docid", FIRST_DISCOVERED);
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
+        ViolationAssociationManager violationAssociatManager = new ViolationAssociationManager();
         while (itr.hasNext()) {
             try {
                 Map.Entry<String, String> entry = itr.next();
@@ -121,6 +122,7 @@ public class EntityManager implements Constants {
                     stats.putAll(uploadInfo);
                     stats.put("errorUpdates", errUpdateInfo);
                     errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
+                    errorList.addAll(violationAssociatManager.uploadViolationInfo(datasource, type));
 
                 } else {
                     Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);

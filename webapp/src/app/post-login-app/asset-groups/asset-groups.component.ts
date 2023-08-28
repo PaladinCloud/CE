@@ -28,7 +28,6 @@
  import { MatDialog, MatDialogRef } from '@angular/material/dialog';
  import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
  import { TourService } from 'src/app/core/services/tour.service';
- import { TableStateService } from 'src/app/core/services/table-state.service';
  
  @Component({
    selector: 'app-asset-groups',
@@ -90,7 +89,6 @@
      private updateRecentAGService: UpdateRecentAGService,
      private utils: UtilsService,
      private workflowService: WorkflowService,
-     private tableStateService: TableStateService
      ) {
      this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
      assetGroupName => {
@@ -204,7 +202,6 @@
        const userDefaultAssetGroup = this.dataStore.getUserDefaultAssetGroup();
  
        if (this.assetTile !== userDefaultAssetGroup) {
-         this.tableStateService.clearAllPreservedFilters();
          this.updateDefaultAssetGroupForUser(this.assetTile.toLowerCase());
        }
      } catch (error) {

@@ -159,7 +159,7 @@ public interface FilterService {
     public List<Map<String, Object>> getNotificationSource() throws ServiceException;
     public List<Map<String, Object>> getNotificationEventName() throws ServiceException;
 
-    List<Map<String, Object>> getAttributeValuesForAssetGroup(String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName) throws ServiceException;
+    List<Map<String, Object>> getAttributeValuesForAssetGroup(String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName,String searchText) throws ServiceException;
 
     ResponseData getPolicycompliance(FilterRequest request) throws ServiceException;
 }

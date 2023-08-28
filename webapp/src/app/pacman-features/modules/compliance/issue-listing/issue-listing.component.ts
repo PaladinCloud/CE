@@ -19,6 +19,7 @@ import { PermissionGuardService } from "../../../../core/services/permission-gua
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
+import { first } from "rxjs/operators";
 
 @Component({
   selector: "app-issue-listing",
@@ -143,6 +144,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
     .subscribe(async(assetGroupName) => {
+        // whenever ag is changed, all filters are cleared in change-default-asset-group component.
         await this.getPreservedState();
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
@@ -214,7 +216,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     // however, one thing to note here is that getData method does not depend on filters array directly
     // but rather it depends on filterText object which is build on URL queryParams.
-    if (!this.activatedRoute.snapshot.queryParamMap.has("filter") && state.filters) {
+    const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
+    if (state.filters && !currentQueryParams.filter) {
       this.filters = state.filters;
       await Promise.resolve().then(() => this.getUpdatedUrl());
     }
@@ -341,7 +347,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.queryParamsWithoutFilter = JSON.parse(
           JSON.stringify(this.FullQueryParams)
         );
-        this.getSortedOrderFromURL(this.FullQueryParams.filter);
+        this.getFiltersAppliedOrderFromURL(this.FullQueryParams.filter);
         delete this.queryParamsWithoutFilter["filter"];
         /**
          * The below code is added to get URLparameter and queryparameter
@@ -356,25 +362,27 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  getSortedOrderFromURL(filterString){
+  getFiltersAppliedOrderFromURL(filterString){
     try{
-      // Split the string by '**'
-      const splitByDoubleAsterisk = filterString.split('**');
+      if(filterString){
+        // Split the string by '**'
+        const splitByDoubleAsterisk = filterString.split('**');
 
-      // Initialize an array to hold the keys
-      const keys = [];
+        // Initialize an array to hold the keys
+        const keys = [];
 
-      // Iterate through the substrings obtained from the split
-      splitByDoubleAsterisk.forEach(substring => {
-        // Split each substring by '=' to get key-value pairs
-        const keyValuePair = substring.split('=');
-        if (keyValuePair.length === 2) {
-          // Extract the key from the key-value pair and add it to the keys array
-          keys.push(decodeURIComponent(keyValuePair[0]).replace(".keyword", ""));
-        }
-      });
+        // Iterate through the substrings obtained from the split
+        splitByDoubleAsterisk.forEach(substring => {
+          // Split each substring by '=' to get key-value pairs
+          const keyValuePair = substring.split('=');
+          if (keyValuePair.length === 2) {
+            // Extract the key from the key-value pair and add it to the keys array
+            keys.push(decodeURIComponent(keyValuePair[0]).replace(".keyword", ""));
+          }
+        });
 
-      this.filterOrder = keys;
+        this.filterOrder = keys;
+      }
     }catch(e){
       this.logger.log("jsError",e);
     }
