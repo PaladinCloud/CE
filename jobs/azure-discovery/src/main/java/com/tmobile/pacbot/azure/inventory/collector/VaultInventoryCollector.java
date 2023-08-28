@@ -99,44 +99,57 @@ public class VaultInventoryCollector {
 			log.debug("Resource group name: {}", resourceGroupName);
 			vaultVH.setResourceGroupName(resourceGroupName);
 			Vault azureVault = azure.vaults().getById(id);
-			try {
-				PagedList<Key> keys = azureVault.keys().list();
-				Set<String> keyExpirationDate = new HashSet<>();
-				for (Key key : keys) {
-					if (key.attributes().expires() != null) {
-						keyExpirationDate.add(key.attributes().expires().toString());
-					} else {
-						keyExpirationDate = null;
-						break;
-					}
-				}
-				vaultVH.setKeyExpirationDate(keyExpirationDate);
-			}catch (KeyVaultErrorException e) {
-				vaultVH.setKeyExpirationDate(new HashSet<>());
-				log.info(e.getMessage());
-			}
-			try{
-				PagedList<Secret> secrets = azureVault.secrets().list();
-				Set<String> secretExpirationDate = new HashSet<>();
-				for (Secret secret : secrets) {
-					if (secret.attributes().expires() != null) {
-						secretExpirationDate.add(secret.attributes().expires().toString());
-					} else {
-						secretExpirationDate = null;
-						break;
-					}
-				}
-				vaultVH.setSecretExpirationDate(secretExpirationDate);
-
-			} catch (KeyVaultErrorException e) {
-				vaultVH.setSecretExpirationDate(new HashSet<>());
-				log.info(e.getMessage());
-			}
+			setKeyExpirationDate(azureVault,vaultVH);
+			setSecretExpirationDate(azureVault,vaultVH);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			Util.eCount.getAndIncrement();
 		}
 		return  vaultVH;
+	}
+
+	private void setSecretExpirationDate(Vault azureVault, VaultVH vaultVH) {
+		try{
+			PagedList<Secret> secrets = azureVault.secrets().list();
+			Set<String> secretExpirationDate = new HashSet<>();
+			for (Secret secret : secrets) {
+				if (secret.attributes().expires() != null) {
+					secretExpirationDate.add(secret.attributes().expires().toString());
+				} else {
+					//Expiry date is set as null because violation will be raised even if one secret does not have expiry date
+					secretExpirationDate = null;
+					break;
+				}
+			}
+			vaultVH.setSecretExpirationDate(secretExpirationDate);
+
+		} catch (KeyVaultErrorException e) {
+			//if permission is denied to get list of secrets, then do not raise any violation
+			vaultVH.setSecretExpirationDate(new HashSet<>());
+			log.info(e.getMessage());
+		}
+	}
+
+	private void setKeyExpirationDate(Vault azureVault, VaultVH vaultVH) {
+		try {
+			PagedList<Key> keys = azureVault.keys().list();
+			Set<String> keyExpirationDate = new HashSet<>();
+			for (Key key : keys) {
+				if (key.attributes().expires() != null) {
+					keyExpirationDate.add(key.attributes().expires().toString());
+				} else {
+					//Expiry date is set as null because violation will be raised even if one key does not have expiry date
+					keyExpirationDate = null;
+					break;
+				}
+			}
+			vaultVH.setKeyExpirationDate(keyExpirationDate);
+		}catch (KeyVaultErrorException e) {
+			//if permission is denied to get list of keys, then do not raise any violation
+			vaultVH.setKeyExpirationDate(new HashSet<>());
+			log.info(e.getMessage());
+		}
+
 	}
 
 	public HashMap<String,List<VaultVH>> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
