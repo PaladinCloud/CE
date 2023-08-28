@@ -1,9 +1,6 @@
 package com.tmobile.pacman.api.compliance.repository.model;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.*;
 
 @Entity
