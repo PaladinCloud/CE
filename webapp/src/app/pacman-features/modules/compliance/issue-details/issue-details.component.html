@@ -52,28 +52,12 @@
             <div class="details-header-wrapper">
                 <span class="body-2">Details</span>
             </div>
-            <div class="details-body">
-                <div class="detail-wrapper">
-                    <span class="detail-header body-2">Policy Violated</span>
-                    <span class="detail-value body-2 link" (click)="navigateTo('policy knowledgebase details',policyId)">{{policyViolated}}</span>
-                </div>
-                <div class="detail-wrapper">
-                    <span class="detail-header body-2">Asset ID</span>
-                    <span class="detail-value body-2 link"  (click)="navigateTo('asset details',assetID,resourceType)">{{assetID}}</span>
-                </div>
-                <div class="detail-wrapper reason">
-                    <span class="detail-header body-2">Violation Reason</span>
-                    <span class="detail-value body-2">{{violationReason}}</span>
-                </div>
-                <div class="detail-wrapper">
-                    <span class="detail-header body-2">Date Created</span>
-                    <span class="detail-value body-2">{{violationCreatedDate  | date : 'medium'}}</span>
-                </div>
-                <div class="detail-wrapper">
-                    <span class="detail-header body-2">Age</span>
-                    <span class="detail-value body-2">{{violationAge}}</span>
-                </div>
-            </div>
+            <app-policy-violation-desc
+                [breadcrumbPresent]="breadcrumbPresent"
+                [pageLevel]="pageLevel"
+                [violationData]="issueBlocks">
+            </app-policy-violation-desc>
+          
         </div>
         <div *ngIf="issueBlocks" class="right-details-container flex flex-col">
             <div [class.after-click-button]='showOpposite || showOppositeEmail || showOppositeRecommend || showOppositeJira || showOppositeRevoke'
