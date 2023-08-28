@@ -299,7 +299,7 @@ public interface ComplianceService {
      * @return the issue exception response
      * @throws ServiceException the service exception
      */
-    IssueExceptionResponse addMultipleIssueException(String assetGroup, IssuesException issuesException) throws ServiceException;
+    IssueExceptionResponse addMultipleIssueException(String assetGroup, IssuesException issuesException,boolean auditTrail) throws ServiceException;
 
     /**
      * Revoke multiple issue exception.

@@ -707,7 +707,7 @@ public class ComplianceController implements Constants {
             if(issuesException.getIssueIds().isEmpty()) {
                 return ResponseUtils.buildFailureResponse(new Exception("Atleast one issue id is required"));
             }
-            return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(assetGroup,issuesException));
+            return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(assetGroup,issuesException,false));
         } catch (ServiceException | ParseException exception) {
             return ResponseUtils.buildFailureResponse(exception);
         }
