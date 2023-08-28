@@ -4,6 +4,7 @@ import java.net.URLEncoder;
 import java.util.*;
 
 import com.microsoft.azure.PagedList;
+import com.microsoft.azure.keyvault.models.KeyVaultErrorException;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.keyvault.Key;
 import com.microsoft.azure.management.keyvault.Secret;
@@ -97,8 +98,8 @@ public class VaultInventoryCollector {
 			String resourceGroupName = (vaultVH.getId()).substring(beginningIndex, id.indexOf('/', beginningIndex + 2));
 			log.debug("Resource group name: {}", resourceGroupName);
 			vaultVH.setResourceGroupName(resourceGroupName);
+			Vault azureVault = azure.vaults().getById(id);
 			try {
-				Vault azureVault = azure.vaults().getById(id);
 				PagedList<Key> keys = azureVault.keys().list();
 				Set<String> keyExpirationDate = new HashSet<>();
 				for (Key key : keys) {
@@ -110,6 +111,11 @@ public class VaultInventoryCollector {
 					}
 				}
 				vaultVH.setKeyExpirationDate(keyExpirationDate);
+			}catch (KeyVaultErrorException e) {
+				vaultVH.setKeyExpirationDate(new HashSet<>());
+				log.info(e.getMessage());
+			}
+			try{
 				PagedList<Secret> secrets = azureVault.secrets().list();
 				Set<String> secretExpirationDate = new HashSet<>();
 				for (Secret secret : secrets) {
@@ -122,8 +128,9 @@ public class VaultInventoryCollector {
 				}
 				vaultVH.setSecretExpirationDate(secretExpirationDate);
 
-			} catch (Exception e) {
-				log.error(e.getMessage());
+			} catch (KeyVaultErrorException e) {
+				vaultVH.setSecretExpirationDate(new HashSet<>());
+				log.info(e.getMessage());
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
