@@ -468,20 +468,24 @@ export class UtilsService {
       return this.datePipe.transform(new Date(date).toUTCString(), this.utcDateFormat);
     }
 
-    generateIntervals(minimum, maximum, numIntervals) : {lowerBound: number, upperBound: number}[]{
-      const range = maximum - minimum;
-      const intervalSize = range / numIntervals;
+    generateIntervals(min, max, numOfIntervals) : {lowerBound: number, upperBound: number}[]{
+      if (numOfIntervals <= 0) {
+        return []; // No intervals to generate
+      }
+    
+      if (numOfIntervals >= max - min + 1) {
+        return [{ lowerBound: min, upperBound: max }]; // Single interval covering the entire range
+      }
+    
+      const intervalSize = Math.floor((max - min + 1) / numOfIntervals); // Calculate the interval size
     
       const intervals = [];
-      let lowerBound = minimum;
     
-      for (let i = 0; i < numIntervals; i++) {
-        const upperBound = Math.min(lowerBound + intervalSize, maximum);
+      for (let i = 0; i < numOfIntervals; i++) {
+        const lowerBound = min + i * intervalSize;
+        const upperBound = i === numOfIntervals - 1 ? max : min + (i + 1) * intervalSize - 1;
+    
         intervals.push({ lowerBound, upperBound });
-        lowerBound = upperBound;
-        if(lowerBound>=maximum){
-          return intervals;
-        }
       }
     
       return intervals;

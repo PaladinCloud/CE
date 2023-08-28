@@ -847,24 +847,21 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
                 });
               });
             }
-            else if(value.toLowerCase()=="violations" || value.toLowerCase()=="compliance"){
-              console.log("intervals: ", response[0].data);
+            else if (value.toLowerCase() === "violations" || value.toLowerCase() === "compliance") {
               const numOfIntervals = 5;
-              const min = response[0].data.optionRange.min;
-              const max = response[0].data.optionRange.max;
+              const { min, max } = response[0].data.optionRange;
               const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
-              if(value.toLowerCase()=="violations"){
-                intervals.forEach(interval => {
-                  const lb = Math.round(interval.lowerBound);
-                  const up = Math.round(interval.upperBound);
-                  filterTagsData.push({id: lb + "-" + up, name: lb + "-" + up});
-                })
-              }else{
-                intervals.forEach(interval => {
-                  const lb = (interval.lowerBound);
-                  const up = (interval.upperBound);
-                  filterTagsData.push({id: lb + "-" + up, name: lb + "-" + up});
-                })
+
+              intervals.forEach(interval => {
+                const lb = Math.round(interval.lowerBound);
+                let up = Math.round(interval.upperBound);
+                if (value.toLowerCase() === "compliance" && up === 100) {
+                  up--;
+                }
+                filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
+              });
+              if (value.toLowerCase() === "compliance") {
+                filterTagsData.push({ id: "100-100", name: "100-100" });
               }
             }
             this.filterTagOptions[value] = filterTagsData;

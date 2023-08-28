@@ -563,19 +563,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   async applyFilterTagsData(filterTagsData, value) {
     if (value.toLowerCase() === "asset type") {
       this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-        filterTagsData.forEach(filterOption => {
+      filterTagsData.forEach(filterOption => {
           filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
-        });
+      });
       });
     }
   
     this.filterTagOptions[value] = filterTagsData;
-    this.filterTagLabels[value] = map(filterTagsData, 'name').sort((a, b) => a.localeCompare(b));
+    this.filterTagLabels[value] = filterTagsData.map(option => option.name);
   
-    if (this.filterTagLabels[value].length === 0) {
-      this.filterErrorMessage = 'noDataAvailable';
-    }
   
+    this.filterErrorMessage = this.filterTagLabels[value].length === 0 ? 'noDataAvailable' : '';
     this.storeState();
     return this.filterTagOptions[value];
   }
