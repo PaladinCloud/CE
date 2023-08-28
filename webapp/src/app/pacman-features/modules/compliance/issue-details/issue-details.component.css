@@ -848,3 +848,8 @@ a.button:hover {
   padding: 1.5em;
   margin: 0;
 }
+
+.table-wrapper{
+  max-height: 300px;
+  height: 100%;
+}

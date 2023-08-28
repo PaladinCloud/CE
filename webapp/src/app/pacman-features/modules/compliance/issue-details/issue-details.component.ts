@@ -500,13 +500,11 @@
                     this.showLoader = false;
                     this.seekdata = true;
                     this.issueBlocks = false;
-                    this.tableErrorMessage = 'noDataAvailable';
                   }
                 } catch (e) {
                   this.showLoader = false;
                   this.seekdata = true;
                   this.issueBlocks = false;
-                  this.tableErrorMessage = 'noDataAvailable';
                 }
 
                 // this.getRecommend();
@@ -515,7 +513,6 @@
                 this.showLoader = false;
                 this.seekdata = true;
                 this.issueBlocks = false;
-                this.tableErrorMessage = 'apiResponseError';
               }
             );
         }
@@ -694,12 +691,9 @@
               ) {
                 const enityData = response.response[0];
                 this.chunckTags(enityData);
-              } else {
-                this.tableErrorMessage = 'noDataAvailable';
               }
             },
             error => {
-              this.tableErrorMessage = 'apiResponseError';
             }
           );
       } catch (e) {
@@ -776,6 +770,7 @@
             },
             error => {
               this.errorValue = -1;
+              this.tableErrorMessage = "noDataAvailable";
             }
           );
       } catch (e) {
@@ -836,6 +831,9 @@
         this.totalRows = this.violationAuditLogs.length;
         if (this.lastPaginator > this.totalRows) {
           this.lastPaginator = this.totalRows;
+          this.tableErrorMessage = '';
+        }else{
+          this.tableErrorMessage = 'noDataAvailable';
         }
       } catch (e) {
         this.logger.log('error', e);
