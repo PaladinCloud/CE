@@ -421,6 +421,14 @@ public class AssetServiceImpl implements AssetService {
                 "architecture", "tenancy"};
         attributesList.addAll(createAttributes(ec2Data, fields3, "AWS Attributes"));
 
+        attributesList.stream().forEach(obj -> {
+            obj.entrySet().stream().forEach(entry ->{
+                if(entry.getKey().equalsIgnoreCase("name") && (entry.getValue().equals("docType") || entry.getValue().equals("_cloudType"))){
+                    obj.put("value", Arrays.asList(obj.get("value").toString()));
+                }
+            });
+        });
+
         Map<String, String> ipAddressKvPairs = new LinkedHashMap<>();
         ipAddressKvPairs
                 .put(AssetConstants.PUBLIC_IP_ADDRESS, ec2Data.get(AssetConstants.PUBLIC_IP_ADDRESS).toString());
