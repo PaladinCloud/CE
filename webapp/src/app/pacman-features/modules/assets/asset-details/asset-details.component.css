@@ -57,6 +57,10 @@
   gap: 20px;
 }
 
+.tile-content-wrapper:hover{
+  cursor: unset;
+}
+
 .resource-text{
   overflow: hidden;
   text-overflow: ellipsis;
@@ -115,6 +119,7 @@
   flex-direction: row;
   align-items: flex-start;
   height: 52px;
+  background-color: #f8f8f8;
   border-bottom: 2px solid var(--border-200);
 }
 

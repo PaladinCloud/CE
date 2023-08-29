@@ -76,10 +76,8 @@ export class TableStateService {
     clearAllPreservedFilters() {
         const storedState = this.getStateFromLocalStorage();
         const updatedState = Object.keys(storedState).reduce((acc, next) => {
-            storedState[next].filters?.forEach(f => {
-                f.value = undefined;
-                f.filterValue = undefined;
-            });
+            storedState[next].data = [];
+            storedState[next].filters = [];
             storedState[next].bucketNumber = 0;
             storedState[next].selectedRowIndex = undefined;
             storedState[next].totalRows = 0;

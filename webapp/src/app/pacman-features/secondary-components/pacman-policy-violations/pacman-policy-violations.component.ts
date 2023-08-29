@@ -72,7 +72,6 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   centeredColumns = {
     Severity: true,
     Category: true,
-    Status: true,
 };
   @Input() breadcrumbPresent;
   private urlToRedirect: string;

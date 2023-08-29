@@ -1,4 +1,4 @@
-package com.tmobile.cloud.azurerules.virtualMachines;
+package com.tmobile.cloud.azurerules.VMScaleSet;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
-import com.tmobile.cloud.azurerules.VirtualMachine.RemoveUnusedScaleSet;
+import com.tmobile.cloud.azurerules.VMScaleSet.RemoveUnusedScaleSet;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
@@ -36,13 +36,13 @@ public class RemoveUnusedScaleSetTest {
     public JsonObject getHitJsonArrayForUnusedScaleSet(){
         Gson gson=new Gson();
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("hits", gson.fromJson("{\"hits\":[{\"_source\":{\"discoverydate\":\"2022-07-03 11:00:00+0000\",\"_cloudType\":\"Azure\",\"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\"region\":\"centralus\",\"subscriptionName\":\"dev-paladincloud\",\"resourceGroupName\":\"dev-paladincloud\",\"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/DEV-PALADINCLOUD/providers/Microsoft.Compute/virtualMachines/testing\",\"networkInterfaceIds\":[\"/subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-paladincloud/providers/Microsoft.Network/networkInterfaces/testing243\"],\"key\":\"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\"virtualMachineScaleSetVHList\":[{\"virtualMachineIds\":[\"f4d319d8-7eac-4e15-a561-400f7744aa81\"],\"loadBalancerIds\":[]}]}}]}", JsonElement.class));
+        jsonObject.add("hits", gson.fromJson("{\"hits\":[{\"_source\":{\"discoverydate\":\"2022-07-03 11:00:00+0000\",\"_cloudType\":\"Azure\",\"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\"region\":\"centralus\",\"subscriptionName\":\"dev-paladincloud\",\"resourceGroupName\":\"dev-paladincloud\",\"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/DEV-PALADINCLOUD/providers/Microsoft.Compute/virtualMachines/testing\",\"networkInterfaceIds\":[\"/subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-paladincloud/providers/Microsoft.Network/networkInterfaces/testing243\"],\"key\":\"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\"virtualMachineIds\":[\"f4d319d8-7eac-4e15-a561-400f7744aa81\"],\"loadBalancerIds\":[]}}]}", JsonElement.class));
         return jsonObject;
     }
     public  JsonObject getFailureJsonArrayForUnusedScaleSet() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("hits", gson.fromJson("{\"hits\":[{\"_source\":{\"discoverydate\":\"2022-07-03 11:00:00+0000\",\"_cloudType\":\"Azure\",\"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\"region\":\"centralus\",\"subscriptionName\":\"dev-paladincloud\",\"resourceGroupName\":\"dev-paladincloud\",\"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/DEV-PALADINCLOUD/providers/Microsoft.Compute/virtualMachines/testing\",\"networkInterfaceIds\":[\"/subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-paladincloud/providers/Microsoft.Network/networkInterfaces/testing243\"],\"key\":\"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\"virtualMachineScaleSetVHList\":[{\"virtualMachineIds\":[],\"loadBalancerIds\":[]}]}}]}", JsonElement.class));
+        jsonObject.add("hits", gson.fromJson("{\"hits\":[{\"_source\":{\"discoverydate\":\"2022-07-03 11:00:00+0000\",\"_cloudType\":\"Azure\",\"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\"region\":\"centralus\",\"subscriptionName\":\"dev-paladincloud\",\"resourceGroupName\":\"dev-paladincloud\",\"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/DEV-PALADINCLOUD/providers/Microsoft.Compute/virtualMachines/testing\",\"networkInterfaceIds\":[\"/subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-paladincloud/providers/Microsoft.Network/networkInterfaces/testing243\"],\"key\":\"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\"virtualMachineIds\":[],\"loadBalancerIds\":[]}}]}", JsonElement.class));
         return jsonObject;
     }
     @Test

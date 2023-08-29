@@ -39,7 +39,7 @@ public class DeleteUnusedDiskRule extends BasePolicy {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "azure_disk/_search";
+            esUrl = url + "/azure_disk/_search";
         }
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         boolean isValid = false;

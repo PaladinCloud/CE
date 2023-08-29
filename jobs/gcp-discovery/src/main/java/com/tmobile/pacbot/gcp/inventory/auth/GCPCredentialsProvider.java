@@ -105,6 +105,8 @@ public class GCPCredentialsProvider {
 
     private ApiKeysClient apiKeysClient;
 
+    private  DisksClient  disksClient;
+
     private Map<String, GoogleCredentials> credentialCache = new HashMap<>();
 
     // If you don't specify credentials when constructing the client, the client
@@ -351,6 +353,14 @@ public class GCPCredentialsProvider {
         return sslPoliciesClient;
     }
 
+    public  DisksClient getDiskClient(String projectId)  throws  IOException{
+        if(disksClient==null){
+          DisksSettings disksSettings=DisksSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
+            disksClient=DisksClient.create(disksSettings);
+        }
+        return disksClient;
+    }
+
 
 
     /*public CloudFunctionsServiceClient getFunctionClientGen1(String projectId) throws IOException {
@@ -390,5 +400,6 @@ public class GCPCredentialsProvider {
         this.backendService=null;
         this.targetHttpsProxiesClient=null;
         this.sslPoliciesClient=null;
+        this.disksClient=null;
     }
 }

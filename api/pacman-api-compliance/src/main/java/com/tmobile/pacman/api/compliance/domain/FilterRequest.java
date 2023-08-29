@@ -12,6 +12,16 @@ public class FilterRequest {
     private String type;
     private String attributeName;
 
+    private String searchText;
+
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
+    }
+
     public String getAttributeName() {
         return attributeName;
     }

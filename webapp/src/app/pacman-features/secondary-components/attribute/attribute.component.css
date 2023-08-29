@@ -18,10 +18,9 @@
      border: 1px solid var(--border-200);
      border-radius: 4px;
  }
-.attribute-parent-wrapper {
-    padding: 1.5em 1em 1em 2em;
-    max-height: 33em;
-    overflow: hidden;
+
+.attribute-parent-wrapper, .assets-wrapper{
+  padding: 16px 24px;
 }
 
 .attribute-parent-wrapper:hover {
@@ -33,14 +32,12 @@ section.system-info {
 }
 
 .system-info-topic {
-    font-size: 0.9em;
-    padding: 8px;
-    width: 30em;
+    padding-bottom: 24px;
 }
 
 .header {
     border-bottom: 2px solid var(--border-200);
-    padding: 20px 24px;
+    padding: 16px 24px;
     font: var(--text-body-2);
     color: var(--text-high-emphasis);
 }
@@ -55,12 +52,7 @@ section.system-info {
 
 .system-values {
     align-content: space-between;
-}
-
-.values-wrapper {
-    margin: 0.5em 1em;
-    line-height: 1.5;
-    min-width: 12em;
+    gap: 20px;
 }
 
 .values-wrapper-field {
@@ -81,6 +73,11 @@ section.system-info {
 
 .copy-icon{
     display: none;
+}
+
+.tile-wrapper{
+    width: 90%;
+    gap: 6px;
 }
 
 .values-wrapper-value:hover .copy-icon{
@@ -118,16 +115,12 @@ section.access-groups {
     font-family: ex2-extralight;
 }
 
-.uncategorizedWrapper {
-    max-width: 12em;
-}
-
 .uncategorizedWrapper:first-letter {
     text-transform: capitalize;
 }
 
 .widthWrapper {
-    width: calc(33.33% - 2em);
+    width: calc(50% - 20px);
 }
 
 .marginWrapper {

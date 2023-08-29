@@ -21,6 +21,7 @@ package com.tmobile.cloud.awsrules.iam;
 
 import java.util.*;
 
+import com.amazonaws.services.identitymanagement.model.AmazonIdentityManagementException;
 import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +102,30 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 		}
 
 		try{
-			Optional<PasswordPolicy> pwdPolicyOptional = Optional.ofNullable(iamClient).map(obj -> (GetAccountPasswordPolicyResult)obj.getAccountPasswordPolicy()).map(obj -> (PasswordPolicy)obj.getPasswordPolicy());
+			Optional<PasswordPolicy> pwdPolicyOptional=Optional.ofNullable(null);
+			for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+				try {
+					pwdPolicyOptional = Optional.ofNullable(iamClient).map(obj -> obj.getAccountPasswordPolicy()).map(obj -> (PasswordPolicy)obj.getPasswordPolicy());
+				} catch (AmazonIdentityManagementException e) {
+					if (e.getMessage().startsWith("Rate exceeded")) {
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException ex) {
+							throw new RuntimeException(ex);
+						}
+						if (i == 2) {
+							logger.error(e.getMessage());
+							throw e;
+						}
+						logger.info("Retrying inside execute");
+						continue;
+					}
+					else{
+						throw e;
+					}
+				}
+				break;
+			}
 			if (pwdPolicyOptional.isPresent()) {
 				PasswordPolicy passwordPolicy = pwdPolicyOptional.get();
 				if (!isPasswordPolicyCompliant(passwordPolicy, ruleParam)) {

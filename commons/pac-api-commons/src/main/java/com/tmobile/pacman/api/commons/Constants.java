@@ -67,6 +67,7 @@ public interface Constants {
     String POLICY_COMPLIANCE_FILTER = "policyComplianceFilter";
     String OPTION_LIST = "optionList";
     String OPTION_VALUE = "optionValue";
+    String BOOLEAN_TYPE  = "boolean";
 
     String MIN = "min";
 
@@ -170,6 +171,8 @@ public interface Constants {
     String EXEMPT = "exempt";
     String REQUEST_EXEMPT = "request exemption";
     String REVOKE_EXEMPT = "revoke request";
+    String DENY_EXEMPT = "deny request";
+    String GRANT_EXEMPT = "grant request";
     String MODIFIED_DATE = "modifiedDate";
     String PAC_DS = "pac_ds";
     String POLICY_VIOLATION = "#violation";

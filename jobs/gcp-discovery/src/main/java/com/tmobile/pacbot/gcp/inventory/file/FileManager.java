@@ -67,6 +67,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-iamusers.data", "[", false);
         FileGenerator.writeToFile("gcp-gcploadbalancer.data", "[", false);
         FileGenerator.writeToFile("gcp-apikeys.data", "[", false);
+        FileGenerator.writeToFile("gcp-gcpdisks.data", "[", false);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION, "[", false);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION_GEN1, "[", false);
     }
@@ -93,6 +94,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-iamusers.data", "]", true);
         FileGenerator.writeToFile("gcp-gcploadbalancer.data", "]", true);
         FileGenerator.writeToFile("gcp-apikeys.data", "]", true);
+        FileGenerator.writeToFile("gcp-gcpdisks.data", "]", true);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION, "]", true);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION_GEN1, "]", true);
 
@@ -173,6 +175,9 @@ public class FileManager {
     }
     public static void generateLoadBalancerFiles(List<LoadBalancerVH> fetchLoadBalancerInventory) {
         FileGenerator.generateJson(fetchLoadBalancerInventory, "gcp-gcploadbalancer.data");
+    }
+    public static void generateDisksFiles(List<DiskVH> fetchDisksList) {
+        FileGenerator.generateJson(fetchDisksList, "gcp-gcpdisks.data");
     }
     public static void generateApiKeysFiles(List<APIKeysVH>apiKeysVHList){
         FileGenerator.generateJson(apiKeysVHList, "gcp-apikeys.data");

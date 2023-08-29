@@ -2,6 +2,7 @@ package com.tmobile.cso.pacman.datashipper.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 
 /**
@@ -94,5 +96,44 @@ public class RDSDBManager {
             LOGGER.error("Error Executing Query",exception);
         }
         return 0;
+    }
+    
+    
+    public static boolean insertNewPolicy(List<PolicyTable> policyList ) {
+    	 try(
+    	         Connection conn = getConnection();
+    			 	
+    		     ){
+    		 String strQuery = "INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc,  targetType, assetGroup,  policyParams, policyType,  severity, category, status)"
+			 			+ "VALUES (?,?,?,?,?,?,?,'{\"params\":[{\"encrypt\":false,\"value\":\"hign\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}]}','External',?,?,?);";
+    		 PreparedStatement preparedStatement = conn.prepareStatement(strQuery);
+    		 	
+    		 policyList.forEach( policy -> {
+    			 try {
+					preparedStatement.setString(1, policy.getPolicyId());
+					preparedStatement.setString(2, policy.getPolicyUUID());
+					preparedStatement.setString(3, policy.getPolicyName());
+					preparedStatement.setString(4, policy.getPolicyDisplayName());
+					preparedStatement.setString(5, policy.getPolicyDesc());
+					preparedStatement.setString(6, policy.getTarget());
+					preparedStatement.setString(7, policy.getAssetgroup());
+					preparedStatement.setString(8, policy.getSeverity());
+					preparedStatement.setString(9, policy.getCategory());
+					preparedStatement.setString(10, policy.getStatus());
+                    preparedStatement.addBatch();
+				} catch (SQLException e) {
+					LOGGER.error("sql prepared statement error {}", e);
+				}
+    			 
+    		 });
+    		 
+    		 int[] insertCounts = preparedStatement.executeBatch();
+    		 LOGGER.error("Rows inserted: {}" , insertCounts.length);
+    	          
+    	        } catch (Exception ex) {
+    	            LOGGER.error("Error Executing Query {}",ex);
+    	            return false;
+    	        } 
+    	return true;
     }
 }

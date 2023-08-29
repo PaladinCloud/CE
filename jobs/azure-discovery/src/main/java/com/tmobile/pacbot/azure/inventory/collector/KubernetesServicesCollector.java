@@ -64,7 +64,7 @@ public class KubernetesServicesCollector {
                     String kubernatesClusterName = kubernetesClusterObject.get("name").getAsString()!=null && !kubernetesClusterObject.get("name").getAsString().isEmpty()?kubernetesClusterObject.get("name").getAsString():"";
                     logger.info("kubernatesClusterName: {}", kubernatesClusterName);
                     kubernetesClustersVH.setName(kubernatesClusterName);
-                    if(kubernetesCluster.addonProfiles().get("kubeDashboard")!=null) {
+                    if(kubernetesCluster.addonProfiles()!=null && kubernetesCluster.addonProfiles().get("kubeDashboard")!=null) {
                         kubernetesClustersVH.setDashBoardEnabled( kubernetesCluster.addonProfiles().get("kubeDashboard").enabled());
                     }
                     kubernetesClustersVH.setSubscription(subscription.getSubscriptionId());

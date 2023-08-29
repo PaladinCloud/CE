@@ -43,7 +43,6 @@ public class VMInventoryCollector {
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 
 		List<NetworkInterface> networkInterfaces = azure.networkInterfaces().list();
-		PagedList<VirtualMachineScaleSet> vmss=azure.virtualMachineScaleSets().list();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
 
 		PagedList<VirtualMachine> vms = azure.virtualMachines().list();
@@ -118,7 +117,6 @@ public class VMInventoryCollector {
 				setNsgs(virtualMachine, vmVH, networkInterfaces);
 				setVnetInfo(virtualMachine, vmVH);
 				setOtherVnets(virtualMachine, vmVH, networkInterfaces);
-				setVirtualMachineScaleSet(vmVH,vmss);
 
 				if (virtualMachine.osProfile() != null) {
 					if (virtualMachine.osProfile().linuxConfiguration() != null) {
@@ -286,32 +284,6 @@ public class VMInventoryCollector {
 		}
 		vmVH.setDisks(vmDisks);
 
-	}
-	private void setVirtualMachineScaleSet(VirtualMachineVH vmVH,PagedList<VirtualMachineScaleSet>vmss){
-		List<VirtualMachineScaleSetVH>virtualMachineScaleSetVHList=new ArrayList<>();
-		VirtualMachineScaleSetVH virtualMachineScaleSetVH=new VirtualMachineScaleSetVH();
-		for(VirtualMachineScaleSet virtualMachineScaleSet:vmss){
-			List<VirtualMachineScaleSetVM> instanceList=virtualMachineScaleSet.virtualMachines().list();
-			List<String>vmIds=new ArrayList<>();
-			for(VirtualMachineScaleSetVM instance:instanceList){
-				vmIds.add(instance.id());
-			}
-			virtualMachineScaleSetVH.setVirtualMachineIds(vmIds);
-			List<VirtualMachineScaleSetNetworkConfiguration> networkConfigurationList=virtualMachineScaleSet.networkProfile().networkInterfaceConfigurations();
-			for(VirtualMachineScaleSetNetworkConfiguration networkConfiguration:networkConfigurationList){
-				 List<VirtualMachineScaleSetIPConfiguration> ipConfigurations=networkConfiguration.ipConfigurations();
-				 for(VirtualMachineScaleSetIPConfiguration ipConfiguration:ipConfigurations){
-					 List<SubResource> backendAddressPools= ipConfiguration.loadBalancerBackendAddressPools();
-					 List<String>lbIds=new ArrayList<>();
-					 for(SubResource resource:backendAddressPools){
-						 lbIds.add(resource.id());
-					 }
-					 virtualMachineScaleSetVH.setLoadBalancerIds(lbIds);
-				 }
-			}
-			virtualMachineScaleSetVHList.add(virtualMachineScaleSetVH);
-		}
-		vmVH.setVirtualMachineScaleSetVHList(virtualMachineScaleSetVHList);
 	}
 
 	@SuppressWarnings("unused")

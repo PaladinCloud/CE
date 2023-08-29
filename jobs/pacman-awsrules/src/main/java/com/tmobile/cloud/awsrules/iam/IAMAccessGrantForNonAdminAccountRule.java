@@ -30,21 +30,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.identitymanagement.model.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
-import com.amazonaws.services.identitymanagement.model.AttachedPolicy;
-import com.amazonaws.services.identitymanagement.model.GetPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.GetPolicyResult;
-import com.amazonaws.services.identitymanagement.model.GetPolicyVersionRequest;
-import com.amazonaws.services.identitymanagement.model.GetPolicyVersionResult;
-import com.amazonaws.services.identitymanagement.model.ListAttachedRolePoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListAttachedRolePoliciesResult;
-import com.amazonaws.services.identitymanagement.model.Policy;
-import com.amazonaws.services.identitymanagement.model.PolicyVersion;
 import com.amazonaws.util.CollectionUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -95,7 +87,7 @@ public class IAMAccessGrantForNonAdminAccountRule extends BasePolicy {
      */
 
     public PolicyResult execute(final Map<String, String> ruleParam,
-            Map<String, String> resourceAttributes) {
+            Map<String, String> resourceAttributes)  {
 
         logger.debug("========IAMAccessGrantForNonAdminAccountRule started=========");
         Map<String, String> ruleParamforIAM = new HashMap<>();
@@ -137,7 +129,7 @@ public class IAMAccessGrantForNonAdminAccountRule extends BasePolicy {
                     ruleParamforIAM);
             iamClient = (AmazonIdentityManagementClient) map
                     .get(PacmanSdkConstants.CLIENT);
-        } catch (UnableToCreateClientException e) {
+        } catch (Exception e) {
             logger.error("unable to get client for following input", e);
             throw new InvalidInputException(e.toString());
         }
@@ -150,31 +142,56 @@ public class IAMAccessGrantForNonAdminAccountRule extends BasePolicy {
             // Disabling pagination. Otherwise it fetches only the first 100
             // records.
             do {
-                result = iamClient.listAttachedRolePolicies(request);
+                for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+                    try {
+                        result = iamClient.listAttachedRolePolicies(request);
+                    } catch (AmazonIdentityManagementException e) {
+                        if (e.getMessage().startsWith("Rate exceeded")) {
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            if (i == 2) {
+                                logger.error(e.getMessage());
+                                throw e;
+                            }
+                            logger.info("Retrying inside execute for rolename -{} ", roleName);
+                            continue;
+                        }
+                        else{
+                            throw e;
+                        }
+                    }
+                    break;
+                }
                 attachedRolePolicies.addAll(result.getAttachedPolicies());
                 request.setMarker(result.getMarker());
             } while (result.isTruncated());
 
             if (!CollectionUtils.isNullOrEmpty(attachedRolePolicies)) {
-                if (isValidPoliciesForNonAdminRole(attachedRolePolicies)
-                        || isIAMFullAccessFoundAfterThoroughCheck(iamClient,
-                                attachedRolePolicies)) {
-                    message = "Role " + roleName + " has IAM full access";
-                    logger.warn(message);
-                    annotation = Annotation.buildAnnotation(ruleParam,
-                            Annotation.Type.ISSUE);
-                    annotation.put(PacmanSdkConstants.DESCRIPTION,
-                            "Non-admin roles with IAMFullAccess found");
-                    annotation.put(PacmanRuleConstants.SEVERITY, severity);
-                    annotation.put(PacmanRuleConstants.CATEGORY, category);
+                try {
+                    if (isValidPoliciesForNonAdminRole(attachedRolePolicies)
+                            || isIAMFullAccessFoundAfterThoroughCheck(iamClient,attachedRolePolicies)) {
+                        message = "Role " + roleName + " has IAM full access";
+                        logger.warn(message);
+                        annotation = Annotation.buildAnnotation(ruleParam,
+                                Annotation.Type.ISSUE);
+                        annotation.put(PacmanSdkConstants.DESCRIPTION,
+                                "Non-admin roles with IAMFullAccess found");
+                        annotation.put(PacmanRuleConstants.SEVERITY, severity);
+                        annotation.put(PacmanRuleConstants.CATEGORY, category);
 
-                    issue.put(PacmanRuleConstants.VIOLATION_REASON,
-                            "Non-admin roles with IAMFullAccess found");
-                    issueList.add(issue);
-                    annotation.put("issueDetails", issueList.toString());
+                        issue.put(PacmanRuleConstants.VIOLATION_REASON,
+                                "Non-admin roles with IAMFullAccess found");
+                        issueList.add(issue);
+                        annotation.put("issueDetails", issueList.toString());
 
-                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
-                            PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
+                                PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             } else {
                 logger.info(roleName , "This Role has no policies attached");
@@ -197,20 +214,57 @@ public class IAMAccessGrantForNonAdminAccountRule extends BasePolicy {
      */
     private boolean isIAMFullAccessFoundAfterThoroughCheck(
             AmazonIdentityManagementClient iamClient,
-            List<AttachedPolicy> attachedRolePolicies) {
+            List<AttachedPolicy> attachedRolePolicies) throws AmazonIdentityManagementException, InterruptedException {
         boolean isIAMFullAccess = false;
         for (AttachedPolicy policy : attachedRolePolicies) {
 
             GetPolicyRequest policyRequest = new GetPolicyRequest();
             policyRequest.setPolicyArn(policy.getPolicyArn());
-            GetPolicyResult policyResult = iamClient.getPolicy(policyRequest);
+            GetPolicyResult policyResult=new GetPolicyResult();
+            for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+                try {
+                    policyResult = iamClient.getPolicy(policyRequest);
+                } catch (AmazonIdentityManagementException e) {
+                    if (e.getMessage().startsWith("Rate exceeded")) {
+                        Thread.sleep(5000);
+                        if (i == 2) {
+                            logger.error(e.getMessage());
+                            throw e;
+                        }
+                        logger.info("Retrying inside isIAMFullAccessFoundAfterThoroughCheck for policy arn -{} ", policy.getPolicyArn());
+                        continue;
+                    }
+                    else{
+                        throw e;
+                    }
+                }
+                break;
+            }
             Policy p = policyResult.getPolicy();
 
             GetPolicyVersionRequest versionRequest = new GetPolicyVersionRequest();
             versionRequest.setPolicyArn(policy.getPolicyArn());
             versionRequest.setVersionId(p.getDefaultVersionId());
-            GetPolicyVersionResult versionResult = iamClient
-                    .getPolicyVersion(versionRequest);
+            GetPolicyVersionResult versionResult=new GetPolicyVersionResult();
+            for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+                try {
+                    versionResult = iamClient.getPolicyVersion(versionRequest);
+                } catch (AmazonIdentityManagementException e) {
+                    if (e.getMessage().startsWith("Rate exceeded")) {
+                        Thread.sleep(5000);
+                        if (i == 2) {
+                            logger.error(e.getMessage());
+                            throw e;
+                        }
+                        logger.info("Retrying inside isIAMFullAccessFoundAfterThoroughCheck for policy arn -{} and version id - {}", policy.getPolicyArn(),p.getDefaultVersionId());
+                        continue;
+                    }
+                    else{
+                        throw e;
+                    }
+                }
+                break;
+            }
 
             String decode = null;
             PolicyVersion pv = versionResult.getPolicyVersion();

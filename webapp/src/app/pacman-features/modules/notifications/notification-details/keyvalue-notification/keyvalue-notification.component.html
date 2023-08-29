@@ -13,10 +13,13 @@
             <td
                 class="keyvalue-value"
                 *ngIf="!isObject(item)"
-                [appPropValueLink]="item.value"
-                (innerNavigate)="navigateTo($event)"
+                (click)="navigateTo(item.value)"
             >
-                {{ item.value }}
+                <app-text
+                    [classNames]="item.value?.includes(windowHostName)?'pointer primary-400':'high-emphasis'"
+                    [text]="item.value"
+                    >
+                </app-text>
             </td>
         </tr>
     </tbody>

@@ -14,6 +14,7 @@
 
 import {Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import { TableStateService } from 'src/app/core/services/table-state.service';
 import {AssetGroupObservableService} from '../../core/services/asset-group-observable.service';
 
 @Component({
@@ -25,7 +26,7 @@ export class ChangeDefaultAssetGroupComponent implements OnInit {
 
   constructor(private router: Router,
               private activatedRoute: ActivatedRoute,
-              private assetGroupObservableService: AssetGroupObservableService) { }
+              private tableStateService: TableStateService) { }
 
   ngOnInit() {
   }
@@ -39,7 +40,9 @@ export class ChangeDefaultAssetGroupComponent implements OnInit {
       const agValue = value ? value : '';
 
       if (agValue) {
-          navigationParams['queryParams'] = {'ag': agValue};
+          navigationParams['queryParams'] = {'ag': agValue, 'filter': undefined};
+          navigationParams['queryParamsHandling'] = undefined;
+          this.tableStateService.clearAllPreservedFilters();
       } else {
           navigationParams['queryParamsHandling'] = 'merge';
       }
@@ -53,7 +56,7 @@ export class ChangeDefaultAssetGroupComponent implements OnInit {
           }
         }
       ],
-          navigationParams
+        navigationParams
     );
 
   }

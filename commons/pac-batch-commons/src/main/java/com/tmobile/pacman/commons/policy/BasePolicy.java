@@ -23,8 +23,11 @@
 
 package com.tmobile.pacman.commons.policy;
 
+import java.util.Collections;
 import java.util.Map;
 
+import com.amazonaws.services.identitymanagement.model.AmazonIdentityManagementException;
+import com.amazonaws.services.identitymanagement.model.ListPolicyVersionsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,12 +92,14 @@ public abstract class BasePolicy implements Policy {
 	 * @return the client for
 	 * @throws UnableToCreateClientException the unable to create client exception
 	 */
-	public Map<String, Object> getClientFor(AWSService service,String roleIdentifierString,Map<String, String> ruleParam) throws UnableToCreateClientException{
+
+	public Map<String, Object> getClientFor(AWSService service,String roleIdentifierString,Map<String, String> ruleParam) throws UnableToCreateClientException {
 		AWSClientManager awsClientManager = new AWSClientManagerImpl();
 		StringBuilder roleArn= new StringBuilder();
 		String accountId=ruleParam.get(PacmanSdkConstants.ACCOUNT_ID);
 		String roleIdentifier=ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
-		try {
+		for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+			try {
 				if(Strings.isNullOrEmpty(accountId) ||  Strings.isNullOrEmpty(roleIdentifier)){
 					throw new UnableToCreateClientException("missing account id or role arn identifier");
 				}
@@ -104,9 +109,28 @@ public abstract class BasePolicy implements Policy {
 				}else {
 					return awsClientManager.getClient(accountId,roleArn.toString(), service, null,roleIdentifierString);
 				}
-		} catch (UnableToCreateClientException e) {
-			throw e;
+			} catch (UnableToCreateClientException e) {
+				throw e;
+			}
+			catch (AmazonIdentityManagementException e) {
+				if (e.getMessage().startsWith("Rate exceeded")) {
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException ex) {
+						throw new RuntimeException(ex);
+					}
+					if (i == 2) {
+						logger.error(e.getMessage());
+						throw e;
+					}
+					logger.info("Retrying inside getClientFor for accountId and roleIdentifier -{}, {}", accountId, roleIdentifier);
+				}
+				else{
+					throw e;
+				}
+			}
 		}
+		return Collections.EMPTY_MAP;
 	}
 
 	/* (non-Javadoc)
