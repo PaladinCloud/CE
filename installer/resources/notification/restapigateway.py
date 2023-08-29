@@ -1,7 +1,7 @@
 from core.config import Settings
 from core.terraform.resources.aws.aws_webhook import ApiRestGateway,ApiRestAuthorizer,ApiRestIntegration,ApiRestDeployment,ApiRestMethod,ApiRestMethodSettings,ApiRestResources
-from installer.resources.cognito.userpool import UserPool
-from installer.resources.notification.function import InvokeNotificationFunction
+from resources.cognito.userpool import UserPool
+from resources.notification.function import InvokeNotificationFunction
 
 class RestGateway(ApiRestGateway):
     name = "lambda"
