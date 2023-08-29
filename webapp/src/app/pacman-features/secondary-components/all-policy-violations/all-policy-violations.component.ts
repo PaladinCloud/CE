@@ -172,7 +172,7 @@
  
        const downloadRequest = {
          ag: this.selectedAssetGroup,
-         filter: { "policyId.keyword": this.ruleID, domain: this.selectedDomain },
+         filter: { "policyId.keyword": this.ruleID, "issueStatus.keyword":["open"], domain: this.selectedDomain },
          from: 0,
          searchtext: this.searchTxt,
          size: this.totalRows,
