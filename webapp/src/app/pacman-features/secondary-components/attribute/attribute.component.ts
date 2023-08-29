@@ -70,8 +70,8 @@ export class AttributeComponent implements OnInit {
         }
         if (name.toLowerCase() === "cloud type" || name.toLowerCase() == "_cloudType") {
           cloudType = value[0];
-         }
         }
+      }
        obj = {
          'name': keys[i],
          'values': keyValues
