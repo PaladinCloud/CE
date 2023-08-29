@@ -2001,7 +2001,12 @@ public class InventoryUtil {
 				}
 			}
 		}catch(AWSSupportException e){
-			log.info(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
+			if(e.getErrorMessage().equals("Amazon Web Services Premium Support Subscription is required to use this service."))
+				log.info(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
+			else {
+				log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
+				ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
+			}
 		}catch (Exception e)
 		{
 			log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
