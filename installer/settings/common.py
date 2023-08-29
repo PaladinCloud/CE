@@ -77,7 +77,8 @@ PROCESS_RESOURCES = {
     'notification.s3_upload' : {'tags' : ["notification"]},
     'notification.function' : {'tags' : ["notification"]},
     'notification.appsync' : {'tags' : ["notification"]},
-    'notification.apigateway' : {'tags' : ["notification"]}
+    'notification.apigateway' : {'tags' : ["notification"]},
+    'notification.restapigateway' : {'tags' : ["notification"]}
 }
 
 

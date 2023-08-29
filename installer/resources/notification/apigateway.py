@@ -91,3 +91,6 @@ class InvokeAcsLambdaPermission(LambdaPermission):
     function_name = InvokeNotificationFunction.get_output_attr('function_name')
     principal = "sns.amazonaws.com"
     source_arn = AcsSNS.get_output_attr('arn')
+    
+    
+    
