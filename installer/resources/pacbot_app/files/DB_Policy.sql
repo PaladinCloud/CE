@@ -3360,3 +3360,7 @@ update cf_PolicyTable set policyDesc="EC2 instances are considered underutilized
 UPDATE cf_PolicyTable SET policyDisplayName = 'Configure \'Send Scan Report to\' within Vulnerability Assessment under SQL Server' WHERE policyId = 'Send_Scan_Reports_Should_Be_Configured';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused Scale Set' WHERE policyId = 'remove_unused_scale_set';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused VM Disk' WHERE policyId = 'remove_unused_vm_disk';
+
+UPDATE cf_PolicyTable SET severity ='critical' WHERE policyId = 'AWSVMScannedByTenable';
+UPDATE cf_PolicyTable SET category='security' WHERE policyId = 'Enable_Cloud_Asset_Inventory';
+
