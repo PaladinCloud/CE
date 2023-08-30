@@ -812,6 +812,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
+  handleFilterSearchTextChange(event){
+    if(event.selectedFilterCategory=="Asset ID") this.changeFilterType(event.selectedFilterCategory, event.searchText);
+  }
+
   handlePopClick(rowText) {
     const fileType = "csv";
 
@@ -947,7 +951,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     })
   }
 
-  changeFilterType(value) {
+  changeFilterType(value, searchText=''){
     return new Promise((resolve) => {
     try {
       this.currentFilterType = find(this.filterTypeOptions, {
@@ -967,7 +971,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
         ag: this.selectedAssetGroup,
         domain: this.selectedDomain,
-        filter: filtersToBePassed
+        filter: filtersToBePassed,
+        searchText
       }
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
