@@ -68,7 +68,7 @@ export class AttributeComponent implements OnInit {
         if(typeof(value)=="string"){
           keyValues[i].value = [value];
         }
-        if (name.toLowerCase() === "cloud type" || name.toLowerCase() == "_cloudType") {
+        if (name.toLowerCase() === "source" || name.toLowerCase() == "_cloudType") {
           cloudType = value[0];
         }
       }

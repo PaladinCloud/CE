@@ -12,12 +12,12 @@
  * limitations under the License.
  */
 
- export const MAPPING = {
-    'provider': 'Cloud Type',
+export const MAPPING = {
+    'provider': 'Source',
     'Creation Date': 'Data Created',
     'expirydate': 'Expiry Date',
-    '_cloudtype': 'Cloud Type',
-    '_cloudType': 'Cloud Type',
+    '_cloudtype': 'Source',
+    '_cloudType': 'Source',
     '_resourceId': 'Asset ID',
     'volumetype': 'Volume Type',
     'snapshotid': 'Snapshot ID',

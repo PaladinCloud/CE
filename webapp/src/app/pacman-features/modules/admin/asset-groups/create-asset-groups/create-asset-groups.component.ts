@@ -108,8 +108,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   targetTypeSelectedValue = '';
   disableOptions: boolean = true;
   selectedAttributes = [];
-  AttributeKeyViewMap = {"CloudType":"Cloud Type", "TargetType" : "Asset Type" ,"Region":"Region", "Id": "Account Id", "region":"Region","accountid":"Account Id"};
-  AttributeKeyMap = {"Cloud Type":"CloudType", "Asset Type" : "TargetType" ,"Region":"region", "Account Id": "accountid"};
+  AttributeKeyViewMap = {"CloudType":"Source", "TargetType" : "Asset Type" ,"Region":"Region", "Id": "Account Id", "region":"Region","accountid":"Account Id"};
+  AttributeKeyMap = {"Source":"CloudType", "Asset Type" : "TargetType" ,"Region":"region", "Account Id": "accountid"};
   allOptionalRuleParams = [];
   isAssetGroupFailed = false;
   isAssetGroupSuccess = false;
@@ -396,7 +396,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   getDisplayName(selectedKey:string,selectedValue:string){
     selectedKey = selectedKey.toLowerCase();
-    if(selectedKey == "cloud type"){
+    if(selectedKey == "source"){
       return DATA_MAPPING[selectedValue.toLowerCase()];
     } else if(selectedKey == "asset type"){
       if(this.assetTypeMap.get(selectedValue))
@@ -407,7 +407,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   getName(selectedKey:string,selectedValue:string){
     selectedKey = selectedKey.toLowerCase();
-    if(selectedKey == "cloud type"){
+    if(selectedKey == "source"){
       return selectedValue.toLowerCase();
     } else if(selectedKey == "asset type"){
       for (const [key, value] of this.assetTypeMap) {
