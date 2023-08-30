@@ -452,7 +452,7 @@
    storeState(data?){    
      const state = {
        totalRows: this.totalRows,
-       // data: data,
+       data: data,
        headerColName: this.headerColName,
        direction: this.direction,
        whiteListColumns: this.whiteListColumns,
