@@ -49,6 +49,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
     @Input() data = [];
     @Input() direction: SortDirection;
+    @Input() areAllFiltersEnabled = false;
     @Input() enableMultiValuedFilter = false;
     @Input() doLocalFilter = false;
     @Input() doLocalSearch = false;

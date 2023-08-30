@@ -1,5 +1,6 @@
 <div class="table-filters-container flex flex-align-center flex-wrap gap-16">
     <app-table-filter-chip
+    [isDisabled]="i!=appliedFilters.length-1 && !areAllFiltersEnabled"
         *ngFor="let appliedFilter of appliedFilters; let i=index;trackBy: trackByAppliedFilter"
         [category]="appliedFilter.keyDisplayValue"
         [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"

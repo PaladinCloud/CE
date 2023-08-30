@@ -25,6 +25,7 @@ export interface OptionChange {
 })
 export class TableFiltersComponent implements OnInit, OnDestroy {
     @Input() enableMultiValuedFilter = false;
+    @Input() areAllFiltersEnabled = false;
     @Input() filtersToExcludeFromCasing = [];
     isDateFilter: boolean = false;
     @Input() set appliedFilters(filters: FilterItem[] | undefined) {

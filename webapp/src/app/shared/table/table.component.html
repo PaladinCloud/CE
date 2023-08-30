@@ -36,6 +36,7 @@
                     [categoryOptions]="filterTagLabels"
                     [enableMultiValuedFilter]="enableMultiValuedFilter"
                     [filtersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing"
+                    [areAllFiltersEnabled]="areAllFiltersEnabled"
                     (categoryChange)="selectFilterCategory($event)"
                     (categoryClear)="removeFilterCategory($event)"
                     (optionChange)="selectFilterCategoryOption($event)"
