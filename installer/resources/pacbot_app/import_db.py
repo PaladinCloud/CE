@@ -2,6 +2,7 @@ from core.terraform.resources.misc import NullResource
 from core.terraform.utils import get_terraform_scripts_and_files_dir, get_terraform_scripts_dir, \
     get_terraform_provider_file
 from core.config import Settings
+from resources.notification.invokelambdagateway import InvokeApiStage
 from resources.lambda_rule_engine.utils import number_of_aws_rules, number_of_azure_rules, number_of_gcp_rules, number_of_plugin_rules
 from resources.datastore.db import MySQLDatabase
 from resources.datastore.es import ESDomain
@@ -21,7 +22,7 @@ from shutil import copy2
 import os
 import json
 from resources.cognito.userpool import Appcredentials
-from resources.notification.function import SendNotificationFunction, NotificationSNS, EmailSNS, SendNotificationFunctionUrl
+from resources.notification.function import SendNotificationFunction, NotificationSNS, EmailSNS
 
 class ReplaceSQLPlaceHolder(NullResource):
     dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_With_Values.sql')
@@ -181,7 +182,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_AQUA_PASSWORD': Settings.get('AQUA_PASSWORD', ""),
                         'ENV_AQUA_API_DEFAULT_PAGE_SIZE': Settings.get('AQUA_API_DEFAULT_PAGE_SIZE', ""),
                         'ENV_AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS': Settings.get('AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS', ""),
-                        'ENV_NOTIFICATION_FUNCTION_URL' : SendNotificationFunctionUrl.get_output_attr('function_url'),
+                        'ENV_NOTIFICATION_FUNCTION_URL' : InvokeApiStage.get_output_attr('invoke_url'),
                         'ENV_TOPIC_ARN' : NotificationSNS.get_output_attr('arn'),
                         'ENV_EMAIL_TOPIC_ARN' : EmailSNS.get_output_attr('arn'),
                         'ENV_NOTIFICATION_EMAIL_ID' : Settings.COGNITO_ADMIN_EMAIL_ID,
