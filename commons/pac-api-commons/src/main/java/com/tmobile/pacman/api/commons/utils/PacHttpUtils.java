@@ -47,9 +47,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpHeaders;
 
@@ -66,6 +69,8 @@ public class PacHttpUtils {
 	 * 
 	 */
 	private static final String CONTENT_TYPE = "Content-Type";
+	private static final String APPLICATION_JSON = "application/json";
+
 	static final Log LOGGER = LogFactory.getLog(PacHttpUtils.class);
 
 	/**
