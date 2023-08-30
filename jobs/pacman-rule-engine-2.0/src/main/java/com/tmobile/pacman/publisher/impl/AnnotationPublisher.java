@@ -15,10 +15,9 @@
  ******************************************************************************/
 package com.tmobile.pacman.publisher.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import com.google.gson.*;
 import com.tmobile.pacman.commons.dao.RDSDBManager;
@@ -227,6 +226,7 @@ public class AnnotationPublisher {
                 actualCreatedDate = issueAttributes.get(PacmanSdkConstants.CREATED_DATE);
                 currentIssueStatus = issueAttributes.get(PacmanSdkConstants.ISSUE_STATUS_KEY);
                 issueAttributes.putAll(_annotation);
+                isExemptionExpiring(issueAttributes);
                 issueAttributes.put(PacmanSdkConstants.CREATED_DATE, actualCreatedDate);
                 issueAttributes.put(PacmanSdkConstants.MODIFIED_DATE, CommonUtils.getCurrentDateStringWithFormat(
                         PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
@@ -281,6 +281,20 @@ public class AnnotationPublisher {
             processErrors(responseList);
         }
 
+    }
+
+    private void isExemptionExpiring(Map<String, String> issueAttributes) throws ParseException {
+        if(issueAttributes.containsKey("exemption-expiring-on"))
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat(PacmanSdkConstants.DATE_FORMAT_CURRENT);
+            Date expiredExemptionDate=sdf.parse(issueAttributes.get("exemption-expiring-on"));
+            Date today=sdf.parse(CommonUtils.getCurrentDateStringWithFormat(
+                    PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
+            if(expiredExemptionDate.before(today))
+            {
+             issueAttributes.put(PacmanSdkConstants.STATUS_KEY,"no action");
+            }
+        }
     }
 
     /**
