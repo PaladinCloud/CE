@@ -918,6 +918,14 @@
                     this.showLoadcompleteRevoke = true;
                   }, 100);
                   this.updateComponent();
+                }else{              
+                  this.dialog.open(DialogBoxComponent, {
+                    width: '600px',
+                    data: {
+                      title: "Error",
+                      message: `${Object.values(response?.data?.failureReason).toString()}`
+                    }
+                  })
                 }
               },
               error => {
@@ -1045,6 +1053,14 @@
                 this.showLoadcomplete = true;
                 this.showTopSection = false;
                 this.updateComponent();
+              }else{              
+                this.dialog.open(DialogBoxComponent, {
+                  width: '600px',
+                  data: {
+                    title: "Error",
+                    message: `${Object.values(response?.data?.failureReason).toString()}`
+                  }
+                })
               }
             },
             error => {
@@ -1113,7 +1129,8 @@
                 this.dialog.open(DialogBoxComponent, {
                   width: '600px',
                   data: {
-                    title: `Error - ${Object.values(response?.data?.failureReason).toString()}`,
+                    title: "Error",
+                    message: `${Object.values(response?.data?.failureReason).toString()}`
                   }
                 })
               }

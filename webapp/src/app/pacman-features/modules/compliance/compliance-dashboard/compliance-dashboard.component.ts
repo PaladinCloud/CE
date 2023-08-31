@@ -507,13 +507,11 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
                             this.violationCards[i].subInfo = {
                                 Policies: {value: data[violationName].policyCount},
                                 Assets: {value: data[violationName].assetCount},
-                                // 'Average age': Math.round(data[violationName].averageAge),
                             };
                         } else {
                             this.violationCards[i].totalViolations = 0;
                             this.violationCards[i].subInfo = {
                               Policies: {value: 0}, Assets: {value: 0}
-                                // 'Average age': {value: 0},
                             };
                         }
                     }

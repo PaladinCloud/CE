@@ -286,11 +286,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldType = "number";
       this.fieldName = "resourcetType.keyword";
     } else{
-      let apiColName =  find(this.filterTypeOptions, {
-        optionName: this.headerColName,
-      })["optionValue"];
-      this.fieldType = "string";
-      this.fieldName = apiColName;
+      try{
+        let apiColName =  find(this.filterTypeOptions, {
+          optionName: this.headerColName,
+        })["optionValue"];
+        this.fieldType = "string";
+        this.fieldName = apiColName;
+      }catch(e){
+        this.logger.log("error", e);
+      }
     }
   }
 
@@ -579,7 +583,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   
     this.filterTagOptions[value] = filterTagsData;
     this.filterTagLabels[value] = filterTagsData.map(option => option.name);
-  
+    
+    this.filterTagLabels[value] = this.filterTagLabels[value].sort((a, b) => a.localeCompare(b));
   
     this.filterErrorMessage = this.filterTagLabels[value].length === 0 ? 'noDataAvailable' : '';
     this.storeState();
@@ -936,16 +941,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       const filterToBePassed = { ...this.filterText };
       filterToBePassed.domain = this.selectedDomain;
-      if(filterToBePassed["slaEndDate"]){
-        if(filterToBePassed["slaEndDate"].toLowerCase().includes("in sla") && filterToBePassed["slaEndDate"].toLowerCase().includes("out sla")){
-          filterToBePassed["out_of_sla"] = "yes,no";
-        }else if(filterToBePassed["slaEndDate"].toLowerCase().includes("in sla")){
-          filterToBePassed["out_of_sla"] = "no";
-        }else{
-          filterToBePassed["out_of_sla"] = "yes";
-        }
-        delete filterToBePassed["slaEndDate"];
-      }
 
       Object.keys(filterToBePassed).forEach(filterKey => {
         if (filterKey !== "domain") {

@@ -1000,12 +1000,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
                       a.localeCompare(b),
                   ),
               },
-          };          
-          if(value.toLowerCase()=="age"){
-            const filterValues = this.filterTagLabels[value].splice(1);
-            filterValues.sort((a, b) => a-b);
-            this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
-          }
+          };
           resolve(this.filterTagOptions[value]);
           this.storeState();
         });
@@ -1058,8 +1053,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     try {
       if (this.currentFilterType) {
         const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
-          return v;
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+          return v?v["id"]:value;
         });
         this.utils.addOrReplaceElement(
           this.filters,
