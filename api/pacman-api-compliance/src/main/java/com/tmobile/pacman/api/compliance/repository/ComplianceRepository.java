@@ -611,7 +611,7 @@ public interface ComplianceRepository {
      * @return the issue exception response
      * @throws DataException the data exception
      */
-    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup,IssuesException issuesException) throws DataException;
+    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup,IssuesException issuesException,boolean skipAuditTrail) throws DataException;
 
     /**
      * Revoke and update multiple issue details.

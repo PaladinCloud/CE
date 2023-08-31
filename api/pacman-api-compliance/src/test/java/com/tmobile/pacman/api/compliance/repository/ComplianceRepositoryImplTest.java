@@ -282,7 +282,7 @@ public class ComplianceRepositoryImplTest implements Constants {
         when(elasticSearchRepository.updatePartialDataToES(anyString(), anyString(), anyString(), anyString(),
                 anyString(), anyObject())).thenReturn(true);
         when(elasticSearchRepository.saveExceptionDataToES(anyString(), anyString(), anyMap())).thenReturn(true);
-        assertTrue(complianceRepositoryImpl.exemptAndUpdateMultipleIssueDetails("aws",issueException).getStatus().equals("Success"));
+        assertTrue(complianceRepositoryImpl.exemptAndUpdateMultipleIssueDetails("aws",issueException,false).getStatus().equals("Success"));
 
     }
 

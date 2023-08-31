@@ -318,10 +318,10 @@ public class ComplianceControllerTest {
     @Test
     public void addIssuesExceptionExceptionTest() throws Exception {
         
-        when(complianceService.addMultipleIssueException("aws",anyObject())).thenReturn(new IssueExceptionResponse());
+        when(complianceService.addMultipleIssueException("aws",anyObject(),false)).thenReturn(new IssueExceptionResponse());
         assertThat(complianceController.addIssuesException("aws",new IssuesException()), is(notNullValue()));
         
-        when(complianceService.addMultipleIssueException("aws",anyObject())).thenThrow(new ServiceException());
+        when(complianceService.addMultipleIssueException("aws",anyObject(),false)).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
         ResponseEntity<Object> responseObj = complianceController.addIssuesException("",new IssuesException());
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);

@@ -42,6 +42,7 @@ import com.amazonaws.services.securityhub.AWSSecurityHubClientBuilder;
 import com.amazonaws.services.securityhub.model.DescribeHubRequest;
 import com.amazonaws.services.securityhub.model.DescribeHubResult;
 import com.tmobile.cso.pacman.inventory.vo.*;
+import com.amazonaws.services.support.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -296,12 +297,6 @@ import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
 import com.amazonaws.services.sqs.model.ListQueueTagsRequest;
 import com.amazonaws.services.support.AWSSupport;
 import com.amazonaws.services.support.AWSSupportClientBuilder;
-import com.amazonaws.services.support.model.DescribeTrustedAdvisorCheckResultRequest;
-import com.amazonaws.services.support.model.DescribeTrustedAdvisorCheckResultResult;
-import com.amazonaws.services.support.model.DescribeTrustedAdvisorChecksRequest;
-import com.amazonaws.services.support.model.DescribeTrustedAdvisorChecksResult;
-import com.amazonaws.services.support.model.RefreshTrustedAdvisorCheckRequest;
-import com.amazonaws.services.support.model.TrustedAdvisorCheckDescription;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1937,7 +1932,15 @@ public class InventoryUtil {
 					ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
 				}
 			}
-		}catch(Exception e){
+		}catch(AWSSupportException e){
+			if(e.getErrorMessage().equals("Amazon Web Services Premium Support Subscription is required to use this service."))
+				log.info(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
+			else {
+				log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
+				ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
+			}
+		}catch (Exception e)
+		{
 			log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
 			ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
 		}
