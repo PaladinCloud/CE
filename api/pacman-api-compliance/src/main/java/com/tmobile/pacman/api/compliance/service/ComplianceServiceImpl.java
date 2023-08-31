@@ -1477,9 +1477,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     }
 
     @Override
-    public IssueExceptionResponse addMultipleIssueException(String assetGroup, IssuesException issuesException) throws ServiceException {
+    public IssueExceptionResponse addMultipleIssueException(String assetGroup, IssuesException issuesException,boolean skipAuditTrail) throws ServiceException {
         try {
-            return repository.exemptAndUpdateMultipleIssueDetails(assetGroup, issuesException);
+            return repository.exemptAndUpdateMultipleIssueDetails(assetGroup, issuesException,skipAuditTrail);
         } catch (DataException e) {
             throw new ServiceException(e);
         }

@@ -2251,7 +2251,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     @Override
-    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup, IssuesException issuesException)
+    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup, IssuesException issuesException,boolean skipAuditTrail)
             throws DataException {
         String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\" } }%n";
         StringBuilder builderRequestAudit= new StringBuilder();
@@ -2331,8 +2331,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         bulkRequest.append(doc + "\n");
                         String _index = dataSource;
                         String _type = targetType + "_audit";
-
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id,issuesException.getCreatedBy(), _type, parentDetMap, target)+"\n");
+                        if(!skipAuditTrail)
+                            builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id,issuesException.getCreatedBy(), _type, parentDetMap, target)+"\n");
+                        else
+                            builderRequestAudit.append(String.format(actionTemplateAudit, _index, id));
 
                     }
                     i++;
@@ -2994,7 +2996,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     String _type = targetType + AUDIT;
                     builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id))
                             .append(createAuditTrail(exemptionRequest.getAssetGroup(), targetType,exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST)?REQUEST_EXEMPT:exemptionRequest.getAction().equals(ExemptionActions.REVOKE_EXEMPTION_REQUEST)?REVOKE_EXEMPT:exemptionRequest.getAction().equals(ExemptionActions.CANCEL_EXEMPTION_REQUEST)?DENY_EXEMPT:GRANT_EXEMPT, id,
-                                    exemptionRequest.getCreatedBy(), _type, parentDetMap, target)+"\n");
+                                    exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST)?exemptionRequest.getApprovedBy():exemptionRequest.getCreatedBy(), _type, parentDetMap, target)+"\n");
 
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
@@ -3079,7 +3081,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             try {
                 if (!failedIssueIds.contains(approvedIssueId)) {
                     exemptAndUpdateMultipleIssueDetails(exemptionRequest.getAssetGroup(),
-                            approvedIssuesExemptionMap.get(approvedIssueId));
+                            approvedIssuesExemptionMap.get(approvedIssueId),true);
                 }
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex.fillInStackTrace());
