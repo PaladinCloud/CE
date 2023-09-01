@@ -108,8 +108,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   targetTypeSelectedValue = '';
   disableOptions: boolean = true;
   selectedAttributes = [];
-  AttributeKeyViewMap = {"CloudType":"Cloud Type", "TargetType" : "Asset Type" ,"Region":"Region", "Id": "Account Id", "region":"Region","accountid":"Account Id"};
-  AttributeKeyMap = {"Cloud Type":"CloudType", "Asset Type" : "TargetType" ,"Region":"region", "Account Id": "accountid"};
+  AttributeKeyViewMap = {"CloudType":"Source", "TargetType" : "Asset Type" ,"Region":"Region", "Id": "Account Id", "region":"Region","accountid":"Account Id"};
+  AttributeKeyMap = {"Source":"CloudType", "Asset Type" : "TargetType" ,"Region":"region", "Account Id": "accountid"};
   allOptionalRuleParams = [];
   isAssetGroupFailed = false;
   isAssetGroupSuccess = false;
@@ -253,6 +253,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   assetTypeMap: any;
   assetGroupName: any;
   buttonClicked: boolean = false;
+  selectedAssetGroup: string = "";
+  currentDomain: string = "";
 
   constructor(
     private router: Router,
@@ -394,7 +396,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   getDisplayName(selectedKey:string,selectedValue:string){
     selectedKey = selectedKey.toLowerCase();
-    if(selectedKey == "cloud type"){
+    if(selectedKey == "source"){
       return DATA_MAPPING[selectedValue.toLowerCase()];
     } else if(selectedKey == "asset type"){
       if(this.assetTypeMap.get(selectedValue))
@@ -405,7 +407,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   getName(selectedKey:string,selectedValue:string){
     selectedKey = selectedKey.toLowerCase();
-    if(selectedKey == "cloud type"){
+    if(selectedKey == "source"){
       return selectedValue.toLowerCase();
     } else if(selectedKey == "asset type"){
       for (const [key, value] of this.assetTypeMap) {
@@ -833,6 +835,10 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     if(this.submitBtn.toLowerCase() == "confirm and update"){
       payload["groupId"] = this.groupId;
     }
+    const queryParams = {
+      "ag": this.selectedAssetGroup,
+      "domain": this.currentDomain
+    };
     this.adminService.executeHttpAction(url, method, payload, {}).subscribe(response => {
       if(response && response[0]){
         this.assetTilesService.getAssetGroupList().subscribe(response=>{
@@ -842,8 +848,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
         this.notificationObservableService.postMessage(data,3000,"","check-circle");
         this.router.navigate(['../'], {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge',
-          queryParams: {}
+          queryParams: queryParams
         });
         if(response[0]['message']==="success"){
           if(this.submitBtn =="Confirm and Create"){
@@ -1238,6 +1243,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
         this.FullQueryParams = currentQueryParams;
         this.groupId = this.FullQueryParams.groupId;
         this.groupName = this.FullQueryParams.groupName;
+        this.selectedAssetGroup = this.FullQueryParams.ag;
+        this.currentDomain = this.FullQueryParams.domain;
         this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
         delete this.queryParamsWithoutFilter['filter'];
         if (this.groupId) {

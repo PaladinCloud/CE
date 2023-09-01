@@ -12,90 +12,31 @@
  * limitations under the License.
  -->
 
- <section class="policy-violation-desc-wrapper flex flex-col" *ngIf="violationData">
-    <div class="policy-violation-label flex flex-col flex-align-start" *ngIf="violationData.policyViolated">
-        <div class="policy-violation-label-header capitalize">
-            Policy Violated
-        </div>
-        <div class="policy-violation-label-content anchor-link pointer" title="{{violationData.policyViolated}}" (click)="navigateTo('policy knowledgebase details',violationData.policyId)">
-            {{violationData.policyViolated}}
+<div class="details-body">
+    <div class="detail-wrapper">
+        <span class="detail-header body-2">Policy Violated</span>
+        <span class="detail-value body-2 link" (click)="navigateTo('policy knowledgebase details',violationData.policyId)">{{violationData.policyViolated}}</span>
+    </div>
+    <div class="detail-wrapper">
+        <span class="detail-header body-2">Asset ID</span>
+        <span class="detail-value body-2 link"  (click)="navigateTo('asset details',violationData.resouceViolatedPolicy,violationData.resourceType)">{{violationData.resouceViolatedPolicy}}</span>
+    </div>
+    <div class="detail-wrapper reason">
+        <span class="detail-header body-2">Violation Reason</span>
+        <span class="detail-value body-2">{{violationData.violationReason}}</span>
+        <div class="vulnerability-wrapper" *ngIf="violationData?.vulnerabilityDetails?.length">
+            <app-text class="pointer link" (click)="openVulnerabilityDialog()" text="Vulnerabilty Information" postImagePath="/assets/icons/right-arrow-icon.svg" textVariant="body-2 primary-400"></app-text>
         </div>
     </div>
-    <div class="policy-violation-label flex flex-col" *ngIf="violationId">
-        <div class="policy-violation-label-header capitalize " >
-            Violation ID</div>
-        <div class="policy-violation-label-content copy-wrapper" [title]="violationId">{{violationId}}
-        <img class="copy-icon" [cdkCopyToClipboard]="violationId" src="/assets/icons/files.svg">
-        </div>
+    <div class="detail-wrapper">
+        <span class="detail-header body-2">Date Created</span>
+        <span class="detail-value body-2">{{violationData.violationCreatedDate  | date : 'medium'}}</span>
     </div>
-        <div class="policy-violation-label flex flex-col" *ngIf="violationData.policyDescription">
-        <div class="policy-violation-label-header capitalize">
-            Policy Description
-        </div>
-        <div class="policy-violation-label-content policy-description-content" [innerHTML]="violationData.policyDescription">
-        </div>
+    <div class="detail-wrapper">
+        <span class="detail-header body-2">Age</span>
+        <span class="detail-value body-2">{{violationData.Age}}</span>
     </div>
-    <div class="policy-violation-label flex flex-col" *ngIf="violationData.violationReason">
-        <div class="policy-violation-label-header capitalize">
-            violation Reason</div>
-        <div class="policy-violation-label-content" [innerHTML]="violationData.violationReason" title="{{violationData.violationReason}}">
-        </div>
-    </div>
-    <div class="policy-violation-label flex flex-col" *ngIf="labelData.length > 0">
-        <div class="policy-violation-label-header capitalize">
-            Violation Details
-        </div>
-        <div class="policy-violation-label-content flex" *ngIf="labelData.length > 0">
-            <div [class.full-width]='!eachData.isAccordion' class="each-label flex flex-col" *ngFor='let eachData of labelData;let i = index '>
-                <div class="policy-violation-label-name capitalize nowrap-ellipsis" title="{{eachData.labelName}}">
-                    {{eachData.labelName}}
-                </div>
-                <div class="policy-violation-label-value relative" *ngIf="eachData.isAccordion == true" tabindex="1" >
-                    <span class="anchor-link pointer" (click)='$event.stopPropagation(); showAccordion=!showAccordion '> View </span>
-                    <app-nested-accordion (click)='$event.stopPropagation()' (accodionClicked)="$event.stopPropagation(); closeAccordion($event)"  [nestedAccordionData]="eachData.values" class="nested-accordion-component-wrapper" *ngIf="showAccordion"></app-nested-accordion>
-                </div>
-                <div *ngIf="eachData.isAccordion == false">
-                    <div class="policy-violation-label-value" *ngIf="eachData.labelCount" title="{{eachData.labelCount}}">
-                        {{ eachData.labelCount }}
-                    </div>
-                    <br>
-                    <span *ngFor="let item of eachData.data">
-                        <a class="anchor-link" [href]="item.link" target="_blank">{{item.cveNumber}}</a><span>: {{ item.displayName }}</span>,
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div style="padding-bottom: 1.5em;" *ngIf="violationData.vulnerabilityDetails.length">
-        <app-text-with-icon class="pointer" (click)="openVulnerabilityDialog()" text="Vulnerabilty Information" postImagePath="/assets/icons/right-arrow-icon.svg" textVariant="body-2 primary-400"></app-text-with-icon>
-    </div>
-    <div class="policy-violation-label flex flex-col flex-align-start" *ngIf="violationData.resouceViolatedPolicy">
-        <div class="policy-violation-label-header capitalize">
-            Asset ID </div>
-        <div class="policy-violation-label-content anchor-link pointer copy-wrapper" title="{{violationData.resouceViolatedPolicy}}" (click)="navigateTo('asset details',violationData.resouceViolatedPolicy,violationData.resourceType)">
-            {{violationData.resouceViolatedPolicy}}
-                 <img class="copy-icon" [cdkCopyToClipboard]="violationData.resouceViolatedPolicy" src="/assets/icons/files.svg">
-        </div>
-    </div>
-    <div class="policy-violation-label flex flex-col" *ngIf="violationData.violationCreatedDate">
-        <div class="policy-violation-label-header capitalize">
-            Date Created 
-        </div>
-        <div class="policy-violation-label-content" title="{{violationData.violationCreatedDate | date : 'medium'}}">
-            {{violationData.violationCreatedDate | date : 'medium'}}
-        </div>
-    </div>
-    <div class="policy-violation-label flex flex-col" *ngIf="violationData.violationModifiedDate">
-        <div class="policy-violation-label-header capitalize">
-            Last Status Change
-        </div>
-        <div class="policy-violation-label-content" title="{{violationData.violationModifiedDate | date : 'medium'}}">
-            <div>
-            {{ violationData.status}} - {{violationData.violationModifiedDate | date : 'medium'}}
-            </div>
-        </div>
-    </div>
-</section>
+</div>
 
 <ng-template #vulnerabilityDialogRef>
     <div class="dialog-body">

@@ -12,7 +12,47 @@
  * limitations under the License.
  */
 
- .policy-violation-label {
+ .details-header-wrapper{
+    padding: 16px 0px 16px 24px;
+    border-bottom: 1px solid var(--border-100);
+  }
+  
+  .detail-header{
+     color: var(--text-low-emphasis);
+  }
+
+ .details-body{
+    padding: 24px;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-height: calc(100% - 52px);
+    overflow: auto;
+  }
+  
+  .detail-wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 45%;
+  }
+  
+  .reason, .vulnerabilty-link {
+    width: 100%;
+  }
+  
+  .link{
+    font: var(--text-body-2);
+    color: var(--primary-400);
+    cursor: pointer;
+  }
+  
+  .detail-value{
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+.policy-violation-label {
     font-size: 1.2em;
     padding-bottom: 1.5em;
 }

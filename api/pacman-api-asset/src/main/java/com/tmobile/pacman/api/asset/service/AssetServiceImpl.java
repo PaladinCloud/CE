@@ -412,13 +412,13 @@ public class AssetServiceImpl implements AssetService {
 
         List<Map<String, Object>> attributesList = new ArrayList<>();
 
-        String[] fields1 = {"imageid", "subnetid", "instancetype", "accountname", "vpcid", "availabilityzone"};
+        String[] fields1 = {"imageid", "subnetid", "instancetype", "accountname", "vpcid", "availabilityzone","docType"};
         attributesList.addAll(createAttributes(ec2Data, fields1, "AWS Metadata"));
         String[] fields2 = {AssetConstants.PUBLIC_IP_ADDRESS, AssetConstants.PRIVATE_IP_ADDRESS};
         attributesList.addAll(createAttributes(ec2Data, fields2, "IP Address"));
         String[] fields3 = {Constants.STATE_NAME, "monitoringstate", "hostid", "statereasoncode",
                 "virtualizationtype", "rootdevicename", "keyname", "kernelid", Constants.STATE_NAME, "hypervisor",
-                "architecture", "tenancy"};
+                "architecture", "tenancy","_cloudType"};
         attributesList.addAll(createAttributes(ec2Data, fields3, "AWS Attributes"));
 
         attributesList.stream().forEach(obj -> {

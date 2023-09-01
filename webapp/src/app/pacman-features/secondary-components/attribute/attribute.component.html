@@ -52,11 +52,12 @@
 						{{tiles.name}}
 						</div>
 						<div class="values-wrapper-value" *ngFor='let subTiles of tiles.value'>
-							<div *ngIf="tiles.name === 'EBS Volumes' || tiles.name === 'Security Groups'" class="nowrap-ellipsis uncategorizedWrapper link-text pointer" title="{{subTiles}}" (click)="navigatePage(subTiles)">
+							<div *ngIf="tiles.assetType;else noLinksRef" class="nowrap-ellipsis uncategorizedWrapper link-text pointer" title="{{subTiles}}" (click)="navigatePage(tiles)">
 								{{subTiles}}
 							</div>
-							<div *ngIf="tiles.name!=='EBS Volumes' && tiles.name !== 'Security Groups' && subTiles.href" class="nowrap-ellipsis uncategorizedWrapper" title="{{subTiles.href}}" [innerHTML]='subTiles.href'></div>
-							<div *ngIf="tiles.name!=='EBS Volumes' && tiles.name !== 'Security Groups' && !subTiles.href" class="nowrap-ellipsis uncategorizedWrapper" title="{{subTiles}}" [innerHTML]='subTiles'></div>
+							<ng-template #noLinksRef>
+								<div class="nowrap-ellipsis uncategorizedWrapper" title="{{subTiles}}" [innerHTML]='subTiles'></div>
+							</ng-template>
 							<img class="copy-icon" [cdkCopyToClipboard]="subTiles" src="/assets/icons/files.svg">
 						</div>
 					</div>

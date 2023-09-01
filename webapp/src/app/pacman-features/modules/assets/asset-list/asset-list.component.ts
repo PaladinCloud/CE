@@ -74,10 +74,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
   tableScrollTop=0;
   selectedRowIndex;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Cloud Type': 0.5};
+  columnWidths = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Source': 0.5};
   columnNamesMap = {
     targettypedisplayname: 'Asset Type',
-    _entitytype: 'assetTypeValue'
+    _entitytype: 'assetTypeValue',
+    _cloudType: 'Source'
   };
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -190,7 +191,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
             const apiColName =  find(this.filterTypeOptions, {
               optionName: label,
             })["optionValue"];
-            if(apiColName) this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
+            if(apiColName && this.columnNamesMap[apiColName.replace(".keyword","")]==undefined) {
+              this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
+            }
           }  
         })
         this.columnNamesMap = {...this.columnNamesMap};
@@ -220,7 +223,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     this.tableData = state?.data ?? [];
     this.tableDataLoaded = true;
-    this.displayedColumns = ['Asset ID', 'Asset Name', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Cloud Type'];
+    this.displayedColumns = ['Asset ID', 'Asset Name', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Source'];
     this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
     this.tableScrollTop = state?.tableScrollTop;
 
@@ -755,7 +758,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
       newData.push(newObj);
     });
-
+    
     this.columnNamesMap = columnNamesMap;
     return newData;
   }

@@ -58,7 +58,7 @@
 
 .table-header .table-column-modifier {
     border: 1px solid var(--border-100);
-    padding: 12px 19px 12px 24px;
+    padding: 12px 19px 12px 12px;
     align-items: center;
     display: flex;
     gap: 12px;

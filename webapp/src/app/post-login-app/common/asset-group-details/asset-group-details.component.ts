@@ -43,41 +43,38 @@
        return string.charAt(0).toUpperCase() + string.slice(1);
      }
  
-     createProviderArray() {
-       this.provider = [];
-       const order = ["AWS", "Azure", "GCP"];
-       const providerMap = {
-         "aws": "AWS",
-         "azure": "Azure",
-         "gcp": "GCP"
-       }
-       let curr_provider = "";
-       if (this.detailsVal && this.detailsVal.providers) {
-         this.detailsVal.providers.forEach(element => {
-           curr_provider = providerMap[element.provider.toLowerCase()];
-           if(curr_provider)
-           this.provider.push(curr_provider);
-           else
-           this.provider.push(element.provider);
-         });
-       }
- 
-       this.provider.sort((a, b) => {
-         return order.indexOf(a) - order.indexOf(b);
-       });
-     }
- 
-     instructParentToNavigate (data, agDetails) {
-       const obj = {
-         data: data,
-         agDetails: agDetails
-       };
-       this.navigatePage.emit(obj);
+    createProviderArray() {
+      this.provider = [];
+      const order = ["AWS", "Azure", "GCP"];
+      const providerMap = {
+        "aws": "AWS",
+        "azure": "Azure",
+        "gcp": "GCP"
+      }
+      let curr_provider = "";
+      if (this.detailsVal && this.detailsVal.providers) {
+        this.detailsVal.providers.forEach(element => {
+          curr_provider = providerMap[element.provider.toLowerCase()];
+          if(curr_provider)
+          this.provider.push(curr_provider);
+          else
+          this.provider.push(element.provider);
+        });
+      }
+
+      this.provider.sort();
     }
- 
-    getDisplayName(assertName:string){
-      return assertName.replace(/,/g, " ");
-    }
- 
- }
- 
+
+    instructParentToNavigate (data, agDetails) {
+      const obj = {
+        data: data,
+        agDetails: agDetails
+      };
+      this.navigatePage.emit(obj);
+   }
+
+   getDisplayName(assertName:string){
+     return assertName.replace(/,/g, " ");
+   }
+
+}
