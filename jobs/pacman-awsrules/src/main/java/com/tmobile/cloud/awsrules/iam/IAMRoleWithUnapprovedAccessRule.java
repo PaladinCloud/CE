@@ -25,7 +25,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -149,7 +151,13 @@ public class IAMRoleWithUnapprovedAccessRule extends BasePolicy {
 				}
 			}
 
-		} catch (Exception e) {
+		}
+		catch(NoSuchEntityException exception){
+			if(!Pattern.matches(exception.getMessage(),"The role with name * cannot be found.")){
+				throw exception;
+			}
+		}
+		catch (Exception e) {
 			logger.error(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
 			throw new InvalidInputException(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
 		}
