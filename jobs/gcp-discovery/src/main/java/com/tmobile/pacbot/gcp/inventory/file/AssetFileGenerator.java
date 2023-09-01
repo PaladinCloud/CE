@@ -187,17 +187,17 @@ public class AssetFileGenerator {
 					Util.errorCount.getAndIncrement();
 				}
 			});
-			executor.execute(() -> {
-				if (!(isTypeInScope("pubsub"))) {
-					return;
-				}
-				try {
-					FileManager.generatePubSubFiles(pubSubInventoryCollector.fetchPubSubInventory(project));
-				} catch (Exception e) {
-					e.printStackTrace();
-					Util.errorCount.getAndIncrement();
-				}
-			});
+//			executor.execute(() -> {
+//				if (!(isTypeInScope("pubsub"))) {
+//					return;
+//				}
+//				try {
+//					FileManager.generatePubSubFiles(pubSubInventoryCollector.fetchPubSubInventory(project));
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					Util.errorCount.getAndIncrement();
+//				}
+//			});
 
 			executor.execute(() -> {
 				if (!(isTypeInScope("cloudsql"))) {
@@ -293,30 +293,30 @@ public class AssetFileGenerator {
 					Util.errorCount.getAndIncrement();
 				}
 			});
-			executor.execute(() -> {
+//			executor.execute(() -> {
+//
+//				if (!(isTypeInScope("apikeys"))) {
+//					return;
+//				}
+//				try {
+//					FileManager.generateApiKeysFiles(apiKeysInventoryCollector.fetchApiKeys(project));
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					Util.errorCount.getAndIncrement();
+//				}
+//			});
 
-				if (!(isTypeInScope("apikeys"))) {
-					return;
-				}
-				try {
-					FileManager.generateApiKeysFiles(apiKeysInventoryCollector.fetchApiKeys(project));
-				} catch (Exception e) {
-					e.printStackTrace();
-					Util.errorCount.getAndIncrement();
-				}
-			});
-
-			executor.execute(() -> {
-				if (!(isTypeInScope("iamusers"))) {
-					return;
-				}
-				try {
-					FileManager.generateIamUsers(iamUserCollector.fetchIamUsers(project));
-				} catch (Exception e) {
-					e.printStackTrace();
-					Util.errorCount.getAndIncrement();
-				}
-			});
+//			executor.execute(() -> {
+//				if (!(isTypeInScope("iamusers"))) {
+//					return;
+//				}
+//				try {
+//					FileManager.generateIamUsers(iamUserCollector.fetchIamUsers(project));
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					Util.errorCount.getAndIncrement();
+//				}
+//			});
 			executor.execute(() -> {
 				if (!(isTypeInScope("gcploadbalancer"))) {
 					return;
