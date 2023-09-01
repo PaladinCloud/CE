@@ -3,5 +3,6 @@ export const DATA_MAPPING = {
     governance: "operations",
     aws: "AWS",
     gcp: "GCP",
-    azure: "Azure"
+    azure: "Azure",
+    redhat: "Red Hat"
 }

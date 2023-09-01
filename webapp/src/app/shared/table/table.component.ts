@@ -49,6 +49,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
     @Input() data = [];
     @Input() direction: SortDirection;
+    @Input() areAllFiltersEnabled = false;
     @Input() enableMultiValuedFilter = false;
     @Input() doLocalFilter = false;
     @Input() doLocalSearch = false;
@@ -119,6 +120,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }>();
     @Output() selectedFilterType = new EventEmitter<string>();
     @Output() whitelistColumnsChanged = new EventEmitter<string[]>();
+    @Output() filterSearchTextChange = new EventEmitter();
 
     @ViewChild('select') select: MatSelect;
     @ViewChild('customTable') customTable: ElementRef<HTMLDivElement>;

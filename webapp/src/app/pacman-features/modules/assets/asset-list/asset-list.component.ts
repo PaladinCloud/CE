@@ -812,6 +812,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
+  handleFilterSearchTextChange(event){
+    if(event.selectedFilterCategory=="Asset ID") this.changeFilterType(event.selectedFilterCategory, event.searchText);
+  }
+
   handlePopClick(rowText) {
     const fileType = "csv";
 
@@ -947,7 +951,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     })
   }
 
-  changeFilterType(value) {
+  changeFilterType(value, searchText=''){
     return new Promise((resolve) => {
     try {
       this.currentFilterType = find(this.filterTypeOptions, {
@@ -967,7 +971,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
         ag: this.selectedAssetGroup,
         domain: this.selectedDomain,
-        filter: filtersToBePassed
+        filter: filtersToBePassed,
+        searchText
       }
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
@@ -995,12 +1000,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
                       a.localeCompare(b),
                   ),
               },
-          };          
-          if(value.toLowerCase()=="age"){
-            const filterValues = this.filterTagLabels[value].splice(1);
-            filterValues.sort((a, b) => a-b);
-            this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
-          }
+          };
           resolve(this.filterTagOptions[value]);
           this.storeState();
         });
@@ -1053,8 +1053,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     try {
       if (this.currentFilterType) {
         const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
-          return v;
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+          return v?v["id"]:value;
         });
         this.utils.addOrReplaceElement(
           this.filters,

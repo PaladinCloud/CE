@@ -41,6 +41,10 @@
                             [tableScrollTop]="tableScrollTop"
                             [totalRows]="totalRows"
                             [whiteListColumns]="whiteListColumns"
+                            [selectedRowIndex]="selectedRowIndex"
+                            [enableMultiValuedFilter]="isMultiValuedFilterEnabled"
+                            [columnsAndFiltersToExcludeFromCasing]="columnsToExcludeFromCasing"
+                            [doLocalSort]="false"
                             (deleteFilters)="deleteFilters($event)"
                             (downloadClicked)="handlePopClick($event)"
                             (headerColNameSelected)="handleHeaderColNameSelection($event)"
@@ -50,10 +54,7 @@
                             (selectedFilter)="changeFilterTags($event)"
                             (selectedFilterType)="changeFilterType($event)"
                             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-                            [doLocalSort]="false"
-                            [selectedRowIndex]="selectedRowIndex"
-                            [enableMultiValuedFilter]="isMultiValuedFilterEnabled"
-                            [columnsAndFiltersToExcludeFromCasing]="columnsToExcludeFromCasing"
+                            (filterSearchTextChange)="handleFilterSearchTextChange($event)"
                         ></app-table>
                         <div class="data-table-desc">{{ dataTableDesc }}</div>
                     </div>

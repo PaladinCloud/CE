@@ -52,6 +52,8 @@
             [whiteListColumns]="whiteListColumns"
             [selectedRowIndex]="selectedRowIndex"
             [enableMultiValuedFilter]="true"
+            [areAllFiltersEnabled]="true"
+            [columnsAndFiltersToExcludeFromCasing]="columnsToExcludeFromCasing"
             (deleteFilters)="deleteFilters($event)"
             (downloadClicked)="handlePopClick($event)"
             (headerColNameSelected)="handleHeaderColNameSelection($event)"
@@ -61,7 +63,7 @@
             (selectedFilter)="changeFilterTags($event)"
             (selectedFilterType)="changeFilterType($event)"
             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-            [columnsAndFiltersToExcludeFromCasing]="columnsToExcludeFromCasing"
+            (filterSearchTextChange)="handleFilterSearchTextChange($event)"
         >
         </app-table>
     </div>

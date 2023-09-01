@@ -19,7 +19,6 @@ import { PermissionGuardService } from "../../../../core/services/permission-gua
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
-import { first } from "rxjs/operators";
 
 @Component({
   selector: "app-issue-listing",
@@ -222,6 +221,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         );
     if (state.filters && !currentQueryParams.filter) {
       this.filters = state.filters;
+      this.storeState();
       await Promise.resolve().then(() => this.getUpdatedUrl());
     }
   }
@@ -286,11 +286,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldType = "number";
       this.fieldName = "resourcetType.keyword";
     } else{
-      let apiColName =  find(this.filterTypeOptions, {
-        optionName: this.headerColName,
-      })["optionValue"];
-      this.fieldType = "string";
-      this.fieldName = apiColName;
+      try{
+        let apiColName =  find(this.filterTypeOptions, {
+          optionName: this.headerColName,
+        })["optionValue"];
+        this.fieldType = "string";
+        this.fieldName = apiColName;
+      }catch(e){
+        this.logger.log("error", e);
+      }
     }
   }
 
@@ -347,7 +351,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.queryParamsWithoutFilter = JSON.parse(
           JSON.stringify(this.FullQueryParams)
         );
-        this.getFiltersAppliedOrderFromURL(this.FullQueryParams.filter);
         delete this.queryParamsWithoutFilter["filter"];
         /**
          * The below code is added to get URLparameter and queryparameter
@@ -362,6 +365,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
+  // TODO: getting order from url might sometimes lead to inconsistency because
+  // the filter might be present (say at 2nd position) with 0 selected but since it
+  // is 0 selected, it might not be present in the URL.
+  // Thus, filter order cannot be derived from url.
   getFiltersAppliedOrderFromURL(filterString){
     try{
       if(filterString){
@@ -424,6 +431,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       if (!event) {
         this.filters = [];
       } else if (event.removeOnlyFilterValue) {
+        this.removeFiltersOnRightOfIndex(event.index);
         this.getUpdatedUrl();
         this.updateComponent();
       } else if (event.index !== undefined && !this.filters[event.index].filterValue) {
@@ -445,7 +453,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   /*
    * this functin passes query params to filter component to show filter
    */
-  async getFilterArray() {
+  async getFilterArray(removeFilterIfNotPresent=true) {
     try {
       const dataArray = Object.keys(this.filterText).map(filterKey => {
       const keyDisplayValue = this.filterTypeOptions.find(option => option.optionValue === filterKey)?.optionName;
@@ -455,8 +463,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         };
       });
       const formattedFilters = dataArray;
+      // const state = this.tableStateService.getState(this.pageTitle) ?? {};
+      // this.filters = state.filters;
       for (let i = 0; i < formattedFilters.length; i++) {
-        await this.processFilterItem(formattedFilters[i], i);
+        await this.processFilterItem(formattedFilters[i], removeFilterIfNotPresent);
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -464,7 +474,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  async processFilterItem(formattedFilterItem, index){
+  async processFilterItem(formattedFilterItem, removeFilterIfNotPresent){
 
     let keyDisplayValue = formattedFilterItem.keyDisplayValue;
     if(!keyDisplayValue){
@@ -473,24 +483,33 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       })["optionName"];
     }
 
-    await this.changeFilterType(keyDisplayValue, index);
     const filterKey = formattedFilterItem.filterkey;
-    const filterValues = this.filterText[filterKey]?.split(',') || [];
-    const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
-    const filterTagLabelsForKey = this.filterTagLabels[keyDisplayValue];
-
-    
-    const validFilterValues = filterValues.reduce((result, val) => {
-      const valObj = filterTagOptionsForKey?.find(obj => obj.id === val);
-      if (valObj && filterTagLabelsForKey?.includes(valObj.name)) {
-        result.push(valObj);
-      }
-      return result;
-    }, []);
       
     const existingFilterObjIndex = this.filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
+    if(this.filters[existingFilterObjIndex]?.filterValue.length > 0){}
+    else if (existingFilterObjIndex >= 0) {
+      if(!removeFilterIfNotPresent){
+        this.filters[existingFilterObjIndex].filterValue = [];
+        this.filters[existingFilterObjIndex].value = [];
+      }else{
+        this.filters.splice(existingFilterObjIndex, 1);
+      }
+    }else{
+      await this.changeFilterType(keyDisplayValue);
+      const filterValues = this.filterText[filterKey]?.split(',') || [];
+      const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
+      const filterTagLabelsForKey = this.filterTagLabels[keyDisplayValue];
 
-    if (validFilterValues.length > 0) {
+      
+      const validFilterValues = filterValues
+      .reduce((result, val) => {
+        const valObj = filterTagOptionsForKey?.find(obj => obj.id === val);
+        if (valObj && filterTagLabelsForKey?.includes(valObj.name)) {
+          result.push(valObj);
+        }
+        return result;
+      }, []);
+
       const eachObj = {
         keyDisplayValue: keyDisplayValue,
         filterValue: validFilterValues.map(valObj => valObj.name),
@@ -500,14 +519,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         compareKey: filterKey?.toLowerCase().trim(),
       };
 
-      if (existingFilterObjIndex >= 0) {
-        this.filters[existingFilterObjIndex] = eachObj;
-      } else {
-        this.filters.push(eachObj);
-      }
-
-    } else if (existingFilterObjIndex >= 0) {
-      this.filters.splice(existingFilterObjIndex, 1);
+      this.filters.push(eachObj);
     }
     this.filters = [...this.filters];
     this.storeState();
@@ -563,19 +575,18 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   async applyFilterTagsData(filterTagsData, value) {
     if (value.toLowerCase() === "asset type") {
       this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-        filterTagsData.forEach(filterOption => {
+      filterTagsData.forEach(filterOption => {
           filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
-        });
+      });
       });
     }
   
     this.filterTagOptions[value] = filterTagsData;
-    this.filterTagLabels[value] = map(filterTagsData, 'name').sort((a, b) => a.localeCompare(b));
+    this.filterTagLabels[value] = filterTagsData.map(option => option.name);
+    
+    this.filterTagLabels[value] = this.filterTagLabels[value].sort((a, b) => a.localeCompare(b));
   
-    if (this.filterTagLabels[value].length === 0) {
-      this.filterErrorMessage = 'noDataAvailable';
-    }
-  
+    this.filterErrorMessage = this.filterTagLabels[value].length === 0 ? 'noDataAvailable' : '';
     this.storeState();
     return this.filterTagOptions[value];
   }
@@ -586,10 +597,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .then(response => response[0].data.response);
   }
   
-  async changeFilterType(value, index=-1) {
+  async changeFilterType(value, searchText='') {
     this.filterErrorMessage = '';
   
     try {
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
+      this.getFiltersAppliedOrderFromURL(currentQueryParams.filter);
       this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
   
@@ -601,6 +617,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.currentFilterType["optionValue"]?.replace(".keyword", "")
       ];
       
+      const index = this.filterOrder?.indexOf(this.currentFilterType.optionValue?.replace(".keyword", ""));
       const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
   
       const filtersToBePassed = Object.keys(this.filterText).reduce((result, key) => {
@@ -616,13 +633,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           result[key] = filtersToBePassed[key];
         }
         return result;
-      }, {});      
+      }, {});
   
       const payload = {
         type: "issue",
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
         ag: this.selectedAssetGroup,
         domain: this.selectedDomain,
+        searchText,
         filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
       };
   
@@ -637,7 +655,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
   
 
-  changeFilterTags(event) {
+  async changeFilterTags(event) {
     let filterValues = event.filterValue;
     if(!filterValues){
       return;
@@ -649,8 +667,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     try {
       if (this.currentFilterType) {
         const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
-          return v;
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+          return v?v["id"]:value;
         });
         this.utils.addOrReplaceElement(
           this.filters,
@@ -670,14 +688,24 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           }
         );
       }
-      this.storeState();
+      const index = this.filters.findIndex(filter => filter.keyDisplayValue===this.currentFilterType.optionName);
+      // this.getUpdatedUrl();
+      this.removeFiltersOnRightOfIndex(index);
       this.getUpdatedUrl();
-      this.utils.clickClearDropdown();
+      this.storeState();
       this.updateComponent();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  removeFiltersOnRightOfIndex(index: number){
+    for(let i=index+1; i<this.filters.length && i>0; i++){
+      this.filters[i].filterValue = [];
+      this.filters[i].value = [];
+    }
+    this.filters = [...this.filters];
   }
 
   updateComponent() {
@@ -750,7 +778,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       Object.keys(filterToBePassed).forEach(filterKey => {
         if (filterKey !== "domain") {
-          filterToBePassed[filterKey] = filterToBePassed[filterKey]?.split(",") || [];
+          if(filterToBePassed[filterKey]?.length>0){
+            filterToBePassed[filterKey] = filterToBePassed[filterKey]?.split(",") || [];
+          }else{
+            delete filterToBePassed[filterKey];
+          }
         }
       });
 
@@ -909,16 +941,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       const filterToBePassed = { ...this.filterText };
       filterToBePassed.domain = this.selectedDomain;
-      if(filterToBePassed["slaEndDate"]){
-        if(filterToBePassed["slaEndDate"].toLowerCase().includes("in sla") && filterToBePassed["slaEndDate"].toLowerCase().includes("out sla")){
-          filterToBePassed["out_of_sla"] = "yes,no";
-        }else if(filterToBePassed["slaEndDate"].toLowerCase().includes("in sla")){
-          filterToBePassed["out_of_sla"] = "no";
-        }else{
-          filterToBePassed["out_of_sla"] = "yes";
-        }
-        delete filterToBePassed["slaEndDate"];
-      }
 
       Object.keys(filterToBePassed).forEach(filterKey => {
         if (filterKey !== "domain") {
@@ -971,6 +993,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.isStatePreserved = false;
     this.updateComponent();
     // this.getUpdatedUrl();
+  }
+
+  handleFilterSearchTextChange(event){
+    if(event.selectedFilterCategory=="Violation ID") this.changeFilterType(event.selectedFilterCategory, event.searchText);
   }
 
 

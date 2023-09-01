@@ -138,6 +138,10 @@
       gcp:{
         image: "gcp-color",
         imageOnly: true
+      },
+      "red hat":{
+        image: "redhat-color",
+        imageOnly: true
       }
    }
  
@@ -448,7 +452,7 @@
    storeState(data?){    
      const state = {
        totalRows: this.totalRows,
-       // data: data,
+       data: data,
        headerColName: this.headerColName,
        direction: this.direction,
        whiteListColumns: this.whiteListColumns,

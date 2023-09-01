@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import merge from 'lodash/merge';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { FilterItem } from '../table/table.component';
 import { FilterChipUpdateEvent } from './table-filter-chip/table-filter-chip.component';
 
@@ -21,8 +23,9 @@ export interface OptionChange {
     templateUrl: './table-filters.component.html',
     styleUrls: ['./table-filters.component.css'],
 })
-export class TableFiltersComponent implements OnInit {
+export class TableFiltersComponent implements OnInit, OnDestroy {
     @Input() enableMultiValuedFilter = false;
+    @Input() areAllFiltersEnabled = false;
     @Input() filtersToExcludeFromCasing = [];
     isDateFilter: boolean = false;
     @Input() set appliedFilters(filters: FilterItem[] | undefined) {
@@ -81,6 +84,7 @@ export class TableFiltersComponent implements OnInit {
     @Output() categoryChange = new EventEmitter<string>();
     @Output() categoryClear = new EventEmitter<string>();
     @Output() optionChange = new EventEmitter<OptionChange>();
+    @Output() filterSearchTextChange = new EventEmitter();
 
     readonly filterMenuOffsetY = 7;
     readonly maxOptionChars = 30;
@@ -97,10 +101,25 @@ export class TableFiltersComponent implements OnInit {
 
     private _appliedFilters: FilterItem[] = [];
     private _categories: string[] = [];
+    private filterTextChange = new Subject<any>();
+    private filterTextSubscription: Subscription;
+    private filterOptionChange = new Subject<any>();
+    private filterOptionChangeSubscription: Subscription;
 
     constructor() {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.filterTextSubscription = this.filterTextChange
+        .pipe(debounceTime(500))
+        .subscribe((event) => {
+            this.filterSearchTextChange.emit(event);
+        });
+
+        this.filterOptionChangeSubscription = this.filterOptionChange.pipe(debounceTime(500))
+        .subscribe((event) => {
+            this.optionChange.emit(event);
+        });
+    }
 
     openMenu() {
         this.isCategoryMenuOpen = !this.isCategoryMenuOpen;
@@ -118,6 +137,19 @@ export class TableFiltersComponent implements OnInit {
             this.isDateFilter = false;
         }
         this.categoryChange.emit(filterCategory);
+    }
+
+    handleSearchTextChangeForCategory(event){
+        this.filterTextChange.next(event);
+    }
+
+    handleSearchTextChange(searchText){
+        const event = {
+            searchText,
+            selectedFilterCategory: this.selectedCategory
+        };
+        
+        this.handleSearchTextChangeForCategory(event);
     }
 
     dateIntervalSelected(from?, to?){
@@ -157,7 +189,7 @@ export class TableFiltersComponent implements OnInit {
             }),
         });
 
-        this.optionChange.emit({
+        this.filterOptionChange.next({
             category: filterCategory,
             appliedFilterTags: Object.keys(this.appliedFiltersDict[filterCategory]).filter(filter => this.appliedFiltersDict[filterCategory][filter])
         });
@@ -232,5 +264,10 @@ export class TableFiltersComponent implements OnInit {
           
             return dict;
           }, this.appliedFiltersDict);
+    }
+
+    ngOnDestroy(): void {
+        this.filterTextSubscription.unsubscribe();
+        this.filterOptionChangeSubscription.unsubscribe();
     }
 }
