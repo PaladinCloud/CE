@@ -463,8 +463,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         };
       });
       const formattedFilters = dataArray;
-      const state = this.tableStateService.getState(this.pageTitle) ?? {};
-      this.filters = state.filters;
+      // const state = this.tableStateService.getState(this.pageTitle) ?? {};
+      // this.filters = state.filters;
       for (let i = 0; i < formattedFilters.length; i++) {
         await this.processFilterItem(formattedFilters[i], removeFilterIfNotPresent);
       }
@@ -689,7 +689,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         );
       }
       const index = this.filters.findIndex(filter => filter.keyDisplayValue===this.currentFilterType.optionName);
-      this.getUpdatedUrl();
+      // this.getUpdatedUrl();
       this.removeFiltersOnRightOfIndex(index);
       this.getUpdatedUrl();
       this.storeState();

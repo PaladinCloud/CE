@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { LoggerService } from '../../services/logger.service';
 
 export interface FilterChipUpdateEvent {
@@ -12,7 +12,7 @@ export interface FilterChipUpdateEvent {
     templateUrl: './table-filter-chip.component.html',
     styleUrls: ['./table-filter-chip.component.css'],
 })
-export class TableFilterChipComponent implements OnInit {
+export class TableFilterChipComponent implements OnInit, OnChanges {
     @Input() isDisabled = false;
     @Input() filtersToExcludeFromCasing = [];
     @Input() category: string;
@@ -45,11 +45,19 @@ export class TableFilterChipComponent implements OnInit {
     isOptionsMenuOpen = false;
 
     optionFilterQuery = '';
+    filteredOptions = [];
 
     private _appliedFilters: { name: string; value: boolean }[] = [];
     private _appliedFiltersDict: { [key: string]: boolean } = {};
 
     constructor(private logger: LoggerService) {}
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if(changes.options){
+            this.filterOptionsByQuery();
+        }
+        
+    }
 
     ngOnInit(): void {}
 
@@ -58,19 +66,37 @@ export class TableFilterChipComponent implements OnInit {
             searchText,
             selectedFilterCategory: this.category
         };
-        
+
+        this.filterOptionsByQuery();
         this.filterSearchTextChange.emit(event);
     }
 
     toggleOptionsMenu() {
         this.isDateFilter =this.category.toLowerCase() == "created date" ?  true : false;
         this.isOptionsMenuOpen = !this.isOptionsMenuOpen;
+        if(this.isOptionsMenuOpen){
+            this.filterOptionsByQuery();
+        }else{
+            this.optionFilterQuery = '';
+        }
+    }
+
+    closeMenu(){
+        this.isOptionsMenuOpen = false;
+        this.optionFilterQuery = '';
+    }
+
+    sortCheckedOptionsFirst(){
+        const checkedOptions = Object.keys(this.appliedFiltersDict || {}).filter(key => this.appliedFiltersDict[key]);
+        const uncheckedOptions = this.options?.filter((f) => !Object.keys(this.appliedFiltersDict).includes(f)) || [];
+        this.options = [...checkedOptions, ...uncheckedOptions];
     }
 
     dateIntervalSelected(from?, to?){
         const toDate = new Date(to).toLocaleDateString('en-CA');
         const fromDate = new Date(from).toLocaleDateString('en-CA');
         this.isOptionsMenuOpen = false;
+        this.optionFilterQuery = '';
         this.updateFilterOption(fromDate+' - '+toDate,true);
     }
 
@@ -85,17 +111,20 @@ export class TableFilterChipComponent implements OnInit {
     overlayKeyDown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             this.isOptionsMenuOpen = false;
+            this.optionFilterQuery = '';
         }
     }
 
     filterOptionsByQuery() {
+        this.sortCheckedOptionsFirst();
+        
         try{
-            return this.options?.filter((f) =>
-            f?.toLowerCase()?.includes(this.optionFilterQuery?.toLowerCase()),
-        );
+            this.filteredOptions = this.options?.filter((f) =>
+                f?.toLowerCase()?.includes(this.optionFilterQuery?.toLowerCase()),
+            ) || [];
+
         }catch(e){
             this.logger.log('jsError', e);
-            return [];
         }
     }
 }
