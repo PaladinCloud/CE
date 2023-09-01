@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -149,9 +150,15 @@ public class IAMRoleWithUnapprovedAccessRule extends BasePolicy {
 				}
 			}
 
-		} catch (Exception e) {
-			logger.error(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
-			throw new InvalidInputException(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
+		}
+		catch(NoSuchEntityException exception){
+			logger.error("NoSuchEntityException thrown..", exception);
+			return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
+					annotation);
+		}
+		catch (Exception e) {
+				logger.error(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
+				throw new InvalidInputException(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
 		}
 		logger.debug("========IAMRoleWithUnapprovedAccessRule ended=========");
 		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
