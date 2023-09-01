@@ -91,28 +91,21 @@ public class EnableOSLoginProjectLevelRule extends BasePolicy {
                     .get(PacmanRuleConstants.SOURCE);
 
             logger.debug("Validating the data item: {}", vmInstanceObject);
-            JsonObject metadataObj = vmInstanceObject.getAsJsonObject()
-                    .get(PacmanRuleConstants.COMPUTE_INSTANCE_METADATA).getAsJsonObject();
 
-
-            if (metadataObj != null) {
-                logger.info("login data --> {}",metadataObj);
-
-                if(metadataObj.get(PacmanRuleConstants.ENABLE_OS_LOGIN)!=null){
-                    if(metadataObj.get(PacmanRuleConstants.ENABLE_OS_LOGIN).getAsBoolean()){
-                        validationResult=true;
-                    }
-
-                }
-
-            } else {
+            Optional<Boolean> optionalBool = Optional.ofNullable(vmInstanceObject).map(obj -> obj.isJsonNull()?null:obj.getAsJsonObject())
+                    .map(obj -> obj.get(PacmanRuleConstants.COMPUTE_INSTANCE_METADATA))
+                    .map(obj -> obj.isJsonNull()?null:obj.getAsJsonObject()).map(obj -> obj.get(PacmanRuleConstants.ENABLE_OS_LOGIN))
+                    .map(obj -> obj.isJsonPrimitive()?obj.getAsBoolean():null);
+            if(optionalBool.isPresent()){
+                validationResult=optionalBool.get();
+            }
+            else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
 
         } else {
             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }
-
         return validationResult;
     }
 
