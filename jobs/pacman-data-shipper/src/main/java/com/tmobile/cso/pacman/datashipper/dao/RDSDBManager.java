@@ -100,16 +100,18 @@ public class RDSDBManager {
     
     
     public static boolean insertNewPolicy(List<PolicyTable> policyList ) {
-    	 try(
-    	         Connection conn = getConnection();
-    			 	
-    		     ){
-    		 String strQuery = "INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc,  targetType, assetGroup,  policyParams, policyType,  severity, category, status)"
-			 			+ "VALUES (?,?,?,?,?,?,?,'{\"params\":[{\"encrypt\":false,\"value\":\"hign\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}]}','External',?,?,?);";
-    		 PreparedStatement preparedStatement = conn.prepareStatement(strQuery);
-    		 	
-    		 policyList.forEach( policy -> {
-    			 try {
+		String strQuery = "INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc, "
+				+ " targetType, assetGroup,  policyParams, policyType,  severity, category, status, policyFrequency)"
+				+ "VALUES (?,?,?,?,?,?,?,?,'External',?,?,?,?);";
+		
+		String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
+		+ "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
+
+		try (Connection conn = getConnection();
+				PreparedStatement preparedStatement = conn.prepareStatement(strQuery);) {
+
+			policyList.forEach(policy -> {
+				try {
 					preparedStatement.setString(1, policy.getPolicyId());
 					preparedStatement.setString(2, policy.getPolicyUUID());
 					preparedStatement.setString(3, policy.getPolicyName());
@@ -117,23 +119,25 @@ public class RDSDBManager {
 					preparedStatement.setString(5, policy.getPolicyDesc());
 					preparedStatement.setString(6, policy.getTarget());
 					preparedStatement.setString(7, policy.getAssetgroup());
-					preparedStatement.setString(8, policy.getSeverity());
-					preparedStatement.setString(9, policy.getCategory());
-					preparedStatement.setString(10, policy.getStatus());
-                    preparedStatement.addBatch();
+					preparedStatement.setString(8,
+							String.format(policyParams, policy.getSeverity(), policy.getCategory()));
+					preparedStatement.setString(9, policy.getSeverity());
+					preparedStatement.setString(10, policy.getCategory());
+					preparedStatement.setString(11, policy.getStatus());
+					preparedStatement.setString(12, "0 0 1/1 * ? *");
 				} catch (SQLException e) {
 					LOGGER.error("sql prepared statement error {}", e);
 				}
-    			 
-    		 });
-    		 
-    		 int[] insertCounts = preparedStatement.executeBatch();
-    		 LOGGER.error("Rows inserted: {}" , insertCounts.length);
-    	          
-    	        } catch (Exception ex) {
-    	            LOGGER.error("Error Executing Query {}",ex);
-    	            return false;
-    	        } 
-    	return true;
-    }
+
+			});
+
+			int[] insertCounts = preparedStatement.executeBatch();
+			LOGGER.error("Rows inserted: {}", insertCounts.length);
+
+		} catch (Exception ex) {
+			LOGGER.error("Error Executing Query {}", ex);
+			return false;
+		}
+		return true;
+	}
 }
