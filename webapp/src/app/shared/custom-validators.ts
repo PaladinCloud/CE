@@ -97,4 +97,13 @@ export class CustomValidators extends Validators {
     }
   }
 
+  static checkIfMultipleOfTwentyFour(control){
+    const value = control.value;
+    console.log(value," value ",value%24);
+    if(value%24==0){
+      return null;
+    }
+    return { notMultipleOf24 : true};
+  }
+
 }

@@ -26,7 +26,7 @@ import { RefactorFieldsService } from './../../../../shared/services/refactor-fi
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../services/all-admin.service';
-import { NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { UploadFileService } from '../../../services/upload-file-service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
@@ -34,6 +34,8 @@ import { NotificationObservableService } from 'src/app/shared/services/notificat
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { DatePipe } from '@angular/common';
 import { TourService } from 'src/app/core/services/tour.service';
+import { CONFIGURATIONS } from 'src/config/configurations';
+import { CustomValidators } from 'src/app/shared/custom-validators';
 
 @Component({
   selector: 'app-admin-create-edit-policy',
@@ -59,8 +61,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   pageTitle = 'Edit Policy';
   FormHeader = "Policy Details";
   allPolicies = [];
-  breadcrumbArray = ['policys'];
-  breadcrumbLinks = ['policys'];
+  breadcrumbArray = ['policies'];
+  breadcrumbLinks = ['policies'];
   breadcrumbPresent;
   outerArr = [];
   dataLoaded = false;
@@ -121,7 +123,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   direction = "";
   @ViewChild('policyForm') policyForm!: NgForm;
   @ViewChild('disablePolicyRef') disablePolicyRef: TemplateRef<any>;
-
+  notificationsForm: FormGroup;
+  public notificationFormErrors = {
+    waitingTime: '',
+    maxEmailNotification: ''
+  }
   searchTxt = '';
   dataTableData = [];
   initVals = [];
@@ -183,6 +189,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   policyId: any;
   policyDetails: any;
   resolution = "";
+  countTooltipText: string = "Count should not exceed the limit value ";
+  waitingTimeTooltipText: string = "Duration should be multiples of 24 in hours"
   policyUrl = "";
   stepperData = [
     {
@@ -211,8 +219,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   warningMessage: any = "";
   warningMailSubject: any = "";
   index: string = "";
-  waitingTime: any;
-  maxEmailNotification: any;
+  waitingTime: number;
+  maxEmailNotification: number;
   elapsedTime: any;
   fixType: any;
   showAutofix = false;
@@ -236,6 +244,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   whiteListColumns = [];
   logsTableErrorMessage: string = "";
   logsTableDataLoaded : boolean = false;
+  jobInterval: number;
 
   constructor(
     private datePipe: DatePipe,
@@ -251,7 +260,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     private adminService: AdminService,
     public dialog: MatDialog,
     private assetTypeMapService: AssetTypeMapService,
-    private tourService: TourService
+    private tourService: TourService,
+    private form: FormBuilder
   ) {
       this.routerParam();
   }
@@ -259,6 +269,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   formData = {};
 
   ngOnInit() {
+    // this.jobInterval = parseInt(CONFIGURATIONS.optional.general.Interval.JobInterval);
     this.whiteListColumns = Object.keys(this.logColumnsWidths);
     this.urlToRedirect = this.router.routerState.snapshot.url;
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
@@ -282,6 +293,15 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   onReset() {
     this.navigateBack();
     // this.policyForm.reset(this.formData);
+  }
+
+  buildForm(){
+    const maxEmailNotificationValue = this.waitingTime / this.jobInterval;
+    this.countTooltipText += maxEmailNotificationValue;
+    this.notificationsForm = this.form.group({
+      waitingTime: [this.waitingTime, [Validators.required, CustomValidators.checkIfMultipleOfTwentyFour]],
+      maxEmailNotification : [this.maxEmailNotification,[Validators.required,Validators.max(maxEmailNotificationValue)]]
+    });
   }
 
   selectedType(event: any) {
@@ -628,7 +648,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
        })
        this.formData["maxEmailNotification"]=this.maxEmailNotification;
        this.formData["waitingTime"] = this.waitingTime;
- 
+       this.buildForm();
      },
        error => {
          this.logger.log("Error",error);

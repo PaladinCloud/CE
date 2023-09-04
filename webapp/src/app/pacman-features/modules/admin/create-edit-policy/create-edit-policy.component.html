@@ -23,7 +23,8 @@
                         Policy Details
                     </div>
                     <div class="button-wrapper">
-                        <button class="button submit-btn" [disabled]="!enableUpdate || updateButtonClicked" [class.disabled-button]="!enableUpdate || updateButtonClicked"
+                        <button class="button submit-btn" [disabled]="!enableUpdate || updateButtonClicked || notificationsForm.invalid"
+                        [class.disabled-button]="!enableUpdate || updateButtonClicked || notificationsForm.invalid" 
                         (click)="onSubmit()">Save</button>
                         <!-- <button class="button cancel-btn" 
                             (click)="onReset()" [disabled]="!enableUpdate" [class.disabled-button]="!enableUpdate">Cancel</button> -->
@@ -99,30 +100,30 @@
                                       </div>
                                      <div class="notifications-wrapper">
                                             <div class="parameters-wrapper">
-                                                <div class="parameter-wrapper">
-                                                    <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled || !status">
-                                                        <mat-form-field appearance="outline">
-                                                            <mat-label>Duration</mat-label>
-                                                            <input autocomplete="off" matInput name="waitingTime" 
-                                                                (ngModelChange)="onValueChange($event)"  [(ngModel)]="waitingTime">
-                                                        </mat-form-field>
-                                                        <div class="info-img">
-                                                            <img src="../../../assets/icons/info-circle.svg" [matTooltip]="" matTooltipPosition="right">
-                                                        </div>
-                                                    </div>
-                                                    </div>
+                                                 <form class="parameters-wrapper" [formGroup]="notificationsForm">
                                                     <div class="parameter-wrapper">
-                                                    <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification || !status">
-                                                        <mat-form-field appearance="outline">
-                                                            <mat-label>Count</mat-label>
-                                                            <input autocomplete="off" matInput name="maxEmailNotification" [class.hideInput]="warningNotification"
-                                                             (ngModelChange)="onValueChange($event)"  [(ngModel)]="maxEmailNotification">
-                                                        </mat-form-field>
-                                                        <div class="info-img">
-                                                            <img src="../../../assets/icons/info-circle.svg" [matTooltip]="" matTooltipPosition="right">
+                                                        <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled || !status">
+                                                            <app-input-field [parentForm]="notificationsForm" formControlName="waitingTime" [label]="'Duration'" 
+                                                            placeholder="Enter only digits" [(value)]="waitingTime" [shouldApplyNumericDirective]="true"
+                                                            [formErrors]="notificationFormErrors" [isRequired]="true" (ngModelChange)="onValueChange($event)">
+                                                            </app-input-field>
+                                                            <div class="info-img">
+                                                                <img src="../../../assets/icons/info-circle.svg" [matTooltip]="waitingTimeTooltipText" matTooltipPosition="right">
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                        <div class="parameter-wrapper">
+                                                        <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification || !status">
+                                                            <app-input-field [parentForm]="notificationsForm" formControlName="maxEmailNotification" [label]="'Count'" 
+                                                            placeholder="Enter only digits" [(value)]="maxEmailNotification" [shouldApplyNumericDirective]="true"
+                                                            [formErrors]="notificationFormErrors" [isRequired]="true" (ngModelChange)="onValueChange($event)">
+                                                            </app-input-field>
+                                                            <div class="info-img">
+                                                                <img src="../../../assets/icons/info-circle.svg" [matTooltip]="countTooltipText" matTooltipPosition="right">
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                 </div>
+                                                 </form>
                                               </div>
                                         </div>
                                 </div>
