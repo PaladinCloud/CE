@@ -12,7 +12,7 @@ export class CustomCardComponent implements OnInit {
   @Output() graphIntervalSelected = new EventEmitter();
 
   @Input() selectedItem = "All time";
-  @Input() fromDate: Date = new Date(2022, 0, 1);
+  @Input() fromDate: Date;
   @Input() toDate: Date = new Date();
   @Input() showDateDropdown = false;
   @Input() card = {
@@ -28,7 +28,6 @@ export class CustomCardComponent implements OnInit {
   }
 
   handleGraphIntervalSelection = (e) => {
-    this.fromDate = new Date(2022, 0, 1);
     this.toDate = new Date();
     this.selectedItem = e;
     e = e.toLowerCase();
@@ -38,7 +37,7 @@ export class CustomCardComponent implements OnInit {
         this.matMenuTrigger.openMenu()
         return;
       }
-      this.dateIntervalSelected(this.fromDate, this.toDate);
+      this.dateIntervalSelected(new Date(2022, 0, 1), this.toDate);
       return;
     }
     let date = new Date();

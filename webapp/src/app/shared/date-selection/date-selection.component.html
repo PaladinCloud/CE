@@ -2,6 +2,7 @@
     <mat-card-content class="date-selection-content">
         <mat-calendar
             [maxDate]="today"
+            [minDate]="minDate"
             [selected]="selectedRange"
             (selectedChange)="selectedDateChange($event)"
         ></mat-calendar>

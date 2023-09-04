@@ -250,6 +250,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     tableScrollTop = 0;
     graphFromDate: Date = new Date(2022, 0, 1);
     graphToDate: Date = new Date();
+    minDate: Date;
 
     dashboardContainers: DashboardArrangementItems;
     dashcobardCollapsedContainers: DasbhoardCollapsedDict;
@@ -360,10 +361,14 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
                     'zero-value': e.totalassets == 0,
                 });
             });
-            data[i].values.sort(function (a, b) {
-                return new Date(a.date).valueOf() - new Date(b.date).valueOf();
-            });
-        }
+          }
+          data[0].values.sort(function(a,b){
+            return new Date(a.date) > new Date(b.date)? 1: -1;
+          });
+      
+          if(!this.minDate){
+            this.minDate = data[0].values[0].date;
+          }
 
         data[0].info = {
             id: 'TotalAssetsCountTrend',

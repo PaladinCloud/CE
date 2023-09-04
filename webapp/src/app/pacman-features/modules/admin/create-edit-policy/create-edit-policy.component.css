@@ -65,6 +65,10 @@
   width: 100%;
 }
 
+.parameter-wrapper app-input-field{
+  width: calc(100% - 40px);
+}
+
 .input-wrapper ::ng-deep .mat-form-field-label{
    padding: 5px 5px !important;
 }

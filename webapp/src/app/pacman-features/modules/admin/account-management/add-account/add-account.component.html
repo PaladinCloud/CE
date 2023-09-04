@@ -24,13 +24,13 @@
                         <ng-container [ngTemplateOutlet]="currentTemplateRef">
                         </ng-container>
                         <div class="button-wrapper" [hidden]="isValidating || isValidated">
-                            <button class="button btn" [class.hide]="currentStepperIndex<2"
+                            <button class="button btn" [class.hide]="(pluginSelected=='gcp' && currentStepperIndex<3) || (pluginSelected!='gcp' && currentStepperIndex<2)"
                                 (click)="onSubmit()" [disabled]="buttonClicked" [class.disabled-button]="buttonClicked">
                                 Submit</button>
-                            <button class="button btn" [class.hide]="currentStepperIndex<1 || currentStepperIndex>1"
+                            <button class="button btn" [class.hide]="(pluginSelected=='gcp' && (currentStepperIndex<2 || currentStepperIndex>2)) || (pluginSelected!='gcp' && (currentStepperIndex<1 || currentStepperIndex>1))"
                                 (click)="validateAccount()" [class.isDisabled]="selectedAccount && currentPluginForm?.invalid">
                                 Validate</button>
-                            <button class="button btn" [class.hide]="currentStepperIndex>0" (click)="pageCounter('next')"
+                            <button class="button btn" [class.hide]="(currentStepperIndex>1 && pluginSelected=='gcp') || (currentStepperIndex>0 && pluginSelected!='gcp')" (click)="pageCounter('next')"
                                 [class.isDisabled]="selectedAccount && (selectedAccount.toLowerCase() == 'aws' && currentPluginForm?.invalid)">
                                 Next</button>
                             <button class=" button back-btn" [class.hide]="currentStepperIndex==0"
@@ -143,7 +143,6 @@
                         </div>
                     </div>
                 </div>
-                <ng-container [ngTemplateOutlet]="connectRef"></ng-container>
             </div>
             <div class="configure-wrapper" *ngIf="pluginSelected===('azure')">
                 <div class="steps-wrapper" >

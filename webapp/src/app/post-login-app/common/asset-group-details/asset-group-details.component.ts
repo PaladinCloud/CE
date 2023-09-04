@@ -49,7 +49,8 @@
       const providerMap = {
         "aws": "AWS",
         "azure": "Azure",
-        "gcp": "GCP"
+        "gcp": "GCP",
+        "redhat": "Red Hat"
       }
       let curr_provider = "";
       if (this.detailsVal && this.detailsVal.providers) {
