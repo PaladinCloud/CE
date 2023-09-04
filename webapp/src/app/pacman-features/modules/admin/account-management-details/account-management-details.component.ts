@@ -174,8 +174,8 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
       this.assets = data.assets;
       this.violations = data.violations;
       this.status = data.accountStatus;
-      this.createdBy = data?.createdBy?.split(".")[0];
-      this.platform = data.platform;
+      this.createdBy = data.createdBy.split(".")[0];
+      this.platform = data.source;
       // this.createdTime = this.utilityService.calculateDateAndTime(data.createdTime); ;
       this.createdTime = data.createdTime;
       if(this.status.toLowerCase()=="configured")

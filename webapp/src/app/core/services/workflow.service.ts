@@ -112,16 +112,13 @@ export class WorkflowService {
         });
     }
 
-    checkIfFlowExistsCurrently(currentLevel?: number) {
+    checkIfFlowExistsCurrently(currentLevel:number=0) {
+        currentLevel = 0;
         let flowExiststatus = false;
         this.level = this.getDetailsFromStorage();
-        while (currentLevel >= 0) {
-            if (this.level['level' + currentLevel]) {
-                flowExiststatus = this.level['level' + currentLevel].length > 0;
-            }
-            currentLevel--;
+        if (this.level['level' + currentLevel]) {
+            flowExiststatus = this.level['level' + currentLevel].length > 0;
         }
-
         return flowExiststatus;
     }
 

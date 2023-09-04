@@ -101,20 +101,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     qualysApiUser: '',
   }
 
-  stepperData = [
-    {
-      id: 1,
-      name: "Add Details"
-    },
-    {
-      id: 2,
-      name: "Configure Access"
-    },
-    {
-      id: 3,
-      name: "Review"
-    }
-  ]
+  stepperData = [];
 
   commands = [
     {
@@ -203,47 +190,13 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     ) {
       this.activatedRoute.queryParams.subscribe(params => {
         const selectedAcc = params["selectedAccount"];
+        this.selectedAccount = selectedAcc??"";
         this.breadcrumbPresent = selectedAcc??"Add Plugin";
         this.pluginSelected = selectedAcc?.toLowerCase();
         if(this.pluginSelected){
           this.currentStepperIndex = 0;
-          this.selectAccount({name: selectedAcc});
-        }
-        this.selectedAccount = selectedAcc??"";
-        if(this.selectedAccount.toLowerCase()=="gcp"){
-          this.stepperData = [
-            {
-              id: 1,
-              name: "Add Details"
-            },
-            {
-              id: 2,
-              name: "Connect"
-            },
-            {
-              id: 3,
-              name: "Configure Access"
-            },
-            {
-              id: 4,
-              name: "Review"
-            }
-          ]
-        }else{
-          this.stepperData = [
-            {
-              id: 1,
-              name: "Add Details"
-            },
-            {
-              id: 2,
-              name: "Configure Access"
-            },
-            {
-              id: 3,
-              name: "Review"
-            }
-          ]
+          const selectedAccount = this.accountsList.find(account=>account.name == selectedAcc);
+          this.selectAccount(selectedAccount);
         }
       })
     }
@@ -300,8 +253,11 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           this.currentTemplateRef = this.addDetailsRef;
         }else{
           this.currentTemplateRef = this.reviewRef;
+        }
         break;
-    }
+      case 3:
+        this.currentTemplateRef = this.reviewRef;
+        break;
     }
   }
   
@@ -452,10 +408,14 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
             },
             {
               id: 2,
-              name: "Add Details"
+              name: "Connect"
             },
             {
               id: 3,
+              name: "Add Details"
+            },
+            {
+              id: 4,
               name: "Review"
             }
           ]

@@ -53,14 +53,14 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   tableData = [];
   headerColName;
   direction;
-  columnNamesMap = {"accountName": "Account Name","accountId":"Account ID", "assets": "Assets",  "violations": "Violations", "accountStatus": "Status","platform":"Platform","createdBy": "Created By"};
+  columnNamesMap = {"accountName": "Account Name","accountId":"Account ID", "assets": "Assets",  "violations": "Violations", "accountStatus": "Status","source":"Source","createdBy": "Created By"};
   columnWidths = {"Account Name": 1.5, "Account ID": 1.5, "Assets": 0.5, "Violations": 0.5, "Status": 0.5, "Created By": 1};
   whiteListColumns;
   tableScrollTop = 0;
   centeredColumns = {
     Assets: true,
     Violations: true,
-    Platform: true,
+    Source: true,
 };
   dataTableDesc: String = "";
   tableImageDataMap = {
@@ -458,7 +458,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
           if(col.toLowerCase()=="account name"){
             cellObj = {
               ...cellObj,
-              imgSrc: this.tableImageDataMap[getData[row]["Platform"]?.toLowerCase()]?this.tableImageDataMap[getData[row]["Platform"].toLowerCase()].image:"noImg",
+              imgSrc: this.tableImageDataMap[getData[row]["Source"]?.toLowerCase()]?this.tableImageDataMap[getData[row]["Source"].toLowerCase()].image:"noImg",
               isLink: true
             };
           }
@@ -573,7 +573,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     this.selectedRowIndex = event.selectedRowIndex;
     this.storeState();
     const accountId = rowSelected["Account ID"].valueText;
-    const provider = rowSelected["Platform"].valueText;
+    const provider = rowSelected["Source"].valueText;
     if(action.toLowerCase() == "delete"){
       this.deleteAccount(accountId,provider);
      }
@@ -799,14 +799,20 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
             filtersData = response[0].map(item => { return {id: item, name: item} });
           }
           this.filterTagOptions[value] = filtersData;
-          this.filterTagLabels = {
+            this.filterTagLabels = {
               ...this.filterTagLabels,
               ...{
                   [value]: map(filtersData, 'name').sort((a, b) =>
-                      a.localeCompare(b),
+                  {
+                    if(value.toLowerCase()=="assets" || value.toLowerCase()=="violations"){
+                      return a-b;
+                    }else{
+                      return a.localeCompare(b)
+                    }
+                  }
                   ),
               },
-          };
+            };
           if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
           resolve(this.filterTagOptions[value]);
           this.storeState();
