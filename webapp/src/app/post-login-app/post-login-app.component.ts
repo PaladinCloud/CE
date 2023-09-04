@@ -252,14 +252,14 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
           }
 
           this.agAndDomainKey = newKey;
-          // this.queryParameters = params;
-
-          // this.updateAssetGroup(this.queryParameters["ag"]);
-          // this.updateDomainName(this.queryParameters["domain"]);
-
+          
           if(params["ag"] && params["ag"]!=this.queryParameters["ag"]){
+            this.updateAssetGroup(params["ag"]);
+            const isPrevAg = this.queryParameters["ag"] != undefined;
             this.queryParameters["ag"] = params["ag"];
-            this.updateAssetGroup(this.queryParameters["ag"]);
+            if(isPrevAg){
+              this.navigateBackToRoot();
+            }
           }
           if(params["domain"] && params["domain"]!=this.queryParameters["domain"]){
             this.queryParameters["domain"] = params["domain"];
@@ -276,6 +276,17 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  navigateBackToRoot(){
+    if(this.workflowService.checkIfFlowExistsCurrently()){
+      const levelInfo = this.workflowService.getDetailsFromStorage()["level0"];
+      const rootLevel = levelInfo[0];
+      this.router.navigate([rootLevel.url],{
+        queryParams: this.queryParameters
+      });
+      this.workflowService.clearAllLevels();
+    }
   }
 
   ngOnDestroy() {
