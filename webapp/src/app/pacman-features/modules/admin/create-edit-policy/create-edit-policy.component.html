@@ -23,8 +23,8 @@
                         Policy Details
                     </div>
                     <div class="button-wrapper">
-                        <button class="button submit-btn" [disabled]="!enableUpdate || updateButtonClicked || (isAutofixEnabled && notificationsForm?.dirty &&  notificationsForm?.invalid)"
-                        [class.disabled-button]="!enableUpdate || updateButtonClicked || (isAutofixEnabled && notificationsForm?.dirty &&  notificationsForm?.invalid)" 
+                        <button class="button submit-btn" [disabled]="!enableUpdate || updateButtonClicked || notificationsForm.invalid"
+                        [class.disabled-button]="!enableUpdate || updateButtonClicked || notificationsForm.invalid" 
                         (click)="onSubmit()">Save</button>
                         <!-- <button class="button cancel-btn" 
                             (click)="onReset()" [disabled]="!enableUpdate" [class.disabled-button]="!enableUpdate">Cancel</button> -->
@@ -104,17 +104,23 @@
                                                     <div class="parameter-wrapper">
                                                         <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled || !status">
                                                             <app-input-field [parentForm]="notificationsForm" formControlName="waitingTime" [label]="'Duration'" 
-                                                            placeholder="Enter only digits" [(value)]="waitingTime" [shouldApplyNumericDirective]="true" 
-                                                            [formErrors]="notificationFormErrors" [description]="waitingTimeTooltipText" [isRequired]="true" 
-                                                            (ngModelChange)="onValueChange($event)"></app-input-field>
+                                                            placeholder="Enter only digits" [(value)]="waitingTime" [shouldApplyNumericDirective]="true"
+                                                            [formErrors]="notificationFormErrors" [isRequired]="true" (ngModelChange)="onValueChange($event)">
+                                                            </app-input-field>
+                                                            <div class="info-img">
+                                                                <img src="../../../assets/icons/info-circle.svg" [matTooltip]="waitingTimeTooltipText" matTooltipPosition="right">
+                                                            </div>
                                                         </div>
                                                         </div>
                                                         <div class="parameter-wrapper">
                                                         <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification || !status">
                                                             <app-input-field [parentForm]="notificationsForm" formControlName="maxEmailNotification" [label]="'Count'" 
                                                             placeholder="Enter only digits" [(value)]="maxEmailNotification" [shouldApplyNumericDirective]="true"
-                                                            [description]="countTooltipText"  [formErrors]="notificationFormErrors" [isRequired]="true" 
-                                                            (ngModelChange)="onValueChange($event)"></app-input-field>
+                                                            [formErrors]="notificationFormErrors" [isRequired]="true" (ngModelChange)="onValueChange($event)">
+                                                            </app-input-field>
+                                                            <div class="info-img">
+                                                                <img src="../../../assets/icons/info-circle.svg" [matTooltip]="countTooltipText" matTooltipPosition="right">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                  </form>
