@@ -50,6 +50,8 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     private _appliedFilters: { name: string; value: boolean }[] = [];
     private _appliedFiltersDict: { [key: string]: boolean } = {};
 
+    private excludeSortForCategories = ["compliance", "violations", "severity", "category"];
+
     constructor(private logger: LoggerService) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -86,11 +88,16 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
         this.optionFilterQuery = '';
     }
 
-    sortCheckedOptionsFirst(){
+    sortCheckedOptionsFirst() {
         const checkedOptions = Object.keys(this.appliedFiltersDict || {}).filter(key => this.appliedFiltersDict[key]);
-        const uncheckedOptions = this.options?.filter((f) => !Object.keys(this.appliedFiltersDict).includes(f)) || [];
-        this.options = [...checkedOptions, ...uncheckedOptions];
-    }
+        this.options.sort((a, b) => {
+          const aIsChecked = checkedOptions.includes(a);
+          const bIsChecked = checkedOptions.includes(b);
+          if (aIsChecked && !bIsChecked) return -1;
+          if (!aIsChecked && bIsChecked) return 1;
+          return this.excludeSortForCategories.includes(this.category?.toLowerCase())?0:a.localeCompare(b);
+        });
+      }
 
     dateIntervalSelected(from?, to?){
         const toDate = new Date(to).toLocaleDateString('en-CA');
@@ -116,15 +123,17 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     }
 
     filterOptionsByQuery() {
-        this.sortCheckedOptionsFirst();
         
-        try{
-            this.filteredOptions = this.options?.filter((f) =>
-                f?.toLowerCase()?.includes(this.optionFilterQuery?.toLowerCase()),
-            ) || [];
-
-        }catch(e){
-            this.logger.log('jsError', e);
+        if(this.options){
+            try{
+                this.sortCheckedOptionsFirst();
+                this.filteredOptions = this.options.filter((f) =>
+                    f?.toLowerCase()?.includes(this.optionFilterQuery?.toLowerCase()),
+                ) || [];
+    
+            }catch(e){
+                this.logger.log('jsError', e);
+            }
         }
     }
 }
