@@ -34,6 +34,8 @@ import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
+import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
+import { MatDialog } from '@angular/material/dialog';
 
 interface ICondition{
     keyList: string[];
@@ -228,6 +230,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   @ViewChild('assetGroupRef') assetGroupRef: TemplateRef<any>;
   @ViewChild('configurationRef') configurationRef: TemplateRef<any>;
   @ViewChild('reviewRef') reviewRef: TemplateRef<any>;
+  @ViewChild("actionRef") actionRef: TemplateRef<any>;
 
   stepperData = [
     {
@@ -255,6 +258,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   buttonClicked: boolean = false;
   selectedAssetGroup: string = "";
   currentDomain: string = "";
+  criteriaDetails: any;
 
   constructor(
     private router: Router,
@@ -268,7 +272,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private dataCacheService: DataCacheService,
     private assetTypeMapService: AssetTypeMapService,
-    private assetTilesService: AssetTilesService
+    private assetTilesService: AssetTilesService,
+    public dialog: MatDialog,
   ) {
     this.routerParam();
     this.updateComponent();
@@ -392,6 +397,67 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     else{
     this.criterias[criteriaIdx].push(condition);
     }
+  }
+
+  openModal(){
+    const dialogRef = this.dialog.open(DialogBoxComponent,
+    {
+      width: '600px',
+      data: {
+        title: null,
+        yesButtonLabel: "Delete",
+        noButtonLabel: "Cancel",
+        template: this.actionRef
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      try {
+        if (result == "yes") {
+              this.deleteAssetGroup();
+        }
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log('error', error);
+      }
+    });
+  }
+
+  deleteAssetGroup() {
+    let url = environment.deleteAssetGroups.url; 
+    let method = environment.deleteAssetGroups.method; 
+    const queryParams = {
+      "ag": this.selectedAssetGroup,
+      "domain": this.currentDomain
+    };
+    this.adminService.executeHttpAction(url, method, {groupId: this.groupId}, {}).subscribe(response => {
+      if(response){
+        const data = response[0]?.data;
+        this.updateComponent();
+        this.notificationObservableService.postMessage(data,3000,"","check-circle");
+        if(response[0].message==="success"){
+          let criteriasBeforeUpdate = {};
+          this.criteriaDetails?.forEach(crit => {
+              if(crit.criteriaName in criteriasBeforeUpdate){
+                criteriasBeforeUpdate[crit.criteriaName][crit.attributeName]=crit.attributeValue;
+              }
+              else{
+                criteriasBeforeUpdate[crit.criteriaName]={};
+                criteriasBeforeUpdate[crit.criteriaName][crit.attributeName]=crit.attributeValue;
+              }
+            });
+            let agDetails = {groupName : this.assetGroupName, description : this.assetGroupDesc, type : this.selectedAccountType, configuration : Object.values(criteriasBeforeUpdate)};
+            delete agDetails['criteriaDetails'];
+        }
+        this.router.navigate(['../'], {
+          relativeTo: this.activatedRoute,
+          queryParams: queryParams
+         });
+      }
+    },
+    error => {
+      this.notificationObservableService.postMessage("Error in deleting asset group",3000,"error","Error");
+      this.logger.log("Error in Js",error);
+    })
   }
 
   getDisplayName(selectedKey:string,selectedValue:string){
@@ -844,12 +910,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
         this.assetTilesService.getAssetGroupList().subscribe(response=>{
           console.log(" Updated Asset Group List ");
         })
-        const data = response[0].data;
-        this.notificationObservableService.postMessage(data,3000,"","check-circle");
-        this.router.navigate(['../'], {
-          relativeTo: this.activatedRoute,
-          queryParams: queryParams
-        });
+         const data = response[0].data;
         if(response[0]['message']==="success"){
           if(this.submitBtn =="Confirm and Create"){
           }
@@ -868,6 +929,11 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
           }
           this.configurationsBeforeEdit['configuration']=Object.values(criteriasBeforeUpdate);
         }
+        this.notificationObservableService.postMessage(data,3000,"","check-circle");
+        this.router.navigate(['../'], {
+         relativeTo: this.activatedRoute,
+         queryParams: queryParams
+        });
         }
       }
     },  
@@ -1220,7 +1286,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.assetGroupDesc = assetGroupDetails.description;
     this.createdBy = assetGroupDetails.createdBy;
     this.selectedAccountType = assetGroupDetails.type;
-    this.getAttributesData(assetGroupDetails.criteriaDetails);
+    this.criteriaDetails = assetGroupDetails.criteriaDetails;
+    this.getAttributesData(this.criteriaDetails);
     },
       error => {
         this.assetGroupLoader = false;

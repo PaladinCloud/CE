@@ -3,6 +3,10 @@
         <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
+    <div class="header-wrapper">
+        <app-text classNames="headline-6 medium-emphasis" [text]="assetGroupDisplayName"></app-text>
+        <button class="app-button white-button" (click)="openModal()">Delete</button>
+    </div>
     <div class="page">
         <div class="stepper">
             <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
@@ -47,7 +51,7 @@
 
 <ng-template #configurationRef>
     <div class="configuration-body">
-        <div class="header-wrapper">
+        <div class="config-header-wrapper">
             <span class="attribute-header">Criteria</span>
             <span class="attribute-header">Value</span>
         </div>
@@ -120,6 +124,13 @@
                 </div>
             </div>
         </div>
+    </div>
+</ng-template>
+
+<ng-template #actionRef>
+    <div class="dialog-body">
+       <span class="dialog-body-header">Delete Asset Group</span>
+       <span class="dialog-body-content">Are you really sure you want to delete "{{assetGroupDisplayName}}"?</span>
     </div>
 </ng-template>
 

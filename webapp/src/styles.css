@@ -2143,6 +2143,7 @@ g.arc .bubble-text {
   padding: 40px;
   height: 100%;
   display: flex;
+  border-radius: 8px;
   flex-direction: column;
 }
 
