@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -74,9 +75,22 @@ public class IAMRoleWithFullAdminPrevilegeRule extends BasePolicy {
 					logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
 					throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 				});
-		
-		Optional<String> opt = Optional.ofNullable(resourceAttributes)
-				.map(resource -> checkValidation(ruleParam, resource));
+
+		Optional<String> opt;
+		try{
+			opt = Optional.ofNullable(resourceAttributes)
+					.map(resource -> checkValidation(ruleParam, resource));
+		}
+		catch(NoSuchEntityException exception){
+			Annotation annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+			annotation.put(PacmanSdkConstants.DESCRIPTION,"Customer managed policy having full admin privilege is attached to the IAM role!!");
+			annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
+			annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
+			annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+			return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
+					annotation);
+		}
+
 		
 		PolicyResult ruleResult = Optional.ofNullable(ruleParam)
 				.filter(param -> opt.isPresent())
@@ -138,7 +152,12 @@ public class IAMRoleWithFullAdminPrevilegeRule extends BasePolicy {
 			if (IAMUtils.isInlineRolePolicyWithFullAdminAccess(roleName, iamClient))
 				return description = "Customer managed policy having full admin privilege is attached to the IAM role!!";
 
-		} catch (UnableToCreateClientException e) {
+		}
+		catch(NoSuchEntityException exception){
+			logger.error("NoSuchEntityException thrown..", exception);
+			throw exception;
+		}
+		catch (UnableToCreateClientException e) {
 			logger.error("unable to get client for following input", e);
 			throw new InvalidInputException(e.toString());
 		} catch (Exception e) {
