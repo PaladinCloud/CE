@@ -24,9 +24,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +44,10 @@ import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
 import com.tmobile.pacman.api.compliance.service.PolicyTableService;
 import com.tmobile.pacman.api.compliance.util.CommonTestUtil;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ComplianceControllerTest {
@@ -319,11 +321,18 @@ public class ComplianceControllerTest {
     public void addIssuesExceptionExceptionTest() throws Exception {
         
         when(complianceService.addMultipleIssueException("aws",anyObject(),false)).thenReturn(new IssueExceptionResponse());
-        assertThat(complianceController.addIssuesException("aws",new IssuesException()), is(notNullValue()));
+        Authentication principal = new UsernamePasswordAuthenticationToken( "admin","admin");
+        Set<String> set1 = new HashSet<>();
+        set1.add("read");
+        OAuth2Request req = new OAuth2Request(new HashMap<>(),"client1",null,true,set1,null,null,null,null);
+
+        OAuth2Authentication oauth = new OAuth2Authentication(req,principal);
+
+        assertThat(complianceController.addIssuesException(oauth,"aws",new IssuesException()), is(notNullValue()));
         
         when(complianceService.addMultipleIssueException("aws",anyObject(),false)).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.addIssuesException("",new IssuesException());
+        ResponseEntity<Object> responseObj = complianceController.addIssuesException(oauth,"",new IssuesException());
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     
@@ -333,11 +342,17 @@ public class ComplianceControllerTest {
         RevokeIssuesException revokeIssuesException = new RevokeIssuesException();
         revokeIssuesException.setIssueIds(Arrays.asList("123"));
         when(complianceService.revokeMultipleIssueException("aws",anyObject(), revokeIssuesException.getRevokedBy())).thenReturn(new IssueExceptionResponse());
-        assertThat(complianceController.revokeIssuesException("aws",revokeIssuesException), is(notNullValue()));
+        Authentication principal = new UsernamePasswordAuthenticationToken( "admin","admin");
+        Set<String> set1 = new HashSet<>();
+        set1.add("read");
+        OAuth2Request req = new OAuth2Request(new HashMap<>(),"client1",null,true,set1,null,null,null,null);
+
+        OAuth2Authentication oauth = new OAuth2Authentication(req,principal);
+        assertThat(complianceController.revokeIssuesException(oauth,"aws",revokeIssuesException), is(notNullValue()));
         
         when(complianceService.revokeMultipleIssueException("aws",anyObject(), revokeIssuesException.getRevokedBy())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.revokeIssuesException("aws",revokeIssuesException);
+        ResponseEntity<Object> responseObj = complianceController.revokeIssuesException(oauth,"aws",revokeIssuesException);
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
 

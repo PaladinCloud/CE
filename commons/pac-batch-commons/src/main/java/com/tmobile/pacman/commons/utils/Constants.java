@@ -36,8 +36,6 @@ public interface Constants {
 
      String API_READ_SCOPE = "API_OPERATION/READ";
 
-
-
     /** The failed. */
     String FAILED = "failed";
 
@@ -103,5 +101,8 @@ public interface Constants {
     }
     String EVENT_SOURCE = "paladinCloud";
     String EVENT_SOURCE_NAME = "Paladin Cloud";
+
+    String APPLICATION_JSON = "application/json";
+    String AUTHORIZATION = "Authorization";
 
 }

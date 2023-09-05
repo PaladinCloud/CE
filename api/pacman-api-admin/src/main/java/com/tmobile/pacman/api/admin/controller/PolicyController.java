@@ -5,7 +5,9 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERRO
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -194,9 +199,14 @@ public class PolicyController {
      */
 	@ApiOperation(httpMethod = "POST", value = "API to enable disable policy", response = Response.class, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@RequestMapping(path = "/enable-disable", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> enableDisablePolicy(@AuthenticationPrincipal Principal user,
+	public ResponseEntity<Object> enableDisablePolicy(@AuthenticationPrincipal OAuth2Authentication user,
 			@ApiParam(value = "provide valid policy details", required = true) @RequestBody(required = true)EnableDisablePolicy enableDisablePolicy) {
 		try {
+			Optional<String> accessTokenOptional = Optional.ofNullable(user).map(obj -> (OAuth2AuthenticationDetails) obj.getDetails())
+					.map(obj -> obj.getTokenValue());
+			if(accessTokenOptional.isPresent()){
+				ThreadLocalUtil.accessToken.set(accessTokenOptional.get());
+			}
 			if (enableDisablePolicy == null) {
 				return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED),
 						AdminConstants.MISSING_PARAMETERS);

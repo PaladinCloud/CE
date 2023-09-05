@@ -19,6 +19,7 @@ import com.google.common.base.Strings;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
+import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import com.tmobile.pacman.api.compliance.domain.*;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
 import com.tmobile.pacman.api.compliance.service.PolicyTableService;
@@ -34,6 +35,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -684,10 +688,15 @@ public class ComplianceController implements Constants {
             @ApiResponse(code = 403, message = "Add Issue Exception is forbidden")
     })
     @ResponseBody
-    public ResponseEntity<Object> addIssuesException(@RequestParam("ag") String assetGroup,
+
+    public ResponseEntity<Object> addIssuesException(@AuthenticationPrincipal OAuth2Authentication user, @RequestParam("ag") String assetGroup,
                                                      @ApiParam(value = "Provide Issue Exception Details", required = true) @RequestBody(required = true) IssuesException issuesException) {
         try {
-
+            Optional<String> accessTokenOptional = Optional.ofNullable(user).map(obj -> (OAuth2AuthenticationDetails) obj.getDetails())
+                    .map(obj -> obj.getTokenValue());
+            if(accessTokenOptional.isPresent()){
+                ThreadLocalUtil.accessToken.set(accessTokenOptional.get());
+            }
             if (issuesException.getExceptionGrantedDate() == null) {
                 return ResponseUtils.buildFailureResponse(new Exception("Exception Granted Date is mandatory"));
             }
@@ -725,8 +734,13 @@ public class ComplianceController implements Constants {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully Added Issue Exception"),
             @ApiResponse(code = 401, message = "You are not authorized to Add Issue Exception"),
             @ApiResponse(code = 403, message = "Add Issue Exception is forbidden")})
-    public ResponseEntity<Object> createOrRevokeUserExemptionRequest(@RequestBody ExemptionRequest exemptionRequest) {
+    public ResponseEntity<Object> createOrRevokeUserExemptionRequest(@AuthenticationPrincipal OAuth2Authentication user, @RequestBody ExemptionRequest exemptionRequest) {
         try {
+            Optional<String> accessTokenOptional = Optional.ofNullable(user).map(obj -> (OAuth2AuthenticationDetails) obj.getDetails())
+                    .map(obj -> obj.getTokenValue());
+            if(accessTokenOptional.isPresent()){
+                ThreadLocalUtil.accessToken.set(accessTokenOptional.get());
+            }
             ResponseEntity<Object> validationResult = complianceService.validateIssuesExemptionRequest(exemptionRequest);
             if (!Objects.isNull(validationResult)) {
                 return validationResult;
@@ -752,11 +766,16 @@ public class ComplianceController implements Constants {
             @ApiResponse(code = 403, message = "Revoke IssueException is forbidden")
     })
     @ResponseBody
-    public ResponseEntity<Object> revokeIssuesException(@RequestParam("ag") String assetGroup,
-                                                        @ApiParam(value = "Provide Issue Id", required = true) @RequestBody(required = true) RevokeIssuesException revokeIssuesException) {
+    public ResponseEntity<Object> revokeIssuesException(@AuthenticationPrincipal OAuth2Authentication user, @RequestParam("ag") String assetGroup,
+            @ApiParam(value = "Provide Issue Id", required = true) @RequestBody(required = true) RevokeIssuesException revokeIssuesException) {
         try {
-            if (revokeIssuesException.getIssueIds().isEmpty()) {
-                return ResponseUtils.buildFailureResponse(new Exception("At least one issue id is required"));
+            Optional<String> accessTokenOptional = Optional.ofNullable(user).map(obj -> (OAuth2AuthenticationDetails) obj.getDetails())
+                    .map(obj -> obj.getTokenValue());
+            if(accessTokenOptional.isPresent()){
+                ThreadLocalUtil.accessToken.set(accessTokenOptional.get());
+            }
+            if(revokeIssuesException.getIssueIds().isEmpty()) {
+                return ResponseUtils.buildFailureResponse(new Exception("Atleast one issue id is required"));
             }
 
             return ResponseUtils.buildSucessResponse(complianceService.revokeMultipleIssueException(assetGroup, revokeIssuesException.getIssueIds(), revokeIssuesException.getRevokedBy()));
