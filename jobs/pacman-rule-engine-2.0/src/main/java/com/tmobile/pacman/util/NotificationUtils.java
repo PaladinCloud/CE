@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.tmobile.pacman.common.AutoFixAction;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.dto.NotificationBaseRequest;
+import com.tmobile.pacman.commons.dto.PaladinAccessToken;
 import com.tmobile.pacman.dto.PolicyViolationNotificationRequest;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.utils.Constants;
@@ -23,6 +24,8 @@ public class NotificationUtils {
 
     private NotificationUtils(){
     }
+
+    private static PaladinAccessToken accessToken;
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationUtils.class);
 
     public static void triggerNotificationsForViolations(List<Annotation> annotations, Map<String, Map<String, String>> existingIssuesMap, boolean isOpen) {
@@ -47,8 +50,7 @@ public class NotificationUtils {
             }
             if (!notificationDetailsList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationDetailsList);
-                String notifyUrl = CommonUtils.getPropValue(PacmanSdkConstants.NOTIFICATION_URL);
-                com.tmobile.pacman.commons.utils.CommonUtils.doHttpPost(notifyUrl, notificationDetailsStr);
+                invokeNotificationUrl(notificationDetailsStr);
                 if(LOGGER.isInfoEnabled()){
                     LOGGER.info("{} Notifications sent for violations of policy \"{}\" ",notificationDetailsList.size(),annotations.get(0).get(POLICY_NAME));
                 }
@@ -151,8 +153,7 @@ public class NotificationUtils {
             notificationBaseRequestList.add(notificationBaseRequest);
             if (!notificationBaseRequestList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationBaseRequestList);
-                String notifyUrl = CommonUtils.getPropValue(PacmanSdkConstants.NOTIFICATION_URL);
-                com.tmobile.pacman.commons.utils.CommonUtils.doHttpPost(notifyUrl, notificationDetailsStr);
+                invokeNotificationUrl(notificationDetailsStr);
                 if(LOGGER.isInfoEnabled()){
                     LOGGER.info("Autofix Notification sent for violation of policy \"{}\" for resource \"{}\"",policyParam.get(POLICY_DISPLAY_NAME), annotation.get(RESOURCE_ID));
                 }
@@ -218,8 +219,7 @@ public class NotificationUtils {
             }
             if (!notificationBaseRequestList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationBaseRequestList);
-                String notifyUrl = CommonUtils.getPropValue(PacmanSdkConstants.NOTIFICATION_URL);
-                com.tmobile.pacman.commons.utils.CommonUtils.doHttpPost(notifyUrl, notificationDetailsStr);
+                invokeNotificationUrl(notificationDetailsStr);
                 if(LOGGER.isInfoEnabled()){
                     LOGGER.info("{} Silent Autofix Notification sent for violations of policy \"{}\"",silentAutofixAnnotations.size(),policyParam.get(POLICY_DISPLAY_NAME));
                 }
@@ -228,5 +228,17 @@ public class NotificationUtils {
         catch(Exception exception){
             LOGGER.error("exception occurred in triggerAutofixNotification with message - {}",exception.getMessage());
         }
+    }
+
+    public static void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
+        String credentials = CommonUtils.getPropValue(Constants.API_AUTH_INFO);
+        String authApiUrl = System.getenv(Constants.AUTH_API_URL);
+        String notifyUrl = CommonUtils.getPropValue(PacmanSdkConstants.NOTIFICATION_URL);
+        Map<String,String> headersMap = new HashMap<>();
+        if (accessToken == null || accessToken.getExpiresAt() <= System.currentTimeMillis()) {
+            accessToken = com.tmobile.pacman.commons.utils.CommonUtils.getAccessToken(authApiUrl, credentials);
+        }
+        headersMap.put("Authorization",accessToken.getToken());
+        com.tmobile.pacman.commons.utils.CommonUtils.doHttpPost(notifyUrl, notificationDetailsStr,headersMap);
     }
 }

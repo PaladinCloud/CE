@@ -53,8 +53,9 @@ public class SendNotification implements RequestHandler<Map<String,Object>, Stri
                 });
             }
             else{
-                System.out.println("notificationsrequeststr for single event---"+payloadObj.toString());
-                PublishRequest request = new PublishRequest(snsTopicArn,payloadObj.toString());
+
+                System.out.println("notificationsrequeststr for single event---"+payloadString);
+                PublishRequest request = new PublishRequest(snsTopicArn,payloadString);
                 PublishResult result = client.publish(request);
                 logger.log("message sent with id "+result.getMessageId());
             }
