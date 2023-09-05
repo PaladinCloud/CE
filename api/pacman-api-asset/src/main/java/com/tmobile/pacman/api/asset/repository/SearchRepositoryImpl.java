@@ -17,9 +17,9 @@ package com.tmobile.pacman.api.asset.repository;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.HashMultimap;
-import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import joptsimple.internal.Strings;
 
 import org.apache.http.HttpEntity;
@@ -304,12 +304,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String getResultsFromElastic(final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
                                          final HashMultimap<String, Object> shouldFilter, final String searchText,
                                          final Map<String, Object> mustTermsFilter, Map<String, List<String>> matchPhrasePrefix,
-                                          String searchType, List<String> returnFieldsForSearch, String ag, String searchCategory, int size) throws Exception {
+                                         List<String> fieldsForSearch, String searchType, List<String> returnFieldsForSearch, String ag, String searchCategory, int size) throws Exception {
 
         Map<String, Object> query = new HashMap<>();
-        Set<String> allFieldsSet = ThreadLocalUtil.fieldSet.get();
-        Map<String,Object> queryMap = "quick".equalsIgnoreCase(searchType)?esRepository.buildQuery(mustFilter, mustNotFilter, shouldFilter, searchText,
-                mustTermsFilter, null,ag,allFieldsSet):esRepository.buildQuery(mustFilter, null, shouldFilter, searchText,
+        Map<String,Object> queryMap = "quick".equalsIgnoreCase(searchType)?esRepository.buildQuery(mustFilter, null, null, searchText,
+                mustTermsFilter, null,fieldsForSearch):esRepository.buildQuery(mustFilter, null, null, searchText,
                 mustTermsFilter, null);
         query.put("size",String.valueOf(size));
         query.put("query", queryMap);
@@ -326,6 +325,10 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String getSearchResults(Map<String, Object> mustFilter, String searchText, Map<String, Object> mustTermsFilter, List<String> returnFieldsForSearch, String ag, String searchCategory, int size) throws Exception {
         long start = System.currentTimeMillis();
         List<Map<String,Object>> tokenList = getTokenListFromSearchText(searchText);
+        List<String> fieldsForSearch = AssetConstants.ASSETS.equalsIgnoreCase(searchCategory)?
+                Arrays.asList("*","_docid","_entity","_entitytype","_cloudType","_resourcename","_resourceid"):
+                Arrays.asList("*","_docid","_resourceid");
+
         String caseSensitiveStr="";
         /*
         If it is a case sensitive search, following query criteria shall be used.
@@ -392,20 +395,29 @@ public class SearchRepositoryImpl implements SearchRepository {
             {"query_string":{"query":"*user-provided-search-text*", "default_operator":"AND"}}
 
              */
-            String result = getResultsFromElastic(mustFilter, null, null, searchText, mustTermsFilter, null,"quick",returnFieldsForSearch,ag,searchCategory,size);
+            String result = getResultsFromElastic(mustFilter, null, null, searchText, mustTermsFilter, null,fieldsForSearch,"quick",returnFieldsForSearch,ag,searchCategory,size);
             int count = getResultCount(result);
             LOGGER.info("results(1) obtained in data search thread for search category -{} , count - {}",searchCategory,count);
             if(count==0){
-                if(tokenList.size()>1){
+                if(tokenList.size()>2){
                     List<String> tokensExcludingFirstTokenList = new ArrayList<>();
                     for (int i = 1; i < tokenList.size(); i++) {
                         tokensExcludingFirstTokenList.add(tokenList.get(i).get("token").toString());
                     }
-                    String secondResult = getResultsFromElastic(mustFilter, null, null, String.join(" ", tokensExcludingFirstTokenList), mustTermsFilter, null,"quick",returnFieldsForSearch,ag, searchCategory, size);
+                    String secondResult = getResultsFromElastic(mustFilter, null, null, String.join(" ", tokensExcludingFirstTokenList), mustTermsFilter, null,fieldsForSearch,"quick",returnFieldsForSearch,ag, searchCategory, size);
                     LOGGER.info("results(2) obtained for data search thread for search category -{}",searchCategory);
                     long end = System.currentTimeMillis();
                     LOGGER.info("Time taken in data search thread for Search Category {} is: {}", searchCategory, (end - start));
                     return secondResult;
+                }
+                else{
+                    String expandedSearchText = tokenList.stream().map(obj -> obj.get("token").toString()).collect(Collectors.joining(" "))+"*";
+                    //   String searchTextForCaseSensitive = "";
+                    String thirdResult = getResultsFromElastic(mustFilter, null, null, expandedSearchText, mustTermsFilter, null,fieldsForSearch,"slow",returnFieldsForSearch,ag, searchCategory, size);
+                    LOGGER.info("results(3) obtained for data search thread for search category -{} ",searchCategory);
+                    long end = System.currentTimeMillis();
+                    LOGGER.info("Time taken in data search thread for Search Category {} is: {}", searchCategory, (end - start));
+                    return thirdResult;
                 }
             }
             else{
@@ -486,9 +498,20 @@ public class SearchRepositoryImpl implements SearchRepository {
                 includeAllAssets);
         List<Map<String,Object>> tokenListFromSearchText = getTokenListFromSearchText(searchText);
         String firstUrl = PROTOCOL + esHost + ":" + esPort + "/" + ag + "/" + Constants.SEARCH;
-        Set<String> allFieldsSet = ThreadLocalUtil.fieldSet.get();
-        Map<String,Object> boolShouldClause = esRepository.getMultiMatchShouldClause(new ArrayList<>(allFieldsSet), searchText, allFieldsSet.size());
-
+        String searchFieldsStr = AssetConstants.ASSETS.equals(searchCategory)? "\"fields\": [\"*\",\"_docid\",\"_entity\",\"_resourcename\",\"_resourceid\",\"_entitytype\",\"_cloudType\"]\n" :
+                "\"fields\": [\"*\",\"_docid\",\"_resourceid\"]\n";
+        String multiMatchCondition = "{\"multi_match\":{\n" +
+                "                  \"query\":\"%s\",\n" +
+                "                  \"type\": \"phrase_prefix\",\n" +
+                searchFieldsStr +
+                "               }\n" +
+                "            }";
+        String queryStringCondition = "{\n" +
+                "               \"simple_query_string\":{\n" +
+                "                  \"query\":\"%s\",\n" +
+                "                  \"default_operator\": \"AND\"\n" +
+                "               }\n" +
+                "            }";
         String queryStringCaseSensitiveCondition = "{\n" +
                 "               \"simple_query_string\":{\n" +
                 "                  \"query\":\"%s\",\n" +
@@ -520,7 +543,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             return responseJson;
         }
         else{
-            String multiMatchStr1 = gson.toJson(boolShouldClause);
+            String multiMatchStr1 = String.format(multiMatchCondition,searchText);
             LOGGER.info("payload(1) in outgoing filter thread for search category -{} is  {}",searchCategory,String.format(payLoadStr,multiMatchStr1));
             String responseJson = PacHttpUtils.doHttpPost(firstUrl, String.format(payLoadStr,multiMatchStr1));
             int count = getResultCount(responseJson);
@@ -528,20 +551,28 @@ public class SearchRepositoryImpl implements SearchRepository {
             if(count>0){
                 return responseJson;
             }
-            else if(tokenListFromSearchText.size()>1){
+            else{
+                if(tokenListFromSearchText.size()>2){
                     List<String> tokensExcludingFirstTokenList = new ArrayList<>();
                     for (int i = 1; i < tokenListFromSearchText.size(); i++) {
                         tokensExcludingFirstTokenList.add(tokenListFromSearchText.get(i).get("token").toString());
                     }
-                    Map<String,Object> boolShouldClause1 = esRepository.getMultiMatchShouldClause(new ArrayList<>(allFieldsSet), String.join(" ",tokensExcludingFirstTokenList), allFieldsSet.size());
-                    String multiMatchStr2 = String.format(payLoadStr,gson.toJson(boolShouldClause1));
-                    LOGGER.info("payload(2) in outgoing filter thread for search category -{} is {}",searchCategory,multiMatchStr2);
-                    responseJson = PacHttpUtils.doHttpPost(firstUrl, multiMatchStr2);
+                    String multiMatchStr2 = String.format(multiMatchCondition,String.join(" ",tokensExcludingFirstTokenList));
+                    LOGGER.info("payload(2) in outgoing filter thread for search category -{} is {}",searchCategory,String.format(payLoadStr,multiMatchStr2));
+                    responseJson = PacHttpUtils.doHttpPost(firstUrl, String.format(payLoadStr,multiMatchStr2));
                     LOGGER.info("results(2) obtained for outgoing filter thread for search category -{}"+searchCategory);
                     return responseJson;
+                }
+                else{
+                    String expandedSearchText = tokenListFromSearchText.stream().map(obj -> obj.get("token").toString()).collect(Collectors.joining(" "))+"*";
+                    String queryStr = String.format(queryStringCondition,expandedSearchText);
+                    LOGGER.info("payload(3) in outgoing filter thread for search category -{} is {}",searchCategory,String.format(payLoadStr,queryStr));
+                    responseJson = PacHttpUtils.doHttpPost(firstUrl, String.format(payLoadStr,queryStr));
+                    LOGGER.info("results(3) obtained for outgoing filter thread for search category -{} ",searchCategory);
+                    return responseJson;
+                }
             }
         }
-        return "{}";
     }
 
     private List<String> getTypesForDomain(String ag, String domain) {
@@ -882,4 +913,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
         return null;
     }
+
+
+
 }
