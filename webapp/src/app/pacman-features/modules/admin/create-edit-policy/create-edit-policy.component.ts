@@ -36,6 +36,7 @@
  import { TourService } from 'src/app/core/services/tour.service';
  import { CONFIGURATIONS } from 'src/config/configurations';
  import { CustomValidators } from 'src/app/shared/custom-validators';
+ import { DataCacheService } from 'src/app/core/services/data-cache.service';
  
  @Component({
    selector: 'app-admin-create-edit-policy',
@@ -246,10 +247,17 @@
    logsTableErrorMessage: string = "";
    logsTableDataLoaded : boolean = false;
    jobInterval: number;
+
+   isPolicyEnableDisableAllowed = false;
+   isPolicySeverityEditAllowed = false;
+   isPolicyParamsEditAllowed = false;
+   isAutofixSwitchToggleAllowed = false;
+   isWarningNotificationToggleAllowed = false; 
  
    constructor(
      private datePipe: DatePipe,
      private activatedRoute: ActivatedRoute,
+     private dataStore: DataCacheService,
      private router: Router,
      private utils: UtilsService,
      private logger: LoggerService,
@@ -265,6 +273,7 @@
      public form: FormBuilder
    ) {
        this.routerParam();
+       this.checkRoleBasedElementAccess();
    }
  
    formData = {};
@@ -607,7 +616,7 @@
        this.isAutofixEnabled =this.policyDetails.autoFixEnabled == "true";
        this.disableDescription = this.policyDetails.disableDesc;
        this.exemptionDetails = this.policyDetails.policyExemption;
-       
+       this.checkRoleBasedElementAccess();
        if (this.resolutionUrl == null || this.resolutionUrl == "") {
          this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
        }
@@ -816,6 +825,38 @@
      })
  
    }
+   
+   checkRoleBasedElementAccess(){
+    this.canDisableOrEnablePolicy();
+    this.canEditSeverityOfPolicy();
+    this.canUpdatePolicyParams();
+    this.canEditAutoFixStatus();
+  }
+
+  canDisableOrEnablePolicy() {
+    const roleCapabilities = this.dataStore.getRoleCapabilities();
+    const category = this.selectedCategory?.toLowerCase();
+
+    this.isPolicyEnableDisableAllowed = roleCapabilities.includes(`${category}-enable-disable`);
+  }
+
+  canEditSeverityOfPolicy() {
+    const roleCapabilities = this.dataStore.getRoleCapabilities();
+    const category = this.selectedCategory?.toLowerCase();
+
+    this.isPolicySeverityEditAllowed = roleCapabilities.includes(`${category}-severity-update`);
+  }
+
+  canUpdatePolicyParams() {
+    const roleCapabilities = this.dataStore.getRoleCapabilities();  
+    this.isPolicyParamsEditAllowed = roleCapabilities.includes("policy-param-update");
+  }
+
+  canEditAutoFixStatus() {
+    const roleCapabilities = this.dataStore.getRoleCapabilities();  
+    this.isAutofixSwitchToggleAllowed = roleCapabilities.includes("autofix-enable-disable");
+    this.isWarningNotificationToggleAllowed = roleCapabilities.includes("autofix-enable-disable");
+  }
  
    ngOnDestroy() {
      try {

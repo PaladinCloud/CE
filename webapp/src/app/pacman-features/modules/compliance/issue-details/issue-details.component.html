@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
- <div class="exemption-banner" *ngIf="adminAccess && exemptionDetails?.status == 'requested'">
+ <div class="exemption-banner" *ngIf="showExemptionRequest && exemptionDetails?.status == 'requested'">
     <div class="exemption-wrapper">
         <img src="/assets/icons/blue-info.svg">
         <div class="exemption-details-wrapper flex flex-col">

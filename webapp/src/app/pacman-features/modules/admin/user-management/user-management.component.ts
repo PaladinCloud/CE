@@ -15,6 +15,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
+import { CustomValidators } from 'src/app/shared/custom-validators';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 
 @Component({
@@ -90,6 +92,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   action: any;
   updatedRoles = ["ROLE_USER"];
+  allRoles = [];
 
   private userForm: FormGroup;
   public userFormErrors : any = {
@@ -97,6 +100,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     firstName: '',
     lastName: ''
   }
+
+  private editableRoles = [];
 
   constructor(
     private router: Router,
@@ -111,6 +116,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     private tableStateService: TableStateService,
     private tourService: TourService,
+    private dataCacheService: DataCacheService,
     public form: FormBuilder
   ) {
     this.getPreservedState();
@@ -122,7 +128,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.buildForm();
-    this.getRoles();
   }
 
   getPreservedState(){
@@ -161,21 +166,39 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getRoles(){
-    const url = environment.roles.url;
-    const method = environment.roles.method;
+  getEditableRoles(rolesData){
+    this.allRoles = rolesData.map(role => role.roleName);
+    const userRoles = this.dataCacheService.getUserDetailsValue().getRoles();
+    let rolesEditable = [];
+    if(userRoles.includes("AccountManager")){
+      rolesEditable = rolesData.find(data => data.roleDisplayName=="Account Manager").rolesEditable;
+    } else if(userRoles.includes("TechnicalAdmin")){
+      rolesEditable = rolesData.find(data => data.roleDisplayName=="Technical Admin").rolesEditable;
+    } else if(userRoles.includes("SecurityAdmin")){
+      rolesEditable = rolesData.find(data => data.roleDisplayName=="Security Admin").rolesEditable;
+    } else{
+      rolesEditable = rolesData.find(data => data.roleDisplayName=="Read Only").rolesEditable;
+    }
 
-    this.adminService.executeHttpAction(url,method,{},{}).subscribe(response=>{
-      try{
-        if(response){
-          const userRoles = response[0];
-          this.processRoles(userRoles);
-        }
-      }catch(error){
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log("error", error);
+    return rolesEditable;
+  }
+
+  async getRoles() {
+    try {
+      const url = environment.roles.url;
+      const method = environment.roles.method;
+      const response = await this.adminService.executeHttpAction(url, method, {}, {}).toPromise();
+  
+      if (response) {
+        const userRoles = response[0];
+        this.processRoles(userRoles);
       }
-    })
+
+      return response[0];
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
   }
 
   processRoles(userRoles){
@@ -484,7 +507,9 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         optionValue: 'Status'
       })
       this.routerParam();
-      this.getFilterArray().then(() => {
+      this.getFilterArray().then(async() => {
+        const rolesData = await this.getRoles();
+        this.editableRoles = this.getEditableRoles(rolesData);
         this.updateComponent();
       }).catch(e => {
         this.logger.log("jsError: ", e);
@@ -622,6 +647,13 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             } else {
               dropDownItems.push("Activate");
             }
+            if(getData[row]["Roles"].includes("AccountManager") && !this.editableRoles.includes("AccountManager")){
+              dropDownItems = [];
+            } else if(getData[row]["Roles"].includes("TechnicalAdmin") && !this.editableRoles.includes("TechnicalAdmin")){
+              dropDownItems = [];
+            } else if(getData[row]["Roles"].includes("SecurityAdmin") && !this.editableRoles.includes("SecurityAdmin")){
+              dropDownItems = [];
+            }
             cellObj = {
               ...cellObj,
               isMenuBtn: true,
@@ -647,10 +679,18 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   callNewSearch(event: any) {
   }
 
+    
+  getUpdatedUserRoles(editableRoles){
+    this.nonRemovableChips = this.allRoles.filter(role => !editableRoles.includes(role));
+    this.userRoles = this.allRoles;    
+  }
+
   onSelectAction(event:any){
     const action = event.action;
     const rowSelected = event.rowSelected;
     this.selectedRowIndex = event.selectedRowIndex;
+    this.getUpdatedUserRoles(this.editableRoles);
+
     this.storeState();
     this.action = action;
     if(action == "Activate" || action == "Deactivate" || action == "Remove"){

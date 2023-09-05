@@ -1,256 +1,262 @@
 
-  import {
-    Component,
-    OnInit,
-    ViewChild,
-    ElementRef,
-    Input,
-    OnDestroy,
-    HostListener
-  } from '@angular/core';
-  import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
-  import { ActivatedRoute, UrlSegment, Router } from '@angular/router';
-  import { ICONS } from './../../../../shared/constants/icons-mapping';
-  import { DataCacheService } from '../../../../core/services/data-cache.service';
-  import {
-    FormControl,
-    FormGroup,
-    FormBuilder,
-    Validators
-  } from '@angular/forms';
-  import { AutorefreshService } from '../../../services/autorefresh.service';
-  import { CommonResponseService } from '../../../../shared/services/common-response.service';
-  import { IssueAuditService } from '../../../services/issue-audit.service';
-  import { environment } from './../../../../../environments/environment';
-  import { Subscription } from 'rxjs';
-  import { LoggerService } from '../../../../shared/services/logger.service';
-  import { WorkflowService } from '../../../../core/services/workflow.service';
-  import { UtilsService } from '../../../../shared/services/utils.service';
-  import { DomainTypeObservableService } from '../../../../core/services/domain-type-observable.service';
-  import { PolicyViolationDescComponent } from '../../../secondary-components/policy-violation-desc/policy-violation-desc.component';
-  import { CONFIGURATIONS } from '../../../../../config/configurations';
-  import { PermissionGuardService } from '../../../../core/services/permission-guard.service';
-  import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
-  import { AutofixDetails } from './policy-autofix/policy-autofix.component';
-  import { TableStateService } from 'src/app/core/services/table-state.service';
-  import { MatDialog } from '@angular/material/dialog';
-  import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy,
+  HostListener
+} from '@angular/core';
+import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
+import { ActivatedRoute, UrlSegment, Router } from '@angular/router';
+import { ICONS } from './../../../../shared/constants/icons-mapping';
+import { DataCacheService } from '../../../../core/services/data-cache.service';
+import {
+  FormControl,
+  FormGroup,
+  FormBuilder,
+  Validators
+} from '@angular/forms';
+import { AutorefreshService } from '../../../services/autorefresh.service';
+import { CommonResponseService } from '../../../../shared/services/common-response.service';
+import { IssueAuditService } from '../../../services/issue-audit.service';
+import { environment } from './../../../../../environments/environment';
+import { Subscription } from 'rxjs';
+import { LoggerService } from '../../../../shared/services/logger.service';
+import { WorkflowService } from '../../../../core/services/workflow.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
+import { DomainTypeObservableService } from '../../../../core/services/domain-type-observable.service';
+import { PolicyViolationDescComponent } from '../../../secondary-components/policy-violation-desc/policy-violation-desc.component';
+import { CONFIGURATIONS } from '../../../../../config/configurations';
+import { PermissionGuardService } from '../../../../core/services/permission-guard.service';
+import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
+import { AutofixDetails } from './policy-autofix/policy-autofix.component';
+import { TableStateService } from 'src/app/core/services/table-state.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
+const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-  @Component({
-    selector: 'app-issue-details',
-    templateUrl: './issue-details.component.html',
-    styleUrls: ['./issue-details.component.css'],
-    providers: [
-      CommonResponseService,
-      AutorefreshService,
-      LoggerService,
-      IssueAuditService
-    ]
-  })
+@Component({
+  selector: 'app-issue-details',
+  templateUrl: './issue-details.component.html',
+  styleUrls: ['./issue-details.component.css'],
+  providers: [
+    CommonResponseService,
+    AutorefreshService,
+    LoggerService,
+    IssueAuditService
+  ]
+})
 
-  export class IssueDetailsComponent implements OnInit, OnDestroy {
-    /* global variables for email template and add exception*/
-    @ViewChild(PolicyViolationDescComponent) policyViolationDescComponent: PolicyViolationDescComponent;
 
-    public queryValue = '';
-    public filteredList = [];
-    public idDetailsName = [];
-    public elementRef;
-    public emailArray = [];
-    public users;
-    public endDateValue: any;
-    public grantedDateValue: any;
-    searchTxt = '';
-    today = new Date();
+export class IssueDetailsComponent implements OnInit, OnDestroy {
+  /* global variables for email template and add exception*/
+  @ViewChild(PolicyViolationDescComponent) policyViolationDescComponent: PolicyViolationDescComponent;
 
-    @ViewChild('query') vc: ElementRef;
+  public queryValue = '';
+  public filteredList = [];
+  public idDetailsName = [];
+  public elementRef;
+  public emailArray = [];
+  public users;
+  public endDateValue: any;
+  public grantedDateValue: any;
+  searchTxt = '';
+  today = new Date();
 
-    dataForm: FormGroup;
-    user: FormGroup;
-    userEmail: FormGroup;
+  @ViewChild('query') vc: ElementRef;
 
-    /*variables for breadcrumb data*/
+  dataForm: FormGroup;
+  user: FormGroup;
+  userEmail: FormGroup;
 
-    breadcrumbArray: any = [];
-    breadcrumbLinks: any = [];
-    breadcrumbPresent: any;
+  /*variables for breadcrumb data*/
 
-    /* variables for handling data*/
+  breadcrumbArray: any = [];
+  breadcrumbLinks: any = [];
+  breadcrumbPresent: any;
 
-    autofixDetails: AutofixDetails;
-    issueBlocks: any;
-    search: any;
-    entity: any;
-    tagsData: any;
-    totalRows = 0;
-    bucketNumber = 0;
-    currentBucket: any = [];
-    firstPaginator = 1;
-    lastPaginator: number;
-    currentPointer = 0;
-    errorValue = 0;
-    addRevokeExemptionErrorMessage;
-    tableErrorMessage: any;
-    resourceDetails: any;
-    issueAudit: any;
-    outerArr: any = [];
-    issueTopblocks: any = [];
-    endDate: any;
-    allColumns: any = [];
-    descname: any;
-    accountIdname: any;
-    sevname: any;
-    regionname: any;
-    policyname: any;
-    issuename: any;
-    categoryname: any;
-    modifiedname: any;
-    rulename: any;
-    paginatorSize = 1000;
-    dataTableData: any = [];
-    tableDataLoaded = false;
-    resourceIdname: any;
-    awsAccountname: any;
-    createdname: any;
-    accountname: any;
-    policyNameVal: any;
-    targetname: any;
-    recommedData: any;
-    numberOfButtons: any = [];
-    actionData: any = [];
-    arrowkeyLocation = 0;
-    assetID: any;
-    keysValue: any;
-    issueKey: any;
+  /* variables for handling data*/
 
-    /*Boolean variables for setting property*/
+  autofixDetails: AutofixDetails;
+  issueBlocks: any;
+  search: any;
+  entity: any;
+  tagsData: any;
+  totalRows = 0;
+  bucketNumber = 0;
+  currentBucket: any = [];
+  firstPaginator = 1;
+  lastPaginator: number;
+  currentPointer = 0;
+  errorValue = 0;
+  addRevokeExemptionErrorMessage;
+  tableErrorMessage: any;
+  resourceDetails: any;
+  issueAudit: any;
+  outerArr: any = [];
+  issueTopblocks: any = [];
+  endDate: any;
+  allColumns: any = [];
+  descname: any;
+  accountIdname: any;
+  sevname: any;
+  regionname: any;
+  policyname: any;
+  issuename: any;
+  categoryname: any;
+  modifiedname: any;
+  rulename: any;
+  paginatorSize = 1000;
+  dataTableData: any = [];
+  tableDataLoaded = false;
+  resourceIdname: any;
+  awsAccountname: any;
+  createdname: any;
+  accountname: any;
+  policyNameVal: any;
+  targetname: any;
+  recommedData: any;
+  numberOfButtons: any = [];
+  actionData: any = [];
+  arrowkeyLocation = 0;
+  assetID: any;
+  keysValue: any;
+  issueKey: any;
 
-    showNone = true;
-    showOpposite = false;
-    showOppositeEmail = false;
-    showLoader = true;
-    seekdata = false;
-    showTransaction = false;
-    showTransactionEmail = false;
-    showLoadcomplete = false;
-    showLoadcompleteEmail = false;
-    check = false;
-    checkEmail = false;
-    checkRecommend = false;
-    emailObj = {
-      'to': {
-        'required': true,
-        'validFormat': true
-      },
-      'from': {
-        'required': true,
-        'validFormat': true
-      }
-    };
-    showTopSection = false;
-    showRecommendantions = false;
-    exceptionAdded = false;
-    showOppositeRecommend = false;
-    showLoadcompleteRecommend = false;
-    showRecommend = true;
-    showJira = true;
-    adminAccess = false;
-    showRevoke = true;
-    showOppositeJira = false;
-    showOppositeRevoke = false;
-    showLoadcompleteJira = false;
-    showLoadcompleteRevoke = false;
-    checkJira = false;
-    checkRevoke = false;
-    userAdmin = false;
-    showJiraData = false;
-    showJiraButton = false;
-    viewJira = false;
-    selectedDomain: any = '';
-    selectedAssetGroup: string;
-    public GLOBAL_CONFIG;
-    fromEmailID: any;
-    public policyViolationId;
-    title = "Violation Audit Logs";
-    direction = "asc";
-    tileList = [];
-    columnWidths = {'Date': 1, 'Source': 1, 'Status': 1};
-    whiteListColumns = [];
-    columnsSortFunctionMap = {
-      Date: (a, b, isAsc) => {      
-        const ADate = a["Date"].valueText??"default";
-        const BDate = b["Date"].valueText??"default";
-        return (ADate < BDate ? -1 : 1) * (isAsc ? 1 : -1);
-      }
-    };
+  /*Boolean variables for setting property*/
 
-    /*Subscription variables*/
-    private getRuleDescSubscription: Subscription;
-    private getEmailSubscription: Subscription;
-    private getResourceDetailsSubscription: Subscription;
-    private getEntityDetailsSubscription: Subscription;
-    private getIssueAuditSubscription: Subscription;
-    private assetGroupSubscription: Subscription;
-    private routeSubscription: Subscription;
-    private getUserSubscription: Subscription;
-    private getExceptionSubscription: Subscription;
-    private getRecommendSubscription: Subscription;
-    private getActionDataSubscription: Subscription;
-    private getJiraSubscription: Subscription;
-    private getRevokeSubscription: Subscription;
-    private findJiraSubscription: Subscription;
-    private subscriptionDomain: Subscription;
-    private autofixDetails$: Subscription;
-
-    emailIcon: any = {
-      icon: '../assets/icons/email.svg'
-    };
-    jiraIcon: any = {
-      icon: '../assets/icons/jira.svg'
-    };
-    downIcon: any = {
-      icon: '../assets/png/down.png'
-    };
-    viewMore: any = {
-      icon: '../assets/icons/front-arrow.svg'
-    };
-    public pageLevel = 0;
-    public backButtonRequired;
-    issueAssetGroup: any;
-    assetTypeMap: any;
-    violationAuditLogs = [];
-    addExemption: string = "Add Exemption";
-    revokeExemption: string = "Revoke Exemption";
-    exemptionReason: string = "";
-    exemptionDetails: any;
-    exemptionRaisedBy: string = "";
-    violationAge: string = "";
-    violationCreatedDate: Date;
-    violationReason: string = "";
-    policyViolated: string = "";
-    resourceType: string = "";
-    policyId: string = "";
-    sortColName: any;
-    violationModifiedDate: any;
-
-    @HostListener('document:click', ['$event']) handleClick(event) {
-      try {
-        let clickedComponent = event.target;
-        let inside = false;
-        do {
-          if (clickedComponent === this.elementRef.nativeElement) {
-            inside = true;
-          }
-          clickedComponent = clickedComponent.parentNode;
-        } while (clickedComponent);
-        if (!inside) {
-          this.filteredList = [];
-        }
-      } catch (e) {
-        this.logger.log('error', e);
-      }
+  showNone = true;
+  showOpposite = false;
+  showOppositeEmail = false;
+  showLoader = true;
+  seekdata = false;
+  showTransaction = false;
+  showTransactionEmail = false;
+  showLoadcomplete = false;
+  showLoadcompleteEmail = false;
+  check = false;
+  checkEmail = false;
+  checkRecommend = false;
+  emailObj = {
+    'to': {
+      'required': true,
+      'validFormat': true
+    },
+    'from': {
+      'required': true,
+      'validFormat': true
     }
+  };
+  showTopSection = false;
+  showRecommendantions = false;
+  exceptionAdded = false;
+  showOppositeRecommend = false;
+  showLoadcompleteRecommend = false;
+  showRecommend = true;
+  showJira = true;
+  adminAccess = false;
+  showRevoke = true;
+  showOppositeJira = false;
+  showOppositeRevoke = false;
+  showLoadcompleteJira = false;
+  showLoadcompleteRevoke = false;
+  checkJira = false;
+  checkRevoke = false;
+  userAdmin = false;
+  showJiraData = false;
+  showJiraButton = false;
+  viewJira = false;
+  private previousUrl: any = '';
+  selectedDomain: any = '';
+  selectedAssetGroup: string;
+  public GLOBAL_CONFIG;
+  fromEmailID: any;
+  public policyViolationId;
+  title = "Violation Audit Logs";
+  direction = "asc";
+  tileList = [];
+  columnWidths = {'Date': 1, 'Source': 1, 'Status': 1};
+  whiteListColumns = [];
+  columnsSortFunctionMap = {
+    Date: (a, b, isAsc) => {      
+      const ADate = a["Date"].valueText??"default";
+      const BDate = b["Date"].valueText??"default";
+      return (ADate < BDate ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+  };
+
+  showExemptionRequest = false;
+
+
+  /*Subscription variables*/
+
+  private getRuleDescSubscription: Subscription;
+  private getEmailSubscription: Subscription;
+  private getResourceDetailsSubscription: Subscription;
+  private getEntityDetailsSubscription: Subscription;
+  private getIssueAuditSubscription: Subscription;
+  private assetGroupSubscription: Subscription;
+  private routeSubscription: Subscription;
+  private getUserSubscription: Subscription;
+  private getExceptionSubscription: Subscription;
+  private getRecommendSubscription: Subscription;
+  private getActionDataSubscription: Subscription;
+  private getJiraSubscription: Subscription;
+  private getRevokeSubscription: Subscription;
+  private findJiraSubscription: Subscription;
+  private subscriptionDomain: Subscription;
+  private autofixDetails$: Subscription;
+
+  emailIcon: any = {
+    icon: '../assets/icons/email.svg'
+  };
+  jiraIcon: any = {
+    icon: '../assets/icons/jira.svg'
+  };
+  downIcon: any = {
+    icon: '../assets/png/down.png'
+  };
+  viewMore: any = {
+    icon: '../assets/icons/front-arrow.svg'
+  };
+  public pageLevel = 0;
+  public backButtonRequired;
+  issueAssetGroup: any;
+  assetTypeMap: any;
+  violationAuditLogs = [];
+  addExemption: string = "Add Exemption";
+  revokeExemption: string = "Revoke Exemption";
+  exemptionReason: string = "";
+  exemptionDetails: any;
+  exemptionRaisedBy: string = "";
+  violationAge: string = "";
+  violationCreatedDate: Date;
+  violationReason: string = "";
+  policyViolated: string = "";
+  resourceType: string = "";
+  policyId: string = "";
+  sortColName: any;
+  violationModifiedDate: any;
+
+  @HostListener('document:click', ['$event']) handleClick(event) {
+    try {
+      let clickedComponent = event.target;
+      let inside = false;
+      do {
+        if (clickedComponent === this.elementRef.nativeElement) {
+          inside = true;
+        }
+        clickedComponent = clickedComponent.parentNode;
+      } while (clickedComponent);
+      if (!inside) {
+        this.filteredList = [];
+      }
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
     constructor(
       private activatedRoute: ActivatedRoute,
       private assetGroupObservableService: AssetGroupObservableService,
@@ -297,24 +303,14 @@
       }
     }
 
-    ngOnInit() {
+  ngOnInit() {
       try {
         this.adminAccess = this.permissions.checkAdminPermission();
+        this.shouldShowExemptionRequest();
         if(!this.adminAccess){
           this.addExemption = "Request Exemption"
           this.revokeExemption = "Revoke Request"
         }
-
-        this.dataForm = this.formBuilder.group({
-          date: ''
-        });
-
-        this.user = new FormGroup({
-          name: new FormControl('', [
-            Validators.required,
-            Validators.minLength(5)
-          ])
-        });
 
         this.userEmail = new FormGroup({
           ename: new FormControl('', [
@@ -1564,59 +1560,64 @@
       this.direction = event.direction;
     }
 
-    ngOnDestroy() {
-      try {
-        // pushes the current url to datastore
-        if (this.getRuleDescSubscription) {
-          this.getRuleDescSubscription.unsubscribe();
-        }
-        if (this.getEmailSubscription) {
-          this.getEmailSubscription.unsubscribe();
-        }
-        if (this.getResourceDetailsSubscription) {
-          this.getResourceDetailsSubscription.unsubscribe();
-        }
-        if (this.getEntityDetailsSubscription) {
-          this.getEntityDetailsSubscription.unsubscribe();
-        }
-        if (this.getIssueAuditSubscription) {
-          this.getIssueAuditSubscription.unsubscribe();
-        }
-        if (this.assetGroupSubscription) {
-          this.assetGroupSubscription.unsubscribe();
-        }
-        if (this.routeSubscription) {
-          this.routeSubscription.unsubscribe();
-        }
-        if (this.subscriptionDomain) {
-          this.subscriptionDomain.unsubscribe();
-        }
-        if (this.getUserSubscription) {
-          this.getUserSubscription.unsubscribe();
-        }
-        if (this.getExceptionSubscription) {
-          this.getExceptionSubscription.unsubscribe();
-        }
-        if (this.getRecommendSubscription) {
-          this.getRecommendSubscription.unsubscribe();
-        }
-        if (this.getActionDataSubscription) {
-          this.getActionDataSubscription.unsubscribe();
-        }
-        if (this.getJiraSubscription) {
-          this.getJiraSubscription.unsubscribe();
-        }
-        if (this.getRevokeSubscription) {
-          this.getRevokeSubscription.unsubscribe();
-        }
-        if (this.findJiraSubscription) {
-          this.findJiraSubscription.unsubscribe();
-        }
-        if (this.autofixDetails$) {
-          this.autofixDetails$.unsubscribe();
-        }
-      } catch (e) {
+  shouldShowExemptionRequest(){
+    let roleCapabilities = this.dataStore.getRoleCapabilities();
+    this.showExemptionRequest = roleCapabilities.includes("grant-deny-exemption");
+  }
+
+  ngOnDestroy() {
+    try {
+      // pushes the current url to datastore
+      if (this.getRuleDescSubscription) {
+        this.getRuleDescSubscription.unsubscribe();
+      }
+      if (this.getEmailSubscription) {
+        this.getEmailSubscription.unsubscribe();
+      }
+      if (this.getResourceDetailsSubscription) {
+        this.getResourceDetailsSubscription.unsubscribe();
+      }
+      if (this.getEntityDetailsSubscription) {
+        this.getEntityDetailsSubscription.unsubscribe();
+      }
+      if (this.getIssueAuditSubscription) {
+        this.getIssueAuditSubscription.unsubscribe();
+      }
+      if (this.assetGroupSubscription) {
+        this.assetGroupSubscription.unsubscribe();
+      }
+      if (this.routeSubscription) {
+        this.routeSubscription.unsubscribe();
+      }
+      if (this.subscriptionDomain) {
+        this.subscriptionDomain.unsubscribe();
+      }
+      if (this.getUserSubscription) {
+        this.getUserSubscription.unsubscribe();
+      }
+      if (this.getExceptionSubscription) {
+        this.getExceptionSubscription.unsubscribe();
+      }
+      if (this.getRecommendSubscription) {
+        this.getRecommendSubscription.unsubscribe();
+      }
+      if (this.getActionDataSubscription) {
+        this.getActionDataSubscription.unsubscribe();
+      }
+      if (this.getJiraSubscription) {
+        this.getJiraSubscription.unsubscribe();
+      }
+      if (this.getRevokeSubscription) {
+        this.getRevokeSubscription.unsubscribe();
+      }
+      if (this.findJiraSubscription) {
+        this.findJiraSubscription.unsubscribe();
+      }
+      if (this.autofixDetails$) {
+        this.autofixDetails$.unsubscribe();
+      }
+     } catch (e) {
         this.logger.log('error', e);
       }
     }
-  }
+}

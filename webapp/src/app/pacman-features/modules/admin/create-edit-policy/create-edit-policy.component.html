@@ -8,14 +8,14 @@
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
     <div class="header" style="padding-bottom: 24px;">
-          <h6>{{policyDisplayName}}</h6>
-          <div class="button-wrapper">
-            <button class="button disable-btn" 
-            (click)="disablePolicy()" *ngIf="status">Disable Policy</button>
-            <button class="button enable-btn" 
-            (click)="enablePolicy()" *ngIf="!status">Enable Policy</button>
-          </div>
-    </div>
+        <h6>{{policyDisplayName}}</h6>
+        <div class="button-wrapper">
+          <button class="button disable-btn" [class.disabled-button]="!isPolicyEnableDisableAllowed" [disabled]="!isPolicyEnableDisableAllowed"
+          (click)="disablePolicy()" *ngIf="status">Disable Policy</button>
+          <button class="button enable-btn" [class.disabled-button]="!isPolicyEnableDisableAllowed" [disabled]="!isPolicyEnableDisableAllowed"
+          (click)="enablePolicy()" *ngIf="!status">Enable Policy</button>
+        </div>
+  </div>
     <div class="right-wrapper">
             <div class="details-wrapper">
                 <div class="details-header flex flex-around">
@@ -45,7 +45,7 @@
                     </div>
                     <div class="dropdown-wrapper">
                         <div class="dropdown">
-                            <app-dropdown [required]="isRequired" [optionImage]="true"
+                            <app-dropdown [class.isDisabled]="!isPolicySeverityEditAllowed" [required]="isRequired" [optionImage]="true"
                                 [items]="policySeverities" placeholder="Severity"
                                 [selectedItem]="selectedSeverity" name="severity"
                                 (selected)="onSelectSeverity($event)">
@@ -65,7 +65,7 @@
                                 <span class="subtitle-2">Policy Parameters</span>
                                  <div class="parameters-wrapper">
                                     <div class="parameter-wrapper" *ngFor="let param of paramsList;let i=index" [class.hide]="!param.isEdit">
-                                            <div class="input-wrapper">
+                                            <div class="input-wrapper" [class.isDisabled]="!isPolicyParamsEditAllowed">
                                                 <mat-form-field appearance="outline">
                                                     <mat-label>{{param.displayName}}</mat-label>
                                                     <input autocomplete="off" matInput [name]="param.key" [required]="param.isMandatory"
@@ -85,24 +85,24 @@
                                         <span class="subtitle-2">Autofix</span>
                                         <div class="status-wrapper">
                                           <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle [class.isDisabled]="!status" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
+                                          <mat-slide-toggle [class.isDisabled]="!status || !isAutofixSwitchToggleAllowed" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
                                         </div>
                                      </div>
                                   <div class="autofix-wrapper">
-                                    <app-dropdown [items]="accountList" placeholder="Accounts" [isChipListEnabled]="true" [class.isDisabled]="!status || !isAutofixEnabled"
+                                    <app-dropdown [items]="accountList" placeholder="Accounts" [isChipListEnabled]="true" [class.isDisabled]="!status || !isAutofixEnabled || !isAutofixSwitchToggleAllowed"
                                     [selectedList]="selectedAccounts" (selected)="onAccountsChange($event)"></app-dropdown>
                                     <div class="header">
                                         <span class="subtitle-2">Warning Notification</span>
                                         <div class="status-wrapper">
                                           <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle  [disabled]="!isAutofixEnabled || !status" [checked]="warningNotification" (change)="toggleWarningNotification($event)"></mat-slide-toggle>
+                                          <mat-slide-toggle  [disabled]="!isAutofixEnabled || !status || !isWarningNotificationToggleAllowed" [checked]="warningNotification" (change)="toggleWarningNotification($event)"></mat-slide-toggle>
                                         </div>
                                       </div>
                                      <div class="notifications-wrapper">
                                             <div class="parameters-wrapper">
                                                  <form class="parameters-wrapper" [formGroup]="notificationsForm">
                                                     <div class="parameter-wrapper">
-                                                        <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled || !status">
+                                                        <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled || !status || !isWarningNotificationToggleAllowed">
                                                             <app-input-field [parentForm]="notificationsForm" formControlName="waitingTime" [label]="'Duration'" 
                                                             placeholder="Enter only digits" [(value)]="waitingTime" [shouldApplyNumericDirective]="true" 
                                                             [formErrors]="notificationFormErrors" [description]="waitingTimeTooltipText" [isRequired]="true" 
@@ -110,7 +110,7 @@
                                                         </div>
                                                         </div>
                                                         <div class="parameter-wrapper">
-                                                        <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification || !status">
+                                                        <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification || !status || !isWarningNotificationToggleAllowed">
                                                             <app-input-field [parentForm]="notificationsForm" formControlName="maxEmailNotification" [label]="'Count'" 
                                                             placeholder="Enter only digits" [(value)]="maxEmailNotification" [shouldApplyNumericDirective]="true"
                                                             [description]="countTooltipText"  [formErrors]="notificationFormErrors" [isRequired]="true" 
