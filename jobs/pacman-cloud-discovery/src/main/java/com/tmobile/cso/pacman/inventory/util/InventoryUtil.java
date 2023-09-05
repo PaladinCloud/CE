@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.ec2.model.*;
 import com.amazonaws.services.ecr.AmazonECR;
 import com.amazonaws.services.ecr.AmazonECRClientBuilder;
 import com.amazonaws.services.ecr.model.DescribeRepositoriesRequest;
@@ -40,6 +41,7 @@ import com.amazonaws.services.securityhub.AWSSecurityHub;
 import com.amazonaws.services.securityhub.AWSSecurityHubClientBuilder;
 import com.amazonaws.services.securityhub.model.DescribeHubRequest;
 import com.amazonaws.services.securityhub.model.DescribeHubResult;
+import com.tmobile.cso.pacman.inventory.vo.*;
 import com.amazonaws.services.support.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,34 +149,6 @@ import com.amazonaws.services.dynamodbv2.model.ListTagsOfResourceRequest;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
-import com.amazonaws.services.ec2.model.BlockDeviceMapping;
-import com.amazonaws.services.ec2.model.CreateVolumePermission;
-import com.amazonaws.services.ec2.model.DescribeImagesRequest;
-import com.amazonaws.services.ec2.model.DescribeImagesResult;
-import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.DescribeNatGatewaysRequest;
-import com.amazonaws.services.ec2.model.DescribeNatGatewaysResult;
-import com.amazonaws.services.ec2.model.DescribeNetworkInterfacesResult;
-import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
-import com.amazonaws.services.ec2.model.DescribeSnapshotAttributeRequest;
-import com.amazonaws.services.ec2.model.DescribeSnapshotAttributeResult;
-import com.amazonaws.services.ec2.model.DescribeSnapshotsRequest;
-import com.amazonaws.services.ec2.model.DescribeSubnetsResult;
-import com.amazonaws.services.ec2.model.DescribeVolumesResult;
-import com.amazonaws.services.ec2.model.DescribeVpcEndpointsRequest;
-import com.amazonaws.services.ec2.model.Filter;
-import com.amazonaws.services.ec2.model.Image;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.NatGateway;
-import com.amazonaws.services.ec2.model.NetworkInterface;
-import com.amazonaws.services.ec2.model.SecurityGroup;
-import com.amazonaws.services.ec2.model.Snapshot;
-import com.amazonaws.services.ec2.model.SnapshotAttributeName;
-import com.amazonaws.services.ec2.model.Subnet;
-import com.amazonaws.services.ec2.model.Volume;
-import com.amazonaws.services.ec2.model.Vpc;
-import com.amazonaws.services.ec2.model.VpcEndpoint;
 import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.ecs.model.DescribeTaskDefinitionRequest;
@@ -329,50 +303,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.cso.pacman.inventory.file.ErrorManageUtil;
 import com.tmobile.cso.pacman.inventory.file.FileGenerator;
-import com.tmobile.cso.pacman.inventory.vo.AMIVH;
-import com.tmobile.cso.pacman.inventory.vo.ASGLaunchConfigVH;
-import com.tmobile.cso.pacman.inventory.vo.ASGVH;
-import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
-import com.tmobile.cso.pacman.inventory.vo.AccessKeyMetadataVH;
-import com.tmobile.cso.pacman.inventory.vo.AccountVH;
-import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
-import com.tmobile.cso.pacman.inventory.vo.Attribute;
-import com.tmobile.cso.pacman.inventory.vo.BackupVaultVH;
-import com.tmobile.cso.pacman.inventory.vo.BucketVH;
-import com.tmobile.cso.pacman.inventory.vo.CheckVH;
-import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
-import com.tmobile.cso.pacman.inventory.vo.CloudFrontVH;
-import com.tmobile.cso.pacman.inventory.vo.CloudTrailEventSelectorVH;
-import com.tmobile.cso.pacman.inventory.vo.CloudTrailVH;
-import com.tmobile.cso.pacman.inventory.vo.CloudWatchLogsVH;
-import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
-import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
-import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
-import com.tmobile.cso.pacman.inventory.vo.ECSClusterVH;
-import com.tmobile.cso.pacman.inventory.vo.ECSTaskDefinitionVH;
-import com.tmobile.cso.pacman.inventory.vo.EKSVH;
-import com.tmobile.cso.pacman.inventory.vo.EbsVH;
-import com.tmobile.cso.pacman.inventory.vo.EfsVH;
-import com.tmobile.cso.pacman.inventory.vo.GroupVH;
-import com.tmobile.cso.pacman.inventory.vo.IAMCertificateVH;
-import com.tmobile.cso.pacman.inventory.vo.KMSKeyVH;
-import com.tmobile.cso.pacman.inventory.vo.LambdaVH;
-import com.tmobile.cso.pacman.inventory.vo.LoadBalancerVH;
-import com.tmobile.cso.pacman.inventory.vo.PhdVH;
-import com.tmobile.cso.pacman.inventory.vo.RedshiftVH;
-import com.tmobile.cso.pacman.inventory.vo.Resource;
-import com.tmobile.cso.pacman.inventory.vo.SQS;
-import com.tmobile.cso.pacman.inventory.vo.SQSVH;
-import com.tmobile.cso.pacman.inventory.vo.SSLCertificateVH;
-import com.tmobile.cso.pacman.inventory.vo.SnapshotVH;
-import com.tmobile.cso.pacman.inventory.vo.TargetGroupVH;
-import com.tmobile.cso.pacman.inventory.vo.UserVH;
-import com.tmobile.cso.pacman.inventory.vo.VpcEndPointVH;
-import com.tmobile.cso.pacman.inventory.vo.VpcVH;
-import com.tmobile.cso.pacman.inventory.vo.RegistryVH;
 import com.amazonaws.services.docdb.AmazonDocDB;
 import com.amazonaws.services.docdb.AmazonDocDBClientBuilder;
-import com.tmobile.cso.pacman.inventory.vo.DocumentDBVH;
 
 /**
  * The Class InventoryUtil.
@@ -3171,6 +3103,52 @@ public class InventoryUtil {
 
 		}
 		return securityHubMap;
+	}
+
+	public static Map<String,List<LaunchTemplateVH>> fetchLaunchTemplates(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+		Map<String,List<LaunchTemplateVH>> launchTemplates = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Launch Template\" , \"region\":\"" ;
+		AmazonEC2 ec2Client ;
+		List<LaunchTemplateVH> launchTemplateVHList = new ArrayList<>();
+		for(Region region : RegionUtils.getRegions()) {
+			try{
+				if(!skipRegions.contains(region.getName())){
+					ec2Client = AmazonEC2ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					DescribeLaunchTemplatesRequest request = new DescribeLaunchTemplatesRequest();
+					DescribeLaunchTemplatesResult descLaunchTempResult ;
+					descLaunchTempResult=ec2Client.describeLaunchTemplates(request);
+					final AmazonEC2 finalEc2Client = ec2Client;
+					descLaunchTempResult.getLaunchTemplates().forEach(template -> {
+						try {
+							DescribeLaunchTemplateVersionsRequest versionsRequest = new DescribeLaunchTemplateVersionsRequest()
+									.withLaunchTemplateId(template.getLaunchTemplateId());
+
+							DescribeLaunchTemplateVersionsResult describeVersionsResult = finalEc2Client.describeLaunchTemplateVersions(versionsRequest);
+
+							describeVersionsResult.getLaunchTemplateVersions().forEach(version -> {
+								LaunchTemplateVH launchTemplateVH = new LaunchTemplateVH();
+								launchTemplateVH.setLaunchTemplateId(template.getLaunchTemplateId());
+								launchTemplateVH.setLaunchTemplateName(template.getLaunchTemplateName());
+								launchTemplateVH.setImageId(version.getLaunchTemplateData().getImageId());
+								launchTemplateVH.setSecurityGroupIds(version.getLaunchTemplateData().getSecurityGroupIds());
+								launchTemplateVHList.add(launchTemplateVH);
+							});
+						} catch (Exception e) {
+							log.warn("Error fetching versions for Launch Template: " + template.getLaunchTemplateName());
+						}
+					});
+
+					if (!launchTemplateVHList.isEmpty()) {
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type: Launch Template " + region.getName() + " >> " + launchTemplateVHList.size());
+						launchTemplates.put(accountId + delimiter + accountName + delimiter + region.getName(), launchTemplateVHList);
+					}
+				}
+			}catch(Exception e){
+				log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
+				ErrorManageUtil.uploadError(accountId,region.getName(),"launchtemplate",e.getMessage());
+			}
+		}
+		return launchTemplates;
 	}
 	
 	/**

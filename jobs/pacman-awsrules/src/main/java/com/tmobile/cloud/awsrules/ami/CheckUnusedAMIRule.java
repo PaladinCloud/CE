@@ -30,6 +30,7 @@ public class CheckUnusedAMIRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(CheckUnusedAMIRule.class);
 
     private static final String EC2_URL = "/aws/ec2/_search";
+    private static final String LAUNCH_TEMPLATE_URL = "/aws/launchtemplate/_search";
 
     private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -85,6 +86,7 @@ public class CheckUnusedAMIRule extends BasePolicy {
     private String checkValidation(Map<String, String> resource) {
 
         String esCloudTrailPubAccessUrl = null;
+        String esLaunchTemplateUrl=null;
         String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
         String accountId = resource.get(PacmanRuleConstants.ACCOUNTID);
         String imageId = resource.get(PacmanRuleConstants.RESOURCE_ID);
@@ -92,12 +94,12 @@ public class CheckUnusedAMIRule extends BasePolicy {
 
         if (!StringUtils.isNullOrEmpty(pacmanHost)) {
             esCloudTrailPubAccessUrl = EC2_URL;
+            esLaunchTemplateUrl=LAUNCH_TEMPLATE_URL;
             esCloudTrailPubAccessUrl = pacmanHost + esCloudTrailPubAccessUrl;
+            esLaunchTemplateUrl=pacmanHost + esLaunchTemplateUrl;
         }
 
-        if (Objects.isNull(esCloudTrailPubAccessUrl) || Objects.isNull(imageId) || imageId.isEmpty() ||
-                Objects.isNull(publicValue) || publicValue.isEmpty() || Objects.isNull(accountId) ||
-                accountId.isEmpty()) {
+        if (Objects.isNull(esCloudTrailPubAccessUrl) || Objects.isNull(esLaunchTemplateUrl) || Objects.isNull(imageId) || imageId.isEmpty() || Objects.isNull(publicValue) || publicValue.isEmpty() || Objects.isNull(accountId) || accountId.isEmpty()) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
@@ -117,7 +119,10 @@ public class CheckUnusedAMIRule extends BasePolicy {
             Set<String> resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esCloudTrailPubAccessUrl, mustFilter,
                     shouldFilter, mustTermsFilter, "_resourceid", null);
 
-            if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
+            Set<String> resultSetForLaunchTemplate = PacmanUtils.getValueFromElasticSearchAsSet(esLaunchTemplateUrl, mustFilter,
+                    shouldFilter, mustTermsFilter, "_resourceid", null);
+
+            if ((Objects.isNull(resultSet) || resultSet.isEmpty())  && (Objects.isNull(resultSetForLaunchTemplate) || resultSetForLaunchTemplate.isEmpty())) {
                 return description;
             }
         } catch (Exception ex) {
