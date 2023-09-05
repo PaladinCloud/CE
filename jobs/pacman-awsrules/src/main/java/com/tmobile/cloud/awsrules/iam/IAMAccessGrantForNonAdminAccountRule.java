@@ -117,7 +117,13 @@ public class IAMAccessGrantForNonAdminAccountRule extends BasePolicy {
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
 
-        Annotation annotation = null;
+        Annotation annotation;
+        annotation = Annotation.buildAnnotation(ruleParam,
+                Annotation.Type.ISSUE);
+        annotation.put(PacmanSdkConstants.DESCRIPTION,
+                "Non-admin roles with IAMFullAccess found");
+        annotation.put(PacmanRuleConstants.SEVERITY, severity);
+        annotation.put(PacmanRuleConstants.CATEGORY, category);
 
         List<AttachedPolicy> attachedRolePolicies = new ArrayList<>();
         String message = null;
@@ -145,7 +151,13 @@ public class IAMAccessGrantForNonAdminAccountRule extends BasePolicy {
                 for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
                     try {
                         result = iamClient.listAttachedRolePolicies(request);
-                    } catch (AmazonIdentityManagementException e) {
+                    }
+                    catch(NoSuchEntityException exception){
+                        logger.error("NoSuchEntityException thrown..", exception);
+                        return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
+                                annotation);
+                    }
+                    catch (AmazonIdentityManagementException e) {
                         if (e.getMessage().startsWith("Rate exceeded")) {
                             try {
                                 Thread.sleep(5000);
@@ -175,12 +187,7 @@ public class IAMAccessGrantForNonAdminAccountRule extends BasePolicy {
                             || isIAMFullAccessFoundAfterThoroughCheck(iamClient,attachedRolePolicies)) {
                         message = "Role " + roleName + " has IAM full access";
                         logger.warn(message);
-                        annotation = Annotation.buildAnnotation(ruleParam,
-                                Annotation.Type.ISSUE);
-                        annotation.put(PacmanSdkConstants.DESCRIPTION,
-                                "Non-admin roles with IAMFullAccess found");
-                        annotation.put(PacmanRuleConstants.SEVERITY, severity);
-                        annotation.put(PacmanRuleConstants.CATEGORY, category);
+
 
                         issue.put(PacmanRuleConstants.VIOLATION_REASON,
                                 "Non-admin roles with IAMFullAccess found");
