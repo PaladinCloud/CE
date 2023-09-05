@@ -3069,3 +3069,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
  VALUES('image','Image','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
  concat(@eshost,':',@esport,'/redhat_image'),'2023-08-07','2023-08-07','Infra & Platforms','Image');
+
+  update pac_v2_ui_options set optionName ="Source" where optionId='32';
+  update pac_v2_ui_options set optionName ="Source" where optionId='57';
+  update pac_v2_ui_options set optionName ="Source" where optionId='43';

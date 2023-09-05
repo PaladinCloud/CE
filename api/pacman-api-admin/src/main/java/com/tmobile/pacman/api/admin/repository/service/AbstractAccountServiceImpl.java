@@ -103,7 +103,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             accountMap.put("assets",ob[2].toString());
             accountMap.put("violations",ob[3].toString());
             accountMap.put("accountStatus",ob[4].toString());
-            accountMap.put("platform",ob[5].toString());
+            accountMap.put("source",ob[5].toString());
             accountMap.put("createdBy",ob[6]!=null?ob[6].toString():"");
             accountMap.put("createdTime",ob[6]!=null?formatCreatedTime(ob[7]):"");
             convertAccountDetails.add(accountMap);
