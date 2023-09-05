@@ -28,10 +28,14 @@ public interface Constants {
 
     /** The API  User:Password  */
     String API_AUTH_INFO = "apiauthinfo";
+    String AUTH_API_URL = "AUTH_API_URL";
 
     String CONFIG_QUERY = "configquery";
 
     String CONFIG_URL = "CONFIG_URL";
+
+     String API_READ_SCOPE = "API_OPERATION/READ";
+
 
 
     /** The failed. */
