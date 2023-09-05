@@ -827,33 +827,28 @@
    }
    
    checkRoleBasedElementAccess(){
-    this.canDisableOrEnablePolicy();
-    this.canEditSeverityOfPolicy();
-    this.canUpdatePolicyParams();
-    this.canEditAutoFixStatus();
-  }
-
-  canDisableOrEnablePolicy() {
     const roleCapabilities = this.dataStore.getRoleCapabilities();
     const category = this.selectedCategory?.toLowerCase();
 
+    this.canDisableOrEnablePolicy(roleCapabilities, category);
+    this.canEditSeverityOfPolicy(roleCapabilities, category);
+    this.canUpdatePolicyParams(roleCapabilities);
+    this.canEditAutoFixStatus(roleCapabilities);
+  }
+
+ canDisableOrEnablePolicy(roleCapabilities, category) {
     this.isPolicyEnableDisableAllowed = roleCapabilities.includes(`${category}-enable-disable`);
   }
 
-  canEditSeverityOfPolicy() {
-    const roleCapabilities = this.dataStore.getRoleCapabilities();
-    const category = this.selectedCategory?.toLowerCase();
-
+  canEditSeverityOfPolicy(roleCapabilities, category) {
     this.isPolicySeverityEditAllowed = roleCapabilities.includes(`${category}-severity-update`);
   }
 
-  canUpdatePolicyParams() {
-    const roleCapabilities = this.dataStore.getRoleCapabilities();  
+  canUpdatePolicyParams(roleCapabilities) {
     this.isPolicyParamsEditAllowed = roleCapabilities.includes("policy-param-update");
   }
-
-  canEditAutoFixStatus() {
-    const roleCapabilities = this.dataStore.getRoleCapabilities();  
+  
+  canEditAutoFixStatus(roleCapabilities) {
     this.isAutofixSwitchToggleAllowed = roleCapabilities.includes("autofix-enable-disable");
     this.isWarningNotificationToggleAllowed = roleCapabilities.includes("autofix-enable-disable");
   }
