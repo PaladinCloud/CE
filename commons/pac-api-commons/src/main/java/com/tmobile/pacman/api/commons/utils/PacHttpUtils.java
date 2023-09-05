@@ -29,11 +29,17 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletRequest;
+
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -47,9 +53,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpHeaders;
 
@@ -323,4 +333,51 @@ public class PacHttpUtils {
         }
         return url;
     }
+
+	private static CloseableHttpClient getHttpClient() {
+		CloseableHttpClient httpClient = null;
+		try {
+			httpClient = HttpClientBuilder.create().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+					.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+						@Override
+						public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+							return true;
+						}
+					}).build()).build();
+		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+			LOGGER.error("Error getting getHttpClient "+e.getMessage());
+		}
+		return httpClient;
+	}
+
+	public static String doHttpPost(final String url, final String requestBody, Map<String,String> headers) throws Exception {
+		try {
+			CloseableHttpClient client = getHttpClient();
+			HttpPost httppost = new HttpPost(url);
+			if(requestBody==null || requestBody.isEmpty()){
+				httppost.setHeader(CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.toString());
+			}else {
+				httppost.setHeader(CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+			}
+			headers.entrySet().stream().forEach(entry -> httppost.setHeader(entry.getKey(),entry.getValue()));
+			StringEntity jsonEntity = new StringEntity(requestBody);
+			httppost.setEntity(jsonEntity);
+			HttpResponse httpresponse = client.execute(httppost);
+			int statusCode = httpresponse.getStatusLine().getStatusCode();
+			if(statusCode==HttpStatus.SC_OK || statusCode==HttpStatus.SC_CREATED)
+			{
+				return EntityUtils.toString(httpresponse.getEntity());
+			}else{
+				LOGGER.error(httpresponse.getStatusLine().getStatusCode() + "---" + httpresponse.getStatusLine().getReasonPhrase());
+				throw new Exception("unable to execute post request because " + httpresponse.getStatusLine().getReasonPhrase());
+			}
+		} catch (ParseException parseException) {
+			LOGGER.error("ParseException in getHttpPost :"+parseException.getMessage());
+			throw parseException;
+		} catch (Exception exception) {
+			LOGGER.error("Exception in getHttpPost :"+exception.getMessage());
+			throw exception;
+		}
+	}
+
 }

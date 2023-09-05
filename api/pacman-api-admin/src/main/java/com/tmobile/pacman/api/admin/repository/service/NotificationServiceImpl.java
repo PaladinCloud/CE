@@ -12,6 +12,7 @@ import com.tmobile.pacman.api.admin.util.AdminUtils;
 import com.tmobile.pacman.api.commons.dto.NotificationBaseRequest;
 import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.*;
@@ -39,7 +37,7 @@ public class NotificationServiceImpl implements NotificationService {
             "request not sent for policy action. Error - {}";
 
     @Value("${notification.lambda.function.url}")
-    private String notificationUrl;
+    private static String notificationUrl;
 
     /** The ui host. */
     @Value("${pacman.host}")
@@ -74,7 +72,7 @@ public class NotificationServiceImpl implements NotificationService {
                 notificationBaseRequest.setPayload(stickyExNotificationRequest);
                 notificationBaseRequestList.add(notificationBaseRequest);
                 String notificationDetailsStr = gson.toJson(notificationBaseRequestList);
-                PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr);
+                invokeNotificationUrl(notificationDetailsStr);
                 if(log.isInfoEnabled()){
                     log.info("Notification request sent for create/update of sticky exception - {}",assetGroupExceptionDetails.getExceptionName().trim());
                 }
@@ -105,7 +103,7 @@ public class NotificationServiceImpl implements NotificationService {
             notificationBaseRequest.setPayload(stickyExNotificationRequest);
             notificationBaseRequestList.add(notificationBaseRequest);
             String notificationDetailsStr = gson.toJson(notificationBaseRequestList);
-            PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr);
+            invokeNotificationUrl(notificationDetailsStr);
             if(log.isInfoEnabled()){
                 log.info("Notification request sent for delete of sticky exception - {}",assetGroupException.getExceptionName().trim());
             }
@@ -147,7 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
             notificationBaseRequest.setPayload(request);
             notificationBaseRequestList.add(notificationBaseRequest);
             String notificationDetailsStr = gson.toJson(notificationBaseRequestList);
-            PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr);
+            invokeNotificationUrl(notificationDetailsStr);
         } catch (Exception ex) {
             log.error(POLICY_ACTION_ERROR_MSG, ex.getMessage());
         }
@@ -161,5 +159,11 @@ public class NotificationServiceImpl implements NotificationService {
         notificationBaseRequest.setEventDescription(eventName);
         notificationBaseRequest.setSubject(subject);
         return notificationBaseRequest;
+    }
+
+    public static void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
+        Map<String,String> headersMap = new HashMap<>();
+        headersMap.put("Authorization", ThreadLocalUtil.accessToken.get());
+        PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr,headersMap);
     }
 }
