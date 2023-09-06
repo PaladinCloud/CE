@@ -2,6 +2,7 @@ package com.tmobile.pacbot.azure.inventory.collector;
 
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.appservice.DefaultErrorResponseException;
 import com.microsoft.azure.management.appservice.WebApp;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
@@ -60,7 +61,10 @@ public class WebAppInventoryCollector {
                 webAppVH.setName(webApp.name());
                 webAppList.add(webAppVH);
 
-            } catch (Exception e) {
+            } catch(DefaultErrorResponseException exception){
+                log.info(exception.getMessage());
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 log.error("Error Collecting info for {} ", e.getMessage());
                 Util.eCount.getAndIncrement();

@@ -37,6 +37,8 @@ import com.amazonaws.services.ecr.model.DescribeRepositoriesRequest;
 import com.amazonaws.services.ecr.model.DescribeRepositoriesResult;
 import com.amazonaws.services.ecr.model.ImageDetail;
 import com.amazonaws.services.ecr.model.Repository;
+import com.amazonaws.services.health.model.*;
+import com.amazonaws.services.kms.model.*;
 import com.amazonaws.services.securityhub.AWSSecurityHub;
 import com.amazonaws.services.securityhub.AWSSecurityHubClientBuilder;
 import com.amazonaws.services.securityhub.model.DescribeHubRequest;
@@ -196,15 +198,6 @@ import com.amazonaws.services.elasticmapreduce.model.ListClustersResult;
 import com.amazonaws.services.guardduty.model.BucketPolicy;
 import com.amazonaws.services.health.AWSHealth;
 import com.amazonaws.services.health.AWSHealthClientBuilder;
-import com.amazonaws.services.health.model.AffectedEntity;
-import com.amazonaws.services.health.model.DescribeAffectedEntitiesRequest;
-import com.amazonaws.services.health.model.DescribeAffectedEntitiesResult;
-import com.amazonaws.services.health.model.DescribeEventDetailsRequest;
-import com.amazonaws.services.health.model.DescribeEventsRequest;
-import com.amazonaws.services.health.model.DescribeEventsResult;
-import com.amazonaws.services.health.model.EntityFilter;
-import com.amazonaws.services.health.model.Event;
-import com.amazonaws.services.health.model.EventDetails;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.identitymanagement.model.AccessKeyMetadata;
@@ -234,12 +227,6 @@ import com.amazonaws.services.identitymanagement.model.ServerCertificateMetadata
 import com.amazonaws.services.identitymanagement.model.User;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
-import com.amazonaws.services.kms.model.AliasListEntry;
-import com.amazonaws.services.kms.model.DescribeKeyRequest;
-import com.amazonaws.services.kms.model.DescribeKeyResult;
-import com.amazonaws.services.kms.model.GetKeyRotationStatusRequest;
-import com.amazonaws.services.kms.model.KeyListEntry;
-import com.amazonaws.services.kms.model.ListResourceTagsRequest;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.FunctionConfiguration;
@@ -1798,14 +1785,14 @@ public class InventoryUtil {
 					buckets.add(new BucketVH(bucket,bucketRegion,versionconfig, tags, bucketEncryp,hasWebSiteConfiguration,bucketLoggingConfiguration,bucketPolicy));
 				}
 			}
-			catch(AmazonS3Exception e){
-				if("AccessDenied".equals(e.getErrorCode())){
+			catch(AmazonS3Exception e) {
+				if ("AccessDenied".equals(e.getErrorCode())) {
 					log.info("Access Denied for bucket " + bucket.getName());
-					buckets.add(new BucketVH(bucket,"",versionconfig, tags, null,hasWebSiteConfiguration,bucketLoggingConfiguration,null));
-				}else{
-					log.info("Exception fetching S3 Bucket",e);
+					buckets.add(new BucketVH(bucket, "", versionconfig, tags, null, hasWebSiteConfiguration, bucketLoggingConfiguration, null));
+				} else {
+					log.info("Exception fetching S3 Bucket", e);
+					ErrorManageUtil.uploadError(accountId, "", "s3", e.getMessage());
 				}
-				ErrorManageUtil.uploadError(accountId,"","s3",e.getMessage());
 			}
 			catch(Exception e){
 				log.warn(expPrefix+ bucket.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
@@ -2373,12 +2360,23 @@ public class InventoryUtil {
 								kmsKey.setKey(result.getKeyMetadata());
 								try{
 									kmsKey.setTags(awskms.listResourceTags(new ListResourceTagsRequest().withKeyId(key.getKeyId())).getTags());
-								}catch(Exception e){
+								}catch (AWSKMSException e)
+								{
+									log.error(e.getMessage());
+									if(!e.getErrorCode().equals("AccessDeniedException"))
+										ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
+								}
+								catch(Exception e){
 									log.debug(e.getMessage());
 									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 								}
 								try{
 									kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
+								}catch (AWSKMSException e)
+								{
+									log.error(e.getMessage());
+									if(!e.getErrorCode().equals("AccessDeniedException"))
+										ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 								}catch(Exception e){
 									log.debug(e.getMessage());
 									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
@@ -2392,7 +2390,12 @@ public class InventoryUtil {
 									}
 								}
 								kmsKeysList.add(kmsKey);
-							} catch (Exception e) {
+							} catch (AWSKMSException e)
+							{
+								log.error(e.getMessage());
+								if(!e.getErrorCode().equals("AccessDeniedException"))
+									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
+							}catch (Exception e) {
 								log.debug(e.getMessage());
 								ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 							}
@@ -2611,7 +2614,12 @@ public class InventoryUtil {
 				log.debug(InventoryConstants.ACCOUNT + accountId +" Type : PHD "+ " >> "+phdList.size());
 				phd.put(accountId+delimiter+accountName,phdList);
 			}
-		}catch(Exception e){
+		}catch (AWSHealthException e){
+			log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
+			 if(!e.getErrorCode().equals("AccessDeniedException")||e.getErrorCode().equals("SubscriptionRequiredException"))
+				 ErrorManageUtil.uploadError(accountId,"","phd",e.getMessage());
+		}
+		catch(Exception e){
 				log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
 				ErrorManageUtil.uploadError(accountId,"","phd",e.getMessage());
 		}
