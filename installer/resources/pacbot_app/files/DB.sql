@@ -2753,8 +2753,8 @@ Update cf_Target set status = 'disabled' where targetName in ('asgpolicy','cloud
 
 
 /* disable policydefinition , policyevaluationresults and phd */
-update  pacmandata.cf_Target set status = 'disable' where targetName in ( 'policydefinitions', 'policyevaluationresults', 'phd');
-delete from cf_AssetGroupTargetDetails where targetType in ( 'policydefinitions', 'policyevaluationresults', 'phd');
+update  pacmandata.cf_Target set status = 'disable' where targetName in ( 'policydefinitions', 'policyevaluationresults', 'phd','vaultsrbac');
+delete from cf_AssetGroupTargetDetails where targetType in ( 'policydefinitions', 'policyevaluationresults', 'phd','vaultsrbac');
 
 
 /* Updating display name can be removed in future  */
