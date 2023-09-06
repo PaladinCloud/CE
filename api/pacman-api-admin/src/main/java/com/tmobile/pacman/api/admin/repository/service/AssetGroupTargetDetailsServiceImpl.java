@@ -187,4 +187,11 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 		return  valueString;
 	}
 
+	@Override
+	public List<String> getAllConfiguredSources() {
+		String query = "select distinct platform from cf_Accounts  where platform in (select distinct dataSourceName " +
+				" from cf_Target) and accountStatus= 'configured'";
+		return rdsRepository.getStringList(query);
+	}
+
 }

@@ -66,6 +66,11 @@ public class PacmanRdsRepository
 		return jdbcTemplate.queryForList(query);
 	}
 
+	public List<String> getStringList(String query)
+	{
+		return jdbcTemplate.queryForList(query, String.class);
+	}
+
 	public int update(String query, Object... queryParams)
 	{
 		return jdbcTemplate.update(query, queryParams);
