@@ -2034,7 +2034,7 @@ public class FileManager {
 		String keys;
 
 		fieldNames ="launchTemplateId`launchTemplateName`imageId`securityGroupIds";
-		keys ="discoverydate`accountid`accountname`launchTemplateId`launchTemplateName`imageId`securityGroupIds";
+		keys ="discoverydate`accountid`accountname`region`launchTemplateId`launchTemplateName`imageId`securityGroupIds";
 		FileGenerator.generateJson(launchTemplateMap, fieldNames, "aws-launchtemplate.data",keys);
 	}
 }
