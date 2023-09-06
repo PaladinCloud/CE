@@ -313,11 +313,14 @@
          waitingTime: [this.waitingTime, [Validators.required, CustomValidators.checkIfMultipleOfTwentyFour]],
          maxEmailNotification : [this.maxEmailNotification,[Validators.required,Validators.max(maxEmailNotificationValue)]]
        });
+       this.notificationsForm.get('maxEmailNotification').markAsTouched();
+       this.notificationsForm.get('waitingTime').markAsTouched();
  
        this.waitingTimeSubscription = this.notificationsForm.get('waitingTime').valueChanges.subscribe((newValue) => {
-         const maxEmailNotificationValue =  parseInt((this.waitingTime / this.jobInterval).toString(), 10)
+         const maxEmailNotificationValue =  parseInt((newValue/ this.jobInterval).toString(), 10)
          this.countTooltipText =  "Count should not exceed the limit value " + maxEmailNotificationValue;
          this.notificationsForm.get('maxEmailNotification').setValidators([Validators.required,Validators.max(maxEmailNotificationValue)]);
+         this.notificationsForm.get('maxEmailNotification').updateValueAndValidity();
        });
  
      }
@@ -442,7 +445,6 @@
        const url =  environment.updatePolicy.url;
        const method = environment.updatePolicy.method;
        this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
-        this.getData();
          this.policyLoader = false;
          this.ispolicyCreationSuccess = true;
          this.enableUpdate = false;
@@ -585,303 +587,303 @@
      }
    }
  
-   /**
-    * This function get calls the keyword service before initializing
-    * the filter array ,so that filter keynames are changed
-    */
-   getPolicyDetails(policyId: any,action?) {
-     let url = environment.getPolicyDetailsById.url;
-     let method = environment.getPolicyDetailsById.method;
- 
-     const oldPolicyDetails = this.policyDetails;
-     this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
-       this.policyDetails = reponse[0];
-       this.selectedPolicyId = this.policyDetails.policyId;
-       this.status = this.policyDetails.status=="ENABLED";
-       this.selectedSeverity = this.policyDetails.severity;
-       this.selectedCategory = this.policyDetails.category;
-       this.policyId = this.policyDetails.policyId;
-       this.policyDisplayName = this.policyDetails.policyDisplayName;
-       this.selectedPolicyType = this.policyDetails.policyType;
-       this.policyName = this.policyDetails.policyName;
-       this.selectedAssetGroup = this.policyDetails.assetGroup;
-       this.policyUrl = this.policyDetails.policyRestUrl;
-       this.selectedAssetType = this.policyDetails.targetType;
-       this.description = this.policyDetails.policyDesc;
-       this.resolution = this.policyDetails.resolution;
-       this.resolutionUrl = this.policyDetails.resolutionUrl;
-       this.isAutofixAvailable = this.policyDetails.autoFixAvailable == "true";
-       this.isAutofixEnabled =this.policyDetails.autoFixEnabled == "true";
-       this.disableDescription = this.policyDetails.disableDesc;
-       this.exemptionDetails = this.policyDetails.policyExemption;
-       
-       this.checkRoleBasedElementAccess();
- 
-       if (this.resolutionUrl == null || this.resolutionUrl == "") {
-         this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
-       }
- 
-       this.assetTypeMapService.getAssetMap().subscribe(data=>{
-         this.assetMap = data;
-         this.selectedAssetType = this.assetMap.get(this.selectedAssetType);
-       });
- 
-       if(this.isAutofixAvailable){
-           this.getAccounts();
-           this.selectedAccounts = this.policyDetails.allowList.split(",").slice();
-           this.fixMailSubject = this.policyDetails.fixMailSubject;
-           this.postFixMessage = this.policyDetails.fixMessage;
-           this.violationMessage = this.policyDetails.violationMessage;
-           this.waitingTime = this.policyDetails.waitingTime;
-           this.maxEmailNotification = this.policyDetails.maxEmailNotification;
-           this.warningMessage = this.policyDetails.warningMessage;
-           this.warningMailSubject = this.policyDetails.warningMailSubject;
-           this.elapsedTime = this.policyDetails.elapsedTime;
-           this.fixType = this.policyDetails.fixType;
-           this.warningNotification = this.fixType == "non-silent";
-         }
-       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
-       this.paramsList = [];
-       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
-         if(JSON.parse(this.allPolicyParams[i]["isEdit"])){
-           this.hasEditableParams++;
+    /**
+     * This function get calls the keyword service before initializing
+     * the filter array ,so that filter keynames are changed
+     */
+    getPolicyDetails(policyId: any,action?) {
+      let url = environment.getPolicyDetailsById.url;
+      let method = environment.getPolicyDetailsById.method;
+  
+      const oldPolicyDetails = this.policyDetails;
+      this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
+        this.policyDetails = reponse[0];
+        this.selectedPolicyId = this.policyDetails.policyId;
+        this.status = this.policyDetails.status=="ENABLED";
+        this.selectedSeverity = this.policyDetails.severity;
+        this.selectedCategory = this.policyDetails.category;
+        this.policyId = this.policyDetails.policyId;
+        this.policyDisplayName = this.policyDetails.policyDisplayName;
+        this.selectedPolicyType = this.policyDetails.policyType;
+        this.policyName = this.policyDetails.policyName;
+        this.selectedAssetGroup = this.policyDetails.assetGroup;
+        this.policyUrl = this.policyDetails.policyRestUrl;
+        this.selectedAssetType = this.policyDetails.targetType;
+        this.description = this.policyDetails.policyDesc;
+        this.resolution = this.policyDetails.resolution;
+        this.resolutionUrl = this.policyDetails.resolutionUrl;
+        this.isAutofixAvailable = this.policyDetails.autoFixAvailable == "true";
+        this.isAutofixEnabled =this.policyDetails.autoFixEnabled == "true";
+        this.disableDescription = this.policyDetails.disableDesc;
+        this.exemptionDetails = this.policyDetails.policyExemption;
+        
+        this.checkRoleBasedElementAccess();
+  
+        if (this.resolutionUrl == null || this.resolutionUrl == "") {
+          this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
+        }
+  
+        this.assetTypeMapService.getAssetMap().subscribe(data=>{
+          this.assetMap = data;
+          this.selectedAssetType = this.assetMap.get(this.selectedAssetType);
+        });
+  
+        if(this.isAutofixAvailable){
+            this.getAccounts();
+            this.selectedAccounts = this.policyDetails.allowList.split(",").slice();
+            this.fixMailSubject = this.policyDetails.fixMailSubject;
+            this.postFixMessage = this.policyDetails.fixMessage;
+            this.violationMessage = this.policyDetails.violationMessage;
+            this.waitingTime = this.policyDetails.waitingTime;
+            this.maxEmailNotification = this.policyDetails.maxEmailNotification;
+            this.warningMessage = this.policyDetails.warningMessage;
+            this.warningMailSubject = this.policyDetails.warningMailSubject;
+            this.elapsedTime = this.policyDetails.elapsedTime;
+            this.fixType = this.policyDetails.fixType;
+            this.warningNotification = this.fixType == "non-silent";
           }
-         if(this.allPolicyParams[i]["key"].toLowerCase() == "policycategory" || this.allPolicyParams[i]["key"].toLowerCase() == "severity")
-         {
-           continue;
-         }
-           this.paramsList.push(
-             {
-               "key": this.allPolicyParams[i]["key"],
-               "value": this.allPolicyParams[i]["value"],
-               "displayName": this.allPolicyParams[i]["displayName"]?this.allPolicyParams[i]["displayName"]:this.allPolicyParams[i]["key"],
-               "isEdit": this.allPolicyParams[i]["isEdit"] ? JSON.parse(this.allPolicyParams[i]["isEdit"]) : false,
-               "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false,
-               "description": this.allPolicyParams[i]["description"]
-             }
-           )
-         }
-       // this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
-       this.hideContent = false;
-       this.paramsList.forEach(param=>{
-         this.formData[param.key]=param.value;
-       })
-       this.formData["maxEmailNotification"]=this.maxEmailNotification;
-       this.formData["waitingTime"] = this.waitingTime;
-       this.buildForm();
-     },
-       error => {
-         this.logger.log("Error",error);
-       });
-   }
- 
-   getAccounts(){
- 
-     try{
-       const url = environment.listTargetTypeAttributeValues.url;
-       const method = environment.listTargetTypeAttributeValues.method;
- 
-       let accounts=[];
-    
-       const payload = {
-        source: this.selectedAssetGroup,
+        this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
+        this.paramsList = [];
+        for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
+          if(JSON.parse(this.allPolicyParams[i]["isEdit"])){
+            this.hasEditableParams++;
+           }
+          if(this.allPolicyParams[i]["key"].toLowerCase() == "policycategory" || this.allPolicyParams[i]["key"].toLowerCase() == "severity")
+          {
+            continue;
+          }
+            this.paramsList.push(
+              {
+                "key": this.allPolicyParams[i]["key"],
+                "value": this.allPolicyParams[i]["value"],
+                "displayName": this.allPolicyParams[i]["displayName"]?this.allPolicyParams[i]["displayName"]:this.allPolicyParams[i]["key"],
+                "isEdit": this.allPolicyParams[i]["isEdit"] ? JSON.parse(this.allPolicyParams[i]["isEdit"]) : false,
+                "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false,
+                "description": this.allPolicyParams[i]["description"]
+              }
+            )
+          }
+        // this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
+        this.hideContent = false;
+        this.paramsList.forEach(param=>{
+          this.formData[param.key]=param.value;
+        })
+        this.formData["maxEmailNotification"]=this.maxEmailNotification;
+        this.formData["waitingTime"] = this.waitingTime;
+        this.buildForm();
+      },
+        error => {
+          this.logger.log("Error",error);
+        });
+    }
+  
+    getAccounts(){
+  
+      try{
+        const url = environment.listTargetTypeAttributeValues.url;
+        const method = environment.listTargetTypeAttributeValues.method;
+  
+        let accounts=[];
+     
+        const payload = {
+         source: this.selectedAssetGroup,
+       }
+        this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
+            const aggregations = response[0]?.data?.aggregations;
+            const alldata = aggregations.alldata;
+            const buckets = alldata.buckets;
+            buckets.forEach(element => {
+              accounts.push(element.key);
+            });
+            this.accountList = accounts;
+        })
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log('error', error);
       }
-       this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
-           const aggregations = response[0]?.data?.aggregations;
-           const alldata = aggregations.alldata;
-           const buckets = alldata.buckets;
-           buckets.forEach(element => {
-             accounts.push(element.key);
-           });
-           this.accountList = accounts;
-       })
-     } catch (error) {
-       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-       this.logger.log('error', error);
-     }
-   }
- 
-   onAccountsChange(selectedAccounts:any){
-     this.selectedAccounts = selectedAccounts;
-     this.enableUpdate = true;
-   }
- 
-   removeStepper(stepperName: string){
-     this.stepperData= this.stepperData.filter(element=> element.name != stepperName);
-   }
- 
-   openDialog(PolicyModel: any): void {
-     const title = "Update Policy!"
-     const yesButtonLabel = "Update";
-     const dialogRef = this.dialog.open(DialogBoxComponent, {
-       width: '500px',
-       data: { title: title,
-             yesButtonLabel: yesButtonLabel,
-           }
-     });
- 
-     dialogRef.afterClosed().subscribe(result => {
-       if (result == "yes") {
-         this.createOrUpdatepolicy(PolicyModel);
-       }
-     });
-   }
- 
- 
-   openDisablePolicyDialog(): void {
-     const dialogRef = this.dialog.open(DialogBoxComponent, {
-       width: '500px',
-       data: { 
-             title: "Disable Policy",
-             noButtonLabel: "Cancel",
-             yesButtonLabel: "Confirm",
-             template: this.disablePolicyRef,
-           } 
-     });
-     dialogRef.afterClosed().subscribe(result => {
-       if (result == "yes") {
-         this.enableDisableRuleOrJob("disabled");
-       }
-     });
-   }
- 
-   updateComponent(action?) {
-     this.outerArr = [];
-     this.searchTxt = '';
-     this.currentBucket = [];
-     this.bucketNumber = 0;
-     this.firstPaginator = 1;
-     this.showLoader = true;
-     this.currentPointer = 0;
-     this.dataTableData = [];
-     this.tableDataLoaded = false;
-     this.dataLoaded = false;
-     this.seekdata = false;
-     this.errorValue = 0;
-     this.showGenericMessage = false;
-     this.getData(action);
-   }
- 
-   navigateBack() {
-     try {
-       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-       this.workflowService.clearAllLevels();
-       this.router.navigate(['../'], {
-         relativeTo: this.activatedRoute,
-         queryParamsHandling: "merge", 
-         state: {
-           dataUpdated: this.updateButtonClicked
-           }
-       });
-     } catch (error) {
-       this.logger.log('error', error);
-     }
-   }
- 
-   toggleStatus(event:any){
-       this.status = event.checked;
-       if(!this.status)
-       this.isAutofixEnabled = this.status;
-   }
- 
-   toggleWarningNotification(event:any){
-       this.warningNotification = event.checked;
-       this.enableUpdate = true;
-   }
- 
-   onValueChange(event:any){
-     this.enableUpdate = true;
-   }
- 
-   enableDisableRuleOrJob(action:string) {
-     return new Promise((resolve,reject)=>{
-     try {
-         const url = environment.enableDisableRuleOrJob.url;
-         const method = environment.enableDisableRuleOrJob.method;
-         const params = {};
-         const payload = {
-           "policyId": this.policyId ,
-           "action": action
-         }
-         if(action.toLowerCase()=="disabled"){
-           payload["expireDate"] = this.expireDate,
-           payload["description"] = this.disableDescription
-         }
-         this.adminService.executeHttpAction(url, method, payload, params).subscribe(response => {
-             this.updateComponent(action.toLowerCase());
-             this.tourService.setComponentReady();
-             resolve("sucess");
-       },
-           error => {
-             this.tourService.setComponentReady();
-             reject("error");
-           });
-       } catch (error) {
-         this.tourService.setComponentReady();
-         this.logger.log("error", error);
-         reject("error");
-       }
-     })
- 
-   }
- 
-   checkRoleBasedElementAccess(){
-     const roleCapabilities = this.dataStore.getRoleCapabilities();
-     const category = this.selectedCategory?.toLowerCase();
-     this.canDisableOrEnablePolicy(roleCapabilities, category);
-     this.canEditSeverityOfPolicy(roleCapabilities, category);
-     this.canUpdatePolicyParams(roleCapabilities);
-     this.canEditAutoFixStatus(roleCapabilities);
-   }
- 
-   canDisableOrEnablePolicy(roleCapabilities, category) {
-     this.isPolicyEnableDisableAllowed = roleCapabilities.includes(`${category}-enable-disable`);
-   }
-   
-   canEditSeverityOfPolicy(roleCapabilities, category) {
-     let isSeverityEditAllowed = false;
-     switch(category){
-       case "security":
-         isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.SecuritySeverityUpdate);
-         break;
-       case "cost":
-         isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.CostSeverityUpdate);
-         break;
-       case "operations":
-         isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.OperationsSeverityUpdate);
-         break;
-       case "tagging":
-         isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.TaggingSeverityUpdate);
-         break;
-     }
-     this.isPolicySeverityEditAllowed = isSeverityEditAllowed;
-   }
- 
-   canUpdatePolicyParams(roleCapabilities) {
-     this.isPolicyParamsEditAllowed = roleCapabilities.includes(UserCapabilities.PolicyParamUpdate);
-   }
-   
-   canEditAutoFixStatus(roleCapabilities) {
-     this.isAutofixSwitchToggleAllowed = roleCapabilities.includes(UserCapabilities.AutofixEnableDisable);
-     this.isWarningNotificationToggleAllowed = roleCapabilities.includes(UserCapabilities.WarningNotificationEnableDisable);
-   }
- 
-   ngOnDestroy() {
-     try {
-       if (this.routeSubscription) {
-         this.routeSubscription.unsubscribe();
-       }
-       if (this.previousUrlSubscription) {
-         this.previousUrlSubscription.unsubscribe();
-       }
-       if(this.assetTypeSubscription){
-         this.assetTypeSubscription.unsubscribe();
-       }
-       if(this.waitingTimeSubscription){
-         this.waitingTimeSubscription.unsubscribe();
-       }
-     } catch (error) {
-       this.logger.log('error', '--- Error while unsubscribing ---');
-     }
-   }
- }
+    }
+  
+    onAccountsChange(selectedAccounts:any){
+      this.selectedAccounts = selectedAccounts;
+      this.enableUpdate = true;
+    }
+  
+    removeStepper(stepperName: string){
+      this.stepperData= this.stepperData.filter(element=> element.name != stepperName);
+    }
+  
+    openDialog(PolicyModel: any): void {
+      const title = "Update Policy!"
+      const yesButtonLabel = "Update";
+      const dialogRef = this.dialog.open(DialogBoxComponent, {
+        width: '500px',
+        data: { title: title,
+              yesButtonLabel: yesButtonLabel,
+            }
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        if (result == "yes") {
+          this.createOrUpdatepolicy(PolicyModel);
+        }
+      });
+    }
+  
+  
+    openDisablePolicyDialog(): void {
+      const dialogRef = this.dialog.open(DialogBoxComponent, {
+        width: '500px',
+        data: { 
+              title: "Disable Policy",
+              noButtonLabel: "Cancel",
+              yesButtonLabel: "Confirm",
+              template: this.disablePolicyRef,
+            } 
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result == "yes") {
+          this.enableDisableRuleOrJob("disabled");
+        }
+      });
+    }
+  
+    updateComponent(action?) {
+      this.outerArr = [];
+      this.searchTxt = '';
+      this.currentBucket = [];
+      this.bucketNumber = 0;
+      this.firstPaginator = 1;
+      this.showLoader = true;
+      this.currentPointer = 0;
+      this.dataTableData = [];
+      this.tableDataLoaded = false;
+      this.dataLoaded = false;
+      this.seekdata = false;
+      this.errorValue = 0;
+      this.showGenericMessage = false;
+      this.getData(action);
+    }
+  
+    navigateBack() {
+      try {
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.clearAllLevels();
+        this.router.navigate(['../'], {
+          relativeTo: this.activatedRoute,
+          queryParamsHandling: "merge", 
+          state: {
+            dataUpdated: this.updateButtonClicked
+            }
+        });
+      } catch (error) {
+        this.logger.log('error', error);
+      }
+    }
+  
+    toggleStatus(event:any){
+        this.status = event.checked;
+        if(!this.status)
+        this.isAutofixEnabled = this.status;
+    }
+  
+    toggleWarningNotification(event:any){
+        this.warningNotification = event.checked;
+        this.enableUpdate = true;
+    }
+  
+    onValueChange(event:any){
+      this.enableUpdate = true;
+    }
+  
+    enableDisableRuleOrJob(action:string) {
+      return new Promise((resolve,reject)=>{
+      try {
+          const url = environment.enableDisableRuleOrJob.url;
+          const method = environment.enableDisableRuleOrJob.method;
+          const params = {};
+          const payload = {
+            "policyId": this.policyId ,
+            "action": action
+          }
+          if(action.toLowerCase()=="disabled"){
+            payload["expireDate"] = this.expireDate,
+            payload["description"] = this.disableDescription
+          }
+          this.adminService.executeHttpAction(url, method, payload, params).subscribe(response => {
+              this.updateComponent(action.toLowerCase());
+              this.tourService.setComponentReady();
+              resolve("sucess");
+        },
+            error => {
+              this.tourService.setComponentReady();
+              reject("error");
+            });
+        } catch (error) {
+          this.tourService.setComponentReady();
+          this.logger.log("error", error);
+          reject("error");
+        }
+      })
+  
+    }
+  
+    checkRoleBasedElementAccess(){
+      const roleCapabilities = this.dataStore.getRoleCapabilities();
+      const category = this.selectedCategory?.toLowerCase();
+      this.canDisableOrEnablePolicy(roleCapabilities, category);
+      this.canEditSeverityOfPolicy(roleCapabilities, category);
+      this.canUpdatePolicyParams(roleCapabilities);
+      this.canEditAutoFixStatus(roleCapabilities);
+    }
+  
+    canDisableOrEnablePolicy(roleCapabilities, category) {
+      this.isPolicyEnableDisableAllowed = roleCapabilities.includes(`${category}-enable-disable`);
+    }
+    
+    canEditSeverityOfPolicy(roleCapabilities, category) {
+      let isSeverityEditAllowed = false;
+      switch(category){
+        case "security":
+          isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.SecuritySeverityUpdate);
+          break;
+        case "cost":
+          isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.CostSeverityUpdate);
+          break;
+        case "operations":
+          isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.OperationsSeverityUpdate);
+          break;
+        case "tagging":
+          isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.TaggingSeverityUpdate);
+          break;
+      }
+      this.isPolicySeverityEditAllowed = isSeverityEditAllowed;
+    }
+  
+    canUpdatePolicyParams(roleCapabilities) {
+      this.isPolicyParamsEditAllowed = roleCapabilities.includes(UserCapabilities.PolicyParamUpdate);
+    }
+    
+    canEditAutoFixStatus(roleCapabilities) {
+      this.isAutofixSwitchToggleAllowed = roleCapabilities.includes(UserCapabilities.AutofixEnableDisable);
+      this.isWarningNotificationToggleAllowed = roleCapabilities.includes(UserCapabilities.WarningNotificationEnableDisable);
+    }
+  
+    ngOnDestroy() {
+      try {
+        if (this.routeSubscription) {
+          this.routeSubscription.unsubscribe();
+        }
+        if (this.previousUrlSubscription) {
+          this.previousUrlSubscription.unsubscribe();
+        }
+        if(this.assetTypeSubscription){
+          this.assetTypeSubscription.unsubscribe();
+        }
+        if(this.waitingTimeSubscription){
+          this.waitingTimeSubscription.unsubscribe();
+        }
+      } catch (error) {
+        this.logger.log('error', '--- Error while unsubscribing ---');
+      }
+    }
+  }

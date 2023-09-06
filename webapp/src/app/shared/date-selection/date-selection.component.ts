@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
     DateRange,
     DefaultMatCalendarRangeStrategy,
@@ -18,6 +18,8 @@ import {
 })
 export class DateSelectionComponent implements OnInit {
     readonly today = new Date();
+
+    @Input("minDate") minDate : Date;
 
     selectedRange?: DateRange<Date>;
 
