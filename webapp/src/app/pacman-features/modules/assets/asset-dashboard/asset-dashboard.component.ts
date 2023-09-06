@@ -184,7 +184,7 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             });
         });
         data[0].values.sort(function(a,b){
-            return new Date(a.date) > new Date(b.date)? 1 : -1;
+            return new Date(a.date) > new Date(b.date);
         });
 
         if(!this.minDate)

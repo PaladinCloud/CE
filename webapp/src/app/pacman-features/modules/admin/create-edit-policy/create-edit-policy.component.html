@@ -23,8 +23,8 @@
                         Policy Details
                     </div>
                     <div class="button-wrapper">
-                        <button class="button submit-btn" [disabled]="!enableUpdate || updateButtonClicked || (isAutofixEnabled &&  notificationsForm?.invalid)"
-                        [class.disabled-button]="!enableUpdate || updateButtonClicked || (isAutofixEnabled &&  notificationsForm?.invalid)" 
+                        <button class="button submit-btn" [disabled]="!enableUpdate || updateButtonClicked || (isAutofixEnabled && notificationsForm?.dirty &&  notificationsForm?.invalid)"
+                        [class.disabled-button]="!enableUpdate || updateButtonClicked || (isAutofixEnabled && notificationsForm?.dirty &&  notificationsForm?.invalid)" 
                         (click)="onSubmit()">Save</button>
                         <!-- <button class="button cancel-btn" 
                             (click)="onReset()" [disabled]="!enableUpdate" [class.disabled-button]="!enableUpdate">Cancel</button> -->
