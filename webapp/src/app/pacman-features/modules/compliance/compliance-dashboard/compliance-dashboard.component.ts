@@ -363,7 +363,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             });
           }
           data[0].values.sort(function(a,b){
-            return new Date(a.date) > new Date(b.date);
+            return new Date(a.date) > new Date(b.date)? 1: -1;
           });
       
           if(!this.minDate){
