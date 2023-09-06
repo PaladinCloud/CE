@@ -239,6 +239,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   policyId: string = "";
   sortColName: any;
   violationModifiedDate: any;
+  hasCurrentUserRequested: boolean;
 
   @HostListener('document:click', ['$event']) handleClick(event) {
     try {
@@ -413,6 +414,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     this.issueBlocks = response;
                     this.violationModifiedDate = this.issueBlocks?.violationModifiedDate;
                     this.exemptionDetails = response["exemption"];
+                    this.hasCurrentUserRequested = this.exemptionDetails.exemptionRaisedBy == this.dataStore.getUserDetailsValue().getEmail();
                     this.exemptionRaisedBy = this.exemptionDetails.exemptionRaisedBy.split('.')[0];
                     this.exemptionRaisedBy = this.exemptionRaisedBy.charAt(0).toUpperCase() + this.exemptionRaisedBy.slice(1);
                     // changing the time using utils func
