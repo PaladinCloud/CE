@@ -94,7 +94,7 @@ public class EnableClusterMonitoring extends BasePolicy {
                         .get(PacmanRuleConstants.SOURCE);
                 JsonObject properties = jsonDataItem.getAsJsonObject("properties");
                 JsonObject addonProfiles=properties.getAsJsonObject("addonProfiles");
-                if (addonProfiles.has("omsAgent")) {
+                if (addonProfiles!=null && addonProfiles.has("omsAgent")) {
                     JsonObject omsAgent = addonProfiles.get("omsAgent").getAsJsonObject();
                     if (omsAgent.has("config")) {
                         JsonObject config = omsAgent.getAsJsonObject("config");
