@@ -125,6 +125,7 @@ export class CardComponent implements OnInit {
     
             const filterParam = this.utils.makeFilterObj({
                 'policyCategory.keyword': category.toLowerCase(),
+                'issueStatus.keyword': "open"
             });
     
             this.router.navigate(['/pl/compliance/issue-listing'], {

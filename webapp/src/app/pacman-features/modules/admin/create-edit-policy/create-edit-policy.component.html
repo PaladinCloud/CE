@@ -85,7 +85,7 @@
                                         <span class="subtitle-2">Autofix</span>
                                         <div class="status-wrapper">
                                           <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle [class.isDisabled]="!status || !isAutofixSwitchToggleAllowed" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
+                                          <mat-slide-toggle [disabled]="!status || !isAutofixSwitchToggleAllowed" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
                                         </div>
                                      </div>
                                   <div class="autofix-wrapper">

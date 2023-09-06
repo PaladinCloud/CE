@@ -37,6 +37,7 @@
  import { CONFIGURATIONS } from 'src/config/configurations';
  import { CustomValidators } from 'src/app/shared/custom-validators';
  import { DataCacheService } from 'src/app/core/services/data-cache.service';
+ import { UserCapabilities } from 'src/app/shared/constants/role-capabilites';
  
  @Component({
    selector: 'app-admin-create-edit-policy',
@@ -247,12 +248,12 @@
    logsTableErrorMessage: string = "";
    logsTableDataLoaded : boolean = false;
    jobInterval: number;
-
+ 
    isPolicyEnableDisableAllowed = false;
    isPolicySeverityEditAllowed = false;
    isPolicyParamsEditAllowed = false;
    isAutofixSwitchToggleAllowed = false;
-   isWarningNotificationToggleAllowed = false; 
+   isWarningNotificationToggleAllowed = false;
  
    constructor(
      private datePipe: DatePipe,
@@ -273,7 +274,6 @@
      public form: FormBuilder
    ) {
        this.routerParam();
-       this.checkRoleBasedElementAccess();
    }
  
    formData = {};
@@ -292,6 +292,7 @@
        this.pageLevel
      );
      this.getCurrentDate();
+     this.checkRoleBasedElementAccess();
    }
  
    getCurrentDate(){
@@ -312,14 +313,11 @@
          waitingTime: [this.waitingTime, [Validators.required, CustomValidators.checkIfMultipleOfTwentyFour]],
          maxEmailNotification : [this.maxEmailNotification,[Validators.required,Validators.max(maxEmailNotificationValue)]]
        });
-       this.notificationsForm.get('maxEmailNotification').markAsTouched();
-       this.notificationsForm.get('waitingTime').markAsTouched();
  
        this.waitingTimeSubscription = this.notificationsForm.get('waitingTime').valueChanges.subscribe((newValue) => {
-         const maxEmailNotificationValue =  parseInt((newValue/ this.jobInterval).toString(), 10)
+         const maxEmailNotificationValue =  parseInt((this.waitingTime / this.jobInterval).toString(), 10)
          this.countTooltipText =  "Count should not exceed the limit value " + maxEmailNotificationValue;
          this.notificationsForm.get('maxEmailNotification').setValidators([Validators.required,Validators.max(maxEmailNotificationValue)]);
-         this.notificationsForm.get('maxEmailNotification').updateValueAndValidity();
        });
  
      }
@@ -444,7 +442,7 @@
        const url =  environment.updatePolicy.url;
        const method = environment.updatePolicy.method;
        this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
-         this.getData();
+        this.getData();
          this.policyLoader = false;
          this.ispolicyCreationSuccess = true;
          this.enableUpdate = false;
@@ -616,7 +614,9 @@
        this.isAutofixEnabled =this.policyDetails.autoFixEnabled == "true";
        this.disableDescription = this.policyDetails.disableDesc;
        this.exemptionDetails = this.policyDetails.policyExemption;
+       
        this.checkRoleBasedElementAccess();
+ 
        if (this.resolutionUrl == null || this.resolutionUrl == "") {
          this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
        }
@@ -640,7 +640,7 @@
            this.fixType = this.policyDetails.fixType;
            this.warningNotification = this.fixType == "non-silent";
          }
-       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams || "{}")["params"] || [];
+       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
        this.paramsList = [];
        for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
          if(JSON.parse(this.allPolicyParams[i]["isEdit"])){
@@ -663,7 +663,6 @@
          }
        // this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
        this.hideContent = false;
- 
        this.paramsList.forEach(param=>{
          this.formData[param.key]=param.value;
        })
@@ -683,10 +682,10 @@
        const method = environment.listTargetTypeAttributeValues.method;
  
        let accounts=[];
- 
+    
        const payload = {
-         source: this.selectedAssetGroup,
-       }
+        source: this.selectedAssetGroup,
+      }
        this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
            const aggregations = response[0]?.data?.aggregations;
            const alldata = aggregations.alldata;
@@ -825,33 +824,47 @@
      })
  
    }
-   
+ 
    checkRoleBasedElementAccess(){
-    const roleCapabilities = this.dataStore.getRoleCapabilities();
-    const category = this.selectedCategory?.toLowerCase();
-
-    this.canDisableOrEnablePolicy(roleCapabilities, category);
-    this.canEditSeverityOfPolicy(roleCapabilities, category);
-    this.canUpdatePolicyParams(roleCapabilities);
-    this.canEditAutoFixStatus(roleCapabilities);
-  }
-
- canDisableOrEnablePolicy(roleCapabilities, category) {
-    this.isPolicyEnableDisableAllowed = roleCapabilities.includes(`${category}-enable-disable`);
-  }
-
-  canEditSeverityOfPolicy(roleCapabilities, category) {
-    this.isPolicySeverityEditAllowed = roleCapabilities.includes(`${category}-severity-update`);
-  }
-
-  canUpdatePolicyParams(roleCapabilities) {
-    this.isPolicyParamsEditAllowed = roleCapabilities.includes("policy-param-update");
-  }
-  
-  canEditAutoFixStatus(roleCapabilities) {
-    this.isAutofixSwitchToggleAllowed = roleCapabilities.includes("autofix-enable-disable");
-    this.isWarningNotificationToggleAllowed = roleCapabilities.includes("autofix-enable-disable");
-  }
+     const roleCapabilities = this.dataStore.getRoleCapabilities();
+     const category = this.selectedCategory?.toLowerCase();
+     this.canDisableOrEnablePolicy(roleCapabilities, category);
+     this.canEditSeverityOfPolicy(roleCapabilities, category);
+     this.canUpdatePolicyParams(roleCapabilities);
+     this.canEditAutoFixStatus(roleCapabilities);
+   }
+ 
+   canDisableOrEnablePolicy(roleCapabilities, category) {
+     this.isPolicyEnableDisableAllowed = roleCapabilities.includes(`${category}-enable-disable`);
+   }
+   
+   canEditSeverityOfPolicy(roleCapabilities, category) {
+     let isSeverityEditAllowed = false;
+     switch(category){
+       case "security":
+         isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.SecuritySeverityUpdate);
+         break;
+       case "cost":
+         isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.CostSeverityUpdate);
+         break;
+       case "operations":
+         isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.OperationsSeverityUpdate);
+         break;
+       case "tagging":
+         isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.TaggingSeverityUpdate);
+         break;
+     }
+     this.isPolicySeverityEditAllowed = isSeverityEditAllowed;
+   }
+ 
+   canUpdatePolicyParams(roleCapabilities) {
+     this.isPolicyParamsEditAllowed = roleCapabilities.includes(UserCapabilities.PolicyParamUpdate);
+   }
+   
+   canEditAutoFixStatus(roleCapabilities) {
+     this.isAutofixSwitchToggleAllowed = roleCapabilities.includes(UserCapabilities.AutofixEnableDisable);
+     this.isWarningNotificationToggleAllowed = roleCapabilities.includes(UserCapabilities.WarningNotificationEnableDisable);
+   }
  
    ngOnDestroy() {
      try {
@@ -872,4 +885,3 @@
      }
    }
  }
- 

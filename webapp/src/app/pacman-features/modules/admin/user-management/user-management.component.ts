@@ -17,6 +17,7 @@ import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { ROLES } from 'src/app/shared/constants/roles';
 
 
 @Component({
@@ -169,15 +170,15 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   getEditableRoles(rolesData){
     this.allRoles = rolesData.map(role => role.roleName);
     const userRoles = this.dataCacheService.getUserDetailsValue().getRoles();
-    let rolesEditable = [];
-    if(userRoles.includes("AccountManager")){
-      rolesEditable = rolesData.find(data => data.roleDisplayName=="Account Manager").rolesEditable;
-    } else if(userRoles.includes("TechnicalAdmin")){
-      rolesEditable = rolesData.find(data => data.roleDisplayName=="Technical Admin").rolesEditable;
-    } else if(userRoles.includes("SecurityAdmin")){
-      rolesEditable = rolesData.find(data => data.roleDisplayName=="Security Admin").rolesEditable;
+    let rolesEditable = [];    
+    if(userRoles.includes(ROLES.AccountManager)){
+      rolesEditable = rolesData.find(data => data.roleName==ROLES.AccountManager).rolesEditable;
+    } else if(userRoles.includes(ROLES.TechnicalAdmin)){
+      rolesEditable = rolesData.find(data => data.roleName==ROLES.TechnicalAdmin).rolesEditable;
+    } else if(userRoles.includes(ROLES.SecurityAdmin)){
+      rolesEditable = rolesData.find(data => data.roleName==ROLES.SecurityAdmin).rolesEditable;
     } else{
-      rolesEditable = rolesData.find(data => data.roleDisplayName=="Read Only").rolesEditable;
+      rolesEditable = rolesData.find(data => data.roleName==ROLES.ReadOnly).rolesEditable;
     }
 
     return rolesEditable;
@@ -647,11 +648,9 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             } else {
               dropDownItems.push("Activate");
             }
-            if(getData[row]["Roles"].includes("AccountManager") && !this.editableRoles.includes("AccountManager")){
-              dropDownItems = [];
-            } else if(getData[row]["Roles"].includes("TechnicalAdmin") && !this.editableRoles.includes("TechnicalAdmin")){
-              dropDownItems = [];
-            } else if(getData[row]["Roles"].includes("SecurityAdmin") && !this.editableRoles.includes("SecurityAdmin")){
+            if((getData[row]["Roles"].includes(ROLES.AccountManager) && !this.editableRoles.includes(ROLES.AccountManager))
+            || (getData[row]["Roles"].includes(ROLES.TechnicalAdmin) && !this.editableRoles.includes(ROLES.TechnicalAdmin))
+            || (getData[row]["Roles"].includes(ROLES.SecurityAdmin) && !this.editableRoles.includes(ROLES.SecurityAdmin))){
               dropDownItems = [];
             }
             cellObj = {
