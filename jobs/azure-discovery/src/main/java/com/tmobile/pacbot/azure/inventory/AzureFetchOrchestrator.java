@@ -18,7 +18,6 @@ import com.microsoft.azure.management.Azure.Authenticated;
 import com.microsoft.azure.management.resources.Subscription;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.file.AssetFileGenerator;
-import com.tmobile.pacbot.azure.inventory.file.S3Uploader;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
 @Component

@@ -75,9 +75,9 @@ public class GCPFetchOrchestrator {
             fileGenerator.generateFiles(allProjects, filePath);
             log.info("End : FIle Generation");
 
-            log.info("Start : Backup Current Files");
-            s3Uploader.backUpFiles(s3Bucket, s3Region, s3Data, s3Processed + "/" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
-            log.info("End : Backup Current Files");
+//            log.info("Start : Backup Current Files");
+//            s3Uploader.backUpFiles(s3Bucket, s3Region, s3Data, s3Processed + "/" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
+//            log.info("End : Backup Current Files");
 
             log.info("Start : Upload Files to S3");
             s3Uploader.uploadFiles(s3Bucket, s3Data, s3Region, filePath);
