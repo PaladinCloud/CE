@@ -159,17 +159,7 @@ public class ErrorManageUtil {
 					log.info("Omit exception :{}",errorVH.getException());
 					errorVHList.remove(errorVH);
 				}
-				if(errorVH.getType().equals("kms")&&errorVH.getException().contains("AccessDeniedException"))
-				{
-					log.info("Omit exception :{}",errorVH.getException());
-					errorVHList.remove(errorVH);
-				}
-				if(errorVH.getType().equals("s3")&&errorVH.getException().contains("AccessDeniedException"))
-				{
-					log.info("Omit exception :{}",errorVH.getException());
-					errorVHList.remove(errorVH);
-				}
-				if(errorVH.getType().equals("checks")&&errorVH.getException().contains("AWSSupportException"))
+				if(((errorVH.getType().equals("kms")||errorVH.getType().equals("s3"))&&errorVH.getException().contains("AccessDeniedException"))||(errorVH.getType().equals("checks")&&errorVH.getException().contains("AWSSupportException")))
 				{
 					log.info("Omit exception :{}",errorVH.getException());
 					errorVHList.remove(errorVH);
