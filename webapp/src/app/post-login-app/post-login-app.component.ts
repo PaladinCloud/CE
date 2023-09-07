@@ -259,8 +259,9 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
             this.updateAssetGroup(params["ag"]);
             const isPrevAg = this.queryParameters["ag"] != undefined;
             this.queryParameters["ag"] = params["ag"];
-            this.updateAssetGroup(this.queryParameters["ag"]);
-            this.navigateBackToRoot();
+            if(isPrevAg){
+              this.navigateBackToRoot();
+            }
           }
           if(params["domain"] && params["domain"]!=this.queryParameters["domain"]){
             this.queryParameters["domain"] = params["domain"];
@@ -283,7 +284,9 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     if(this.workflowService.checkIfFlowExistsCurrently()){
       const levelInfo = this.workflowService.getDetailsFromStorage()["level0"];
       const rootLevel = levelInfo[0];
-      this.router.navigate([rootLevel.url]);
+      this.router.navigate([rootLevel.url],{
+        queryParams: this.queryParameters
+      });
       this.workflowService.clearAllLevels();
     }
   }
