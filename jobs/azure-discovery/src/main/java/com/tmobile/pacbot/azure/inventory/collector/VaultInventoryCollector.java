@@ -152,8 +152,10 @@ public class VaultInventoryCollector {
 
 	}
 
-	public List<VaultVH> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
+	public HashMap<String,List<VaultVH>> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
 		List<VaultVH> vaultList = new ArrayList();
+		List<VaultVH> vaultRBACList=new ArrayList();
+		HashMap<String,List<VaultVH>> vaults=new HashMap();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
 		String vaultListTemplate = "https://management.azure.com/subscriptions/" + subscription.getSubscriptionId() + "/resources?$filter=resourceType%20eq%20'Microsoft.KeyVault/vaults'&api-version=2015-11-01";
 	try {
@@ -166,8 +168,10 @@ public class VaultInventoryCollector {
 				for (JsonElement vaultElement : vaultObjects) {
 					JsonObject vaultObject = vaultElement.getAsJsonObject();
 					VaultVH vault = fetchVaultDetailsById(vaultObject.get("id").getAsString(), subscription);
-					if (vault.isEnableRbacAuthorization()) {
+					if (!vault.isEnableRbacAuthorization()) {
 						vaultList.add(vault);
+					}else {
+						vaultRBACList.add(vault);
 					}
 
 				}
@@ -178,7 +182,7 @@ public class VaultInventoryCollector {
 		}
 
 		log.info("Target Type : {}  Total: {} ","Vault",vaultList.size());
-		return vaultList;
+		return vaults;
 	}
 
 }

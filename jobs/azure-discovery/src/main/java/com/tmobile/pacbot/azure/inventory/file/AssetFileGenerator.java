@@ -548,7 +548,9 @@ public class AssetFileGenerator {
 				}
 
 				try {
-					FileManager.generateVaultFiles(vaultInventoryCollector.fetchVaultDetails(subscription));
+					HashMap<String,List<VaultVH>> vaults=vaultInventoryCollector.fetchVaultDetails(subscription);
+					FileManager.generateVaultFiles(vaults.get("vaultList"));
+					FileManager.generateVaultRABCFiles(vaults.get("vaultRBACList"));
 				} catch (Exception e) {
 					e.printStackTrace();
 					Util.eCount.getAndIncrement();

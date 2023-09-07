@@ -270,6 +270,10 @@ public class FileManager {
 		FileGenerator.generateJson(vaultList, "azure-vaults.data");
 
 	}
+	public static void generateVaultRABCFiles(List<VaultVH> vaultRBACList) throws IOException {
+		FileGenerator.generateJson(vaultRBACList, "azure-vaultsrbac.data");
+
+	}
 
 	public static void generateWorkflowFiles(List<WorkflowVH> workflowList) throws IOException {
 		FileGenerator.generateJson(workflowList, "azure-workflows.data");
