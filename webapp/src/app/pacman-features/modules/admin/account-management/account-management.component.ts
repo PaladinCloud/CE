@@ -799,14 +799,20 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
             filtersData = response[0].map(item => { return {id: item, name: item} });
           }
           this.filterTagOptions[value] = filtersData;
-          this.filterTagLabels = {
+            this.filterTagLabels = {
               ...this.filterTagLabels,
               ...{
                   [value]: map(filtersData, 'name').sort((a, b) =>
-                      a.localeCompare(b),
+                  {
+                    if(value.toLowerCase()=="assets" || value.toLowerCase()=="violations"){
+                      return a-b;
+                    }else{
+                      return a.localeCompare(b)
+                    }
+                  }
                   ),
               },
-          };
+            };
           if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
           resolve(this.filterTagOptions[value]);
           this.storeState();

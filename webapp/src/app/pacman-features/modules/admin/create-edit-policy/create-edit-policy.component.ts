@@ -446,6 +446,7 @@
        const method = environment.updatePolicy.method;
        this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
          this.policyLoader = false;
+         this.getData();
          this.ispolicyCreationSuccess = true;
          this.enableUpdate = false;
          const notificationMessage = "Policy " + this.policyDisplayName + " updated successfully!!";
