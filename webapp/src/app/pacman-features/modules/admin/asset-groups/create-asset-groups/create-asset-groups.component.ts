@@ -31,6 +31,7 @@
  import { UploadFileService } from '../../../../services/upload-file-service';
  import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
  import { DataCacheService } from 'src/app/core/services/data-cache.service';
+ import { ActivityLogService } from 'src/app/pacman-features/services/activity-log.service';
  import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
  import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
  import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
@@ -272,6 +273,7 @@
      private activatedRoute: ActivatedRoute,
      private dataCacheService: DataCacheService,
      private assetTypeMapService: AssetTypeMapService,
+     private activityLogService : ActivityLogService,
      private assetTilesService: AssetTilesService,
      public dialog: MatDialog,
    ) {
@@ -450,6 +452,7 @@
              });
              let agDetails = {groupName : this.assetGroupName, description : this.assetGroupDesc, type : this.selectedAccountType, configuration : Object.values(criteriasBeforeUpdate)};
              delete agDetails['criteriaDetails'];
+           this.activityLogService.saveActivityLog('Asset Group',agDetails['groupName'],'delete',JSON.stringify(agDetails),'NA');
          }
          this.router.navigate(['../'], {
            relativeTo: this.activatedRoute,
@@ -916,9 +919,8 @@
          })
           const data = response[0].data;
          if(response[0]['message']==="success"){
-           if(this.submitBtn =="Confirm and Create"){
-             
-           }
+           if(this.submitBtn =="Confirm and Create")
+           this.activityLogService.saveActivityLog('Asset Group',this.assetGroupName,'create','NA',JSON.stringify(payload));
          else{
            let criteriasBeforeUpdate = {};
            for (let obj in this.configurationsBeforeEdit['configuration']) {
@@ -933,6 +935,7 @@
              });
            }
            this.configurationsBeforeEdit['configuration']=Object.values(criteriasBeforeUpdate);
+           this.activityLogService.saveActivityLog('Asset Group',this.assetGroupName,'update',JSON.stringify(this.configurationsBeforeEdit),JSON.stringify(payload));
          }
          this.notificationObservableService.postMessage(data,3000,"","check-circle");
          this.router.navigate(['../'], {
