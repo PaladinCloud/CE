@@ -241,6 +241,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   createEditUser(currentRow:any) {
+    this.getUpdatedUserRoles();
     if(currentRow){
         this.dialogHeader = "Edit User Information";
         this.emailID = currentRow["Email"].valueText;
@@ -679,8 +680,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
     
-  getUpdatedUserRoles(editableRoles){
-    this.nonRemovableChips = this.allRoles.filter(role => !editableRoles.includes(role));
+  getUpdatedUserRoles(){
+    this.nonRemovableChips = this.allRoles.filter(role => !this.editableRoles.includes(role));
     this.userRoles = this.allRoles;    
   }
 
@@ -688,7 +689,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     const action = event.action;
     const rowSelected = event.rowSelected;
     this.selectedRowIndex = event.selectedRowIndex;
-    this.getUpdatedUserRoles(this.editableRoles);
 
     this.storeState();
     this.action = action;
