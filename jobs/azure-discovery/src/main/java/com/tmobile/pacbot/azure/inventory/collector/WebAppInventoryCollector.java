@@ -62,7 +62,7 @@ public class WebAppInventoryCollector {
                 webAppList.add(webAppVH);
 
             } catch(DefaultErrorResponseException exception){
-                log.info(exception.getMessage());
+                log.error(exception.getMessage());
             }
             catch (Exception e) {
                 e.printStackTrace();
