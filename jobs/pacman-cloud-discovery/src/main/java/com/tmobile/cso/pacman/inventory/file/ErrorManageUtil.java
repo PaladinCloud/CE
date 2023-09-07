@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +42,7 @@ public class ErrorManageUtil {
     private static Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
 
 	/** The error map. */
-	private static Map<String,List<ErrorVH>> errorMap = new HashMap<>();
+	private static Map<String,List<ErrorVH>> errorMap = new ConcurrentHashMap<>();
 	
 	/**
 	 * Instantiates a new error manage util.
@@ -87,7 +89,7 @@ public class ErrorManageUtil {
 		try{
 			List<ErrorVH> errorList = errorMap.get(account);
 			if(errorList==null){
-				errorList =  new ArrayList<>();
+				errorList =  new CopyOnWriteArrayList<>();
 				errorMap.put(account, errorList);
 			}
 			ErrorVH error = new ErrorVH();
@@ -145,4 +147,35 @@ public class ErrorManageUtil {
         log.info("Return Info {}",errorCode);
         return errorCode;
     }
+
+	public static void omitOpsAlert() {
+		for(Map.Entry<String,List<ErrorVH>> entry:errorMap.entrySet())
+		{
+			List<ErrorVH> errorVHList=entry.getValue();
+			for(ErrorVH errorVH:entry.getValue())
+			{
+				if(errorVH.getType().equals("phd")&&(errorVH.getException().contains("AccessDeniedException")||errorVH.getException().contains("SubscriptionRequiredException")))
+				{
+					log.info("Omit exception :{}",errorVH.getException());
+					errorVHList.remove(errorVH);
+				}
+				if(errorVH.getType().equals("kms")&&errorVH.getException().contains("AccessDeniedException"))
+				{
+					log.info("Omit exception :{}",errorVH.getException());
+					errorVHList.remove(errorVH);
+				}
+				if(errorVH.getType().equals("s3")&&errorVH.getException().contains("AccessDeniedException"))
+				{
+					log.info("Omit exception :{}",errorVH.getException());
+					errorVHList.remove(errorVH);
+				}
+				if(errorVH.getType().equals("checks")&&errorVH.getException().contains("AWSSupportException"))
+				{
+					log.info("Omit exception :{}",errorVH.getException());
+					errorVHList.remove(errorVH);
+				}
+			}
+			if(errorVHList.isEmpty()){errorMap.remove(entry.getKey());}
+		}
+	}
 }

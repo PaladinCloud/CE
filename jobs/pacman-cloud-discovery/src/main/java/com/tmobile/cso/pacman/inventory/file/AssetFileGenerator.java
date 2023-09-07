@@ -1230,6 +1230,7 @@ public class AssetFileGenerator {
 		}
 
 		ErrorManageUtil.writeErrorFile();
+		ErrorManageUtil.omitOpsAlert();
 		if(!ErrorManageUtil.getErrorMap().isEmpty()){
 			//Below logger message is used by datadog to create notification in slack
 			log.error("Error occurred in atleast one collector for jobId : AWS-Data-Collector-Job");

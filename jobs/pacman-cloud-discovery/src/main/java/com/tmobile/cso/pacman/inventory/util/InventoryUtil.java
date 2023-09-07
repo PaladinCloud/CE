@@ -1791,8 +1791,8 @@ public class InventoryUtil {
 					buckets.add(new BucketVH(bucket, "", versionconfig, tags, null, hasWebSiteConfiguration, bucketLoggingConfiguration, null));
 				} else {
 					log.info("Exception fetching S3 Bucket", e);
-					ErrorManageUtil.uploadError(accountId, "", "s3", e.getMessage());
 				}
+				ErrorManageUtil.uploadError(accountId, "", "s3", e.getMessage());
 			}
 			catch(Exception e){
 				log.warn(expPrefix+ bucket.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
@@ -1918,13 +1918,6 @@ public class InventoryUtil {
 					log.debug("Erro fetching Advisor Check ",e);
 					ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
 				}
-			}
-		}catch(AWSSupportException e){
-			if(e.getErrorMessage().equals("Amazon Web Services Premium Support Subscription is required to use this service."))
-				log.info(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
-			else {
-				log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
-				ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
 			}
 		}catch (Exception e)
 		{
@@ -2360,11 +2353,6 @@ public class InventoryUtil {
 								kmsKey.setKey(result.getKeyMetadata());
 								try{
 									kmsKey.setTags(awskms.listResourceTags(new ListResourceTagsRequest().withKeyId(key.getKeyId())).getTags());
-								}catch (AWSKMSException e)
-								{
-									log.error(e.getMessage());
-									if(!e.getErrorCode().equals("AccessDeniedException"))
-										ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 								}
 								catch(Exception e){
 									log.debug(e.getMessage());
@@ -2372,11 +2360,6 @@ public class InventoryUtil {
 								}
 								try{
 									kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
-								}catch (AWSKMSException e)
-								{
-									log.error(e.getMessage());
-									if(!e.getErrorCode().equals("AccessDeniedException"))
-										ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 								}catch(Exception e){
 									log.debug(e.getMessage());
 									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
@@ -2390,11 +2373,6 @@ public class InventoryUtil {
 									}
 								}
 								kmsKeysList.add(kmsKey);
-							} catch (AWSKMSException e)
-							{
-								log.error(e.getMessage());
-								if(!e.getErrorCode().equals("AccessDeniedException"))
-									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 							}catch (Exception e) {
 								log.debug(e.getMessage());
 								ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
@@ -2614,10 +2592,6 @@ public class InventoryUtil {
 				log.debug(InventoryConstants.ACCOUNT + accountId +" Type : PHD "+ " >> "+phdList.size());
 				phd.put(accountId+delimiter+accountName,phdList);
 			}
-		}catch (AWSHealthException e){
-			log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
-			 if(!e.getErrorCode().equals("AccessDeniedException")||e.getErrorCode().equals("SubscriptionRequiredException"))
-				 ErrorManageUtil.uploadError(accountId,"","phd",e.getMessage());
 		}
 		catch(Exception e){
 				log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
