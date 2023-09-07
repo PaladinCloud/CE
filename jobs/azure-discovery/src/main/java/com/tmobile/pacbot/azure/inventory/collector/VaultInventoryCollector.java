@@ -176,6 +176,8 @@ public class VaultInventoryCollector {
 
 				}
 			}
+		vaults.put("vaultList",vaultList);
+		vaults.put("vaultRBACList",vaultRBACList);
 		} catch (Exception e) {
 			log.error("Error Colectting vaults ",e);
 			Util.eCount.getAndIncrement();
