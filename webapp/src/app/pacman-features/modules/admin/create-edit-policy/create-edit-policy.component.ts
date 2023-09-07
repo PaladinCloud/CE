@@ -251,6 +251,7 @@
  
    isPolicyEnableDisableAllowed = false;
    isPolicySeverityEditAllowed = false;
+   isPolicyCategoryEditAllowed = false;
    isPolicyParamsEditAllowed = false;
    isAutofixSwitchToggleAllowed = false;
    isWarningNotificationToggleAllowed = false;
@@ -450,6 +451,7 @@
          this.ispolicyCreationSuccess = true;
          this.enableUpdate = false;
          const notificationMessage = "Policy " + this.policyDisplayName + " updated successfully!!";
+         this.checkRoleBasedElementAccess();
          this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
          // this.navigateBack();
        },
@@ -643,7 +645,7 @@
             this.fixType = this.policyDetails.fixType;
             this.warningNotification = this.fixType == "non-silent";
           }
-        this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
+        this.allPolicyParams = JSON.parse(this.policyDetails.policyParams || "{}")["params"] || [];
         this.paramsList = [];
         for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
           if(JSON.parse(this.allPolicyParams[i]["isEdit"])){
@@ -833,6 +835,7 @@
       const category = this.selectedCategory?.toLowerCase();
       this.canDisableOrEnablePolicy(roleCapabilities, category);
       this.canEditSeverityOfPolicy(roleCapabilities, category);
+      this.canEditCategoryOfPolicy(roleCapabilities, category);
       this.canUpdatePolicyParams(roleCapabilities);
       this.canEditAutoFixStatus(roleCapabilities);
     }
@@ -860,6 +863,25 @@
       this.isPolicySeverityEditAllowed = isSeverityEditAllowed;
     }
   
+    canEditCategoryOfPolicy(roleCapabilities, category) {
+      let isCategoryEditAllowed = false;
+      switch(category){
+        case "security":
+          isCategoryEditAllowed = roleCapabilities.includes(UserCapabilities.SecurityCategoryUpdate);
+          break;
+        case "cost":
+          isCategoryEditAllowed = roleCapabilities.includes(UserCapabilities.CostCategoryUpdate);
+          break;
+        case "operations":
+          isCategoryEditAllowed = roleCapabilities.includes(UserCapabilities.OperationsCategoryUpdate);
+          break;
+        case "tagging":
+          isCategoryEditAllowed = roleCapabilities.includes(UserCapabilities.TaggingCategoryUpdate);
+          break;
+      }
+      this.isPolicyCategoryEditAllowed = isCategoryEditAllowed;
+    }
+    
     canUpdatePolicyParams(roleCapabilities) {
       this.isPolicyParamsEditAllowed = roleCapabilities.includes(UserCapabilities.PolicyParamUpdate);
     }
