@@ -426,7 +426,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     let url = environment.deleteAssetGroups.url; 
     let method = environment.deleteAssetGroups.method; 
     const queryParams = {
-      "ag": this.selectedAssetGroup,
+      "ag": this.selectedAssetGroup == this.assetGroupName? "aws" : this.selectedAssetGroup,
       "domain": this.currentDomain
     };
     this.adminService.executeHttpAction(url, method, {groupId: this.groupId}, {}).subscribe(response => {
@@ -435,6 +435,9 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
         this.updateComponent();
         this.notificationObservableService.postMessage(data,3000,"","check-circle");
         if(response[0].message==="success"){
+          this.assetTilesService.getAssetGroupList().subscribe(response=>{
+            console.log(" Delete Asset Group Successfully ");
+          })
           let criteriasBeforeUpdate = {};
           this.criteriaDetails?.forEach(crit => {
               if(crit.criteriaName in criteriasBeforeUpdate){

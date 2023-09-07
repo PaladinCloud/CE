@@ -193,7 +193,6 @@
      if(assetGroupName){
       this.assetTile = assetGroupName.toLowerCase();
      }
-     this.workflowService.clearAllLevels();
  
      try {
  

@@ -3,9 +3,11 @@
         <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
-    <div class="header-wrapper">
+    <div class="header-wrapper" *ngIf="groupId">
         <app-text classNames="headline-6 medium-emphasis" [text]="assetGroupDisplayName"></app-text>
-        <button class="app-button white-button" (click)="openModal()">Delete</button>
+        <div *ngIf="selectedAccountType.toLowerCase()!='system'">
+            <button class="app-button white-button" (click)="openModal()">Delete</button>
+        </div>
     </div>
     <div class="page">
         <div class="stepper">
