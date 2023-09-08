@@ -278,7 +278,7 @@ public interface IAutofixManger {
                 try {
                     // if issue is not exempted create auto fix plan
                     try {
-                        if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)) {
+                        if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))) {
                             autoFixPlan = autoFixPlanManager.createPlan(policyId, annotation.get(PacmanSdkConstants.ANNOTATION_PK), resourceId,
                                     annotation.get(PacmanSdkConstants.DOC_ID), targetType, NextStepManager.getMaxNotifications(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION)),
                                     NextStepManager.getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME)));
@@ -335,7 +335,7 @@ public interface IAutofixManger {
                     try {
                         nextStepManager.postFixAction(resourceId, AutoFixAction.EMAIL);
                         try {
-                            if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)) {
+                            if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))) {
                                 autoFixPlanManager.synchronizeAndRepublishAutoFixPlan(autoFixPlan, resourceId, policyParam);
                                 autoFixTrans.add(new AutoFixTransaction(AutoFixAction.SYNC_AUTO_FIX_PLAN, resourceId, policyId, executionId,
                                         transactionId, "auto fix plan synchronized with id" + autoFixPlan.getPlanId(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
@@ -366,7 +366,7 @@ public interface IAutofixManger {
                                     .add(result);
                             autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_FIX, resourceId, policyId,
                                     executionId, transactionId, result.toString(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
-                            if (!nextStepManager.isSilentFixEnabledForRule(policyId)) {
+                            if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))) {
 
                                 if (null != addDetailsToTransactionLogMethod) {
                                     addDetailsToLogTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject, annotation));
@@ -376,7 +376,7 @@ public interface IAutofixManger {
                                 NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_FIX, annotation);
                                 nextStepManager.postFixAction(resourceId, AutoFixAction.AUTOFIX_ACTION_FIX);
                                 try {
-                                    if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)) {
+                                    if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))) {
                                         autoFixPlanManager.synchronizeAndRepublishAutoFixPlan(autoFixPlan, resourceId, policyParam);
                                         autoFixTrans.add(new AutoFixTransaction(AutoFixAction.SYNC_AUTO_FIX_PLAN, resourceId, policyId, executionId,
                                                 transactionId, "auto fix plan synchronized with id" + autoFixPlan.getPlanId(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
@@ -394,7 +394,7 @@ public interface IAutofixManger {
                                 logger.error("unable to send email");
 
                             }
-                            if (nextStepManager.isSilentFixEnabledForRule(policyId) && null != addDetailsToTransactionLogMethod) {
+                            if (nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE)) && null != addDetailsToTransactionLogMethod) {
                                 silentautoFixTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject, annotation));
                                 silentFixAnnotations.add(annotation);
                             }
@@ -416,7 +416,7 @@ public interface IAutofixManger {
         updateAutofixPlannedFlag(policyParam,issueList);
         autoFixPlanManager.releaseResourfes();
         //Silent fix send Digest email
-        if (!silentautoFixTrans.isEmpty() && nextStepManager.isSilentFixEnabledForRule(policyId)) {
+        if (!silentautoFixTrans.isEmpty() && nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))) {
                 NotificationUtils.triggerSilentAutofixNotification(silentFixAnnotations,policyParam);
          //   MailUtils.sendCommonFixNotification(silentautoFixTrans, policyParam, resourceOwner, targetType);
         }
