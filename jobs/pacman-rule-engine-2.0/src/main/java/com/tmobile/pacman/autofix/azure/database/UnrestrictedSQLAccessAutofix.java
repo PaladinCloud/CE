@@ -40,9 +40,8 @@ public class UnrestrictedSQLAccessAutofix extends BaseFix {
         for (SqlServer sqlServer : sqlServers) {
             List<SqlDatabase> sqlDatabases = azure.sqlServers().databases().listBySqlServer(sqlServer);
             for (SqlDatabase sqlDatabase : sqlDatabases) {
-                String id = sqlDatabase.databaseId();
-                String sqlDbId = id.startsWith("/") ? id.substring(1) : id;
-                if (StringUtils.compare(resourceId, sqlDbId) == 0) {
+                String dbName = sqlDatabase.name();
+                if (StringUtils.compare(resourceId.substring(resourceId.lastIndexOf("/")+1), dbName) == 0) {
                     sqlServerInstance = sqlServer;
                     break;
                 }
