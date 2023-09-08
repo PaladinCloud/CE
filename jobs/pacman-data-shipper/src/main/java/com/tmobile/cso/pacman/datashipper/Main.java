@@ -30,8 +30,7 @@ public class Main implements Constants {
 
     private static String dataSource = null;
     private static String srcFolder = null;
-    // private static String accessKey = null;
-    //private static String secretKey = null;
+
     private static String srcInventoryFolderName = null;
 
     @Value("${base.account}")
@@ -122,21 +121,13 @@ public class Main implements Constants {
      * @param awsCredentialProvider
      */
     public static void doBackUpAndCleanUpInventory(String dataSource, String srcFolder, AWSCredentialProvider awsCredentialProvider) {
-        //accessKey = System.getenv("ACCESS_KEY");
-        //secretKey = System.getenv("SECRET_KEY");
         LOGGER.info("Inside doBackUpAndCleanUpInventory Method:{}");
         LOGGER.debug(dataSource);
         LOGGER.debug(srcFolder);
 
         try {
-//            String account = "500559730414";
-//            String region  = "us-east-1";
-//            s3Role         =  "saasdev_ro";
-//            s3Bucket       = "saasdev-data-us-east-1-500559730414";
-//            s3Processed    =  "backup";
             BasicSessionCredentials credentials = awsCredentialProvider.getCredentials(account, region, s3Role);
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-
             srcInventoryFolderName = srcFolder;
             String backupFolderName = dataSource + "-" + s3Processed;
             //back up the shipped files

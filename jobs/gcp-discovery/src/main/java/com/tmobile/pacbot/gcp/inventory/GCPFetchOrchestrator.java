@@ -74,7 +74,7 @@ public class GCPFetchOrchestrator {
             log.info("Start : FIle Generation");
             fileGenerator.generateFiles(allProjects, filePath);
             log.info("End : FIle Generation");
-
+            //commenting out below code since below action will be handled by Shipper
 //            log.info("Start : Backup Current Files");
 //            s3Uploader.backUpFiles(s3Bucket, s3Region, s3Data, s3Processed + "/" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
 //            log.info("End : Backup Current Files");
