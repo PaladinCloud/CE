@@ -52,7 +52,7 @@
                             </app-dropdown>
                         </div>
                         <div class="dropdown">
-                            <app-dropdown [required]="isRequired" [optionImage]="true"
+                            <app-dropdown [class.isDisabled]="!isPolicyCategoryEditAllowed" [required]="isRequired" [optionImage]="true"
                                 [items]="policyCategories" placeholder="Category"
                                 [selectedItem]="selectedCategory" name="category"
                                 (selected)="onSelectCategory($event)">
