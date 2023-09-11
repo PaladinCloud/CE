@@ -797,3 +797,29 @@ class RedHatDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
         ]
     })
     # PROCESS = need_to_enable_gcp()
+
+class LongRunningLambdaFunction(LambdaFunctionResource):
+    function_name = "longrunningjob"
+    role = LambdaRole.get_output_attr('arn')
+    handler = BATCH_JOB_FILE_NAME + ".lambda_handler"
+    runtime = "python3.8"
+    s3_bucket = BucketStorage.get_output_attr('bucket')
+    s3_key = UploadLambdaSubmitJobZipFile.get_output_attr('id') 
+
+    DEPENDS_ON = [SubmitAndRuleEngineJobDefinition, BatchJobsQueue,SubmitAndQualysJobDefinition]
+
+class LongRunningJob(CloudWatchEventRuleResource):
+    name = "long-running-job"
+    schedule_expression = "cron(0 */3 * * ? *)"
+    DEPENDS_ON = [LongRunningLambdaFunction]
+
+class LongRunningJobLambdaPermission(LambdaPermission):
+    statement_id = "AllowExecutionFromTenableVMVulnerabilityCollectorEvent"
+    action = "lambda:InvokeFunction"
+    function_name = LongRunningLambdaFunction.get_output_attr('function_name')
+    principal = "events.amazonaws.com"
+    source_arn = LongRunningJob.get_output_attr('arn')
+
+class LongRunningTarget(CloudWatchEventTargetResource):
+    rule = LongRunningJob.get_output_attr('name')
+    arn = LongRunningLambdaFunction.get_output_attr('arn')
