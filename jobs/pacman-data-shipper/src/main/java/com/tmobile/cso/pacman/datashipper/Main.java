@@ -65,13 +65,30 @@ public class Main implements Constants {
             String[] paramArray = obj.split("[:]");
             params.put(paramArray[0], paramArray[1]);
         });
-        shipData(params);
+        try {
+            LOGGER.info("shipData() method is going to be executed");
+            shipData(params);
+            LOGGER.info("shipData() method is executed sucessfully");
+        }
+        catch (AmazonS3Exception s3Exception){
+            LOGGER.error("s3Exception Occured while Shipping the data", s3Exception.getMessage());
+
+        }
+        catch (Exception exception){
+            LOGGER.error("exception Occured while Shipping the data", exception.getMessage());
+        }
+
         //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
         try {
+            LOGGER.info("Back Up logic code is going to be executed");
             AWSCredentialProvider awsCredentialProvider = new AWSCredentialProvider();
             dataSource = params.get("datasource");
             srcFolder = params.get("s3.data");
+            LOGGER.debug("dataSource:{}",dataSource);
+            LOGGER.debug("srcFolder:{}",srcFolder);
+            LOGGER.debug("Invoking/Calling doBackUpAndCleanUpInventory() method");
             doBackUpAndCleanUpInventory(dataSource, srcFolder, awsCredentialProvider);
+            LOGGER.info("Execution of doBackUpAndCleanUpInventory() method is done");
         } catch (AmazonS3Exception s3Exception) {
             LOGGER.error("Exception Occured while doing Backup and Clean Up Inventory", s3Exception.getMessage());
         } catch (Exception exception) {
