@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.microsoft.azure.CloudException;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.resources.Subscription;
@@ -260,7 +261,7 @@ public interface IAutofixManger {
 //                        }
 
                         if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))
-                                && !NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EXEMPTED, annotation)) {
+                                && !NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EXEMPTED, annotation,null)) {
                             logger.error("unable to send email");
                         }
                     }
@@ -321,7 +322,7 @@ public interface IAutofixManger {
 //                        continue; // notification was not sent, skip further
 //                        // execution
 //                    } getting here
-                    if (!NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EMAIL, annotation)) {
+                    if (!NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EMAIL, annotation,null)) {
                         String msg = String.format("unable to send email for vulnerable resource %s, hence skipping this pass", resourceId);
                         logger.error(msg);
                         new SlackMessageRelay().sendMessage(CommonUtils.getPropValue(PacmanSdkConstants.PAC_MONITOR_SLACK_USER), msg);
@@ -373,7 +374,7 @@ public interface IAutofixManger {
                                 }
 //                                MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId, "",
 //                                        AutoFixAction.AUTOFIX_ACTION_FIX, addDetailsToLogTrans, annotation);
-                                NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_FIX, annotation);
+                                NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_FIX, annotation,null);
                                 nextStepManager.postFixAction(resourceId, AutoFixAction.AUTOFIX_ACTION_FIX);
                                 try {
                                     if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)) {
@@ -400,13 +401,26 @@ public interface IAutofixManger {
                             }
                             autoFixCounter++;
                         } catch (Exception e) {
+                            if(e instanceof CloudException){
+                                Gson gson=new Gson();
+                                String reasonForAutofixFailing="";
+                                Map<String,Object> errorMap = gson.fromJson(e.getMessage(),Map.class);
+                                Map<String,Object> innerErrorMap = errorMap.get("error")!=null?(Map<String,Object>)errorMap.get("error"):null;
+                                if(innerErrorMap!=null && innerErrorMap.get("code")!=null && innerErrorMap.get("code").toString().equalsIgnoreCase("AuthorizationFailed")){
+                                    reasonForAutofixFailing = innerErrorMap.get("message").toString();
+                                }
+                                else{
+                                    reasonForAutofixFailing = e.getMessage();
+                                }
+                                NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_FAILED, annotation,reasonForAutofixFailing);
+                            }
                             logger.error(String.format("unable to execute auto fix for %s  will not fix at this time", resourceId),
                                     e);
                             // continue with next bucket
                             continue;
                         }
                     } else if (AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY == autoFixAction) {
-                        NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY, annotation);
+                        NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY, annotation,null);
                         logger.info("Auto fix remainder email sent");
                     }
                 }

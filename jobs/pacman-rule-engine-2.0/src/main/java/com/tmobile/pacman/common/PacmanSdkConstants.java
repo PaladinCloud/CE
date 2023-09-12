@@ -674,4 +674,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String APPLICATION_PREFIX = "application.prefix";
     String ROLE_PREFIX = "role/";
     String ROLE_SUFFIX = "_ro";
+
+    String AUTOFIX_FAILED_TO_APPLY = "Autofix Failed To Apply For A Resource";
+    String AUTOFIX_FAILED_EVENT_NAME= "Autofix Failed To Apply For Resource %s";
 }

@@ -1,10 +1,12 @@
 package com.tmobile.pacman.autofix.azure.nsg;
 
 import com.amazonaws.util.StringUtils;
+import com.google.gson.Gson;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.network.NetworkSecurityGroup;
 import com.microsoft.azure.management.network.NetworkSecurityRule;
+import com.microsoft.azure.CloudException;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.autofix.BaseFix;

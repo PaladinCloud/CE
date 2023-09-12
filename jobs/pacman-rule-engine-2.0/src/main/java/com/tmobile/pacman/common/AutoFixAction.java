@@ -43,7 +43,8 @@ public enum AutoFixAction {
  /** The do nothing. */
  DO_NOTHING("doNothing"),
 /** unable to determine */
-UNABLE_TO_DETERMINE("unableToDetermine"), CREATE_AUTO_FIX_PLAN("createAutoFixPlan"), SUSPEND_AUTO_FIX_PLAN("suspendAutoFixPlan"), SYNC_AUTO_FIX_PLAN("syncAutoFixPlan");
+UNABLE_TO_DETERMINE("unableToDetermine"), CREATE_AUTO_FIX_PLAN("createAutoFixPlan"),
+    SUSPEND_AUTO_FIX_PLAN("suspendAutoFixPlan"), SYNC_AUTO_FIX_PLAN("syncAutoFixPlan"), AUTOFIX_FAILED("autofixFailed");
 
 
     /** The action. */

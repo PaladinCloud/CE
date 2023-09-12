@@ -8,6 +8,7 @@ import com.tmobile.pacman.dto.PolicyViolationNotificationRequest;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.utils.Constants;
 import com.tmobile.pacman.dto.AutofixNotificationRequest;
+import org.opensearch.common.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +91,7 @@ public class NotificationUtils {
         return notificationBaseRequest;
     }
 
-    public static boolean triggerAutoFixNotification(Map<String, String> policyParam, AutoFixAction autofixActionEmail, Map<String,String> annotation) {
+    public static boolean triggerAutoFixNotification(Map<String, String> policyParam, AutoFixAction autofixActionEmail, Map<String,String> annotation, String autofixFailedReason) {
         try {
             List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
             Gson gson = new Gson();
@@ -108,6 +109,9 @@ public class NotificationUtils {
             autofixNotificationRequest.setSeverity(policyParam.get("severity").toUpperCase());
             autofixNotificationRequest.setWaitingTime(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
             autofixNotificationRequest.setIssueId(annotation.get(PacmanSdkConstants.ANNOTATION_PK));
+            if(!Strings.isNullOrEmpty(autofixFailedReason)){
+                autofixNotificationRequest.setAutofixFailedReason(autofixFailedReason);
+            }
 
             //populate tags information into additionalInfo field.
             Map<String,String> tagsKeyAndValueMap = new HashMap<>();
@@ -145,6 +149,13 @@ public class NotificationUtils {
                 notificationBaseRequest.setEventName(String.format(AUTOFIX_EXEMPTION_EVENT_NAME, policyParam.get(POLICY_DISPLAY_NAME)));
                 notificationBaseRequest.setEventDescription(String.format(AUTOFIX_EXEMPTION_EVENT_NAME, policyParam.get(POLICY_DISPLAY_NAME)));
                 autofixNotificationRequest.setAction(AutoFixAction.AUTOFIX_ACTION_EXEMPTED);
+                autofixNotificationRequest.setIssueIdLink(hostName + ISSUE_ID_UI_PATH + annotation.get(ANNOTATION_PK) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
+                autofixNotificationRequest.setDiscoveredOn(getDateTimeInUserFormat(annotation.get(CREATED_DATE)));
+            } else if (autofixActionEmail == AutoFixAction.AUTOFIX_FAILED) {
+                notificationBaseRequest.setSubject(AUTOFIX_FAILED_TO_APPLY);
+                notificationBaseRequest.setEventName(String.format(AUTOFIX_FAILED_EVENT_NAME, annotation.get(RESOURCE_ID)));
+                notificationBaseRequest.setEventDescription(String.format(AUTOFIX_FAILED_EVENT_NAME, annotation.get(RESOURCE_ID)));
+                autofixNotificationRequest.setAction(AutoFixAction.AUTOFIX_FAILED);
                 autofixNotificationRequest.setIssueIdLink(hostName + ISSUE_ID_UI_PATH + annotation.get(ANNOTATION_PK) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
                 autofixNotificationRequest.setDiscoveredOn(getDateTimeInUserFormat(annotation.get(CREATED_DATE)));
             }

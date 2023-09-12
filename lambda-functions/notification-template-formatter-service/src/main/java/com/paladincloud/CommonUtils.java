@@ -119,6 +119,9 @@ public class CommonUtils {
                 else if(Constants.AutoFixAction.AUTOFIX_ACTION_EXEMPTED.toString().equalsIgnoreCase(action)) {
                     templateName= "autofixExemptedForViolation.html";
                 }
+                else if(Constants.AutoFixAction.AUTOFIX_ACTION_EXEMPTED.toString().equalsIgnoreCase(action)) {
+                    templateName= "autofixFailedTemplate.html";
+                }
                 break;
         }
         return templateName;
