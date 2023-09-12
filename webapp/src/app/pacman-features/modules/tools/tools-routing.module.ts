@@ -14,7 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { TOOLS_ROUTES } from './../../../shared/constants/routes';
+import { TOOLS_ROUTES } from './tools-routes';
 const routes: Routes = TOOLS_ROUTES;
 
 @NgModule({

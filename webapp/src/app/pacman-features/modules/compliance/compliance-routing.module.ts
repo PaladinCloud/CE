@@ -14,7 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { COMPLIANCE_ROUTES } from '../../../shared/constants/routes';
+import { COMPLIANCE_ROUTES } from './compliance-routes';
 const routes: Routes = COMPLIANCE_ROUTES;
 
 @NgModule({
