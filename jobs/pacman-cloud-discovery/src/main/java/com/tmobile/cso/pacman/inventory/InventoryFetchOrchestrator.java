@@ -99,10 +99,10 @@ public class InventoryFetchOrchestrator {
 			log.info("Start : Asset Discovery and File Creation");
 			fileGenerator.generateFiles(accounts,skipRegions,filePath);
 			log.info("End : Asset Discovery and File Creation");
-			
-			log.info("Start : Backup Current Files");
-			s3Uploader.backUpFiles(s3Bucket, s3Region, s3Data, s3Processed+ "/"+ new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
-			log.info("End : Backup Current Files");
+			//commenting out below code since below action will be handled by Shipper
+//			log.info("Start : Backup Current Files");
+//			s3Uploader.backUpFiles(s3Bucket, s3Region, s3Data, s3Processed+ "/"+ new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
+//			log.info("End : Backup Current Files");
 		
 			log.info("Start : Upload Files to S3");
 			s3Uploader.uploadFiles(s3Bucket,s3Data,s3Region,filePath);

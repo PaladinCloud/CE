@@ -62,14 +62,14 @@ export class PolicyViolationSummaryService {
             dataValue.push(data.severityInfo[i].count);
         }
         const dataObj = {
-            'color': ['#d40325', '#f75c03', '#ffb00d', '#ffe00d'],
+            'color': ["#D14938", "#F58F6F", "#F5B66F", "#506EA7"],
             'data': dataValue,
             'legend': ['Critical', 'High', 'Medium', 'Low'],
             'legendTextcolor': '#000',
             'totalCount': data.total,
             'link': true,
             'styling': {
-             'cursor': 'pointer'
+            'cursor': 'pointer'
             }
          };
         return dataObj;

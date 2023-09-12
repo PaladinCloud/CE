@@ -74,10 +74,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
   tableScrollTop=0;
   selectedRowIndex;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Cloud Type': 0.5};
+  columnWidths = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Source': 0.5};
   columnNamesMap = {
     targettypedisplayname: 'Asset Type',
-    _entitytype: 'assetTypeValue'
+    _entitytype: 'assetTypeValue',
+    _cloudType: 'Source'
   };
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -190,7 +191,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
             const apiColName =  find(this.filterTypeOptions, {
               optionName: label,
             })["optionValue"];
-            if(apiColName) this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
+            if(apiColName && this.columnNamesMap[apiColName.replace(".keyword","")]==undefined) {
+              this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
+            }
           }  
         })
         this.columnNamesMap = {...this.columnNamesMap};
@@ -220,7 +223,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     this.tableData = state?.data ?? [];
     this.tableDataLoaded = true;
-    this.displayedColumns = ['Asset ID', 'Asset Name', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Cloud Type'];
+    this.displayedColumns = ['Asset ID', 'Asset Name', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Source'];
     this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
     this.tableScrollTop = state?.tableScrollTop;
 
@@ -755,7 +758,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
       newData.push(newObj);
     });
-
+    
     this.columnNamesMap = columnNamesMap;
     return newData;
   }
@@ -810,6 +813,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  handleFilterSearchTextChange(event){
+    if(event.selectedFilterCategory=="Asset ID") this.changeFilterType(event.selectedFilterCategory, event.searchText);
   }
 
   handlePopClick(rowText) {
@@ -947,7 +954,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     })
   }
 
-  changeFilterType(value) {
+  changeFilterType(value, searchText=''){
     return new Promise((resolve) => {
     try {
       this.currentFilterType = find(this.filterTypeOptions, {
@@ -967,7 +974,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
         ag: this.selectedAssetGroup,
         domain: this.selectedDomain,
-        filter: filtersToBePassed
+        filter: filtersToBePassed,
+        searchText
       }
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
@@ -995,12 +1003,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
                       a.localeCompare(b),
                   ),
               },
-          };          
-          if(value.toLowerCase()=="age"){
-            const filterValues = this.filterTagLabels[value].splice(1);
-            filterValues.sort((a, b) => a-b);
-            this.filterTagLabels[value] = [...this.filterTagLabels[value], ...filterValues];
-          }
+          };
           resolve(this.filterTagOptions[value]);
           this.storeState();
         });
@@ -1053,8 +1056,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     try {
       if (this.currentFilterType) {
         const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
-          return v;
+          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+          return v?v["id"]:value;
         });
         this.utils.addOrReplaceElement(
           this.filters,

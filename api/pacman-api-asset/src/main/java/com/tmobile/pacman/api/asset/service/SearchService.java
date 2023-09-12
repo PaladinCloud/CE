@@ -33,7 +33,7 @@ public interface SearchService {
      * @return the search result
      * @throws SearchException the search exception
      */
-    SearchResult search(SearchCriteria criteria) throws Exception;
+    SearchResult search(SearchCriteria criteria) throws SearchException;
 
     /**
      * Gets the search categories such as Assets, etc. which apply to the particular domain.

@@ -1,7 +1,8 @@
-[![Latest release](https://img.shields.io/badge/release-2.0.2-blue)](https://github.com/PaladinCloud/CE/releases/latest)
+[![Latest release](https://img.shields.io/badge/release-3.0.0-blue)](https://github.com/PaladinCloud/CE/releases/latest)
 [![Build Status](https://github.com/PaladinCloud/CE/blob/master/wiki/images/gitter.svg)](https://github.com/PaladinCloud/CE/actions?query=branch%3Amaster)
 [![GitHub license](https://github.com/PaladinCloud/CE/blob/master/wiki/license_apache.svg)](https://github.com/PaladinCloud/CE/blob/master/LICENSE)
-[![Slack](https://img.shields.io/badge/chat-chat%20on%20Slack-9cf)](http://paladincloudcommunity.slack.com/)
+[![Slack](https://img.shields.io/badge/chat-on%20Slack-9cf)](http://paladincloudcommunity.slack.com/)
+[![Slack](https://img.shields.io/badge/chat-on%20Discord-9cf)](https://discord.gg/xvCFD29Jj4)
 [![Community Survey](https://img.shields.io/badge/community-survey-9cf)](https://paladincloud.io/paladin-cloud-survey/)
 
 ![Paladin Cloud, Inc](https://github.com/PaladinCloud/Rev1/raw/master/wiki/images/banner_paladincloud.png)

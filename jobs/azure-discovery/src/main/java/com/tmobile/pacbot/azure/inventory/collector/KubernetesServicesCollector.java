@@ -64,9 +64,17 @@ public class KubernetesServicesCollector {
                     String kubernatesClusterName = kubernetesClusterObject.get("name").getAsString()!=null && !kubernetesClusterObject.get("name").getAsString().isEmpty()?kubernetesClusterObject.get("name").getAsString():"";
                     logger.info("kubernatesClusterName: {}", kubernatesClusterName);
                     kubernetesClustersVH.setName(kubernatesClusterName);
-                    if(kubernetesCluster.addonProfiles()!=null && kubernetesCluster.addonProfiles().get("kubeDashboard")!=null) {
-                        kubernetesClustersVH.setDashBoardEnabled( kubernetesCluster.addonProfiles().get("kubeDashboard").enabled());
+                    try{
+                        if(kubernetesCluster.addonProfiles()!=null && kubernetesCluster.addonProfiles().get("kubeDashboard")!=null) {
+                            kubernetesClustersVH.setDashBoardEnabled( kubernetesCluster.addonProfiles().get("kubeDashboard").enabled());
+                        }
                     }
+                    catch(Exception exception){
+                        //Data alert will not be published for the below error.
+                        logger.error(" Following error occurred while fetching add on profiles for kubernetes cluster - {}, This can be due to no addOnProfiles" +
+                                "present for cluster. ",exception.getMessage());
+                    }
+
                     kubernetesClustersVH.setSubscription(subscription.getSubscriptionId());
                     kubernetesClustersVH.setSubscriptionName(subscription.getSubscriptionName());
                     kubernetesClustersVH.setRegion(Util.getRegionValue(subscription,kubernetesClusterObject.get("location").getAsString()));

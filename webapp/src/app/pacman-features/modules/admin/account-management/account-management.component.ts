@@ -66,30 +66,30 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   tableImageDataMap = {
     aws:{
         image: "aws-color",
-        imageOnly: true
+        imageOnly: false
     },
     azure:{
       image: "azure-color",
-      imageOnly: true
+      imageOnly: false
    }, gcp:{
     image: "gcp-color",
-    imageOnly: true
+    imageOnly: false
    },
     aqua:{
       image: "aqua-color",
-      imageOnly: true
+      imageOnly: false
     },
     qualys: {
       image: "qualys-color",
-      imageOnly: true
+      imageOnly: false
     },
-    redhat: {
+    "red hat": {
       image: "redhat-color",
-      imageOnly: true
+      imageOnly: false
     },
     tenable: {
       image: "tenable-color",
-      imageOnly: true
+      imageOnly: false
     }
     }
 

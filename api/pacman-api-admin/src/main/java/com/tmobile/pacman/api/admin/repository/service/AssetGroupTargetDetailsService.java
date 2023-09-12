@@ -53,4 +53,5 @@ public interface AssetGroupTargetDetailsService {
 	public  String getGcpFlagValueFromDB();
 
 	public  String getAzureFlagValueFromDB();
+	List<String> getAllConfiguredSources();
 }

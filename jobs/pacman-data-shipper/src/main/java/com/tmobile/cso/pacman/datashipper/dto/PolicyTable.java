@@ -12,6 +12,7 @@ public class PolicyTable {
  private String assetgroup;
  private String category;
  private String status;
+ private String policyFrequency;
  
  
  
@@ -75,7 +76,13 @@ public String getStatus() {
 public void setStatus(String status) {
 	this.status = status;
 }
+public String getPolicyFrequency() {
+	return policyFrequency;
+}
+public void setPolicyFrequency(String policyFrequency) {
+	this.policyFrequency = policyFrequency;
+}
  
- 
+
  
 }

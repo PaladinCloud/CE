@@ -500,13 +500,11 @@
                     this.showLoader = false;
                     this.seekdata = true;
                     this.issueBlocks = false;
-                    this.tableErrorMessage = 'noDataAvailable';
                   }
                 } catch (e) {
                   this.showLoader = false;
                   this.seekdata = true;
                   this.issueBlocks = false;
-                  this.tableErrorMessage = 'noDataAvailable';
                 }
 
                 // this.getRecommend();
@@ -515,7 +513,6 @@
                 this.showLoader = false;
                 this.seekdata = true;
                 this.issueBlocks = false;
-                this.tableErrorMessage = 'apiResponseError';
               }
             );
         }
@@ -694,12 +691,9 @@
               ) {
                 const enityData = response.response[0];
                 this.chunckTags(enityData);
-              } else {
-                this.tableErrorMessage = 'noDataAvailable';
               }
             },
             error => {
-              this.tableErrorMessage = 'apiResponseError';
             }
           );
       } catch (e) {
@@ -776,6 +770,7 @@
             },
             error => {
               this.errorValue = -1;
+              this.tableErrorMessage = "noDataAvailable";
             }
           );
       } catch (e) {
@@ -836,6 +831,9 @@
         this.totalRows = this.violationAuditLogs.length;
         if (this.lastPaginator > this.totalRows) {
           this.lastPaginator = this.totalRows;
+          this.tableErrorMessage = '';
+        }else{
+          this.tableErrorMessage = 'noDataAvailable';
         }
       } catch (e) {
         this.logger.log('error', e);
@@ -913,14 +911,22 @@
             .getData(Url, Method, payload, queryParams)
             .subscribe(
               response => {
-                this.upateStatusOnAddOrRevokeException('Open');
-                this.clearViolationsPreservedData();
-                setTimeout(() => {
-                  this.exceptionAdded = !this.exceptionAdded;
-                  this.checkRevoke = false;
-                  this.showLoadcompleteRevoke = true;
-                  this.getIssueAudit();
-                }, 100);
+                if(response.message==='success'){
+                  this.clearViolationsPreservedData();
+                  setTimeout(() => {
+                    this.checkRevoke = false;
+                    this.showLoadcompleteRevoke = true;
+                  }, 100);
+                  this.updateComponent();
+                }else{              
+                  this.dialog.open(DialogBoxComponent, {
+                    width: '600px',
+                    data: {
+                      title: "Error",
+                      message: `${Object.values(response?.data?.failureReason).toString()}`
+                    }
+                  })
+                }
               },
               error => {
                 setTimeout(() => {
@@ -1041,13 +1047,21 @@
           .getData(exceptionUrl, exceptionMethod, payload, queryParams)
           .subscribe(
             response => {
-              this.clearViolationsPreservedData();
-              this.check = true;
-              this.showLoadcomplete = true;
-              this.showTopSection = false;
-              this.exceptionAdded = !this.exceptionAdded;
-              this.getIssueAudit();
-              this.upateStatusOnAddOrRevokeException('Exempt');
+              if(response.message==='success'){
+                this.clearViolationsPreservedData();
+                this.check = true;
+                this.showLoadcomplete = true;
+                this.showTopSection = false;
+                this.updateComponent();
+              }else{              
+                this.dialog.open(DialogBoxComponent, {
+                  width: '600px',
+                  data: {
+                    title: "Error",
+                    message: `${Object.values(response?.data?.failureReason).toString()}`
+                  }
+                })
+              }
             },
             error => {
               this.logger.log("error test", error);
@@ -1105,23 +1119,21 @@
           .getData(exceptionUrl, exceptionMethod, payload, queryParams)
           .subscribe(
             response => {
-              this.clearViolationsPreservedData();
-              this.check = true;
-              this.showLoadcomplete = true;
-              this.showTopSection = false;
               if(response?.data?.status?.toLowerCase() == "success"){              
-                this.upateStatusOnAddOrRevokeException('Exempt');
-                this.exceptionAdded = !this.exceptionAdded;
-                this.getIssueAudit();
+                this.clearViolationsPreservedData();
+                this.check = true;
+                this.showLoadcomplete = true;
+                this.showTopSection = false;
+                this.updateComponent();
               }else{              
                 this.dialog.open(DialogBoxComponent, {
                   width: '600px',
                   data: {
-                    title: `Error - ${Object.values(response?.data?.failureReason).toString()}`,
+                    title: "Error",
+                    message: `${Object.values(response?.data?.failureReason).toString()}`
                   }
                 })
               }
-              this.updateComponent();
             },
             error => {
               this.logger.log("error test", error);
@@ -1183,80 +1195,6 @@
             } else {
               this.emailObj.to.required = true;
             }
-        }
-      } catch (e) {
-        this.logger.log('error', e);
-      }
-    }
-
-    upateStatusOnAddOrRevokeException(status) {
-      try {
-
-        let statusIcon;
-
-        if (status && status.toLowerCase() === 'exempt') {
-          statusIcon = '../assets/icons/Lock-Closed.svg';
-        } else if (status && status.toLowerCase() === 'open') {
-          statusIcon = '../assets/icons/Lock-Open.svg';
-        }
-
-        let obj;
-        this.issueTopblocks = [];
-        obj = {
-          header: 'Status',
-          footer: status, // 'Exempted' | 'Open'
-          img: statusIcon
-        };
-        this.issueTopblocks.push(obj);
-
-        if (this.issueBlocks.severity !== undefined) {
-          obj = {
-            header: 'Severity',
-            footer: this.issueBlocks.severity,
-            img: '../assets/icons/violations-'+this.issueBlocks.severity.toLowerCase()+'-icon.svg'
-          };
-          this.issueTopblocks.push(obj);
-        }
-
-        if (this.issueBlocks.resourceType !== undefined) {
-          const iconKeys = Object.keys(ICONS.awsResources);
-          if (iconKeys.indexOf(this.issueBlocks.resourceType) > -1) {
-            obj = {
-              header: 'Asset Type',
-              footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
-              img: ICONS.awsResources[this.issueBlocks.resourceType]
-            };
-          } else {
-            obj = {
-              header: 'Asset Type',
-              footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
-              img: ICONS.awsResources[`unknown`]
-            };
-          }
-          this.issueTopblocks.push(obj);
-        }
-
-        if (this.issueBlocks.policyCategory !== undefined) {
-          if (
-            this.issueBlocks.policyCategory === 'governance' ||
-            this.issueBlocks.policyCategory === 'Governance'
-          ) {
-            obj = {
-              header: 'Rule Category',
-              footer: this.issueBlocks.policyCategory,
-              img: '../assets/icons/Governance.svg'
-            };
-          } else {
-            obj = {
-              header: 'Rule Category',
-              footer: this.issueBlocks.policyCategory,
-              img: '../assets/icons/Security.svg'
-            };
-          }
-          this.issueTopblocks.push(obj);
-        }
-        if (this.issueTopblocks.length) {
-          this.showTopSection = true;
         }
       } catch (e) {
         this.logger.log('error', e);

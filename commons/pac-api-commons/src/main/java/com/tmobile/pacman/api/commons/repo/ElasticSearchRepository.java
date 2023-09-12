@@ -1921,12 +1921,12 @@ public class ElasticSearchRepository implements Constants {
 				.append(cloudType).append("/").append(SEARCH);
 		StringBuilder requestBody = null;
 		String accountId;
-		if(cloudType.equalsIgnoreCase("aws")){
-			accountId="accountid";
+		if (cloudType.equalsIgnoreCase("gcp")) {
+			accountId = "projectId";
 		} else if(cloudType.equalsIgnoreCase("azure")){
 			accountId="subscriptionId";
 		} else{
-			accountId="projectId";
+			accountId = "accountid";
 		}
 		String body = "{"
 				+ "\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}}"
@@ -2029,8 +2029,7 @@ public class ElasticSearchRepository implements Constants {
 	}
 	public Map<String, Object> buildQuery(final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
 										  final HashMultimap<String, Object> shouldFilter, final String searchText,
-										  final Map<String, Object> mustTermsFilter,Map<String, List<String>> matchPhrasePrefix,
-										  String assetGroup, Set<String> fieldsSet) throws Exception {
+										  final Map<String, Object> mustTermsFilter,Map<String, List<String>> matchPhrasePrefix, List<String> fieldsForSearch) {
 
 		Map<String, Object> queryFilters = Maps.newHashMap();
 		Map<String, Object> boolFilters = Maps.newHashMap();
@@ -2050,13 +2049,23 @@ public class ElasticSearchRepository implements Constants {
 		}
 
 		if (isNotNullOrEmpty(mustFilter) && (!Strings.isNullOrEmpty(searchText))) {
+
 			List<Map<String, Object>> must = getFilter(mustFilter, mustTermsFilter,matchPhrasePrefix);
-			List<String> allFieldsList = new ArrayList(fieldsSet);
-			int numberOfFields=fieldsSet.size();
-			boolFilters.put(MUST, must);
-			if(numberOfFields>0){
-				must.add(getMultiMatchShouldClause(allFieldsList,searchText,numberOfFields));
+			Map<String, Object> match = Maps.newHashMap();
+			Map<String, Object> all = Maps.newHashMap();
+			// If the string is enclosed in quotes, do a match phrase instead of
+			// match
+			match.put("multi_match",all);
+			all.put("type","phrase_prefix");
+			all.put("fields",fieldsForSearch);
+
+			if (searchText.startsWith("\"") && searchText.endsWith("\"")) {
+				all.put(QUERY, searchText.substring(1, searchText.length() - 1));
+			} else {
+				all.put(QUERY, searchText);
 			}
+			must.add(match);
+			boolFilters.put(MUST, must);
 		} else if (isNotNullOrEmpty(mustFilter)) {
 			boolFilters.put(MUST, getFilter(mustFilter, mustTermsFilter,matchPhrasePrefix));
 		}
@@ -2089,76 +2098,5 @@ public class ElasticSearchRepository implements Constants {
 		}
 		queryFilters.put(BOOL, boolFilters);
 		return queryFilters;
-	}
-
-	public static Set<String> getAllFieldsOfAssetGroup(String ag,String esHost,int esPort) throws Exception {
-		String responseDetails = PacHttpUtils.getHttpGet(protocol +"://"+ esHost + ":" + esPort + "/" + ag+"/_mapping?pretty", new HashMap<>());
-		Gson gson=new Gson();
-		Map<String,Object> map =gson.fromJson(responseDetails,Map.class);
-		Set<String> allFieldsSet=new HashSet<>();
-		map.entrySet().stream().forEach(obj -> {
-			if(obj.getValue() instanceof Map){
-				Map<String,Object> m1=(Map<String,Object>)obj.getValue();
-				if(m1.get("mappings") instanceof Map){
-					Map<String,Object> m2=(Map<String,Object>)m1.get("mappings");
-					if(m2.get("properties") instanceof Map){
-						Map<String,Object> m3=(Map<String,Object>)m2.get("properties");
-						m3.entrySet().stream().forEach(obj1->{
-							if(obj1.getKey().equalsIgnoreCase("tags")) {
-								Map<String, Object> m4 = (Map<String, Object>) obj1.getValue();
-								if (m4.get("properties") instanceof Map) {
-									Map<String, Object> m5 = (Map<String, Object>) m4.get("properties");
-									m5.entrySet().stream().forEach(obj3 -> allFieldsSet.add("tags." + obj3.getKey()));
-								}
-							}
-							if(!obj1.getKey().endsWith("_relations"))
-								allFieldsSet.add(obj1.getKey());
-						});
-					}
-				}
-			}
-		} );
-		return allFieldsSet;
-	}
-
-
-	public static Map<String,Object> getMultiMatchShouldClause(List<String> allFieldsList, String searchText, int numberOfFields){
-		if(numberOfFields>500){
-			Map<String,Object> boolShouldMap = new HashMap<>();
-			Map<String,Object> shouldMap = new HashMap<>();
-			List<Map<String,Object>> shouldList=new ArrayList<>();
-			for(int i=0;i<=numberOfFields/500;i++){
-				int count = i==(numberOfFields/500)?(numberOfFields%500+(i*500)):((i+1)*500);
-				if(count==0)
-					break;
-				List<String> fieldList = allFieldsList.subList(0+(i*500),count);
-				shouldList.add(addMultiMatchClauseToFilter( fieldList, searchText));
-			}
-			shouldMap.put(SHOULD,shouldList);
-			boolShouldMap.put(BOOL,shouldMap);
-			return boolShouldMap;
-		}
-		else{
-			List<String> fieldList = new ArrayList(allFieldsList);
-			return addMultiMatchClauseToFilter( fieldList, searchText);
-		}
-	}
-
-	private static Map<String, Object> addMultiMatchClauseToFilter(List<String> fieldsForSearch, String searchText){
-		Map<String, Object> match = Maps.newHashMap();
-		Map<String, Object> all = Maps.newHashMap();
-		// If the string is enclosed in quotes, do a match phrase instead of
-		// match
-		match.put("multi_match",all);
-		all.put("type","phrase_prefix");
-		all.put("fields",fieldsForSearch);
-		all.put("lenient",true);
-
-		if (searchText.startsWith("\"") && searchText.endsWith("\"")) {
-			all.put(QUERY, searchText.substring(1, searchText.length() - 1));
-		} else {
-			all.put(QUERY, searchText);
-		}
-		return match;
 	}
 }

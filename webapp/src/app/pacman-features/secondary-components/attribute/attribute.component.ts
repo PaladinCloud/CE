@@ -12,67 +12,66 @@
  * limitations under the License.
  */
 
- import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
- import { LoggerService } from '../../../shared/services/logger.service';
- import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
- import {ActivatedRoute, Router} from '@angular/router';
- import {UtilsService} from '../../../shared/services/utils.service';
- import {WorkflowService} from '../../../core/services/workflow.service';
- 
- @Component({
-   selector: 'app-attribute',
-   templateUrl: './attribute.component.html',
-   styleUrls: ['./attribute.component.css'],
-   providers: [
-     LoggerService,
-     ErrorHandlingService
-   ]
- })
- export class AttributeComponent implements OnInit {
-   @Input() data: any;
-   @Input() pageLevel: number;
-   @Input() dataObj: any;
-   @Input() breadcrumbPresent;
-   @Output() assetCloudType = new EventEmitter();
-   urlToRedirect: any = '';
- 
-   dataShow = false;
-   dataShowforAssets = false;
-   showData = false;
- 
-   dataObjArray = [];
-   relatedAssetList = [];
-   constructor(
-     private logger: LoggerService, private errorHandling: ErrorHandlingService, private router: Router,
-     private activatedRoute: ActivatedRoute,
-     private utilityService: UtilsService, private workflowService: WorkflowService) {
- }
- 
-   ngOnInit() {
-     this.urlToRedirect = this.router.routerState.snapshot.url;
-     this.massageData(this.dataObj);
-   }
- 
- /* Function for massaging the raw data into array */
- 
-   massageData(data) {
-     let dataObjContainer = [];
-     const keys = Object.keys(data);
-     let keyValues, cloudType;
-     let obj = {};
-     for (let i = 0; i < keys.length; i++) {
-        keyValues = data[keys[i]];
-        keyValues.sort((a,b)=>a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
-        for (let i = 0; i < keyValues.length; i++) {
-         let { name, value } = keyValues[i];
-         if(typeof(value)=="string"){
-           keyValues[i].value = [value];
-         }
-         if (name.toLowerCase() === "cloud type") {
-           cloudType = value[0];
-           break;
-         }
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {UtilsService} from '../../../shared/services/utils.service';
+import {WorkflowService} from '../../../core/services/workflow.service';
+
+@Component({
+  selector: 'app-attribute',
+  templateUrl: './attribute.component.html',
+  styleUrls: ['./attribute.component.css'],
+  providers: [
+    LoggerService,
+    ErrorHandlingService
+  ]
+})
+export class AttributeComponent implements OnInit {
+  @Input() data: any;
+  @Input() pageLevel: number;
+  @Input() dataObj: any;
+  @Input() breadcrumbPresent;
+  @Output() assetCloudType = new EventEmitter();
+  urlToRedirect: any = '';
+
+  dataShow = false;
+  dataShowforAssets = false;
+  showData = false;
+
+  dataObjArray = [];
+  relatedAssetList = [];
+  constructor(
+    private logger: LoggerService, private errorHandling: ErrorHandlingService, private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private utilityService: UtilsService, private workflowService: WorkflowService) {
+}
+
+  ngOnInit() {
+    this.urlToRedirect = this.router.routerState.snapshot.url;
+    this.massageData(this.dataObj);
+  }
+
+/* Function for massaging the raw data into array */
+
+  massageData(data) {
+    let dataObjContainer = [];
+    const keys = Object.keys(data);
+    let keyValues, cloudType;
+    let obj = {};
+    for (let i = 0; i < keys.length; i++) {
+       keyValues = data[keys[i]];
+       keyValues.sort((a,b)=>a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
+       for (let i = 0; i < keyValues.length; i++) {
+        let { name, value } = keyValues[i];
+        if(typeof(value)=="string"){
+          keyValues[i].value = [value];
         }
+        if (name.toLowerCase() === "source" || name.toLowerCase() == "_cloudType") {
+          cloudType = value[0];
+        }
+      }
        obj = {
          'name': keys[i],
          'values': keyValues
@@ -130,26 +129,20 @@
      }
  
    }
-    /**
-    * This function navigates the page mentioned  with a ruleID
-    */
-   navigatePage(event) {
-     try {
-           let resourceType = '';
-           const resourceID = event;
-           if(resourceID.includes("vol")){
-              resourceType = 'volume'
-           }else{
-             resourceType = 'sg'
-           }
-           this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
-         this.router.navigate(['../../', resourceType, resourceID],
-           {relativeTo: this.activatedRoute, queryParamsHandling: "merge"}
-           );
-     } catch (error) {
-       this.logger.log('error', error);
-     }
-   }
-   /* navigatePage function ends here */
- }
-
+  /**
+   * This function navigates the page mentioned  with a ruleID
+   */
+  navigatePage(event) {
+    try {
+          let resourceType = event.assetType;
+          const resourceID = event.value[0];
+          this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
+          this.router.navigate(['../../', resourceType, resourceID],
+            {relativeTo: this.activatedRoute, queryParamsHandling: "merge"}
+            );
+    } catch (error) {
+      this.logger.log('error', error);
+    }
+  }
+  /* navigatePage function ends here */
+}

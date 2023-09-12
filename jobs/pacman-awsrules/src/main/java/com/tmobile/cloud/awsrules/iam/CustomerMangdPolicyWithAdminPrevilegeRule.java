@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -74,20 +76,29 @@ public class CustomerMangdPolicyWithAdminPrevilegeRule extends BasePolicy {
 					logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
 					throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 				});
-		
-		Optional<String> opt = Optional.ofNullable(resourceAttributes)
-				.map(resource -> checkValidation(ruleParam, resource));
-		
-		PolicyResult ruleResult = Optional.ofNullable(ruleParam)
-				.filter(param -> opt.isPresent())
-				.map(param -> buildFailureAnnotation(param, opt.get()))
-				.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 
-
-		logger.debug("========CustomerManagedPolicyWithAdminPrevilegeRule ended=========");
-		return ruleResult;
-
-	}
+		try{
+			if(resourceAttributes!=null){
+				String description = checkValidation(ruleParam, resourceAttributes);
+				PolicyResult ruleResult = Optional.ofNullable(ruleParam)
+						.filter(param -> !Strings.isNullOrEmpty(description))
+						.map(param -> buildFailureAnnotation(param, description))
+						.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+				logger.debug("========CustomerManagedPolicyWithAdminPrevilegeRule ended=========");
+				return ruleResult;
+			}
+		}
+		catch(NoSuchEntityException exception){
+			logger.error("NoSuchEntityException thrown..", exception);
+			Annotation annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+			annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
+			annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
+			annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+			return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
+					annotation);
+		}
+		return null;
+    }
 
 	@Override
 	public String getHelpText() {
@@ -121,7 +132,11 @@ public class CustomerMangdPolicyWithAdminPrevilegeRule extends BasePolicy {
 
 			if (isAdminPrevilege)
 				description = "IAM customer managed policy with full admin previlege found. Detach the policy from user,role and group !!";
-		} catch (Exception e) {
+		}
+		catch(NoSuchEntityException e){
+			throw e;
+		}
+		catch (Exception e) {
 			logger.error("unable to determine", e);
 			throw new RuleExecutionFailedExeption("unable to determine" + e);
 		}

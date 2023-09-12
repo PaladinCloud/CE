@@ -47,6 +47,7 @@ public class SecurityGroupNotUsedRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(SecurityGroupNotUsedRule.class);
 	private static final String ES_NETWORK_INTERFACE_INDEX = "/aws/eni_secgroups/_search";
+	private static final String ES_LAUNCH_TEMPLATE_INDEX = "/aws/launchtemplate/_search";
 
 	/**
 	 * The method will get triggered from Rule Engine with following parameters
@@ -101,9 +102,11 @@ public class SecurityGroupNotUsedRule extends BasePolicy {
 				.equals(resourceAttributes.get(PacmanRuleConstants.GROUP_NAME))) {
 			groupId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.GROUP_ID));
 			String resource;
+			String launchTemplateResource;
 			try {
 				resource = PacmanUtils.getQueryFromElasticSearch(groupId, ES_NETWORK_INTERFACE_INDEX, esUrl, ruleParam);
-				if (StringUtils.isNullOrEmpty(resource)) {
+				launchTemplateResource= PacmanUtils.getQueryFromElasticSearch(groupId, ES_LAUNCH_TEMPLATE_INDEX, esUrl, ruleParam);
+				if (StringUtils.isNullOrEmpty(resource) && StringUtils.isNullOrEmpty(launchTemplateResource)) {
 					annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
 					annotation.put(PacmanSdkConstants.DESCRIPTION, "Unused security group found!!");
 					annotation.put(PacmanRuleConstants.SEVERITY, severity);

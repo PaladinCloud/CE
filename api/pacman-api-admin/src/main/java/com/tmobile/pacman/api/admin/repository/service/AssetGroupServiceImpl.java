@@ -717,19 +717,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 
 	@Override
 	public List<Map<String, Object>> getCloudTypeObject() throws Exception {
-
-		String isGcpEnabled=assetGroupTargetDetailsService.getGcpFlagValueFromDB();
-		String isAzureEnabled=assetGroupTargetDetailsService.getAzureFlagValueFromDB();
-		List<String>cloudTypes=new ArrayList<>(Arrays.asList(cloudProvider.split(",")));
-
-		if(isGcpEnabled.equalsIgnoreCase("true")){
-			cloudTypes.add("gcp");
-		}
-
-		if(isAzureEnabled.equalsIgnoreCase("true")){
-			cloudTypes.add("azure");
-		}
-
+		List<String> cloudTypes = assetGroupTargetDetailsService.getAllConfiguredSources();
 		List<Map<String ,Object>> cloudProviderObjList=new ArrayList<>();
 
 		String aggsStrByTag = "\"%s\":{\"terms\":{\"field\":\"%s\",\"size\":10000}}";

@@ -35,6 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class CheckUnusedAMIRuleTest {
 
     private static final String EC2_URL = "/aws/ec2/_search";
+    private static final String LAUNCH_TEMPLATE_URL = "/aws/launchtemplate/_search";
     Map<String, String> ruleParam;
     Map<String, String> resourceAttribute;
     @InjectMocks
@@ -87,6 +88,16 @@ public class CheckUnusedAMIRuleTest {
                 any(), any(), any(), any())).thenReturn(null);
         PolicyResult policyResult = checkUnusedAMIRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
+    }
+
+    @Test
+    public void executeSuccessTestForLaunchTemplate() throws Exception {
+
+        resourceAttribute.put(PacmanRuleConstants.PUBLIC_VALUE, "true");
+        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + LAUNCH_TEMPLATE_URL), any(),
+                any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
+        PolicyResult ruleResult = checkUnusedAMIRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
     }
 
     @Test

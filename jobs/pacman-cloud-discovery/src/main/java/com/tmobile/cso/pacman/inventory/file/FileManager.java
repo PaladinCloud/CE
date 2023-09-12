@@ -68,49 +68,7 @@ import com.amazonaws.services.securityhub.model.DescribeHubResult;
 import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
-import com.tmobile.cso.pacman.inventory.vo.AMIVH;
-import com.tmobile.cso.pacman.inventory.vo.ASGVH;
-import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
-import com.tmobile.cso.pacman.inventory.vo.AccountVH;
-import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
-import com.tmobile.cso.pacman.inventory.vo.BackupVaultVH;
-import com.tmobile.cso.pacman.inventory.vo.BucketVH;
-import com.tmobile.cso.pacman.inventory.vo.CheckVH;
-import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
-import com.tmobile.cso.pacman.inventory.vo.CloudFrontVH;
-import com.tmobile.cso.pacman.inventory.vo.CloudTrailVH;
-import com.tmobile.cso.pacman.inventory.vo.CloudWatchLogsVH;
-import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
-import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
-import com.tmobile.cso.pacman.inventory.vo.DataStreamVH;
-import com.tmobile.cso.pacman.inventory.vo.DeliveryStreamVH;
-import com.tmobile.cso.pacman.inventory.vo.DocumentDBVH;
-import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
-import com.tmobile.cso.pacman.inventory.vo.ECSClusterVH;
-import com.tmobile.cso.pacman.inventory.vo.ECSTaskDefinitionVH;
-import com.tmobile.cso.pacman.inventory.vo.EKSVH;
-import com.tmobile.cso.pacman.inventory.vo.EbsVH;
-import com.tmobile.cso.pacman.inventory.vo.EfsVH;
-import com.tmobile.cso.pacman.inventory.vo.ElastiCacheVH;
-import com.tmobile.cso.pacman.inventory.vo.ElasticsearchDomainVH;
-import com.tmobile.cso.pacman.inventory.vo.ErrorVH;
-import com.tmobile.cso.pacman.inventory.vo.GroupVH;
-import com.tmobile.cso.pacman.inventory.vo.IAMCertificateVH;
-import com.tmobile.cso.pacman.inventory.vo.KMSKeyVH;
-import com.tmobile.cso.pacman.inventory.vo.LambdaVH;
-import com.tmobile.cso.pacman.inventory.vo.LoadBalancerVH;
-import com.tmobile.cso.pacman.inventory.vo.PhdVH;
-import com.tmobile.cso.pacman.inventory.vo.RedshiftVH;
-import com.tmobile.cso.pacman.inventory.vo.Resource;
-import com.tmobile.cso.pacman.inventory.vo.SGRuleVH;
-import com.tmobile.cso.pacman.inventory.vo.SQSVH;
-import com.tmobile.cso.pacman.inventory.vo.SSLCertificateVH;
-import com.tmobile.cso.pacman.inventory.vo.SnapshotVH;
-import com.tmobile.cso.pacman.inventory.vo.TargetGroupVH;
-import com.tmobile.cso.pacman.inventory.vo.UserVH;
-import com.tmobile.cso.pacman.inventory.vo.VideoStreamVH;
-import com.tmobile.cso.pacman.inventory.vo.VpcVH;
-import com.tmobile.cso.pacman.inventory.vo.RegistryVH;
+import com.tmobile.cso.pacman.inventory.vo.*;
 
 /**
  * The Class FileManager.
@@ -301,7 +259,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-cloudwatchalarm.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ecr.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-vpc-cidrblock-association.data",InventoryConstants.OPEN_ARRAY, false);
-
+		FileGenerator.writeToFile("aws-launchtemplate.data",InventoryConstants.OPEN_ARRAY, false);
 	}
 
 	public static void finalise() throws IOException{
@@ -472,8 +430,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-cloudwatchalarm.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ecr.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-vpc-cidrblock-association.data",InventoryConstants.CLOSE_ARRAY, true);
-
-
+		FileGenerator.writeToFile("aws-launchtemplate.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -2070,5 +2027,14 @@ public class FileManager {
 		fieldNames = "repository.repositoryArn`repository.registryId`imageDetail.imagePushedAt`imageDetail.artifactMediaType`imageDetail.imageTags";
 		keys = "discoverydate`accountid`accountname`region`repositoryArn`registryId`imagePushedAt`artifactMediaType`tags";
 		FileGenerator.generateJson(fetchRepositories, fieldNames, "aws-ecr.data",keys);
+	}
+
+	public static void generateLaunchTemplateFiles(Map<String,List<LaunchTemplateVH>> launchTemplateMap) throws IOException {
+		String fieldNames;
+		String keys;
+
+		fieldNames ="launchTemplateId`launchTemplateName`imageId`securityGroupIds";
+		keys ="discoverydate`accountid`accountname`region`launchTemplateId`launchTemplateName`imageId`securityGroupIds";
+		FileGenerator.generateJson(launchTemplateMap, fieldNames, "aws-launchtemplate.data",keys);
 	}
 }

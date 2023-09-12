@@ -277,6 +277,8 @@ public interface PacmanSdkConstants {
 	/** The status unknown. */
 	String STATUS_UNKNOWN="unknown";
 
+	String STATUS_UNKNOWN_MESSAGE = "unable to determine for this resource";
+
 	/** The error desc key. */
 	String ERROR_DESC_KEY = "errorDesc";
 

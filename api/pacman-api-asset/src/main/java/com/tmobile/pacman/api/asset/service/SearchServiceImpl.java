@@ -15,19 +15,20 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
-import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.tmobile.pacman.api.asset.AssetConstants;
@@ -52,16 +53,8 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     SearchRepository searchRepository;
 
-    @Autowired
-    ElasticSearchRepository esRepository;
-
-    @Value("${elastic-search.host}")
-    private String esHost;
-    @Value("${elastic-search.port}")
-    private int esPort;
-
     @Override
-    public SearchResult search(SearchCriteria criteria) throws Exception {
+    public SearchResult search(SearchCriteria criteria) throws SearchException {
 
         SearchFilter incomingFilter = criteria.getFilter();
 
@@ -82,8 +75,7 @@ public class SearchServiceImpl implements SearchService {
         ExecutorService executors = Executors.newFixedThreadPool(Constants.TWO);
         List<SearchResult> candidateResult = new ArrayList<>();
         List<String> candidateSearchCategory = new ArrayList<>();
-        Set<String> allFieldsSet = esRepository.getAllFieldsOfAssetGroup(criteria.getAg(),esHost,esPort);
-        ThreadLocalUtil.fieldSet.set(allFieldsSet);
+
         executors.execute(() -> {
             long start = System.currentTimeMillis();
             LOGGER.debug("Start Getting Search Results...........");

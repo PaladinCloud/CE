@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -94,10 +95,12 @@ public class IAMRoleWithUnapprovedAccessRule extends BasePolicy {
 		ruleParamIam.put(PacmanSdkConstants.REGION, Regions.DEFAULT_REGION.getName());
 
 		Map<String, Object> map = null;
-		Annotation annotation = null;
+		Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
 		AmazonIdentityManagementClient identityManagementClient = null;
 		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
 		String roleName = resourceAttributes.get(ROLE_NAME);
+		annotation.put(ROLE_NAME, roleName);
+
 		String unapprovedActionsParam = ruleParam.get(PacmanRuleConstants.UNAPPROVED_IAM_ACTIONS);
 		String tagsSplitter = ruleParam.get(PacmanSdkConstants.SPLITTER_CHAR);
 
@@ -132,13 +135,12 @@ public class IAMRoleWithUnapprovedAccessRule extends BasePolicy {
 				}
 				if (!unapprovedAttachedAndInlineActionList.isEmpty()) {
 					String  unapprovedAttachedAndInlineActionString = "["+String.join(",", unapprovedAttachedAndInlineActionList) + "]";
-					annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
 					annotation.put(PacmanSdkConstants.DESCRIPTION,
 							"Unapproved IAM role has " + unapprovedAttachedAndInlineActionString);
 					issue.put(PacmanRuleConstants.VIOLATION_REASON,
 							"Unapproved IAM role has " + unapprovedAttachedAndInlineActionString);
 					issue.put("privileges", unapprovedActionsParam);
-					annotation.put(ROLE_NAME, roleName);
+
 					issueList.add(issue);
 					annotation.put("issueDetails", issueList.toString());
 
@@ -149,9 +151,15 @@ public class IAMRoleWithUnapprovedAccessRule extends BasePolicy {
 				}
 			}
 
-		} catch (Exception e) {
-			logger.error(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
-			throw new InvalidInputException(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
+		}
+		catch(NoSuchEntityException exception){
+			logger.error("NoSuchEntityException thrown..", exception);
+			return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
+					annotation);
+		}
+		catch (Exception e) {
+				logger.error(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
+				throw new InvalidInputException(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
 		}
 		logger.debug("========IAMRoleWithUnapprovedAccessRule ended=========");
 		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);

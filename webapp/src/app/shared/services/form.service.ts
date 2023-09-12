@@ -33,6 +33,7 @@ export class FormService {
       startsWithLetter: 'This field must start with a letter',
       invalidField: 'This field contains invalid characters',
       invalidURL: 'Please enter a valid Url',
+      maxlength: 'This field is exceeding maximum characters',
       invalid_characters: (matches: any[]) => {
 
         let matchedCharacters = matches;
