@@ -69,6 +69,7 @@ import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.cso.pacman.inventory.vo.*;
+import com.tmobile.pacman.commons.dto.ErrorVH;
 
 /**
  * The Class FileManager.

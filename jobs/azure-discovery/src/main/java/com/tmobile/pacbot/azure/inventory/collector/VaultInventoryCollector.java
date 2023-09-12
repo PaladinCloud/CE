@@ -9,6 +9,7 @@ import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.keyvault.Key;
 import com.microsoft.azure.management.keyvault.Secret;
 import com.microsoft.azure.management.keyvault.Vault;
+import com.tmobile.pacbot.azure.inventory.ErrorManageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +127,7 @@ public class VaultInventoryCollector {
 		} catch (KeyVaultErrorException e) {
 			//if permission is denied to get list of secrets, then do not raise any violation
 			vaultVH.setSecretExpirationDate(new HashSet<>());
+			ErrorManageUtil.uploadError(vaultVH.getSubscription(),vaultVH.getRegion(),"vault",e.getMessage());
 			log.error(e.getMessage());
 		}
 	}
@@ -147,6 +149,7 @@ public class VaultInventoryCollector {
 		}catch (KeyVaultErrorException e) {
 			//if permission is denied to get list of keys, then do not raise any violation
 			vaultVH.setKeyExpirationDate(new HashSet<>());
+			ErrorManageUtil.uploadError(vaultVH.getSubscription(),vaultVH.getRegion(),"vault",e.getMessage());
 			log.error(e.getMessage());
 		}
 
