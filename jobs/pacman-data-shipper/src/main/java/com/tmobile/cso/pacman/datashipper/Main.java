@@ -78,23 +78,7 @@ public class Main implements Constants {
             LOGGER.error("exception Occured while Shipping the data", exception.getMessage());
         }
 
-        //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
-        try {
-            LOGGER.info("Back Up logic code is going to be executed");
-            AWSCredentialProvider awsCredentialProvider = new AWSCredentialProvider();
-            dataSource = params.get("datasource");
-            srcFolder = params.get("s3.data");
-            LOGGER.debug("dataSource:{}",dataSource);
-            LOGGER.debug("srcFolder:{}",srcFolder);
-            LOGGER.debug("Invoking/Calling doBackUpAndCleanUpInventory() method");
-            doBackUpAndCleanUpInventory(dataSource, srcFolder, awsCredentialProvider);
-            LOGGER.info("Execution of doBackUpAndCleanUpInventory() method is done");
-        } catch (AmazonS3Exception s3Exception) {
-            LOGGER.error("Exception Occured while doing Backup and Clean Up Inventory", s3Exception.getMessage());
-        } catch (Exception exception) {
-            LOGGER.error("Exception Occured while doing Backup and Clean Up Inventory", exception.getMessage());
-        }
-        System.exit(0);
+         System.exit(0);
     }
 
     /**
@@ -125,6 +109,23 @@ public class Main implements Constants {
         errorList.addAll(new AssetsCountManager().populateAssetCount());
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
+        //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
+        try {
+            LOGGER.info("Back Up logic code is going to be executed");
+            AWSCredentialProvider awsCredentialProvider = new AWSCredentialProvider();
+            dataSource = params.get("datasource");
+            srcFolder = params.get("s3.data");
+            LOGGER.debug("dataSource:{}",dataSource);
+            LOGGER.debug("srcFolder:{}",srcFolder);
+            LOGGER.debug("Invoking/Calling doBackUpAndCleanUpInventory() method");
+            doBackUpAndCleanUpInventory(dataSource, srcFolder, awsCredentialProvider);
+            LOGGER.info("Execution of doBackUpAndCleanUpInventory() method is done");
+        } catch (AmazonS3Exception s3Exception) {
+            LOGGER.error("Exception Occured while doing Backup and Clean Up Inventory", s3Exception.getMessage());
+        } catch (Exception exception) {
+            LOGGER.error("Exception Occured while doing Backup and Clean Up Inventory", exception.getMessage());
+        }
+
         return status;
     }
 
