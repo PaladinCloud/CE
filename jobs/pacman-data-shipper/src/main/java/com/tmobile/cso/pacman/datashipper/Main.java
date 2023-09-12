@@ -67,7 +67,7 @@ public class Main implements Constants {
         });
         try {
             LOGGER.info("shipData() method is going to be executed");
-             shipData(params);
+            shipData(params);
             LOGGER.info("shipData() method is executed sucessfully");
         }
         catch (AmazonS3Exception s3Exception){
@@ -77,7 +77,8 @@ public class Main implements Constants {
         catch (Exception exception){
             LOGGER.error("exception Occured while Shipping the data", exception.getMessage());
         }
-        System.exit(0);
+
+         System.exit(0);
     }
 
     /**
@@ -156,7 +157,7 @@ public class Main implements Constants {
             deleteFiles(s3Client, s3Bucket, srcInventoryFolderName);
             LOGGER.info("End : Cleaning Up Source Inventory  as Part of Shipper Job", srcInventoryFolderName);
         } catch (AmazonS3Exception s3Exception) {
-            LOGGER.error("s3Exception Occured while doing Backup and Clean Up Inventory", s3Exception.getMessage());
+            LOGGER.error("Exception Occured while doing Backup and Clean Up Inventory", s3Exception.getMessage());
         } catch (Exception exception) {
             LOGGER.error("Exception Occured while doing Backup and Clean Up Inventory", exception.getMessage());
 
