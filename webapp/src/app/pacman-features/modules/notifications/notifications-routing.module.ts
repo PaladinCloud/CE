@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NOTIFICATIONS_ROUTES } from 'src/app/shared/constants/routes';
+import { NOTIFICATIONS_ROUTES } from './notifications-routes';
 
 const routes: Routes = NOTIFICATIONS_ROUTES;
 
