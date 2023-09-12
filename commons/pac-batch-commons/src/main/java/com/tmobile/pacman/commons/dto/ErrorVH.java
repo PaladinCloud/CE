@@ -13,12 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package com.tmobile.cso.pacman.inventory.vo;
 
+package com.tmobile.pacman.commons.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * The Class ErrorVH.
  */
+@JsonSerialize
 public class ErrorVH {
 
 	/** The type. */

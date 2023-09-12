@@ -27,6 +27,8 @@ import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
+import static com.tmobile.pacbot.azure.inventory.ErrorManageUtil.triggerNotificationforPermissionDenied;
+
 @Component
 public class AssetFileGenerator {
 
@@ -795,7 +797,7 @@ public class AssetFileGenerator {
 
 			log.info("Finished Discovery for sub {}", subscription);
 		}
-
+		triggerNotificationforPermissionDenied();
 		//Below logger message is used by datadog to create notification in slack
 		if(Util.eCount.get()>0){
 			log.error("Error occurred in atleast one collector for jobId : Azure-Data-Collector-Job");
