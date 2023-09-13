@@ -70,7 +70,6 @@ public class Main implements Constants {
         try {
             LOGGER.info("shipData() method is going to be executed");
             shipData(params);
-            //
             LOGGER.info("shipData() method is executed sucessfully");
         }
         catch (AmazonS3Exception s3Exception){
