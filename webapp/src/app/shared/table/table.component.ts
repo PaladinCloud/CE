@@ -93,6 +93,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         optionValue: string;
     }[];
 
+    @Input() hasMoreData: boolean = false;
+
     private _filteredArray: FilterItem[];
     @Output() actionSelected = new EventEmitter();
     @Output() deleteFilters = new EventEmitter<{
@@ -607,7 +609,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         // visible height + pixel scrolled >= total height
         const target = event.target as HTMLDivElement;
         if (target.offsetHeight + target.scrollTop >= target.scrollHeight - 10) {
-            if (this.data.length < this.totalRows && !this.isDataLoading && this.data.length > 0) {
+            if ((this.data.length < this.totalRows || this.hasMoreData) && !this.isDataLoading && this.data.length > 0) {
                 this.tableScrollTop = target.scrollTop;
                 this.nextPageCalled.emit(this.tableScrollTop);
                 this.isDataLoading = true;

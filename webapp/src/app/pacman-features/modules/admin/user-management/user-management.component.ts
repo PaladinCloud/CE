@@ -60,7 +60,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   lastName: string;
   selectedRoles: string[];
 
-  paginatorSize: number = 60;
+  paginatorSize: number = 25;
+  hasMoreDataToLoad: boolean = false;
   isLastPage: boolean;
   isFirstPage: boolean;
   totalPages: number;
@@ -813,7 +814,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     }
 
     this.errorMessage = '';
-    this.tableDataLoaded = false;
 
     try{
       this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
@@ -832,10 +832,12 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             }else{
               this.tableData = processedData;
             }
+            this.totalRows = (this.pageNumber)*this.paginatorSize;
+            this.hasMoreDataToLoad = true;
           }else{
-            this.errorMessage = "noDataAvailable";
+            if(!isNextPageCalled) this.errorMessage = "noDataAvailable";
+            this.hasMoreDataToLoad = false;
           }
-          this.totalRows = tableData.length;
           this.dataLoaded = true;
         }
       },
@@ -882,7 +884,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
 
   nextPage(e) {
     try {
-        this.pageNumber++;
+        this.pageNumber += this.paginatorSize;
         this.showLoader = true;
         this.getUserList(true);
     } catch (error) {
