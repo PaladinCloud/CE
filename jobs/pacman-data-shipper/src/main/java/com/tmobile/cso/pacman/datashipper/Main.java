@@ -165,9 +165,9 @@ public class Main implements Constants {
 
         try {
             //local testing
-            account = "500559730414";
-            region  =  "us-east-1";
-            s3Role  =  "saasdev_ro";
+           // account = "500559730414";
+            //region  =  "us-east-1";
+            //s3Role  =  "saasdev_ro";
             LOGGER.debug("printing account");
             LOGGER.debug(account);
             LOGGER.debug("printing region");
