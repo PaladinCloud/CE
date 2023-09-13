@@ -3047,8 +3047,6 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
  VALUES ('s3.processed','backup-redhatacs','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
  
- /* This recored need to be inseted using plugin screen. We need to remove this insert statement in next release */
- INSERT IGNORE INTO cf_Accounts values ('RedHat ACS','acs-cgcv4rlkik9vj0kg0rk0','0','0','configured','redhat','admin@paladicloud.io','07/08/2023 10:51:33');
  
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
  VALUES('deployment','Deployment','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
