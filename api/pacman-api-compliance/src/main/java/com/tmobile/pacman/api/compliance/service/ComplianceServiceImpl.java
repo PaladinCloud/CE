@@ -737,7 +737,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     .filter(x -> policyName.isEmpty() || policyName.contains(x.get(PolicyComplianceFilter.POLICY_NAME.filter)))
                     .filter(x -> severity.isEmpty() || severity.contains(x.get(PolicyComplianceFilter.SEVERITY.filter)))
                     .filter(x -> category.isEmpty() || category.contains(x.get(PolicyComplianceFilter.CATEGORY.filter)))
-                    .filter(x -> compliance.isEmpty() || isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance))
+                    .filter(x -> compliance.size() ==0 || (Long.valueOf(x.get(PolicyComplianceFilter.ASSETS_SCANNED.filter).toString()) >0 && isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance)))
                     .filter(x -> violations.isEmpty() || isViolationsInRange(Long.valueOf(x.get(PolicyComplianceFilter.VIOLATIONS.filter).toString()), violations))
                     .filter(x -> assetType.isEmpty() || assetType.contains(x.get(PolicyComplianceFilter.ASSET_TYPE.filter)))
                     .filter(x -> autoFixAvailable.size() ==0 || autoFixAvailable.size() ==2 || autoFixAvailable.contains(x.get(PolicyComplianceFilter.AUTOFIX.filter).toString()))
@@ -765,7 +765,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         for(Map<String, Object> map: rangeList){
             double min = Double.parseDouble(map.get(Constants.MIN).toString());
             double max = Double.parseDouble(map.get(Constants.MAX).toString());
-            if(percent >= min && percent <= max){
+            if(percent >= min && percent <= max ){
                 return true;
             }
         }
