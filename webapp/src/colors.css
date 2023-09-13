@@ -1,0 +1,176 @@
+:root {
+
+  /**
+   Global variables 
+  */
+
+  /* Brand Color */
+  --color-brand-n4: #002054;
+  --color-brand-n3: #002A6E;
+  --color-brand-n2: #003387;
+  --color-brand-n1: #003DA1;
+  --color-brand-p0: #0047BB;
+  --color-brand-p1: #2C70DE;
+  --color-brand-p2: #437EDE;
+  --color-brand-p3: #739EE5;
+  --color-brand-p4: #90B4F0;
+  --color-brand-p5: #ABC7F5; 
+  --color-brand-p6: #CCDFFF;
+  --color-brand-p7: #E5EFFF;
+  --color-brand-p8: #FAFCFF;
+  
+
+  /* Neutral Color */
+  --color-neutral-n4: #1B242C;
+  --color-neutral-n3: #272E35;
+  --color-neutral-n2: #3A424A;
+  --color-neutral-n1: #4A545E;
+  --color-neutral-p0: #555F6D;
+  --color-neutral-p1: #7E8B99;
+  --color-neutral-p2: #9EA8B3;
+  --color-neutral-p3: #CFD6DD;
+  --color-neutral-p4: #DEE3E7;
+  --color-neutral-p5: #E9ECEF;
+  --color-neutral-p6: #F0F3F5;
+  --color-neutral-p7: #F5F7F9;
+  --color-neutral-p8: #FBFCFD;
+
+
+  /* Red Color */
+  --color-red-n4: #4A0D0D;
+  --color-red-n3: #6F2020;
+  --color-red-n2: #952D2D;
+  --color-red-n1: #A13636;
+  --color-red-p0: #C53434;
+  --color-red-p1: #F26464;
+  --color-red-p2: #F49090;
+  --color-red-p3: #FCCFCF;
+  --color-red-p4: #FCD9D9;
+  --color-red-p5: #FEE6E6;
+  --color-red-p6: #FFEBEB;
+  --color-red-p7: #FEF5F5;
+  --color-red-p8: #FFFAFA;
+
+
+  /* Orange Color */
+  --color-orange-n4: #482909;
+  --color-orange-n3: #7A4510;
+  --color-orange-n2: #A05C1C;
+  --color-orange-n1: #B4610E;
+  --color-orange-p0: #F59638;
+  --color-orange-p1: #F6A351;
+  --color-orange-p2: #FEB872;
+  --color-orange-p3: #FFD4A8;
+  --color-orange-p4: #FCDEC0;
+  --color-orange-p5: #FFE8D1;
+  --color-orange-p6: #FFF0E0;
+  --color-orange-p7: #FFF5EB;
+  --color-orange-p8: #FFFCFA;
+
+
+  /* Green Color */
+  --color-green-n4: #062D1B;
+  --color-green-n3: #0E4E30;
+  --color-green-n2: #196742;
+  --color-green-n1: #1E714A;
+  --color-green-p0: #1D7C4D;
+  --color-green-p1: #4AA578;
+  --color-green-p2: #75CC9E;
+  --color-green-p3: #C2EBD5;
+  --color-green-p4: #C6F1DA;
+  --color-green-p5: #D8F8E7;
+  --color-green-p6: #E6F9EF;
+  --color-green-p7: #F4FBF7;
+  --color-green-p8: #FBFEFC;
+
+  /* Surface color */
+  --color-white: #fff;
+
+
+  /**
+   Semantic variables 
+  */
+
+  /* Content */
+  --content-primary: var(--color-neutral-n3);
+  --content-secondary: var(--color-neutral-p0);
+  --content-tertiary: var(--color-neutral-p1);
+  --content-disabled: var(--color-neutral-p2);
+
+
+  /* Border */
+  --border-primary: var(--color-neutral-p0);
+  --border-secondary: var(--color-neutral-p3);
+  --border-tertiary: var(--color-neutral-p5);
+
+
+  /* Background */
+  --background-white: var(--color-white);
+
+  --background-neutral-default: var(--color-neutral-n3);
+  --background-neutral-subtle: var(--color-neutral-p7);
+
+  --background-positive-default: var(--color-green-p0);
+  --background-positive-subtle: var(--color-green-p7);
+
+  --background-negative-default: var(--color-red-p0);
+  --background-negative-subtle: var(--color-red-p7);
+
+  --background-warning-default: var(--color-orange-p0);
+  --background-warning-subtle: var(--color-orange-p7);
+
+  --background-informative-default: var(--color-brand-p0);
+  --background-informative-subtle: var(--color-brand-p7);
+
+  --background-brand-default: var(--color-brand-p0);
+  --background-brand-subtle: var(--color-brand-p7);
+
+
+  /* Action */
+  --background-button-primary-default: var(--color-brand-p0);
+  --background-button-primary-hover: var(--color-brand-n2);
+  --background-button-primary-active: var(--color-brand-n3);
+  --background-button-primary-disabled: var(--color-brand-n2);
+
+  --background-button-inverted-default: var(--color-white);
+  --background-button-inverted-hover: var(--color-neutral-p6);
+  --background-button-inverted-active: var(--color-neutral-p4);
+  --background-button-inverted-disabled: var(--color-neutral-p6);
+
+  --background-button-ghost-default: var(--color-white);
+  --background-button-ghost-hover: var(--color-neutral-p6);
+  --background-button-ghost-active: var(--color-neutral-p4);
+  --background-button-ghost-disabled: var(--color-white);
+
+  --background-button-success-default: var(--color-green-p0);
+  --background-button-success-hover: var(--color-green-n2);
+  --background-button-success-active: var(--color-green-n3);
+  --background-button-success-disabled: var(--color-green-n2);
+
+  --background-button-destructive-default: var(--color-red-p0);
+  --background-button-destructive-hover: var(--color-red-n2);
+  --background-button-destructive-active: var(--color-red-n3);
+  --background-button-destructive-disabled: var(--color-red-n2);
+
+
+  /* Interaction */
+  --background-interaction-neutral-default: var(--color-neutral-p7);
+  --background-interaction-neutral-hover: var(--color-neutral-p6);
+  --background-interaction-neutral-active: var(--color-white);
+  --background-interaction-neutral-disabled: var(--color-neutral-p8);
+
+  --background-interaction-neutral-inverted-default: var(--color-white);
+  --background-interaction-neutral-inverted-hover: var(--color-neutral-p6);
+  --background-interaction-neutral-inverted-active: var(--color-neutral-p4);
+  --background-interaction-neutral-inverted-disabled: var(--color-neutral-p6);
+
+  --border-interaction-neutral-default: var(--color-neutral-p4);
+  --border-interaction-neutral-hover: var(--color-neutral-p3);
+  --border-interaction-neutral-active: var(--color-neutral-p2);
+  --border-interaction-neutral-disabled: var(--color-neutral-p4);
+
+  --border-interaction-alert: var(--color-red-n1);
+
+  --border-interaction-focus: var(--color-brand-p1);
+
+}
