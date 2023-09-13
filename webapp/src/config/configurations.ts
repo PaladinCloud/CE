@@ -86,6 +86,6 @@
        Interval:{
          JobInterval: '',
      }
-   }
- };
-
+ } 
+}
+};
