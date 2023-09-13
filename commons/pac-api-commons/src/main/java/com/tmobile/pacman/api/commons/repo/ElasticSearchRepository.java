@@ -1921,12 +1921,12 @@ public class ElasticSearchRepository implements Constants {
 				.append(cloudType).append("/").append(SEARCH);
 		StringBuilder requestBody = null;
 		String accountId;
-		if(cloudType.equalsIgnoreCase("aws")){
-			accountId="accountid";
+		if (cloudType.equalsIgnoreCase("gcp")) {
+			accountId = "projectId";
 		} else if(cloudType.equalsIgnoreCase("azure")){
 			accountId="subscriptionId";
 		} else{
-			accountId="projectId";
+			accountId = "accountid";
 		}
 		String body = "{"
 				+ "\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}}"

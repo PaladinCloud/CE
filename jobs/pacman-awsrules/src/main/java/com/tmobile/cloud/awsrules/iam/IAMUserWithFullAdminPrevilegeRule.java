@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -69,29 +70,38 @@ public class IAMUserWithFullAdminPrevilegeRule extends BasePolicy {
 
 		MDC.put("executionId", ruleParam.get("executionId"));
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
-		
-		Optional.ofNullable(ruleParam)
-				.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY),
-						param.get(PacmanRuleConstants.CATEGORY), param.get(PacmanSdkConstants.Role_IDENTIFYING_STRING),
-						param.get(PacmanRuleConstants.ES_CUSTOMER_MGD_POLICY_URL),
-						param.get(PacmanRuleConstants.ES_IAM_GROUP_URL))))
-				.map(param -> {
-					logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
-					throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
-				});
-		
-		Optional<String> opt = Optional.ofNullable(resourceAttributes)
-				.map(resource -> checkValidation(ruleParam, resource));
-		
-		PolicyResult ruleResult = Optional.ofNullable(ruleParam)
-				.filter(param -> opt.isPresent())
-				.map(param -> buildFailureAnnotation(param, opt.get()))
-				.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 
+		try{
+			Optional.ofNullable(ruleParam)
+					.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY),
+							param.get(PacmanRuleConstants.CATEGORY), param.get(PacmanSdkConstants.Role_IDENTIFYING_STRING),
+							param.get(PacmanRuleConstants.ES_CUSTOMER_MGD_POLICY_URL),
+							param.get(PacmanRuleConstants.ES_IAM_GROUP_URL))))
+					.map(param -> {
+						logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
+						throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
+					});
 
-		logger.debug("========IAMUserWithFullAdminPrevilegeRule ended=========");
-		return ruleResult;
+			Optional<String> opt = Optional.ofNullable(resourceAttributes)
+					.map(resource -> checkValidation(ruleParam, resource));
 
+			PolicyResult ruleResult = Optional.ofNullable(ruleParam)
+					.filter(param -> opt.isPresent())
+					.map(param -> buildFailureAnnotation(param, opt.get()))
+					.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+			logger.debug("========IAMUserWithFullAdminPrevilegeRule ended=========");
+			return ruleResult;
+		}
+		catch(NoSuchEntityException exception){
+			logger.error("NoSuchEntityException thrown..", exception);
+			Annotation annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+			annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
+			annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
+			annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+			logger.debug("========IAMUserWithFullAdminPrevilegeRule ended=========");
+			return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
+					annotation);
+		}
 	}
     
 	/**
@@ -129,16 +139,13 @@ public class IAMUserWithFullAdminPrevilegeRule extends BasePolicy {
 
 			// List attached policy names of user group
 			if(!StringUtils.isNullOrEmpty(groups)) {
-				
 				policies = new HashSet<>();
 				groupList = new ArrayList<>();
 				groupList = Arrays.asList(org.apache.commons.lang3.StringUtils.split(groups, ":;"));
 				String formattedGroupUrl = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_IAM_GROUP_URL);
 				String esIamGroupUrl = !StringUtils.isNullOrEmpty(formattedGroupUrl) ? formattedGroupUrl : "";
 				policies = PacmanUtils.getPolicyByGroup(groupList, esIamGroupUrl,accountId);
-				
 			}
-			
 
 			if (!CollectionUtils.isNullOrEmpty(attachedPolicy))
 				policyNames = attachedPolicy.stream().map(AttachedPolicy::getPolicyName).collect(Collectors.toSet());
@@ -172,7 +179,12 @@ public class IAMUserWithFullAdminPrevilegeRule extends BasePolicy {
 
 			}
 
-		} catch (UnableToCreateClientException e) {
+
+		}
+		catch(NoSuchEntityException e){
+			throw e;
+		}
+		catch (UnableToCreateClientException e) {
 			logger.error("unable to get client for following input", e);
 			throw new InvalidInputException(e.toString());
 		} catch (Exception e) {
@@ -198,8 +210,6 @@ public class IAMUserWithFullAdminPrevilegeRule extends BasePolicy {
 		annotation.put("issueDetails",issueList.toString());
 		logger.debug("========IAMUserWithFullAdminPrevilegeRule annotation {} :=========",annotation);
 		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-	
-	
 	}
 	
 	@Override
