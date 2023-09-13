@@ -82,7 +82,9 @@
          url: '',
          region: '',
          apiKey: '',
-       }
+       },
+       Interval:{
+         JobInterval: '',
      }
    }
  };
