@@ -167,7 +167,7 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
         logger.info("checkDestinationPort");
 
         for (int i = 0; i < destinationPorts.size(); i++) {
-            if (ArrayUtils.contains(validatePorts, destinationPorts.get(i).toString())
+            if (ArrayUtils.contains(validatePorts, destinationPorts.get(i).getAsString())
                     || ArrayUtils.contains(validatePorts, PacmanRuleConstants.PORT_ANY)) {
                 return true;
             }

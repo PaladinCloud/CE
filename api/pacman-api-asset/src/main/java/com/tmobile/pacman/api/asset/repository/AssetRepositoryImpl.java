@@ -1786,7 +1786,8 @@ public class AssetRepositoryImpl implements AssetRepository {
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         if (Constants.EC2.equals(type) || AssetConstants.ALL.equals(type)) {
             if(mustFilter.containsKey(AssetConstants.FILTER_POLICYID) && 
-                    ((mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.CLOUD_QUALYS_RULE) && qualysEnabled) || mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.SSM_AGENT_RULE))) {
+                    ((mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.CLOUD_QUALYS_RULE) && qualysEnabled)
+                            || mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.SSM_AGENT_RULE))) {
                 String policyId= (String) mustFilter.get(AssetConstants.FILTER_POLICYID);
                 PolicyParamResponse discoveredDayRangeParam = complianceServiceClient.getPolicyParam(policyId,DISCOVERED_DAYS_RANGE);
                 String discoverDayRange=discoveredDayRangeParam.getData().getValue();
