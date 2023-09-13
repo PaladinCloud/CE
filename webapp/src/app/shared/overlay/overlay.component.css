@@ -23,6 +23,7 @@
 
 .overlay-state {
     height: 100%;
-    background-color: rgba(24, 33, 44, 0.5);
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(6px);
     cursor: default;
 }

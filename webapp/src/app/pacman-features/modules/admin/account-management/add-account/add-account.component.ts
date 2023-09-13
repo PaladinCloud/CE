@@ -33,6 +33,11 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   accountName: string = "";
   qualysApiUrl: string;
   qualysApiUser: string;
+  redHatId: string;
+  centralInstance: string;
+  redHatToken: string;
+  redHatRegion: string;
+  redHatOwner: string;
   qualysApiPassword: string;
   projectId: string;
   tenantId: string;
@@ -61,12 +66,18 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   pluginSelected: string = "";
   @ViewChild("selectAccountRef") selectAccountRef: TemplateRef<any>;
   @ViewChild("configureAccountRef") configureAccountRef: TemplateRef<any>;
+  @ViewChild("validateAccountRef") validateAccountRef: TemplateRef<any>;
   @ViewChild("addDetailsRef") addDetailsRef: TemplateRef<any>;
   @ViewChild("reviewRef") reviewRef: TemplateRef<any>;
   currentTemplateRef : TemplateRef<ElementRef>;
   @ViewChild('accountForm', {static: false}) accountForm: NgForm;
   @ViewChild('supportInfoRef') supportInfoRef: TemplateRef<any>;
   @ViewChild("connectRef") connectRef: TemplateRef<any>;
+  name = 'Video events';
+  videoSource = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
+  @ViewChild('videoPlayer') videoplayer: any;
+  public startedPlay:boolean = false;
+  public show:boolean = false;
 
 
   private currentPluginForm: FormGroup;
@@ -75,6 +86,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   private gcpPluginForm: FormGroup;
   private qualysPluginForm: FormGroup;
   private aquaPluginForm: FormGroup;
+  private redHatPluginForm: FormGroup;
+
 
   
   public awsFormErrors = {
@@ -99,6 +112,14 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     qualysApiUrl: '',
     qualysApiPassword: '',
     qualysApiUser: '',
+  }
+
+  public redHatFormErrors = {
+    redHatId: '',
+    centralInstance: '',
+    redHatToken: '',
+    redHatRegion: '',
+    redHatOwner: ''
   }
 
   stepperData = [];
@@ -195,8 +216,56 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.pluginSelected = selectedAcc?.toLowerCase();
         if(this.pluginSelected){
           this.currentStepperIndex = 0;
-          const selectedAccount = this.accountsList.find(account=>account.name == selectedAcc);
-          this.selectAccount(selectedAccount);
+          this.selectAccount({name: selectedAcc});
+        }
+        
+        this.selectedAccount = selectedAcc??"";
+        if(this.selectedAccount.toLowerCase()=="gcp"){
+          this.stepperData = [
+            {
+              id: 1,
+              name: "Add Details"
+            },
+            {
+              id: 2,
+              name: "Connect"
+            },
+            {
+              id: 3,
+              name: "Configure Access"
+            },
+            {
+              id: 4,
+              name: "Review"
+            }
+          ]
+        } else if(this.selectedAccount.toLowerCase()=="red hat"){
+          this.stepperData = [
+            {
+              id: 1,
+              name: "Configure Access"
+            },
+            {
+              id: 2,
+              name: "Add Details"
+            }
+          ]
+        }
+        else{
+          this.stepperData = [
+            {
+              id: 1,
+              name: "Add Details"
+            },
+            {
+              id: 2,
+              name: "Configure Access"
+            },
+            {
+              id: 3,
+              name: "Review"
+            }
+          ]
         }
       })
     }
@@ -231,11 +300,33 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     return imageName;
   }
 
+  pauseVideo(videoplayer)
+{
+  videoplayer.nativeElement.play();
+  // this.startedPlay = true;
+  // if(this.startedPlay == true)
+  // {
+     setTimeout(() => 
+     {
+      videoplayer.nativeElement.pause();
+       if(videoplayer.nativeElement.paused)
+      {
+        this.show = !this.show;       
+      } 
+     }, 5000);
+  // }
+  }
+
+  closebutton(videoplayer){
+    this.show = !this.show; 
+    videoplayer.nativeElement.play();
+  }
+
   displayTemplate(){
     const currentAccount = this.selectedAccount.toLowerCase();
     switch (this.currentStepperIndex) {
       case 0:
-        if(currentAccount=="azure" || currentAccount == "aqua" || currentAccount == "qualys" || currentAccount == "gcp")
+        if(currentAccount=="azure" || currentAccount == "aqua" || currentAccount == "qualys" || currentAccount == "gcp" || currentAccount == "red hat")
         this.currentTemplateRef = this.configureAccountRef;
         else
         this.currentTemplateRef = this.addDetailsRef;
@@ -313,6 +404,14 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         qualysApiPassword: ['', [Validators.required]],
         qualysApiUser: ['', [Validators.required,CustomValidators.alphanumericValidator]]
       })
+
+      this.redHatPluginForm = this.form.group({
+        redHatId: ['', [Validators.required]],
+        centralInstance: ['',Validators.required],
+        redHatToken: ['',Validators.required],
+        redHatRegion: [''],
+        redHatOwner: [''],
+      })
     }
 
     openSupportInfoDialog(accountName): void {
@@ -330,8 +429,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     }
 
   selectAccount(account:any){
-    if(account.name.toLowerCase() == "red hat"
-        || account.name.toLowerCase() == "tenable"
+    if(account.name.toLowerCase() == "tenable"
         || account.name.toLowerCase() == "aqua"
       ){
           this.openSupportInfoDialog(account.name);
@@ -468,6 +566,26 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           "To scan the resources and generate aqua vulnerability data, you would need to have account with aqua before you add the details here. Click here to get the guide for Aqua configuration"
           ];
           break;
+      case "red hat":
+        this.stepperData = [
+          {
+            id: 1,
+            name: "Configure Access"
+          },
+          {
+            id: 2,
+            name: "Add Details"
+          }
+        ]
+        this.currentPluginForm = this.redHatPluginForm;
+        this.configureSteps = [
+           "Go to Azure active directory",
+           "Navigate to App registration and register new application",
+           "Once registered click on client credentials and create a new client secret",
+           "Get the Application ID, Directory ID and Client Secret Value",
+           "Configure the registered App to allow access to the Azure Subscriptions, for which data needs to be collected."
+          ];
+          break;
     }
     this.displayTemplate();
   }
@@ -493,7 +611,19 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     return hiddenPassword;
   }
 
+  showValidation(){
+    this.dialogRef = this.dialog.open(DialogBoxComponent, {
+      width: '500px',
+      data: { 
+            template: this.validateAccountRef,
+          } 
+    });
+  }
+
+  
+
   validateAccount(){
+    this.showValidation();
     const provider = this.selectedAccount.toLowerCase();
     let payload = {};
     switch (provider) {
@@ -534,7 +664,16 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           "aquaApiPassword": this.aquaApiPassword,
           "platform": this.selectedAccount.toLowerCase()
         }
-
+        break;
+      case "redhat":
+        payload = {
+          redHatId: this.redHatId,
+          centralInstance: this.centralInstance,
+          redHatToken: this.redHatToken,
+          redHatRegion: this.redHatRegion,
+          redHatOwner: this.redHatOwner
+        }
+        break;
     }
     this.isValidating = true;
     const url = environment.validateAccount.url;
@@ -558,6 +697,9 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
 
 goToReview(){
   this.isValidated = false;
+  if(this.dialogRef){
+    this.closeDialog();
+  }
   this.currentStepperIndex++;
   this.roleArn = "arn:aws::iam:"+this.accountId+":role/"+this.roleName;
   this.displayTemplate();
@@ -565,6 +707,9 @@ goToReview(){
 
 goToConfigure(){
   this.isValidated = false;
+  if(this.dialogRef){
+    this.closeDialog();
+  }
 }
 
 onSubmit(){
@@ -613,6 +758,17 @@ onSubmit(){
           "aquaApiPassword": this.aquaApiPassword,
           "platform": this.selectedAccount.toLowerCase()
         }
+        break;
+      case "red hat":
+        payload = {
+          redHatId: this.redHatId,
+          centralInstance: this.centralInstance,
+          redHatToken: this.redHatToken,
+          redHatRegion: this.redHatRegion,
+          redHatOwner: this.redHatOwner
+        }
+        break;
+
     }
    const userDetails = this.dataCacheService.getUserDetailsValue();
    let userId = userDetails.getEmail(); 
@@ -646,6 +802,9 @@ isSelectedAccount(account:string){
 }
 
 redirectTo(){
+  if(this.dialogRef){
+    this.closeDialog();
+  }
   this.workflowService.navigateTo({
     urlArray: ['../'],
     queryParams: {selectedAccount:undefined},
