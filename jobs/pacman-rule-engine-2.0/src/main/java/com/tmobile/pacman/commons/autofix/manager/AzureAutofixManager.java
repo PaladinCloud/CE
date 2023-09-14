@@ -35,7 +35,7 @@ public class AzureAutofixManager implements IAutofixManger{
         String credentialPrefix=ConfigManager.getConfigurationsMap().get("secret.manager.path").toString();
         List<Map<String, String>> queryResults = RDSDBManager.executeQuery("SELECT tenant FROM cf_AzureTenantSubscription WHERE subscription='"+subscriptionId+"'");
         String tenantId = queryResults.get(0).get("tenant");
-        BasicSessionCredentials credentials = CloudUtils.getCredentials(baseAccount, region, roleName,credentialPrefix);
+        BasicSessionCredentials credentials = CloudUtils.getCredentials(baseAccount, roleName);
         Map<String, String> creds = CloudUtils.decodeCredetials(tenantId,credentials,region,credentialPrefix,roleName);
         String clientId = creds.get("clientId");
         String secret = creds.get("secretId");

@@ -35,7 +35,7 @@ public class VpcNetworkPortAutofix extends BaseFix {
         String firewallRuleName = issue.get(PacmanRuleConstants.FIREWALL_RULE_NAME);
         String resourceId = issue.get(RESOURCEID);
         String portValue = ruleParams.get(PacmanRuleConstants.PORT);
-        String projectId = issue.get(PacmanSdkConstants.PROJECT_NAME);
+        String projectId = issue.get(PacmanSdkConstants.PROJECT_ID);
         Operation response = null;
         try {
             response = firewallsClient.deleteAsync(projectId, firewallRuleName).get();
