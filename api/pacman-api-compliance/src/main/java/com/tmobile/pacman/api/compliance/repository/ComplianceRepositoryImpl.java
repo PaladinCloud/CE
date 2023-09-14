@@ -2743,7 +2743,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             Map<String, String> datasourceTargetType = new HashMap<String, String>();
             if (!Strings.isNullOrEmpty(name.getType())) {
                 datasourceTargetType.put(TYPE, name.getType());
-                datasourceTargetType.put(PROVIDER, name.getProvider());
+                datasourceTargetType.put(PROVIDER, getProvideBrandName(name.getProvider()));
                 if (targetType == null) {
                     dataSourceForTargetType.add(datasourceTargetType);
                 } else {
@@ -2754,6 +2754,23 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             }
         }
         return dataSourceForTargetType;
+    }
+
+    private String getProvideBrandName(String provider){
+        if(StringUtils.isEmpty(provider)){
+            return provider;
+        }
+        if(provider.equalsIgnoreCase(AWS) || provider.equalsIgnoreCase(GCP)){
+            return provider.toUpperCase();
+        }
+        if(provider.equalsIgnoreCase(AZURE)){
+            return "Azure";
+        }
+        if(provider.equalsIgnoreCase(REDHAT)){
+            return "Redhat";
+        }
+        else
+            return provider;
     }
 
     /*

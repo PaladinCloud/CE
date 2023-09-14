@@ -14,8 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { DOMAIN_MAPPING } from '../../../config/domain-mapping';
-import { COMPLIANCE_ROUTES, TOOLS_ROUTES, ADMIN_ROUTES, OMNISEARCH_ROUTES } from '../../shared/constants/routes';
-import { ASSETS_ROUTES } from '../../shared/constants/routes';
 import { DataCacheService } from './data-cache.service';
 import difference from 'lodash/difference';
 import { Router } from '@angular/router';
@@ -107,17 +105,7 @@ export class DomainMappingService {
 
     /*@returns: List of all routes for a module */
     getAllRoutesOfAModule(moduleName) {
-        if (moduleName === 'compliance' ) {
-            return COMPLIANCE_ROUTES;
-        } else if (moduleName === 'assets') {
-            return ASSETS_ROUTES;
-        } else if (moduleName === 'tools') {
-            return TOOLS_ROUTES;
-        } else if (moduleName === 'omnisearch') {
-            return OMNISEARCH_ROUTES;
-        } else if (moduleName === 'admin') {
-            return ADMIN_ROUTES;
-        }
+        return [];
     }
 
     /*@returns: data of the route which can be used as a link in side nav and burger menu and to check roles */

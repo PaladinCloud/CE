@@ -43,7 +43,8 @@ class BuildUiAndApis(NullResource):
                     'APPSYNC_URL': AppSyncNotification.get_output_attr('uris["GRAPHQL"]'),
                     'APPSYNC_API_KEY': AppSyncIdKey.get_output_attr('key'),
                     'LAMBDA_PATH' : Settings.LAMBDA_PATH,
-                    'GOOGLE_ANALYTICS' : Settings.GOOGLE_ANALYTICS
+                    'GOOGLE_ANALYTICS' : Settings.GOOGLE_ANALYTICS,
+                    'JOB_SCHEDULE_INTERVAL' : Settings.JOB_SCHEDULE_INTERVAL
                 },
                 'interpreter': [Settings.PYTHON_INTERPRETER]
             }
