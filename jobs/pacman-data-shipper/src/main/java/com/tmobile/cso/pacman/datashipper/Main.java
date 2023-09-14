@@ -168,6 +168,13 @@ public class Main implements Constants {
            // account = "500559730414";
             //region  =  "us-east-1";
             //s3Role  =  "saasdev_ro";
+            //Get the required params from System properties
+            account = System.getProperty("base.account");
+            region  = System.getProperty("base.region");
+            s3Role  = System.getProperty("s3.role");
+            s3Processed = System.getProperty("s3.processed");
+            s3Data      = System.getProperty("s3.data");
+            s3Bucket    = System.getProperty("s3");
             LOGGER.debug("printing account");
             LOGGER.debug(account);
             LOGGER.debug("printing region");
