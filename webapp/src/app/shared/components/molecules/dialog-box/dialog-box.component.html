@@ -1,4 +1,4 @@
-<div class="dialog-box">
+<div [class]="'dialog-box '+data.customClass">
   <div mat-dialog-title [class.hide]="data.title == null">
     <app-text classNames="body-2 high-emphasis" [text]="data.title"></app-text>
       <img class="x-icon" src="../assets/icons/x-icon.svg" (click)=onNoClick($event)>
