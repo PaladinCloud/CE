@@ -12,7 +12,6 @@ jobDefinition = os.environ.get('JOB_DEFINITION') #JOB_DEFINITION:pacman-rule-eng
 def lambda_handler(event, context):
 
     print("check whether it is SQS type or not")
-
     ##Check whether it is of SQS type. SQS event will have Parent Key as 'Records'
     print(event)
     if('Records' in event):
