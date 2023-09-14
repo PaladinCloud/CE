@@ -73,6 +73,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   @ViewChild('accountForm', {static: false}) accountForm: NgForm;
   @ViewChild('supportInfoRef') supportInfoRef: TemplateRef<any>;
   @ViewChild("connectRef") connectRef: TemplateRef<any>;
+
+  @ViewChild("redHatStepsVideo") redHatStepsVideo: TemplateRef<any>;
   name = 'Video events';
   videoSource = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
   @ViewChild('videoPlayer') videoplayer: any;
@@ -665,11 +667,12 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           "platform": this.selectedAccount.toLowerCase()
         }
         break;
-      case "redhat":
+      case "red hat":
         payload = {
-          redHatId: this.redHatId,
-          centralInstance: this.centralInstance,
-          redHatToken: this.redHatToken,
+          platform: "redhat",
+          redhatAccountId: this.redHatId,
+          redhatAPIUrl: this.centralInstance,
+          redhatToken: this.redHatToken,
           redHatRegion: this.redHatRegion,
           redHatOwner: this.redHatOwner
         }
@@ -687,6 +690,11 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.isValidated = true;
         if(!this.isValid){
           this.errorList = data.errorDetails?.split(",");
+        }else{
+          if(this.dialogRef){
+            this.closeDialog();
+          }
+          this.onSubmit();
         }
       }
       catch(error){
@@ -761,11 +769,12 @@ onSubmit(){
         break;
       case "red hat":
         payload = {
-          redHatId: this.redHatId,
-          centralInstance: this.centralInstance,
-          redHatToken: this.redHatToken,
-          redHatRegion: this.redHatRegion,
-          redHatOwner: this.redHatOwner
+          platform: "redhat",
+          redhatAccountId: this.redHatId,
+          redhatAPIUrl: this.centralInstance,
+          redhatToken: this.redHatToken,
+          redhatRegion: this.redHatRegion,
+          redhatOwner: this.redHatOwner
         }
         break;
 
@@ -828,4 +837,15 @@ copyToClipboard(commands) {
    this.secondGcpCommand = "gcloud iam workload-identity-pools providers create-aws "+ this.providerId +" --workload-identity-pool="+ this.workloadIdentityPoolId +" --account-id="+ this.projectId+"--location="+this.location;
    this.thirdGcpCommand = "gcloud iam service-accounts add-iam-policy-binding "+ this.serviceAccount+" --role roles/iam.workloadIdentityUser --member" + "principalSet://iam.googleapis.com/projects/"+ this.gcpProjectNumber+"/locations/" + this.location +"/workloadIdentityPools/"+ this.workloadIdentityPoolId+"/*"
   }
+
+  openVideoDialog(){
+    this.dialog.open(DialogBoxComponent, {
+      width: '800px',
+      data: { 
+            customClass: 'video-dialog',
+            template: this.redHatStepsVideo,
+          } 
+    });
+  }
+
 }

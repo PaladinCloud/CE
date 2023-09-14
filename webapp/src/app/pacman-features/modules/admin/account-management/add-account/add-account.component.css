@@ -55,6 +55,41 @@
     flex-direction: row !important;
 }
 
+.video-thumbnail-wrapper {
+    position: relative;
+    display: inline-block;
+    height: 20.9%;
+    min-height: 161px;
+}
+
+.video-thumbnail{
+    border-radius: 8px;
+    height: 20.9%;
+    min-height: 161px;
+    display: block;
+    width: 100%;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.play-button .icon {
+    cursor: pointer;
+    color: white; /* Optional: Set the color of the play button icon */
+    font-size: 24px; /* Optional: Adjust the size of the play button icon */
+}
+
+::ng-deep .video-dialog .mat-dialog-content{
+    padding: 0px;
+}
+
 .configuration-header{
     display: flex;
     gap: 12px;
@@ -92,8 +127,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding-top: 24px;  
-    border-top: 1px solid var(--border-100);
+    padding-top: 12px;  
     overflow: auto;
 }
 
@@ -212,7 +246,6 @@
     flex-direction: column;
     gap: 20px;
     height: 100%;
-    width: 70%;
     overflow: auto;
 }
 

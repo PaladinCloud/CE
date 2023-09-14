@@ -23,7 +23,7 @@
                                 Submit</button>
                             <button class="button btn" [class.hide]="(pluginSelected=='gcp' && (currentStepperIndex<2 || currentStepperIndex>2)) || (pluginSelected!='gcp' && (currentStepperIndex<1 || currentStepperIndex>1))"
                                 (click)="validateAccount()" [class.isDisabled]="selectedAccount && currentPluginForm?.invalid">
-                                Validate</button>
+                                {{ pluginSelected=='red hat'?'Add Plugin':'Validate' }}</button>
                             <button class="button btn" [class.hide]="(currentStepperIndex>1 && pluginSelected=='gcp') || (currentStepperIndex>0 && pluginSelected!='gcp')" (click)="pageCounter('next')"
                                 [class.isDisabled]="selectedAccount && (selectedAccount.toLowerCase() == 'aws' && currentPluginForm?.invalid)">
                                 Next</button>
@@ -96,10 +96,12 @@
 
 <ng-template #configureAccountRef>
     <div class="configuration-body">
-        <h6>Configure Access</h6>
-        <span class="subtext">
-            Follow the instructions below to setup your account.
-        </span>
+        <div style="border-bottom: 1px solid #DEE3E7; padding-bottom: 12px;">
+            <h6>Configure Access</h6>
+            <span class="subtext">
+                Follow the instructions below to setup your account.
+            </span>
+        </div>
           <div  class="configure-wrapper" *ngIf="pluginSelected===('aws')">
             <div class="download-template">
                 <a [href]="CloudformationTemplateUrl">
@@ -167,12 +169,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="video-wrapper">
-                    <video controls (canplay)="pauseVideo(videoplayer)"
-                      #videoPlayer style="width: 220px;height: 200px;">
-                    <source src="{{videoSource}}" type="video/mp4">
-                    Your browser does not support the video tag
-                    </video>
+                <div class="video-thumbnail-wrapper">
+                    <img class="video-thumbnail" src="/assets/images/plugin-thumbnails/red-hat.png" alt="Red hat image">
+                    <div class="play-button">
+                        <!-- Play button icon -->
+                        <img class="icon" (click)="openVideoDialog()" src="/assets/icons/play-button.svg" alt="play button">
+                    </div>
                 </div>
             </div>
           
@@ -404,5 +406,15 @@
                 </div>
             </div>
         </div>
+    </div>
+</ng-template>
+
+<ng-template #redHatStepsVideo>
+    <div>
+        <video controls (canplay)="pauseVideo(videoplayer)"
+                #videoPlayer style="width: 100%;height: 100%;">
+            <source src="{{videoSource}}" type="video/mp4">
+            Your browser does not support the video tag
+        </video>
     </div>
 </ng-template>
