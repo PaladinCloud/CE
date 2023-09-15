@@ -74,13 +74,12 @@ public class Main implements Constants {
         }
         catch (AmazonS3Exception s3Exception){
             LOGGER.error("s3Exception Occured while Shipping the data", s3Exception.getMessage());
-
         }
         catch (Exception exception){
             LOGGER.error("exception Occured while Shipping the data", exception.getMessage());
         }
 
-         System.exit(0);
+        System.exit(0);
     }
 
     /**
@@ -113,8 +112,6 @@ public class Main implements Constants {
         errorList.addAll(new IssueCountManager().populateViolationsCount());
         errorList.addAll(new AssetsCountManager().populateAssetCount());
 
-
-
         //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
         try {
             LOGGER.info("Back Up logic code is going to be executed");
@@ -133,13 +130,12 @@ public class Main implements Constants {
             LOGGER.error("Exception Occured inside shipData method while doing Backup and Clean Up Inventory", s3Exception);
             //Adding to error Map which will be part of error list for SHipper Batch Job Processing
             shipperBackUpAndCleanUpErrorMap.put(EXCEPTION,String.valueOf(s3Exception));
-
-
         } catch (Exception exception) {
             LOGGER.error("Exception Occured inside shipData method while doing Backup and Clean Up Inventory", exception);
             //Adding to error Map which will be part of error list for SHipper Batch Job Processing
             shipperBackUpAndCleanUpErrorMap.put(EXCEPTION,String.valueOf(exception));
         }
+
         //add shipperBackUpAndCleanUpErrorMap to errorList collection
         errorList.add(shipperBackUpAndCleanUpErrorMap);
 
@@ -160,60 +156,39 @@ public class Main implements Constants {
      */
     public static void doBackUpAndCleanUpInventory(String dataSource, String srcFolder, AWSCredentialProvider awsCredentialProvider) {
         LOGGER.info("Inside doBackUpAndCleanUpInventory Method:{}");
-        LOGGER.debug(dataSource);
-        LOGGER.debug(srcFolder);
 
         try {
-            //local testing
-           // account = "500559730414";
-            //region  =  "us-east-1";
-            //s3Role  =  "saasdev_ro";
             //Get the required params from System properties
             account = System.getProperty("base.account");
             region  = System.getProperty("base.region");
             s3Role  = System.getProperty("s3.role");
             s3Processed = System.getProperty("s3.processed");
-            s3Data      = System.getProperty("s3.data");
             s3Bucket    = System.getProperty("s3");
-            LOGGER.debug("printing account");
-            LOGGER.debug(account);
-            LOGGER.debug("printing region");
-            LOGGER.debug(region);
-            LOGGER.debug("printing s3Role");
-            LOGGER.debug(s3Role);
-            LOGGER.debug(srcFolder);
-            LOGGER.info("Trying to get Basic awsCredentials using IAM role");
+            LOGGER.debug("base account: {}", account);
+            LOGGER.debug("base region: {}", region);
             BasicSessionCredentials credentials = awsCredentialProvider.getCredentials(account, region, s3Role);
-            LOGGER.info("Printing credentials");
-            LOGGER.debug("Aws AccessKey:{}",credentials.getAWSAccessKeyId());
-            LOGGER.debug("Aws SecretKey:{}",credentials.getAWSSecretKey());
-            LOGGER.debug("Aws SessionToken:{}",credentials.getSessionToken());
 
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-            srcInventoryFolderName = srcFolder;
+
             String backupFolderName = dataSource + "-" + s3Processed;
             //back up the shipped files
             LOGGER.info("Start : Backup Current Files as Part of Shipper Job");
-            LOGGER.debug("Printing s3Client:{}",s3Client);
-            LOGGER.debug("Printing s3Bucket:{}",s3Bucket);
-            LOGGER.debug("Printing srcInventoryFolderName:{}",srcInventoryFolderName);
-            LOGGER.info("Printing backupFolderName {}",backupFolderName);
+            LOGGER.debug("Printing s3Bucket:{}", s3Bucket);
+            LOGGER.info("Printing backupFolderName {}", backupFolderName);
             LOGGER.info("Calling  copytoBackUp Method");
-            copytoBackUp(s3Client, s3Bucket, srcInventoryFolderName, backupFolderName + "/" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
+            copytoBackUp(s3Client, s3Bucket, srcFolder, backupFolderName + "/" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
             LOGGER.info("End : Backup Current Files as Part of Shipper Job");
+
             //clean up the shipped files
             LOGGER.info("Start : Cleaning Up Source Inventory  as Part of Shipper Job");
-            LOGGER.debug("srcInventoryFolderName:{}",srcInventoryFolderName);
-            deleteFiles(s3Client, s3Bucket, srcInventoryFolderName);
+            deleteFiles(s3Client, s3Bucket, srcFolder);
             LOGGER.info("End : Cleaning Up Source Inventory  as Part of Shipper Job");
         } catch (AmazonS3Exception s3Exception) {
             LOGGER.error("Exception Occurred inside doBackUpAndCleanUpInventory method execution", s3Exception);
             shipperBackUpAndCleanUpErrorMap.put(EXCEPTION,String.valueOf(s3Exception));
-
         } catch (Exception exception) {
             LOGGER.error("Exception Occurred inside doBackUpAndCleanUpInventory method execution", exception);
             shipperBackUpAndCleanUpErrorMap.put(EXCEPTION,String.valueOf(exception));
-
         }
     }
 
@@ -233,7 +208,6 @@ public class Main implements Constants {
             try {
                 fileName = key.substring(key.lastIndexOf('/') + 1);
                 s3client.copyObject(s3Bucket, key, s3Bucket, to + "/" + fileName);
-                LOGGER.debug("    Copy " + fileName + " to backup folder");
             } catch (Exception e) {
                 LOGGER.info("    Copy " + fileName + "failed", e);
             }
@@ -250,7 +224,6 @@ public class Main implements Constants {
      */
     private static void deleteFiles(AmazonS3 s3client, String s3Bucket, String folder) {
         LOGGER.info("Inside deleteFiles Method");
-        LOGGER.info("Printing s3client {}",s3client);
         LOGGER.info("Printing s3Bucket {}",s3Bucket);
         LOGGER.info("Printing folder {}",folder);
         String[] keys = listKeys(s3client, s3Bucket, folder);
