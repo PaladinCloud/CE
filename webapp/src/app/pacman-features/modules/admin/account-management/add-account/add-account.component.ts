@@ -48,7 +48,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   clientId: string;
   isValidating = false;
   isValidated = false;
-  isValid = false;
+  isValid = true;
   serviceAccount = "";
   gcpProjectId = "";
   location = "";
@@ -198,6 +198,10 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   buttonClicked: boolean = false;
   dialogRef: any;
   selectedAccountName: any;
+  isAdding: boolean = false;
+  errorMessage: any;
+  selectedAccountImage: any;
+  addDetailsStepperIndex: number;
   
   constructor(private workflowService: WorkflowService,
     private activatedRoute: ActivatedRoute,
@@ -216,7 +220,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.pluginSelected = selectedAcc?.toLowerCase();
         if(this.pluginSelected){
           this.currentStepperIndex = 0;
-          this.selectAccount({name: selectedAcc});
+          const selectedAccount = this.accountsList.find(account => account.name===selectedAcc);
+          this.selectAccount(selectedAccount);
         }
         
         this.selectedAccount = selectedAcc??"";
@@ -322,25 +327,33 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     videoplayer.nativeElement.play();
   }
 
-  displayTemplate(){
+  displayTemplate(addDetailsStepperIndex=-1){
     const currentAccount = this.selectedAccount.toLowerCase();
+    if(addDetailsStepperIndex>=0){
+      this.currentStepperIndex = this.addDetailsStepperIndex;
+    }
     switch (this.currentStepperIndex) {
       case 0:
         if(currentAccount=="azure" || currentAccount == "aqua" || currentAccount == "qualys" || currentAccount == "gcp" || currentAccount == "red hat")
         this.currentTemplateRef = this.configureAccountRef;
-        else
-        this.currentTemplateRef = this.addDetailsRef;
+        else{
+          this.addDetailsStepperIndex = this.currentStepperIndex;
+          this.currentTemplateRef = this.addDetailsRef;
+        }
         break;
       case 1:
         if(currentAccount=="aws")
             this.currentTemplateRef = this.configureAccountRef;
         else if(currentAccount == "gcp"){
              this.currentTemplateRef = this.connectRef;
-        } else
-            this.currentTemplateRef = this.addDetailsRef;
+        } else{
+          this.addDetailsStepperIndex = this.currentStepperIndex;
+          this.currentTemplateRef = this.addDetailsRef;
+        }
         break;
       case 2:
         if(currentAccount=="gcp"){
+          this.addDetailsStepperIndex = this.currentStepperIndex;
           this.currentTemplateRef = this.addDetailsRef;
         }else{
           this.currentTemplateRef = this.reviewRef;
@@ -424,10 +437,13 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     }
 
     closeDialog(): void {
-      this.dialogRef.close();
+      if(this.dialogRef){
+        this.dialogRef.close();
+      }
     }
 
   selectAccount(account:any){
+    this.isValid = true;
     if(account.name.toLowerCase() == "tenable"
         || account.name.toLowerCase() == "aqua"
       ){
@@ -435,6 +451,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           return;
     }
     this.selectedAccount = account.name;
+    this.selectedAccountImage = account.img;
     this.configureSteps = [];
 
     this.router.navigate([], {
@@ -685,8 +702,12 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.isValidating = false;
         this.isValidated = true;
         if(!this.isValid){
+          this.displayTemplate(this.addDetailsStepperIndex);
+          this.closeDialog();
+          this.errorMessage = data.message;
           this.errorList = data.errorDetails?.split(",");
-        }else if(this.selectedAccount.toLowerCase()=="red hat"){
+        }else {
+          this.isValidating = false;
           this.onSubmit();
         }
       }
@@ -714,6 +735,7 @@ goToConfigure(){
 }
 
 onSubmit(){
+  this.isAdding = true;
   this.buttonClicked = true;
    const provider = this.selectedAccount.toLowerCase();
    let accountid = "";
@@ -783,22 +805,21 @@ onSubmit(){
        const data = response.data;
        if(data){
            if(data.validationStatus.toLowerCase() !== "failure"){
-            if(this.dialogRef && this.selectedAccount.toLowerCase()=="red hat"){
-              this.closeDialog();
-            }
             notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" has been created successfully";
             this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
             this.redirectTo();
            } else{
-            if(this.selectedAccount.toLowerCase()=="red hat"){
-              if(this.dialogRef){
-                this.closeDialog();
-              }
+            this.isValid = false;
+            this.displayTemplate(this.addDetailsStepperIndex);
+            this.errorMessage = data.message;
+             notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" creation has been failed";
+             this.notificationObservableService.postMessage(notificationMessage,3000,"error","Error");
             }
-            notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" creation has been failed";
-            this.notificationObservableService.postMessage(notificationMessage,3000,"error","Error");
-           }
-       }
+          }
+          if(this.dialogRef){
+            this.closeDialog();
+          }
+          this.isAdding = false;
        }
       catch(error){
         console.log(error,"error js");

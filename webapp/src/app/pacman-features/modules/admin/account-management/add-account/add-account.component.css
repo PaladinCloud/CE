@@ -101,6 +101,14 @@
     height: calc(100% - 52px);
 }
 
+.header{
+    border-bottom: 1px solid #DEE3E7;
+    padding: 16px 24px;
+}
+
+.error-state{
+    border: 1px solid red;
+}
 /* img{
     padding: 7px;
     border: 0.5px solid var(--border-200);
@@ -299,7 +307,8 @@
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
-    padding: 0px 24px 16px 24px;
+    border-top: 1px solid #DEE3E7;
+    padding: 16px 24px 16px 24px;
   }
 
   .validation-sub-text

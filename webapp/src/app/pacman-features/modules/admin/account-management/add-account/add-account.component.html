@@ -14,16 +14,13 @@
             <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
                 (selectedStepperIndex)="selectedStepperIndex($event)">
                 <ng-template #stepsContent>
-                    <div class="right-wrapper">
+                    <div class="right-wrapper" [class.error-state]="!isValid && addDetailsStepperIndex==currentStepperIndex">
                         <ng-container [ngTemplateOutlet]="currentTemplateRef">
                         </ng-container>
                         <div class="button-wrapper">
-                            <button class="button btn" [class.hide]="(pluginSelected=='gcp' && currentStepperIndex<3) || (pluginSelected!='gcp' && currentStepperIndex<2)"
-                                (click)="onSubmit()" [disabled]="buttonClicked" [class.disabled-button]="buttonClicked">
-                                Submit</button>
                             <button class="button btn" [class.hide]="(pluginSelected=='gcp' && (currentStepperIndex<2 || currentStepperIndex>2)) || (pluginSelected!='gcp' && (currentStepperIndex<1 || currentStepperIndex>1))"
                                 (click)="validateAccount()" [class.isDisabled]="selectedAccount && currentPluginForm?.invalid">
-                                {{ pluginSelected=='red hat'?'Add Plugin':'Validate' }}</button>
+                                Add Plugin</button>
                             <button class="button btn" [class.hide]="(currentStepperIndex>1 && pluginSelected=='gcp') || (currentStepperIndex>0 && pluginSelected!='gcp')" (click)="pageCounter('next')"
                                 [class.isDisabled]="selectedAccount && (selectedAccount.toLowerCase() == 'aws' && currentPluginForm?.invalid)">
                                 Next</button>
@@ -53,57 +50,34 @@
     </div>
 </div>
 
-<ng-template #validateAccountRef>
-    {{isValidated}}
-    {{isValidating}}
-    <div *ngIf="!isValidated && isValidating" class="validation-wrapper">
+<ng-template #validateAccountRef>   
+    <div class="validation-wrapper">
         <div class="validation-inner-wrapper">
             <div class="validation-image-wrapper">
                 <img class="validate-cloud-img" src="/assets/icons/paladin-logo.svg">
                 <img src="/assets/icons/arrows.svg">
-                <img class="validate-cloud-img" src="/assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
+                <img class="validate-cloud-img" src="/assets/icons/{{selectedAccountImage}}-color.svg">
             </div>
-            <div class="validation-text-wrapper">
+            <div class="validation-text-wrapper" *ngIf="isValidating">
                 <h5 class="high-emphasis">Validating Your {{selectedAccount}} Plugin</h5>
                 <span class="validation-sub-text">Please wait for few minutes till the validation is done. Do not press back button.</span>
             </div>
-        </div>
-    </div>
-    <div *ngIf="isValidated && !isValidating" class="validation-wrapper">
-        <div class="validation-inner-wrapper" *ngIf="isValid">
-            <div class="validation-image-wrapper">
-                <img src="/assets/icons/validation-success.svg">
+            <div class="validation-text-wrapper" *ngIf="isAdding">
+                <h5 class="high-emphasis">Adding Your {{selectedAccount}} Plugin</h5>
+                <span class="validation-sub-text">Please wait for few minutes till the account has been added. Do not press back button.</span>
             </div>
-            <div class="validation-text-wrapper">
-                <h5 class="high-emphasis">Plugin Validated Successfully</h5>
-                <span class="validation-sub-text" *ngIf="pluginSelected===('aws')">Role-based-access {{roleName}} generated Successfully for aws account.</span>
-            </div>
-            <button *ngIf="pluginSelected!='red hat'" class="button btn" style="width: 185px;" (click)="goToReview()">Review</button>
-        </div>
-        <div class="validation-inner-wrapper" *ngIf="!isValid">
-            <div class="validation-image-wrapper">
-                <img src="/assets/icons/validation-failed.svg">
-            </div>
-            <div class="validation-text-wrapper">
-                <h5 class="high-emphasis">Plugin Validation Failed</h5>
-                <div *ngFor="let error of errorList">
-                    <span class="validation-sub-text">{{error}}</span>
-                    </div>
-            </div>
-            <button class="button btn" style="width: 185px;" (click)="goToConfigure()">Reconfigure</button>
-            <button class="button cancel-btn" style="width: 185px;" (click)="redirectTo()">Cancel</button>
         </div>
     </div>
 </ng-template>
 
 <ng-template #configureAccountRef>
+    <div class="header">
+        <h6>Configure Access</h6>
+        <span class="subtext">
+            Follow the instructions below to setup your account.
+        </span>
+    </div>
     <div class="configuration-body">
-        <div style="border-bottom: 1px solid #DEE3E7; padding-bottom: 12px;">
-            <h6>Configure Access</h6>
-            <span class="subtext">
-                Follow the instructions below to setup your account.
-            </span>
-        </div>
           <div  class="configure-wrapper" *ngIf="pluginSelected===('aws')">
             <div class="download-template">
                 <a [href]="CloudformationTemplateUrl">
@@ -184,18 +158,20 @@
 </ng-template>
 
 <ng-template #addDetailsRef>
-    <div *ngIf="pluginSelected=='red hat'" class="flex gap-8 body-2" style="padding: 16px 24px; background: #FEF5F5; border-radius: 8px 8px 0;">
-        <div><img src="/assets/icons/alert.svg" alt="" style="height: 16px;"></div>
+    <div *ngIf="!isValid" class="flex gap-8 body-2" style="padding: 16px 24px; background: #FEF5F5; border-radius: 8px 8px 0;">
+        <div><img src="/assets/icons/alert-icon.svg" alt="" style="height: 16px;"></div>
         <div class="flex flex-col gap-8">
             <div class="title high-emphasis">Plugin Validation failed</div>
-            <div class="errorMessage low-emphasis">Please verify your credentials and try again</div>
+            <div class="errorMessage low-emphasis">{{ errorMessage }}</div>
         </div>
     </div>
-    <div class="configuration-body">
+    <div class="header">
         <h6>Add Details</h6>
         <span class="subtext">
             Fill account details below to configure your account.
         </span>
+    </div>
+    <div class="configuration-body">
         <div *ngIf="pluginSelected===('aws')" class="details-wrapper"> 
             <form class="form-wrapper" [formGroup]="awsPluginForm">
                 <app-input-field [parentForm]="awsPluginForm" formControlName="accountId" [label]="'Account ID'" 
