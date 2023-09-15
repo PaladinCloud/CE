@@ -34,9 +34,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   qualysApiUrl: string;
   qualysApiUser: string;
   redHatId: string;
-  centralInstance: string;
   redHatToken: string;
-  redHatRegion: string;
+  redhatAccountName: string;
   redHatOwner: string;
   qualysApiPassword: string;
   projectId: string;
@@ -118,9 +117,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
 
   public redHatFormErrors = {
     redHatId: '',
-    centralInstance: '',
+    redhatAccountName: '',
     redHatToken: '',
-    redHatRegion: '',
     redHatOwner: ''
   }
 
@@ -409,9 +407,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
 
       this.redHatPluginForm = this.form.group({
         redHatId: ['', [Validators.required]],
-        centralInstance: ['',Validators.required],
         redHatToken: ['',Validators.required],
-        redHatRegion: [''],
+        redhatAccountName: [''],
         redHatOwner: [''],
       })
     }
@@ -671,9 +668,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         payload = {
           platform: "redhat",
           redhatAccountId: this.redHatId,
-          redhatAPIUrl: this.centralInstance,
           redhatToken: this.redHatToken,
-          redHatRegion: this.redHatRegion,
+          redhatAccountName: this.redhatAccountName,
           redHatOwner: this.redHatOwner
         }
         break;
@@ -690,10 +686,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.isValidated = true;
         if(!this.isValid){
           this.errorList = data.errorDetails?.split(",");
-        }else{
-          if(this.dialogRef){
-            this.closeDialog();
-          }
+        }else if(this.selectedAccount.toLowerCase()=="red hat"){
           this.onSubmit();
         }
       }
@@ -771,9 +764,8 @@ onSubmit(){
         payload = {
           platform: "redhat",
           redhatAccountId: this.redHatId,
-          redhatAPIUrl: this.centralInstance,
           redhatToken: this.redHatToken,
-          redhatRegion: this.redHatRegion,
+          redhatAccountName: this.redhatAccountName,
           redhatOwner: this.redHatOwner
         }
         break;
@@ -791,13 +783,21 @@ onSubmit(){
        const data = response.data;
        if(data){
            if(data.validationStatus.toLowerCase() !== "failure"){
+            if(this.dialogRef && this.selectedAccount.toLowerCase()=="red hat"){
+              this.closeDialog();
+            }
             notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" has been created successfully";
             this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
+            this.redirectTo();
            } else{
+            if(this.selectedAccount.toLowerCase()=="red hat"){
+              if(this.dialogRef){
+                this.closeDialog();
+              }
+            }
             notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" creation has been failed";
             this.notificationObservableService.postMessage(notificationMessage,3000,"error","Error");
            }
-           this.redirectTo();
        }
        }
       catch(error){

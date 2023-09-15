@@ -54,6 +54,8 @@
 </div>
 
 <ng-template #validateAccountRef>
+    {{isValidated}}
+    {{isValidating}}
     <div *ngIf="!isValidated && isValidating" class="validation-wrapper">
         <div class="validation-inner-wrapper">
             <div class="validation-image-wrapper">
@@ -76,7 +78,7 @@
                 <h5 class="high-emphasis">Plugin Validated Successfully</h5>
                 <span class="validation-sub-text" *ngIf="pluginSelected===('aws')">Role-based-access {{roleName}} generated Successfully for aws account.</span>
             </div>
-            <button class="button btn" style="width: 185px;" (click)="goToReview()">Review</button>
+            <button *ngIf="pluginSelected!='red hat'" class="button btn" style="width: 185px;" (click)="goToReview()">Review</button>
         </div>
         <div class="validation-inner-wrapper" *ngIf="!isValid">
             <div class="validation-image-wrapper">
@@ -182,6 +184,13 @@
 </ng-template>
 
 <ng-template #addDetailsRef>
+    <div *ngIf="pluginSelected=='red hat'" class="flex gap-8 body-2" style="padding: 16px 24px; background: #FEF5F5; border-radius: 8px 8px 0;">
+        <div><img src="/assets/icons/alert.svg" alt="" style="height: 16px;"></div>
+        <div class="flex flex-col gap-8">
+            <div class="title high-emphasis">Plugin Validation failed</div>
+            <div class="errorMessage low-emphasis">Please verify your credentials and try again</div>
+        </div>
+    </div>
     <div class="configuration-body">
         <h6>Add Details</h6>
         <span class="subtext">
@@ -222,9 +231,8 @@
         <div *ngIf="pluginSelected===('red hat')" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="redHatPluginForm">
                 <app-input-field [label]="'ID'" [(value)]="redHatId" [parentForm]="redHatPluginForm" formControlName="redHatId" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Central Instance'" [(value)]="centralInstance" [parentForm]="redHatPluginForm" formControlName="centralInstance" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
                 <app-input-field [label]="'Token'" type="textarea" height="'56px'" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Region (Optional)'" [(value)]="redHatRegion" [parentForm]="redHatPluginForm" formControlName="redHatRegion" [formErrors]="redHatFormErrors"></app-input-field>
+                <app-input-field [label]="'Account Name (Optional)'" [(value)]="redhatAccountName" [parentForm]="redHatPluginForm" formControlName="redhatAccountName" [formErrors]="redHatFormErrors"></app-input-field>
                 <app-input-field [label]="'Owner (Optional)'" [(value)]="redHatOwner" [parentForm]="redHatPluginForm" formControlName="redHatOwner" [formErrors]="redHatFormErrors"></app-input-field>
             </form>
         </div>
