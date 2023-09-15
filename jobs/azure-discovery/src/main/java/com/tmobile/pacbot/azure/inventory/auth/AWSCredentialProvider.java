@@ -57,7 +57,6 @@ public class AWSCredentialProvider {
 			
 		}
 		else{
-			System.out.println("inside");
 			AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.defaultClient();
 			AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount,roleName)).withRoleSessionName("pic-base-ro");
 			AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
