@@ -45,14 +45,66 @@
     display: flex;
     flex-direction: column;
     width: calc(100% - 200px);
-    padding: 16px 24px;
+    height: 100%;
     border: 2px solid var(--border-200);
     border-radius: 8px;
     background-color: var(--background-white);
 }
 
+.content-header{
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #DEE3E7;
+    padding: 10px 24px;
+    gap: 4px;
+}
+
+.h6{
+    color: var(--text-high-emphasis);
+}
+
+.sub-text{
+    color: var(--text-low-emphasis);
+}
+
 .redhat-video-wrapper{
     flex-direction: row !important;
+}
+
+.video-thumbnail-wrapper {
+    position: relative;
+    display: inline-block;
+    height: 20.9%;
+    width: 300px;
+    min-height: 161px;
+}
+
+.video-thumbnail{
+    border-radius: 8px;
+    height: 20.9%;
+    min-height: 161px;
+    display: block;
+    width: 100%;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.play-button .icon {
+    cursor: pointer;
+    color: white; /* Optional: Set the color of the play button icon */
+    font-size: 24px; /* Optional: Adjust the size of the play button icon */
+}
+
+::ng-deep .video-dialog .mat-dialog-content{
+    padding: 0px;
 }
 
 .configuration-header{
@@ -62,7 +114,8 @@
 }
 
 .configuration-body{
-    height: calc(100% - 40px);
+    height: calc(100% - 52px);
+    overflow: auto;
 }
 
 /* img{
@@ -91,10 +144,8 @@
 .steps-wrapper{
     display: flex;
     flex-direction: column;
+    padding-top: 12px;  
     gap: 12px;
-    padding-top: 24px;  
-    border-top: 1px solid var(--border-100);
-    overflow: auto;
 }
 
 .step-wrapper{
@@ -196,24 +247,19 @@
 }
 
 .configure-wrapper{
-    height: calc(100% - 56px);
+    height: 100%;
+    padding: 16px 20px;
     overflow: auto;
-    padding-top: 24px;
-    padding-right: 24px;
     gap: 20px;
     display: flex;
     flex-direction: column;
 }
 
 .form-wrapper{
-    padding-top: 24px;
-    padding-right: 24px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     height: 100%;
-    width: 70%;
-    overflow: auto;
 }
 
 .script-wrapper{
@@ -265,7 +311,8 @@
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
-    padding: 0;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-200);
   }
 
   .validation-sub-text
@@ -340,7 +387,8 @@
   }
 
   .details-wrapper{
-      height: calc(100% - 60px);
+      height: 100%;
+      padding: 16px 20px;
   }
 
   .details-wrapper ::ng-deep .mat-form-field{
