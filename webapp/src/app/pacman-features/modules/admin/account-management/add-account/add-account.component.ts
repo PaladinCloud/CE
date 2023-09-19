@@ -11,6 +11,7 @@ import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 import { MatDialog } from '@angular/material/dialog';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 
 @Component({
@@ -34,9 +35,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   qualysApiUrl: string;
   qualysApiUser: string;
   redHatId: string;
-  centralInstance: string;
   redHatToken: string;
-  redHatRegion: string;
+  redHatAccountName: string;
   redHatOwner: string;
   qualysApiPassword: string;
   projectId: string;
@@ -49,7 +49,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   clientId: string;
   isValidating = false;
   isValidated = false;
-  isValid = false;
+  isValid = true;
   serviceAccount = "";
   gcpProjectId = "";
   location = "";
@@ -73,8 +73,10 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   @ViewChild('accountForm', {static: false}) accountForm: NgForm;
   @ViewChild('supportInfoRef') supportInfoRef: TemplateRef<any>;
   @ViewChild("connectRef") connectRef: TemplateRef<any>;
+
+  @ViewChild("redHatStepsVideo") redHatStepsVideo: TemplateRef<any>;
   name = 'Video events';
-  videoSource = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
+  videoSource = "https://paladincloud-production-video.s3.amazonaws.com/redhat-setup-video.mp4";
   @ViewChild('videoPlayer') videoplayer: any;
   public startedPlay:boolean = false;
   public show:boolean = false;
@@ -116,9 +118,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
 
   public redHatFormErrors = {
     redHatId: '',
-    centralInstance: '',
+    redHatAccountName: '',
     redHatToken: '',
-    redHatRegion: '',
     redHatOwner: ''
   }
 
@@ -198,6 +199,10 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   buttonClicked: boolean = false;
   dialogRef: any;
   selectedAccountName: any;
+  isAdding: boolean = false;
+  errorMessage: any;
+  selectedAccountImage: any;
+  addDetailsStepperIndex: number;
   
   constructor(private workflowService: WorkflowService,
     private activatedRoute: ActivatedRoute,
@@ -207,6 +212,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     private notificationObservableService: NotificationObservableService,
     private dataCacheService: DataCacheService,
     public dialog: MatDialog,
+    private gaService: GoogleAnalyticsService,
     public form: FormBuilder,
     ) {
       this.activatedRoute.queryParams.subscribe(params => {
@@ -275,25 +281,33 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     videoplayer.nativeElement.play();
   }
 
-  displayTemplate(){
+  displayTemplate(addDetailsStepperIndex?){
     const currentAccount = this.selectedAccount.toLowerCase();
+    if(addDetailsStepperIndex>=0){
+      this.currentStepperIndex = this.addDetailsStepperIndex;
+    }
     switch (this.currentStepperIndex) {
       case 0:
         if(currentAccount=="azure" || currentAccount == "aqua" || currentAccount == "qualys" || currentAccount == "gcp" || currentAccount == "red hat")
         this.currentTemplateRef = this.configureAccountRef;
-        else
-        this.currentTemplateRef = this.addDetailsRef;
+        else{
+          this.addDetailsStepperIndex = this.currentStepperIndex;
+          this.currentTemplateRef = this.addDetailsRef;
+        }
         break;
       case 1:
         if(currentAccount=="aws")
             this.currentTemplateRef = this.configureAccountRef;
         else if(currentAccount == "gcp"){
              this.currentTemplateRef = this.connectRef;
-        } else
-            this.currentTemplateRef = this.addDetailsRef;
+        } else{
+          this.addDetailsStepperIndex = this.currentStepperIndex;
+          this.currentTemplateRef = this.addDetailsRef;
+        }
         break;
       case 2:
         if(currentAccount=="gcp"){
+          this.addDetailsStepperIndex = this.currentStepperIndex;
           this.currentTemplateRef = this.addDetailsRef;
         }else{
           this.currentTemplateRef = this.reviewRef;
@@ -314,12 +328,14 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.createCommand();
     }
     if (clickedButton == 'back') {
+      this.gaService.event('Button', 'Click', 'Back');
       if(this.currentStepperIndex == 0){
         this.selectedAccount = "";
       }
       else
       this.currentStepperIndex--;
     } else{
+      this.gaService.event('Button', 'Click', 'Next');
       this.currentStepperIndex++;
     }
     this.displayTemplate();
@@ -360,9 +376,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
 
       this.redHatPluginForm = this.form.group({
         redHatId: ['', [Validators.required]],
-        centralInstance: ['',Validators.required],
         redHatToken: ['',Validators.required],
-        redHatRegion: [''],
+        redHatAccountName: [''],
         redHatOwner: [''],
       })
     }
@@ -378,10 +393,14 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     }
 
     closeDialog(): void {
-      this.dialogRef.close();
+      if(this.dialogRef){
+        this.dialogRef.close();
+      }
     }
 
   selectAccount(account:any){
+    this.gaService.event('Button', 'Click', 'Select Plugin');
+    this.isValid = true;
     if(account.name.toLowerCase() == "tenable"
         || account.name.toLowerCase() == "aqua"
       ){
@@ -389,6 +408,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           return;
     }
     this.selectedAccount = account.name;
+    this.selectedAccountImage = account.img;
     this.configureSteps = [];
 
     this.router.navigate([], {
@@ -419,10 +439,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           {
             id: 2,
             name: "Configure Access"
-          },
-          {
-            id: 3,
-            name: "Review"
           }
         ]
         this.currentPluginForm = this.awsPluginForm;
@@ -444,10 +460,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           {
             id: 2,
             name: "Add Details"
-          },
-          {
-            id: 3,
-            name: "Review"
           }
         ]
         break;
@@ -464,10 +476,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
             {
               id: 3,
               name: "Add Details"
-            },
-            {
-              id: 4,
-              name: "Review"
             }
           ]
         this.currentPluginForm = this.gcpPluginForm;
@@ -492,10 +500,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
             {
               id: 2,
               name: "Add Details"
-            },
-            {
-              id: 3,
-              name: "Review"
             }
           ]
           break;
@@ -508,10 +512,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           {
             id: 2,
             name: "Add Details"
-          },
-          {
-            id: 3,
-            name: "Review"
           }
         ]
         this.currentPluginForm = this.aquaPluginForm;
@@ -523,21 +523,29 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.stepperData = [
           {
             id: 1,
-            name: "Configure Access"
+            name: "Configure Access",
+            stepInfo: "Setup your Account"
           },
           {
             id: 2,
-            name: "Add Details"
+            name: "Add Details",
+            stepInfo: "Provide Account Details"
           }
         ]
         this.currentPluginForm = this.redHatPluginForm;
         this.configureSteps = [
-           "Go to Azure active directory",
-           "Navigate to App registration and register new application",
-           "Once registered click on client credentials and create a new client secret",
-           "Get the Application ID, Directory ID and Client Secret Value",
-           "Configure the registered App to allow access to the Azure Subscriptions, for which data needs to be collected."
-          ];
+          "Access the ACS Instance page by selecting 'Advanced Security Cluster' in the side menu. Click on the ACS instance you want to link with Paladin Cloud.",
+          "Inside the chosen ACS instance, copy the 'ID' from the 'Instance Details' card.",
+          "Switch to the Paladin Cloud application, move to step 2 (Add Details), and paste the copied 'ID' into the 'ID Field'.",
+          "Return to the Red Hat ACS Instance page and click the “Open ACS Console” button.",
+          "Access Platform Configuration from the side menu, and then choose the 'Integrations' option.",
+          "Scroll down to the 'Authentication Tokens' section.",
+          "Select 'API Token'. You'll be taken to the 'Integration API Tokens' page, which lists previously generated tokens (if any).",
+          "Click the 'Generate Token' button.",
+          "Name the token and choose a role that suits your requirements.",
+          "Copy the generated token and paste it into the token input field within the Red Hat Plugin in the Paladin Cloud application.",
+          "Hit the 'Validate' button to confirm and successfully add the plugin to Paladin Cloud"
+        ];
           break;
     }
     this.displayTemplate();
@@ -576,6 +584,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   
 
   validateAccount(){
+    this.gaService.event('Button', 'Click', 'Add Plugin');
     this.showValidation();
     const provider = this.selectedAccount.toLowerCase();
     let payload = {};
@@ -618,33 +627,45 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           "platform": this.selectedAccount.toLowerCase()
         }
         break;
-      case "redhat":
+      case "red hat":
         payload = {
-          redHatId: this.redHatId,
-          centralInstance: this.centralInstance,
-          redHatToken: this.redHatToken,
-          redHatRegion: this.redHatRegion,
-          redHatOwner: this.redHatOwner
+          platform: "redhat",
+          redhatAccountId: this.redHatId,
+          redhatAccountName: this.redHatAccountName,
+          redhatToken: this.redHatToken,
+          redhatOwner: this.redHatOwner
         }
         break;
     }
     this.isValidating = true;
-    const url = environment.validateAccount.url;
+    const url = this.replaceUrl(environment.validateAccount.url, 'validate');
     const method = environment.validateAccount.method;
     this.validateSubscription = this.commonResponseService.getData(url,method,payload,{})
     .subscribe(response=>{
       try{
         const data = response.data;
-        this.isValid = data.validationStatus.toLowerCase() != "failure";
-        this.isValidating = false;
+        const status = data.validationStatus || data.status;        
+        this.isValid = status.toLowerCase() != "failure" ;
         this.isValidated = true;
         if(!this.isValid){
+          this.displayTemplate(this.addDetailsStepperIndex);
+          this.closeDialog();
+          this.errorMessage = data.message;
           this.errorList = data.errorDetails?.split(",");
+        }else {
+          this.isValidating = false;
+          this.onSubmit();
         }
       }
       catch(error){
+        this.closeDialog();
+        this.notificationObservableService.postMessage("Something went wrong", 3000, "error", "Error");
         console.log(error,"error js");
       }
+    }, error => {
+        this.closeDialog();
+        this.notificationObservableService.postMessage("Something went wrong", 3000, "error", "Error");
+        console.log(error,"api error");
     })
   }
 
@@ -666,6 +687,7 @@ goToConfigure(){
 }
 
 onSubmit(){
+  this.isAdding = true;
   this.buttonClicked = true;
    const provider = this.selectedAccount.toLowerCase();
    let accountid = "";
@@ -714,11 +736,11 @@ onSubmit(){
         break;
       case "red hat":
         payload = {
-          redHatId: this.redHatId,
-          centralInstance: this.centralInstance,
-          redHatToken: this.redHatToken,
-          redHatRegion: this.redHatRegion,
-          redHatOwner: this.redHatOwner
+          platform: "redhat",
+          redhatAccountId: this.redHatId,
+          redhatAccountName: this.redHatAccountName,
+          redhatToken: this.redHatToken,
+          redhatOwner: this.redHatOwner
         }
         break;
 
@@ -726,7 +748,7 @@ onSubmit(){
    const userDetails = this.dataCacheService.getUserDetailsValue();
    let userId = userDetails.getEmail(); 
    payload['createdBy'] = userId;
-   const url = environment.createAccount.url;
+   const url = this.replaceUrl(environment.createAccount.url, 'create');
    const method = environment.createAccount.method;
    let notificationMessage = "";
    this.commonResponseService.getData(url,method,payload,{})
@@ -734,20 +756,42 @@ onSubmit(){
      try{
        const data = response.data;
        if(data){
-           if(data.validationStatus.toLowerCase() !== "failure"){
+          if(this.dialogRef){
+            this.closeDialog();
+          }
+           this.isAdding = false;
+           const status = data.validationStatus || data.status;           
+           this.isValid = status.toLowerCase() != "failure" ;
+           if(this.isValid){
             notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" has been created successfully";
             this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
+            this.redirectTo();
            } else{
-            notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" creation has been failed";
-            this.notificationObservableService.postMessage(notificationMessage,3000,"error","Error");
-           }
-           this.redirectTo();
-       }
+            this.displayTemplate(this.addDetailsStepperIndex);
+            this.errorMessage = data.message;
+             notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" creation has been failed";
+             this.notificationObservableService.postMessage(notificationMessage,3000,"error","Error");
+            }
+          }
+          if(this.dialogRef){
+            this.closeDialog();
+          }
+          this.isAdding = false;
        }
       catch(error){
         console.log(error,"error js");
       }
    })
+}
+
+replaceUrl(url, action=''){
+  if(this.getImageName()=="redhat"){
+    return url.replace("{pluginSelected}", this.getImageName());
+  }else if(action=='validate'){
+    return url.replace("{pluginSelected}/","");
+  } else {
+    return url.replace("/{pluginSelected}/","").replace(action, '');
+  }
 }
 
 isSelectedAccount(account:string){
@@ -781,4 +825,16 @@ copyToClipboard(commands) {
    this.secondGcpCommand = "gcloud iam workload-identity-pools providers create-aws "+ this.providerId +" --workload-identity-pool="+ this.workloadIdentityPoolId +" --account-id="+ this.projectId+"--location="+this.location;
    this.thirdGcpCommand = "gcloud iam service-accounts add-iam-policy-binding "+ this.serviceAccount+" --role roles/iam.workloadIdentityUser --member" + "principalSet://iam.googleapis.com/projects/"+ this.gcpProjectNumber+"/locations/" + this.location +"/workloadIdentityPools/"+ this.workloadIdentityPoolId+"/*"
   }
+
+  openVideoDialog(){
+    this.gaService.event('Button', 'Click', 'Video');
+    this.dialog.open(DialogBoxComponent, {
+      width: '800px',
+      data: { 
+            customClass: 'video-dialog',
+            template: this.redHatStepsVideo,
+          } 
+    });
+  }
+
 }

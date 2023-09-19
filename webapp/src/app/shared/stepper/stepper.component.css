@@ -35,6 +35,8 @@
 
 ::ng-deep .mat-vertical-content-container{
     margin-left: 12px !important;
+    height: 40px !important;
+    bottom: 12px !important;
 }
 
 ::ng-deep .mat-step-icon{
@@ -52,9 +54,38 @@
 }
 
 ::ng-deep .mat-vertical-stepper-header{
-    padding: 24px 0px;
+    padding: 8px 0px;
+    height:  50px !important;
+    align-items: start !important;
 }
 
 ::ng-deep .mat-step-icon-state-edit{
     background-color: var(--primary-100) !important;
 }
+
+::ng-deep .mat-step-label{
+    color: var(--gray-700, #344054);
+    /* Text sm/Semibold */
+    font-family: Mark Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.step-label {
+    font-weight: bold;
+  }
+  
+  .subtext {
+    color: var(--gray-600, #475467);
+    font-feature-settings: 'clig' off, 'liga' off;
+    /* Body-2 */
+    font-family: Mark Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 142.857% */
+    letter-spacing: 0.1px; 
+    white-space: pre-wrap
+  }

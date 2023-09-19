@@ -5,7 +5,6 @@
     </div>
     <div class="page-content" [class.hide]="!selectedAccount">
         <div class="configuration-header">
-            <img class="cloud-header" src="../../../../../../assets/icons/{{getImageName()}}-color.svg">
             <h6>
                 {{selectedAccount}} Plugin Configuration
             </h6>
@@ -98,7 +97,7 @@
     <div class="configuration-body">
         <h6>Configure Access</h6>
         <span class="subtext">
-            Follow the instructions below to setup your account.
+            Follow the instruction to setup your account.
         </span>
           <div  class="configure-wrapper" *ngIf="pluginSelected===('aws')">
             <div class="download-template">
@@ -175,7 +174,6 @@
                     </video>
                 </div>
             </div>
-          
     </div>
 </ng-template>
 
@@ -183,7 +181,7 @@
     <div class="configuration-body">
         <h6>Add Details</h6>
         <span class="subtext">
-            Fill account details below to configure your account.
+            Follow the instruction to setup your account.
         </span>
         <div *ngIf="pluginSelected===('aws')" class="details-wrapper"> 
             <form class="form-wrapper" [formGroup]="awsPluginForm">
@@ -220,9 +218,8 @@
         <div *ngIf="pluginSelected===('red hat')" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="redHatPluginForm">
                 <app-input-field [label]="'ID'" [(value)]="redHatId" [parentForm]="redHatPluginForm" formControlName="redHatId" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Central Instance'" [(value)]="centralInstance" [parentForm]="redHatPluginForm" formControlName="centralInstance" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Token'" type="textarea" height="'56px'" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Region (Optional)'" [(value)]="redHatRegion" [parentForm]="redHatPluginForm" formControlName="redHatRegion" [formErrors]="redHatFormErrors"></app-input-field>
+                <app-input-field [label]="'Token'" type="textarea" height="56px" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'Account Name'" [(value)]="redHatAccountName" [parentForm]="redHatPluginForm" formControlName="redHatAccountName" [formErrors]="redHatFormErrors"></app-input-field>
                 <app-input-field [label]="'Owner (Optional)'" [(value)]="redHatOwner" [parentForm]="redHatPluginForm" formControlName="redHatOwner" [formErrors]="redHatFormErrors"></app-input-field>
             </form>
         </div>
@@ -233,103 +230,6 @@
                 <app-input-field [label]="'API URL'" [(value)]="aquaApiUrl" [parentForm]="aquaPluginForm" formControlName="aquaApiUrl" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
                 <app-input-field [label]="'Client Domain URL'" [(value)]="aquaClientDomainUrl" [isDisabled]="true" [parentForm]="aquaPluginForm" formControlName="aquaClientDomainUrl" [formErrors]="aquaFormErrors"></app-input-field>
             </form>
-        </div>
-    </div>
-</ng-template>
-
-<ng-template #reviewRef>
-    <div class="configuration-body">
-        <h6>Review</h6>
-        <span class="subtext">
-            Review the below details and configure your account.
-        </span>
-        <div class="review-wrapper">
-            <div class="account-details-wrapper">
-            <span class="details-header">Plugin Details</span>
-            <div class="details-content">
-                <div *ngIf="pluginSelected===('aws')"> 
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Account ID</span>
-                        <span class="value-wrapper">{{accountId}}</span>
-                    </div>
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Account Name</span>
-                        <span class="value-wrapper">{{accountName.length?accoutnName:accountId}}</span>
-                    </div>
-                </div>
-                <div *ngIf="pluginSelected===('azure')"> 
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Tenant ID</span>
-                        <span class="value-wrapper">{{tenantId}}</span>
-                    </div>
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Tenant Name</span>
-                        <span class="value-wrapper">{{tenantName}}</span>
-                    </div>
-                </div>
-                <div *ngIf="pluginSelected===('gcp')"> 
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Project ID</span>
-                        <span class="value-wrapper">{{projectId}}</span>
-                    </div>
-                </div>
-                <div *ngIf="pluginSelected===('qualys')"> 
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">API User Name</span>
-                        <span class="value-wrapper">{{qualysApiUser}}</span>
-                    </div>
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Password</span>
-                        <span class="value-wrapper">{{hidePassword(qualysApiPassword)}}</span>
-                    </div>
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">API URL</span>
-                        <span class="value-wrapper">{{qualysApiUrl}}</span>
-                    </div>
-                </div>
-                <div *ngIf="pluginSelected===('aqua')"> 
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Username</span>
-                        <span class="value-wrapper">{{aquaApiUser}}</span>
-                    </div>
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">Password</span>
-                        <span class="value-wrapper">{{hidePassword(aquaApiPassword)}}</span>
-                    </div>
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">API URL</span>
-                        <span class="value-wrapper">{{aquaApiUrl}}</span>
-                    </div>
-                    <div class="flex flex-row gap-12">
-                        <span class="key-wrapper">client Domain URL</span>
-                        <span class="value-wrapper">{{aquaClientDomainUrl}}</span>
-                    </div>
-                </div>
-            </div>
-            </div>
-            <div class="configure-access-wrapper" [class.hide]="selectedAccount.toLowerCase() =='aqua' || selectedAccount.toLowerCase() =='qualys'">
-                <span class="configure-header">Configure Access</span>
-                <div class="configure-content">
-                    <div *ngIf="pluginSelected===('aws')"> 
-                        <div class="flex flex-row gap-12">
-                            <span class="key-wrapper">Role Arn</span>
-                            <span class="value-wrapper">{{roleArn}}</span>
-                        </div>
-                    </div>
-                    <div *ngIf="pluginSelected===('azure')"> 
-                        <div class="flex flex-row">
-                            <span class="key-wrapper">Secret Data</span>
-                            <span class="value-wrapper">{{hidePassword(tenantSecretData)}}</span>
-                        </div>
-                    </div>
-                    <div *ngIf="pluginSelected===('gcp')"> 
-                        <div class="flex flex-row gap-12">
-                            <span class="key-wrapper">Service Account Key JSON</span>
-                            <span class="value-wrapper">{{serviceAccount}}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </ng-template>
@@ -348,58 +248,60 @@
 </ng-template>
 
 <ng-template #connectRef>
+    <div class="header">
+        <h6>Connect</h6>
+        <span class="subtext">
+            Copy and execute the below commands in GCP Cloud Shell for the project.
+        </span>
+    </div>
     <div class="configuration-body connector-container flex flex-col gap-16">
-        <div class="header-container">
-            <div class="header-description flex flex-col gap-4">
-                <app-text text="Connect" classNames="body-2"></app-text>
-                <app-text classNames="body-3" text="Copy and execute the below commands in GCP Cloud Shell for the project"></app-text>
-            </div>
-        </div>
-        <div class="commands-container border-200">
-            <div class="commands-header-container">
-                <div class="commands-header-wrapper flex flex-between flex-align-center ">
-                    <div class="body-1">Code</div>
-                    <div class="copy-button">
-                        <button mat-button (click)="copyToClipboard(commands)">
-                            <img src="/assets/icons/copy-content.svg" alt="copy icon">
-                            <span style="font: var(--text-body-3)">Copy</span>
-                        </button>
+        <div class="configure-wrapper">
+            <div class="commands-container border-200">
+                <div class="commands-header-container">
+                    <div class="commands-header-wrapper flex flex-between flex-align-center ">
+                        <div class="body-1">Code</div>
+                        <div class="copy-button">
+                            <button mat-button (click)="copyToClipboard(commands)">
+                                <img src="/assets/icons/copy-content.svg" alt="copy icon">
+                                <span style="font: var(--text-body-3)">Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="commands-body-container flex">
+                    <div class="commands-number-container flex flex-col gap-4">
+                        <section>
+                            <ul>
+                                <li *ngFor="let command of commands; let i=index" style="color: grey;"> {{ i+1 }} </li>
+                            </ul>
+                        </section>
+                    </div>
+                    <div class="commands-body-wrapper flex flex-row gap-4">
+                        <section>
+                            <ul>
+                              <li *ngFor="let command of commands">{{ command.command }} <span class="command-service-name">{{ command.service }}</span></li>
+                            </ul>
+                        </section>
+                          
                     </div>
                 </div>
             </div>
-            <div class="commands-body-container flex">
-                <div class="commands-number-container flex flex-col gap-4">
-                    <section>
-                        <ul>
-                            <li *ngFor="let command of commands; let i=index" style="color: grey;"> {{ i+1 }} </li>
-                        </ul>
-                    </section>
-                </div>
-                <div class="commands-body-wrapper flex flex-row gap-4">
-                    <section>
-                        <ul>
-                          <li *ngFor="let command of commands">{{ command.command }} <span class="command-service-name">{{ command.service }}</span></li>
-                        </ul>
-                    </section>
-                      
-                </div>
-            </div>
-        </div>
-        <div class="note-container">
-            <div class="note-wrapper flex flex gap-8 padding-20">
-                <div class="icon-indent">
-                    <mat-icon style="font-size: 20px;">info</mat-icon>
-                </div>
-                <div class="note-body">
-                    <app-text classNames="body-2" text="Note"></app-text>
-                    <div style="font: var(--text-body-3)">
-                        For the discovery of GCP resources and the authentication process, you must enable the following APIs: 
-                        <span *ngFor="let command of commands;let i=index">
-                            <span class="command-service-name">{{ command.service }}</span>
-                            <span *ngIf="i<commands.length-2">, </span>
-                            <span *ngIf="i==commands.length-2"> and </span>
-                        </span>.
-                        If you don’t enable these APIs, we’ll enable them during the onboarding process by running the GCloud script.
+            <div class="note-container">
+                <div class="note-wrapper flex flex gap-8 padding-20">
+                    <div class="icon-indent">
+                        <mat-icon style="font-size: 20px;">info</mat-icon>
+                    </div>
+                    <div class="note-body">
+                        <app-text classNames="body-2" text="Note"></app-text>
+                        <div style="font: var(--text-body-3)">
+                            For the discovery of GCP resources and the authentication process, you must enable the following APIs: 
+                            <span *ngFor="let command of commands;let i=index">
+                                <span class="command-service-name">{{ command.service }}</span>
+                                <span *ngIf="i<commands.length-2">, </span>
+                                <span *ngIf="i==commands.length-2"> and </span>
+                            </span>.
+                            If you don’t enable these APIs, we’ll enable them during the onboarding process by running the GCloud script.
+                        </div>
                     </div>
                 </div>
             </div>
