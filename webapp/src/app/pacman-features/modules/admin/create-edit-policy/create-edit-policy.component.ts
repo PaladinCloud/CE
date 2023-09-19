@@ -37,7 +37,6 @@
  import { CONFIGURATIONS } from 'src/config/configurations';
  import { CustomValidators } from 'src/app/shared/custom-validators';
  import { DataCacheService } from 'src/app/core/services/data-cache.service';
- import { UserCapabilities } from 'src/app/shared/constants/role-capabilites';
  
  @Component({
    selector: 'app-admin-create-edit-policy',
@@ -249,13 +248,6 @@
    logsTableDataLoaded : boolean = false;
    jobInterval: number;
  
-   isPolicyEnableDisableAllowed = false;
-   isPolicySeverityEditAllowed = false;
-   isPolicyCategoryEditAllowed = false;
-   isPolicyParamsEditAllowed = false;
-   isAutofixSwitchToggleAllowed = false;
-   isWarningNotificationToggleAllowed = false;
- 
    constructor(
      private datePipe: DatePipe,
      private activatedRoute: ActivatedRoute,
@@ -280,7 +272,7 @@
    formData = {};
  
    ngOnInit() {
-    //  this.jobInterval = parseInt(CONFIGURATIONS.optional.general.Interval.JobInterval);
+     this.jobInterval = parseInt(CONFIGURATIONS.optional.general.Interval.JobInterval);
      this.whiteListColumns = Object.keys(this.logColumnsWidths);
      this.urlToRedirect = this.router.routerState.snapshot.url;
      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
@@ -293,7 +285,6 @@
        this.pageLevel
      );
      this.getCurrentDate();
-     this.checkRoleBasedElementAccess();
    }
  
    getCurrentDate(){
@@ -451,7 +442,6 @@
          this.ispolicyCreationSuccess = true;
          this.enableUpdate = false;
          const notificationMessage = "Policy " + this.policyDisplayName + " updated successfully!!";
-         this.checkRoleBasedElementAccess();
          this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
          // this.navigateBack();
        },
@@ -620,8 +610,6 @@
         this.disableDescription = this.policyDetails.disableDesc;
         this.exemptionDetails = this.policyDetails.policyExemption;
         
-        this.checkRoleBasedElementAccess();
-  
         if (this.resolutionUrl == null || this.resolutionUrl == "") {
           this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
         }
@@ -828,67 +816,6 @@
         }
       })
   
-    }
-  
-    checkRoleBasedElementAccess(){
-      const roleCapabilities = this.dataStore.getRoleCapabilities();
-      const category = this.selectedCategory?.toLowerCase();
-      this.canDisableOrEnablePolicy(roleCapabilities, category);
-      this.canEditSeverityOfPolicy(roleCapabilities, category);
-      this.canEditCategoryOfPolicy(roleCapabilities, category);
-      this.canUpdatePolicyParams(roleCapabilities);
-      this.canEditAutoFixStatus(roleCapabilities);
-    }
-  
-    canDisableOrEnablePolicy(roleCapabilities, category) {
-      this.isPolicyEnableDisableAllowed = roleCapabilities.includes(`${category}-enable-disable`);
-    }
-    
-    canEditSeverityOfPolicy(roleCapabilities, category) {
-      let isSeverityEditAllowed = false;
-      switch(category){
-        case "security":
-          isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.SecuritySeverityUpdate);
-          break;
-        case "cost":
-          isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.CostSeverityUpdate);
-          break;
-        case "operations":
-          isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.OperationsSeverityUpdate);
-          break;
-        case "tagging":
-          isSeverityEditAllowed = roleCapabilities.includes(UserCapabilities.TaggingSeverityUpdate);
-          break;
-      }
-      this.isPolicySeverityEditAllowed = isSeverityEditAllowed;
-    }
-  
-    canEditCategoryOfPolicy(roleCapabilities, category) {
-      let isCategoryEditAllowed = false;
-      switch(category){
-        case "security":
-          isCategoryEditAllowed = roleCapabilities.includes(UserCapabilities.SecurityCategoryUpdate);
-          break;
-        case "cost":
-          isCategoryEditAllowed = roleCapabilities.includes(UserCapabilities.CostCategoryUpdate);
-          break;
-        case "operations":
-          isCategoryEditAllowed = roleCapabilities.includes(UserCapabilities.OperationsCategoryUpdate);
-          break;
-        case "tagging":
-          isCategoryEditAllowed = roleCapabilities.includes(UserCapabilities.TaggingCategoryUpdate);
-          break;
-      }
-      this.isPolicyCategoryEditAllowed = isCategoryEditAllowed;
-    }
-    
-    canUpdatePolicyParams(roleCapabilities) {
-      this.isPolicyParamsEditAllowed = roleCapabilities.includes(UserCapabilities.PolicyParamUpdate);
-    }
-    
-    canEditAutoFixStatus(roleCapabilities) {
-      this.isAutofixSwitchToggleAllowed = roleCapabilities.includes(UserCapabilities.AutofixEnableDisable);
-      this.isWarningNotificationToggleAllowed = roleCapabilities.includes(UserCapabilities.WarningNotificationEnableDisable);
     }
   
     ngOnDestroy() {

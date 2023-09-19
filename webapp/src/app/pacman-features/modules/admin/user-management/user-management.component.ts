@@ -17,7 +17,6 @@ import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
-import { ROLES } from 'src/app/shared/constants/roles';
 
 
 @Component({
@@ -94,7 +93,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   action: any;
   updatedRoles = ["ROLE_USER"];
-  allRoles = [];
 
   private userForm: FormGroup;
   public userFormErrors : any = {
@@ -102,8 +100,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     firstName: '',
     lastName: ''
   }
-
-  private editableRoles = [];
 
   constructor(
     private router: Router,
@@ -130,6 +126,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.buildForm();
+    this.getRoles();
   }
 
   getPreservedState(){
@@ -168,39 +165,20 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getEditableRoles(rolesData){
-    this.allRoles = rolesData.map(role => role.roleName);
-    const userRoles = this.dataCacheService.getUserDetailsValue().getRoles();
-    let rolesEditable = [];    
-    if(userRoles.includes(ROLES.AccountManager)){
-      rolesEditable = rolesData.find(data => data.roleName==ROLES.AccountManager).rolesEditable;
-    } else if(userRoles.includes(ROLES.TechnicalAdmin)){
-      rolesEditable = rolesData.find(data => data.roleName==ROLES.TechnicalAdmin).rolesEditable;
-    } else if(userRoles.includes(ROLES.SecurityAdmin)){
-      rolesEditable = rolesData.find(data => data.roleName==ROLES.SecurityAdmin).rolesEditable;
-    } else{
-      rolesEditable = rolesData.find(data => data.roleName==ROLES.ReadOnly).rolesEditable;
-    }
-
-    return rolesEditable;
-  }
-
-  async getRoles() {
-    try {
-      const url = environment.roles.url;
-      const method = environment.roles.method;
-      const response = await this.adminService.executeHttpAction(url, method, {}, {}).toPromise();
-  
-      if (response) {
-        const userRoles = response[0];
-        this.processRoles(userRoles);
+  getRoles(){
+    const url = environment.roles.url;
+    const method = environment.roles.method;
+    this.adminService.executeHttpAction(url,method,{},{}).subscribe(response=>{
+      try{
+        if(response){
+          const userRoles = response[0];
+          this.processRoles(userRoles);
+        }
+      }catch(error){
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
       }
-
-      return response[0];
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
+    })
   }
 
   processRoles(userRoles){
@@ -242,7 +220,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   createEditUser(currentRow:any) {
-    this.getUpdatedUserRoles();
     if(currentRow){
         this.dialogHeader = "Edit User Information";
         this.emailID = currentRow["Email"].valueText;
@@ -510,9 +487,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         optionValue: 'Status'
       })
       this.routerParam();
-      this.getFilterArray().then(async() => {
-        const rolesData = await this.getRoles();
-        this.editableRoles = this.getEditableRoles(rolesData);
+      this.getFilterArray().then(() => {
         this.updateComponent();
       }).catch(e => {
         this.logger.log("jsError: ", e);
@@ -650,11 +625,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             } else {
               dropDownItems.push("Activate");
             }
-            if((getData[row]["Roles"].includes(ROLES.AccountManager) && !this.editableRoles.includes(ROLES.AccountManager))
-            || (getData[row]["Roles"].includes(ROLES.TechnicalAdmin) && !this.editableRoles.includes(ROLES.TechnicalAdmin))
-            || (getData[row]["Roles"].includes(ROLES.SecurityAdmin) && !this.editableRoles.includes(ROLES.SecurityAdmin))){
-              dropDownItems = [];
-            }
             cellObj = {
               ...cellObj,
               isMenuBtn: true,
@@ -681,11 +651,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
     
-  getUpdatedUserRoles(){
-    this.nonRemovableChips = this.allRoles.filter(role => !this.editableRoles.includes(role));
-    this.userRoles = this.allRoles;    
-  }
-
   onSelectAction(event:any){
     const action = event.action;
     const rowSelected = event.rowSelected;
