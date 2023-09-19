@@ -35,7 +35,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   qualysApiUser: string;
   redHatId: string;
   redHatToken: string;
-  redhatAccountName: string;
+  redHatAccountName: string;
   redHatOwner: string;
   qualysApiPassword: string;
   projectId: string;
@@ -117,7 +117,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
 
   public redHatFormErrors = {
     redHatId: '',
-    redhatAccountName: '',
+    redHatAccountName: '',
     redHatToken: '',
     redHatOwner: ''
   }
@@ -218,60 +218,13 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.selectedAccount = selectedAcc??"";
         this.breadcrumbPresent = selectedAcc??"Add Plugin";
         this.pluginSelected = selectedAcc?.toLowerCase();
+        this.selectedAccount = selectedAcc??"";
         if(this.pluginSelected){
           this.currentStepperIndex = 0;
           const selectedAccount = this.accountsList.find(account => account.name===selectedAcc);
           this.selectAccount(selectedAccount);
         }
         
-        this.selectedAccount = selectedAcc??"";
-        if(this.selectedAccount.toLowerCase()=="gcp"){
-          this.stepperData = [
-            {
-              id: 1,
-              name: "Add Details"
-            },
-            {
-              id: 2,
-              name: "Connect"
-            },
-            {
-              id: 3,
-              name: "Configure Access"
-            },
-            {
-              id: 4,
-              name: "Review"
-            }
-          ]
-        } else if(this.selectedAccount.toLowerCase()=="red hat"){
-          this.stepperData = [
-            {
-              id: 1,
-              name: "Configure Access"
-            },
-            {
-              id: 2,
-              name: "Add Details"
-            }
-          ]
-        }
-        else{
-          this.stepperData = [
-            {
-              id: 1,
-              name: "Add Details"
-            },
-            {
-              id: 2,
-              name: "Configure Access"
-            },
-            {
-              id: 3,
-              name: "Review"
-            }
-          ]
-        }
       })
     }
 
@@ -327,7 +280,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     videoplayer.nativeElement.play();
   }
 
-  displayTemplate(addDetailsStepperIndex=-1){
+  displayTemplate(addDetailsStepperIndex?){
     const currentAccount = this.selectedAccount.toLowerCase();
     if(addDetailsStepperIndex>=0){
       this.currentStepperIndex = this.addDetailsStepperIndex;
@@ -421,7 +374,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       this.redHatPluginForm = this.form.group({
         redHatId: ['', [Validators.required]],
         redHatToken: ['',Validators.required],
-        redhatAccountName: [''],
+        redHatAccountName: [''],
         redHatOwner: [''],
       })
     }
@@ -482,10 +435,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           {
             id: 2,
             name: "Configure Access"
-          },
-          {
-            id: 3,
-            name: "Review"
           }
         ]
         this.currentPluginForm = this.awsPluginForm;
@@ -507,10 +456,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           {
             id: 2,
             name: "Add Details"
-          },
-          {
-            id: 3,
-            name: "Review"
           }
         ]
         break;
@@ -527,10 +472,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
             {
               id: 3,
               name: "Add Details"
-            },
-            {
-              id: 4,
-              name: "Review"
             }
           ]
         this.currentPluginForm = this.gcpPluginForm;
@@ -555,10 +496,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
             {
               id: 2,
               name: "Add Details"
-            },
-            {
-              id: 3,
-              name: "Review"
             }
           ]
           break;
@@ -571,10 +508,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           {
             id: 2,
             name: "Add Details"
-          },
-          {
-            id: 3,
-            name: "Review"
           }
         ]
         this.currentPluginForm = this.aquaPluginForm;
@@ -586,11 +519,13 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.stepperData = [
           {
             id: 1,
-            name: "Configure Access"
+            name: "Configure Access",
+            stepInfo: "Please Provide Account Details Account Details v Account Details vAccount DetailsAccount DetailsAccount DetailsAccount DetailsAccount Details"
           },
           {
             id: 2,
-            name: "Add Details"
+            name: "Add Details",
+            stepInfo: "Please Provide Account Details"
           }
         ]
         this.currentPluginForm = this.redHatPluginForm;
@@ -685,8 +620,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         payload = {
           platform: "redhat",
           redhatAccountId: this.redHatId,
+          redHatAccountName: this.redHatAccountName,
           redhatToken: this.redHatToken,
-          redhatAccountName: this.redhatAccountName,
           redHatOwner: this.redHatOwner
         }
         break;
@@ -699,7 +634,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       try{
         const data = response.data;
         this.isValid = data.validationStatus.toLowerCase() != "failure";
-        this.isValidating = false;
         this.isValidated = true;
         if(!this.isValid){
           this.displayTemplate(this.addDetailsStepperIndex);
@@ -786,8 +720,8 @@ onSubmit(){
         payload = {
           platform: "redhat",
           redhatAccountId: this.redHatId,
+          redHatAccountName: this.redHatAccountName,
           redhatToken: this.redHatToken,
-          redhatAccountName: this.redhatAccountName,
           redhatOwner: this.redHatOwner
         }
         break;
@@ -804,6 +738,10 @@ onSubmit(){
      try{
        const data = response.data;
        if(data){
+          if(this.dialogRef){
+            this.closeDialog();
+          }
+           this.isAdding = false;
            if(data.validationStatus.toLowerCase() !== "failure"){
             notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" has been created successfully";
             this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
