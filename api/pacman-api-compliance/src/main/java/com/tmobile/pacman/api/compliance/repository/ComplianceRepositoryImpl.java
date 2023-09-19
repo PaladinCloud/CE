@@ -2463,10 +2463,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     Map<String, Object> parentDetMap = Maps.newHashMap();
                     String target = String.valueOf(issueDetail.get(TARGET_TYPE));
                     parentDetMap.put("parent", issueDetail.get(target+"_relations.parent"));
-                    parentDetMap.put("name", issueDetail.get(target+"x`.name"));
+                    parentDetMap.put("name", issueDetail.get(target+"_relations.name"));
                     Map<String, Object> partialDocument = Maps.newHashMap();
                     partialDocument.put(ISSUE_STATUS, OPEN);
                     partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
+                    SimpleDateFormat sdf1 = new SimpleDateFormat(YYYY_MM_DD_T, Locale.US);
+                    sdf1.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    partialDocument.put(MODIFIED_DATE, sdf1.format(new Date()));
                     issueDetail.put(STATUS, "revoked");
                     partialDocument.put(STATUS, "revoked");
                     partialDocument.put(DOC_TYPE, targetType);
