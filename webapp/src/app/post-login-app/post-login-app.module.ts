@@ -20,17 +20,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { AssetGroupObservableService } from '../core/services/asset-group-observable.service';
-import { AdminModule } from '../pacman-features/modules/admin/admin.module';
-import { NotificationsModule } from '../pacman-features/modules/notifications/notifications.module';
-import { ToolsModule } from '../pacman-features/modules/tools/tools.module';
 import { FetchResourcesService } from '../pacman-features/services/fetch-resources.service';
 import { TokenResolverService } from '../resolver/token-resolver.service';
 import { CopyElementService } from '../shared/services/copy-element.service';
 import { DownloadService } from '../shared/services/download.service';
 import { SharedModule } from '../shared/shared.module';
-import { AssetsModule } from './../pacman-features/modules/assets/assets.module';
 import { ComplianceModule } from './../pacman-features/modules/compliance/compliance.module';
-import { OmnisearchModule } from './../pacman-features/modules/omnisearch/omnisearch.module';
 import { AwsResourceTypeSelectionService } from './../pacman-features/services/aws-resource-type-selection.service';
 import { AssetGroupsComponent } from './asset-groups/asset-groups.component';
 import { ChangeDefaultAssetGroupComponent } from './change-default-asset-group/change-default-asset-group.component';
@@ -61,7 +56,6 @@ import { VulnerabilityReportComponent } from './vulnerability-report/vulnerabili
 import { MatMenuModule } from "@angular/material/menu";
 import { MatBadgeModule } from '@angular/material/badge';
 import { AssetTilesService } from '../core/services/asset-tiles.service';
-import { StatisticsModule } from '../pacman-features/modules/statistics/statistics.module';
 
 @NgModule({
 imports: [
@@ -74,13 +68,7 @@ imports: [
     PostLoginAppRoutingModule,
     SharedModule,
     ComplianceModule,
-    StatisticsModule,
     MatMenuModule,
-    AssetsModule,
-    NotificationsModule,
-    ToolsModule,
-    OmnisearchModule,
-    AdminModule,
     CdkTreeModule,
 ],
 declarations: [

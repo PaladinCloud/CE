@@ -14,3 +14,12 @@ class UploadLambdaSubmitJobZipFile(S3BucketObject):
     source = os.path.join(
         get_terraform_scripts_and_files_dir(),
         BATCH_JOB_FILE_NAME + ".zip")
+
+BATCH_LONG_RUNNING_JOB_FILE_NAME = "paladincloud-longrunningjob"
+
+class UploadLambdaSubmitJobZipFile(S3BucketObject):
+    bucket = BucketStorage.get_output_attr('bucket')
+    key = Settings.RESOURCE_NAME_PREFIX + PATH + BATCH_LONG_RUNNING_JOB_FILE_NAME + ".zip"
+    source = os.path.join(
+        get_terraform_scripts_and_files_dir(),
+        BATCH_LONG_RUNNING_JOB_FILE_NAME + ".zip")

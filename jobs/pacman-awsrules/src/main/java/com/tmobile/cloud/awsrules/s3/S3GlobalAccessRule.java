@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,11 +113,21 @@ public class S3GlobalAccessRule extends BasePolicy {
         if (!resourceAttributes.isEmpty()) {
             logger.info("=========================region {}",resourceAttributes.get("region"));
             try {
+                if(StringUtils.isEmpty(resourceAttributes.get("region")))
+                    throw new IllegalArgumentException("Region cannot be empty");
                 map = getClientFor(AWSService.S3, roleIdentifyingString, ruleParam);
                 awsS3Client = (AmazonS3Client) map.get(PacmanSdkConstants.CLIENT);
             } catch (UnableToCreateClientException e) {
                 logger.error("unable to get client for following input", e);
                 throw new InvalidInputException(e.toString());
+            }catch (IllegalArgumentException e)
+            {
+                logger.error("IllegalArgumentException thrown..{}", e.getMessage());
+                Annotation annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+                annotation.put(PacmanRuleConstants.SEVERITY, severity);
+                annotation.put(PacmanRuleConstants.CATEGORY, category);
+                annotation.put(PacmanRuleConstants.RESOURCE_ID, s3BucketName);
+                return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,annotation);
             }
         }
 		       

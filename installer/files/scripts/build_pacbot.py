@@ -45,6 +45,7 @@ class Buildpacbot(object):
         self.appsync_url = appsync_url
         self.lambda_path = lambda_path
         self.google_analytics = google_analytics
+        self.jobinterval = jobinterval
 
     def _clean_up_all(self):
         os.chdir(self.cwd)
@@ -219,7 +220,10 @@ class Buildpacbot(object):
                     lines[idx] = "tenant: '" + self.tenant_id + "',\n"
                 if "clientId: '" in line:
                     lines[idx] = "clientId: '" + self.client_id + "'"
-
+                    
+            if "JobInterval: ''" in line:
+                lines[idx] = lines[idx].replace("JobInterval: ''",
+                                                "JobInterval: '" + self.jobinterval + "'")
             if self.auth_type == "DB":
                 if "AUTH_TYPE: AZURE_SSO" in line:
                     lines[idx] = lines[idx].replace("AUTH_TYPE: AZURE_SSO", "AUTH_TYPE: DB")
@@ -305,6 +309,7 @@ if __name__ == "__main__":
     appsyncapikey =  os.getenv('APPSYNC_API_KEY')
     lambda_path = os.getenv('LAMBDA_PATH')
     google_analytics = os.getenv('GOOGLE_ANALYTICS')
+    jobinterval = os.getenv('JOB_SCHEDULE_INTERVAL')
     Buildpacbot(
         aws_details,
         api_domain_url,

@@ -14,7 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { OMNISEARCH_ROUTES } from '../../../shared/constants/routes';
+import { OMNISEARCH_ROUTES } from './omnisearch-routes';
 
 const routes: Routes = OMNISEARCH_ROUTES;
 

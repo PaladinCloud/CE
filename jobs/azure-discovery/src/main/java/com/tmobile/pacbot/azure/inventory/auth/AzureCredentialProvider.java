@@ -40,7 +40,7 @@ public class AzureCredentialProvider {
 	String roleName=System.getProperty("s3.role");
 	String credentialPrefix=System.getProperty("secret.manager.path");
 
-	
+
 	public AzureCredentialProvider() {
 		azureClients = new HashMap<>();
 		apiTokens = new HashMap<>();

@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.slf4j.Logger;
@@ -99,7 +100,9 @@ public class AccessKeyRotatedRule extends BasePolicy {
 			throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 		}
 		
-		Annotation annotation = null;		
+		Annotation annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+		annotation.put(PacmanRuleConstants.SEVERITY, severity);
+		annotation.put(PacmanRuleConstants.CATEGORY, category);
 		List<AccessKeyMetadata> accessKeyMetadatas;
 		String message =  null;
 		try {
@@ -112,12 +115,7 @@ public class AccessKeyRotatedRule extends BasePolicy {
 		                
 		                message = "Iam access keys for " + userName + " are NOT ROTATED for more than "+PacmanRuleConstants.ACCESSKEY_ROTATION_DURATION+" days";
 		                logger.info(message);       
-		                
-		                annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
-		                annotation.put(PacmanSdkConstants.DESCRIPTION,"access keys not rotated for more than " +PacmanRuleConstants.ACCESSKEY_ROTATION_DURATION+" days found");
-		                annotation.put(PacmanRuleConstants.SEVERITY, severity);
-		                annotation.put(PacmanRuleConstants.CATEGORY, category);
-		                
+						annotation.put(PacmanSdkConstants.DESCRIPTION,"access keys not rotated for more than " +PacmanRuleConstants.ACCESSKEY_ROTATION_DURATION+" days found");
 		                issue.put(PacmanRuleConstants.VIOLATION_REASON, "access keys not rotated for more than " +PacmanRuleConstants.ACCESSKEY_ROTATION_DURATION+" days found");
 		                issueList.add(issue);
 		                annotation.put("issueDetails",issueList.toString());
@@ -129,7 +127,12 @@ public class AccessKeyRotatedRule extends BasePolicy {
 		        } else{
 		            logger.info(userName,"Access key metadata is empty for username ");
 		        }
-		} catch (UnableToCreateClientException e) {
+		}
+		catch(NoSuchEntityException exception){
+			logger.error("NoSuchEntityException thrown..", exception);
+			return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,annotation);
+		}
+		catch (UnableToCreateClientException e) {
 			logger.error("unable to get client for following input", e);
 			throw new InvalidInputException(e.toString());
 		}	

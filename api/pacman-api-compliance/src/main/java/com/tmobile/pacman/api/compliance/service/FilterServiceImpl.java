@@ -561,7 +561,7 @@ public class FilterServiceImpl implements FilterService, Constants {
             List<LinkedHashMap<String, Object>> finalOpenIssuesByPolicyListFinal = dataList;
             if(rangeAttribute.contains(filterObj.get(Constants.OPTION_TYPE).toString().toUpperCase())){
                 filterREsponseMap.put(Constants.OPTION_RANGE, getRangeMapFromPolicyComplianceData(filterObj, finalOpenIssuesByPolicyListFinal));
-            } if(Constants.BOOLEAN_TYPE.equalsIgnoreCase(filterObj.get(Constants.OPTION_TYPE).toString())){
+            } else if(Constants.BOOLEAN_TYPE.equalsIgnoreCase(filterObj.get(Constants.OPTION_TYPE).toString())){
                 Set<Object> optionList  = finalOpenIssuesByPolicyListFinal.stream()
                         .filter(x -> x.containsKey(request.getAttributeName())).map(x -> x.get(request.getAttributeName()).toString()).collect(Collectors.toSet());
                 filterREsponseMap.put(Constants.OPTION_LIST, optionList);
