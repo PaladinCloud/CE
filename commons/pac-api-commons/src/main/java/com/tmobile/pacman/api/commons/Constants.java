@@ -349,6 +349,8 @@ public interface Constants {
     String SEV_INFO = "severityinfo";
     String ASSETS_AFFECTED = "assetsAffected";
     String CATEGORY = "category";
+
+    String ASSET_TYPE = "assetType";
     String VULN_TYPE = "vulntype";
     String PATCHABLE = "patchable";
     String ATTRIBUTES = "attributes";

@@ -368,7 +368,7 @@ public class AssetServiceImpl implements AssetService {
         for (String field : fields) {
             Map<String, Object> attribute = new LinkedHashMap<>();
             attribute.put(Constants.NAME, field);
-            String strValue = data.get(field).toString();
+            String strValue = data.get(field) != null ? data.get(field).toString() : "";
             attribute.put(Constants.VALUE, strValue );
             attribute.put(Constants.CATEGORY, category);
             if (StringUtils.isNotEmpty(strValue) && StringUtils.isNotBlank(strValue)) {
@@ -473,12 +473,14 @@ public class AssetServiceImpl implements AssetService {
         attributeForVolumes.put(Constants.NAME, "EBS Volumes");
         attributeForVolumes.put(Constants.VALUE, listOfVolumeIds);
         attributeForVolumes.put(Constants.CATEGORY, AssetConstants.RELATED_ASSETS);
+        attributeForVolumes.put(Constants.ASSET_TYPE,"volume");
         addAttributeIfNotEmpty(attributeForVolumes, attributesList);
 
         Map<String, Object> attributeForSG = new LinkedHashMap<>();
         attributeForSG.put(Constants.NAME, "Security Groups");
         attributeForSG.put(Constants.VALUE, listOfSecurityGroupIds);
         attributeForSG.put(Constants.CATEGORY, AssetConstants.RELATED_ASSETS);
+        attributeForSG.put(Constants.ASSET_TYPE,"sg");
         addAttributeIfNotEmpty(attributeForSG, attributesList);
 
         Object publicIp = ec2Data.get(AssetConstants.PUBLIC_IP_ADDRESS);
@@ -576,7 +578,6 @@ public class AssetServiceImpl implements AssetService {
                     String tagKey = key.substring(tagsPrefix.length(), key.length());
                     tagsKvPairs.put("gcp".equalsIgnoreCase(cloudType)?tagKey.toLowerCase():tagKey, value.toString());
                 } else {
-
                     Map<String, Object> attribute = new LinkedHashMap<>();
                     attribute.put(Constants.NAME, key);
                     attribute.put(Constants.VALUE, new String[]{value.toString()});
@@ -599,10 +600,11 @@ public class AssetServiceImpl implements AssetService {
         Set<String> mandatoryTags = getMandatoryTagsNames(AssetConstants.ASSETLISTING);
         for(String mandatoryTag : mandatoryTags){
             String mTag = "gcp".equalsIgnoreCase(cloudType)?mandatoryTag.toLowerCase():mandatoryTag;
-            if(!tagsKvPairs.containsKey(mTag)) {
+            if(!tagsKvPairs.containsKey(mTag)){
                 tagsKvPairs.put(mTag, AssetConstants.UNKNOWN);
             }
         }
+
         assetDetailMap.put("tags", tagsKvPairs);
         assetDetailMap.put("attributes", attributesList);
 
