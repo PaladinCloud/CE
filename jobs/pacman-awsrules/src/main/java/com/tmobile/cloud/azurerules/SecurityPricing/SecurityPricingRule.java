@@ -54,7 +54,7 @@ public class SecurityPricingRule extends BasePolicy {
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             Map<String, Object> mustFilter = new HashMap<>();
-            mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
+            mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.AZURE_SUBSCRIPTION), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
                 isValid = checkAzureDefenderEnabled(esUrl, mustFilter, name, pricingTier);
@@ -102,32 +102,32 @@ public class SecurityPricingRule extends BasePolicy {
             JsonObject hitsJson = (JsonObject) parser.parse(hitsString);
             JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
             if (hitsJsonArray.size() > 0) {
-                JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                        .get(PacmanRuleConstants.SOURCE);
-                if (jsonDataItem != null && jsonDataItem.get(PacmanRuleConstants.NAME) != null
-                        && jsonDataItem.get(PacmanRuleConstants.PROPERTIESMAP) != null) {
-                    String jsonName = jsonDataItem.get(PacmanRuleConstants.NAME).getAsString();
-                    JsonObject propertiesMap = jsonDataItem.get(PacmanRuleConstants.PROPERTIESMAP).getAsJsonObject();
-                    if (propertiesMap.get(PacmanRuleConstants.PRICING_TIER) != null) {
-                        String jsonPricingTier = propertiesMap.get(PacmanRuleConstants.PRICING_TIER).getAsString();
-                        if (jsonName.equalsIgnoreCase(name) && jsonPricingTier.equalsIgnoreCase(pricingTier)) {
-                            validationResult = true;
+                for (int i = 0; i < hitsJsonArray.size(); i++) {
+                    JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(i))
+                            .get(PacmanRuleConstants.SOURCE);
+                    if (jsonDataItem != null && jsonDataItem.get(PacmanRuleConstants.NAME) != null
+                            && jsonDataItem.get(PacmanRuleConstants.PROPERTIESMAP) != null) {
+                        String jsonName = jsonDataItem.get(PacmanRuleConstants.NAME).getAsString();
+                        JsonObject propertiesMap = jsonDataItem.get(PacmanRuleConstants.PROPERTIESMAP).getAsJsonObject();
+                        if (propertiesMap.get(PacmanRuleConstants.PRICING_TIER) != null) {
+                            String jsonPricingTier = propertiesMap.get(PacmanRuleConstants.PRICING_TIER).getAsString();
+                            if (jsonName.equalsIgnoreCase(name) && jsonPricingTier.equalsIgnoreCase(pricingTier)) {
+                                validationResult = true;
+                                break;
+                            }
                         } else {
-                            validationResult = false;
+                            logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                         }
                     } else {
                         logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                     }
-                } else {
-                    logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                 }
-            } else {
+            }else {
                 logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
         } else {
             logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }
-
         return validationResult;
     }
 

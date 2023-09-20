@@ -3400,3 +3400,12 @@ update cf_PolicyTable set fixType='silent', autoFixAvailable='true', autoFixEnab
 'VPC_firewall_ORACLE_port_should_not_be_publicly_accessible','VPC_firewall_POSTGRES_port_should_not_be_publicly_accessible','VPC_firewall_RPC_port_should_not_be_publicly_accessible',
 'VPC_firewall_SMTP_port_should_not_be_publicly_accessible','VPC_firewall_SQLSERVER_port_should_not_be_publicly_accessible','VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible',
 'VPC_firewall_SSH_port_22_should_not_be_publicly_accessible');
+
+UPDATE cf_PolicyTable SET targetType='subscription' where policyId IN ('Enable_Azure_Defender_for_App_Service_version-1_SecurityPricing','Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing','Enable_Azure_Defender_for_Virtual_Machine_version-1_SecurityPricing');
+
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_App_Service_version-1_SecurityPricing','name','AppServices','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_App_Service_version-1_SecurityPricing','pricingTier','Standard','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing','name','SqlDatabases','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing','pricingTier','Standard','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_Virtual_Machine_version-1_SecurityPricing','name','VirtualMachines','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_Virtual_Machine_version-1_SecurityPricing','pricingTier','Standard','','false','false','false','','');
