@@ -188,9 +188,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     }
   };
 
-  showExemptionRequest = false;
-
-
   /*Subscription variables*/
 
   private getRuleDescSubscription: Subscription;
@@ -309,7 +306,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     try {
       this.adminAccess = this.permissions.checkAdminPermission();
-      this.shouldShowExemptionRequest();
       if(!this.adminAccess){
         this.addExemption = "Request Exemption"
         this.revokeExemption = "Revoke Request"
@@ -1081,7 +1077,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       const endDateValue = this.utilityService.getUTCDate(this.endDate);
       const grantedDateValue = this.utilityService.getUTCDate(date);
       const email = this.dataStore.getUserDetailsValue().getEmail();
-      let beforeStatus = this.issueBlocks.status=="revoked"?"open":this.issueBlocks.status, afterStatus;
       let payload = {
         createdBy: email,
         assetGroup: this.selectedAssetGroup,
@@ -1094,19 +1089,15 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
           payload["exceptionEndDate"] = this.exemptionDetails.exemptionRaisedExpiringOn;
           payload["exceptionReason"] = this.exemptionDetails.reasonToExempt,
           payload.action = "APPROVE_EXEMPTION_REQUEST"
-          afterStatus = "exempt";
       }
       else if(action == "deny"){
         payload.action = "CANCEL_EXEMPTION_REQUEST";
-        afterStatus = "open";
       }
       else if(action == "request"){
         payload["exceptionEndDate"] = endDateValue;
         payload["exceptionReason"] = this.exemptionReason;
-        afterStatus = "open";
       } else if(action == "revoke request"){
         payload.action = "REVOKE_EXEMPTION_REQUEST";
-        afterStatus = "open";
       } 
       
       const queryParams = {}
@@ -1558,11 +1549,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   handleSortColNameSelection(event){
     this.sortColName = event.headerColName;
     this.direction = event.direction;
-  }
-
-  shouldShowExemptionRequest(){
-    let roleCapabilities = this.dataStore.getRoleCapabilities();
-    this.showExemptionRequest = roleCapabilities.includes("grant-deny-exemption");
   }
 
   ngOnDestroy() {
