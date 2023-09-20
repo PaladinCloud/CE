@@ -22,6 +22,7 @@
 **/
 package com.tmobile.pacman.api.commons.utils;
 
+import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -40,6 +41,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.commons.Constants;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 public class CommonUtils {
 
@@ -350,7 +361,6 @@ public class CommonUtils {
     // character is not space then it shows that 
     // current letter is the starting of the word 
 	/**
-	 * @param str input String
 	 * @return string with capital case
 	 */
 	public static String capitailizeWord(String mainStr) { 
@@ -405,6 +415,44 @@ public class CommonUtils {
 			dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 		return dateFormatter.format(new Date());
+	}
+
+	public static String doHttpPut(final String url, final String requestBody) throws Exception {
+		try {
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpPut httpPut = new HttpPut(url);
+			httpPut.setHeader("Content-Type", "application/json");
+
+			StringEntity jsonEntity =null;
+			if(requestBody!=null){
+				jsonEntity = new StringEntity(requestBody);
+			}
+
+			httpPut.setEntity(jsonEntity);
+			HttpResponse httpresponse = client.execute(httpPut);
+			if(httpresponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK)
+			{
+				return EntityUtils.toString(httpresponse.getEntity());
+			}else{
+				throw new Exception("unable to execute put request caused by"+EntityUtils.toString(httpresponse.getEntity()));
+			}
+		} catch (ParseException parseException) {
+		} catch (IOException ioException) {
+		}
+		return null;
+	}
+
+	public static boolean isValidResource(String esUrl) {
+		HttpClient httpclient = HttpClientBuilder.create().build();
+		HttpHead httpHead = new HttpHead(esUrl);
+		HttpResponse response;
+		try {
+			response = httpclient.execute(httpHead);
+			return HttpStatus.SC_OK==response.getStatusLine().getStatusCode();
+		} catch (ClientProtocolException clientProtocolException) {
+		} catch (IOException ioException) {
+		}
+		return false;
 	}
 
 
