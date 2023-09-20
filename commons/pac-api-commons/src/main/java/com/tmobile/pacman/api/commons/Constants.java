@@ -158,6 +158,7 @@ public interface Constants {
     String DISK_READ_IN_BYTES = "diskReadinBytes";
     String DISK_WRITE_IN_BYTES = "diskWriteinBytes";
     String AWS = "aws";
+    String REDHAT = "redhat";
     String RESOURCEID = "_resourceid";
     String AUDIT_DATE = "auditdate";
     String STATUS = "status";
@@ -415,7 +416,6 @@ public interface Constants {
     String VIRTUALMACHINE_QUALYS_RULEID = "Ec2InstanceScannedByQualys_version-1_VmInstanceScannedByQualys_virtualmachine";
     String ONPREM_QUALYS_RULEID = "Onprem-asset-scanned-by-qualys-API_version-1_OnpremassetscannedbyqualysAPI_onpremserver";
     String AZURE = "azure";
-    String REDHAT = "redhat";
     String MASTER_ALIAS = "ds-all";
     String ROOT_ALIAS = "*";
     String CLOUD_TYPE_KEYWORD = "_cloudType.keyword";

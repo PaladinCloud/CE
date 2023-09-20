@@ -87,6 +87,7 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
     private int numberOfPoliciesEnforced;
 
     private int numberOfAwsAccounts;
+    private int numberOfRedhatAccounts;
     private int numberOfAzureSubscription;
     private int numberOfGCPProjects;
 
@@ -210,6 +211,9 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
              numberOfAwsAccounts = getNumberOfAwsAccounts();
             });
             executor.execute(() -> {
+                numberOfRedhatAccounts = getNumberOfRedhatAccounts();
+            });
+            executor.execute(() -> {
                 numberOfAzureSubscription = getNumberOfAzureSubscription();
             });
             executor.execute(() -> {
@@ -231,7 +235,7 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
             // 1. Total number of policies active in AWS Datasources
             data.put("numberOfPoliciesEnforced", numberOfPoliciesEnforced);
             // 2.Total Accounts
-            int totalAccounts = numberOfAwsAccounts + numberOfAzureSubscription + numberOfGCPProjects;
+            int totalAccounts = numberOfAwsAccounts + numberOfAzureSubscription + numberOfGCPProjects + numberOfRedhatAccounts;
             LOGGER.info("Total number of AWS accounts:{}, Total number of Azure subscription:{}," +
                     " Total number of GCP projects:{}",numberOfAwsAccounts,numberOfAzureSubscription,numberOfGCPProjects);
             data.put("numberOfAwsAccounts", totalAccounts);
@@ -445,6 +449,17 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
             Thread.currentThread().interrupt();
         }
         return numberOfPoliciesEnforced;
+    }
+
+    private int getNumberOfRedhatAccounts() {
+        int numberOfAwsAccounts = 0;
+        try {
+            numberOfAwsAccounts = repository.getNumberOfRedhatAccounts().size();
+        } catch (DataException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        return numberOfAwsAccounts;
     }
 
     private int getNumberOfAwsAccounts() {
