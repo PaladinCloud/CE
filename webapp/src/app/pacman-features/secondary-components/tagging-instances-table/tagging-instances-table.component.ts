@@ -333,15 +333,13 @@ export class TaggingInstancesTableComponent implements OnInit, OnDestroy {
 
     goToDetails(row) {
         try {
-          const apiTarget = {'TypeAsset' : 'taggable'};
-            this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+          const apiTarget = {'TypeAsset' : 'taggable'};          
+            this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, "Tagging");
             if (row.col.toLowerCase() === 'environment untagged' && row.row['environment Untagged'].text > 0) {
-              const eachParams = {'tagName': 'Environment', 'tagged' : false};
-              eachParams['application'] = row.row.Application.valText;
-              let newParams = this.utils.makeFilterObj(eachParams);
-              newParams = Object.assign(newParams, apiTarget);
-              newParams['mandatory'] = 'tagged';
-              this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling : 'merge'});
+              const eachParams = {'tagged' : false};
+              eachParams['tags.Application.keyword'] = row.row.Application.valText;
+              let newParams = this.utils.makeFilterObj(eachParams);              
+              this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {"tempFilters":true, ...newParams}, queryParamsHandling : 'merge'});
             } else if (row.col.toLowerCase() === 'role untagged' && row.row['role Untagged'].text > 0) {
               const eachParams = {'tagName': 'Role', 'tagged' : false};
               eachParams['application'] = row.row.Application.valText;
