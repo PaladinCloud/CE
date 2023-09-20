@@ -175,11 +175,6 @@ public class Main implements Constants {
             LOGGER.debug(srcFolder);
             LOGGER.info("Trying to get Basic awsCredentials using IAM role");
             BasicSessionCredentials credentials = awsCredentialProvider.getCredentials(account, region, s3Role);
-            LOGGER.info("Printing credentials");
-            LOGGER.debug("Aws AccessKey:{}", credentials.getAWSAccessKeyId());
-            LOGGER.debug("Aws SecretKey:{}", credentials.getAWSSecretKey());
-            LOGGER.debug("Aws SessionToken:{}", credentials.getSessionToken());
-
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
             srcInventoryFolderName = srcFolder;
             String backupFolderName = dataSource + "-" + s3Processed;
@@ -215,18 +210,18 @@ public class Main implements Constants {
      */
     private static void copytoBackUp(AmazonS3 s3client, String s3Bucket, String from, String to) {
         LOGGER.info("Inside copyBackUp Method:{}", s3client);
-        LOGGER.info("Printing  s3Bucket:{}", s3Bucket);
-        LOGGER.info("Printing  from:{}", from);
-        LOGGER.info("Printing  to:{}", to);
+        LOGGER.debug("Printing  s3Bucket:{}", s3Bucket);
+        LOGGER.debug("Printing  from:{}", from);
+        LOGGER.debug("Printing  to:{}", to);
         String[] keys = listKeys(s3client, s3Bucket, from);
         String fileName = "";
         for (String key : keys) {
             try {
                 fileName = key.substring(key.lastIndexOf('/') + 1);
                 s3client.copyObject(s3Bucket, key, s3Bucket, to + "/" + fileName);
-                LOGGER.debug("    Copy " + fileName + " to backup folder");
+                LOGGER.debug(String.format("Copy %s to backup folder",fileName));
             } catch (Exception e) {
-                LOGGER.info("    Copy " + fileName + "failed", e);
+                LOGGER.error(String.format("Copy %s failed",fileName), e);
             }
         }
         LOGGER.info("copytoBackUp Method is Done ");
@@ -269,9 +264,9 @@ public class Main implements Constants {
      */
     private static String[] listKeys(AmazonS3 s3client, String s3Bucket, String folder) {
         LOGGER.info("Inside listKeys Method");
-        LOGGER.info("Printing s3client {}", s3client);
-        LOGGER.info("Printing s3Bucket {}", s3Bucket);
-        LOGGER.info("Printing folder {}", folder);
+        LOGGER.debug("Printing s3client {}", s3client);
+        LOGGER.debug("Printing s3Bucket {}", s3Bucket);
+        LOGGER.debug("Printing folder {}", folder);
         try {
             return s3client.listObjectsV2(new ListObjectsV2Request().withBucketName(s3Bucket).withPrefix(folder)).getObjectSummaries().stream().map(S3ObjectSummary::getKey).toArray(String[]::new);
         } catch (Exception e) {
