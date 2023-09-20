@@ -159,7 +159,9 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       this.downloadSubscription = this.downloadService
         .getDownloadStatus()
         .subscribe((val) => {
-          if (val) {
+          const values = Object.values(val);
+          const isDownloading = values.some(value => value);
+          if (isDownloading) {
             this.showPacLoader.push("downloading");
           } else {
             this.showPacLoader.pop();
