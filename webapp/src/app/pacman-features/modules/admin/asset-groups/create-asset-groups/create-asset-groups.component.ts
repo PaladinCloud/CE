@@ -477,7 +477,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   getName(selectedKey:string,selectedValue:string){
     selectedKey = selectedKey.toLowerCase();
     if(selectedKey == "source"){
-      return selectedValue.toLowerCase();
+      const keys = Object.keys(DATA_MAPPING);
+      return keys.find(key => DATA_MAPPING[key]===selectedValue);
     } else if(selectedKey == "asset type"){
       for (const [key, value] of this.assetTypeMap) {
         if(selectedValue == value){
