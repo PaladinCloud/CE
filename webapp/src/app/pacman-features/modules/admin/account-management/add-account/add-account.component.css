@@ -75,7 +75,8 @@
     position: relative;
     display: inline-block;
     height: 20.9%;
-    width: 300px;
+    width: 33.28%;
+    min-width: 255px;
     min-height: 161px;
 }
 
@@ -221,9 +222,12 @@
 }
 
 .back-btn{
+    border-radius: 8px;
+    border: 1px solid var(--gray-300, #D0D5DD);
+    background: var(--base-white, #FFF);
+
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
     color: var(--primary-400);
-    border: none;
-    background-color: var(--background-white);
 }
 
 
@@ -259,6 +263,7 @@
     padding: 16px 20px;
     overflow: auto;
     gap: 20px;
+    justify-content: space-between;
     display: flex;
     flex-direction: column;
 }
@@ -431,7 +436,7 @@
     background: white;
 }
 
-.details-header, .configure-header{
+.details-header, .configure-header, .configure-footer{
     font: var(--text-body-2);
     color: var(--text-medium-emphasis);
 }

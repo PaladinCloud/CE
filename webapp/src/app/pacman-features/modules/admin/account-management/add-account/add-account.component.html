@@ -136,12 +136,19 @@
                 </div>
             </div>
             <div class="configure-wrapper redhat-video-wrapper" *ngIf="pluginSelected===('red hat')">
-                <div class="steps-wrapper" >
+                <div class="steps-wrapper" style="padding: 0;">
+                    <div class="configure-header">
+                        <p>To seamlessly integrate Red Hat ACS with Paladin Cloud, Red Hat recommends utilizing an authentication token, especially in a production environment, as it offers specific access control permissions.</p>
+                        <p>Follow these straightforward steps to generate an authentication token:</p>
+                    </div>
                     <div *ngFor="let step of configureSteps;let i=index">
                         <div class="flex flex-row gap-12">
-                            <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
+                            <span class="index-wrapper body-2 medium-emphasis">{{i+1}}.</span>
                             <span class="body-2 medium-emphasis">{{step}}</span>
                         </div>
+                    </div>
+                    <div class="configure-footer">
+                        <strong class="high-emphasis">IMPORTANT: </strong>Be sure to safely store the copied token. Once generated, it won't be visible again for security reasons
                     </div>
                 </div>
                 <div class="video-thumbnail-wrapper">
@@ -205,8 +212,8 @@
         <div *ngIf="pluginSelected===('red hat')" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="redHatPluginForm">
                 <app-input-field [label]="'ID'" [(value)]="redHatId" [parentForm]="redHatPluginForm" formControlName="redHatId" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Token'" type="textarea" height="56px" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Account Name'" [(value)]="redHatAccountName" [parentForm]="redHatPluginForm" formControlName="redHatAccountName" [formErrors]="redHatFormErrors"></app-input-field>
+                <app-input-field [label]="'Token'" type="textarea" height="150px" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'Account Name (Optional)'" [(value)]="redHatAccountName" [parentForm]="redHatPluginForm" formControlName="redHatAccountName" [formErrors]="redHatFormErrors"></app-input-field>
                 <app-input-field [label]="'Owner (Optional)'" [(value)]="redHatOwner" [parentForm]="redHatPluginForm" formControlName="redHatOwner" [formErrors]="redHatFormErrors"></app-input-field>
             </form>
         </div>

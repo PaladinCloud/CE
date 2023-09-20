@@ -11,6 +11,7 @@ import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 import { MatDialog } from '@angular/material/dialog';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 
 @Component({
@@ -211,6 +212,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     private notificationObservableService: NotificationObservableService,
     private dataCacheService: DataCacheService,
     public dialog: MatDialog,
+    private gaService: GoogleAnalyticsService,
     public form: FormBuilder,
     ) {
       this.activatedRoute.queryParams.subscribe(params => {
@@ -327,12 +329,14 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.createCommand();
     }
     if (clickedButton == 'back') {
+      this.gaService.event('Button', 'Click', 'Back');
       if(this.currentStepperIndex == 0){
         this.selectedAccount = "";
       }
       else
       this.currentStepperIndex--;
     } else{
+      this.gaService.event('Button', 'Click', 'Next');
       this.currentStepperIndex++;
     }
     this.displayTemplate();
@@ -396,6 +400,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     }
 
   selectAccount(account:any){
+    this.gaService.event('Button', 'Click', 'Select Plugin');
     this.isValid = true;
     if(account.name.toLowerCase() == "tenable"
         || account.name.toLowerCase() == "aqua"
@@ -520,22 +525,27 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           {
             id: 1,
             name: "Configure Access",
-            stepInfo: "Please Provide Account Details Account Details v Account Details vAccount DetailsAccount DetailsAccount DetailsAccount DetailsAccount Details"
+            stepInfo: "Setup your Account"
           },
           {
             id: 2,
             name: "Add Details",
-            stepInfo: "Please Provide Account Details"
+            stepInfo: "Provide Account Details"
           }
         ]
         this.currentPluginForm = this.redHatPluginForm;
         this.configureSteps = [
-           "Go to Azure active directory",
-           "Navigate to App registration and register new application",
-           "Once registered click on client credentials and create a new client secret",
-           "Get the Application ID, Directory ID and Client Secret Value",
-           "Configure the registered App to allow access to the Azure Subscriptions, for which data needs to be collected."
-          ];
+          "Log in to the Red Hat ACS Console at https://console.redhat.com/application-services/acs/instances.",
+          "Click on the specific ACS instance you wish to connect with Paladin Cloud.",
+          "Within the Red Hat Plugin located inside the Paladin Cloud application, find the 'ID input field,' and then paste the previously copied ID into it.",
+          "Navigate to the Red Hat ACS portal.",
+          "Proceed to Platform Configuration, and then select Integrations.",
+          "Scroll down to the Authentication Tokens category, and click on API Token.",
+          "Click Generate Token.",
+          "Provide a name for the token and select an appropriate role that aligns with your requirements.",
+          "Copy the generated token and paste it into the token input field within the Red Hat Plugin located inside the Paladin Cloud application."
+        ];
+        
           break;
     }
     this.displayTemplate();
@@ -574,6 +584,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   
 
   validateAccount(){
+    this.gaService.event('Button', 'Click', 'Add Plugin');
     this.showValidation();
     const provider = this.selectedAccount.toLowerCase();
     let payload = {};
@@ -646,8 +657,14 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         }
       }
       catch(error){
+        this.closeDialog();
+        this.notificationObservableService.postMessage("Something went wrong", 3000, "error", "Error");
         console.log(error,"error js");
       }
+    }, error => {
+        this.closeDialog();
+        this.notificationObservableService.postMessage("Something went wrong", 3000, "error", "Error");
+        console.log(error,"api error");
     })
   }
 
@@ -798,6 +815,7 @@ copyToClipboard(commands) {
   }
 
   openVideoDialog(){
+    this.gaService.event('Button', 'Click', 'Video');
     this.dialog.open(DialogBoxComponent, {
       width: '800px',
       data: { 

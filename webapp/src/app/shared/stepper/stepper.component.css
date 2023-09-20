@@ -66,7 +66,7 @@
 ::ng-deep .mat-step-label{
     color: var(--gray-700, #344054);
     /* Text sm/Semibold */
-    font-family: Mark Pro;
+    font-family: "mark-pro";
     font-size: 14px;
     font-style: normal;
     font-weight: 600;
@@ -81,7 +81,7 @@
     color: var(--gray-600, #475467);
     font-feature-settings: 'clig' off, 'liga' off;
     /* Body-2 */
-    font-family: Mark Pro;
+    font-family: "mark-pro";
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
