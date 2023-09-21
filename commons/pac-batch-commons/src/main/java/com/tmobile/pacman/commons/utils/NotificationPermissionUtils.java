@@ -37,9 +37,9 @@ public class NotificationPermissionUtils {
     }
     private static NotificationBaseRequest getNotificationBaseRequest(PermissionVH permissionVH,String cloudType) {
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
-        notificationBaseRequest.setEventCategory(Constants.NotificationTypes.Permissions);
+        notificationBaseRequest.setEventCategory(Constants.NotificationTypes.PERMISSION);
         notificationBaseRequest.setSubject(SUBJECT);
-        notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.Permissions.getValue());
+        notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.PERMISSION.getValue());
         notificationBaseRequest.setEventName(String.format(String.format(opsEventName, permissionVH.getErrorVH().getType())));
         notificationBaseRequest.setEventDescription(String.format(String.format(opsEventName, permissionVH.getErrorVH().getType())));
 
