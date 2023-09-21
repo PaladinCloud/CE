@@ -102,7 +102,7 @@ public class CommonUtils {
                 return getAutofixTemplateName(channelName,action);
             case "policy":
                 return "policyActionEmailTemplate.html";
-            case "permissions":
+            case "permission":
                 return "permissionAlertEmailTemplate.html";
         }
         return null;
