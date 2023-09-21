@@ -217,6 +217,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                 this.mainDataSource = new MatTableDataSource(this.data);
                 this.dataSource = new MatTableDataSource(this.data);
             }
+        }
+        if(changes.totalRows){
             this.totalRecordsAfterFilter = this.totalRows;
         }
         if ((this.doLocalSearch || this.doLocalSort) && this.tableDataLoaded) {
