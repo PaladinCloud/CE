@@ -90,6 +90,8 @@ public class Main implements Constants {
      * @return
      */
     public static Map<String, Object> shipData(Map<String, String> params) {
+        LOGGER.info("Inside shipData Method");
+        LOGGER.debug("Shipper Job Params:{}", params);
         String jobName = System.getProperty("jobName");
         List<Map<String, String>> errorList = new ArrayList<>();
         try {
@@ -104,25 +106,28 @@ public class Main implements Constants {
         }
         String ds = params.get("datasource");
         String overrideSourcePath = params.get(Constants.OVERRIDE_SOURCE_PATH);
-        LOGGER.debug("overrideSourcePath:{}",overrideSourcePath);
-        ESManager.configureIndexAndTypes(ds, errorList);
-        errorList.addAll(new EntityManager().uploadEntityData(ds,overrideSourcePath));
-        new ExternalPolicies().uploadPolicyDefinition(ds);
-        errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
-        errorList.addAll(new IssueCountManager().populateViolationsCount());
-        errorList.addAll(new AssetsCountManager().populateAssetCount());
-
-        //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
+        LOGGER.debug("overrideSourcePath:{}", overrideSourcePath);
         try {
-            LOGGER.info("Back Up logic code is going to be executed");
             AWSCredentialProvider awsCredentialProvider = new AWSCredentialProvider();
             dataSource = params.get("datasource");
-            if (overrideSourcePath != null && !overrideSourcePath.isEmpty())
-                srcFolder = overrideSourcePath;
-            else
-                srcFolder = params.get("s3.data");
             LOGGER.debug("dataSource:{}", dataSource);
+            //overrideSourcePath will sent by Mapper Lambda to indicate the path where shipper should exactly pick from
+            if (null != overrideSourcePath && !overrideSourcePath.isEmpty()) {
+                srcFolder = overrideSourcePath;
+            }
+            //Aws & Azure will pick up from s3.data location
+            else {
+                srcFolder = params.get("s3.data");
+            }
             LOGGER.debug("srcFolder:{}", srcFolder);
+            ESManager.configureIndexAndTypes(ds, errorList);
+            errorList.addAll(new EntityManager().uploadEntityData(ds, srcFolder));
+            new ExternalPolicies().uploadPolicyDefinition(ds);
+            errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
+            errorList.addAll(new IssueCountManager().populateViolationsCount());
+            errorList.addAll(new AssetsCountManager().populateAssetCount());
+             //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
+            LOGGER.info("Back Up logic code is going to be executed");
             LOGGER.debug("Invoking/Calling doBackUpAndCleanUpInventory() method");
             doBackUpAndCleanUpInventory(dataSource, srcFolder, awsCredentialProvider);
             LOGGER.info("Execution of doBackUpAndCleanUpInventory() method is done");
