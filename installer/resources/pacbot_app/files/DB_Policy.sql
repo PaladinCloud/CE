@@ -3357,6 +3357,7 @@ update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-poli
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-Create/Update-Network-Security-Group' where policyId='Azure_Create_Network_Security_Group_log_alert';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-Create/Update-SQL-DB' where policyId='Enable_Create_or_Update_SQL_Database_Log_Alert';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-PostgreSQL-DB' where policyId='Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#articleTOC_12' where policyId='SGWithAnywhereAccess_version-1_SgWithSshPort22OpenToInternetAccess_sg';
 
 update cf_PolicyParams set paramValue='paladin-cloud-trail' where policyId='Centralized_CloudTrail_version-1_Centralized_Cloudtrail_account' and paramKey='inputCloudTrailName';
 update cf_PolicyParams set paramValue='paladin-cloudfront-bucket' where policyId='CloudFront_AccessLogs_version-1_CloudFront_AccessLogs_cloudfront' and paramKey='accessLogBucketName';
