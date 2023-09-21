@@ -84,7 +84,7 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
 
         PluginResponse validationResponse = validateRedhatPluginRequest(request);
 
-        if (validationResponse.getValidationStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
+        if (validationResponse.getStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
             LOGGER.info(VALIDATION_FAILED);
             return validationResponse;
         }
@@ -92,7 +92,7 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
         LOGGER.info(ADDING_ACCOUNT);
         PluginResponse createResponse = createAccountInDb(request, Constants.REDHAT, createdBy);
 
-        if (createResponse.getValidationStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
+        if (createResponse.getStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
             LOGGER.info(ACCOUNT_EXISTS);
             return createResponse;
         }
@@ -100,7 +100,7 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
         try {
             BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
             Regions region = Regions.fromName(System.getenv(REGION));
-            String roleName = System.getenv(PALADINCLOUD_RO);
+            String roleName = System.getenv(ROLE_NAME);
             AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(credentials))
                     .withRegion(region).build();
@@ -113,27 +113,27 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
             CreateSecretResult createSecretResponse = secretClient.createSecret(createRequest);
             LOGGER.info(SECRET_CREATION_RESPONSE, createSecretResponse);
 
-            PluginResponse configUpdateResponse = updateConfigProperty(REDHAT_ENABLED, TRUE, JOB_SCHEDULER);
+            PluginResponse configUpdateResponse = updateConfigProperty(REDHAT_ENABLED, Boolean.TRUE.toString(), JOB_SCHEDULER);
 
-            if (configUpdateResponse.getValidationStatus().equals(AdminConstants.FAILURE)) {
+            if (configUpdateResponse.getStatus().equals(AdminConstants.FAILURE)) {
                 LOGGER.error(FAILED_TO_UPDATE_CONFIG_MSG, configUpdateResponse.getErrorDetails());
             }
 
-            createResponse.setValidationStatus(AdminConstants.SUCCESS);
+            createResponse.setStatus(AdminConstants.SUCCESS);
             createResponse.setMessage(String.format(ACCOUNT_ADDED_SUCCESSFULLY, request.getRedhatAccountId()));
         } catch (ResourceExistsException ree) {
             LOGGER.error(String.format(ERROR_MESSAGE_TEMPLATE, CREATING) + ree.getMessage());
             deleteSecret(request.getRedhatAccountId());
             deleteAccountFromDB(request.getRedhatAccountId());
             createResponse = new PluginResponse();
-            createResponse.setValidationStatus(AdminConstants.FAILURE);
+            createResponse.setStatus(AdminConstants.FAILURE);
             createResponse.setMessage(String.format(ERROR_MESSAGE_TEMPLATE, CREATING) + SECRET_EXISTS);
             createResponse.setErrorDetails(String.format(ERROR_MESSAGE_TEMPLATE, CREATING) + ree.getMessage());
         } catch (Exception e) {
             LOGGER.error(String.format(ERROR_MESSAGE_TEMPLATE, CREATING) + e.getMessage());
             deleteAccountFromDB(request.getRedhatAccountId());
             createResponse = new PluginResponse();
-            createResponse.setValidationStatus(AdminConstants.FAILURE);
+            createResponse.setStatus(AdminConstants.FAILURE);
             createResponse.setMessage(String.format(ERROR_MESSAGE_TEMPLATE, CREATING));
             createResponse.setErrorDetails(String.format(ERROR_MESSAGE_TEMPLATE, CREATING) + e.getMessage());
         }
@@ -153,15 +153,15 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
 
             if (onlineAccounts == null || onlineAccounts.isEmpty()) {
                 LOGGER.debug(ACCOUNTS_DELETED_MSG);
-                PluginResponse configUpdateResponse = updateConfigProperty(REDHAT_ENABLED, FALSE, JOB_SCHEDULER);
+                PluginResponse configUpdateResponse = updateConfigProperty(REDHAT_ENABLED, Boolean.FALSE.toString(), JOB_SCHEDULER);
 
-                if (configUpdateResponse.getValidationStatus().equals(AdminConstants.FAILURE)) {
+                if (configUpdateResponse.getStatus().equals(AdminConstants.FAILURE)) {
                     LOGGER.error(FAILED_TO_UPDATE_CONFIG_MSG, configUpdateResponse.getErrorDetails());
                 }
             }
         } catch (Exception e) {
             response = new PluginResponse();
-            response.setValidationStatus(AdminConstants.FAILURE);
+            response.setStatus(AdminConstants.FAILURE);
             response.setMessage(String.format(ERROR_MESSAGE_TEMPLATE, DELETING));
             response.setErrorDetails(String.format(ERROR_MESSAGE_TEMPLATE, DELETING) + e.getMessage());
             LOGGER.error(String.format(ERROR_MESSAGE_TEMPLATE, DELETING));
@@ -173,7 +173,7 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
     private void deleteSecret(String accountId) {
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         Regions region = Regions.fromName(System.getenv(REGION));
-        String roleName = System.getenv(PALADINCLOUD_RO);
+        String roleName = System.getenv(ROLE_NAME);
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
@@ -191,7 +191,7 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
 
         PluginResponse validationResponse = validateRedhatPluginRequest(accountData);
 
-        if (validationResponse.getValidationStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
+        if (validationResponse.getStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
             LOGGER.info(VALIDATION_FAILED);
             return validationResponse;
         }
@@ -239,11 +239,11 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
         String validationError = validationErrorDetails.toString();
 
         if (!validationError.isEmpty()) {
-            response.setValidationStatus(AdminConstants.FAILURE);
+            response.setStatus(AdminConstants.FAILURE);
             response.setMessage(INVALID_PLUGIN_REQUEST_MSG);
             response.setErrorDetails(validationError);
         } else {
-            response.setValidationStatus(AdminConstants.SUCCESS);
+            response.setStatus(AdminConstants.SUCCESS);
         }
 
         return response;

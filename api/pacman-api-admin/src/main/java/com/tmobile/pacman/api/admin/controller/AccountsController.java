@@ -189,7 +189,7 @@ public class AccountsController {
                                                @PathVariable("type") String type) {
         try {
             PluginResponse response = redHatPluginService.deletePlugin(accountId);
-            if (response.getValidationStatus().equals(AdminConstants.SUCCESS)) {
+            if (response.getStatus().equals(AdminConstants.SUCCESS)) {
                 List<String> optionalAssetList = null;
                 if (Objects.nonNull(optionalAssetGroupList)) {
                     optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
@@ -222,7 +222,7 @@ public class AccountsController {
         try {
             String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
             PluginResponse response = redHatPluginService.createPlugin(request, createdBy);
-            if (response.getValidationStatus().equals(AdminConstants.SUCCESS)) {
+            if (response.getStatus().equals(AdminConstants.SUCCESS)) {
                 List<String> optionalAssetList = null;
                 if (Objects.nonNull(optionalAssetGroupList)) {
                     optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));

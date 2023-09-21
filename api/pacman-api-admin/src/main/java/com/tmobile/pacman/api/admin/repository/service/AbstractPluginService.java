@@ -36,9 +36,7 @@ public abstract class AbstractPluginService {
     public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
     public static final String ACCOUNTS_TABLE_DATE_FORMAT = "dd/MM/yyyy HH:mm:ss";
     public static final String STATUS_CONFIGURED = "configured";
-    public static final String PALADINCLOUD_RO = "PALADINCLOUD_RO";
-    public static final String TRUE = "true";
-    public static final String FALSE = "false";
+    public static final String ROLE_NAME = "PALADINCLOUD_RO";
     public static final String JOB_SCHEDULER = "job-scheduler";
     public static final String ACCOUNT_EXISTS_MSG = "Account already exists";
     public static final String PARAM_MSG = ": {}";
@@ -71,21 +69,21 @@ public abstract class AbstractPluginService {
             if (existingAccount.isPresent()) {
                 accountsRepository.deleteById(accountId);
                 response.setMessage(ACCOUNT_DELETED_MSG);
-                response.setValidationStatus(AdminConstants.SUCCESS);
+                response.setStatus(AdminConstants.SUCCESS);
             } else {
-                response.setValidationStatus(AdminConstants.FAILURE);
+                response.setStatus(AdminConstants.FAILURE);
                 response.setErrorDetails(ACCOUNT_DOESNT_EXISTS);
                 response.setMessage(ACCOUNT_DELETION_FAILED_ERROR_MSG);
             }
         } catch (DataAccessException e) {
             // Handle database-related exceptions
             LOGGER.error(ACCOUNT_DELETION_DB_FAILED_MSG, e.getMessage());
-            response.setValidationStatus(AdminConstants.FAILURE);
+            response.setStatus(AdminConstants.FAILURE);
             response.setErrorDetails(FETCH_ONLINE_ACCOUNT_ERROR_MSG);
             response.setMessage(ACCOUNT_DELETION_DB_ERROR_MSG);
         } catch (Exception e) {
             LOGGER.error(ACCOUNT_DELETION_ERROR_MSG, e.getMessage());
-            response.setValidationStatus(AdminConstants.FAILURE);
+            response.setStatus(AdminConstants.FAILURE);
             response.setErrorDetails(AdminConstants.UNEXPECTED_ERROR_OCCURRED);
             response.setMessage(ACCOUNT_DELETION_FAILED_MSG);
         }
@@ -111,17 +109,17 @@ public abstract class AbstractPluginService {
                     false);
             if (configProperties.isEmpty()) {
                 LOGGER.error(FAILED_TO_UPDATE_CONFIG);
-                response.setValidationStatus(AdminConstants.FAILURE);
+                response.setStatus(AdminConstants.FAILURE);
                 response.setErrorDetails(RECORDS_NOT_UPDATED_MSG);
                 response.setMessage(FAILED_TO_UPDATE_CONFIG);
             } else {
-                response.setValidationStatus(AdminConstants.SUCCESS);
+                response.setStatus(AdminConstants.SUCCESS);
                 LOGGER.info(configProperties.size() + CONFIG_UPDATED);
                 response.setMessage(configProperties.size() + CONFIG_UPDATED);
             }
         } catch (Exception e) {
             LOGGER.error(ACCOUNT_UPDATE_ERROR_MSG, e.getMessage());
-            response.setValidationStatus(AdminConstants.FAILURE);
+            response.setStatus(AdminConstants.FAILURE);
             response.setErrorDetails(AdminConstants.UNEXPECTED_ERROR_OCCURRED);
             response.setMessage(FAILED_TO_UPDATE_MSG);
         }
@@ -138,7 +136,7 @@ public abstract class AbstractPluginService {
         if (account.isPresent()) {
             LOGGER.error(ACCOUNT_EXISTS_MSG + PARAM_MSG, account.get().getAccountId());
             response.setErrorDetails(ACCOUNT_EXISTS_MSG);
-            response.setValidationStatus(AdminConstants.FAILURE);
+            response.setStatus(AdminConstants.FAILURE);
             response.setMessage(ACCOUNT_EXISTS_MSG);
         } else {
             AccountDetails accountDetails = new AccountDetails();
@@ -156,17 +154,17 @@ public abstract class AbstractPluginService {
 
             try {
                 accountsRepository.save(accountDetails);
-                response.setValidationStatus(AdminConstants.SUCCESS);
+                response.setStatus(AdminConstants.SUCCESS);
                 response.setMessage(ACCOUNT_ADDED_MSG);
             } catch (DataAccessException e) {
                 LOGGER.error(DATA_ACCESS_EXCEPTION_MSG + PARAM_MSG, e.getMessage());
                 response.setErrorDetails(DATA_ACCESS_EXCEPTION_MSG);
-                response.setValidationStatus(AdminConstants.FAILURE);
+                response.setStatus(AdminConstants.FAILURE);
                 response.setMessage(ACCOUNT_CREATION_FAIL_MSG);
             } catch (Exception e) {
                 LOGGER.error(SAVING_ERROR_MSG + PARAM_MSG, e.getMessage());
                 response.setErrorDetails(SAVING_ERROR_MSG);
-                response.setValidationStatus(AdminConstants.FAILURE);
+                response.setStatus(AdminConstants.FAILURE);
                 response.setMessage(ACCOUNT_CREATION_FAIL_MSG);
             }
         }

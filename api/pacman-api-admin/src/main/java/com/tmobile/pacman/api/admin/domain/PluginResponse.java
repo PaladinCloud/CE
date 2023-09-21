@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PluginResponse {
 
-    private String validationStatus;
+    private String status;
     private String message;
     private String errorDetails;
 }
