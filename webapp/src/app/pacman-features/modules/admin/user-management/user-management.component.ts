@@ -273,7 +273,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
         if(response){
           this.getUserList();
-          this.openSnackBar(this.action.toLowerCase()+" user successfully","check-circle");
           this.updateUserRoles([]);
         }
       })
@@ -308,6 +307,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
              else{
               this.openSnackBar("User added successfully!","check-circle");
              }
+            this.updatedRoles = ["ReadOnly"];
            }
          }
          catch(error){
@@ -808,8 +808,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             this.hasMoreDataToLoad = false;
             if(!isNextPageCalled) this.tableErrorMessage = "noDataAvailable";
           }else{
-            if(tableData.length==this.paginatorSize) {
-              this.totalRows = (this.pageNumber)*this.paginatorSize;
+            if(isNextPageCalled){
+                this.totalRows = this.totalRows + tableData.length;
             }else{
               this.totalRows = this.totalRows + tableData.length;
             }
