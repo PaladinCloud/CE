@@ -29,9 +29,5 @@ public class CreateAccountRequest {
     private String tenableAccessKey;
     private String tenableSecretKey;
 
-    private String redhatAccountId;
-    private String redhatAccountName;
-    private String redhatToken;
-
     private String createdBy;
 }
