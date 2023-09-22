@@ -535,7 +535,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         ]
         this.currentPluginForm = this.redHatPluginForm;
         this.configureSteps = [
-          "Log in to the Red Hat ACS Console at https://console.redhat.com/application-services/acs/instances.",
           "Click on the specific ACS instance you wish to connect with Paladin Cloud.",
           "Within the Red Hat Plugin located inside the Paladin Cloud application, find the 'ID input field,' and then paste the previously copied ID into it.",
           "Navigate to the Red Hat ACS portal.",
