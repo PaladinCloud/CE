@@ -15,6 +15,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
+import { CustomValidators } from 'src/app/shared/custom-validators';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 
 @Component({
@@ -51,13 +53,15 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   headerColName;
   direction;
   errorMessage: string;
+  tableErrorMessage: string = '';
   tableData = [];
   emailID: string;
   firstName: string;
   lastName: string;
   selectedRoles: string[];
 
-  paginatorSize: number = 60;
+  paginatorSize: number = 25;
+  hasMoreDataToLoad: boolean = false;
   isLastPage: boolean;
   isFirstPage: boolean;
   totalPages: number;
@@ -111,6 +115,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     private tableStateService: TableStateService,
     private tourService: TourService,
+    private dataCacheService: DataCacheService,
     public form: FormBuilder
   ) {
     this.getPreservedState();
@@ -133,15 +138,14 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.bucketNumber = state.bucketNumber ?? 0;
       this.totalRows = state.totalRows ?? 0;
       this.searchTxt = state?.searchTxt ?? '';
-      
-      this.tableDataLoaded = true;
 
       this.tableData = state?.data ?? [];
       this.whiteListColumns = state?.whiteListColumns ?? ["Email", "Roles", "Status","Actions"];;
       this.tableScrollTop = state?.tableScrollTop;
       this.selectedRowIndex = state?.selectedRowIndex;
 
-      if(this.tableData && this.tableData.length>0){        
+      if(this.tableData && this.tableData.length>0){     
+        this.tableDataLoaded = true;   
         this.isStatePreserved = true;
       }else{
         this.isStatePreserved = false;
@@ -164,7 +168,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   getRoles(){
     const url = environment.roles.url;
     const method = environment.roles.method;
-
     this.adminService.executeHttpAction(url,method,{},{}).subscribe(response=>{
       try{
         if(response){
@@ -243,6 +246,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       });
     dialogRef.afterClosed().subscribe(result => {
       if (result == "yes") {
+        this.resetComponent();
         if(currentRow)
         this.updateUserRoles(this.selectedRoles);
         else{
@@ -564,6 +568,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   processData(data) {
+    if(data.length==0) return;
     try {
       var innerArr = {};
       var totalVariablesObj = {};
@@ -639,7 +644,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       }
       return processedData;
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
@@ -647,10 +652,12 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   callNewSearch(event: any) {
   }
 
+    
   onSelectAction(event:any){
     const action = event.action;
     const rowSelected = event.rowSelected;
     this.selectedRowIndex = event.selectedRowIndex;
+
     this.storeState();
     this.action = action;
     if(action == "Activate" || action == "Deactivate" || action == "Remove"){
@@ -697,6 +704,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       try {
         if (result == "yes") {
+          this.resetComponent();
           if(action == "Remove"){
               this.deleteUser(username, roles);
           }
@@ -708,6 +716,11 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         this.logger.log('error', error);
       }
     });
+  }
+
+  resetComponent(){
+    this.tableDataLoaded = false;
+    this.pageNumber = 1;
   }
 
   userActivation(username:string, existingRoles:any){
@@ -773,8 +786,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       queryParams["searchTerm"] = this.searchTxt;
     }
 
-    this.errorMessage = '';
-    this.tableDataLoaded = false;
+    this.tableErrorMessage = '';
 
     try{
       this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
@@ -785,30 +797,36 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
           this.searchCriteria = undefined;
           const tableData = response[0];
           this.tableDataLoaded = true;
-          if(tableData.length>0){
-            const updatedResponse = this.massageData(tableData);
-            const processedData = this.processData(updatedResponse);
-            if(isNextPageCalled){
-              this.onScrollDataLoader.next(processedData)
-            }else{
-              this.tableData = processedData;
-            }
+          const updatedResponse = this.massageData(tableData);
+          const processedData = this.processData(updatedResponse);
+          if(isNextPageCalled){
+            this.onScrollDataLoader.next(processedData)
           }else{
-            this.errorMessage = "noDataAvailable";
+            this.tableData = processedData;
           }
-          this.totalRows = tableData.length;
+          if(tableData.length==0){
+            this.hasMoreDataToLoad = false;
+            if(!isNextPageCalled) this.tableErrorMessage = "noDataAvailable";
+          }else{
+            if(tableData.length==this.paginatorSize) {
+              this.totalRows = (this.pageNumber)*this.paginatorSize;
+            }else{
+              this.totalRows = this.totalRows + tableData.length;
+            }
+            this.hasMoreDataToLoad = true;
+          }
           this.dataLoaded = true;
         }
       },
       (error) => {
         this.tableDataLoaded = true;
-        this.errorMessage = "apiResponseError";
+        this.tableErrorMessage = "apiResponseError";
         this.logger.log("apiResponseError: ", error);
       }
     );
     }catch(e){
       this.tableDataLoaded = true;
-      this.errorMessage = this.errorHandling.handleJavascriptError(e);
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
       this.logger.log("error: ", e);
     }
   }
@@ -843,7 +861,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
 
   nextPage(e) {
     try {
-        this.pageNumber++;
+        this.pageNumber += this.paginatorSize;
         this.showLoader = true;
         this.getUserList(true);
     } catch (error) {

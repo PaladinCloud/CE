@@ -12,13 +12,13 @@
  * limitations under the License.
  -->
 
- <div class="exemption-banner" *ngIf="adminAccess && exemptionDetails?.status == 'requested'">
+ <div class="exemption-banner" *ngIf="exemptionDetails?.status == 'requested'">
     <div class="exemption-wrapper">
         <img src="/assets/icons/blue-info.svg">
         <div class="exemption-details-wrapper flex flex-col">
             <span class="body-1 high-emphasis">Exemption Request: {{issueBlocks.policyViolated}}</span>
-            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionExpiringOn}}</mark></span>
-            <div class="button-wrapper">
+            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionRaisedExpiringOn}}</mark></span>
+            <div class="button-wrapper" *ngIf="adminAccess">
                 <app-button
                 (onClickInner)="handleRequest('grant')">Exempt</app-button>
                 <app-button
@@ -80,7 +80,7 @@
                     <app-button-icon (onClickInner)="showOtherDiv()" *ngIf="!exceptionAdded && exemptionDetails.status != 'requested'"> {{addExemption}}
                     </app-button-icon>
                     <app-button-icon (onClickInner)="showOtherDivRevoke();revokeException()"
-                                     *ngIf="(exceptionAdded && adminAccess) || (!adminAccess && exemptionDetails.status == 'requested')"> {{revokeExemption}}
+                                     *ngIf="(exceptionAdded && adminAccess) || (!adminAccess && exemptionDetails.status == 'requested' && hasCurrentUserRequested)"> {{revokeExemption}}
                     </app-button-icon>
                 </div>
                 <div *ngIf="GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL"

@@ -2,6 +2,7 @@ package com.tmobile.pacman.api.compliance.service;
 
 import com.google.gson.Gson;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
+import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import com.tmobile.pacman.api.compliance.domain.ExemptionRequest;
 import com.tmobile.pacman.api.compliance.dto.IndividualExNotificationRequest;
 import com.tmobile.pacman.api.commons.dto.NotificationBaseRequest;
@@ -27,7 +28,7 @@ public class NotificationServiceImpl implements NotificationService{
     @Autowired
     PacmanRdsRepository pacmanRdsRepository;
     @Value("${notification.lambda.function.url}")
-    private String notificationUrl;
+    private static String notificationUrl;
 
     /** The ui host. */
     @Value("${pacman.host}")
@@ -77,7 +78,7 @@ public class NotificationServiceImpl implements NotificationService{
             }
             if (!notificationDetailsList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationDetailsList);
-                PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr);
+                invokeNotificationUrl(notificationDetailsStr);
                 if(LOGGER.isInfoEnabled()){
                     LOGGER.info("{} Notifications sent for create exemption for issueIds - {}",notificationDetailsList.size(),issueDetails.stream().map(obj -> (String)obj.get(ES_DOC_ID_KEY)).filter(obj -> !failedIssueIds.contains(obj)).collect(Collectors.joining(",")));
                 }
@@ -208,7 +209,7 @@ public class NotificationServiceImpl implements NotificationService{
             }
             if (!notificationDetailsList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationDetailsList);
-                PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr);
+                invokeNotificationUrl(notificationDetailsStr);
                 if(LOGGER.isInfoEnabled()){
                     LOGGER.info("{} Notifications sent for revoke exemption for issueIds - {}",notificationDetailsList.size(),issueDetails.stream().map(obj -> (String)obj.get(ES_DOC_ID_KEY)).filter(obj -> !failedIssueIds.contains(obj)).collect(Collectors.joining(",")));
                 }
@@ -217,5 +218,11 @@ public class NotificationServiceImpl implements NotificationService{
         catch (Exception e) {
             LOGGER.error("Error triggering lambda function url, notification request not sent for revoke exemption. Error - {}",e.getMessage());
         }
+    }
+
+    public static void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
+        Map<String,String> headersMap = new HashMap<>();
+        headersMap.put("Authorization", ThreadLocalUtil.accessToken.get());
+        PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr,headersMap);
     }
 }

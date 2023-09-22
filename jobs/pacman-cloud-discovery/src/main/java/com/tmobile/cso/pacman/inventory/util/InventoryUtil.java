@@ -1788,15 +1788,15 @@ public class InventoryUtil {
 			catch(AmazonS3Exception e) {
 				if ("AccessDenied".equals(e.getErrorCode())) {
 					log.info("Access Denied for bucket " + bucket.getName());
-					buckets.add(new BucketVH(bucket, "", versionconfig, tags, null, hasWebSiteConfiguration, bucketLoggingConfiguration, null));
+					buckets.add(new BucketVH(bucket,bucketRegion , versionconfig, tags, null, hasWebSiteConfiguration, bucketLoggingConfiguration, null));
 				} else {
 					log.info("Exception fetching S3 Bucket", e);
 				}
-				ErrorManageUtil.uploadError(accountId, "", "s3", e.getMessage());
+				ErrorManageUtil.uploadError(accountId, bucketRegion, "s3", e.getMessage());
 			}
 			catch(Exception e){
 				log.warn(expPrefix+ bucket.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
-				ErrorManageUtil.uploadError(accountId,"","s3",e.getMessage());
+				ErrorManageUtil.uploadError(accountId,bucketRegion,"s3",e.getMessage());
 			}
 		});
 		log.debug(InventoryConstants.ACCOUNT + accountId +" Type : S3 >> "+buckets.size());

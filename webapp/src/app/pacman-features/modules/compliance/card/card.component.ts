@@ -35,12 +35,12 @@ export class CardComponent implements OnInit {
     widgetWidth2: number;
     @Output() graphIntervalSelected = new EventEmitter<any>();
 
-    @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
-    isCustomSelected = false;
-    fromDate: Date = new Date(2022, 0, 1);
-    toDate: Date = new Date();
-    selectedItem = "All time";
-    breadcrumbPresent: string = "Dashboard";
+  @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
+  isCustomSelected = false;
+  @Input("fromDate") fromDate: Date;
+  toDate: Date = new Date();
+  selectedItem = "All time";
+  breadcrumbPresent: string = "Dashboard";
 
 
     constructor(
@@ -67,7 +67,6 @@ export class CardComponent implements OnInit {
     }
 
     handleGraphIntervalSelection = (e) => {
-        this.fromDate = new Date(2022, 0, 1);
         this.toDate = new Date();
         this.selectedItem = e;
         e = e.toLowerCase();
@@ -77,7 +76,7 @@ export class CardComponent implements OnInit {
                 this.isCustomSelected = true;
                 return;
             }
-            this.dateIntervalSelected(this.fromDate, this.toDate);
+            this.dateIntervalSelected(new Date(2022, 0, 1), this.toDate);
             return;
         }
         const date = new Date();
@@ -125,6 +124,7 @@ export class CardComponent implements OnInit {
     
             const filterParam = this.utils.makeFilterObj({
                 'policyCategory.keyword': category.toLowerCase(),
+                'issueStatus.keyword': ['open']
             });
     
             this.router.navigate(['/pl/compliance/issue-listing'], {

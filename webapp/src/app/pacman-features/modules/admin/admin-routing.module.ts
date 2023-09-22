@@ -14,7 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ADMIN_ROUTES } from './../../../shared/constants/routes';
+import { ADMIN_ROUTES } from './admin-routes';
 
 const routes: Routes = ADMIN_ROUTES;
 

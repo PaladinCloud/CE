@@ -21,19 +21,21 @@
     </div>
 
     <div class="relative table-wrapper">
-        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
+        <app-table style="height: 100%; width: 100%;" [data]="tableData"
+            [columnWidths]="columnWidths"
             [headerColName]="headerColName" [direction]="direction"
-            (actionSelected)="onSelectAction($event)" [doLocalSearch]="true" [doLocalFilter]="true"
+            [doLocalSearch]="true" [doLocalFilter]="true"
             [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
             [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
             [showDownloadBtn]="false" [showFilterBtn]="true" (nextPageCalled)="nextPg($event)"
             [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded"
-            [rowClickable]="false" [showAddRemoveCol]="true" [showDownloadBtn]="false"  [tableErrorMessage]="tableErrorMessage"
+            [rowClickable]="true" [showAddRemoveCol]="true" [showDownloadBtn]="false"  [tableErrorMessage]="tableErrorMessage"
             [onScrollDataLoader]="onScrollDataLoader"
             [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [selectedRowIndex]="selectedRowIndex"
             [filterTagLabels]="filterTagLabels" [filterTypeOptions]="filterTypeOptions"
             (headerColNameSelected)="handleHeaderColNameSelection($event)"
             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+            (rowSelectEventEmitter)="handleRowClick($event)"
             (selectedFilter)="handleFilterSelection()"
             (selectedFilterType)="handleFilterTypeSelection()"
             (deleteFilters)="deleteFilters($event)">
@@ -41,9 +43,3 @@
     </div>
 </div>
 
-<ng-template #actionRef>
-    <div class="dialog-body">
-       <span class="dialog-body-header">Delete Asset Group</span>
-       <span class="dialog-body-content">Are you really sure you want to delete "{{selectedAssetGroup}}"?</span>
-    </div>
-</ng-template>

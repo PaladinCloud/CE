@@ -3372,3 +3372,31 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Delete Unused VM Disk' WHERE poli
 UPDATE cf_PolicyTable SET severity ='critical' WHERE policyId = 'AWSVMScannedByTenable';
 UPDATE cf_PolicyTable SET category='security' WHERE policyId = 'Enable_Cloud_Asset_Inventory';
 
+
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('Azure_Check_Public_Access_For_Storage_Account','fixKey','storage-account-public-access-auto-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('UnrestrictedSqlDatabaseAccessRule_version-1','fixKey','unrestricted-sql-access-auto-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('Azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible','fixKey','public-access-nsg-auto-fix');
+
+update cf_PolicyTable set fixType='silent', autoFixAvailable='true', autoFixEnabled = CASE WHEN autoFixEnabled='false' THEN 'false' WHEN autoFixEnabled='true' THEN 'true' ELSE 'false' END
+ where policyId in ('Azure_Check_Public_Access_For_Storage_Account','Azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible','UnrestrictedSqlDatabaseAccessRule_version-1');
+
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_UnCommon_ports_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_DNS_port_53_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_FTP_port_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_ICMP_port_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_MYSQL_port_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_ORACLE_port_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_POSTGRES_port_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_RPC_port_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_SMTP_port_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_SQLSERVER_port_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+insert ignore into cf_PolicyParams (policyID,paramKey,paramValue) values ('VPC_firewall_SSH_port_22_should_not_be_publicly_accessible','fixKey','vpc-firewall-port-access-fix');
+
+update cf_PolicyTable set fixType='silent', autoFixAvailable='true', autoFixEnabled= CASE WHEN autoFixEnabled='false' THEN 'false' WHEN autoFixEnabled='true' THEN 'true' ELSE 'false' END
+ where policyId in ('VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible','VPC_UnCommon_ports_should_not_be_publicly_accessible','VPC_firewall_DNS_port_53_should_not_be_publicly_accessible',
+'VPC_firewall_FTP_port_should_not_be_publicly_accessible','VPC_firewall_ICMP_port_should_not_be_publicly_accessible','VPC_firewall_MYSQL_port_should_not_be_publicly_accessible',
+'VPC_firewall_ORACLE_port_should_not_be_publicly_accessible','VPC_firewall_POSTGRES_port_should_not_be_publicly_accessible','VPC_firewall_RPC_port_should_not_be_publicly_accessible',
+'VPC_firewall_SMTP_port_should_not_be_publicly_accessible','VPC_firewall_SQLSERVER_port_should_not_be_publicly_accessible','VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible',
+'VPC_firewall_SSH_port_22_should_not_be_publicly_accessible');

@@ -822,4 +822,5 @@ class LongRunningJobLambdaPermission(LambdaPermission):
 
 class LongRunningTarget(CloudWatchEventTargetResource):
     rule = LongRunningJob.get_output_attr('name')
+    target_id = 'LongRunningTarget'  # Unique identifier
     arn = LongRunningLambdaFunction.get_output_attr('arn')

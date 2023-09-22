@@ -199,7 +199,7 @@
      if (this.ruleID !== undefined) {
        const payload = {
          ag: this.selectedAssetGroup,
-         filter: { "policyId.keyword": this.ruleID, domain: this.selectedDomain },
+         filter: { "policyId.keyword": this.ruleID, "issueStatus.keyword":["open"], domain: this.selectedDomain },
          from: this.bucketNumber * this.paginatorSize,
          searchtext: this.searchTxt,
          size: this.paginatorSize,

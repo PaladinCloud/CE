@@ -74,7 +74,7 @@ public class EntityManager implements Constants {
      * @param datasource            the datasource
      * @return the list
      */
-    public List<Map<String, String>> uploadEntityData(String datasource) {
+    public List<Map<String, String>> uploadEntityData(String datasource, String sourceFolder) {
     	List<Map<String,String>> errorList = new ArrayList<>();
         Map<String,String> types = ConfigManager.getTypesWithDisplayName(datasource);
         Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
@@ -98,7 +98,7 @@ public class EntityManager implements Constants {
                 Map<String, Map<String, String>> currentInfo = ESManager.getExistingInfo(indexName, type, filters);
                 LOGGER.info("Existing no of docs : {}", currentInfo.size());
 
-                List<Map<String, Object>> entities = fetchEntitiyInfoFromS3(datasource, type, errorList);
+                List<Map<String, Object>> entities = fetchEntitiyInfoFromS3(datasource,sourceFolder, type, errorList);
                 List<Map<String, String>> tags = fetchTagsForEntitiesFromS3(datasource, type);
 
                 LOGGER.info("Fetched from S3");
@@ -160,20 +160,38 @@ public class EntityManager implements Constants {
 		return tags;
 	}
 
-	private List<Map<String, Object>> fetchEntitiyInfoFromS3(String datasource,String type,List<Map<String, String>> errorList) {
-		List<Map<String, Object>> entities = new ArrayList<>() ;
-		try{
-			entities = Util.fetchDataFromS3(s3Account,s3Region, s3Role,bucketName, dataPath+"/"+datasource + "-" + type+".data");
-		} catch (Exception e) {
-			 LOGGER.error("Exception in collecting data for {}" ,type,e);
-		     Map<String,String> errorMap = new HashMap<>();
-		     errorMap.put(ERROR, "Exception in collecting data for "+type);
-		     errorMap.put(ERROR_TYPE, WARN);
-		     errorMap.put(EXCEPTION, e.getMessage());
-		     errorList.add(errorMap);
-		}
-		return entities;
-	}
+    /**
+     * This method is used to fetch all entity type .data files associated with particular datasource(gcp/azure/aws)
+     * from specified bucket/source location
+     * @param datasource
+     * @param sourceFolder (i.e) s3.data,dynamic path fetched from Mapper lambda
+     * @param type
+     * @param errorList
+     * @return
+     */
+	private List<Map<String, Object>> fetchEntitiyInfoFromS3(String datasource, String sourceFolder,String type,  List<Map<String, String>> errorList) {
+        List<Map<String, Object>> entities = new ArrayList<>();
+        LOGGER.info("Inside fetchEntitiyInfoFromS3() method");
+        LOGGER.debug("s3Account:{}", s3Account);
+        LOGGER.debug("s3Region:{}", s3Region);
+        LOGGER.debug("s3Role:{}", s3Role);
+        LOGGER.debug("bucketName:{}", bucketName);
+        LOGGER.debug("sourceFolder:{}", sourceFolder);
+        try {
+            //override datapath with sourceFolder
+            dataPath = sourceFolder;
+            entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, dataPath + "/" + datasource + "-" + type + ".data");
+
+        } catch (Exception e) {
+            LOGGER.error("Exception in collecting data for {}", type, e);
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put(ERROR, "Exception in collecting data for " + type);
+            errorMap.put(ERROR_TYPE, WARN);
+            errorMap.put(EXCEPTION, e.getMessage());
+            errorList.add(errorMap);
+        }
+        return entities;
+    }
 	
 
     

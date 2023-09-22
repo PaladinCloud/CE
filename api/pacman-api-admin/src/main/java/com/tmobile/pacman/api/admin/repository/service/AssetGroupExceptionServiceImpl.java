@@ -90,7 +90,6 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	@Autowired
 	private  AmazonCognitoConnector amazonCognitoConnector;
 
-
 	@Override
 	public Page<AssetGroupExceptionProjections> getAllAssetGroupExceptions(String searchTerm, int page, int size) {
 		return assetGroupExceptionRepository.findAllAssetGroupExceptions(searchTerm.toLowerCase(), PageRequest.of(page, size));

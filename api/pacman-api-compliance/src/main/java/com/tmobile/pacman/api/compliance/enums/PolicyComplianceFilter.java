@@ -11,7 +11,8 @@ public enum PolicyComplianceFilter {
     ASSET_TYPE("resourcetType"),
     SOURCE("provider"),
     COMPLIANCE("compliance_percent"),
-    VIOLATIONS("failed");
+    VIOLATIONS("failed"),
+    ASSETS_SCANNED("assetsScanned");
 
     public final String filter;
 

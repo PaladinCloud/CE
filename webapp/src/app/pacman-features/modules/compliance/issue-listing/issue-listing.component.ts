@@ -486,15 +486,19 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     const filterKey = formattedFilterItem.filterkey;
       
     const existingFilterObjIndex = this.filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
-    if(this.filters[existingFilterObjIndex]?.filterValue.length > 0){}
+    if(this.filters[existingFilterObjIndex]?.filterValue.length > 0){
+      // do nothing when we have existing filter and filterValues > 0
+    }
     else if (existingFilterObjIndex >= 0) {
-      if(!removeFilterIfNotPresent){
-        this.filters[existingFilterObjIndex].filterValue = [];
-        this.filters[existingFilterObjIndex].value = [];
-      }else{
-        this.filters.splice(existingFilterObjIndex, 1);
-      }
+      // remove filter chip when 0 selected filter chip is present
+      // if(!removeFilterIfNotPresent){        
+      //   this.filters[existingFilterObjIndex].filterValue = [];
+      //   this.filters[existingFilterObjIndex].value = [];
+      // }else{
+      //   this.filters.splice(existingFilterObjIndex, 1);
+      // }
     }else{
+      // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
       await this.changeFilterType(keyDisplayValue);
       const filterValues = this.filterText[filterKey]?.split(',') || [];
       const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
@@ -505,7 +509,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .reduce((result, val) => {
         const valObj = filterTagOptionsForKey?.find(obj => obj.id === val);
         if (valObj && filterTagLabelsForKey?.includes(valObj.name)) {
+          // here we push valid filter option to validFilterValues array
           result.push(valObj);
+        }else{
+          // here we also push filter option that is not present in filterTagOptions[key] (i.e, options list) to validFilterValues array
+          // but here, we take id and displayname to be same
+          // this case is to handle when some filter is applied while navigating from other screen and if that filter option is not in the list.
+          result.push({id: val, name:val});
         }
         return result;
       }, []);

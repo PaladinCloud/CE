@@ -57,7 +57,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [];
   whiteListColumns: any = [];
   tableScrollTop: any;
-  columnWidths = {'Name': 1.2, "Type": 1, "Created By": 2, "Number of assets": 1, "Actions": 0.5};
+  columnWidths = {'Name': 1.2, "Type": 1, "Created By": 2, "Number of assets": 1};
   columnNamesMap = {"displayName": "Name", "type": "Type", "createdBy": "Created By", "assetCount": "Number of assets"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -285,32 +285,6 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
     this.filterTypeLabels.sort();
   }
 
-  confirmAction(action:string,selectedRow:any, currentAG:any){
-    const groupId = selectedRow["Group Id"].valueText;
-    this.selectedAssetGroup = selectedRow["Name"].valueText;
-    const dialogRef = this.dialog.open(DialogBoxComponent,
-    {
-      width: '600px',
-      data: {
-        title: null,
-        yesButtonLabel: action,
-        noButtonLabel: "Cancel",
-        template: this.actionRef
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      try {
-        if (result == "yes") {
-              this.deleteAssetGroup(groupId,currentAG);
-        }
-      } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
-      }
-    });
-  }
-
-
   getAssetGroupsDetails(isNextPageCalled?) {
     var url = environment.assetGroups.url;
     var method = environment.assetGroups.method;
@@ -458,7 +432,6 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
         // change data value
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
-      newObj["Actions"] = "";
       newData.push(newObj);
     });
     return newData;
@@ -496,14 +469,6 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
               isNumber: true
             };
           }
-          else if (col.toLowerCase() == "actions") {
-            let dropDownItems: Array<String> = ["Edit", "Delete"];
-            cellObj = {
-              ...cellObj,
-              isMenuBtn: true,
-              menuItems: dropDownItems,
-            };
-          }
           innerArr[col] = cellObj;
           totalVariablesObj[col] = "";
         });
@@ -535,67 +500,24 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
       this.logger.log("error", error);
     }
   }
-  deleteAssetGroup(groupId:string, currentAG:any) {
-    let url = environment.deleteAssetGroups.url; 
-    let method = environment.deleteAssetGroups.method; 
-    this.adminService.executeHttpAction(url, method, {groupId: groupId}, {}).subscribe(response => {
-      if(response){
-        const data = response[0]?.data;
-        this.updateComponent();
-        this.notificationObservableService.postMessage(data,3000,"","check-circle");
-        if(response[0].message==="success"){
-          this.assetTilesService.getAssetGroupList().subscribe(response=>{
-            console.log(" Updated Asset Group List ");
-          });
-          let criteriasBeforeUpdate = {};
-          currentAG['criteriaDetails']?.forEach(crit => {
-              if(crit.criteriaName in criteriasBeforeUpdate){
-                criteriasBeforeUpdate[crit.criteriaName][crit.attributeName]=crit.attributeValue;
-              }
-              else{
-                criteriasBeforeUpdate[crit.criteriaName]={};
-                criteriasBeforeUpdate[crit.criteriaName][crit.attributeName]=crit.attributeValue;
-              }
-            });
-            let agDetails = {groupName : currentAG['Group Name'], description : currentAG['Description'], type : currentAG['Type'], configuration : Object.values(criteriasBeforeUpdate)};
-            delete agDetails['criteriaDetails'];
-        }
-      }
-    },
-    error => {
-      this.notificationObservableService.postMessage("Error in deleting asset group",3000,"error","Error");
-      this.logger.log("Error in Js",error);
-    })
-  }
 
-  onSelectAction(event) {
-    const action = event.action;
+  handleRowClick(event) {
     const rowSelected = event.rowSelected;
     const groupId = rowSelected["Group Id"].valueText;
-    let currentAG: any;
-    this.assetGroupList.forEach(assetGroup=>{
-                    if(assetGroup["Group Id"] == groupId){
-                      currentAG = assetGroup;
-                    }
-          })
-    if (action === "Delete") {
-      this.confirmAction(action,rowSelected,currentAG);
-    } else if (action === "Edit") {
-      try {
-        this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root, 0, this.pageTitle
-        );
-        this.router.navigate(["create-asset-groups"],{
-          relativeTo: this.activatedRoute,
-          queryParams:{
-            groupId : groupId
-          },
-          queryParamsHandling: 'merge',
-        });
-      } catch (error) {
-        this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log("error", error);
-      }
+    try {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root, 0, this.pageTitle
+      );
+      this.router.navigate(["create-asset-groups"],{
+        relativeTo: this.activatedRoute,
+        queryParams:{
+          groupId : groupId
+        },
+        queryParamsHandling: 'merge',
+      });
+    } catch (error) {
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
     }
   }
 

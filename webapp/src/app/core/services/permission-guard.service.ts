@@ -34,6 +34,7 @@ export class PermissionGuardService implements CanActivate {
         const canUserAccess = this.checkUserPermissionToAccessThisUrl(urlPermissions, userPermissions);
         //window.alert("canUserAccess" + canUserAccess);
         if (!canUserAccess) {
+            localStorage.removeItem("redirectUrl")
             this.router.navigate(['/home']);
             return false;
         }

@@ -717,8 +717,8 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         if(MapUtils.isNotEmpty(filter)){
             List<String> provider = filter.containsKey(PolicyComplianceFilter.PROVIDER.filter) ?
                     (List<String>) filter.get(PolicyComplianceFilter.PROVIDER.filter) : new ArrayList<>();
-            List<Boolean> autoFixAvailable = filter.containsKey(PolicyComplianceFilter.AUTOFIX.filter) ?
-                    (List<Boolean>) filter.get(PolicyComplianceFilter.AUTOFIX.filter) : new ArrayList<>();
+            List<String> autoFixAvailable = filter.containsKey(PolicyComplianceFilter.AUTOFIX.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.AUTOFIX.filter) : new ArrayList<>();
             List<String> policyName = filter.containsKey(PolicyComplianceFilter.POLICY_NAME.filter) ?
                     (List<String>) filter.get(PolicyComplianceFilter.POLICY_NAME.filter) : new ArrayList<>();
             List<String> severity = filter.containsKey(PolicyComplianceFilter.SEVERITY.filter) ?
@@ -733,14 +733,15 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     (List<Map<String, Object>>) filter.get(PolicyComplianceFilter.COMPLIANCE.filter) : new ArrayList<>();
 
             openIssuesByPolicyListFinal = openIssuesByPolicyListFinal.stream()
-                    .filter(x -> provider.size() == 0 || provider.contains(x.get(PolicyComplianceFilter.PROVIDER.filter)))
+                    .filter(x -> provider.size() == 0 || provider.stream().anyMatch(asset -> asset.equalsIgnoreCase(x.get(PolicyComplianceFilter.PROVIDER.filter).toString())))
                     .filter(x -> policyName.isEmpty() || policyName.contains(x.get(PolicyComplianceFilter.POLICY_NAME.filter)))
                     .filter(x -> severity.isEmpty() || severity.contains(x.get(PolicyComplianceFilter.SEVERITY.filter)))
                     .filter(x -> category.isEmpty() || category.contains(x.get(PolicyComplianceFilter.CATEGORY.filter)))
-                    .filter(x -> compliance.isEmpty() || isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance))
+                    .filter(x -> compliance.size() ==0 || (Long.valueOf(x.get(PolicyComplianceFilter.ASSETS_SCANNED.filter).toString()) >0 && isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance)))
                     .filter(x -> violations.isEmpty() || isViolationsInRange(Long.valueOf(x.get(PolicyComplianceFilter.VIOLATIONS.filter).toString()), violations))
                     .filter(x -> assetType.isEmpty() || assetType.contains(x.get(PolicyComplianceFilter.ASSET_TYPE.filter)))
-                    .filter(x -> autoFixAvailable.size() ==0 || autoFixAvailable.size() ==2 || autoFixAvailable.contains(x.get(PolicyComplianceFilter.AUTOFIX.filter).toString()))
+                    .filter(x -> autoFixAvailable.size() ==0 || autoFixAvailable.size() ==2 ||
+                            (x.get(PolicyComplianceFilter.AUTOFIX.filter) != null && autoFixAvailable.contains(x.get(PolicyComplianceFilter.AUTOFIX.filter).toString().trim())))
                     .collect(Collectors.toList());
         }
         if(!CollectionUtils.isEmpty(openIssuesByPolicyListFinal)){
@@ -750,22 +751,21 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     }
 
     private boolean isViolationsInRange(long percent, List<Map<String, String>> rangeList){
-        boolean res = false;
         for(Map<String, String> map: rangeList){
             long min = Long.parseLong(map.get(Constants.MIN));
             long max = Long.parseLong(map.get(Constants.MAX));
             if(percent >= min && percent <= max){
-                res = true;
+                return true;
             }
         }
-        return res;
+        return false;
     }
 
     private boolean isComplianceInRange(double percent, List<Map<String, Object>> rangeList){
         for(Map<String, Object> map: rangeList){
             double min = Double.parseDouble(map.get(Constants.MIN).toString());
             double max = Double.parseDouble(map.get(Constants.MAX).toString());
-            if(percent >= min && percent <= max){
+            if(percent >= min && percent <= max ){
                 return true;
             }
         }

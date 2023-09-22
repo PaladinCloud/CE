@@ -23,14 +23,20 @@
 package com.tmobile.pacman.commons.utils;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.tmobile.pacman.commons.dto.PaladinAccessToken;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -43,10 +49,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +69,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
+
+import static com.amazonaws.services.s3.Headers.CONTENT_TYPE;
+import static com.tmobile.pacman.commons.utils.Constants.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -103,7 +116,7 @@ public class CommonUtils {
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpPost httppost = new HttpPost(url);
 			//httppost.setHeader("Content-Type", "application/json");
-			httppost.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
+			httppost.setHeader(CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 			StringEntity jsonEntity = new StringEntity(requestBody);
 			httppost.setEntity(jsonEntity);
 			HttpResponse httpresponse = client.execute(httppost);
@@ -136,7 +149,7 @@ public class CommonUtils {
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpPut httpPut = new HttpPut(url);
-			httpPut.setHeader("Content-Type", "application/json");
+			httpPut.setHeader(CONTENT_TYPE, APPLICATION_JSON);
 
 			StringEntity jsonEntity =null;
 			if(requestBody!=null){
@@ -382,10 +395,10 @@ public class CommonUtils {
 	public static String doHttpGet(String uri ,String tokeType, String token) throws Exception  {
 		 
         HttpGet httpGet = new HttpGet(uri);
-        httpGet.addHeader("content-type", "application/json");
+        httpGet.addHeader("content-type", APPLICATION_JSON);
         httpGet.addHeader("cache-control", "no-cache");
         if(!Strings.isNullOrEmpty(token)){
-            httpGet.addHeader("Authorization", tokeType+" "+token);
+            httpGet.addHeader(AUTHORIZATION, tokeType+" "+token);
         }
     	HttpClient httpClient = HttpClientBuilder.create().build();
         if(httpClient!=null){
@@ -409,10 +422,10 @@ public class CommonUtils {
 	public static String doHttpPost(String uri, String token, String accessToken) throws Exception {
 
 		HttpPost httpPost = new HttpPost(uri);
-		httpPost.addHeader("content-type", "application/json");
+		httpPost.addHeader("content-type", APPLICATION_JSON);
 		httpPost.addHeader("cache-control", "no-cache");
 		if (!Strings.isNullOrEmpty(token)) {
-			httpPost.addHeader("Authorization", token + " " + accessToken);
+			httpPost.addHeader(AUTHORIZATION, token + " " + accessToken);
 		}
 		HttpClient httpClient = HttpClientBuilder.create().build();
 		if (httpClient != null) {
@@ -431,5 +444,76 @@ public class CommonUtils {
 			}
 		}
 		return "{}";
+	}
+
+	public static PaladinAccessToken getAccessToken(String authApiUrl, String credentials) throws Exception{
+		logger.info("Called Authorise");
+		Map<String,String> headersMap=new HashMap<>();
+		headersMap.put(AUTHORIZATION, "Basic "+credentials);
+		String response = doHttpPost(authApiUrl+"/oauth2/token?grant_type=client_credentials&scope="+API_READ_SCOPE,"",headersMap);
+		Map<String,Object> authInfo = parseJson(response);
+		Object token = authInfo.get("access_token");
+		Object expiresIn = authInfo.get("expires_in"); // In seconds
+		if( token!=null){
+			long tokenExpiresAt = System.currentTimeMillis() + Long.valueOf(expiresIn.toString())*1000 - (20*1000) ; // 20 second buffer
+			return new PaladinAccessToken(token.toString(), tokenExpiresAt);
+		}
+		return null;
+	}
+
+	private static CloseableHttpClient getHttpClient() {
+		CloseableHttpClient httpClient = null;
+		try {
+			httpClient = HttpClientBuilder.create().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+					.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+						@Override
+						public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+							return true;
+						}
+					}).build()).build();
+		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+			logger.error("Error getting getHttpClient {}",e.getMessage());
+		}
+		return httpClient;
+	}
+
+	public static String doHttpPost(final String url, final String requestBody, Map<String,String> headers) throws Exception {
+		try {
+			CloseableHttpClient client = getHttpClient();
+			HttpPost httppost = new HttpPost(url);
+			if(requestBody==null || requestBody.isEmpty()){
+				httppost.setHeader("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.toString());
+			}else {
+				httppost.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
+			}
+			headers.entrySet().stream().forEach(entry -> httppost.setHeader(entry.getKey(),entry.getValue()));
+			StringEntity jsonEntity = new StringEntity(requestBody);
+			httppost.setEntity(jsonEntity);
+			HttpResponse httpresponse = client.execute(httppost);
+			int statusCode = httpresponse.getStatusLine().getStatusCode();
+			if(statusCode==HttpStatus.SC_OK || statusCode==HttpStatus.SC_CREATED)
+			{
+				return EntityUtils.toString(httpresponse.getEntity());
+			}else{
+				logger.error("{} --- {}",httpresponse.getStatusLine().getStatusCode(),httpresponse.getStatusLine().getReasonPhrase());
+				throw new Exception("unable to execute post request because " + httpresponse.getStatusLine().getReasonPhrase());
+			}
+		} catch (ParseException parseException) {
+			logger.error("ParseException in getHttpPost : {}",parseException.getMessage());
+			throw new ParseException(parseException.getMessage());
+		} catch (Exception exception) {
+			logger.error("Exception in getHttpPost : {}",exception.getMessage());
+			throw new Exception(exception.getMessage());
+		}
+	}
+
+	public static Map<String, Object> parseJson(String json) {
+		try {
+			return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {
+			});
+		} catch (IOException e) {
+			logger.error("Error in parseJson",e);
+		}
+		return new HashMap<>();
 	}
 }

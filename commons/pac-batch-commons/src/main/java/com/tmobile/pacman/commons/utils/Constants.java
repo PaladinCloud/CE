@@ -28,11 +28,13 @@ public interface Constants {
 
     /** The API  User:Password  */
     String API_AUTH_INFO = "apiauthinfo";
+    String AUTH_API_URL = "AUTH_API_URL";
 
     String CONFIG_QUERY = "configquery";
 
     String CONFIG_URL = "CONFIG_URL";
 
+     String API_READ_SCOPE = "API_OPERATION/READ";
 
     /** The failed. */
     String FAILED = "failed";
@@ -99,5 +101,8 @@ public interface Constants {
     }
     String EVENT_SOURCE = "paladinCloud";
     String EVENT_SOURCE_NAME = "Paladin Cloud";
+
+    String APPLICATION_JSON = "application/json";
+    String AUTHORIZATION = "Authorization";
 
 }

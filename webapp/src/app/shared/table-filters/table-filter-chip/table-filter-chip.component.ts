@@ -88,16 +88,11 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
         this.optionFilterQuery = '';
     }
 
-    sortCheckedOptionsFirst() {
+    sortCheckedOptionsFirst(){
         const checkedOptions = Object.keys(this.appliedFiltersDict || {}).filter(key => this.appliedFiltersDict[key]);
-        this.options.sort((a, b) => {
-          const aIsChecked = checkedOptions.includes(a);
-          const bIsChecked = checkedOptions.includes(b);
-          if (aIsChecked && !bIsChecked) return -1;
-          if (!aIsChecked && bIsChecked) return 1;
-          return this.excludeSortForCategories.includes(this.category?.toLowerCase())?0:a.localeCompare(b);
-        });
-      }
+        const uncheckedOptions = this.options?.filter((f) => !checkedOptions.includes(f)) || [];
+        this.options = [...checkedOptions, ...uncheckedOptions];
+    }
 
     dateIntervalSelected(from?, to?){
         const toDate = new Date(to).toLocaleDateString('en-CA');
