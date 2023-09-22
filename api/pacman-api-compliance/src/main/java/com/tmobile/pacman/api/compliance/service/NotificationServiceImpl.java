@@ -28,7 +28,7 @@ public class NotificationServiceImpl implements NotificationService{
     @Autowired
     PacmanRdsRepository pacmanRdsRepository;
     @Value("${notification.lambda.function.url}")
-    private static String notificationUrl;
+    private String notificationUrl;
 
     /** The ui host. */
     @Value("${pacman.host}")
@@ -220,7 +220,7 @@ public class NotificationServiceImpl implements NotificationService{
         }
     }
 
-    public static void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
+    public void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
         Map<String,String> headersMap = new HashMap<>();
         headersMap.put("Authorization", ThreadLocalUtil.accessToken.get());
         PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr,headersMap);
