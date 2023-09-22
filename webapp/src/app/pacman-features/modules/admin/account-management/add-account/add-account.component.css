@@ -78,6 +78,10 @@
     width: 33.28%;
     min-width: 255px;
     min-height: 161px;
+    border-radius: 8px;
+
+    /* Global/Elevation/Bottom.300 */
+    box-shadow: 0px 8px 16px -2px rgba(27, 36, 44, 0.12), 0px 2px 2px -1px rgba(27, 35, 44, 0.04);
 }
 
 .video-thumbnail{
