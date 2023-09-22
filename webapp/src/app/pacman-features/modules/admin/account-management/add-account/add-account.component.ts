@@ -403,7 +403,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     this.gaService.event('Button', 'Click', 'Select Plugin');
     this.isValid = true;
     if(account.name.toLowerCase() == "tenable"
-        || account.name.toLowerCase() == "aqua"
+        || account.name.toLowerCase() == "aqua" || account.name.toLowerCase()=="red hat"
       ){
           this.openSupportInfoDialog(account.name);
           return;
