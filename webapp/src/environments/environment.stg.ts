@@ -867,20 +867,20 @@
         method: 'POST'
     },
     validateAccount: {
-        url: '{{baseUrl}}/admin/accounts/validate',
+        url: '{{baseUrl}}/admin/accounts/{pluginSelected}/validate',
         method: 'POST'
     },
     deleteAccount:{
-        url: '{{baseUrl}}/admin/accounts',
+        url: '{{baseUrl}}/admin/accounts/{pluginSelected}/delete',
         method: 'DELETE'
+    },
+    createAccount: {
+        url: '{{baseUrl}}/admin/accounts/{pluginSelected}/create',
+        method: 'POST'
     },
     getBaseAccount: {
         url: '{{baseUrl}}/admin/accounts/baseAccount',
         method: 'GET'
-    },
-    createAccount: {
-        url: '{{baseUrl}}/admin/accounts',
-        method: 'POST'
     },
     deleteAccounts: {
         url: '{{baseUrl}}/admin/awsaccounts/{{accountId}}',
