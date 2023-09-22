@@ -214,6 +214,8 @@ public final class AdminConstants {
 	public static final String POLICY_ENABLE_DESCRIPTION			=	"The Policy has been enabled by %s on %s";
 	public static final String POLICY_ACTION_EVENT_NAME  			=	"Policy id %s is %s";
 	public static final String POLICY_ACTION_SUBJECT 				= 	"Policy status";
+	public static final String FAILURE = "Failure";
+	public static final String SUCCESS = "Success";
 
 }
 
