@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: job-service
+    title: Paladin Job Service
+    description: PaladinCloud Job API provides
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER_URL:http://localhost:8888/api/config/}
+      enabled: true
+      fail-fast: true
+      name: api
+      password: ${CONFIG_PASSWORD}
+      username: user
+      label: latest
+  jpa: 
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  profiles:
+    active: ${ENVIRONMENT:prd}
+    
+server:
+  servlet:
+    context-path: /api/job

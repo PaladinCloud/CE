@@ -39,6 +39,7 @@ public class JobScheduler {
     public static final String QUALYS_ENABLED = "qualys.enabled";
     public static final String AQUA_ENABLED = "aqua.enabled";
     public static final String TENABLE_ENABLED = "tenable.enabled";
+    public static final String REDHAT_ENABLED = "redhat.enabled";
     public static final String PLUGIN_TYPE_TENABLE = "tenable";
     public static final String PLUGIN_TYPE_QUALYS = "qualys";
     public static final String PLUGIN_TYPE_AQUA = "aqua";
@@ -47,6 +48,9 @@ public class JobScheduler {
     public static final String FAILED_WITH_ERROR_CODE = "Injection failed with Error Code: {} ";
     public static final String EVENT_ID = "Event Id: {} ";
     public static final String CURRENT_MILLISECONDS = "Current milliseconds: {}";
+    public static final String PLUGIN_TYPE_GCP = "gcp";
+    public static final String PLUGIN_TYPE_REDHAT = "redhat";
+
 
     @Autowired
     CredentialProvider credentialProvider;
@@ -73,6 +77,8 @@ public class JobScheduler {
     private boolean aquaEnabled;
 
     private boolean tenableEnabled;
+    
+    private boolean redHatEnabled;
 
     @Value("${scheduler.total.batches}")
     private String noOfBatches;
@@ -85,6 +91,9 @@ public class JobScheduler {
 
     @Value("${scheduler.role}")
     private String roleName;
+    
+    @Autowired
+    private DataCollectorSQSService dataCollectorSQSServic;
 
     @Scheduled(initialDelayString = "${scheduler.collector.initial.delay}", fixedDelayString = "${scheduler.interval}")
     public void scheduleCollectorJobs() {
@@ -97,33 +106,41 @@ public class JobScheduler {
 
         try {
             ConfigUtil.setConfigProperties();
+			  azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
+			  gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
+			  awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED)); 
+			  redHatEnabled=Boolean.parseBoolean(System.getProperty(REDHAT_ENABLED));
 
-            azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
-            gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
-            awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
-            if (awsEnabled) {
-                addCollectorEvent(putEventsRequestEntries, awsBusDetails);
-            }
-            if (azureEnabled) {
-                addCollectorEvent(putEventsRequestEntries, azureBusDetails);
-            }
-            if (gcpEnabled) {
-                addCollectorEvent(putEventsRequestEntries, gcpBusDetails);
-            }
+				
+				if (awsEnabled) {
+					addCollectorEvent(putEventsRequestEntries, awsBusDetails);
+				}
+				if (azureEnabled) {
+					addCollectorEvent(putEventsRequestEntries, azureBusDetails);
+				}
+				 
+				if (gcpEnabled) {
+					dataCollectorSQSServic.sendSQSMessage(PLUGIN_TYPE_GCP);
+				}
+				if (redHatEnabled) {
+					dataCollectorSQSServic.sendSQSMessage(PLUGIN_TYPE_REDHAT);
+				}
 
-            if (!putEventsRequestEntries.isEmpty()) {
-                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+				if (!putEventsRequestEntries.isEmpty()) {
+					PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries)
+							.build();
 
-                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+					PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
-                for (PutEventsResultEntry resultEntry : result.entries()) {
-                    if (resultEntry.eventId() != null) {
-                        logger.info(EVENT_ID, resultEntry.eventId());
-                    } else {
-                        logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
-                    }
-                }
-            }
+					for (PutEventsResultEntry resultEntry : result.entries()) {
+						if (resultEntry.eventId() != null) {
+							logger.info(EVENT_ID, resultEntry.eventId());
+						} else {
+							logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+						}
+					}
+				}
+
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
             System.exit(1);
