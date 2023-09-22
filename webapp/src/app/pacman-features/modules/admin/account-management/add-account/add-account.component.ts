@@ -787,8 +787,10 @@ onSubmit(){
 replaceUrl(url, action=''){
   if(this.getImageName()=="redhat"){
     return url.replace("{pluginSelected}", this.getImageName());
-  }else{
-    return url.replace("{pluginSelected}/","").replace(action, '');
+  }else if(action=='validate'){
+    return url.replace("{pluginSelected}/","");
+  } else {
+    return url.replace("/{pluginSelected}/","").replace(action, '');
   }
 }
 

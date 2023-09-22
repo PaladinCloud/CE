@@ -102,7 +102,7 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
     if(this.platform=="redhat"){
       return url.replace("{pluginSelected}", this.platform)
     }else{
-      return url.replace("{pluginSelected}/","").replace(action, '');
+      return url.replace("/{pluginSelected}/","").replace(action, '');
     }
   }
 
@@ -112,6 +112,7 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
     const method = environment.deleteAccount.method;
     const queryParams = {
       accountId : this.accountId,
+      provider: this.platform
     }
     let nofificationMessage = "";
 
