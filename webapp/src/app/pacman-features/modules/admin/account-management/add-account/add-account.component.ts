@@ -76,7 +76,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
 
   @ViewChild("redHatStepsVideo") redHatStepsVideo: TemplateRef<any>;
   name = 'Video events';
-  videoSource = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
+  videoSource = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"+"#t=0.1";
   @ViewChild('videoPlayer') videoplayer: any;
   public startedPlay:boolean = false;
   public show:boolean = false;
@@ -631,20 +631,21 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         payload = {
           platform: "redhat",
           redhatAccountId: this.redHatId,
-          redHatAccountName: this.redHatAccountName,
+          redhatAccountName: this.redHatAccountName,
           redhatToken: this.redHatToken,
-          redHatOwner: this.redHatOwner
+          redhatOwner: this.redHatOwner
         }
         break;
     }
     this.isValidating = true;
-    const url = environment.validateAccount.url;
+    const url = this.replaceUrl(environment.validateAccount.url, 'validate');
     const method = environment.validateAccount.method;
     this.validateSubscription = this.commonResponseService.getData(url,method,payload,{})
     .subscribe(response=>{
       try{
         const data = response.data;
-        this.isValid = data.validationStatus.toLowerCase() != "failure";
+        const status = data.validationStatus || data.status;        
+        this.isValid = status.toLowerCase() != "failure" ;
         this.isValidated = true;
         if(!this.isValid){
           this.displayTemplate(this.addDetailsStepperIndex);
@@ -737,7 +738,7 @@ onSubmit(){
         payload = {
           platform: "redhat",
           redhatAccountId: this.redHatId,
-          redHatAccountName: this.redHatAccountName,
+          redhatAccountName: this.redHatAccountName,
           redhatToken: this.redHatToken,
           redhatOwner: this.redHatOwner
         }
@@ -747,7 +748,7 @@ onSubmit(){
    const userDetails = this.dataCacheService.getUserDetailsValue();
    let userId = userDetails.getEmail(); 
    payload['createdBy'] = userId;
-   const url = environment.createAccount.url;
+   const url = this.replaceUrl(environment.createAccount.url, 'create');
    const method = environment.createAccount.method;
    let notificationMessage = "";
    this.commonResponseService.getData(url,method,payload,{})
@@ -759,12 +760,13 @@ onSubmit(){
             this.closeDialog();
           }
            this.isAdding = false;
-           if(data.validationStatus.toLowerCase() !== "failure"){
+           const status = data.validationStatus || data.status;           
+           this.isValid = status.toLowerCase() != "failure" ;
+           if(this.isValid){
             notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" has been created successfully";
             this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
             this.redirectTo();
            } else{
-            this.isValid = false;
             this.displayTemplate(this.addDetailsStepperIndex);
             this.errorMessage = data.message;
              notificationMessage =  provider.toUpperCase() + " Account "+ accountid +" creation has been failed";
@@ -780,6 +782,14 @@ onSubmit(){
         console.log(error,"error js");
       }
    })
+}
+
+replaceUrl(url, action=''){
+  if(this.getImageName()=="redhat"){
+    return url.replace("{pluginSelected}", this.getImageName());
+  }else{
+    return url.replace("{pluginSelected}/","").replace(action, '');
+  }
 }
 
 isSelectedAccount(account:string){

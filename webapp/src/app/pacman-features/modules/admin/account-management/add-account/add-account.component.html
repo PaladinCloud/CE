@@ -151,12 +151,14 @@
                         <strong class="high-emphasis">IMPORTANT: </strong>Be sure to safely store the copied token. Once generated, it won't be visible again for security reasons
                     </div>
                 </div>
-                <div class="video-thumbnail-wrapper">
-                    <img class="video-thumbnail" src="/assets/images/plugin-thumbnails/red-hat.png" alt="Red hat image">
-                    <div class="play-button">
-                        <!-- Play button icon -->
-                        <img class="icon" (click)="openVideoDialog()" src="/assets/icons/play-button.svg" alt="play button">
+                <div class="flex flex-col gap-16 flex-align-center">
+                    <div class="video-thumbnail-wrapper">
+                        <img class="video-thumbnail" src="/assets/images/plugin-thumbnails/redhat-steps.png" alt="Red hat image">
+                        <div class="play-button">
+                            <img class="icon" (click)="openVideoDialog()" src="/assets/icons/play-button.svg" alt="play button">
+                        </div>
                     </div>
+                    <div class="body-1">Watch Video</div>
                 </div>
             </div>
     </div>
@@ -212,7 +214,7 @@
         <div *ngIf="pluginSelected===('red hat')" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="redHatPluginForm">
                 <app-input-field [label]="'ID'" [(value)]="redHatId" [parentForm]="redHatPluginForm" formControlName="redHatId" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Token'" type="textarea" height="150px" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field [label]="'Token'" type="textarea" height="112px" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
                 <app-input-field [label]="'Account Name (Optional)'" [(value)]="redHatAccountName" [parentForm]="redHatPluginForm" formControlName="redHatAccountName" [formErrors]="redHatFormErrors"></app-input-field>
                 <app-input-field [label]="'Owner (Optional)'" [(value)]="redHatOwner" [parentForm]="redHatPluginForm" formControlName="redHatOwner" [formErrors]="redHatFormErrors"></app-input-field>
             </form>
