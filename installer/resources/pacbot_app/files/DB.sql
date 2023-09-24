@@ -3071,3 +3071,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
   update pac_v2_ui_options set optionName ="Source" where optionId='32';
   update pac_v2_ui_options set optionName ="Source" where optionId='57';
   update pac_v2_ui_options set optionName ="Source" where optionId='43';
+
+
+
+update cf_pac_updatable_fields set displayFields= "tags.Product,tags.Owner,tags.Environment,tags.Application,_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname,_score" where resourceType="all_list";
