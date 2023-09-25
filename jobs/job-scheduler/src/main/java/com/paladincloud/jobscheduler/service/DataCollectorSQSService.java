@@ -82,12 +82,13 @@ public class DataCollectorSQSService {
         String queueUrl = System.getenv(Constants.DATAMAPPER_SQS_QUEUE_URL); 
         SendMessageRequest request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
-                .withMessageBody(messageBody);
+                .withMessageBody(messageBody)
+                .withMessageGroupId(TEMP_TENANTID);
 
         try {
             // Send the message to the queue
             SendMessageResult result = sqs.sendMessage(request);
-            logger.error("Message sent with message ID: " + result.getMessageId());
+            logger.debug("Message sent with message ID: " + result.getMessageId());
         } catch (Exception e) {
         	logger.error("Error sending message: " + e.getMessage());
         }
