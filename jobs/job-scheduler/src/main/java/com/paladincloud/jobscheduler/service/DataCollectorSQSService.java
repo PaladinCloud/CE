@@ -82,7 +82,8 @@ public class DataCollectorSQSService {
         String queueUrl = System.getenv(Constants.DATAMAPPER_SQS_QUEUE_URL); 
         SendMessageRequest request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
-                .withMessageBody(messageBody);
+                .withMessageBody(messageBody)
+                .withMessageGroupId(TEMP_TENANTID);
 
         try {
             // Send the message to the queue
