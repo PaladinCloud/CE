@@ -23,13 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.tmobile.pacman.commons.dto.ErrorVH;
+import com.tmobile.pacman.commons.dto.PermissionVH;
+import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tmobile.pacbot.azure.inventory.file.FileGenerator;
-import com.tmobile.pacbot.azure.inventory.file.FileManager;
-import com.tmobile.pacbot.azure.inventory.vo.ErrorVH;
 
 
 /**
@@ -41,7 +44,7 @@ public class ErrorManageUtil {
     private static Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
 	
 	/** The error map. */
-	private static Map<String,List<ErrorVH>> errorMap = new HashMap<>();
+	private static Map<String,List<ErrorVH>> errorMap = new ConcurrentHashMap<>();
 	
 	/**
 	 * Instantiates a new error manage util.
@@ -84,7 +87,7 @@ public class ErrorManageUtil {
 		try{
 			List<ErrorVH> errorList = errorMap.get(account);
 			if(errorList==null){
-				errorList =  new ArrayList<>();
+				errorList =  new CopyOnWriteArrayList<>();
 				errorMap.put(account, errorList);
 			}
 			ErrorVH error = new ErrorVH();
@@ -133,4 +136,26 @@ public class ErrorManageUtil {
         log.info("Return Info {}",errorCode);
         return errorCode;
     }
+	public static void triggerNotificationforPermissionDenied()
+	{
+		List<PermissionVH> permissionIssue=new ArrayList<>();
+		for(Map.Entry<String,List<ErrorVH>> entry:errorMap.entrySet())
+		{
+			List<ErrorVH> errorVHList=entry.getValue();
+			for(ErrorVH errorVH:entry.getValue())
+			{
+				if(errorVH.getType().equals("vault")&&errorVH.getException().contains("DeniedWithNoValidRBAC"))
+				{
+					PermissionVH permissionVH=new PermissionVH();
+					log.info("Omit exception :{}",errorVH.getException());
+					permissionVH.setAccountNumber(entry.getKey());
+					permissionVH.setErrorVH(errorVH);
+					permissionIssue.add(permissionVH);
+					errorVHList.remove(errorVH);
+				}
+			}
+			if(errorVHList.isEmpty()){errorMap.remove(entry.getKey());}
+		}
+		NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue,"Azure");
+	}
 }

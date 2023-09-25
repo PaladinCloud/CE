@@ -64,7 +64,9 @@ public interface Constants {
         @SerializedName("violation")
         VIOLATION("violation"),
         @SerializedName("autofix")
-        AUTOFIX("autofix");
+        AUTOFIX("autofix"),
+        @SerializedName("permission")
+        PERMISSION("permission");
 
         String value;
 

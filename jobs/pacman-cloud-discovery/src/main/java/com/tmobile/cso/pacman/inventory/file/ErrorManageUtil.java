@@ -26,11 +26,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.tmobile.pacman.commons.dto.ErrorVH;
+import com.tmobile.pacman.commons.dto.PermissionVH;
+import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
-import com.tmobile.cso.pacman.inventory.vo.ErrorVH;
 
 
 /**
@@ -149,6 +151,7 @@ public class ErrorManageUtil {
     }
 
 	public static void omitOpsAlert() {
+		List<PermissionVH> permissionIssue=new ArrayList<>();
 		for(Map.Entry<String,List<ErrorVH>> entry:errorMap.entrySet())
 		{
 			List<ErrorVH> errorVHList=entry.getValue();
@@ -156,16 +159,25 @@ public class ErrorManageUtil {
 			{
 				if(errorVH.getType().equals("phd")&&(errorVH.getException().contains("AccessDeniedException")||errorVH.getException().contains("SubscriptionRequiredException")))
 				{
+					PermissionVH permissionVH=new PermissionVH();
 					log.info("Omit exception :{}",errorVH.getException());
+					permissionVH.setAccountNumber(entry.getKey());
+					permissionVH.setErrorVH(errorVH);
+					permissionIssue.add(permissionVH);
 					errorVHList.remove(errorVH);
 				}
 				if(((errorVH.getType().equals("kms")||errorVH.getType().equals("s3"))&&errorVH.getException().contains("AccessDeniedException"))||(errorVH.getType().equals("checks")&&errorVH.getException().contains("AWSSupportException")))
 				{
+					PermissionVH permissionVH=new PermissionVH();
 					log.info("Omit exception :{}",errorVH.getException());
+					permissionVH.setAccountNumber(entry.getKey());
+					permissionVH.setErrorVH(errorVH);
+					permissionIssue.add(permissionVH);
 					errorVHList.remove(errorVH);
 				}
 			}
 			if(errorVHList.isEmpty()){errorMap.remove(entry.getKey());}
 		}
+		NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue,"AWS");
 	}
 }

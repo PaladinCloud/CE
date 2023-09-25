@@ -61,7 +61,29 @@ public class IAMUtils {
         List<AccessKeyMetadata> accessKeyMetadatas = new ArrayList<>();
         ListAccessKeysResult keysResult = null;
         do {
-            keysResult = iamClient.listAccessKeys(accessKeysRequest);
+			for(int i=0;i<PacmanSdkConstants.MAX_RETRY_COUNT;i++) {
+				try {
+					keysResult = iamClient.listAccessKeys(accessKeysRequest);
+				} catch (AmazonIdentityManagementException e) {
+					if (e.getMessage().startsWith("Rate exceeded")) {
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException ex) {
+							throw new RuntimeException(ex);
+						}
+						if (i == 2) {
+							logger.error(e.getMessage());
+							throw e;
+						}
+						logger.info("Retrying inside getAccessKeyInformationForUser for username -{}", userName);
+						continue;
+					}
+					else{
+						throw e;
+					}
+				}
+				break;
+			}
             accessKeyMetadatas.addAll(keysResult.getAccessKeyMetadata());
             accessKeysRequest.setMarker(keysResult.getMarker());
         } while (keysResult.isTruncated());

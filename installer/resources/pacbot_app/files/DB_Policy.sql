@@ -107,7 +107,7 @@ insert ignore into cf_NotificationChannels (notificationChannelId,channelName,cr
  insert ignore into cf_NotificationTypes (notificationTypeId,notificationType,createdBy,creationDate) values ('5bf94e30-bd07-11ed-afa1-0242ac120002','autofix','admin@paladincloud.io',current_timestamp());
  insert ignore into cf_NotificationTypes (notificationTypeId,notificationType,createdBy,creationDate) values ('63a2d98a-bd07-11ed-afa1-0242ac120002','exemptions','admin@paladincloud.io',current_timestamp());
  INSERT IGNORE INTO cf_NotificationTypes (notificationTypeId,notificationType,createdBy,creationDate) VALUES ('73a2d98a-bd07-11ed-afa1-0242ac120002', 'policyaction', 'admin@paladincloud.io', current_timestamp());
-
+INSERT IGNORE INTO cf_NotificationTypes (notificationTypeId,notificationType,createdBy,creationDate) VALUES ('68a8451e-ec58-4f09-bb7c-f39a402e3819', 'permission', 'admin@paladincloud.io', current_timestamp());
 /* RUle Category Weightage */
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('cost','Infra & Platforms',20);
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('operations','Infra & Platforms',20);

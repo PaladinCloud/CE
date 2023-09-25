@@ -37,7 +37,7 @@ public class NotificationServiceImpl implements NotificationService {
             "request not sent for policy action. Error - {}";
 
     @Value("${notification.lambda.function.url}")
-    private static String notificationUrl;
+    private String notificationUrl;
 
     /** The ui host. */
     @Value("${pacman.host}")
@@ -161,7 +161,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationBaseRequest;
     }
 
-    public static void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
+    public void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
         Map<String,String> headersMap = new HashMap<>();
         headersMap.put("Authorization", ThreadLocalUtil.accessToken.get());
         PacHttpUtils.doHttpPost(notificationUrl, notificationDetailsStr,headersMap);
