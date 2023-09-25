@@ -1998,7 +1998,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                                                                                        String policyCategory, boolean includeDisabled) throws DataException {
         String stringDisabled = includeDisabled ? StringUtils.EMPTY : "p."+ENABLED_STATUS_FOR_SQL;
         String policyIdWithDisplayquery = "SELECT p.policyId, p.policyDisplayName, p.targetType, p.severity, p.category, " +
-                "p.autoFixEnabled, p.autoFixAvailable, p.status FROM cf_PolicyTable p LEFT JOIN cf_PolicyParams pp ON p.policyId = pp.policyID AND pp.paramKey = 'pluginType' " +
+                "p.autoFixEnabled, p.autoFixAvailable, p.status, p.riskScore FROM cf_PolicyTable p LEFT JOIN cf_PolicyParams pp ON p.policyId = pp.policyID AND pp.paramKey = 'pluginType' " +
                 "LEFT JOIN cf_Accounts a ON pp.paramValue = a.platform " +
                 "WHERE ( pp.paramValue = a.platform " +
                 " OR pp.paramValue IS NULL ) AND " + stringDisabled +

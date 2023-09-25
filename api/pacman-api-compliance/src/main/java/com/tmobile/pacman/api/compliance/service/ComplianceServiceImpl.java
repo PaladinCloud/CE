@@ -490,8 +490,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                             collect(Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(SEVERITY),
                                     (oldvalue, newValue) -> newValue));
 
-
-
+                    Map<String, Object> policyRiskScoreDetails = policiesevCatDetails.parallelStream().
+                            filter(c -> c.get(POLICYID) != null && c.get(SEVERITY) != null).
+                            collect(Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(RISK_SCORE),
+                                    (oldvalue, newValue) -> newValue));
+                    
                     Map<String, Object> policyAutoFixDetails = policiesevCatDetails.parallelStream().collect(
                             Collectors.toMap(c -> c.get(POLICYID).toString(), c -> Boolean.parseBoolean(c.get(AUTOFIX).toString()), (oldValue, newValue) -> newValue));
 
@@ -652,6 +655,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                         }
                         final String resourceTypeFinal = resourceType;
                         openIssuesByPolicy.put(POLICY_CATEGORY, policyCatDetails.get(policyId));
+                        openIssuesByPolicy.put(RISK_SCORE, policyRiskScoreDetails.get(policyId));
                         openIssuesByPolicy.put(RESOURCE_TYPE, resourceType);
                         openIssuesByPolicy.put(PROVIDER, dataSourceTargetType.stream()
                                 .filter(datasourceObj -> datasourceObj.get(TYPE).equals(resourceTypeFinal))
@@ -1072,18 +1076,19 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     public List<Map<String, Object>> getPoliciesCatDetails(List<Map<String, Object>> policyDetails) {
         List<Map<String, Object>> policiesCatDetails = new ArrayList<>();
         for (Map<String, Object> policyDetail : policyDetails) {
-            logger.debug("getPoliciesCatDetails >> Fetching details for policy: {}", policyDetail);
-            Map<String, Object> policyCatDetail = new HashMap<>();
-            policyCatDetail.put(POLICYID, policyDetail.get(POLICYID));
-            policyCatDetail.put(TARGET_TYPE, policyDetail.get(TARGET_TYPE));
-            policyCatDetail.put(DISPLAY_NAME, policyDetail.get(DISPLAY_NAME));
-            policyCatDetail.put(POLICY_CATEGORY, policyDetail.get(CATEGORY));
-            policyCatDetail.put(SEVERITY, policyDetail.get(SEVERITY));
-            policyCatDetail.put(AUTOFIX, policyDetail.get(AUTOFIX_ENABLED));
-            policyCatDetail.put(AUTOFIX_AVAILABLE, policyDetail.get(AUTOFIX_AVAILABLE));
-            policiesCatDetails.add(policyCatDetail);
-        }
+            logger.debug("Fetching details for policy: {}", policyDetail);
+            Map<String, Object> policiesevCatDetail = new HashMap<>();
+            policiesevCatDetail.put(POLICYID, policyDetail.get(POLICYID));
+            policiesevCatDetail.put(AUTOFIX, policyDetail.get(AUTOFIX_ENABLED));
+            policiesevCatDetail.put(TARGET_TYPE, policyDetail.get(TARGET_TYPE));
+            policiesevCatDetail.put(DISPLAY_NAME, policyDetail.get(DISPLAY_NAME));
+            policiesevCatDetail.put(POLICY_CATEGORY, policyDetail.get(CATEGORY));
+            policiesevCatDetail.put(SEVERITY, policyDetail.get(SEVERITY));
+            policiesevCatDetail.put(AUTOFIX_AVAILABLE, policyDetail.get(AUTOFIX_AVAILABLE));
+            policiesevCatDetail.put(RISK_SCORE,policyDetail.get(RISK_SCORE));
+            policiesCatDetails.add(policiesevCatDetail);
 
+        }
         return policiesCatDetails;
     }
 

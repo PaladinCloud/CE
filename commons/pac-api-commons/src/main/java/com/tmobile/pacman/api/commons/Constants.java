@@ -29,6 +29,9 @@ package com.tmobile.pacman.api.commons;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public interface Constants {
 
     String EXCEPTION_IN_GETTING_COUNT_OF_ACCOUNT_IDS = "Exception in getting count of account ids";
@@ -461,6 +464,14 @@ public interface Constants {
     String RELATIONS = "_relations";
 
     String AUTOFIX_PLANNED = "isAutofixPlanned";
+    String RISK_SCORE = "riskScore";
+
+    List<String> RANGE_ATTRIBUTE =  new ArrayList<String>() {{
+        add("LONG");
+        add("INTEGER");
+        add("DOUBLE");
+    } };
+    String ASSET_TYPE = "assetType";
 
     enum NotificationTypes {
         @SerializedName("exemption")

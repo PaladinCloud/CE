@@ -51,6 +51,7 @@ public class PolicyTable {
 	private String fixMessage;
 	private String violationMessage;
 	private Integer elapsedTime;
+	private Float riskScore;
 	@Transient
 	private String disableDesc;
 	
@@ -294,6 +295,13 @@ public class PolicyTable {
 	public void setDisableDesc(String disableDesc) {
 		this.disableDesc = disableDesc;
 	}
-	
+
+	public Float getRiskScore() {
+		return riskScore;
+	}
+
+	public void setRiskScore(Float riskScore) {
+		this.riskScore = riskScore;
+	}
 	
 }

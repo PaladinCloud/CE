@@ -12,13 +12,7 @@ import static com.tmobile.pacman.api.admin.util.AdminUtils.addDays;
 
 import java.nio.ByteBuffer;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -26,6 +20,7 @@ import javax.transaction.Transactional;
 
 import com.tmobile.pacman.api.admin.repository.*;
 import com.tmobile.pacman.api.admin.repository.model.*;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,6 +113,9 @@ public class PolicyServiceImpl implements PolicyService {
 	@Autowired
 	private NotificationService notificationService;
 
+	@Autowired
+	PacmanRdsRepository pacmanRdsRepository;
+
 	@Override
 	public List<Policy> getAllPoliciesByTargetType(String targetType) {
 		List<Policy> policies = policyRepository.findByTargetTypeIgnoreCase(targetType);
@@ -171,21 +169,29 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Override
 	public Page<Policy> getPolicies(final String searchTerm, final int page, final int size) {
-		Page<Policy> allPolicies = policyRepository.findAll(searchTerm.toLowerCase(), PageRequest.of(page, size));
-		List<AccountDetails> onlineAccounts=accountsRepository.findByAccountStatus(AdminConstants.STATUS_CONFIGURED);
-		if(onlineAccounts!=null && !onlineAccounts.isEmpty()){
-			List<String> platformType = onlineAccounts.stream().map(AccountDetails::getPlatform).collect(Collectors.toList());
-			List<Policy> policies= allPolicies.stream().filter(policy -> platformType.contains(policy.getAssetGroup())).collect(Collectors.toList());
-			updatePolicyPluginType(policies,platformType);
-			allPolicies=new PageImpl<>(policies);
-		}
-		allPolicies.stream().forEach(policy -> {
-			Optional<List<PolicyParams>> policyParams = policyParamsRepository.findByPolicyId(policy.getPolicyId());
-			if (policyParams.isPresent() && !policyParams.get().isEmpty()) {
-				policy.setPolicyParams(generatePolicyParamJson(policy.getPolicyId(), policyParams.get()));
+		Page<Policy> allPagePolicies = policyRepository.findAll(searchTerm.toLowerCase(), PageRequest.of(page, size));
+		List<Policy> allPolicies = allPagePolicies.getContent();
+		if(allPolicies!=null){
+			Optional<List<PolicyParams>> policyParamsOptionalList = policyParamsRepository.findByPolicyIdIn(allPolicies.stream().map(policy -> policy.getPolicyId()).collect(Collectors.toList()));
+			if (policyParamsOptionalList.isPresent() && !policyParamsOptionalList.get().isEmpty()) {
+				List<PolicyParams> policyParamsList = policyParamsOptionalList.get();
+				Map<String,List<PolicyParams>> policyParamsMapByPolicyIdAsKey = policyParamsList.stream().collect(Collectors.groupingBy(obj -> obj.getPolicyId()));
+				allPolicies = allPolicies.stream().filter(p -> policyParamsMapByPolicyIdAsKey.containsKey(p.getPolicyId())).collect(Collectors.toList());
+				allPolicies.stream().forEach(policy -> {
+						policy.setPolicyParams(generatePolicyParamJson(policy.getPolicyId(), policyParamsMapByPolicyIdAsKey.get(policy.getPolicyId())));
+				});
+				List<Map<String,Object>> pluginPoliciesList = pacmanRdsRepository.getDataFromPacman("select pp.policyID, ac.accountStatus from cf_PolicyParams pp LEFT OUTER JOIN cf_Accounts ac on pp.paramValue=ac.platform where paramKey = 'pluginType'");
+				if(pluginPoliciesList!=null && !pluginPoliciesList.isEmpty()){
+					Map<String,String> pluginPoliciesMap=new HashMap<>();
+					pluginPoliciesList.stream().forEach(obj -> {
+						pluginPoliciesMap.put(obj.get("policyID").toString(), obj.get("accountStatus")!=null?obj.get("accountStatus").toString(): null);
+					});
+					List<Policy> policies = allPolicies.stream().filter(p -> !pluginPoliciesMap.containsKey(p.getPolicyId()) || "configured".equalsIgnoreCase(pluginPoliciesMap.get(p.getPolicyId()))).collect(Collectors.toList());
+					allPagePolicies=new PageImpl<>(policies);
+				}
 			}
-		});
-		return allPolicies;
+		}
+		return allPagePolicies;
 	}
 
 	private void updatePolicyPluginType(List<Policy> policies,List<String> enabledPluginTypes) {
