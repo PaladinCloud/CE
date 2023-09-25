@@ -88,7 +88,7 @@ public class DataCollectorSQSService {
         try {
             // Send the message to the queue
             SendMessageResult result = sqs.sendMessage(request);
-            logger.error("Message sent with message ID: " + result.getMessageId());
+            logger.debug("Message sent with message ID: " + result.getMessageId());
         } catch (Exception e) {
         	logger.error("Error sending message: " + e.getMessage());
         }
