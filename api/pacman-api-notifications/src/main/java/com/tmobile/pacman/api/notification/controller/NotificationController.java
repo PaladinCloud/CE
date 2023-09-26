@@ -161,7 +161,7 @@ public class NotificationController implements Constants
 	 * @return
 	 * API description: asssetGroup is mandatory & ruleId is optional
 	 * If API receives assetGroup as request parameter, it gives issues count of all open issues and unknown issues for all the rules.
-	 * If API receives both assetGroup and ruleId as request parameter,it gives issues count of all open issues and unknown issues for that rule.
+	 * If API receives both assetGroup and ruleId as request parameter,it gives issues count of all open issues and unknown issues for that rule.Testing
 	 */
 	@RequestMapping(path = "/cache", method = RequestMethod.GET)
 	public ResponseEntity<Object> getDeviceDetails(@RequestParam(name="deviceId") String deviceId)
