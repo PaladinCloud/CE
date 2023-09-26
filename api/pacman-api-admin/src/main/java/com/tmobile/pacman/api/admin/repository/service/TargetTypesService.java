@@ -71,6 +71,8 @@ public interface TargetTypesService {
      */
 	public Map<String, Object> getAttributeValues(AttributeValuesRequest attributeValuesRequest);
 
+	public Map<String, Object> getAttributeValuesForAg(AttributeValuesRequest attributeValuesRequest);
+
 	/**
      * Service to get all target type details
      *

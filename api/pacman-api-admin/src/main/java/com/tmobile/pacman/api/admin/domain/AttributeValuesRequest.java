@@ -22,6 +22,7 @@ public class AttributeValuesRequest {
 	
 	private String index;
 	private String payload;
+	private String source;
 
 	public String getIndex() {
 		return index;
@@ -37,5 +38,13 @@ public class AttributeValuesRequest {
 
 	public void setPayload(String payload) {
 		this.payload = payload;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 }
