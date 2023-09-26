@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - master
-      - v*
+      - chore/ci_update
   pull_request:
     branches:
       - master
-      - c*
+      - chore/ci_update
 
 jobs:
   sonarcloudBuild:
