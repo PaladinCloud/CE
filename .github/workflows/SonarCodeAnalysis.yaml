@@ -23,6 +23,11 @@ jobs:
       - name: Install Maven
         run: |
           sudo apt install maven -y
+          
+      - name: Clean Environment
+        run: |
+          git clean -ffdx
+          git reset --hard
 
       - name: Build and analyze
         env:
