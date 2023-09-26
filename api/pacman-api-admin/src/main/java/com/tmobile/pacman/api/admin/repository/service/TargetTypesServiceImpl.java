@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.api.admin.enums.AssetGrpAttributeIndex;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -150,6 +152,28 @@ public class TargetTypesServiceImpl implements TargetTypesService {
 		return attributes;
 	}
 
+	public Map<String, Object> getAttributeValuesForAg(AttributeValuesRequest attributeValuesRequest){
+		String assetGroup = attributeValuesRequest.getSource();
+		if(!StringUtils.isEmpty(assetGroup)){
+			attributeValuesRequest.setIndex(getIndexName(assetGroup));
+			String payload = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}},\"aggs\":{\"alldata\":{\"terms\":{\"field\":\"accountid.keyword\",\"size\":10000}}}}";
+			attributeValuesRequest.setPayload(payload);
+		}
+		return getAttributeValues(attributeValuesRequest);
+	}
+
+	private String getIndexName(String ag){
+		switch (ag.toUpperCase()) {
+			case "AWS":
+				return AssetGrpAttributeIndex.AWS.toString();
+			case "GCP":
+				return AssetGrpAttributeIndex.GCP.toString();
+			case "AZURE":
+				return AssetGrpAttributeIndex.AZURE.toString();
+			default:
+				return "";
+		}
+	}
 	@Override
 	public Map<String, Object> getAttributeValues(AttributeValuesRequest attributeValuesRequest) {
 		try {

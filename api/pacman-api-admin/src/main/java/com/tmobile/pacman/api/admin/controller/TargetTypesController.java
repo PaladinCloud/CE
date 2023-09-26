@@ -246,7 +246,7 @@ public class TargetTypesController {
 	public ResponseEntity<Object> getAttributeValues(
 			@ApiParam(value = "provide valid attribute request details", required = true) @RequestBody(required = true) AttributeValuesRequest attributeValuesRequest) {
 		try {
-			return ResponseUtils.buildSucessResponse(targetTypesService.getAttributeValues(attributeValuesRequest));
+			return ResponseUtils.buildSucessResponse(targetTypesService.getAttributeValuesForAg(attributeValuesRequest));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
