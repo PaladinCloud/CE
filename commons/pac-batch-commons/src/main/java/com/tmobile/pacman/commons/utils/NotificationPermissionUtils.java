@@ -2,19 +2,23 @@ package com.tmobile.pacman.commons.utils;
 
 import com.google.gson.Gson;
 import com.tmobile.pacman.commons.dto.NotificationBaseRequest;
+import com.tmobile.pacman.commons.dto.PaladinAccessToken;
 import com.tmobile.pacman.commons.dto.PermissionNotificationRequest;
 import com.tmobile.pacman.commons.dto.PermissionVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NotificationPermissionUtils {
     private static final String NOTIFICATION_URL ="notification.lambda.function.url" ;
     static String SUBJECT = "Insufficient permissions";
 
     static String opsEventName = "Permission denied for %s";
+    private static PaladinAccessToken accessToken;
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationPermissionUtils.class);
     public static void triggerNotificationsForPermissionDenied(List<PermissionVH> permissionVHList,String cloudType) {
         try {
@@ -25,8 +29,7 @@ public class NotificationPermissionUtils {
             }
             if (!notificationDetailsList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationDetailsList);
-                String notifyUrl = System.getProperty(NOTIFICATION_URL);
-                com.tmobile.pacman.commons.utils.CommonUtils.doHttpPost(notifyUrl, notificationDetailsStr);
+                invokeNotificationUrl(notificationDetailsStr);
                 if (LOGGER.isInfoEnabled()) {
                     LOGGER.info("{} Notifications sent for permission of cloud type \"{}\" ", notificationDetailsList.size(), cloudType);
                 }
@@ -57,5 +60,15 @@ public class NotificationPermissionUtils {
         permissionNotificationRequest.setAssetType(permissionVH.getErrorVH().getType());
         return permissionNotificationRequest;
     }
-
+    public static void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
+        String credentials = System.getProperty(Constants.API_AUTH_INFO);
+        String authApiUrl = System.getenv(Constants.AUTH_API_URL);
+        String notifyUrl = System.getProperty(NOTIFICATION_URL);
+        Map<String,String> headersMap = new HashMap<>();
+        if (accessToken == null || accessToken.getExpiresAt() <= System.currentTimeMillis()) {
+            accessToken = com.tmobile.pacman.commons.utils.CommonUtils.getAccessToken(authApiUrl, credentials);
+        }
+        headersMap.put("Authorization",accessToken.getToken());
+        com.tmobile.pacman.commons.utils.CommonUtils.doHttpPost(notifyUrl, notificationDetailsStr,headersMap);
+    }
 }
