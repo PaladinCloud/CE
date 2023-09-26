@@ -84,6 +84,8 @@ public class EntityAssociationManager implements Constants {
         try {
             indexName = dataSource + "_" + type;
             String filePrefix = dataSource + "-" + type + "-";
+            dataPath = Util.getDataPath();
+            LOGGER.debug("dataPath:{}", dataPath);
             List<String> childTypes = new ArrayList<>();
             for (S3ObjectSummary objectSummary : s3Client.listObjectsV2(new ListObjectsV2Request().withBucketName(bucketName).withPrefix(dataPath + "/" + filePrefix)).getObjectSummaries()) {
                 String fileName = objectSummary.getKey().replace(dataPath + "/", "").replace(".data", "");
