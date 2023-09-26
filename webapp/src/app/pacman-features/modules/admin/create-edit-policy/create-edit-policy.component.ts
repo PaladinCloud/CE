@@ -220,8 +220,8 @@
    warningMessage: any = "";
    warningMailSubject: any = "";
    index: string = "";
-   waitingTime: number;
-   maxEmailNotification: number;
+   waitingTime: number = 0;
+   maxEmailNotification: number = 0;
    elapsedTime: any;
    fixType: any;
    showAutofix = false;
@@ -427,7 +427,7 @@
        PolicyModel.maxEmailNotification = this.maxEmailNotification;
        PolicyModel.warningMessage  = this.warningMessage;
        PolicyModel.warningMailSubject = this.warningMailSubject;
-       PolicyModel.elapsedTime = this.elapsedTime;
+       PolicyModel.elapsedTime = this.elapsedTime? this.elapsedTime: 24;
        PolicyModel.fixType = this.warningNotification?"non-silent":"silent";
      }
    this.createOrUpdatepolicy(PolicyModel);
@@ -621,12 +621,12 @@
   
         if(this.isAutofixAvailable){
             this.getAccounts();
-            this.selectedAccounts = this.policyDetails.allowList.split(",").slice();
+            this.selectedAccounts = this.policyDetails.allowList ? this.policyDetails.allowList.split(",").slice() : [];
             this.fixMailSubject = this.policyDetails.fixMailSubject;
             this.postFixMessage = this.policyDetails.fixMessage;
             this.violationMessage = this.policyDetails.violationMessage;
-            this.waitingTime = this.policyDetails.waitingTime;
-            this.maxEmailNotification = this.policyDetails.maxEmailNotification;
+            this.waitingTime = this.policyDetails.waitingTime? this.policyDetails.waitingTime: 0;
+            this.maxEmailNotification = this.policyDetails.maxEmailNotification? this.policyDetails.maxEmailNotification : 0;
             this.warningMessage = this.policyDetails.warningMessage;
             this.warningMailSubject = this.policyDetails.warningMailSubject;
             this.elapsedTime = this.policyDetails.elapsedTime;
@@ -681,12 +681,14 @@
        }
         this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
             const aggregations = response[0]?.data?.aggregations;
-            const alldata = aggregations.alldata;
-            const buckets = alldata.buckets;
-            buckets.forEach(element => {
-              accounts.push(element.key);
-            });
-            this.accountList = accounts;
+            if(aggregations){
+              const alldata = aggregations.alldata;
+              const buckets = alldata.buckets;
+              buckets.forEach(element => {
+                accounts.push(element.key);
+              });
+              this.accountList = accounts;
+            }
         })
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);

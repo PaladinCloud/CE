@@ -378,6 +378,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
   deleteFilters(event?) {
     try {
+      this.pageNumber = 1;
       if (!event) {
         this.filters = [];
         this.storeState();
@@ -533,6 +534,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   changeFilterTags(event) {    
+    this.pageNumber = 1;
     let value = event.filterValue;
     this.currentFilterType =  _.find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
