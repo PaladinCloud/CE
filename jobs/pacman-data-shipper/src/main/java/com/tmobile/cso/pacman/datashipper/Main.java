@@ -106,21 +106,11 @@ public class Main implements Constants {
         }
 
        String ds = params.get("datasource");
-        //reverting these changes as it is not required due to mapper changes
-     /*   String overrideSourcePath = params.get(Constants.OVERRIDE_SOURCE_PATH);
-        LOGGER.debug("overrideSourcePath:{}", overrideSourcePath);
-     */   try {
+        try {
             AWSCredentialProvider awsCredentialProvider = new AWSCredentialProvider();
             dataSource = params.get("datasource");
             LOGGER.debug("dataSource:{}", dataSource);
-          /*  //overrideSourcePath will sent by Mapper Lambda to indicate the path where shipper should exactly pick from
-            if (null != overrideSourcePath && !overrideSourcePath.isEmpty()) {
-                srcFolder = overrideSourcePath;
-            }
-            //Aws & Azure will pick up from s3.data location
-            else {*/
-                srcFolder = params.get("s3.data");
-            //}
+            srcFolder = params.get("s3.data");
             LOGGER.debug("srcFolder:{}", srcFolder);
             ESManager.configureIndexAndTypes(ds, errorList);
             errorList.addAll(new EntityManager().uploadEntityData(ds, srcFolder));
@@ -128,11 +118,7 @@ public class Main implements Constants {
             errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
             errorList.addAll(new IssueCountManager().populateViolationsCount());
             errorList.addAll(new AssetsCountManager().populateAssetCount());
-             //Reverting changes since this part goes to  Collector again.
-          //  LOGGER.info("Back Up logic code is going to be executed");
-           // LOGGER.debug("Invoking/Calling doBackUpAndCleanUpInventory() method");
-          //  doBackUpAndCleanUpInventory(dataSource, srcFolder, awsCredentialProvider);
-          //  LOGGER.info("Execution of doBackUpAndCleanUpInventory() method is done");
+
         } catch (AmazonS3Exception s3Exception) {
             LOGGER.error("Exception Occured inside shipData method while doing Backup and Clean Up Inventory", s3Exception);
             //Adding to error Map which will be part of error list for SHipper Batch Job Processing
