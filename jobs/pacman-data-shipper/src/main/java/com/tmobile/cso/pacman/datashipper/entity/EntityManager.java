@@ -177,10 +177,14 @@ public class EntityManager implements Constants {
         LOGGER.debug("s3Role:{}", s3Role);
         LOGGER.debug("bucketName:{}", bucketName);
         LOGGER.debug("sourceFolder:{}", sourceFolder);
+        LOGGER.debug("datasource:{}", datasource);
         try {
-            //override datapath with sourceFolder
-            if(datasource.equalsIgnoreCase("redhat"))
-            dataPath = sourceFolder;
+            //override datapath with sourceFolder(i.e) for redhat s3.data will come from Cq-mapper
+            if (datasource.equalsIgnoreCase("redhat")) {
+                LOGGER.debug("datasource is redhat:");
+                dataPath = sourceFolder;
+            }
+
             entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, dataPath + "/" + datasource + "-" + type + ".data");
 
         } catch (Exception e) {
