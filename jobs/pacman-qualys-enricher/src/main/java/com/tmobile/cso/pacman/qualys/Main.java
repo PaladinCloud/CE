@@ -12,6 +12,8 @@ import com.tmobile.cso.pacman.qualys.jobs.HostAssetDataImporter;
 import com.tmobile.cso.pacman.qualys.jobs.KBDataImporter;
 import com.tmobile.cso.pacman.qualys.util.ErrorManageUtil;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -20,6 +22,7 @@ import com.tmobile.pacman.commons.jobs.PacmanJob;
 @PacmanJob(methodToexecute = "execute", jobName = "Qualys Enricher", desc = "Job to enrich qualys data in ES", priority = 5)
 public class Main {
 
+    private static Logger log = LoggerFactory.getLogger(Main.class);
     /**
      * The main method.
      *
@@ -65,6 +68,10 @@ public class Main {
         case "qualys-kb":
             errorInfo =  new KBDataImporter().execute();
             break;
+        }
+        if(!errorInfo.isEmpty()){
+            //Below logger message is used by datadog to create notification in slack
+            log.error("Error occurred in atleast one collector for jobId : {}",jobHint);
         }
         return  errorInfo;
     }

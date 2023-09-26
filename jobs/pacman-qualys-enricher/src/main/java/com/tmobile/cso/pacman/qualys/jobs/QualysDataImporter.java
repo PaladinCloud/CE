@@ -4,6 +4,7 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tmobile.cso.pacman.qualys.auth.CredentialProvider;
+import com.tmobile.cso.pacman.qualys.exception.UnAuthorisedException;
 import com.tmobile.cso.pacman.qualys.util.Util;
 import com.tmobile.pacman.commons.secrets.AwsSecretManagerUtil;
 import org.apache.http.HttpEntity;
@@ -242,7 +243,7 @@ public abstract class QualysDataImporter {
      * @return the host data
      */
     @SuppressWarnings("unchecked")
-    protected List<Map<String, Object>> getHostData(String uriPost, String inputXml) {
+    protected List<Map<String, Object>> getHostData(String uriPost, String inputXml) throws UnAuthorisedException {
         LOGGER.debug("getHostdata API URL:{}, RequestXML:{}",uriPost,inputXml);
         String resultJson = null;
         int retryCnt = 3;
@@ -265,6 +266,9 @@ public abstract class QualysDataImporter {
                                 .collect(Collectors.toList());
                     }
                     break;
+                }else if (resp != null && "UNAUTHORIZED".equals(resp.get("responseCode"))) {
+                    //notify user code
+                    throw new UnAuthorisedException("You are not authorized to access the application through the API");
                 } else {
                     if (i == retryCnt) {
                         LOGGER.error("Error in fetching host info: Request :{}", inputXml);

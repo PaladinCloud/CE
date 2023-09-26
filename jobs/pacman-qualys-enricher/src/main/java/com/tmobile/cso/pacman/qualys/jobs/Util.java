@@ -181,8 +181,8 @@ public class Util {
      * @return the map
      */
     public static Map<String, List<String>> fetchVPCtoNatIPInfo() {
-        String endPoint = "/aws_nat/nat/_search?filter_path=hits.hits._source.vpcid,hits.hits.inner_hits.nat_addresses.hits.hits._source.publicip";
-        String payLoad = "{\"size\":10000,\"_source\":\"vpcid\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"has_child\":{\"type\":\"nat_addresses\",\"query\":{\"match_all\":{}},\"inner_hits\":{\"size\":100,\"_source\":\"publicip\"}}}]}}}{\"size\":10000,\"_source\":\"vpcid\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"has_child\":{\"type\":\"nat_addresses\",\"query\":{\"match_all\":{}},\"inner_hits\":{\"size\":100,\"_source\":\"publicip\"}}}]}}}";
+        String endPoint = "/aws_nat/_search?filter_path=hits.hits._source.vpcid,hits.hits.inner_hits.nat_addresses.hits.hits._source.publicip";
+        String payLoad = "{\"size\":10000,\"_source\":\"vpcid\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"docType.keyword\":\"nat\"}},{\"has_child\":{\"type\":\"nat_addresses\",\"query\":{\"match_all\":{}},\"inner_hits\":{\"size\":100,\"_source\":\"publicip\"}}}]}}}";
         LOGGER.info("fetchVPCtoNatIPInfo endpoint: {}, payLoad: {}",endPoint,payLoad);
         Map<String, List<String>> VpcPublicIpInfo = new HashMap<>();
         try {
@@ -316,8 +316,8 @@ public class Util {
         List<Map<String, String>> data = new ArrayList<>();
         String scrollId = fetchDataAndScrollId(endPoint, data, payLoad);
         do {
-            endPoint = SCROLL_URI + scrollId;
-            scrollId = fetchDataAndScrollId(endPoint, data, null);
+            endPoint =endPoint+ SCROLL_URI + scrollId;
+            scrollId = fetchDataAndScrollId(endPoint, data, payLoad);
         } while (scrollId != null);
 
         Map<String, List<String>> ec2EniMap = new HashMap<>();
@@ -338,8 +338,8 @@ public class Util {
      * @return the map
      */
     public static Map<String, String> fetchEniMacInfo() {
-        String endPoint = "/aws_eni/eni/_search?scroll=2m&size=10000";
-        String payLoad = "{\"_source\":[\"_resourceid\",\"macaddress\"],\"query\":{\"match\":{\"latest\":\"true\"}}}";
+        String endPoint = "/aws_eni/_search?scroll=2m&size=10000";
+        String payLoad = "{\"_source\":[\"_resourceid\",\"macaddress\"],\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType.keyword\":\"eni\"}}]}}}";
         LOGGER.info("fetchEniMacInfo endpoint: {}",endPoint);
         LOGGER.info("fetchEniMacInfo payLoad: {}",payLoad);
         List<Map<String, String>> data = new ArrayList<>();
