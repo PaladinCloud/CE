@@ -10,7 +10,7 @@
             [style.height]="height" [appOnlyNumber]="shouldApplyNumericDirective">
         </ng-template>
     </mat-form-field>
-    <div class="info-img" *ngIf="description.length>0">
+    <div class="info-img" *ngIf="description?.length">
         <img src="../../../assets/icons/info-circle.svg" [matTooltip]="description" matTooltipPosition="right">
     </div>
 </div>
