@@ -86,6 +86,8 @@ public class ExternalPolicies implements Constants {
            
            
                        	List<Map<String, Object>> entities = new ArrayList<>();
+                        dataPath = Util.getDataPath();
+                        LOGGER.debug("dataPath:{}", dataPath);
                         S3Object entitiesData = s3Client.getObject(new GetObjectRequest(bucketName, dataPath + "/" + filePrefix  + ".data"));
                         try (BufferedReader reader = new BufferedReader(new InputStreamReader(entitiesData.getObjectContent()))) {
                             entities = objectMapper.readValue(reader.lines().collect(Collectors.joining("\n")), new TypeReference<List<Map<String, Object>>>() {
