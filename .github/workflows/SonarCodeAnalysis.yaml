@@ -1,9 +1,13 @@
 name: Sonarcloud-Build
 on:
+  push:
+    branches:
+      - master
+      - v*
   pull_request:
     branches:
       - master
-      - chore/ci_update
+      - c*
 
 jobs:
   sonarcloudBuild:
@@ -23,11 +27,20 @@ jobs:
       - name: Install Maven
         run: |
           sudo apt install maven -y
-          
-      - name: Clean Environment
+
+      - name: Check for changed folders
+        id: changed_folders
         run: |
-          git clean -ffdx
-          git reset --hard
+          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+
+          # Extract unique folder names from the list of changed files
+          changed_folders=$(echo "$changed_files" | xargs -n1 dirname | sort -u)
+
+          echo "Changed folders:"
+          echo "$changed_folders"
+
+          # Set an output variable with the list of changed folders
+          echo "::set-output name=changed_folders::$changed_folders"
 
       - name: Build and analyze
         env:
@@ -37,36 +50,23 @@ jobs:
           export MAVEN_OPTS="-Xmx3000m -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
           export SONAR_SCANNER_OPTS="-Xmx3000m"
 
-          # Check if changes are in the 'webapp/' folder
-          if [[ -n $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^webapp/') ]]; then
-            cd webapp
-            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=WebApp -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
-            cd ..
-          fi
-
-          # Check if changes are in the 'jobs/' folder
-          if [[ -n $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^jobs/') ]]; then
-            cd common
-            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Common -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
-            cd ..
-            cd jobs
-            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Jobs -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
-            cd ..
-          fi
-
-          # Check if changes are in the 'api/' folder
-          if [[ -n $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^api/') ]]; then
-            cd common
-            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Common -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
-            cd ..
-            cd api
-            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=API -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
-            cd ..
-          fi
-
-          # Check if changes are in the 'common/' folder
-          if [[ -n $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^common/') ]]; then
-            cd common
-            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Common -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
-            cd ..
-          fi
+          # Use the list of changed folders to define actions based on the folder
+          for folder in ${{ steps.changed_folders.outputs.changed_folders }}; do
+            echo "Building folder: $folder"
+            
+            if [[ "$folder" == "webapp" ]]; then
+              echo "Folder 'webapp' has changed. Perform action A."
+              # Add your action for 'webapp' here
+            elif [[ "$folder" == "jobs" ]]; then
+              echo "Folder 'jobs' has changed. Perform action B."
+              # Add your action for 'jobs' here
+            elif [[ "$folder" == "api" ]]; then
+              echo "Folder 'api' has changed. Perform action C."
+              # Add your action for 'api' here
+            elif [[ "$folder" == "common" ]]; then
+              echo "Folder 'common' has changed. Perform action D."
+              # Add your action for 'common' here
+            else
+              echo "Folder '$folder' has changed. No specific action defined."
+            fi
+          done
