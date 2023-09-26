@@ -44,20 +44,18 @@ public class DataCollectorSQSService {
     @Value("${base.account}")
     private String baseAccount;
 
-    
-    
-    /* We need to remove this and this property as to come from DB with account Id*/
-    public static final String TEMP_TENANTID = "saasdev_ro";
 
    
     
     
     public void sendSQSMessage(String pluginType) {
-    	DataCollectorSQSMessageBody sqsMessageObject = generateSQSMessage( pluginType);
+    	String tenantID = System.getenv(Constants.TENANT_ID);
+    	DataCollectorSQSMessageBody sqsMessageObject = generateSQSMessage( pluginType, tenantID);
     	ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
     	try {
 			String messageBody = ow.writeValueAsString(sqsMessageObject);
-			sendMessage(messageBody);
+			
+			sendMessage(messageBody, tenantID);
     	} catch (JsonProcessingException e) {
 			logger.error(" error in parsing cqpayload {}", e);
 		}
@@ -66,24 +64,24 @@ public class DataCollectorSQSService {
     
     
     
-    private DataCollectorSQSMessageBody generateSQSMessage(String pluginType) {
+    private DataCollectorSQSMessageBody generateSQSMessage(String pluginType, String tenantID) {
     	List<AccountDetails> accountDetailsList =  accountsRepository.findByAccountStatusAndPlatform(Constants.PLUGIN_STATUS, pluginType);
     	List< String> accountList  = new ArrayList<>(accountDetailsList.size());
     	accountDetailsList.forEach(accountObj -> {
     		accountList.add(accountObj.getAccountId());
     	});
     	DataCollectorSQSMessageBody cQLambdaPayLoad = new DataCollectorSQSMessageBody(pluginType+Constants.JOB_NAME_SUFFIX, 
-    			accountList,TEMP_TENANTID, pluginType);
+    			accountList,tenantID, pluginType);
     	return cQLambdaPayLoad;
     }
     
-    private void sendMessage(String messageBody) {
+    private void sendMessage(String messageBody, String tenantID) {
     	AmazonSQS sqs = generateSQSClient();
         String queueUrl = System.getenv(Constants.DATAMAPPER_SQS_QUEUE_URL); 
         SendMessageRequest request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withMessageBody(messageBody)
-                .withMessageGroupId(TEMP_TENANTID);
+                .withMessageGroupId(tenantID);
 
         try {
             // Send the message to the queue

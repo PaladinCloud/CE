@@ -10,4 +10,6 @@ public class Constants {
     public static final String PLUGIN_STATUS = "configured";
     public static final String JOB_NAME_SUFFIX = "-data-collection";
     public static final String DATAMAPPER_SQS_QUEUE_URL = "SCHEDULER_SQS_URL";
+    public static final String TENANT_ID = "TENANT_ID";
+
 }
