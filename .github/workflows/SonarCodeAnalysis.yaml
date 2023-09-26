@@ -1,9 +1,9 @@
 name: Sonarcloud-Build
 on:
   push:
-    branches: [master, v*]
+    branches: [master, chore/ci_update]
   pull_request:
-    branches: [master, v*]
+    branches: [master, chore/ci_update]
 jobs:
   sonarcloudBuild:
     name: SonarCloud-Build
