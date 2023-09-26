@@ -14,6 +14,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.tmobile.cso.pacman.qualys.exception.UnAuthorisedException;
+import com.tmobile.pacman.commons.dto.ErrorVH;
+import com.tmobile.pacman.commons.dto.PermissionVH;
+import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 import org.apache.http.ParseException;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -108,12 +112,27 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
         stats.put("type", "qualys_"+type);
         stats.put("start_time", new SimpleDateFormat(TIME_FORMAT).format(new java.util.Date()));
 
-        init();
-
         Map<String, List<?>> procssInfo = new HashMap<>();
         try {
+            init();
             procssInfo = fetchHostAssets(type);
-        } catch (Exception e) {
+        }catch (RuntimeException e)
+        {
+            Map<String,String> errorMap = new HashMap<>();
+            errorMap.put(ERROR, "Error fetching host assets");
+            errorMap.put(ERROR_TYPE, FATAL);
+            errorMap.put(EXCEPTION, e.getMessage());
+            errorList.add(errorMap);
+            List<PermissionVH> permissionVHList=new ArrayList<>();
+            PermissionVH permissionVH=new PermissionVH();
+            ErrorVH errorVH=new ErrorVH();
+            errorVH.setException(e.getMessage());
+            errorVH.setType("ec2");
+            permissionVH.setAccountNumber("Qualys-connector");
+            permissionVH.setErrorVH(errorVH);
+            permissionVHList.add(permissionVH);
+            NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionVHList,"Qualys");
+        }catch (Exception e) {
             LOGGER.error("Error fetching host assets ", e);
             Map<String,String> errorMap = new HashMap<>();
             errorMap.put(ERROR, "Error fetching host assets");
@@ -125,20 +144,23 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
         List<?> processList = procssInfo.get(PROCESSED);
         List<?> uploadList = procssInfo.get(UPLOADED);
         List<?> failedList = procssInfo.get(FAILED);
-        LOGGER.info("Total processed {}", uploadList.size());
 
-        if (!uploadList.isEmpty()) {
+
+        if (uploadList!=null &&!uploadList.isEmpty()) {
             new HostAssetsEsIndexer().wrapUp(type,CURR_DATE,errorList);
+            LOGGER.info("Total processed {}", uploadList.size());
         }
 
         stats.put("end_time", new SimpleDateFormat(TIME_FORMAT).format(new java.util.Date()));
-        stats.put(PROCESSED, processList.size());
-        stats.put(UPLOADED, uploadList.size());
-        stats.put(FAILED, failedList.size());
-        stats.put("processedHosts", processList);
-        stats.put("uploadedHosts", uploadList);
-        stats.put("failedHosts", failedList);
-        updateStas(stats);
+        if(uploadList!=null && processList!=null && failedList!=null) {
+            stats.put(PROCESSED, processList.size());
+            stats.put(UPLOADED, uploadList.size());
+            stats.put(FAILED, failedList.size());
+            stats.put("processedHosts", processList);
+            stats.put("uploadedHosts", uploadList);
+            stats.put("failedHosts", failedList);
+            updateStas(stats);
+        }
 
         return ErrorManageUtil.formErrorCode(errorList);
 
@@ -147,7 +169,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
     /**
      * Inits the.
      */
-    private void init() {
+    private void init() throws UnAuthorisedException {
 
         String indexName = ds+"_" + type;
         List<String> filters = new ArrayList<>();
@@ -315,7 +337,9 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 
                         if (hostAsset == null) {
                             LOGGER.info("hostAsset is null,fetch through fallbackNameBasedMatch");
-                            hostAsset = fallbackNameBasedMatch(name, ip);
+                            if(!Strings.isNullOrEmpty(name)) {
+                                hostAsset = fallbackNameBasedMatch(name, ip);
+                            }
                             if (hostAsset != null) {
                                 processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
                                 processinfo.put(MATCH_FOUND_BY, "FallBack Name Match > Id:"
@@ -412,7 +436,10 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                     Util.processAndTransform(_hostAssets, vulnInfoMap, CURR_DATE);
                     new HostAssetsEsIndexer().postHostAssetToES(_hostAssets, ds,type,errorList);
                 }
-            } catch (Exception e) {
+            } catch(UnAuthorisedException e){
+                throw new RuntimeException(e);
+            }
+            catch (Exception e) {
                 LOGGER.error("Error Fetching data for " + entry.getKey(), e);
                 Map<String,String> errorMap = new HashMap<>();
                 errorMap.put(ERROR, "Error Fetching data for " + entry.getKey());
@@ -427,7 +454,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
         return procssInfo;
     }
 
-    private Map<String, Object> fetchBasedOnInstanceID(String resouceId, Map<String, Object> processinfo) {
+    private Map<String, Object> fetchBasedOnInstanceID(String resouceId, Map<String, Object> processinfo) throws UnAuthorisedException {
         LOGGER.debug("Fetching host data based on instance Id, resourceId:{} ",resouceId);
         Map<String, Object> hostAsset = null;
         String inputXmlWithInstanceId = "<ServiceRequest> " + "<preferences><limitResults>100</limitResults></preferences>"
@@ -480,7 +507,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
      * @return the map
      */
     private Map<String, Object> checkAndFetchVulnInfo(String type, String resouceId, Map<String, Object> processinfo,
-                                                      Map<String, Object> hostAsset) {
+                                                      Map<String, Object> hostAsset) throws UnAuthorisedException {
 
         Map<String, Object> host = hostAsset;
         if (host != null && host.get("vuln") == null) {
@@ -569,7 +596,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
      * @param ip the ip
      * @return the map
      */
-    private Map<String, Object> fallbackNatIpBasedMatch(String resouceId, String ip) {
+    private Map<String, Object> fallbackNatIpBasedMatch(String resouceId, String ip) throws UnAuthorisedException {
         LOGGER.info("Fetch host data through fallbackNatIpBasedMatch. ResourceID:{}, IP:{}",resouceId,ip);
         Map<String, Object> hostAsset = null;
 
@@ -600,7 +627,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
      * @return the map
      */
     @SuppressWarnings("unchecked")
-    private Map<String, Object> fallbackNameBasedMatch(String name, String ip) {
+    private Map<String, Object> fallbackNameBasedMatch(String name, String ip) throws UnAuthorisedException {
         Map<String, Object> hostAsset = null;
         String inputXml = "<ServiceRequest> " + "<preferences><limitResults>100</limitResults></preferences>"
                 + "<filters>" + "<Criteria field=\"name\" operator=\"CONTAINS\">%s</Criteria>"
@@ -646,7 +673,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
      * @param processinfo the processinfo
      * @return the map
      */
-    private Map<String, Object> fallbackIdBasedMatch(String resouceId, Map<String, Object> processinfo) {
+    private Map<String, Object> fallbackIdBasedMatch(String resouceId, Map<String, Object> processinfo) throws UnAuthorisedException {
         Map<String, Object> hostAsset = null;
         if (currentQualysInfo.get(resouceId) != null) {
             String strQid = currentQualysInfo.get(resouceId).get("id").toString();
@@ -668,7 +695,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
      * @param qualysId the qualys id
      * @return the map
      */
-    private Map<String, Object> fetchhostAssetWithID(Long qualysId) {
+    private Map<String, Object> fetchhostAssetWithID(Long qualysId) throws UnAuthorisedException {
         Map<String, Object> hostAsset = null;
         String inputXml;
         String _inputXml;
@@ -696,7 +723,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
      */
     @SuppressWarnings("unchecked")
     public Map<String, List<Map<String, Map<String, Object>>>> fetchAssetsWithNatIpAsAddress(
-            Map<String, List<String>> vpcIpInfo) {
+            Map<String, List<String>> vpcIpInfo)throws UnAuthorisedException {
 
         Map<String, List<Map<String, Map<String, Object>>>> vpcAssets = new HashMap<>(); // vpciid-natip-ip-qid
         LOGGER.debug("fetchAssetsWithNatIpAsAddress input vpcIpInfo:{}",vpcIpInfo.size());
@@ -713,7 +740,12 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                         + "</ServiceRequest>";
                 String _inputXml = String.format(inputXml, natIp, lastVulnDate);
                 LOGGER.debug("fetchAssetsWithNatIpAsAddress >> getHostdata");
-                List<Map<String, Object>> hosts = getHostData(uriPost+"?fields=id,modified,networkInterface.list", _inputXml);
+                List<Map<String, Object>> hosts = null;
+                try {
+                    hosts = getHostData(uriPost+"?fields=id,modified,networkInterface.list", _inputXml);
+                } catch (UnAuthorisedException e) {
+                    throw new RuntimeException(e);
+                }
                 Map<String, Map<String, Object>> ipQidInfo = new HashMap<>();
                 if (hosts != null && !hosts.isEmpty()) {
                     hosts.stream().forEach(host -> {
