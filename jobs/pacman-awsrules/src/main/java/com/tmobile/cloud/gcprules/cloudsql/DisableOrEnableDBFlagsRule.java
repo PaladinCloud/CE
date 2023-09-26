@@ -104,7 +104,7 @@ public class DisableOrEnableDBFlagsRule extends BasePolicy {
             
 
 
-            if(settings!=null ){
+            if(settings!=null&& settings.has(PacmanRuleConstants.DBFLAGS) ){
                 JsonArray databaseFlagsList=   settings.get(PacmanRuleConstants.DBFLAGS).getAsJsonArray();
                 if(databaseFlagsList.size()>0){
                     if(dbFlagName.equals("user options")) {
