@@ -33,16 +33,37 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze pull_request
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           export MAVEN_OPTS="-Xmx3000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
           export SONAR_SCANNER_OPTS="-Xmx3000m"
-          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar  -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  -Dsonar.pullrequest.base=master  -Dsonar.pullrequest.key=${{github.event.number}} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=PaladinCloud/CE 
-
+          # Check if changes are in the 'webapp/' folder
+          if [[ -n $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^webapp/') ]]; then
+            cd webapp
+            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=WebApp -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+          fi
+          # Check if changes are in the 'jobs/' folder
+          if [[ -n $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^jobs/') ]]; then
+            cd commons
+            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Jobs -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+            cd jobs
+            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Jobs -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+          fi
+          # Check if changes are in the 'api/' folder
+          if [[ -n $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^api/') ]]; then
+            cd commons
+            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Jobs -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+            cd api
+            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=API -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+          fi
+          # Check if changes are in the 'common/' folder
+          if [[ -n $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^common/') ]]; then
+            cd common
+            mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Common -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+          fi
       - name: Build and analyze push
         if: ${{ github.event_name == 'push' }}
         env:
