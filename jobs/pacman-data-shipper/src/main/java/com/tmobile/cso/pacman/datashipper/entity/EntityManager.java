@@ -180,8 +180,13 @@ public class EntityManager implements Constants {
         LOGGER.debug("datasource:{}", datasource);
         try {
             //override datapath with sourceFolder(i.e) for redhat s3.data will come from Cq-mapper
-            if (datasource.equalsIgnoreCase("redhat")) {
+            if (System.getenv("s3.data")!=null && !System.getenv("s3.data").isEmpty()) {
                 LOGGER.debug("datasource is redhat:");
+                dataPath = System.getenv("s3.data");
+
+            }
+            //fetch from job params(i.e)sourceFolder comes from job params
+            else {
                 dataPath = sourceFolder;
             }
 
