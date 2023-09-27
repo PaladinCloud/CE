@@ -94,6 +94,8 @@ public class Main implements Constants {
         LOGGER.debug("Shipper Job Params:{}", params);
         String jobName = System.getProperty("jobName");
         List<Map<String, String>> errorList = new ArrayList<>();
+        //this map contains all datasource values which should look for dynamic src location for Shipment
+        Set<String> datasourceForOverrideSourcePath = new HashSet<>(Arrays.asList("gcp", "redhat"));
         try {
             MainUtil.setup(params);
         } catch (Exception e) {
@@ -134,19 +136,16 @@ public class Main implements Constants {
         } catch (AmazonS3Exception s3Exception) {
             LOGGER.error("Exception Occured inside shipData method while doing Backup and Clean Up Inventory", s3Exception);
             //Adding to error Map which will be part of error list for SHipper Batch Job Processing
-            shipperBackUpAndCleanUpErrorMap.put(EXCEPTION,String.valueOf(s3Exception));
+            shipperBackUpAndCleanUpErrorMap.put(EXCEPTION, String.valueOf(s3Exception));
         } catch (Exception exception) {
             LOGGER.error("Exception Occured inside shipData method while doing Backup and Clean Up Inventory", exception);
             //Adding to error Map which will be part of error list for SHipper Batch Job Processing
-            shipperBackUpAndCleanUpErrorMap.put(EXCEPTION,String.valueOf(exception));
+            shipperBackUpAndCleanUpErrorMap.put(EXCEPTION, String.valueOf(exception));
         }
-
         //add shipperBackUpAndCleanUpErrorMap to errorList collection
         errorList.add(shipperBackUpAndCleanUpErrorMap);
-
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
-
         return status;
     }
 
