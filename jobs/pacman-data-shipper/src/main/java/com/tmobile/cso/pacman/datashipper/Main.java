@@ -90,12 +90,8 @@ public class Main implements Constants {
      * @return
      */
     public static Map<String, Object> shipData(Map<String, String> params) {
-        LOGGER.info("Inside shipData Method");
-        LOGGER.debug("Shipper Job Params:{}", params);
         String jobName = System.getProperty("jobName");
         List<Map<String, String>> errorList = new ArrayList<>();
-        //this map contains all datasource values which should look for dynamic src location for Shipment
-        Set<String> datasourceForOverrideSourcePath = new HashSet<>(Arrays.asList("gcp", "redhat"));
         try {
             MainUtil.setup(params);
         } catch (Exception e) {
@@ -108,44 +104,44 @@ public class Main implements Constants {
         }
         String ds = params.get("datasource");
         String overrideSourcePath = params.get(Constants.OVERRIDE_SOURCE_PATH);
-        LOGGER.debug("overrideSourcePath:{}", overrideSourcePath);
+        LOGGER.debug("overrideSourcePath:{}",overrideSourcePath);
+        ESManager.configureIndexAndTypes(ds, errorList);
+        errorList.addAll(new EntityManager().uploadEntityData(ds,overrideSourcePath));
+        new ExternalPolicies().uploadPolicyDefinition(ds);
+        errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
+        errorList.addAll(new IssueCountManager().populateViolationsCount());
+        errorList.addAll(new AssetsCountManager().populateAssetCount());
+
+        //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
         try {
+            LOGGER.info("Back Up logic code is going to be executed");
             AWSCredentialProvider awsCredentialProvider = new AWSCredentialProvider();
             dataSource = params.get("datasource");
-            LOGGER.debug("dataSource:{}", dataSource);
-            //overrideSourcePath will sent by Mapper Lambda to indicate the path where shipper should exactly pick from
-            if (null != overrideSourcePath && !overrideSourcePath.isEmpty()) {
+            if (overrideSourcePath != null && !overrideSourcePath.isEmpty())
                 srcFolder = overrideSourcePath;
-            }
-            //Aws & Azure will pick up from s3.data location
-            else {
+            else
                 srcFolder = params.get("s3.data");
-            }
+            LOGGER.debug("dataSource:{}", dataSource);
             LOGGER.debug("srcFolder:{}", srcFolder);
-            ESManager.configureIndexAndTypes(ds, errorList);
-            errorList.addAll(new EntityManager().uploadEntityData(ds, srcFolder));
-            new ExternalPolicies().uploadPolicyDefinition(ds);
-            errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
-            errorList.addAll(new IssueCountManager().populateViolationsCount());
-            errorList.addAll(new AssetsCountManager().populateAssetCount());
-             //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
-            LOGGER.info("Back Up logic code is going to be executed");
             LOGGER.debug("Invoking/Calling doBackUpAndCleanUpInventory() method");
             doBackUpAndCleanUpInventory(dataSource, srcFolder, awsCredentialProvider);
             LOGGER.info("Execution of doBackUpAndCleanUpInventory() method is done");
         } catch (AmazonS3Exception s3Exception) {
             LOGGER.error("Exception Occured inside shipData method while doing Backup and Clean Up Inventory", s3Exception);
             //Adding to error Map which will be part of error list for SHipper Batch Job Processing
-            shipperBackUpAndCleanUpErrorMap.put(EXCEPTION, String.valueOf(s3Exception));
+            shipperBackUpAndCleanUpErrorMap.put(EXCEPTION,String.valueOf(s3Exception));
         } catch (Exception exception) {
             LOGGER.error("Exception Occured inside shipData method while doing Backup and Clean Up Inventory", exception);
             //Adding to error Map which will be part of error list for SHipper Batch Job Processing
-            shipperBackUpAndCleanUpErrorMap.put(EXCEPTION, String.valueOf(exception));
+            shipperBackUpAndCleanUpErrorMap.put(EXCEPTION,String.valueOf(exception));
         }
+
         //add shipperBackUpAndCleanUpErrorMap to errorList collection
         errorList.add(shipperBackUpAndCleanUpErrorMap);
+
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
+
         return status;
     }
 
