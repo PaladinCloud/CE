@@ -179,7 +179,6 @@ public class EntityManager implements Constants {
         LOGGER.debug("sourceFolder:{}", sourceFolder);
         try {
             //override datapath with sourceFolder
-            if(datasource.equalsIgnoreCase("redhat"))
             dataPath = sourceFolder;
             entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, dataPath + "/" + datasource + "-" + type + ".data");
 
