@@ -7,7 +7,10 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 
 import com.tmobile.cso.pacman.datashipper.auth.AWSCredentialProvider;
-import com.tmobile.cso.pacman.datashipper.entity.*;
+import com.tmobile.cso.pacman.datashipper.entity.AssetGroupStatsCollector;
+import com.tmobile.cso.pacman.datashipper.entity.AssetsCountManager;
+import com.tmobile.cso.pacman.datashipper.entity.EntityManager;
+import com.tmobile.cso.pacman.datashipper.entity.IssueCountManager;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.ErrorManageUtil;
@@ -17,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.context.annotation.ComponentScan;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,35 +30,35 @@ import java.util.stream.Collectors;
  * The Class Main.
  */
 @PacmanJob(methodToexecute = "shipData", jobName = "Redshfit-ES-Datashipper", desc = "Job to load data from Redshfit to ES", priority = 5)
+@ComponentScan
 public class Main implements Constants {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-
     private static String dataSource = null;
     private static String srcFolder = null;
     // private static String accessKey = null;
     //private static String secretKey = null;
+    private static String s3BucketName = null;
+
     private static String srcInventoryFolderName = null;
 
     @Value("${base.account}")
     private static String account;
 
-    /**
-     * The account.
-     */
+    /** The account. */
     @Value("${s3.role}")
     private static String s3Role;
 
     @Value("${base.region}")
-    private static String region;
+    private static String region ;
 
     @Value("${s3}")
-    private static String s3Bucket;
+    private static String s3Bucket ;
 
     @Value("${s3.data}")
     private static String s3Data;
 
     @Value("${s3.processed}")
-    private static String s3Processed;
+    private static String s3Processed ;
 
     /**
      * The main method.
@@ -66,13 +71,13 @@ public class Main implements Constants {
             String[] paramArray = obj.split("[:]");
             params.put(paramArray[0], paramArray[1]);
         });
-        shipData(params);
+         shipData(params);
         //As part of new Plugin Development , backup files will be handled by Shipper Batch Job.Hence Collector responsibility lies only with Collecting Data.
         try {
-            AWSCredentialProvider awsCredentialProvider = new AWSCredentialProvider();
+            AWSCredentialProvider awsCredentialProvider= new AWSCredentialProvider();
             dataSource = params.get("datasource");
             srcFolder = params.get("s3.data");
-            doBackUpAndCleanUpInventory(dataSource, srcFolder, awsCredentialProvider);
+            doBackUpAndCleanUpInventory(dataSource, srcFolder,awsCredentialProvider);
         } catch (AmazonS3Exception s3Exception) {
             LOGGER.error("Exception Occured while doing Backup and Clean Up Inventory", s3Exception.getMessage());
         } catch (Exception exception) {
@@ -80,7 +85,6 @@ public class Main implements Constants {
         }
         System.exit(0);
     }
-
     /**
      * Ship data.
      *
@@ -103,7 +107,6 @@ public class Main implements Constants {
         String ds = params.get("datasource");
         ESManager.configureIndexAndTypes(ds, errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
-        new ExternalPolicies().uploadPolicyDefinition(ds);
         errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
         errorList.addAll(new IssueCountManager().populateViolationsCount());
         errorList.addAll(new AssetsCountManager().populateAssetCount());
@@ -129,11 +132,7 @@ public class Main implements Constants {
         LOGGER.debug(srcFolder);
 
         try {
-//            String account = "500559730414";
-//            String region  = "us-east-1";
-//            s3Role         =  "saasdev_ro";
-//            s3Bucket       = "saasdev-data-us-east-1-500559730414";
-//            s3Processed    =  "backup";
+
             BasicSessionCredentials credentials = awsCredentialProvider.getCredentials(account, region, s3Role);
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
 
@@ -142,6 +141,7 @@ public class Main implements Constants {
             //back up the shipped files
             LOGGER.info("Start : Backup Current Files as Part of Shipper Job");
             copytoBackUp(s3Client, s3Bucket, srcInventoryFolderName, backupFolderName + "/" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
+            //copytoBackUp(s3Client, s3BucketName, srcInventoryFolderName, dataSource + "-backup" + "/" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
             LOGGER.info("End : Backup Current Files as Part of Shipper Job");
             //clean up the shipped files
             LOGGER.info("Start : Cleaning Up Source Inventory  as Part of Shipper Job", srcInventoryFolderName);
@@ -154,7 +154,6 @@ public class Main implements Constants {
 
         }
     }
-
     /**
      * This Method is used to Copy the shipped files to backup folder
      * from - azure-inventory,gcp-inventory
@@ -199,7 +198,6 @@ public class Main implements Constants {
 
     /**
      * This method is used to list all files(keys) in specified Bucket
-     *
      * @param s3client
      * @param s3Bucket
      * @param folder
@@ -213,4 +211,7 @@ public class Main implements Constants {
         }
         return new String[0];
     }
+
+
+
 }
