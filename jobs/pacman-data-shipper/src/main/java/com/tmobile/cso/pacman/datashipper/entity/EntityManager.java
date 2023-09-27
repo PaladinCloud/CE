@@ -160,15 +160,6 @@ public class EntityManager implements Constants {
 		return tags;
 	}
 
-    /**
-     * This method is used to fetch all entity type .data files associated with particular datasource(gcp/azure/aws)
-     * from specified bucket/source location
-     * @param datasource
-     * @param sourceFolder (i.e) s3.data,dynamic path fetched from Mapper lambda
-     * @param type
-     * @param errorList
-     * @return
-     */
 	private List<Map<String, Object>> fetchEntitiyInfoFromS3(String datasource, String sourceFolder,String type,  List<Map<String, String>> errorList) {
         List<Map<String, Object>> entities = new ArrayList<>();
         LOGGER.info("Inside fetchEntitiyInfoFromS3() method");
