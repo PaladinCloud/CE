@@ -55,6 +55,5 @@ public interface Constants {
     String NAME = "name";
 
     String DOC_TYPE = "docType";
-
-    String OVERRIDE_SOURCE_PATH = "override_source_path";
+   
 }

@@ -69,6 +69,6 @@ public class EntityManagerTest {
         when(ConfigManager.getKeyForType(anyString(),anyString())).thenReturn("id");
         when(ConfigManager.getIdForType(anyString(),anyString())).thenReturn("id");
         
-        new EntityManager().uploadEntityData("gcp", "anand-cqtest/destinationbackupgcpbackup/20230906-133730");
+        new EntityManager().uploadEntityData("onpremserver");
     }
 }
