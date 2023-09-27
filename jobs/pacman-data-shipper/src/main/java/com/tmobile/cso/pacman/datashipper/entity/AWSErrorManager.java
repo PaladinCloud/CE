@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.tmobile.cso.pacman.datashipper.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,8 +99,6 @@ public class AWSErrorManager implements Constants {
 	    	AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
 	                .withCredentials(new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account,s3Role))).withRegion(s3Region).build();
 	    	try {
-				dataPath = Util.getDataPath();
-				LOGGER.debug("dataPath:{}", dataPath);
 		    	S3Object inventoryErrorData = s3Client.getObject(new GetObjectRequest(bucketName,dataPath+"/"+datasource+"-loaderror.data"));
 		    	try (BufferedReader reader = new BufferedReader(new InputStreamReader(inventoryErrorData.getObjectContent()))) {
 					inventoryErrors = objectMapper.readValue(reader.lines().collect(Collectors.joining("\n")),new TypeReference<List<Map<String, String>>>() {});
