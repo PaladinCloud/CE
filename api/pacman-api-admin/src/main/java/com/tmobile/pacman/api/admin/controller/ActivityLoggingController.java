@@ -37,7 +37,7 @@ public class ActivityLoggingController {
     @RequestMapping(path = "/", method = RequestMethod.POST)
     public ResponseEntity<Object> logActivity(@RequestBody ActivityLogRequest request){
         try{
-            LOGGER.info("inside ActivityLoggingController:::logActivity "+request.toString());
+            LOGGER.info("inside ActivityLoggingController:::logActivity ");
             List<String> missingAttributesList = new ArrayList<>();
             if(Strings.isNullOrEmpty(request.getObject())){
                 missingAttributesList.add("object");
