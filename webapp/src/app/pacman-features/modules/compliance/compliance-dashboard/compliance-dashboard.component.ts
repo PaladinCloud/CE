@@ -804,23 +804,18 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
           optionName: value,
         });
         
-        let filtersToBePassed = {};       
-        Object.keys(this.filterText).map(key => {
-          if(key=="domain" || this.currentFilterType.optionValue == key) return;
-          if(key=="failed"){
-            filtersToBePassed[key] = this.filterText[key].split(",").map(filterVal => {
-              const [min, max] = filterVal.split("-");
-              return {min, max}
-            })
-          }else if(key=="compliance_percent"){
-            filtersToBePassed[key] = this.filterText[key].split(",").map(filterVal => {
-              const [min, max] = filterVal.split("-");
-              return {min, max}
-            })
-          }else{
-            filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
+        const excludedKeys = [
+          "domain",
+          this.currentFilterType.optionValue
+        ]
+        let filtersToBePassed = this.getFilterPayloadForDataAPI();
+        filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
+          const normalizedKey = key.replace(".keyword", "");
+          if ((!excludedKeys.includes(normalizedKey))) {
+            result[normalizedKey] = filtersToBePassed[key];
           }
-        })
+          return result;
+        }, {});
         const payload = {
           attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
           ag: this.selectedAssetGroup,
@@ -1168,27 +1163,27 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             });
     }
 
-    getData() {
-      if(!this.selectedAssetGroup || !this.selectedDomain){
-        return;
-      }
-      const filterToBePassed = {...this.filterText};
-
+    getFilterPayloadForDataAPI(){
+      const filterToBePassed = { ...this.filterText };
       Object.keys(filterToBePassed).forEach(filterKey => {
         if(filterKey=="domain") return;
         filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-        if(filterKey=="failed"){
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-            const [min, max] = filterVal.split("-");
-            return {min, max}
-          })
-        }else if(filterKey=="compliance_percent"){
+        if(filterKey=="failed" || filterKey=="compliance_percent"){
           filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
             const [min, max] = filterVal.split("-");
             return {min, max}
           })
         }
       })
+  
+      return filterToBePassed;
+    }
+
+    getData() {
+      if(!this.selectedAssetGroup || !this.selectedDomain){
+        return;
+      }
+      const filterToBePassed = this.getFilterPayloadForDataAPI();
 
       const filters = {domain: this.selectedDomain};
   
@@ -1341,23 +1336,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
           fileType,
         };
   
-        const filterToBePassed = {...this.filterText};
-  
-        Object.keys(filterToBePassed).forEach(filterKey => {
-          if(filterKey=="domain") return;
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-          if(filterKey=="failed"){
-            filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-              const [min, max] = filterVal.split("-");
-              return {min, max}
-            })
-          }else if(filterKey=="compliance_percent"){
-            filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-              const [min, max] = filterVal.split("-");
-              return {min, max}
-            })
-          }
-        })
+        const filterToBePassed = this.getFilterPayloadForDataAPI();
   
         const downloadRequest = {
           ag: this.selectedAssetGroup,

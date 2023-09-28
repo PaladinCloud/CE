@@ -630,10 +630,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       const index = this.filterOrder?.indexOf(this.currentFilterType.optionValue?.replace(".keyword", ""));
       const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
   
-      const filtersToBePassed = Object.keys(this.filterText).reduce((result, key) => {
+      let filtersToBePassed = this.getFilterPayloadForDataAPI();
+      filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
         const normalizedKey = key.replace(".keyword", "");
         if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) || index>=0) {
-        result[normalizedKey] = this.filterText[key].split(",");
+          result[normalizedKey] = filtersToBePassed[key];
         }
         return result;
       }, {});
@@ -778,12 +779,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  getData(isNextPageCalled=false) {
-    try {
-      if (this.issueListingSubscription) {
-        this.issueListingSubscription.unsubscribe();
-      }
-      const filterToBePassed = { ...this.filterText };
+  getFilterPayloadForDataAPI(){
+    const filterToBePassed = { ...this.filterText };
       filterToBePassed.domain = this.selectedDomain;
 
       Object.keys(filterToBePassed).forEach(filterKey => {
@@ -796,6 +793,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         }
       });
 
+      return filterToBePassed;
+  }
+
+  getData(isNextPageCalled=false) {
+    try {
+      if (this.issueListingSubscription) {
+        this.issueListingSubscription.unsubscribe();
+      }
+      
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+
       const sortFilters = {
         fieldName: this.fieldName,
         fieldType: this.fieldType,
@@ -805,7 +813,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       const payload = {
         ag: this.selectedAssetGroup,
-        filter: filterToBePassed,
+        filter: filtersToBePassed,
         sortFilter: sortFilters,
         from: this.bucketNumber * this.paginatorSize,
         searchtext: this.searchTxt,
@@ -949,18 +957,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         sortOrder: this.sortOrder
       }
 
-      const filterToBePassed = { ...this.filterText };
-      filterToBePassed.domain = this.selectedDomain;
-
-      Object.keys(filterToBePassed).forEach(filterKey => {
-        if (filterKey !== "domain") {
-          filterToBePassed[filterKey] = filterToBePassed[filterKey]?.split(",") || [];
-        }
-      });
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+      filtersToBePassed.domain = this.selectedDomain;
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
-        filter: filterToBePassed,
+        filter: filtersToBePassed,
         sortFilter: sortFilters,
         from: 0,
         searchtext: this.searchTxt,
