@@ -250,30 +250,14 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         fileType: fileType,
       };
 
-      const filterToBePassed = {...this.filterText};
-
-      Object.keys(filterToBePassed).forEach(filterKey => {
-        if(filterKey=="domain") return;
-        filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-        if(filterKey=="failed"){
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-            const [min, max] = filterVal.split("-");
-            return {min, max}
-          })
-        }else if(filterKey=="compliance_percent"){
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-            const [min, max] = filterVal.split("-");
-            return {min, max}
-          })
-        }
-      })
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
         filter: {
           domain: this.selectedDomain,
         },
-        reqFilter: filterToBePassed,
+        reqFilter: filtersToBePassed,
         from: 0,
         searchtext: event.searchTxt,
         size: this.totalRows,
@@ -510,11 +494,18 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         optionName: value,
       });
       
-      let filtersToBePassed = {};       
-      Object.keys(this.filterText).map(key => {
-        if(key=="domain" || this.currentFilterType.optionValue == key) return;
-        filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
-      })
+      const excludedKeys = [
+        "domain",
+        this.currentFilterType.optionValue
+      ]
+      let filtersToBePassed = this.getFilterPayloadForDataAPI();
+      filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
+        const normalizedKey = key.replace(".keyword", "");
+        if ((!excludedKeys.includes(normalizedKey))) {
+          result[normalizedKey] = filtersToBePassed[key];
+        }
+        return result;
+      }, {});
       const payload = {
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
         ag: this.selectedAssetGroup,
@@ -540,15 +531,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
                 filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
               });
             });
-          }
-          else if(value.toLowerCase()=="violations" || value.toLowerCase()=="compliance"){
-            const numOfIntervals = 5;
-            const min = response[0].data.optionRange.min;
-            const max = response[0].data.optionRange.max;
-            const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
-            intervals.forEach(interval => {
-              filterTagsData.push({id: interval.lowerBound + "-" + interval.upperBound, name: interval.lowerBound + "-" + interval.upperBound});
-            })
           }
           this.filterTagOptions[value] = filterTagsData;
           this.filterTagLabels = {
@@ -798,6 +780,17 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     return newData;
   }
 
+  getFilterPayloadForDataAPI(){
+    const filterToBePassed = {...this.filterText};
+
+    Object.keys(filterToBePassed).forEach(filterKey => {
+      if(filterKey=="domain") return;
+      filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+    })
+
+    return filterToBePassed;
+  }
+
   getData() {
     if(!this.selectedAssetGroup || !this.selectedDomain){
       return;
@@ -807,25 +800,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
-    const filterToBePassed = {...this.filterText};
-
-    Object.keys(filterToBePassed).forEach(filterKey => {
-      if(filterKey=="domain") return;
-      filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-      if(filterKey=="failed" || filterKey=="compliance_percent"){
-        filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-          const [min, max] = filterVal.split("-");
-          return {min, max}
-        })
-      }
-    })
 
     const filters = {domain: this.selectedDomain};
 
     const payload = {
       ag: this.selectedAssetGroup,
       filter: filters,
-      reqFilter: filterToBePassed,
+      reqFilter: this.getFilterPayloadForDataAPI(),
       "includeDisabled" : false 
     };
 
