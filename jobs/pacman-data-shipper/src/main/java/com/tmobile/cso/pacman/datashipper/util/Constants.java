@@ -55,5 +55,6 @@ public interface Constants {
     String NAME = "name";
 
     String DOC_TYPE = "docType";
-   
+
+    String ADMIN_MAIL_ID = "admin@paladincloud.io";
 }
