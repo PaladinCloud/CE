@@ -102,9 +102,4 @@ public class ActivityLogRequest {
         activityLogDetails.put(DOCID,strUUID);
         return activityLogDetails;
     }
-
-    public String toString(){
-        return "object-"+this.object+", objectId"+this.objectId+", action"+this.action+
-                ", user"+this.user+", updateTime"+this.updateTime+", oldState"+this.oldState+", newState"+this.newState;
-    }
 }
