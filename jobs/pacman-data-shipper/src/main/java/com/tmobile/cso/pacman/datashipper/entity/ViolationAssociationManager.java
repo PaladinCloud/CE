@@ -122,13 +122,7 @@ public class ViolationAssociationManager implements Constants {
                     
                 
         } catch (Exception e) {
-            LOGGER.error("Error in populating child tables", e);
-            LOGGER.error("Child tables for: ", indexName);
-            Map<String, String> errorMap = new HashMap<>();
-            errorMap.put(ERROR, "Error in populating child tables");
-            errorMap.put(ERROR_TYPE, WARN);
-            errorMap.put(EXCEPTION, e.getMessage());
-            errorList.add(errorMap);
+        	LOGGER.debug("violation data not exists for Asset type  :  {}", type);
         }
         LOGGER.info("Completed EntityAssociationDataCollector for {}", type);
         return errorList;

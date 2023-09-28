@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -101,12 +102,13 @@ public class RDSDBManager {
     
     public static boolean insertNewPolicy(List<PolicyTable> policyList ) {
 		String strQuery = "INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc, "
-				+ " targetType, assetGroup,  policyParams, policyType,  severity, category, status, policyFrequency)"
-				+ "VALUES (?,?,?,?,?,?,?,?,'External',?,?,?,?);";
+				+ " targetType, assetGroup,  policyParams, policyType,  severity, category, status, policyFrequency,userId, createdDate)"
+				+ "VALUES (?,?,?, ?,?,?, ?,?,'External', ?,?,?, ?,?,?);";
 		
 		String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
 		+ "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
-
+		String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+		
 		try (Connection conn = getConnection();
 				PreparedStatement preparedStatement = conn.prepareStatement(strQuery);) {
 
@@ -125,6 +127,9 @@ public class RDSDBManager {
 					preparedStatement.setString(10, policy.getCategory());
 					preparedStatement.setString(11, policy.getStatus());
 					preparedStatement.setString(12, "0 0 1/1 * ? *");
+					preparedStatement.setString(13, Constants.ADMIN_MAIL_ID);
+                    preparedStatement.setString(14, createDate);
+					preparedStatement.addBatch();
 				} catch (SQLException e) {
 					LOGGER.error("sql prepared statement error {}", e);
 				}
