@@ -599,16 +599,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
         sortOrder: this.sortOrder
       }
 
-      const filterToBePassed = {...this.filterText};
-
       if(this.isMultiValuedFilterEnabled){
-        Object.keys(filterToBePassed).forEach(filterKey => {
-          if(filterKey=="domain") return;
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-        })
+        const filtersToBePassed = this.getFilterPayloadForDataAPI();
         queryParams = {
           ag: this.selectedAssetGroup,
-          reqFilter: filterToBePassed,
+          reqFilter: filtersToBePassed,
           sortFilter: sortFilter,
           from: this.bucketNumber * this.paginatorSize,
           searchtext: this.searchTxt,
@@ -617,7 +612,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       }else{
         queryParams = {
           ag: this.selectedAssetGroup,
-          filter: filterToBePassed,
+          filter: this.filterText,
           sortFilter: sortFilter,
           from: this.bucketNumber * this.paginatorSize,
           searchtext: this.searchTxt,
@@ -635,6 +630,16 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  getFilterPayloadForDataAPI(){
+    const filterToBePassed = {...this.filterText};
+    Object.keys(filterToBePassed).forEach(filterKey => {
+      if(filterKey=="domain") return;
+      filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+    })
+
+    return filterToBePassed;
   }
 
   processData(data) {
@@ -852,18 +857,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
         this.filterText["domain"] = this.selectedDomain;
       }
 
-      const filterToBePassed = {...this.filterText};
+      let filtersToBePassed = {...this.filterText};
 
       if(this.isMultiValuedFilterEnabled){
-        Object.keys(filterToBePassed).forEach(filterKey => {
-          if(filterKey=="domain") return;
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-        })
+        filtersToBePassed = this.getFilterPayloadForDataAPI();
       }
       
       const downloadRequest = {
         ag: this.selectedAssetGroup,
-        reqFilter: filterToBePassed,
+        reqFilter: filtersToBePassed,
         sortFilter: sortFilter,
         from: 0,
         searchtext: this.searchTxt,
@@ -962,13 +964,26 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
 
+      const excludedKeys = [
+        this.currentFilterType.optionValue,
+        "domain",
+        "include_exempt",
+        urlObj.params["attribute"],
+        this.currentFilterType["optionValue"]?.replace(".keyword", "")
+      ];
+      
+      const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
+
       if(urlObj.url.includes("attribute") || value=="Exempted" || value=="Tagged"){
-      let filtersToBePassed = {};       
-      Object.keys(this.filterText).forEach(key => {
-        key = key.replace(".keyword", "");
-        if(key==this.currentFilterType["optionValue"]?.replace(".keyword", "") || key=="domain" || key.replace(".keyword", "")==urlObj.params["attribute"]) return;
-        filtersToBePassed[key] = this.filterText[key]?this.filterText[key].split(","):this.filterText[key+".keyword"].split(",");
-      })
+      let filtersToBePassed = this.getFilterPayloadForDataAPI();
+      filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
+        const normalizedKey = key.replace(".keyword", "");
+        if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey))) {
+          result[normalizedKey] = filtersToBePassed[key];
+        }
+        return result;
+      }, {});
+      
       const payload = {
         type: "asset",
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
