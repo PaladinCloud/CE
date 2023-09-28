@@ -18,11 +18,9 @@ public class MainUtil {
      *            the params
      */
     public static void setup(Map<String, String> params) throws Exception {
-
-        //all system properties are set Using ConfigUtil class
+    	
     	ConfigUtil.setConfigProperties(params.get(Constants.CONFIG_CREDS));
-
-        //all job params are stored in params map
+    	
         if( !(params==null || params.isEmpty())){
 			params.forEach((k,v) -> System.setProperty(k, v));
 		}

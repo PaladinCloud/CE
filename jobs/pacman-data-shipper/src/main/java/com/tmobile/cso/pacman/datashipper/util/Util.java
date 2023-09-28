@@ -202,23 +202,4 @@ public class Util {
 		
 		return errorList;
 	}
-
-
-    /**
-     * This Method will give dynamic data path for redhat
-     * @return datapath
-     */
-    public static String getDataPath() {
-
-        String s3EnvDataPath = System.getenv("s3.data");
-        //override datapath with sourceFolder(i.e) for redhat s3.data will come from Cq-mapper
-        if (s3EnvDataPath != null && !s3EnvDataPath.isEmpty()) {
-            LOGGER.debug("datasource is redhat:");
-            return s3EnvDataPath;
-
-        }
-        return System.getProperty("s3.data");
-    }
-
-
 }
