@@ -56,7 +56,6 @@ public class ConfigUtil {
         }
 
         log.info("Config are fetched from {}", configUrl);
-        properties.forEach((k, v) -> log.debug("   {} : {} ", k, v));
         return properties;
     }
 }

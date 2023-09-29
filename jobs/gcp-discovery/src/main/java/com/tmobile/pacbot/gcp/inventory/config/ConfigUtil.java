@@ -63,13 +63,6 @@ public class ConfigUtil {
         }
 
         log.info("Config are fetched from {}", configUrl);
-        properties.forEach((k, v) -> {
-            if (!k.contains("credentials")) {
-                log.debug("   {} : {} ", k, v);
-            } else {
-                log.debug("   {} : {} ", k, "******");
-            }
-        });
         return properties;
     }
 }
