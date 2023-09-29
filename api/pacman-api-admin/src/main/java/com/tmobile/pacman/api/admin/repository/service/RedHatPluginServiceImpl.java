@@ -1,5 +1,21 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
+import java.net.UnknownHostException;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.regions.Regions;
@@ -16,21 +32,6 @@ import com.tmobile.pacman.api.admin.domain.RedHatPluginRequest;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.net.UnknownHostException;
-import java.util.List;
 
 @Service
 public class RedHatPluginServiceImpl extends AbstractPluginService implements PluginsService<RedHatPluginRequest> {
@@ -41,6 +42,8 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
     private String secretManagerPrefix;
     @Autowired
     CredentialProvider credentialProvider;
+    @Autowired
+    DataCollectorSQSService dataCollectorSQSService;
     private static final String ERROR_MESSAGE_TEMPLATE = "Error in %s account. ";
     private static final String SECRET_EXISTS = "The operation failed because the token/secret already exists";
     private static final String CREATING = "creating";
@@ -73,11 +76,15 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
     private static final String UNKNOWN_HOST_ERROR_MSG = " due to an unknown host: {}";
     private static final String VALIDATING_MSG = "Validating Red Hat account details";
 
+    /* This code need to revisited during SAAS in share mode.   */
+    private static final String TENANT_ID = System.getenv(AdminConstants.TENANT_ID);
+
+
+
     @Override
     @Transactional
     public PluginResponse createPlugin(RedHatPluginRequest request, String createdBy) {
         LOGGER.info(VALIDATING_MSG);
-
         if (StringUtils.isEmpty(request.getRedhatAccountName())) {
             request.setRedhatAccountName(request.getRedhatAccountId());
         }
@@ -100,13 +107,12 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
         try {
             BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
             Regions region = Regions.fromName(System.getenv(REGION));
-            String roleName = System.getenv(ROLE_NAME);
             AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(credentials))
                     .withRegion(region).build();
 
             CreateSecretRequest createRequest = new CreateSecretRequest()
-                    .withName(secretManagerPrefix + FORWARD_SLASH + roleName + FORWARD_SLASH + Constants.REDHAT +
+                    .withName(secretManagerPrefix + FORWARD_SLASH + TENANT_ID + FORWARD_SLASH + Constants.REDHAT +
                             FORWARD_SLASH + request.getRedhatAccountId())
                     .withSecretString(String.format(REDHAT_TOKEN_TEMPLATE, request.getRedhatToken()));
 
@@ -118,6 +124,10 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
             if (configUpdateResponse.getStatus().equals(AdminConstants.FAILURE)) {
                 LOGGER.error(FAILED_TO_UPDATE_CONFIG_MSG, configUpdateResponse.getErrorDetails());
             }
+
+            List<AccountDetails> onlineAccounts = findOnlineAccounts(STATUS_CONFIGURED, Constants.REDHAT);
+            /* Send SQS message to DataCollector SQS to trigger collector, mapper, shipper */
+            dataCollectorSQSService.sendSQSMessage(Constants.REDHAT, TENANT_ID, onlineAccounts);
 
             createResponse.setStatus(AdminConstants.SUCCESS);
             createResponse.setMessage(String.format(ACCOUNT_ADDED_SUCCESSFULLY, request.getRedhatAccountId()));
@@ -173,13 +183,12 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
     private void deleteSecret(String accountId) {
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         Regions region = Regions.fromName(System.getenv(REGION));
-        String roleName = System.getenv(ROLE_NAME);
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
         DeleteSecretRequest deleteRequest = new DeleteSecretRequest().withSecretId(secretManagerPrefix +
-                FORWARD_SLASH + roleName + FORWARD_SLASH + Constants.REDHAT +
+                FORWARD_SLASH + TENANT_ID + FORWARD_SLASH + Constants.REDHAT +
                 FORWARD_SLASH + accountId).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
         LOGGER.info(DELETE_SECRET_RESPONSE, deleteResponse);
