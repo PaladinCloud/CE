@@ -782,12 +782,41 @@ public class ESManager implements Constants {
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
-            Gson gson = new GsonBuilder().create(); // create Gson instance
             for (Map<String, Object> doc : docs) {
 
                 String _doc = new Gson().toJson(doc);
                 String parent =  (String)doc.get("_resourceid");
                 String _id =  (String)doc.get("annotationid");
+                
+                bulkRequest.append(String.format(actionTemplate, index,_id, parent)).append("\n");
+                bulkRequest.append(_doc).append("\n");
+                i++;
+                if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
+                    bulkUpload(bulkRequest);
+                    bulkRequest = new StringBuilder();
+                }
+            }
+            if (bulkRequest.length() > 0) {
+                bulkUpload(bulkRequest);
+            }
+        }
+    }
+    
+    
+    public static void uploadAuditLogData(String index, List<Map<String, Object>> docs, String dataSource) {
+    	
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }"; 
+       long dateInMillSec = new Date().getTime();
+        		
+        LOGGER.info("*********UPLOADING*** {}:::{}", index);
+        if (null != docs && !docs.isEmpty()) {
+            StringBuilder bulkRequest = new StringBuilder();
+            int i = 0;
+            for (Map<String, Object> doc : docs) {
+
+                String _doc = new Gson().toJson(doc);
+                String parent =  (String)doc.get("annotationid");
+                String _id =   Util.getUniqueIdForString(parent+""+dateInMillSec);
                 
                 bulkRequest.append(String.format(actionTemplate, index,_id, parent)).append("\n");
                 bulkRequest.append(_doc).append("\n");

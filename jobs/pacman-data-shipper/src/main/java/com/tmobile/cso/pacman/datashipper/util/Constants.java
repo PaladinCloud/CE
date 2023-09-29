@@ -57,5 +57,28 @@ public interface Constants {
     String DOC_TYPE = "docType";
     
     String ADMIN_MAIL_ID = "admin@paladincloud.io";
+    
+    String DATA_SOURCE = "datasource";
+    
+    String TARGET_TYPE = "targetType";
+    
+    String ANNOTATION_ID = "annotationid";
+    
+    String DOC_ID = "_docid";
+    
+    String AUDIT_DATE = "auditdate";
+    
+    String _AUDIT_DATE = "_auditdate";
+    
+    String STATUS = "status";
+    
+    String ISSUE_STATUS = "issueStatus";
+    
+    String DATE_FORMAT_NANO_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'";
+    
+    String DATE_FORMAT_MILL_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    String DATE_FORMAT_SEC = "yyyy-MM-dd HH:mm:00Z";
+    
+    String CREATED_DATE = "createdDate";
    
 }

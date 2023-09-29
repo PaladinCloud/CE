@@ -13,6 +13,7 @@ public class PolicyTable {
  private String category;
  private String status;
  private String policyFrequency;
+ private String url;
  
  
  
@@ -82,7 +83,14 @@ public String getPolicyFrequency() {
 public void setPolicyFrequency(String policyFrequency) {
 	this.policyFrequency = policyFrequency;
 }
- 
+public String getUrl() {
+	return url;
+}
+public void setUrl(String url) {
+	this.url = url;
+}
+
+
 
  
 }

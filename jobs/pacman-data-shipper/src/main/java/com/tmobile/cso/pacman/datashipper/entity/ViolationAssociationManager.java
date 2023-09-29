@@ -35,9 +35,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +98,7 @@ public class ViolationAssociationManager implements Constants {
                         	LOGGER.error("violation object is empty");
                         	return errorList;
                         }
-                        String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
+                        String loaddate = new SimpleDateFormat(Constants.DATE_FORMAT_SEC).format(new java.util.Date());
                         entities.parallelStream().forEach((obj) -> {
 
                             obj.put("_loaddate", loaddate);
@@ -113,12 +115,14 @@ public class ViolationAssociationManager implements Constants {
                         });
 
                         LOGGER.info("Collected :  {}", entities.size());
-                        if (!entities.isEmpty()) {
-                         //   ErrorManager.getInstance(dataSource).handleError(indexName, childTypeES, loaddate, errorList, false);
-                            ESManager.uploadData(indexName, entities, dataSource);
-                            ESManager.deleteOldDocuments(indexName, docType, "_loaddate.keyword",
-                                    loaddate);
-                        }
+						if (!entities.isEmpty()) {
+							ESManager.uploadData(indexName, entities, dataSource);
+							ESManager.deleteOldDocuments(indexName, docType, "_loaddate.keyword", loaddate);
+							String auditDocType = "issue_" + type + "_audit";
+							List<Map<String, Object>> auditLogEntites = createAuditLog(dataSource, type, entities);
+							ESManager.deleteOldDocuments(indexName, auditDocType, "auditdate.keyword", "*");
+							ESManager.uploadAuditLogData(indexName, auditLogEntites, dataSource);
+						}
                     
                 
         } catch (Exception e) {
@@ -126,5 +130,43 @@ public class ViolationAssociationManager implements Constants {
         }
         LOGGER.info("Completed EntityAssociationDataCollector for {}", type);
         return errorList;
+    }
+    
+    private List<Map<String, Object>> createAuditLog(String dataSource, String type, List<Map<String, Object>> violationList){
+    	List<Map<String, Object>> auditLogList = new ArrayList<>();
+    	String docType = "issue_"+type+"_audit";
+    	violationList.forEach(violationObj -> {
+    		Map<String, Object> auditLog =  new HashMap<String, Object>();
+    		String issueId = (String)violationObj.get(Constants.ANNOTATION_ID);
+    		try {
+				Date viloationCreatedDate = Util.getDateFromString((String) violationObj.get(Constants.CREATED_DATE),
+						Constants.DATE_FORMAT_NANO_SEC);
+				String auditDateTime = Util.getDateToStringWithFormat(viloationCreatedDate,
+						Constants.DATE_FORMAT_MILL_SEC);
+				String auditDate = auditDateTime.indexOf("T") != -1
+						? auditDateTime.substring(0, auditDateTime.indexOf("T"))
+						: auditDateTime;
+				auditLog.put(Constants.DOC_TYPE, docType);
+				auditLog.put(Constants.DATA_SOURCE, dataSource);
+				auditLog.put(Constants.TARGET_TYPE, type);
+				auditLog.put(Constants.ANNOTATION_ID, issueId);
+				auditLog.put(Constants.DOC_ID, issueId);
+				auditLog.put(Constants.AUDIT_DATE, auditDateTime);
+				auditLog.put(Constants._AUDIT_DATE, auditDate);
+				auditLog.put(Constants.STATUS, violationObj.get(Constants.ISSUE_STATUS));
+				Map<String, Object> relationMap = new HashMap<String, Object>();
+				relationMap.put("parent", issueId);
+				relationMap.put("name", docType);
+				auditLog.put(type + "_relations", relationMap);
+				auditLogList.add(auditLog);
+    		} catch (ParseException e) {
+				LOGGER.error("date format error {}", e);
+			} catch (Exception e ) {
+				LOGGER.error(" data conversion error {}", e);
+			}
+    		
+    		
+    	});
+    	return auditLogList;
     }
 }
