@@ -90,7 +90,6 @@ public class ConfigUtil {
         	throw new AquaDataImportException("No config properties fetched from "+configUrl);
         }
         LOGGER.info("Config are fetched from {}",configUrl);
-        properties.forEach((k,v)-> LOGGER.debug("{} : {} ",k,v));
         return properties;
     }
 }
