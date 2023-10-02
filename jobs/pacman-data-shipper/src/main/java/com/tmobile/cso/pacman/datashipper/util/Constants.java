@@ -46,7 +46,4 @@ public interface Constants {
     String DOC_TYPE = "docType";
 
     String ADMIN_MAIL_ID = "admin@paladincloud.io";
-
-    String DEFAULT_POLICY_FREQUENCY = "0 0 1/1 * ? *";
-    String EXTERNAL_POLICY = "External";
 }

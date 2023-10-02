@@ -37,42 +37,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * The Class ChildTableDataCollector.
+ * The Class ExternalPolicies.
  */
-public class ExternalPolicies implements Constants {
-
-    /**
-     * The Constant LOGGER.
-     */
+public class ExternalPolicies {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalPolicies.class);
 
-    /**
-     * The s3 account.
-     */
     private final String s3Account = System.getProperty("base.account");
-
-    /**
-     * The s3 region.
-     */
     private final String s3Region = System.getProperty("base.region");
-
-    /**
-     * The s3 role.
-     */
     private final String s3Role = System.getProperty("s3.role");
-
-    /**
-     * The s3 bucket name.
-     */
     private final String bucketName = System.getProperty("s3");
-
-    /**
-     * The s3 data path.
-     */
     private final String dataPath = System.getProperty("s3.data");
 
     /**
-     * Execute.
+     * uploadPolicyDefinition.
      *
      * @param dataSource the data source
      */

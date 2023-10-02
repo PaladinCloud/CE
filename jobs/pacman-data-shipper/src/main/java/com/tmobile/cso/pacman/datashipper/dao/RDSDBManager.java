@@ -13,6 +13,8 @@ import java.util.*;
  * The Class RDSDBManager.
  */
 public class RDSDBManager {
+    private static final String DEFAULT_POLICY_FREQUENCY = "0 0 1/1 * ? *";
+    private static final String EXTERNAL_POLICY = "External";
 
     /**
      * The Constant dbURL.
@@ -140,11 +142,11 @@ public class RDSDBManager {
                     preparedStatement.setString(6, policy.getTarget());
                     preparedStatement.setString(7, policy.getAssetgroup());
                     preparedStatement.setString(8, params);
-                    preparedStatement.setString(9, Constants.EXTERNAL_POLICY);                                                           // Type
+                    preparedStatement.setString(9, EXTERNAL_POLICY);                                                           // Type
                     preparedStatement.setString(10, policy.getSeverity());
                     preparedStatement.setString(11, policy.getCategory());
                     preparedStatement.setString(12, policy.getStatus());
-                    preparedStatement.setString(13, Constants.DEFAULT_POLICY_FREQUENCY);
+                    preparedStatement.setString(13, DEFAULT_POLICY_FREQUENCY);
                     preparedStatement.setString(14, Constants.ADMIN_MAIL_ID);
                     preparedStatement.setString(15, createDate);
                     preparedStatement.setString(16, policy.getResolutionUrl());
