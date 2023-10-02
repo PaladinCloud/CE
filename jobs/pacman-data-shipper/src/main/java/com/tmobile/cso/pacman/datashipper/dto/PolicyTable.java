@@ -102,7 +102,11 @@ public class PolicyTable {
         this.policyFrequency = policyFrequency;
     }
 
-    public String getResolutionUrl() { return resolutionUrl; }
+    public String getResolutionUrl() {
+        return resolutionUrl;
+    }
 
-    public void setResolutionUrl(String resolutionUrl) { this.resolutionUrl = resolutionUrl; }
+    public void setResolutionUrl(String resolutionUrl) {
+        this.resolutionUrl = resolutionUrl;
+    }
 }
