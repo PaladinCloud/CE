@@ -12,7 +12,7 @@ public class PolicyTable {
     private String category;
     private String status;
     private String policyFrequency;
-    private String url;
+    private String resolutionUrl;
 
     public String getPolicyId() {
         return policyId;
@@ -102,7 +102,7 @@ public class PolicyTable {
         this.policyFrequency = policyFrequency;
     }
 
-    public String getUrl() { return url; }
+    public String getResolutionUrl() { return resolutionUrl; }
 
-    public void setUrl(String url) { this.url = url; }
+    public void setResolutionUrl(String resolutionUrl) { this.resolutionUrl = resolutionUrl; }
 }
