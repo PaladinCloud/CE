@@ -33,13 +33,14 @@ public class RDSDBManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
 
-    private RDSDBManager() {}
+    private RDSDBManager() {
+    }
 
     /**
      * Gets the DB connection.
      *
      * @return the connection
-     * @throws SQLException           the SQL exception
+     * @throws SQLException the SQL exception
      */
     private static Connection getConnection() throws SQLException {
         Connection conn;
@@ -60,10 +61,7 @@ public class RDSDBManager {
      */
     public static List<Map<String, String>> executeQuery(String query) {
         List<Map<String, String>> results = new ArrayList<>();
-        try (
-                Connection conn = getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query);) {
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
             Map<String, String> data;
