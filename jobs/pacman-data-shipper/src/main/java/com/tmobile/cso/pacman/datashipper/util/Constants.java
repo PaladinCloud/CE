@@ -64,9 +64,6 @@ public interface Constants {
     
     String ISSUE_STATUS = "issueStatus";
     
-    String DATE_FORMAT_NANO_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'";
-    
-    String DATE_FORMAT_MILL_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     String DATE_FORMAT_SEC = "yyyy-MM-dd HH:mm:00Z";
     
     String CREATED_DATE = "createdDate";

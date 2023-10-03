@@ -139,19 +139,16 @@ public class ViolationAssociationManager implements Constants {
     		Map<String, Object> auditLog =  new HashMap<String, Object>();
     		String issueId = (String)violationObj.get(Constants.ANNOTATION_ID);
     		try {
-				Date viloationCreatedDate = Util.getDateFromString((String) violationObj.get(Constants.CREATED_DATE),
-						Constants.DATE_FORMAT_NANO_SEC);
-				String auditDateTime = Util.getDateToStringWithFormat(viloationCreatedDate,
-						Constants.DATE_FORMAT_MILL_SEC);
-				String auditDate = auditDateTime.indexOf("T") != -1
-						? auditDateTime.substring(0, auditDateTime.indexOf("T"))
-						: auditDateTime;
+				String auditDateWithTime = (String)violationObj.get(Constants.CREATED_DATE);
+				String auditDate = auditDateWithTime.indexOf("T") != -1
+						? auditDateWithTime.substring(0, auditDateWithTime.indexOf("T"))
+						: auditDateWithTime;
 				auditLog.put(Constants.DOC_TYPE, docType);
 				auditLog.put(Constants.DATA_SOURCE, dataSource);
 				auditLog.put(Constants.TARGET_TYPE, type);
 				auditLog.put(Constants.ANNOTATION_ID, issueId);
 				auditLog.put(Constants.DOC_ID, issueId);
-				auditLog.put(Constants.AUDIT_DATE, auditDateTime);
+				auditLog.put(Constants.AUDIT_DATE, violationObj.get(Constants.CREATED_DATE));
 				auditLog.put(Constants._AUDIT_DATE, auditDate);
 				auditLog.put(Constants.STATUS, violationObj.get(Constants.ISSUE_STATUS));
 				Map<String, Object> relationMap = new HashMap<String, Object>();
@@ -159,8 +156,6 @@ public class ViolationAssociationManager implements Constants {
 				relationMap.put("name", docType);
 				auditLog.put(type + "_relations", relationMap);
 				auditLogList.add(auditLog);
-    		} catch (ParseException e) {
-				LOGGER.error("date format error {}", e);
 			} catch (Exception e ) {
 				LOGGER.error(" data conversion error {}", e);
 			}
