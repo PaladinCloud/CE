@@ -108,8 +108,11 @@ public class RDSDBManager {
                 "targetType=VALUES(targetType), " +
                 "assetGroup=VALUES(assetGroup), " +
                 "policyParams=VALUES(policyParams), " +
+                "policyType=values(policyType), " +
                 "severity=VALUES(severity), " +
                 "category=VALUES(category), " +
+                "status=VALUES(status), " +
+                "policyFrequency=VALUES(policyFrequency), " +
                 "resolutionUrl=VALUES(resolutionUrl)";
 
         String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
