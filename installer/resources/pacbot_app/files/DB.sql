@@ -1768,6 +1768,8 @@ INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('aws.
 INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('azure.eventbridge.bus.details','Description PlaceHolder');
 INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('gcp.eventbridge.bus.details','Description PlaceHolder');
 INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('scheduler.total.batches','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('shipper.attributes.to.preserve','Attributes to preserve in the current asset data');
+
 
 
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) VALUES('pacman.es.host','Description PlaceHolder');
@@ -3046,6 +3048,9 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
  VALUES ('s3.data','redhatacs-inventory','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
  VALUES ('s3.processed','backup-redhatacs','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
+
+ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
+  VALUES ('shipper.attributes.to.preserve','firstdiscoveredon','data-shipper','prd','latest',NULL,NULL,NULL,NULL);
  
  
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
