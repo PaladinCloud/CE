@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -27,7 +26,6 @@ import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 import com.tmobile.pacman.commons.utils.CommonUtils;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -49,30 +47,37 @@ import java.util.stream.Collectors;
  */
 public class ESManager implements Constants {
 
-    /** The es host key name. */
+    /**
+     * The es host key name.
+     */
     private static final String ES_HOST_KEY_NAME = System.getProperty("elastic-search.host");
 
-    /** The es http port. */
+    /**
+     * The es http port.
+     */
     private static final Integer ES_HTTP_PORT = getESPort();
-	
-    /** The rest client. */
-    private static RestClient restClient;
-    
-    /** The log. */
+    /**
+     * The log.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ESManager.class);
-    
+    /**
+     * The rest client.
+     */
+    private static RestClient restClient;
+
     /**
      * Gets the ES port.
      *
      * @return the ES port
      */
-    private static int getESPort(){
-        try{
+    private static int getESPort() {
+        try {
             return Integer.parseInt(System.getProperty("elastic-search.port"));
-        }catch(Exception e){
+        } catch (Exception e) {
             return 0;
         }
     }
+
     /**
      * Gets the rest client.
      *
@@ -88,9 +93,9 @@ public class ESManager implements Constants {
     /**
      * Upload data.
      *
-     * @param index            the index
-     * @param type            the type
-     * @param docs            the docs
+     * @param index    the index
+     * @param type     the type
+     * @param docs     the docs
      * @param loaddate the loaddate
      * @return the map
      */
@@ -100,31 +105,31 @@ public class ESManager implements Constants {
         List<String> errors = new ArrayList<>();
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\" } }%n";
 
-        LOGGER.info("*********UPLOADING*** {}:::{}" ,type, index);
+        LOGGER.info("*********UPLOADING*** {}:::{}", type, index);
 
         String keys = ConfigManager.getKeyForType(index, type);
         String[] _keys = keys.split(",");
         if (null != docs && !docs.isEmpty()) {
-            LOGGER.info("*********# of docs *** {}" , docs.size());
+            LOGGER.info("*********# of docs *** {}", docs.size());
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
             for (Map<String, Object> doc : docs) {
 
-                String id = (String)doc.get("_docid");
+                String id = (String) doc.get("_docid");
 
-                String cloudType = (String)doc.get("_cloudType");
-                if(cloudType!=null && !cloudType.isEmpty() && cloudType.equalsIgnoreCase("Azure")){
+                String cloudType = (String) doc.get("_cloudType");
+                if (cloudType != null && !cloudType.isEmpty() && cloudType.equalsIgnoreCase("Azure")) {
                     String assetIdDisplayName = null;
-                    String resourceGroupName = (String)doc.get("resourceGroupName")!=null?(String)doc.get("resourceGroupName"):"";
-                    String assetName         =  (String)doc.get("name")!=null?(String)doc.get("name"):"";
-                    if(!resourceGroupName.isEmpty() && !assetName.isEmpty())
-                        assetIdDisplayName  = resourceGroupName + "/" + assetName;
-                    else if(resourceGroupName.isEmpty())
+                    String resourceGroupName = doc.get("resourceGroupName") != null ? (String) doc.get("resourceGroupName") : "";
+                    String assetName = doc.get("name") != null ? (String) doc.get("name") : "";
+                    if (!resourceGroupName.isEmpty() && !assetName.isEmpty())
+                        assetIdDisplayName = resourceGroupName + "/" + assetName;
+                    else if (resourceGroupName.isEmpty())
                         assetIdDisplayName = assetName;
                     else
                         assetIdDisplayName = resourceGroupName;
                     //set in doc
-                    doc.put("assetIdDisplayName",assetIdDisplayName.toLowerCase());
+                    doc.put("assetIdDisplayName", assetIdDisplayName.toLowerCase());
 
                 }
 
@@ -139,7 +144,7 @@ public class ESManager implements Constants {
                     bulkRequest = new StringBuilder();
                 }
             }
-            if(index.equals("aws_internetgateway")) {
+            if (index.equals("aws_internetgateway")) {
                 LOGGER.info("Printing bulkrequest here:  {}", bulkRequest);
             }
             if (bulkRequest.length() > 0) {
@@ -159,7 +164,7 @@ public class ESManager implements Constants {
     /**
      * Bulk upload.
      *
-     * @param errors the errors
+     * @param errors      the errors
      * @param bulkRequest the bulk request
      */
     private static void bulkUpload(List<String> errors, StringBuilder bulkRequest) {
@@ -168,11 +173,11 @@ public class ESManager implements Constants {
             String responseStr = EntityUtils.toString(resp.getEntity());
             if (responseStr.contains("\"errors\":true")) {
                 List<String> errRecords = Util.retrieveErrorRecords(responseStr);
-                LOGGER.error("Upload failed for {}",errRecords);
+                LOGGER.error("Upload failed for {}", errRecords);
                 errors.addAll(errRecords);
             }
         } catch (Exception e) {
-            LOGGER.error("Bulk upload failed",e);
+            LOGGER.error("Bulk upload failed", e);
             errors.add(e.getMessage());
         }
     }
@@ -193,55 +198,49 @@ public class ESManager implements Constants {
             LOGGER.error("Error in uploading data", e);
         }
     }
-    
+
     /**
      * Refresh.
      *
-     * @param index
-     *            the index
+     * @param index the index
      */
     public static void refresh(String index) {
         try {
             Response refrehsResponse = invokeAPI("POST", index + "/" + "_refresh", null);
             if (refrehsResponse != null && HttpStatus.SC_OK != refrehsResponse.getStatusLine().getStatusCode()) {
-                    LOGGER.error("Refreshing index %s failed", index, refrehsResponse);
+                LOGGER.error("Refreshing index %s failed", index, refrehsResponse);
             }
         } catch (IOException e) {
-            LOGGER.error("Error in refresh ",e); 
+            LOGGER.error("Error in refresh ", e);
         }
-        
+
     }
 
     /**
      * Method not used by the entity upload.But to append data to speific index
      *
-     * @param index
-     *            the index
-     * @param type
-     *            the type
-     * @param docs
-     *            the docs
-     * @param idKey
-     *            the id key
-     * @param refresh
-     *            the refresh
+     * @param index   the index
+     * @param type    the type
+     * @param docs    the docs
+     * @param idKey   the id key
+     * @param refresh the refresh
      */
     public static void uploadData(String index, String type, List<Map<String, Object>> docs, String idKey,
-            boolean refresh) {
+                                  boolean refresh) {
 //        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_id\" : \"%s\"} }%n";
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\"} }%n";
         String endpoint = "/_bulk";
         if (refresh) {
             endpoint = endpoint + "?refresh=true";
         }
-        LOGGER.info("*********UPLOADING*** {}" , type);
+        LOGGER.info("*********UPLOADING*** {}", type);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
             for (Map<String, Object> doc : docs) {
                 String id = doc.get(idKey).toString();
                 doc.put(Constants.DOC_TYPE, type);
-                doc.put("_docid",id);
+                doc.put("_docid", id);
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
 
                 if (_doc != null) {
@@ -250,13 +249,13 @@ public class ESManager implements Constants {
                 }
                 i++;
                 if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
-                    LOGGER.info("Uploaded {}" , i);
+                    LOGGER.info("Uploaded {}", i);
                     bulkUpload(endpoint, bulkRequest);
                     bulkRequest = new StringBuilder();
                 }
             }
             if (bulkRequest.length() > 0) {
-                LOGGER.info("Uploaded {}" , i);
+                LOGGER.info("Uploaded {}", i);
                 bulkUpload(endpoint, bulkRequest);
             }
         }
@@ -266,19 +265,19 @@ public class ESManager implements Constants {
     /**
      * Bulk upload.
      *
-     * @param endpoint the endpoint
+     * @param endpoint    the endpoint
      * @param bulkRequest the bulk request
      */
     private static void bulkUpload(String endpoint, StringBuilder bulkRequest) {
-        try { 
+        try {
             Response resp = invokeAPI("POST", endpoint, bulkRequest.toString());
             String responseStr = EntityUtils.toString(resp.getEntity());
             if (responseStr.contains("\"errors\":true")) {
                 LOGGER.error(responseStr);
             }
         } catch (Exception e) {
-            LOGGER.error("Bulk upload failed",e);
-           
+            LOGGER.error("Bulk upload failed", e);
+
         }
     }
 
@@ -302,8 +301,7 @@ public class ESManager implements Constants {
     /**
      * Creates the ES doc.
      *
-     * @param doc
-     *            the doc
+     * @param doc the doc
      * @return the string
      */
     public static String createESDoc(Map<String, ?> doc) {
@@ -312,7 +310,7 @@ public class ESManager implements Constants {
         try {
             docJson = objMapper.writeValueAsString(doc);
         } catch (JsonProcessingException e) {
-            LOGGER.error("Error createESDoc",e);
+            LOGGER.error("Error createESDoc", e);
         }
         return docJson;
     }
@@ -320,9 +318,9 @@ public class ESManager implements Constants {
     /**
      * Invoke API.
      *
-     * @param method            the method
-     * @param endpoint            the endpoint
-     * @param payLoad            the pay load
+     * @param method   the method
+     * @param endpoint the endpoint
+     * @param payLoad  the pay load
      * @return the response
      * @throws IOException Signals that an I/O exception has occurred.
      */
@@ -334,26 +332,25 @@ public class ESManager implements Constants {
         HttpEntity entity = null;
         if (payLoad != null)
             entity = new NStringEntity(payLoad, ContentType.APPLICATION_JSON);
-        
-        return getRestClient().performRequest(method, uri, Collections.<String, String>emptyMap(), entity);
+
+        return getRestClient().performRequest(method, uri, Collections.emptyMap(), entity);
     }
 
     /**
      * Index exists.
      *
-     * @param indexName
-     *            the index name
+     * @param indexName the index name
      * @return true, if successful
      */
     private static boolean indexExists(String indexName) {
-       
+
         try {
             Response response = invokeAPI("HEAD", indexName, null);
             if (response != null) {
                 return response.getStatusLine().getStatusCode() == 200;
             }
         } catch (IOException e) {
-            LOGGER.error("Error indexExists",e);
+            LOGGER.error("Error indexExists", e);
         }
         return false;
     }
@@ -361,50 +358,46 @@ public class ESManager implements Constants {
     /**
      * Type exists.
      *
-     * @param indexName
-     *            the index name
-     * @param type
-     *            the type
+     * @param indexName the index name
+     * @param type      the type
      * @return true, if successful
      */
     private static boolean typeExists(String indexName, String type) {
         try {
             Response response = invokeAPI("HEAD", indexName + "/_mapping/" + type, null);
             if (response != null) {
-                return response.getStatusLine().getStatusCode() == 200 ? true : false;
+                return response.getStatusLine().getStatusCode() == 200;
             }
         } catch (IOException e) {
-            LOGGER.error("Error in typeExists",e);
+            LOGGER.error("Error in typeExists", e);
         }
-        
+
         return false;
     }
 
     /**
      * Gets the type count.
      *
-     * @param indexName
-     *            the index name
-     * @param type
-     *            the type
+     * @param indexName the index name
+     * @param type      the type
      * @return the type count
      */
     private static int getTypeCount(String indexName, String type) {
         try {
-            Response response = invokeAPI("GET", indexName  + "/_count?filter_path=count",
-                "{\"query\":{ \"match\":{\"latest\":true}}}");
+            Response response = invokeAPI("GET", indexName + "/_count?filter_path=count",
+                    "{\"query\":{ \"match\":{\"latest\":true}}}");
             String rspJson = EntityUtils.toString(response.getEntity());
             return new ObjectMapper().readTree(rspJson).at("/count").asInt();
         } catch (IOException e) {
-            LOGGER.error("Error in getTypeCount",e);
+            LOGGER.error("Error in getTypeCount", e);
         }
         return 0;
     }
-    
+
     /**
      * Configure index and types.
      *
-     * @param ds            the ds
+     * @param ds        the ds
      * @param errorList the error list
      */
     public static void configureIndexAndTypes(String ds, List<Map<String, String>> errorList) {
@@ -441,10 +434,9 @@ public class ESManager implements Constants {
                 }
             }
         }
-        try{
+        try {
             ESManager.createIndex("exceptions", errorList);
-        }
-        catch(Exception exception){
+        } catch (Exception exception) {
             LOGGER.error("Index creation Error: {}", exception.getMessage());
             LOGGER.error("Index creation Error Trace: {}", exception.getStackTrace());
         }
@@ -453,16 +445,13 @@ public class ESManager implements Constants {
     /**
      * Gets the existing info.
      *
-     * @param indexName
-     *            the index name
-     * @param type
-     *            the type
-     * @param filters
-     *            the filters
+     * @param indexName the index name
+     * @param type      the type
+     * @param filters   the filters
      * @return the existing info
      */
     public static Map<String, Map<String, String>> getExistingInfo(String indexName, String type,
-            List<String> filters) {
+                                                                   List<String> filters) {
         int count = getTypeCount(indexName, type);
         int _count = count;
         boolean scroll = false;
@@ -478,9 +467,9 @@ public class ESManager implements Constants {
         }
         filter_path.deleteCharAt(filter_path.length() - 1);
 
-        String endPoint = indexName + "/_search?scroll=1m" + filter_path.toString() + "&size=" + _count;
+        String endPoint = indexName + "/_search?scroll=1m" + filter_path + "&size=" + _count;
         if (count == 0) {
-            endPoint = indexName + "/_search?scroll=1m" + filter_path.toString();
+            endPoint = indexName + "/_search?scroll=1m" + filter_path;
         }
         String payLoad = "{ \"query\": { \"match\": {\"latest\": true}}}";
         Map<String, Map<String, String>> _data = new HashMap<>();
@@ -489,7 +478,7 @@ public class ESManager implements Constants {
         if (scroll) {
             count -= 10000;
             do {
-                endPoint = "/_search/scroll?scroll=1m&scroll_id=" + scrollId + filter_path.toString();
+                endPoint = "/_search/scroll?scroll=1m&scroll_id=" + scrollId + filter_path;
                 scrollId = fetchDataAndScrollId(endPoint, _data, keyField, null);
                 count -= 10000;
                 if (count <= 0)
@@ -502,18 +491,14 @@ public class ESManager implements Constants {
     /**
      * Fetch data and scroll id.
      *
-     * @param endPoint
-     *            the end point
-     * @param _data
-     *            the data
-     * @param keyField
-     *            the key field
-     * @param payLoad
-     *            the pay load
+     * @param endPoint the end point
+     * @param _data    the data
+     * @param keyField the key field
+     * @param payLoad  the pay load
      * @return the string
      */
     private static String fetchDataAndScrollId(String endPoint, Map<String, Map<String, String>> _data, String keyField,
-            String payLoad) {
+                                               String payLoad) {
         try {
             ObjectMapper objMapper = new ObjectMapper();
             Response response = invokeAPI("GET", endPoint, payLoad);
@@ -532,7 +517,7 @@ public class ESManager implements Constants {
             }
             return scrollId;
         } catch (ParseException | IOException e) {
-            LOGGER.error("Error in fetchDataAndScrollId" ,e );
+            LOGGER.error("Error in fetchDataAndScrollId", e);
         }
         return "";
     }
@@ -540,8 +525,7 @@ public class ESManager implements Constants {
     /**
      * Fetch current count stats for asset groups.
      *
-     * @param date
-     *            the date
+     * @param date the date
      * @return the map
      */
     @SuppressWarnings("unchecked")
@@ -589,7 +573,7 @@ public class ESManager implements Constants {
 
             }
         } catch (ParseException | IOException e) {
-           LOGGER.error("Error in fetchCurrentCountStatsForAssetGroups" ,e );
+            LOGGER.error("Error in fetchCurrentCountStatsForAssetGroups", e);
         }
         return asgInfoList;
     }
@@ -597,7 +581,7 @@ public class ESManager implements Constants {
     /**
      * Creates the index.
      *
-     * @param indexName            the index name
+     * @param indexName the index name
      * @param errorList the error list
      */
     public static void createIndex(String indexName, List<Map<String, String>> errorList) {
@@ -606,9 +590,9 @@ public class ESManager implements Constants {
             try {
                 invokeAPI("PUT", indexName, payLoad);
             } catch (IOException e) {
-                LOGGER.error("Error in createIndex" ,e );
-                Map<String,String> errorMap = new HashMap<>();
-                errorMap.put(ERROR, "Error in createIndex "+indexName);
+                LOGGER.error("Error in createIndex", e);
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Error in createIndex " + indexName);
                 errorMap.put(ERROR_TYPE, WARN);
                 errorMap.put(EXCEPTION, e.getMessage());
                 errorList.add(errorMap);
@@ -619,8 +603,8 @@ public class ESManager implements Constants {
     /**
      * Creates the type.
      *
-     * @param indexName            the index name
-     * @param typename            the typename
+     * @param indexName the index name
+     * @param typename  the typename
      * @param errorList the error list
      */
     public static void createType(String indexName, String typename, List<Map<String, String>> errorList) {
@@ -629,9 +613,9 @@ public class ESManager implements Constants {
             try {
                 invokeAPI("PUT", endPoint, "{ \"properties\":{}}");
             } catch (IOException e) {
-                LOGGER.error("Error in createType",e);
-                Map<String,String> errorMap = new HashMap<>();
-                errorMap.put(ERROR, "Error in createType "+typename);
+                LOGGER.error("Error in createType", e);
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Error in createType " + typename);
                 errorMap.put(ERROR_TYPE, WARN);
                 errorMap.put(EXCEPTION, e.getMessage());
                 errorList.add(errorMap);
@@ -659,66 +643,65 @@ public class ESManager implements Constants {
 //    }
 
     /**
-     *
-     * @param index the index
-     * @param type child type
+     * @param index  the index
+     * @param type   child type
      * @param parent parent type
      * @throws IOException ioexception
      */
     public static void createType(String index, String type, String parent) throws IOException {
-     //   if (!typeExists(index, type)) {
-            String endPoint = index + "/_mapping";
+        //   if (!typeExists(index, type)) {
+        String endPoint = index + "/_mapping";
 
-            // Get existing children
-            Map<String, Object> existingChildren = getChildRelations(index, parent);
+        // Get existing children
+        Map<String, Object> existingChildren = getChildRelations(index, parent);
 
-            // Check if parent already has existing children
-            List<String> existingChildTypes;
-            if (existingChildren.containsKey(parent)) {
-                Object existingChildObj = existingChildren.get(parent);
-                if (existingChildObj instanceof String) {
-                    existingChildTypes = new ArrayList<>();
-                    existingChildTypes.add((String) existingChildObj);
-                } else {
-                    existingChildTypes = (List<String>) existingChildObj;
-                }
-            } else {
+        // Check if parent already has existing children
+        List<String> existingChildTypes;
+        if (existingChildren.containsKey(parent)) {
+            Object existingChildObj = existingChildren.get(parent);
+            if (existingChildObj instanceof String) {
                 existingChildTypes = new ArrayList<>();
+                existingChildTypes.add((String) existingChildObj);
+            } else {
+                existingChildTypes = (List<String>) existingChildObj;
             }
+        } else {
+            existingChildTypes = new ArrayList<>();
+        }
 
-            // Add new child
-            if(!existingChildTypes.contains(type)){
-                existingChildTypes.add(type);
-                existingChildren.put(parent, existingChildTypes);
+        // Add new child
+        if (!existingChildTypes.contains(type)) {
+            existingChildTypes.add(type);
+            existingChildren.put(parent, existingChildTypes);
 
-                // Create childMap with updated relations
-                Map<String, Object> childMap = new HashMap<>();
-                childMap.put("type", "join");
-                childMap.put("relations", existingChildren);
+            // Create childMap with updated relations
+            Map<String, Object> childMap = new HashMap<>();
+            childMap.put("type", "join");
+            childMap.put("relations", existingChildren);
 
-                Map<String, Object> properties = new HashMap<>();
-                properties.put(parent + "_relations", childMap);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(parent + "_relations", childMap);
 
-                Map<String, Object> payloadMap = new HashMap<>();
-                payloadMap.put("properties", properties);
+            Map<String, Object> payloadMap = new HashMap<>();
+            payloadMap.put("properties", properties);
 
-                String payLoad = new ObjectMapper().writeValueAsString(payloadMap);
-                LOGGER.info("creating Type: ");
-                LOGGER.info("Index: {}", index);
-                LOGGER.info("type: {}", type);
-                LOGGER.info("parent: {}", parent);
-                LOGGER.info("payLoad: {}", payLoad);
-                try {
-                    invokeAPI("PUT", endPoint, payLoad);
-                } catch (IOException e) {
-                    LOGGER.error("Error createType ", e);
-                    LOGGER.error("Index: {}", index);
-                    LOGGER.error("type: {}", type);
-                    LOGGER.error("parent: {}", parent);
-                    LOGGER.error("payLoad: {}", payLoad);
+            String payLoad = new ObjectMapper().writeValueAsString(payloadMap);
+            LOGGER.info("creating Type: ");
+            LOGGER.info("Index: {}", index);
+            LOGGER.info("type: {}", type);
+            LOGGER.info("parent: {}", parent);
+            LOGGER.info("payLoad: {}", payLoad);
+            try {
+                invokeAPI("PUT", endPoint, payLoad);
+            } catch (IOException e) {
+                LOGGER.error("Error createType ", e);
+                LOGGER.error("Index: {}", index);
+                LOGGER.error("type: {}", type);
+                LOGGER.error("parent: {}", parent);
+                LOGGER.error("payLoad: {}", payLoad);
 
-                }
             }
+        }
     }
 
     // Helper function to retrieve existing child relations
@@ -738,16 +721,15 @@ public class ESManager implements Constants {
      * child.
      *
      * @param index the index
-     * @param type the type
-     * @param docs the docs
-     * @param parentKey the parent key
+     * @param type  the type
+     * @param docs  the docs
      */
     public static void uploadData(String index, String parentType, String type, List<Map<String, Object>> docs, String[] key, String dataSource) {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"routing\" : \"%s\" } }"; // added
-                                                                                                                       // _parent
-                                                                                                                       // node
+        // _parent
+        // node
 //        String docTemplate = "%s\n%s\n";
-        LOGGER.info("*********UPLOADING*** {}:::{}" ,type, index);
+        LOGGER.info("*********UPLOADING*** {}:::{}", type, index);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
@@ -756,10 +738,10 @@ public class ESManager implements Constants {
 
                 String _doc = new Gson().toJson(doc);
                 String parent = Util.concatenate(doc, key, "_");
-                if("aws".equalsIgnoreCase(dataSource)) {
-                	if(Arrays.asList(key).contains("accountid")) {
-                		parent = dataSource+"_"+parentType+"_"+parent;
-                	}
+                if ("aws".equalsIgnoreCase(dataSource)) {
+                    if (Arrays.asList(key).contains("accountid")) {
+                        parent = dataSource + "_" + parentType + "_" + parent;
+                    }
                 }
                 bulkRequest.append(String.format(actionTemplate, index, parent)).append("\n");
                 bulkRequest.append(_doc).append("\n");
@@ -774,11 +756,11 @@ public class ESManager implements Constants {
             }
         }
     }
-    
+
     public static void uploadData(String index, List<Map<String, Object>> docs, String dataSource) {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }"; // added
-                                                                                                                       // _parent
-                                                                                                                       // node
+        // _parent
+        // node
 //        String docTemplate = "%s\n%s\n";
         LOGGER.info("*********UPLOADING*** {}:::{}", index);
         if (null != docs && !docs.isEmpty()) {
@@ -787,10 +769,10 @@ public class ESManager implements Constants {
             for (Map<String, Object> doc : docs) {
 
                 String _doc = new Gson().toJson(doc);
-                String parent =  (String)doc.get("_resourceid");
-                String _id =  (String)doc.get("annotationid");
-                
-                bulkRequest.append(String.format(actionTemplate, index,_id, parent)).append("\n");
+                String parent = (String) doc.get("_resourceid");
+                String _id = (String) doc.get("annotationid");
+
+                bulkRequest.append(String.format(actionTemplate, index, _id, parent)).append("\n");
                 bulkRequest.append(_doc).append("\n");
                 i++;
                 if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
@@ -803,13 +785,13 @@ public class ESManager implements Constants {
             }
         }
     }
-    
-    
+
+
     public static void uploadAuditLogData(String index, List<Map<String, Object>> docs, String dataSource) {
-    	
-        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }"; 
-       long dateInMillSec = new Date().getTime();
-        		
+
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }";
+        long dateInMillSec = new Date().getTime();
+
         LOGGER.info("*********UPLOADING*** {}:::{}", index);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
@@ -817,10 +799,10 @@ public class ESManager implements Constants {
             for (Map<String, Object> doc : docs) {
 
                 String _doc = new Gson().toJson(doc);
-                String parent =  (String)doc.get("annotationid");
-                String _id =   CommonUtils.getUniqueIdForString(parent+""+dateInMillSec);
-                
-                bulkRequest.append(String.format(actionTemplate, index,_id, parent)).append("\n");
+                String parent = (String) doc.get("annotationid");
+                String _id = CommonUtils.getUniqueIdForString(parent + dateInMillSec);
+
+                bulkRequest.append(String.format(actionTemplate, index, _id, parent)).append("\n");
                 bulkRequest.append(_doc).append("\n");
                 i++;
                 if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
@@ -871,20 +853,20 @@ public class ESManager implements Constants {
      * Delete old documents.
      *
      * @param index the index
-     * @param type the type
+     * @param type  the type
      * @param field the field
      * @param value the value
      */
-	public static void deleteOldDocuments(String index, String type, String field, String value) {
-		String deleteJson = "{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\""+field+"\":\""+value+"\"}}],"
-				+ "\"must\":[{\"match\":{\"docType.keyword\":\""+type+"\"}}]}}}";
-		try {
-			invokeAPI("POST", index + "/" + "_delete_by_query", deleteJson);
-		} catch (IOException e) {
-			LOGGER.error("Error deleteOldDocuments ", e);
-		}
-	}
-    
+    public static void deleteOldDocuments(String index, String type, String field, String value) {
+        String deleteJson = "{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"" + field + "\":\"" + value + "\"}}],"
+                + "\"must\":[{\"match\":{\"docType.keyword\":\"" + type + "\"}}]}}}";
+        try {
+            invokeAPI("POST", index + "/" + "_delete_by_query", deleteJson);
+        } catch (IOException e) {
+            LOGGER.error("Error deleteOldDocuments ", e);
+        }
+    }
+
     /**
      * Update load date.
      *
@@ -901,7 +883,7 @@ public class ESManager implements Constants {
         } catch (IOException e) {
             LOGGER.error("Error in updateLoadDate", e);
         }
-        return 0l;
+        return 0L;
     }
 
     public static void createNestedType(String indexName, String typename, List<Map<String, String>> errorList) {
@@ -910,9 +892,9 @@ public class ESManager implements Constants {
             try {
                 invokeAPI("PUT", endPoint, "{ \"properties\":{\"assetCount\":{\"type\":\"nested\",\"properties\":{}}}}");
             } catch (IOException e) {
-                LOGGER.error("Error in createType",e);
-                Map<String,String> errorMap = new HashMap<>();
-                errorMap.put(ERROR, "Error in createType "+typename);
+                LOGGER.error("Error in createType", e);
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Error in createType " + typename);
                 errorMap.put(ERROR_TYPE, WARN);
                 errorMap.put(EXCEPTION, e.getMessage());
                 errorList.add(errorMap);
@@ -922,12 +904,13 @@ public class ESManager implements Constants {
 
     /**
      * Below method deletes violation records for resources which are deleted.
+     *
      * @param entities
      * @param index
      */
     public static void removeViolationForDeletedAssets(List<Map<String, Object>> entities, String index) {
-        try{
-            if(entities!=null && !entities.isEmpty()) {
+        try {
+            if (entities != null && !entities.isEmpty()) {
                 String combinedResourceIdString = entities.stream().map(entity -> "\"" + entity.get("_resourceid") + "\"").collect(Collectors.joining(","));
                 String requestBody = "{\n" +
                         "    \"script\": {\n" +
@@ -964,11 +947,10 @@ public class ESManager implements Constants {
                         "}";
 
                 requestBody = String.format(requestBody, combinedResourceIdString);
-                invokeAPI("POST","/"+index+"/_update_by_query",requestBody);
+                invokeAPI("POST", "/" + index + "/_update_by_query", requestBody);
             }
-        }
-        catch(Exception exception){
-            LOGGER.info("Failed to delete violation records of deleted asssets of index "+index+". Error Message - "+exception.getMessage());
+        } catch (Exception exception) {
+            LOGGER.info("Failed to delete violation records of deleted asssets of index " + index + ". Error Message - " + exception.getMessage());
         }
     }
 }

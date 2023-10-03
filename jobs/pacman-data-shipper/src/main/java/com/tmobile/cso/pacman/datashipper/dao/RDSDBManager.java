@@ -1,7 +1,6 @@
 package com.tmobile.cso.pacman.datashipper.dao;
 
 import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,25 +12,15 @@ import java.util.*;
  * The Class RDSDBManager.
  */
 public class RDSDBManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
+
     private static final String DEFAULT_POLICY_FREQUENCY = "0 0 1/1 * ? *";
     private static final String EXTERNAL_POLICY = "External";
+    private static final String ADMIN_MAIL_ID = "admin@paladincloud.io";
 
-    /**
-     * The Constant dbURL.
-     */
-    private static final String DB_URL = System.getProperty(Constants.RDS_DB_URL);
-
-    /**
-     * The Constant dbUserName.
-     */
-    private static final String DB_USER_NAME = System.getProperty(Constants.RDS_USER);
-
-    /**
-     * The Constant dbPassword.
-     */
-    private static final String DB_PASSWORD = System.getProperty(Constants.RDS_PWD);
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
+    private static final String DB_URL = System.getProperty("spring.datasource.url");
+    private static final String DB_USER_NAME = System.getProperty("spring.datasource.username");
+    private static final String DB_PASSWORD = System.getProperty("spring.datasource.password");
 
     private RDSDBManager() {
     }
@@ -118,17 +107,18 @@ public class RDSDBManager {
                 "targetType=VALUES(targetType), " +
                 "assetGroup=VALUES(assetGroup), " +
                 "policyParams=VALUES(policyParams), " +
+                "policyType=VALUES(policyType), " +
                 "severity=VALUES(severity), " +
                 "category=VALUES(category), " +
+                "status=VALUES(status), " +
+                "policyFrequency=VALUES(policyFrequency), " +
                 "resolutionUrl=VALUES(resolutionUrl)";
 
         String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
                 + "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
         String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
 
-        try (Connection conn = getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(strQuery)) {
-
+        try (Connection conn = getConnection(); PreparedStatement preparedStatement = conn.prepareStatement(strQuery)) {
             policyList.forEach(policy -> {
                 try {
                     String params = String.format(policyParams, policy.getSeverity(), policy.getCategory());
@@ -145,7 +135,7 @@ public class RDSDBManager {
                     preparedStatement.setString(11, policy.getCategory());
                     preparedStatement.setString(12, policy.getStatus());
                     preparedStatement.setString(13, DEFAULT_POLICY_FREQUENCY);
-                    preparedStatement.setString(14, Constants.ADMIN_MAIL_ID);
+                    preparedStatement.setString(14, ADMIN_MAIL_ID);
                     preparedStatement.setString(15, createDate);
                     preparedStatement.setString(16, policy.getResolutionUrl());
                     preparedStatement.addBatch();

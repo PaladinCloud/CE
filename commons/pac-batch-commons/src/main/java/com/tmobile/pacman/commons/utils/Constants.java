@@ -16,46 +16,23 @@ public interface Constants {
     String BASE_ROLE = "s3.role";
     String SECRET_MANAGER_PATH = "secret.manager.path";
 
-
-    /** The target type info. */
-    String TARGET_TYPE_INFO = "targetTypes";
-
     String CONFIG_CREDS = "config_creds";
-
-
-    /** The target type info. */
-    String TARGET_TYPE_OUTSCOPE = "typesNotInScope";
 
     /** The API  User:Password  */
     String API_AUTH_INFO = "apiauthinfo";
     String AUTH_API_URL = "AUTH_API_URL";
-
-    String CONFIG_QUERY = "configquery";
-
     String CONFIG_URL = "CONFIG_URL";
 
      String API_READ_SCOPE = "API_OPERATION/READ";
 
-    /** The failed. */
     String FAILED = "failed";
-
-    /** The error. */
     String ERROR = "error";
-
-    /** The exception. */
     String EXCEPTION = "exception";
-
-    /** The error type. */
     String ERROR_TYPE = "type";
-
-    /** The warn. */
     String WARN = "warn";
-
-    /** The fatal. */
     String FATAL = "fatal";
 
     String SOURCE = "source";
-
     String NAME = "name";
 
     enum NotificationTypes {
@@ -82,7 +59,6 @@ public interface Constants {
         NotificationTypes(String value){
             this.value=value;
         }
-
     }
 
     enum Actions {
@@ -101,10 +77,10 @@ public interface Constants {
             return super.toString().toLowerCase();
         }
     }
+
     String EVENT_SOURCE = "paladinCloud";
     String EVENT_SOURCE_NAME = "Paladin Cloud";
 
     String APPLICATION_JSON = "application/json";
     String AUTHORIZATION = "Authorization";
-
 }
