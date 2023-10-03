@@ -97,7 +97,7 @@ public class DisableExternalScriptsEnabledFlagRule extends BasePolicy {
             JsonObject settings = dbinstances.getAsJsonObject()
                     .get(PacmanRuleConstants.SETTINGS).getAsJsonObject();
 
-            if(settings!=null ){
+            if(settings!=null && settings.has(PacmanRuleConstants.DBFLAGS)){
                 JsonArray databaseFlagsList= settings.get(PacmanRuleConstants.DBFLAGS).getAsJsonArray();
                 if(databaseFlagsList.size()>0){
                     for (JsonElement flag: databaseFlagsList) {

@@ -196,6 +196,21 @@ public class ElasticSearchRepository implements Constants {
 
 	private String esUrl;
 
+	private static String activitylog_mappings = "{\n" +
+			"	\"settings\": {\n" +
+			"    \"number_of_shards\": 1,\n" +
+			"    \"number_of_replicas\": 1\n" +
+			"  }," +
+			"  \"mappings\": {\n" +
+			"      \"properties\": {\n" +
+			"      \"updateTime\":{\n" +
+			"              \"type\": \"date\",\n" +
+			"              \"format\": \"yyyy-MM-dd'T'HH:mm:ss\"\n" +
+			"      }\n" +
+			"    }\n" +
+			"}\n" +
+			"}";
+
 	private static final Log LOGGER = LogFactory.getLog(ElasticSearchRepository.class);
 
 	@PostConstruct
@@ -2098,5 +2113,40 @@ public class ElasticSearchRepository implements Constants {
 		}
 		queryFilters.put(BOOL, boolFilters);
 		return queryFilters;
+	}
+
+	public Boolean saveActivityLogToES(String dataSource, Map<String, Object> data) throws Exception {
+		try {
+			LOGGER.info("inside ElasticSearchRepository:::saveActivityLogToES");
+			if(!isValidIndex(esUrl, dataSource)) {
+				String url = new StringBuilder(esUrl).append("/").append(dataSource).toString();
+				CommonUtils.doHttpPut(url, activitylog_mappings);
+			}
+			StringBuilder esQueryUrl = new StringBuilder(esUrl);
+			String docid = (String)data.get(DOCID);
+			if(docid==null)
+				return false;
+			data.put("_docid", docid);
+			esQueryUrl.append(FORWARD_SLASH).append(dataSource).append(FORWARD_SLASH).append("_doc").append(FORWARD_SLASH).append(docid);
+			Gson serializer = new GsonBuilder().create();
+			String request = serializer.toJson(data);
+			String responseDetails = PacHttpUtils.doHttpPost(esQueryUrl.toString(), request);
+			LOGGER.info("ElasticSearchRepository:::saveActivityLogToES , responseDetails "+responseDetails);
+			Map<String, Object> response = (Map<String, Object>) serializer.fromJson(responseDetails,
+					Object.class);
+			if (response.get("result").toString().equalsIgnoreCase("created")) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception exception) {
+			LOGGER.info("Exception occurred while saving activitylog - "+exception.getMessage());
+			throw new Exception(exception.getMessage());
+		}
+	}
+
+	public static boolean isValidIndex(final String url, final String index) {
+		String esUrl = new StringBuilder(url).append("/").append(index).toString();
+		return CommonUtils.isValidResource(esUrl);
 	}
 }
