@@ -22,10 +22,8 @@ import com.tmobile.cso.pacman.datashipper.entity.AssetsCountManager;
 /**
  * The Class Main.
  */
-@PacmanJob(methodToexecute = "shipData", jobName = "Redshfit-ES-Datashipper", desc = "Job to load data from Redshfit to ES", priority = 5)
+@PacmanJob(methodToexecute = "shipData", jobName = "data-shipper", desc = "Job to load data from s3 to OP", priority = 5)
 public class Main implements Constants {
-
-    
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
     /**
      * The main method.
@@ -39,6 +37,7 @@ public class Main implements Constants {
                 String[] paramArray = obj.split("[:]");
                 params.put(paramArray[0], paramArray[1]);
         });
+
         shipData(params);
         System.exit(0);
     }
@@ -66,15 +65,16 @@ public class Main implements Constants {
         String ds = params.get("datasource");
         ESManager.configureIndexAndTypes(ds,errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
-        new ExternalPolicies().uploadPolicyDefinition(ds);
-        if( ds != null && "aws".equals(ds)) {
+        ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
+        if("aws".equals(ds)) {
         	errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
         	errorList.addAll(new IssueCountManager().populateViolationsCount());
         	errorList.addAll(new AssetsCountManager().populateAssetCount());
         }
+
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ",status);
+
         return status;
     }
-
 }

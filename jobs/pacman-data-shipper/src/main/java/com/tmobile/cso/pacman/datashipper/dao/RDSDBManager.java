@@ -1,56 +1,38 @@
 package com.tmobile.cso.pacman.datashipper.dao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
+import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * The Class RDSDBManager.
  */
 public class RDSDBManager {
-
-    /** The Constant dbURL. */
-    private static final String DB_URL = System.getProperty(Constants.RDS_DB_URL);
-
-    /** The Constant dbUserName. */
-    private static final String DB_USER_NAME = System.getProperty(Constants.RDS_USER);
-
-    /** The Constant dbPassword. */
-    private static final String DB_PASSWORD = System.getProperty(Constants.RDS_PWD);
-
     private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
-    
-    private RDSDBManager(){
-        
+
+    private static final String DEFAULT_POLICY_FREQUENCY = "0 0 1/1 * ? *";
+    private static final String EXTERNAL_POLICY = "External";
+    private static final String ADMIN_MAIL_ID = "admin@paladincloud.io";
+
+    private static final String DB_URL = System.getProperty("spring.datasource.url");
+    private static final String DB_USER_NAME = System.getProperty("spring.datasource.username");
+    private static final String DB_PASSWORD = System.getProperty("spring.datasource.password");
+
+    private RDSDBManager() {
     }
-    
+
     /**
-     * Gets the connection.
+     * Gets the DB connection.
      *
      * @return the connection
-     * @throws ClassNotFoundException
-     *             the class not found exception
-     * @throws SQLException
-     *             the SQL exception
+     * @throws SQLException the SQL exception
      */
-    private static Connection getConnection() throws ClassNotFoundException, SQLException {
-        Connection conn = null;
+    private static Connection getConnection() throws SQLException {
+        Connection conn;
         Properties props = new Properties();
 
         props.setProperty("user", DB_USER_NAME);
@@ -63,16 +45,12 @@ public class RDSDBManager {
     /**
      * Execute query.
      *
-     * @param query
-     *            the query
+     * @param query the query
      * @return the list
      */
     public static List<Map<String, String>> executeQuery(String query) {
         List<Map<String, String>> results = new ArrayList<>();
-        try(
-            Connection conn = getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);){
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
             Map<String, String> data;
@@ -84,65 +62,92 @@ public class RDSDBManager {
                 results.add(data);
             }
         } catch (Exception ex) {
-            LOGGER.error("Error Executing Query",ex);
-        } 
+            LOGGER.error("Error Executing Query", ex);
+        }
+
         return results;
     }
-    public static int executeUpdate(String query){
+
+    public static int executeUpdate(String query) {
         try (
                 Connection conn = getConnection();
-                Statement stmt = conn.createStatement();){
+                Statement stmt = conn.createStatement();) {
             return stmt.executeUpdate(query);
-        }catch (Exception exception){
-            LOGGER.error("Error Executing Query",exception);
+        } catch (Exception ex) {
+            LOGGER.error("Error Executing Query", ex);
         }
+
         return 0;
     }
-    
-    
-    public static boolean insertNewPolicy(List<PolicyTable> policyList ) {
-		String strQuery = "INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc, "
-				+ " targetType, assetGroup,  policyParams, policyType,  severity, category, status, policyFrequency,userId, createdDate)"
-				+ "VALUES (?,?,?, ?,?,?, ?,?,'External', ?,?,?, ?,?,?);";
-		
-		String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
-		+ "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
-		String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
-		
-		try (Connection conn = getConnection();
-				PreparedStatement preparedStatement = conn.prepareStatement(strQuery);) {
 
-			policyList.forEach(policy -> {
-				try {
-					preparedStatement.setString(1, policy.getPolicyId());
-					preparedStatement.setString(2, policy.getPolicyUUID());
-					preparedStatement.setString(3, policy.getPolicyName());
-					preparedStatement.setString(4, policy.getPolicyDisplayName());
-					preparedStatement.setString(5, policy.getPolicyDesc());
-					preparedStatement.setString(6, policy.getTarget());
-					preparedStatement.setString(7, policy.getAssetgroup());
-					preparedStatement.setString(8,
-							String.format(policyParams, policy.getSeverity(), policy.getCategory()));
-					preparedStatement.setString(9, policy.getSeverity());
-					preparedStatement.setString(10, policy.getCategory());
-					preparedStatement.setString(11, policy.getStatus());
-					preparedStatement.setString(12, "0 0 1/1 * ? *");
-					preparedStatement.setString(13, Constants.ADMIN_MAIL_ID);
-                    preparedStatement.setString(14, createDate);
-					preparedStatement.addBatch();
-				} catch (SQLException e) {
-					LOGGER.error("sql prepared statement error {}", e);
-				}
+    public static void insertNewPolicy(List<PolicyTable> policyList) {
+        String strQuery = "INSERT INTO cf_PolicyTable (" +
+                "policyId, " +              // 1
+                "policyUUID, " +            // 2
+                "policyName, " +            // 3
+                "policyDisplayName, " +     // 4
+                "policyDesc, " +            // 5
+                "targetType, " +            // 6
+                "assetGroup, " +            // 7
+                "policyParams, " +          // 8
+                "policyType, " +            // 9
+                "severity, " +              // 10
+                "category, " +              // 11
+                "status, " +                // 12
+                "policyFrequency, " +       // 13
+                "userId, " +                // 14
+                "createdDate, " +           // 14
+                "resolutionUrl" +           // 16
+                ") " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE " +
+                "policyName=VALUES(policyName)," +
+                "policyDisplayName=VALUES(policyDisplayName), " +
+                "policyDesc=VALUES(policyDesc), " +
+                "targetType=VALUES(targetType), " +
+                "assetGroup=VALUES(assetGroup), " +
+                "policyParams=VALUES(policyParams), " +
+                "policyType=VALUES(policyType), " +
+                "severity=VALUES(severity), " +
+                "category=VALUES(category), " +
+                "status=VALUES(status), " +
+                "policyFrequency=VALUES(policyFrequency), " +
+                "resolutionUrl=VALUES(resolutionUrl)";
 
-			});
+        String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
+                + "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
+        String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
 
-			int[] insertCounts = preparedStatement.executeBatch();
-			LOGGER.error("Rows inserted: {}", insertCounts.length);
+        try (Connection conn = getConnection(); PreparedStatement preparedStatement = conn.prepareStatement(strQuery)) {
+            policyList.forEach(policy -> {
+                try {
+                    String params = String.format(policyParams, policy.getSeverity(), policy.getCategory());
+                    preparedStatement.setString(1, policy.getPolicyId());
+                    preparedStatement.setString(2, policy.getPolicyUUID());
+                    preparedStatement.setString(3, policy.getPolicyName());
+                    preparedStatement.setString(4, policy.getPolicyDisplayName());
+                    preparedStatement.setString(5, policy.getPolicyDesc());
+                    preparedStatement.setString(6, policy.getTarget());
+                    preparedStatement.setString(7, policy.getAssetgroup());
+                    preparedStatement.setString(8, params);
+                    preparedStatement.setString(9, EXTERNAL_POLICY);                                                           // Type
+                    preparedStatement.setString(10, policy.getSeverity());
+                    preparedStatement.setString(11, policy.getCategory());
+                    preparedStatement.setString(12, policy.getStatus());
+                    preparedStatement.setString(13, DEFAULT_POLICY_FREQUENCY);
+                    preparedStatement.setString(14, ADMIN_MAIL_ID);
+                    preparedStatement.setString(15, createDate);
+                    preparedStatement.setString(16, policy.getResolutionUrl());
+                    preparedStatement.addBatch();
+                } catch (SQLException e) {
+                    LOGGER.error("sql prepared statement error", e);
+                }
+            });
 
-		} catch (Exception ex) {
-			LOGGER.error("Error Executing Query {}", ex);
-			return false;
-		}
-		return true;
-	}
+            int[] insertCounts = preparedStatement.executeBatch();
+            LOGGER.info("Rows inserted: {}", insertCounts.length);
+        } catch (Exception ex) {
+            LOGGER.error("Error Executing Query", ex);
+        }
+    }
 }
