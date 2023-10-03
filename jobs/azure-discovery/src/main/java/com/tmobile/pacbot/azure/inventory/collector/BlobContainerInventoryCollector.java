@@ -40,39 +40,42 @@ public class BlobContainerInventoryCollector {
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 		PagedList<StorageAccount> storageAccounts = azure.storageAccounts().list();
 		for (StorageAccount storageAccount : storageAccounts) {
-			String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()),
-					URLEncoder.encode(storageAccount.resourceGroupName()), URLEncoder.encode(storageAccount.name()));
-			try {
-				String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-				JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
-				JsonArray blobObjects = responseObj.getAsJsonArray("value");
-				for (JsonElement blobObjectElement : blobObjects) {
-					Map<String, String> tags= new HashMap<String, String>();
-					BlobContainerVH blobContainerVH = new BlobContainerVH();
-					blobContainerVH.setSubscription(subscription.getSubscriptionId());
-					blobContainerVH.setSubscriptionName(subscription.getSubscriptionName());
-					blobContainerVH.setResourceGroupName(storageAccount.resourceGroupName());
-					blobContainerVH.setRegion(Util.getRegionValue(subscription,storageAccount.regionName()));
-					JsonObject blobObject = blobObjectElement.getAsJsonObject();
-					JsonObject properties = blobObject.getAsJsonObject("properties");
-					log.debug("Properties data{}", properties);
-					blobContainerVH.setId(blobObject.get("id").getAsString());
-					blobContainerVH.setName(blobObject.get("name").getAsString());
-					blobContainerVH.setType(blobObject.get("type").getAsString());
-					blobContainerVH.setTag(blobObject.get("etag").getAsString());
-					blobContainerVH.setHasImmutabilityPolicy(properties.get("hasImmutabilityPolicy").getAsBoolean());
-					blobContainerVH.setHasLegalHold(properties.get("hasLegalHold").getAsBoolean());
-					blobContainerVH.setTags(Util.tagsList(tagMap, storageAccount.resourceGroupName(), tags));
-					if (properties != null) {
-						HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
-								HashMap.class);
-						blobContainerVH.setPropertiesMap(propertiesMap);
+			if (!(storageAccount.kind().toString().equals("FileStorage"))) {
+				String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()),
+						URLEncoder.encode(storageAccount.resourceGroupName()), URLEncoder.encode(storageAccount.name()));
+				try {
+					String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
+					JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+					JsonArray blobObjects = responseObj.getAsJsonArray("value");
+					for (JsonElement blobObjectElement : blobObjects) {
+						Map<String, String> tags = new HashMap<String, String>();
+						BlobContainerVH blobContainerVH = new BlobContainerVH();
+						blobContainerVH.setSubscription(subscription.getSubscriptionId());
+						blobContainerVH.setSubscriptionName(subscription.getSubscriptionName());
+						blobContainerVH.setResourceGroupName(storageAccount.resourceGroupName());
+						blobContainerVH.setRegion(Util.getRegionValue(subscription, storageAccount.regionName()));
+						JsonObject blobObject = blobObjectElement.getAsJsonObject();
+						JsonObject properties = blobObject.getAsJsonObject("properties");
+						log.debug("Properties data{}", properties);
+						blobContainerVH.setId(blobObject.get("id").getAsString());
+						blobContainerVH.setName(blobObject.get("name").getAsString());
+						blobContainerVH.setType(blobObject.get("type").getAsString());
+						blobContainerVH.setTag(blobObject.get("etag").getAsString());
+						blobContainerVH.setHasImmutabilityPolicy(properties.get("hasImmutabilityPolicy").getAsBoolean());
+						blobContainerVH.setHasLegalHold(properties.get("hasLegalHold").getAsBoolean());
+						blobContainerVH.setTags(Util.tagsList(tagMap, storageAccount.resourceGroupName(), tags));
+						if (properties != null) {
+							HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
+									HashMap.class);
+							blobContainerVH.setPropertiesMap(propertiesMap);
+						}
+						blobContainerList.add(blobContainerVH);
 					}
-					blobContainerList.add(blobContainerVH);
+
+				} catch (Exception e) {
+					log.error(" Error fetching blobcontainers for storage account {} Cause : {}", storageAccount.name(), e.getMessage());
+					Util.eCount.getAndIncrement();
 				}
-			} catch (Exception e) {
-				log.error(" Error fetching blobcontainers for storage account {} Cause : {}" ,storageAccount.name(),e.getMessage());
-				Util.eCount.getAndIncrement();
 			}
 		}
 		log.info("Target Type : {}  Total: {} ","Blob Container",blobContainerList.size());
