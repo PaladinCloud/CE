@@ -760,7 +760,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       this.getIssueAuditSubscription = this.issueAuditService
         .getData(payload, issueAuditUrl, issueAuditMethod)
         .subscribe(
-          response => {
+          response => {            
             this.errorValue = 1;
             this.tableDataLoaded = true;
             this.issueAudit = response.data.response;
@@ -815,7 +815,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     try {
       this.outerArr = data;
       let firsOpenAuditLog = false;
-      this.violationAuditLogs = this.outerArr.reverse().filter((obj, index) => {
+      let processedData = this.outerArr.reverse().filter((obj, index) => {
+        this.outerArr[index].Date.isDate = true;
          if(this.outerArr[index].Date.valueText >= this.issueBlocks["violationCreatedDate"]){
           if(!firsOpenAuditLog){  
             firsOpenAuditLog = true;
@@ -828,7 +829,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
           return false;
       });
 
-      this.violationAuditLogs = this.violationAuditLogs.reverse();
+      processedData = processedData.reverse();      
+      this.violationAuditLogs = processedData;
       if(this.violationAuditLogs.length>0){
         this.issueBlocks[
           'violationModifiedDate'
