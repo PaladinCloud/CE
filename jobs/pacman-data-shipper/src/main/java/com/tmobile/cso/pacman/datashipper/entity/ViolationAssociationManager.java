@@ -15,6 +15,18 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -25,16 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
-import com.tmobile.cso.pacman.datashipper.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The Class ViolationAssociationManager.
@@ -47,9 +49,6 @@ public class ViolationAssociationManager {
     private static final String S3_ROLE = System.getProperty("s3.role");
     private static final String BUCKET_NAME = System.getProperty("s3");
     private static final String DATA_PATH = System.getProperty("s3.data");
-
-    private static final String DATE_FORMAT_NANO_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'";
-    private static final String DATE_FORMAT_MILL_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final String DATE_FORMAT_SEC = "yyyy-MM-dd HH:mm:00Z";
     private static final String CREATED_DATE = "createdDate";
 
@@ -72,8 +71,6 @@ public class ViolationAssociationManager {
             indexName = dataSource + "_" + type;
             String filePrefix = dataSource + "-issues-" + type;
             String docType = String.format("issue_%s", type);
-
-
             List<Map<String, Object>> entities;
             S3Object entitiesData = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, DATA_PATH + "/" + filePrefix + ".data"));
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(entitiesData.getObjectContent()))) {
@@ -90,7 +87,6 @@ public class ViolationAssociationManager {
                 obj.put("docType", docType);
                 obj.put("_docid", obj.get("_resourceid"));
                 obj.put("targetType", type);
-
                 Map<String, Object> relMap = new HashMap<>();
                 relMap.put("name", docType);
                 relMap.put("parent", obj.get("_resourceid"));
@@ -122,7 +118,7 @@ public class ViolationAssociationManager {
             String issueId = (String) violationObj.get("annotationid");
             try {
             	String auditDateWithTime = (String)violationObj.get(CREATED_DATE);
-				String auditDate = auditDateWithTime.indexOf("T") != -1
+            	String auditDate = auditDateWithTime.indexOf("T") != -1
 						? auditDateWithTime.substring(0, auditDateWithTime.indexOf("T"))
 						: auditDateWithTime;
                 auditLog.put(Constants.DOC_TYPE, docType);
