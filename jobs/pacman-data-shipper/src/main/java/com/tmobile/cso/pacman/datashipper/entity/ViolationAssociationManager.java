@@ -15,6 +15,16 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -25,16 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
-import com.tmobile.cso.pacman.datashipper.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The Class ViolationAssociationManager.
@@ -47,10 +47,8 @@ public class ViolationAssociationManager {
     private static final String S3_ROLE = System.getProperty("s3.role");
     private static final String BUCKET_NAME = System.getProperty("s3");
     private static final String DATA_PATH = System.getProperty("s3.data");
-
-    private static final String DATE_FORMAT_NANO_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'";
-    private static final String DATE_FORMAT_MILL_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final String DATE_FORMAT_SEC = "yyyy-MM-dd HH:mm:00Z";
+    private static final String CREATED_DATE = "createdDate";
 
     /**
      * Execute.
@@ -120,19 +118,16 @@ public class ViolationAssociationManager {
             Map<String, Object> auditLog = new HashMap<>();
             String issueId = (String) violationObj.get("annotationid");
             try {
-                Date viloationCreatedDate = Util.getDateFromString((String) violationObj.get("createdDate"),
-                        DATE_FORMAT_NANO_SEC);
-                String auditDateTime = Util.getDateToStringWithFormat(viloationCreatedDate,
-                        DATE_FORMAT_MILL_SEC);
-                String auditDate = auditDateTime.contains("T")
-                        ? auditDateTime.substring(0, auditDateTime.indexOf("T"))
-                        : auditDateTime;
+            	String auditDateWithTime = (String)violationObj.get(CREATED_DATE);
+            	String auditDate = auditDateWithTime.indexOf("T") != -1
+						? auditDateWithTime.substring(0, auditDateWithTime.indexOf("T"))
+						: auditDateWithTime;
                 auditLog.put(Constants.DOC_TYPE, docType);
                 auditLog.put("datasource", dataSource);
                 auditLog.put("targetType", type);
                 auditLog.put("annotationid", issueId);
                 auditLog.put("_docid", issueId);
-                auditLog.put("auditdate", auditDateTime);
+                auditLog.put("auditdate", auditDateWithTime);
                 auditLog.put("_auditdate", auditDate);
                 auditLog.put("status", violationObj.get("issueStatus"));
                 Map<String, Object> relationMap = new HashMap<>();
@@ -140,8 +135,6 @@ public class ViolationAssociationManager {
                 relationMap.put("name", docType);
                 auditLog.put(type + "_relations", relationMap);
                 auditLogList.add(auditLog);
-            } catch (ParseException e) {
-                LOGGER.error("date format error", e);
             } catch (Exception e) {
                 LOGGER.error(" data conversion error", e);
             }

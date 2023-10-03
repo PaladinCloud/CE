@@ -1,11 +1,29 @@
 package com.tmobile.cso.pacman.datashipper.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import org.apache.http.entity.ContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,19 +32,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
-import org.apache.http.ParseException;
-import org.apache.http.entity.ContentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import java.io.*;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -184,26 +189,5 @@ public class Util {
         }
 
         return errorList;
-    }
-
-    public static String getDateToStringWithFormat(Date d, String format) {
-        return new SimpleDateFormat(format).format(d);
-    }
-
-    /**
-     * Gets the date from string.
-     *
-     * @param dateInString the date in string
-     * @param format       the format
-     * @return the date from string
-     * @throws ParseException the parse exception
-     */
-    public static Date getDateFromString(final String dateInString, final String format)
-            throws java.text.ParseException {
-        if (!StringUtils.isNullOrEmpty(format)) {
-            return new SimpleDateFormat(format).parse(dateInString);
-        }
-
-        return new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse(dateInString);
     }
 }
