@@ -51,9 +51,8 @@
     font: var(--text-body-2);
 }
 
-.policy-category-count {
-    font: var(--text-body-2);
-    color: var(--primary-400);
+.cursor-unset{
+    cursor: unset !important;
 }
 
 .policy-category-icon {

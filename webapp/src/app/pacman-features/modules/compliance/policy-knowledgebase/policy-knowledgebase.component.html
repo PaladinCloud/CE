@@ -21,6 +21,7 @@
     <div class="policy-categories-container flex flex-row">
         <div
             class="tile-content-wrapper flex flex-align-center"
+            [class.cursor-unset]="policyCategoryDic[category]==0"
             *ngFor="let category of policyCategories"
             (click)="applyFilterByCategory(category)"
         >
@@ -29,7 +30,7 @@
                 [src]="'/assets/icons/' + tableImageDataMap[category].image + '.svg'"
             />
             <div class="policy-category-name capitalize">{{ category }}</div>
-            <div class="policy-category-count">
+            <div class="policy-category-count body-2" [class.primary-400]="policyCategoryDic[category]>0">
                 {{ policyCategoryDic[category] }}
             </div>
         </div>

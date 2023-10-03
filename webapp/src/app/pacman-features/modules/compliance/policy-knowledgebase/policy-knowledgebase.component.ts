@@ -877,6 +877,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
 
   async applyFilterByCategory(policyCategory: PolicyCategory) {
+      if(this.policyCategoryDic[policyCategory]==0) return;
       const key = 'Category';
       this.filters = [];
       await Promise.resolve().then(() => this.getUpdatedUrl());
