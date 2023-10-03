@@ -1,7 +1,6 @@
 package com.tmobile.cso.pacman.datashipper.dao;
 
 import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,9 +118,7 @@ public class RDSDBManager {
                 + "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
         String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
 
-        try (Connection conn = getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(strQuery)) {
-
+        try (Connection conn = getConnection(); PreparedStatement preparedStatement = conn.prepareStatement(strQuery)) {
             policyList.forEach(policy -> {
                 try {
                     String params = String.format(policyParams, policy.getSeverity(), policy.getCategory());
