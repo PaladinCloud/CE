@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- *
+ * <p>
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +40,21 @@ import java.util.stream.Collectors;
  */
 public class ExternalPolicies {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalPolicies.class);
-
+    private static ExternalPolicies instance = null;
     private final String s3Account = System.getProperty("base.account");
     private final String s3Region = System.getProperty("base.region");
     private final String s3Role = System.getProperty("s3.role");
     private final String bucketName = System.getProperty("s3");
     private final String dataPath = System.getProperty("s3.data");
+
+    private ExternalPolicies() { }
+
+    public static synchronized ExternalPolicies getInstance() {
+        if (instance == null)
+            instance = new ExternalPolicies();
+
+        return instance;
+    }
 
     /**
      * uploadPolicyDefinition.
