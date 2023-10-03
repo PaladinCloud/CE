@@ -209,32 +209,5 @@ public class Util {
 		
 		return errorList;
 	}
-	
-	 
-    
-   
-    public static String getDateToStringWithFormat(Date d, String format) {
 
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(format);
-
-        return dateFormatter.format(d);
-    }
-
-    /**
-     * Gets the date from string.
-     *
-     * @param dateInString the date in string
-     * @param format the format
-     * @return the date from string
-     * @throws ParseException the parse exception
-     */
-    public static Date getDateFromString(final String dateInString, final String format)
-            throws java.text.ParseException {
-        String dateDormatter = "MM/dd/yyyy";
-        if (!StringUtils.isNullOrEmpty(format)) {
-            dateDormatter = format;
-        }
-        SimpleDateFormat formatter = new SimpleDateFormat(dateDormatter);
-        return formatter.parse(dateInString);
-    }
 }
