@@ -26,6 +26,8 @@ import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.Util;
+import com.tmobile.pacman.commons.utils.CommonUtils;
+
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -816,7 +818,7 @@ public class ESManager implements Constants {
 
                 String _doc = new Gson().toJson(doc);
                 String parent =  (String)doc.get("annotationid");
-                String _id =   Util.getUniqueIdForString(parent+""+dateInMillSec);
+                String _id =   CommonUtils.getUniqueIdForString(parent+""+dateInMillSec);
                 
                 bulkRequest.append(String.format(actionTemplate, index,_id, parent)).append("\n");
                 bulkRequest.append(_doc).append("\n");

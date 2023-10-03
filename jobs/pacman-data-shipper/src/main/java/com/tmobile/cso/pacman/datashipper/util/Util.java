@@ -210,49 +210,7 @@ public class Util {
 		return errorList;
 	}
 	
-	  /**
-     * This is inspired by java hash function.
-     *
-     * @param inStr the in str
-     * @return the unique id for string
-     */
-    public static String getUniqueIdForString(String inStr) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            // if algorithm does not exist, fall back and try to generate unique
-            // hash
-            LOGGER.error("unable to generate has usnig Md5", e);
-            LOGGER.error("falling back to hash generation");
-            return hash(inStr);
-        }
-        md.update(inStr.getBytes());
-        byte byteData[] = md.digest();
-        // convert the byte to hex format method 2
-        StringBuffer hexString = new StringBuffer();
-        for (int i = 0; i < byteData.length; i++) {
-            String hex = Integer.toHexString(0xff & byteData[i]);
-            if (hex.length() == 1)
-                hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
-    }
-    
-    /**
-     * Hash.
-     *
-     * @param s the s
-     * @return the string
-     */
-    public static String hash(String s) {
-        long h = 0;
-        for (int i = 0; i < s.length(); i++) {
-            h = 131 * h + s.charAt(i);
-        }
-        return Long.toString(h);
-    }
+	 
     
    
     public static String getDateToStringWithFormat(Date d, String format) {
