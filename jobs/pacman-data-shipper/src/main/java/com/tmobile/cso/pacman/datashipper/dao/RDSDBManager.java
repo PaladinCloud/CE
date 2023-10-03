@@ -13,25 +13,15 @@ import java.util.*;
  * The Class RDSDBManager.
  */
 public class RDSDBManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
+
     private static final String DEFAULT_POLICY_FREQUENCY = "0 0 1/1 * ? *";
     private static final String EXTERNAL_POLICY = "External";
+    private static final String ADMIN_MAIL_ID = "admin@paladincloud.io";
 
-    /**
-     * The Constant dbURL.
-     */
-    private static final String DB_URL = System.getProperty(Constants.RDS_DB_URL);
-
-    /**
-     * The Constant dbUserName.
-     */
-    private static final String DB_USER_NAME = System.getProperty(Constants.RDS_USER);
-
-    /**
-     * The Constant dbPassword.
-     */
-    private static final String DB_PASSWORD = System.getProperty(Constants.RDS_PWD);
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
+    private static final String DB_URL = System.getProperty("spring.datasource.url");
+    private static final String DB_USER_NAME = System.getProperty("spring.datasource.username");
+    private static final String DB_PASSWORD = System.getProperty("spring.datasource.password");
 
     private RDSDBManager() {
     }
@@ -145,7 +135,7 @@ public class RDSDBManager {
                     preparedStatement.setString(11, policy.getCategory());
                     preparedStatement.setString(12, policy.getStatus());
                     preparedStatement.setString(13, DEFAULT_POLICY_FREQUENCY);
-                    preparedStatement.setString(14, Constants.ADMIN_MAIL_ID);
+                    preparedStatement.setString(14, ADMIN_MAIL_ID);
                     preparedStatement.setString(15, createDate);
                     preparedStatement.setString(16, policy.getResolutionUrl());
                     preparedStatement.addBatch();
