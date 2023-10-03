@@ -16,16 +16,10 @@
 package com.tmobile.cso.pacman.datashipper.entity;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,42 +46,60 @@ public class EntityManager implements Constants {
     
     /** The Constant PAC_OVERRIDE. */
     private static final String PAC_OVERRIDE = "pac_override_";
-	
-	/** The s 3 account. */
-	private String s3Account = System.getProperty("base.account");
-	
-	/** The s 3 region. */
-	private String s3Region = System.getProperty("base.region");
-	
-	/** The s 3 role. */
-	private String s3Role =  System.getProperty("s3.role");
-	
-	/** The bucket name. */
-	private String bucketName =  System.getProperty("s3");
-	
-	/** The data path. */
-	private String dataPath =  System.getProperty("s3.data");
-    
+
+    /**
+     * The s 3 account.
+     */
+    private final String s3Account = System.getProperty("base.account");
+
+    /**
+     * The s 3 region.
+     */
+    private final String s3Region = System.getProperty("base.region");
+
+    /**
+     * The s 3 role.
+     */
+    private final String s3Role = System.getProperty("s3.role");
+
+    /**
+     * The bucket name.
+     */
+    private final String bucketName = System.getProperty("s3");
+
+    /**
+     * The data path.
+     */
+    private final String dataPath = System.getProperty("s3.data");
+    private final String attributesToPreserve = System.getProperty("shipper.attributes.to.preserve");
+
     /**
      * Upload entity data.
      *
-     * @param datasource            the datasource
+     * @param datasource the datasource
      * @return the list
      */
     public List<Map<String, String>> uploadEntityData(String datasource) {
-    	List<Map<String,String>> errorList = new ArrayList<>();
-        Map<String,String> types = ConfigManager.getTypesWithDisplayName(datasource);
+        List<Map<String, String>> errorList = new ArrayList<>();
+        Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
         Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
         String type = "";
         LOGGER.info("*** Start Colleting Entity Info ***");
-        List<String> filters = Arrays.asList("_docid", FIRST_DISCOVERED);
+        List<String> filters = new ArrayList<>(Collections.singletonList("_docid"));
+
+        // Preserve attributes from current asset data if exists
+        if (!Strings.isNullOrEmpty(attributesToPreserve)) {
+            String[] attributes = attributesToPreserve.split(",");
+            filters.addAll(Arrays.asList(attributes));
+        }
+
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
         ViolationAssociationManager violationAssociatManager = new ViolationAssociationManager();
         while (itr.hasNext()) {
             try {
                 Map.Entry<String, String> entry = itr.next();
                 type = entry.getKey();
-                String displayName= entry.getValue();
+                String displayName = entry.getValue();
                 Map<String, Object> stats = new LinkedHashMap<>();
                 String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
                 stats.put("datasource", datasource);
