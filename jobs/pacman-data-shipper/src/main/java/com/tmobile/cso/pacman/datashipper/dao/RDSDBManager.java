@@ -107,7 +107,7 @@ public class RDSDBManager {
                 "targetType=VALUES(targetType), " +
                 "assetGroup=VALUES(assetGroup), " +
                 "policyParams=VALUES(policyParams), " +
-                "policyType=values(policyType), " +
+                "policyType=VALUES(policyType), " +
                 "severity=VALUES(severity), " +
                 "category=VALUES(category), " +
                 "status=VALUES(status), " +
