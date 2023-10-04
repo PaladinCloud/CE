@@ -86,6 +86,11 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
 
   getResources() {
     this.route.queryParams.subscribe((params) => {
+
+      if(this.agAndDomain && this.agAndDomain["ag"]===params["ag"] && this.agAndDomain["domain"]===params["domain"]){
+        return;
+      }
+      
       this.agAndDomain = params;
       this.fetchResourcesService
         .getResourceTypesAndCount(this.agAndDomain).then(results => {
