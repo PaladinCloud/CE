@@ -3357,6 +3357,7 @@ update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-poli
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-Create/Update-Network-Security-Group' where policyId='Azure_Create_Network_Security_Group_log_alert';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-Create/Update-SQL-DB' where policyId='Enable_Create_or_Update_SQL_Database_Log_Alert';
 update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/azure-policy/#Enable-Log-Alert-for-PostgreSQL-DB' where policyId='Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert';
+update cf_PolicyTable set resolutionUrl='https://paladincloud.io/docs/aws-policy/#articleTOC_12' where policyId='SGWithAnywhereAccess_version-1_SgWithSshPort22OpenToInternetAccess_sg';
 
 update cf_PolicyParams set paramValue='paladin-cloud-trail' where policyId='Centralized_CloudTrail_version-1_Centralized_Cloudtrail_account' and paramKey='inputCloudTrailName';
 update cf_PolicyParams set paramValue='paladin-cloudfront-bucket' where policyId='CloudFront_AccessLogs_version-1_CloudFront_AccessLogs_cloudfront' and paramKey='accessLogBucketName';
@@ -3400,3 +3401,12 @@ update cf_PolicyTable set fixType='silent', autoFixAvailable='true', autoFixEnab
 'VPC_firewall_ORACLE_port_should_not_be_publicly_accessible','VPC_firewall_POSTGRES_port_should_not_be_publicly_accessible','VPC_firewall_RPC_port_should_not_be_publicly_accessible',
 'VPC_firewall_SMTP_port_should_not_be_publicly_accessible','VPC_firewall_SQLSERVER_port_should_not_be_publicly_accessible','VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible',
 'VPC_firewall_SSH_port_22_should_not_be_publicly_accessible');
+
+UPDATE cf_PolicyTable SET targetType='subscription' where policyId IN ('Enable_Azure_Defender_for_App_Service_version-1_SecurityPricing','Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing','Enable_Azure_Defender_for_Virtual_Machine_version-1_SecurityPricing');
+
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_App_Service_version-1_SecurityPricing','name','AppServices','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_App_Service_version-1_SecurityPricing','pricingTier','Standard','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing','name','SqlDatabases','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing','pricingTier','Standard','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_Virtual_Machine_version-1_SecurityPricing','name','VirtualMachines','','false','false','false','','');
+INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Enable_Azure_Defender_for_Virtual_Machine_version-1_SecurityPricing','pricingTier','Standard','','false','false','false','','');

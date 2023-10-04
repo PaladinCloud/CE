@@ -539,29 +539,25 @@ public class FilterServiceImpl implements FilterService, Constants {
     }
 
     public ResponseData getPolicycompliance(FilterRequest request) throws ServiceException{
-        List<String> rangeAttribute = new ArrayList<>();
-        rangeAttribute.add("INTEGER");
-        rangeAttribute.add("LONG");
-        rangeAttribute.add("DOUBLE");
         Map<String, Object> filterREsponseMap = new HashMap<>();
         Request req = new Request();
         req.setReqFilter(request.getApiFilter());
         req.setAg(request.getAg());
-        HashMap<String, String> filter = new HashMap<>();
-        filter.put(Constants.DOMAIN, request.getDomain());
-        req.setFilter(filter);
+        req.setFilter(new HashMap<String, String>(){{
+            put(Constants.DOMAIN, request.getDomain());
+        }});
         Map<String, Object> filterObj = complianceRepository.getSupportedFilters(Constants.POLICY_COMPLIANCE_FILTER, request.getAttributeName());
         if(filterObj == null || filterObj.isEmpty()){
-            logger.debug("Invalid filter attribute");
-            return new ResponseData(filterREsponseMap);
+            filterObj = complianceRepository.getSupportedFilters(Constants.USER_POLICY_FILTER, request.getAttributeName());
         }
         ResponseWithOrder response = complianceService.getPolicyCompliance(req);
         if(response != null && !CollectionUtils.isEmpty(response.getResponse())){
             List<LinkedHashMap<String, Object>> dataList = response.getResponse();
             List<LinkedHashMap<String, Object>> finalOpenIssuesByPolicyListFinal = dataList;
-            if(rangeAttribute.contains(filterObj.get(Constants.OPTION_TYPE).toString().toUpperCase())){
+            if(Constants.RANGE_ATTRIBUTE.contains(filterObj.get(Constants.OPTION_TYPE).toString().toUpperCase())){
                 filterREsponseMap.put(Constants.OPTION_RANGE, getRangeMapFromPolicyComplianceData(filterObj, finalOpenIssuesByPolicyListFinal));
-            } else if(Constants.BOOLEAN_TYPE.equalsIgnoreCase(filterObj.get(Constants.OPTION_TYPE).toString())){
+            }
+            else if(Constants.BOOLEAN_TYPE.equalsIgnoreCase(filterObj.get(Constants.OPTION_TYPE).toString())){
                 Set<Object> optionList  = finalOpenIssuesByPolicyListFinal.stream()
                         .filter(x -> x.containsKey(request.getAttributeName())).map(x -> x.get(request.getAttributeName()).toString()).collect(Collectors.toSet());
                 filterREsponseMap.put(Constants.OPTION_LIST, optionList);
@@ -571,8 +567,7 @@ public class FilterServiceImpl implements FilterService, Constants {
                 filterREsponseMap.put(Constants.OPTION_LIST, optionList);
             }
         }
-        return new ResponseData(filterREsponseMap)
-                ;
+        return new ResponseData(filterREsponseMap);
     }
 
     private Map<String, Object> getRangeMapFromPolicyComplianceData(Map<String, Object> obj, List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal){
