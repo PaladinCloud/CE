@@ -175,7 +175,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       });
       this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
         this.selectedDomain = domain;
-        this.updateComponent();
+        // this.updateComponent();
       });
     }
 
