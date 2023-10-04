@@ -63,14 +63,14 @@ public class Main implements Constants {
               return ErrorManageUtil.formErrorCode(jobName, errorList);
 		}
         String ds = params.get("datasource");
-        ESManager.configureIndexAndTypes(ds,errorList);
+       // ESManager.configureIndexAndTypes(ds,errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
-        ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
-        if("aws".equals(ds)) {
-        	errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
-        	errorList.addAll(new IssueCountManager().populateViolationsCount());
-        	errorList.addAll(new AssetsCountManager().populateAssetCount());
-        }
+//        ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
+//        if("aws".equals(ds)) {
+//        	errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
+//        	errorList.addAll(new IssueCountManager().populateViolationsCount());
+//        	errorList.addAll(new AssetsCountManager().populateAssetCount());
+//        }
 
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ",status);
