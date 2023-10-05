@@ -289,11 +289,12 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       this.getPreservedState();
       this.assetGroupSubscription = this.subscriptionToAssetGroup =
         this.assetGroupObservableService
-          .getAssetGroup()
-          .subscribe((assetGroupName) => {
-            this.selectedAssetGroup = assetGroupName;
-            this.updateComponent();
-          });
+        .getAssetGroup()
+        .subscribe(async(assetGroupName) => {
+              await this.getPreservedState();
+              this.selectedAssetGroup = assetGroupName;
+              this.updateComponent();
+            });
 
       this.subscriptionDomain = this.domainObservableService
         .getDomainType()
@@ -305,7 +306,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         });
     }
 
-    getPreservedState(){
+    async getPreservedState(){
       const state = this.tableStateService.getState("dashboard") ?? {};
       
       this.headerColName = state.headerColName ?? 'Severity';
@@ -328,7 +329,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       }
       if(state.filters){
         this.filters = state.filters;
-        Promise.resolve().then(() => this.getUpdatedUrl());
+        await Promise.resolve().then(() => this.getUpdatedUrl());
       }
     }
   
