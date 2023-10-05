@@ -1,10 +1,12 @@
 package com.tmobile.cso.pacman.tenable.util;
 
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -23,24 +25,14 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("unchecked")
 public class ElasticSearchManager {
-    
-    /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchManager.class);
 
-    /** The Constant ES_HOST_KEY_NAME. */
     private static final String ES_HOST_KEY_NAME = System.getProperty("elastic-search.host");
-    
-    /** The Constant ES_HTTP_PORT. */
     private static final Integer ES_HTTP_PORT = Integer.parseInt(System.getProperty("elastic-search.port"));
-    
-    /** The rest client. */
+
     private static RestClient restClient;
 
-    /**
-     * Instantiates a new elastic search manager.
-     */
     private ElasticSearchManager() {
-
     }
 
     /**
@@ -49,19 +41,17 @@ public class ElasticSearchManager {
      * @return the rest client
      */
     private static RestClient getRestClient() {
-        if (restClient == null)
-            restClient = RestClient.builder(new HttpHost(ES_HOST_KEY_NAME, ES_HTTP_PORT)).build();
+        if (restClient == null) restClient = RestClient.builder(new HttpHost(ES_HOST_KEY_NAME, ES_HTTP_PORT)).build();
         return restClient;
-
     }
 
     /**
      * Creates the index.
      *
-     * @param indexName the index name
+     * @param index the index name
      */
     public static void createIndex(String index) {
-    	String indexName = "/"+index;
+        String indexName = "/" + index;
         if (!indexExists(indexName)) {
             String payLoad = "{\"settings\": { \"number_of_shards\" : 1,\"number_of_replicas\" : 1,\"index.mapping.ignore_malformed\": true }}";
             try {
@@ -75,18 +65,17 @@ public class ElasticSearchManager {
     /**
      * Creates the type.
      *
-     * @param indexName the index name
+     * @param index    the index name
      * @param typename the typename
      */
     public static void createType(String index, String typename) {
-    	String indexName = "/"+index;
+        String indexName = "/" + index;
         if (!typeExists(indexName, typename)) {
             String endPoint = indexName + "/_mapping/" + typename;
             try {
                 invokeAPI("PUT", endPoint, "{ \"properties\":{}}");
             } catch (IOException e) {
                 LOGGER.error("Error in method createType", e);
-                ;
             }
         }
     }
@@ -113,8 +102,8 @@ public class ElasticSearchManager {
      * Upload data.
      *
      * @param index the index
-     * @param type the type
-     * @param docs the docs
+     * @param type  the type
+     * @param docs  the docs
      * @param idKey the id key
      */
     public static void uploadData(String index, String type, List<Map<String, Object>> docs, String idKey) {
@@ -126,7 +115,7 @@ public class ElasticSearchManager {
             int i = 0;
             for (Map<String, Object> doc : docs) {
                 String id = doc.get(idKey).toString();
-                doc.put("docType",type);
+                doc.put("docType", type);
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
                 bulkRequest.append(String.format(actionTemplate, index, id));
                 bulkRequest.append(_doc + "\n");
@@ -143,15 +132,15 @@ public class ElasticSearchManager {
             }
             refresh(index);
         }
-      
     }
+
     /**
      * Refresh.
      *
      * @param index the index
      */
     public static void refresh(String index) {
-    	String indexName = "/"+index;
+        String indexName = "/" + index;
         try {
             Response refrehsResponse = invokeAPI("POST", indexName + "/" + "_refresh", null);
             if (refrehsResponse != null && HttpStatus.SC_OK != refrehsResponse.getStatusLine().getStatusCode()) {
@@ -160,7 +149,6 @@ public class ElasticSearchManager {
         } catch (IOException e) {
             LOGGER.error("Error refresh ", e);
         }
-
     }
 
     /**
@@ -176,16 +164,15 @@ public class ElasticSearchManager {
     /**
      * Invoke API.
      *
-     * @param method the method
+     * @param method   the method
      * @param endpoint the endpoint
-     * @param payLoad the pay load
+     * @param payLoad  the pay load
      * @return the response
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static Response invokeAPI(String method, String endpoint, String payLoad) throws IOException {
         HttpEntity entity = null;
-        if (payLoad != null)
-            entity = new NStringEntity(payLoad, ContentType.APPLICATION_JSON);
+        if (payLoad != null) entity = new NStringEntity(payLoad, ContentType.APPLICATION_JSON);
         return getRestClient().performRequest(method, endpoint, Collections.<String, String>emptyMap(), entity);
     }
 
@@ -196,7 +183,6 @@ public class ElasticSearchManager {
      * @return true, if successful
      */
     public static boolean indexExists(String indexName) {
-
         try {
             Response response = invokeAPI("HEAD", indexName, null);
             if (response != null) {
@@ -213,11 +199,10 @@ public class ElasticSearchManager {
      * Type exists.
      *
      * @param indexName the index name
-     * @param type the type
+     * @param type      the type
      * @return true, if successful
      */
     private static boolean typeExists(String indexName, String type) {
-
         try {
             Response response = invokeAPI("HEAD", indexName + "/_mapping/" + type, null);
             if (response != null) {
@@ -229,9 +214,4 @@ public class ElasticSearchManager {
 
         return false;
     }
-
-
-
-
-
 }
