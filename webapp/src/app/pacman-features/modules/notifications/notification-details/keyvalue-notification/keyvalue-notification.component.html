@@ -15,7 +15,9 @@
                 *ngIf="!isObject(item)"
                 (click)="navigateTo(item.value)"
             >
+                <ng-template #dateTemplate> {{ item.value | date : 'medium' }} </ng-template>
                 <app-text
+                    *ngIf="!isStringDate(item.value);else dateTemplate"
                     [classNames]="item.value?.includes(windowHostName)?'pointer primary-400':'high-emphasis'"
                     [text]="item.value"
                     >

@@ -58,4 +58,17 @@ export class KeyvalueNotificationComponent implements OnInit {
     isObject(item) {
         return typeof item.value === 'object' || Array.isArray(item.value);
     }
+
+    isStringDate(str: string){
+        // Attempt to create a Date object from the input string
+        const date = new Date(str);
+
+        // Check if the Date object is valid and the input string was successfully parsed as a date
+        // Also, check if the date is not "Invalid Date" and it is not NaN
+        return (
+            Object.prototype.toString.call(date) === '[object Date]' &&
+            !isNaN(date.getTime()) &&
+            date.toString() !== 'Invalid Date'
+        );
+    }
 }
