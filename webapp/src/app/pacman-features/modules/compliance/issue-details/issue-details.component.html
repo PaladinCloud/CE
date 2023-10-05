@@ -17,8 +17,8 @@
         <img src="/assets/icons/blue-info.svg">
         <div class="exemption-details-wrapper flex flex-col">
             <span class="body-1 high-emphasis">Exemption Request: {{issueBlocks.policyViolated}}</span>
-            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionExpiringOn}}</mark></span>
-            <div class="button-wrapper" *ngIf="adminAccess">
+            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionRaisedExpiringOn | date : 'medium'}}</mark></span>
+            <div class="button-wrapper" *ngIf="showExemptionRequest">
                 <app-button
                 (onClickInner)="handleRequest('grant')">Exempt</app-button>
                 <app-button
