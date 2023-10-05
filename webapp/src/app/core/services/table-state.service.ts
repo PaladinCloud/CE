@@ -94,6 +94,8 @@ export class TableStateService {
             componentState["bucketNumber"] = 0;
             componentState["selectedRowIndex"] = undefined;
             componentState["totalRows"] = 0;
+            componentState["whiteListColumns"] = undefined;
+            
             this.setState(componentKey, componentState);
         }catch(e){
             this.logger.log(componentKey, ": Error in clearing state: "+e);

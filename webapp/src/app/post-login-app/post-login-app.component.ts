@@ -28,6 +28,7 @@ import { SnackbarComponent } from "../shared/components/molecules/snackbar/snack
 import { DownloadService } from "../shared/services/download.service";
 import { LoggerService } from "../shared/services/logger.service";
 import { NotificationObservableService } from "../shared/services/notification-observable.service";
+import { TableStateService } from "../core/services/table-state.service";
 
 declare var Offline: any;
 
@@ -108,11 +109,13 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     private windowExpansionService: WindowExpansionService,
     private notificationObservableService: NotificationObservableService,
     private snackBar: MatSnackBar,
+    private tableStateService: TableStateService
   ) {
     if (this.pageReloadInterval) {
       this.reloadTimeout = this.setReloadTimeOut(this.pageReloadInterval);
     }
 
+    this.clearListStates();
     this.getRouteQueryParameters();
   }
 
@@ -289,6 +292,17 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       });
       this.workflowService.clearAllLevels();
     }
+  }
+
+  clearListStates(){
+    const someRandomString = '1234';
+    const lastVersion = localStorage.getItem('version');
+    if(lastVersion!=someRandomString){ // check if it is not the last value then reset
+      console.log("Clearing the states");
+      
+      this.tableStateService.clearAll();
+    }
+    localStorage.setItem('version', someRandomString); // setting random value
   }
 
   ngOnDestroy() {
