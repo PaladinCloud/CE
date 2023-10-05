@@ -416,7 +416,7 @@ public class AnnotationPublisher {
      * @return the int
      * @throws Exception the exception
      */
-    private int closeDanglingIssues(String _index, String _type) throws Exception {
+    public int closeDanglingIssues(String _index, String _type) throws Exception {
         String esUrl = ESUtils.getEsUrl();
         StringBuffer bulkRequestBody = new StringBuffer();
         String bulkIndexRequestTemplate = BULK_UPDATE_REQUEST_TEMPLATE;

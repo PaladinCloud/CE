@@ -246,6 +246,9 @@ public class PolicyExecutor {
             policyEngineStats.put("timeTakenToFetchInventory", CommonUtils.getElapseTimeSince(startTime));
             if(resources.isEmpty()){
                 logger.info("no resources to evaluvate exiting now");
+                annotationPublisher = new AnnotationPublisher();
+                annotationPublisher.populateExistingIssuesForType(policyParam);
+                annotationPublisher.closeDanglingIssues(indexName+"_"+policyParam.get(PacmanSdkConstants.TARGET_TYPE),policyParam.get(PacmanSdkConstants.TARGET_TYPE));
                 ProgramExitUtils.exitSucessfully();
             }
         } catch (Exception e) {
