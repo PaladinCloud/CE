@@ -178,6 +178,7 @@ public class ErrorManageUtil {
 			}
 			if(errorVHList.isEmpty()){errorMap.remove(entry.getKey());}
 		}
-		NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue,"AWS");
+		//commenting to avoid too many requests
+//		NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue,"AWS");
 	}
 }

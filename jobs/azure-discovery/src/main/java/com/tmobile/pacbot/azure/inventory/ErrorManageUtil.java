@@ -156,6 +156,7 @@ public class ErrorManageUtil {
 			}
 			if(errorVHList.isEmpty()){errorMap.remove(entry.getKey());}
 		}
-		NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue,"Azure");
+		//commenting to avoid too many requests
+//		NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue,"Azure");
 	}
 }
