@@ -18,6 +18,7 @@ import { TableStateService } from 'src/app/core/services/table-state.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import map from 'lodash/map';
 import { TourService } from 'src/app/core/services/tour.service';
+import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
 
 @Component({
   selector: 'app-account-management',
@@ -208,7 +209,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
 
   getPreservedState(){
     const stateUpdated =  history.state.dataUpdated;
-    const state = this.tableStateService.getState("account-management") ?? {};
+    const state = this.tableStateService.getState(SaveStateKeys.AccountManagementList) ?? {};
     if(stateUpdated){
       state.data = [];
       state.bucketNumber = 0;
@@ -254,7 +255,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
         selectedRowIndex: this.selectedRowIndex
         // filterText: this.filterText
       }
-    this.tableStateService.setState("account-management", state);
+    this.tableStateService.setState(SaveStateKeys.AccountManagementList, state);
   }
 
   clearState(){
@@ -677,7 +678,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
         dataArray.push(obj);
       }      
       
-      const state = this.tableStateService.getState("account-management") ?? {};
+      const state = this.tableStateService.getState(SaveStateKeys.AccountManagementList) ?? {};
       const filters = state?.filters;
       
       if(filters){
