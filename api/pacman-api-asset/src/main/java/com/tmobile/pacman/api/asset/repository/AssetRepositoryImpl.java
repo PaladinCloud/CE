@@ -1247,7 +1247,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     "subnetid", "instancetype", AssetConstants.ACCOUNT_ID, "tags", AssetConstants.ACCOUNT_NAME, "iaminstanceprofilearn",
                     Constants.STATE_NAME, "monitoringstate", "hostid", "statereasoncode", "virtualizationtype",
                     "rootdevicename", "keyname", "kernelid", Constants.STATE_NAME, "hypervisor", "architecture", "tenancy",
-                    "launchtime", "platform"), null);
+                    "launchtime", "platform","docType","_cloudType"), null);
         } catch (Exception e) {
             LOGGER.error("Exception in getEc2ResourceDetail ",e);
             throw new DataException(e);
