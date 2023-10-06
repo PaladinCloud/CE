@@ -30,6 +30,7 @@
  import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
  import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
  import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
+import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
  
  @Component({
    selector: "app-admin-policies",
@@ -204,7 +205,7 @@
  
    getPreservedState(){
      const stateUpdated =  history.state.dataUpdated;
-     const state = this.tableStateService.getState("adminPolicies") || {};
+     const state = this.tableStateService.getState(SaveStateKeys.AdminPoliciesList) || {};
      if(stateUpdated){
        state.data = [];
      }
@@ -462,11 +463,11 @@
        filters: this.filters,
        selectedRowIndex: this.selectedRowIndex
      }
-     this.tableStateService.setState("adminPolicies", state);
+     this.tableStateService.setState(SaveStateKeys.AdminPoliciesList, state);
    }
  
    clearState(){
-     // this.tableStateService.clearState("adminPolicies");
+     // this.tableStateService.clearState(SaveStateKeys.AdminPoliciesList);
      this.isStatePreserved = false;
    }
  

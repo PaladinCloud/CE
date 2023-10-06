@@ -305,7 +305,8 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
         SaveStateKeys.ViolationsList,
         SaveStateKeys.AssetList,
         SaveStateKeys.UserPoliciesList,
-        SaveStateKeys.ComplianceCategoryPolicies 
+        SaveStateKeys.ComplianceCategoryPolicies,
+        SaveStateKeys.AdminPoliciesList
       ];
       const fieldsToClear = ["whiteListColumns", "headerColName", "direction"];
       const currentVersion = 'version-1.1';
