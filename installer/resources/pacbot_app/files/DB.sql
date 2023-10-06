@@ -3077,4 +3077,4 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
   update pac_v2_ui_options set optionName ="Source" where optionId='57';
   update pac_v2_ui_options set optionName ="Source" where optionId='43';
 
-  update pac_config_properties set application='batch' where cfkey='shipper.attributes.to.preserve';
+  update ignore pac_config_properties set application='batch' where cfkey='shipper.attributes.to.preserve';
