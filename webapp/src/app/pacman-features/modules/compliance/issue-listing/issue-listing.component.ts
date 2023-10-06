@@ -19,6 +19,7 @@ import { PermissionGuardService } from "../../../../core/services/permission-gua
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
+import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
 
 @Component({
   selector: "app-issue-listing",
@@ -143,7 +144,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
     .subscribe(async(assetGroupName) => {
-        // whenever ag is changed, all filters are cleared in change-default-asset-group component.
+        // whenever ag is changed, all filters and data are cleared in change-default-asset-group component.
         await this.getPreservedState();
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
@@ -186,7 +187,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   async getPreservedState() {
-    const state = this.tableStateService.getState(this.pageTitle) ?? {};
+    const state = this.tableStateService.getState(SaveStateKeys.ViolationsList) ?? {};
   
     this.headerColName = state.headerColName || 'Severity';
     this.direction = state.direction || 'desc';
@@ -327,7 +328,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         selectedRowIndex: this.selectedRowIndex,
         // filterText: this.filterText
       }
-    this.tableStateService.setState(this.pageTitle, state);
+    this.tableStateService.setState(SaveStateKeys.ViolationsList, state);
   }
 
   clearState(){

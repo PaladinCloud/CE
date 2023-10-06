@@ -29,6 +29,9 @@ import { DownloadService } from "../shared/services/download.service";
 import { LoggerService } from "../shared/services/logger.service";
 import { NotificationObservableService } from "../shared/services/notification-observable.service";
 import { TableStateService } from "../core/services/table-state.service";
+import { environment } from "src/environments/environment";
+import { CommonResponseService } from "../shared/services/common-response.service";
+import { SaveStateKeys } from "../shared/constants/save-state-keys";
 
 declare var Offline: any;
 
@@ -109,6 +112,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     private windowExpansionService: WindowExpansionService,
     private notificationObservableService: NotificationObservableService,
     private snackBar: MatSnackBar,
+    private commonResponseService: CommonResponseService,
     private tableStateService: TableStateService
   ) {
     if (this.pageReloadInterval) {
@@ -295,14 +299,27 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   }
 
   clearListStates(){
-    const someRandomString = '1234';
-    const lastVersion = localStorage.getItem('version');
-    if(lastVersion!=someRandomString){ // check if it is not the last value then reset
-      console.log("Clearing the states");
-      
-      this.tableStateService.clearAll();
+    try{
+      const listsToClear = [
+        SaveStateKeys.DashboardList,
+        SaveStateKeys.ViolationsList,
+        SaveStateKeys.AssetList,
+        SaveStateKeys.UserPoliciesList,
+        SaveStateKeys.ComplianceCategoryPolicies 
+      ];
+      const fieldsToClear = ["whiteListColumns", "headerColName", "direction"];
+      const currentVersion = 'version-1.1';
+      const lastVersion = localStorage.getItem('version');
+      if(currentVersion && currentVersion!=lastVersion){
+        
+        listsToClear.forEach(listStateKey => {
+          this.tableStateService.clearStateByFields(listStateKey, fieldsToClear);
+        })
+      }
+      localStorage.setItem('version', currentVersion);
+    }catch(e){
+      this.logger.log("error", e);
     }
-    localStorage.setItem('version', someRandomString); // setting random value
   }
 
   ngOnDestroy() {
