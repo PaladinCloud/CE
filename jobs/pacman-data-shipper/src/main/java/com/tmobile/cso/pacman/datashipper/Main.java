@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.tmobile.cso.pacman.datashipper.dto.DatasourceData;
+import com.tmobile.cso.pacman.datashipper.entity.DatasourceDataFetcher;
+import com.tmobile.cso.pacman.datashipper.util.AuthManager;
+import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +53,7 @@ public class Main implements Constants {
      * @return 
      */
     public static Map<String, Object> shipData(Map<String, String> params) {
+        List<DatasourceData> datasourceDataList = new ArrayList<>();
     	String jobName = System.getProperty("jobName");
         List<Map<String,String>> errorList = new ArrayList<>();
         try {
@@ -66,10 +70,27 @@ public class Main implements Constants {
         ESManager.configureIndexAndTypes(ds,errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
         ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
-        if("aws".equals(ds)) {
-        	errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
-        	errorList.addAll(new IssueCountManager().populateViolationsCount());
-        	errorList.addAll(new AssetsCountManager().populateAssetCount());
+        try {
+            DatasourceData datasourceData = DatasourceDataFetcher.getInstance().fetchDatasourceData(ds);
+            if (datasourceData != null) {
+                List<String> accountIds = datasourceData.getAccountIds();
+                Map<String, List<String>> assetGroupDomains = datasourceData.getAssetGroupDomains();
+
+                if (assetGroupDomains != null && !assetGroupDomains.isEmpty()) {
+                    AssetGroupStatsCollector assetGroupStatsCollector = new AssetGroupStatsCollector();
+                    errorList.addAll(assetGroupStatsCollector.collectAssetGroupStats(datasourceData));
+                }
+
+                if (accountIds != null && !accountIds.isEmpty()) {
+                    IssueCountManager issueCountManager = new IssueCountManager();
+                    errorList.addAll(issueCountManager.populateViolationsCount(ds, accountIds));
+
+                    AssetsCountManager assetsCountManager = new AssetsCountManager();
+                    errorList.addAll(assetsCountManager.populateAssetCount(ds, accountIds));
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error while updating stats", e);
         }
 
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);

@@ -1,6 +1,7 @@
 package com.tmobile.cso.pacman.datashipper.entity;
 
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyMap;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.cso.pacman.datashipper.dto.DatasourceData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,12 +77,14 @@ public class AssetGroupStatsCollectorTest {
         PowerMockito.mockStatic(ESManager.class);
         doNothing().when(ESManager.class);
         ESManager.uploadData(anyString(), anyString(), anyList(), anyString(), anyBoolean());
-        
+
         Map<String, List<String>> assetGroups = new HashMap<>();
         List<String> domains = new ArrayList<>();
         domains.add("infra");
         assetGroups.put("pacman", domains);
-        assetGroupStatsCollector.uploadAssetGroupRuleCompliance(assetGroups);
+        DatasourceData datasourceData = new DatasourceData();
+        datasourceData.setAssetGroupDomains(assetGroups);
+        assetGroupStatsCollector.uploadAssetGroupRuleCompliance(datasourceData);
     }
     
   
@@ -108,7 +112,9 @@ public class AssetGroupStatsCollectorTest {
         List<String> domains = new ArrayList<>();
         domains.add("infra");
         assetGroups.put("pacman", domains);
-        assetGroupStatsCollector.uploadAssetGroupCompliance(assetGroups);
+        DatasourceData datasourceData = new DatasourceData();
+        datasourceData.setAssetGroupDomains(assetGroups);
+        assetGroupStatsCollector.uploadAssetGroupCompliance(datasourceData);
     }
     
  
@@ -163,7 +169,9 @@ public class AssetGroupStatsCollectorTest {
         List<String> domains = new ArrayList<>();
         domains.add("infra");
         assetGroups.put("pacman", domains);
-        assetGroupStatsCollector.uploadAssetGroupIssues(assetGroups);
+        DatasourceData datasourceData = new DatasourceData();
+        datasourceData.setAssetGroupDomains(assetGroups);
+        assetGroupStatsCollector.uploadAssetGroupIssues(datasourceData);
     }
     
     
@@ -175,9 +183,10 @@ public class AssetGroupStatsCollectorTest {
         List<String> domains = new ArrayList<>();
         domains.add("infra");
         assetGroups.put("pacman", domains);
+        DatasourceData datasourceData = new DatasourceData();
+        datasourceData.setAssetGroupDomains(assetGroups);
         
         PowerMockito.mockStatic(AssetGroupUtil.class);
-        when(AssetGroupUtil.fetchAssetGroups(anyString(),anyString())).thenReturn(assetGroups);
       
         
         PowerMockito.mockStatic(ESManager.class);
@@ -186,12 +195,12 @@ public class AssetGroupStatsCollectorTest {
         ESManager.createType(anyString(),anyString(),anyList());
         
         assetGroupStatsCollector = PowerMockito.spy(assetGroupStatsCollector);
-        doNothing().when(assetGroupStatsCollector).uploadAssetGroupRuleCompliance(anyMap());
+        doNothing().when(assetGroupStatsCollector).uploadAssetGroupRuleCompliance(any());
         doNothing().when(assetGroupStatsCollector).uploadAssetGroupCountStats(anyList());
-        doNothing().when(assetGroupStatsCollector).uploadAssetGroupCompliance(anyMap());
+        doNothing().when(assetGroupStatsCollector).uploadAssetGroupCompliance(any());
         doNothing().when(assetGroupStatsCollector).uploadAssetGroupTagCompliance(anyList());
-        doNothing().when(assetGroupStatsCollector).uploadAssetGroupIssues(anyMap());
-        assetGroupStatsCollector.collectAssetGroupStats();
+        doNothing().when(assetGroupStatsCollector).uploadAssetGroupIssues(any());
+        assetGroupStatsCollector.collectAssetGroupStats(datasourceData);
       
     }
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.tmobile.cso.pacman.datashipper.dto.DatasourceData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class AssetGroupStatsCollector implements Constants{
     /**
      * Collect asset group stats.
      */
-    public List<Map<String, String>> collectAssetGroupStats() {
+    public List<Map<String, String>> collectAssetGroupStats(DatasourceData datasourceData) {
 
         
         log.info("Start Collecting asset group stats");
@@ -62,18 +63,6 @@ public class AssetGroupStatsCollector implements Constants{
             Map<String,String> errorMap = new HashMap<>();
             errorMap.put(ERROR, "Exception in collectAssetGroupStats. Authorisation failed");
             errorMap.put(ERROR_TYPE,FATAL);
-            errorMap.put(EXCEPTION, e1.getMessage());
-            errorList.add(errorMap);
-            return errorList;
-        }
-        Map<String, List<String>> assetGroupMap;
-        try {
-            assetGroupMap = AssetGroupUtil.fetchAssetGroups(ASSET_API_URL,token);
-        } catch (Exception e1) {
-            log.error("collectAssetGroupStats failed as unable to fetch asset groups " , e1);
-            Map<String,String> errorMap = new HashMap<>();
-            errorMap.put(ERROR, "Exception in fetchAssetGroups");
-            errorMap.put(ERROR_TYPE, ERROR);
             errorMap.put(EXCEPTION, e1.getMessage());
             errorList.add(errorMap);
             return errorList;
@@ -91,8 +80,8 @@ public class AssetGroupStatsCollector implements Constants{
 //        	ESManager.createType(AG_STATS, "vulncompliance", errorList);
 
 
-        List<String> assetGroups = new ArrayList<>(assetGroupMap.keySet());
-        
+        List<String> assetGroups = new ArrayList<>(datasourceData.getAssetGroupDomains().keySet());
+
         ExecutorService executor = Executors.newCachedThreadPool();
 
         executor.execute(() -> {
@@ -114,7 +103,7 @@ public class AssetGroupStatsCollector implements Constants{
 
         executor.execute(() -> {
             try {
-                uploadAssetGroupRuleCompliance(assetGroupMap);
+                uploadAssetGroupRuleCompliance(datasourceData);
             } catch (Exception e) {
                 log.error("Exception in uploadAssetGroupRuleCompliance " ,e);
                 Map<String,String> errorMap = new HashMap<>();
@@ -128,7 +117,7 @@ public class AssetGroupStatsCollector implements Constants{
         });
         executor.execute(() -> {
             try {
-                uploadAssetGroupCompliance(assetGroupMap);
+                uploadAssetGroupCompliance(datasourceData);
             } catch (Exception e) {
                 log.error("Exception in uploadAssetGroupCompliance " , e);
                 Map<String,String> errorMap = new HashMap<>();
@@ -162,7 +151,7 @@ public class AssetGroupStatsCollector implements Constants{
 
         executor.execute(() -> {
             try {
-                uploadAssetGroupIssues(assetGroupMap);
+                uploadAssetGroupIssues(datasourceData);
             } catch (Exception e) {
                 log.error("Exception in uploadAssetGroupIssues" , e);
                 Map<String,String> errorMap = new HashMap<>();
@@ -261,12 +250,10 @@ public class AssetGroupStatsCollector implements Constants{
      * @param assetGroups
      *            the asset groups
      */
-    public  void uploadAssetGroupRuleCompliance(Map<String, List<String>> assetGroups) throws Exception {
+    public  void uploadAssetGroupRuleCompliance(DatasourceData datasourceData) throws Exception {
         log.info("    Start Collecing Rule  compliance");
         List<Map<String, Object>> docs = new ArrayList<>();
-        assetGroups.entrySet().stream().forEach(entry -> {
-            String ag = entry.getKey();
-            List<String> domains = entry.getValue();
+        datasourceData.getAssetGroupDomains().forEach((ag, domains) -> {
             List<Map<String, Object>> docList = new ArrayList<>();
             try {
                 docList = AssetGroupUtil.fetchPolicyComplianceInfo(COMP_API_URL, ag, domains,getToken());
@@ -300,12 +287,10 @@ public class AssetGroupStatsCollector implements Constants{
      * @param assetGroups
      *            the asset groups
      */
-    public void uploadAssetGroupCompliance(Map<String, List<String>> assetGroups) throws Exception {
+    public void uploadAssetGroupCompliance(DatasourceData datasourceData) throws Exception {
         log.info("    Start Collecing  compliance");
         List<Map<String, Object>> docs = new ArrayList<>();
-        assetGroups.entrySet().stream().forEach(entry -> {
-            String ag = entry.getKey();
-            List<String> domains = entry.getValue();
+        datasourceData.getAssetGroupDomains().forEach((ag, domains) -> {
             try {
                 List<Map<String, Object>> docList = AssetGroupUtil.fetchComplianceInfo(COMP_API_URL, ag, domains,getToken());
                 docList.parallelStream().forEach(doc -> {
@@ -401,12 +386,10 @@ public class AssetGroupStatsCollector implements Constants{
      * @param assetGroups
      *            the asset groups
      */
-    public void uploadAssetGroupIssues(Map<String, List<String>> assetGroups) throws Exception {
+    public void uploadAssetGroupIssues(DatasourceData datasourceData) throws Exception {
         log.info("    Start Collecing  issues");
         List<Map<String, Object>> docs = new ArrayList<>();
-        assetGroups.entrySet().stream().forEach(entry -> {
-            String ag = entry.getKey();
-            List<String> domains = entry.getValue();
+        datasourceData.getAssetGroupDomains().forEach((ag, domains) -> {
             try {
                 List<Map<String, Object>> docList = AssetGroupUtil.fetchIssuesInfo(COMP_API_URL, ag, domains,getToken());
                 docList.parallelStream().forEach(doc -> {
