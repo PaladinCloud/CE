@@ -11,6 +11,7 @@ import { TourService } from 'src/app/core/services/tour.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
@@ -184,7 +185,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     }
 
   getPreservedState(){
-      const state = this.tableStateService.getState("policyKnowledgebase") || {};
+      const state = this.tableStateService.getState(SaveStateKeys.UserPoliciesList) || {};
 
       this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
       this.displayedColumns = Object.keys(this.columnWidths);
@@ -296,7 +297,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       filters: this.filters,
       selectedRowIndex: this.selectedRowIndex
     }
-    this.tableStateService.setState("policyKnowledgebase", state);
+    this.tableStateService.setState(SaveStateKeys.UserPoliciesList, state);
   }
 
   /*

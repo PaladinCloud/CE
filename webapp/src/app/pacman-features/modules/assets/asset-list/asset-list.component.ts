@@ -19,6 +19,7 @@ import { RouterUtilityService } from "../../../../shared/services/router-utility
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
+import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
 
 @Component({
   selector: "app-asset-list",
@@ -304,7 +305,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       filterText: this.filterText,
       selectedRowIndex: this.selectedRowIndex
     }
-    this.tableStateService.setState(this.pageTitle, state);
+    this.tableStateService.setState(SaveStateKeys.AssetList, state);
   }
 
   clearState(){
@@ -392,7 +393,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
         dataArray.push(obj);
       }
 
-      const state = this.tableStateService.getState(this.pageTitle) ?? {};
+      const state = this.tableStateService.getState(SaveStateKeys.AssetList) ?? {};
       const filters = state?.filters;
 
       if(filters){

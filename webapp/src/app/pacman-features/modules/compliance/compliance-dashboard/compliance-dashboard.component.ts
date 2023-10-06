@@ -30,6 +30,7 @@ import { MultilineChartService } from 'src/app/pacman-features/services/multilin
 import { OverallComplianceService } from 'src/app/pacman-features/services/overall-compliance.service';
 import { PacmanIssuesService } from 'src/app/pacman-features/services/pacman-issues.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
@@ -307,7 +308,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
 
     async getPreservedState(){
-      const state = this.tableStateService.getState("dashboard") ?? {};
+      const state = this.tableStateService.getState(SaveStateKeys.DashboardList) ?? {};
       
       this.headerColName = state.headerColName ?? 'Severity';
       this.direction = state.direction ?? 'desc';
@@ -472,7 +473,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
 
     clearState() {
-        // this.tableStateService.clearState('dashboard');
+        // this.tableStateService.clearState(SaveStateKeys.DashboardList);
         this.isStatePreserved = false;
     }
 
@@ -489,7 +490,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
          filters: this.filters,
          selectedRowIndex: this.selectedRowIndex
        }
-       this.tableStateService.setState("dashboard", state);
+       this.tableStateService.setState(SaveStateKeys.DashboardList, state);
      }
 
     getDistributionBySeverity() {
