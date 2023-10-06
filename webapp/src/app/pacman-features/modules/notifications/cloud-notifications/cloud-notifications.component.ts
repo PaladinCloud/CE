@@ -29,6 +29,7 @@ import find from 'lodash/find';
 import map from 'lodash/map';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
+import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
 
 @Component({
     selector: 'app-cloud-notifications',
@@ -161,7 +162,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     getPreservedState(){
-        const state = this.tableStateService.getState(this.pageTitle) || {};
+        const state = this.tableStateService.getState(SaveStateKeys.NotificationsList) || {};
         if (state) {
             this.headerColName = state.headerColName || '';
             this.direction = state.direction || '';
@@ -293,7 +294,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 dataArray.push(obj);
             }
 
-            const state = this.tableStateService.getState(this.pageTitle) ?? {};
+            const state = this.tableStateService.getState(SaveStateKeys.NotificationsList) ?? {};
             const filters = state?.filters;
 
             if (filters) {
@@ -521,7 +522,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             filterText: this.filterText,
             selectedRowIndex: this.selectedRowIndex,
         };
-        this.tableStateService.setState(this.pageTitle, state);
+        this.tableStateService.setState(SaveStateKeys.NotificationsList, state);
     }
 
     clearState() {
