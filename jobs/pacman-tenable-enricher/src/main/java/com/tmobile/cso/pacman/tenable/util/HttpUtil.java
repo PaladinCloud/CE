@@ -71,11 +71,11 @@ public class HttpUtil {
         HttpGet httpGet = new HttpGet(uri);
         httpGet.addHeader("content-type", "application/json");
         httpGet.addHeader("cache-control", "no-cache");
-        if(!Strings.isNullOrEmpty(input.get(Constants.TENABLE_API_KEYS))){
-            httpGet.addHeader(Constants.TENABLE_API_KEYS, input.get(Constants.TENABLE_API_KEYS));
+        if(!Strings.isNullOrEmpty(input.get(Constants.X_API_KEYS_HEADER_NAME))){
+            httpGet.addHeader(Constants.X_API_KEYS_HEADER_NAME, input.get(Constants.X_API_KEYS_HEADER_NAME));
         }
-        if(!Strings.isNullOrEmpty(input.get(Constants.USER_AGENT))){
-            httpGet.addHeader(Constants.USER_AGENT, input.get(Constants.USER_AGENT));
+        if(!Strings.isNullOrEmpty(input.get(Constants.USER_AGENT_HEADER_NAME))){
+            httpGet.addHeader(Constants.USER_AGENT_HEADER_NAME, input.get(Constants.USER_AGENT_HEADER_NAME));
         }
         CloseableHttpClient httpClient = getHttpClient();
         if(httpClient!=null){
@@ -106,11 +106,11 @@ public class HttpUtil {
             if(httpClient!=null){
                 HttpPost httppost = new HttpPost(url);
                 httppost.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
-                if(!Strings.isNullOrEmpty(input.get(Constants.TENABLE_API_KEYS))){
-                    httppost.addHeader(Constants.TENABLE_API_KEYS, input.get(Constants.TENABLE_API_KEYS));
+                if(!Strings.isNullOrEmpty(input.get(Constants.X_API_KEYS_HEADER_NAME))){
+                    httppost.addHeader(Constants.X_API_KEYS_HEADER_NAME, input.get(Constants.X_API_KEYS_HEADER_NAME));
                 }
-                if(!Strings.isNullOrEmpty(input.get(Constants.USER_AGENT))){
-                    httppost.addHeader(Constants.USER_AGENT, input.get(Constants.USER_AGENT));
+                if(!Strings.isNullOrEmpty(input.get(Constants.USER_AGENT_HEADER_NAME))){
+                    httppost.addHeader(Constants.USER_AGENT_HEADER_NAME, input.get(Constants.USER_AGENT_HEADER_NAME));
                 }
                 httppost.setEntity(new StringEntity(requestBody));
                 HttpResponse httpresponse = httpClient.execute(httppost);
