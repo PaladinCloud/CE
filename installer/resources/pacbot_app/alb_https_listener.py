@@ -13,7 +13,7 @@ class PacBotHttpsListener(ALBListenerResource):
     load_balancer_arn = ApplicationLoadBalancer.get_output_attr('arn')
     port = 443
     protocol = "HTTPS"
-    ssl_policy = "ELBSecurityPolicy-2016-08"
+    ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
     certificate_arn = Settings.get('SSL_CERTIFICATE_ARN') if Settings.ALB_PROTOCOL == 'HTTPS' else AcmCertificate.get_output_attr('arn')
     default_action_target_group_arn = tg.NginxALBTargetGroup.get_output_attr('arn')
     default_action_type = "forward"
