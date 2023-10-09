@@ -9,7 +9,7 @@ from resources.iam.base_role import BaseRole
 from resources.s3.bucket import BucketStorage
 from resources.batch.job import SubmitAndRuleEngineJobDefinition, BatchJobsQueue, SubmitAndQualysJobDefinition
 from resources.data.aws_info import AwsAccount, AwsRegion
-from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME, BATCH_LONG_RUNNING_JOB_FILE_NAME
+from resources.lambda_submit.s3_upload import UploadLambdaLongRunningJobZipFile, UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME, BATCH_LONG_RUNNING_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.eventbus.custom_event_bus import CloudWatchEventBusPlugin, CloudWatchEventBusRedHat, CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
 from resources.pacbot_app.utils import  get_azure_tenants,  get_gcp_project_ids, get_aws_account_details
@@ -804,7 +804,7 @@ class LongRunningLambdaFunction(LambdaFunctionResource):
     handler = BATCH_LONG_RUNNING_JOB_FILE_NAME + ".lambda_handler"
     runtime = "python3.8"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = UploadLambdaSubmitJobZipFile.get_output_attr('id') 
+    s3_key = UploadLambdaLongRunningJobZipFile.get_output_attr('id') 
 
     DEPENDS_ON = [SubmitAndRuleEngineJobDefinition, BatchJobsQueue,SubmitAndQualysJobDefinition]
 
