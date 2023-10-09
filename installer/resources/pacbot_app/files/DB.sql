@@ -3048,9 +3048,9 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
  VALUES ('s3.data','redhatacs-inventory','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
  VALUES ('s3.processed','backup-redhatacs','redhat-discovery','prd','latest',NULL,NULL,NULL,NULL);
-
+delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve';
  INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
-  VALUES ('shipper.attributes.to.preserve','firstdiscoveredon','data-shipper','prd','latest',NULL,NULL,NULL,NULL);
+  VALUES ('shipper.attributes.to.preserve','firstdiscoveredon','batch','prd','latest',NULL,NULL,NULL,NULL);
  
  
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
@@ -3077,4 +3077,3 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
   update pac_v2_ui_options set optionName ="Source" where optionId='57';
   update pac_v2_ui_options set optionName ="Source" where optionId='43';
 
-  update ignore pac_config_properties set application='batch' where cfkey='shipper.attributes.to.preserve';
