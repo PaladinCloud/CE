@@ -28,7 +28,7 @@ import { environment } from "./../../../environments/environment";
 import { DomainTypeObservableService } from "../../core/services/domain-type-observable.service";
 import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
 import { RouterUtilityService } from "../../shared/services/router-utility.service";
-import { Subscription } from "rxjs";
+import { combineLatest, Subscription } from "rxjs";
 import { WorkflowService } from "../../core/services/workflow.service";
 import { FetchResourcesService } from "../../pacman-features/services/fetch-resources.service";
 import { AwsResourceTypeSelectionService } from "src/app/pacman-features/services/aws-resource-type-selection.service";
@@ -85,13 +85,8 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
 
 
   getResources() {
-    this.route.queryParams.subscribe((params) => {
-
-      if(this.agAndDomain && this.agAndDomain["ag"]===params["ag"] && this.agAndDomain["domain"]===params["domain"]){
-        return;
-      }
-      
-      this.agAndDomain = params;
+    combineLatest([this.assetGroupObservableService.getAssetGroup(), this.domainTypeObservableService.getDomainType()]).subscribe(([ag, domain]) => {
+      this.agAndDomain = {ag, domain};      
       this.fetchResourcesService
         .getResourceTypesAndCount(this.agAndDomain).then(results => {
           this.assetCount = results[1].totalassets;
@@ -124,7 +119,6 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
           this.awsResourceTypeSelectionService.allAwsResourcesForAssetGroup(this.awsResourceDetails);
         })
     });
-
   }
 
   getAssetsCount(){

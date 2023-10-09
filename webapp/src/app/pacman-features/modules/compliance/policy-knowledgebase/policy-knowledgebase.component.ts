@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import find from 'lodash/find';
 import map from 'lodash/map';
 import { Subscription } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
@@ -168,15 +169,11 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     ) {
 
       this.getPreservedState();
-      this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
-        this.selectedAssetGroup = assetGroupName;
-        this.searchTxt = "";
-        this.updateComponent();
-      });
-      this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
+      combineLatest([this.assetGroupObservableService.getAssetGroup(), this.domainObservableService.getDomainType()]).subscribe(([ag, domain]) => {
+        this.selectedAssetGroup = ag;
         this.selectedDomain = domain;
-        // this.updateComponent();
-      });
+        this.updateComponent();
+      })
     }
 
     ngOnInit(): void {
