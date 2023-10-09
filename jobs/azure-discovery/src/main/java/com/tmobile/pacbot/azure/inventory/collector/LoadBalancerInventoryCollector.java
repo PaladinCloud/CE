@@ -46,8 +46,8 @@ public class LoadBalancerInventoryCollector {
 			loadBalancerVH.setSubscription(subscription.getSubscriptionId());
 			loadBalancerVH.setSubscriptionName(subscription.getSubscriptionName());
 			List<String> backendIpConfigurationIds = loadBalancer.inner().backendAddressPools().stream()
-					.flatMap(pool -> pool.backendIPConfigurations().stream())
-					.map(backendIpConfig -> backendIpConfig.id())
+					.flatMap(pool -> pool.backendIPConfigurations()==null?null:pool.backendIPConfigurations().stream())
+					.map(backendIpConfig ->backendIpConfig.id()==null?null: backendIpConfig.id())
 					.collect(Collectors.toList());
 			loadBalancerVH.setBackendPoolInstances(backendIpConfigurationIds);
 			loadBalancerList.add(loadBalancerVH);
