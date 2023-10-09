@@ -570,7 +570,11 @@ public class AssetServiceImpl implements AssetService {
                 AssetConstants.UNDERSCORE_ENTITY_TYPE, Constants.LATEST, AssetConstants.UNDERSCORE_LOADDATE);
 
         resourceData.forEach((key, value) -> {
+            //modify Cloud Source to desired format
+            if (AssetConstants.CLOUD_SOURCE_KEY.equalsIgnoreCase(key)) {
+                value = setSourceDisplayName(value);
 
+            }
             if (!fieldsToBeSkipped.contains(key) && StringUtils.isNotBlank(value.toString())) {
 
                 String tagsPrefix = "tags.";
@@ -1286,5 +1290,29 @@ public class AssetServiceImpl implements AssetService {
             LOGGER.error(Constants.EXCEPTION_IN_GETTING_COUNT_OF_POLICY_IDS, e);
             return 0;
         }
+    }
+    /**
+     * This method is used to convert cloud type src value to desired format before returning to UI
+     *
+     * @param value will be of (Gcp,Azue,Redhat,Aws)
+     */
+    private String setSourceDisplayName(Object value) {
+
+        LOGGER.info("setSourceDisplayName Method() Starts here");
+        String sourceDisplayName = null;
+        if (StringUtils.isNotEmpty(value.toString())) {
+            LOGGER.debug("Source Value {}",value.toString());
+            String couldSourceValue = value.toString();
+            if (AssetConstants.AWS_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
+                sourceDisplayName = AssetConstants.AWS_CLOUD_SOURCE_DISPLAY_NAME;
+            else if (AssetConstants.REDHAT_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
+                sourceDisplayName = AssetConstants.REDHAT_CLOUD_SOURCE_DISPLAY_NAME;
+            else if (AssetConstants.GCP_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
+                sourceDisplayName = AssetConstants.GCP_CLOUD_SOURCE_DISPLAY_NAME;
+            else if (AssetConstants.AZURE_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
+                sourceDisplayName = AssetConstants.AZURE_CLOUD_SOURCE_DISPLAY_NAME;
+        }
+        LOGGER.info("setSourceDisplayName Method() Ends here");
+        return sourceDisplayName;
     }
 }
