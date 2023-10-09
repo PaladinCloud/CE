@@ -128,6 +128,22 @@ public final class AssetConstants {
     public static final String ACCOUNT_ID = "accountid";
 
     public static final String ES_ERROR_MSG = "Error retrieving inventory from ES in getExemptedAssetCoun";
-    
+
+    public static final String CLOUD_SOURCE_KEY= "_cloudType";
+    public static final String AWS_CLOUD_SOURCE = "Aws";
+
+    public static final String AWS_CLOUD_SOURCE_DISPLAY_NAME = "AWS";
+
+    public static final String AZURE_CLOUD_SOURCE = "AZURE";
+
+    public static final String AZURE_CLOUD_SOURCE_DISPLAY_NAME = "Azure";
+
+    public static final String REDHAT_CLOUD_SOURCE = "Redhat";
+
+    public static final String REDHAT_CLOUD_SOURCE_DISPLAY_NAME = "Red Hat";
+
+    public static final String GCP_CLOUD_SOURCE = "Gcp";
+
+    public static final String GCP_CLOUD_SOURCE_DISPLAY_NAME = "GCP";
 }
 
