@@ -525,8 +525,8 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
     target_id = 'AzureDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
-        'jobName': "data-shipper-azure",
-        'jobUuid': "data-shipper-azure",
+        'jobName': "data-shipper-common",
+        'jobUuid': "data-shipper-common",
         'jobType': "jar",
         'jobDesc': "Ship Azure Data from S3 to PacBot ES",
         'environmentVariables': [
@@ -633,8 +633,8 @@ class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
     target_id = 'GCPDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
-        'jobName': "data-shipper-gcp",
-        'jobUuid': "data-shipper-gcp",
+        'jobName': "data-shipper-common",
+        'jobUuid': "data-shipper-common",
         'jobType': "jar",
         'jobDesc': "Ship GCP Data from S3 to PacBot ES",
         'environmentVariables': [
@@ -780,8 +780,8 @@ class RedHatDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     event_bus_name = CloudWatchEventBusRedHat.get_output_attr('arn')
     target_id = 'RedHatDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
-        'jobName': "data-shipper-redhat",
-        'jobUuid': "data-shipper-redhat",
+        'jobName': "data-shipper-common",
+        'jobUuid': "data-shipper-common",
         'jobType': "jar",
         'jobDesc': "Ship RedHat Data from S3 to PaladinCloud ES",
         'environmentVariables': [
