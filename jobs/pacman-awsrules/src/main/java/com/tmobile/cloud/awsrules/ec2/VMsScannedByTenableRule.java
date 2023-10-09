@@ -3,6 +3,7 @@ package com.tmobile.cloud.awsrules.ec2;
 
 import com.amazonaws.util.CollectionUtils;
 import com.amazonaws.util.StringUtils;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -24,7 +25,6 @@ import java.util.*;
 public class VMsScannedByTenableRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(VMsScannedByTenableRule.class);
-
     /**
      * The method will get triggered from Rule Engine with following parameters.
      *
@@ -44,42 +44,43 @@ public class VMsScannedByTenableRule extends BasePolicy {
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("VMsScannedByTenableRule execution started .............");
+        Annotation annotation = null;
+        String instanceID = null;
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String target = ruleParam.get(PacmanRuleConstants.TARGET);
         String discoveryDate = resourceAttributes.get(PacmanRuleConstants.DISCOVEREY_DATE);
         String discoveredDaysRange = ruleParam.get(PacmanRuleConstants.DISCOVERED_DAYS_RANGE);
-
         if (!StringUtils.isNullOrEmpty(discoveryDate)) {
             discoveryDate = discoveryDate.substring(0, PacmanRuleConstants.FIRST_DISCOVERED_DATE_FORMAT_LENGTH);
         }
-
-        String tenableEsAPI = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_TENABLE_VM_URL);
-
+        String tenableEsAPI = null;
+        String formattedUrl = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_TENABLE_VM_URL);
+        if (!StringUtils.isNullOrEmpty(formattedUrl)) {
+            tenableEsAPI = formattedUrl;
+        }
         MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
-
         if (!PacmanUtils.doesAllHaveValue(category, tenableEsAPI, discoveredDaysRange, target)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
-
+        List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
+        Gson gson = new Gson();
         if (resourceAttributes != null) {
+            instanceID = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
+            String entityType = resourceAttributes.get(PacmanRuleConstants.ENTITY_TYPE);
+            List<JsonObject> vulnerabilityInfoList = new ArrayList<>();
             if (PacmanUtils.calculateLaunchedDuration(discoveryDate) >= 0) {
-                String instanceID = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
-                String entityType = resourceAttributes.get(PacmanRuleConstants.ENTITY_TYPE);
                 try {
-                    List<JsonObject> vulnerabilityInfoList = PacmanUtils.checkInstanceIdFromElasticSearchForTenable(instanceID, tenableEsAPI, "asset.instanceId", null);
+                    vulnerabilityInfoList = PacmanUtils.checkInstanceIdFromElasticSearchForTenable(instanceID, tenableEsAPI, "asset.instanceId", null);
                     if (CollectionUtils.isNullOrEmpty(vulnerabilityInfoList)) {
-                        LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
-                        issue.put(PacmanRuleConstants.VIOLATION_REASON, "" + entityType + " image not scanned by tenable found");
-                        List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
-                        issueList.add(issue);
-
-                        Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+                        annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                         annotation.put(PacmanSdkConstants.DESCRIPTION, "" + entityType + " image not scanned  by tenable found!!");
                         annotation.put(PacmanRuleConstants.CATEGORY, category);
+                        LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
+                        issue.put(PacmanRuleConstants.VIOLATION_REASON, "" + entityType + " image not scanned by tenable found");
+                        issueList.add(issue);
                         annotation.put("issueDetails", issueList.toString());
-
                         logger.debug("========ResourceScannedByTenableRule ended with annotation {} : =========", annotation);
                         return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                     } else {
@@ -90,22 +91,19 @@ public class VMsScannedByTenableRule extends BasePolicy {
                                     try {
                                         return PacmanUtils.calculateDuration(lastVulnScan) < Long.parseLong(target);
                                     } catch (ParseException e) {
-                                        logger.error("Exception while parsing last scan date", e);
+                                        logger.error("Exception while parsing last scan date",e);
                                     }
                                     return false;
                                 }).findAny();
                         if (!foundAny.isPresent()) {
-                            LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
-                            issue.put(PacmanRuleConstants.VIOLATION_REASON, "" + entityType + " image not scanned by tenable found");
-                            List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
-                            issueList.add(issue);
-
-                            Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+                            annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                             annotation.put(PacmanSdkConstants.DESCRIPTION, "" + entityType + " tenable not scanned since "
                                     + target + " days!!");
                             annotation.put(PacmanRuleConstants.CATEGORY, category);
+                            LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
+                            issue.put(PacmanRuleConstants.VIOLATION_REASON, "" + entityType + " image not scanned by tenable found");
+                            issueList.add(issue);
                             annotation.put("issueDetails", issueList.toString());
-
                             logger.debug("========ResourceScannedByTenableRule ended with annotation {} : =========", annotation);
                             return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                         }
@@ -116,8 +114,12 @@ public class VMsScannedByTenableRule extends BasePolicy {
                 }
             }
         }
+        return null;
+    }
 
-        logger.debug("========ResourceScannedByTenableRule ended with NULL result=========");
+    private String buildImageNameFromResourceId(String imageId) {
+        if(imageId!=null && imageId.split("/").length>1)
+            return imageId.split("/")[1].concat(":latest");
         return null;
     }
 
@@ -126,4 +128,3 @@ public class VMsScannedByTenableRule extends BasePolicy {
         return null;
     }
 }
-

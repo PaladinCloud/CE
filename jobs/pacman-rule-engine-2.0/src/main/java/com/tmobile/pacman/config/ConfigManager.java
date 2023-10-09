@@ -46,6 +46,7 @@ public class ConfigManager {
 		Map<String, Object> configCreds = CommonHttpUtils.getHeader(configCredentials);
 
 		JsonObject configurationsFromPacmanTable = CommonHttpUtils.getConfigurationsFromConfigApi(configServerURL, configCreds);
+		logger.info("Configured values {} ",configurationsFromPacmanTable);
 		if (configurationsFromPacmanTable != null) {
 			propertySourcesArray = configurationsFromPacmanTable.get("propertySources").getAsJsonArray();
 		}
