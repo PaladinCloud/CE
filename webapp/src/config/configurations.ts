@@ -54,13 +54,13 @@
          logout: '',
 
          CloudformationTemplateUrl: ''
-       }
+      }
      },
      pacmanIssue: {
        CREATE_JIRA_TICKET_FOR_PACMAN_ISSUE: false, // Expected values: true || false || ''
        emailPacManIssue: {
          ISSUE_MAIL_TEMPLATE_URL: '',
-         ISSUE_EMAIL_FROM_ID: 'autofix@paladincloud.io',
+         ISSUE_EMAIL_FROM_ID: 'notify@paladincloud.io',
        }
      },
      assetDetails: {
