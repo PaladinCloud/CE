@@ -30,6 +30,7 @@ import { LoggerService } from "../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../shared/services/error-handling.service";
 import { WorkflowService } from "../../../core/services/workflow.service";
 import { RefactorFieldsService } from "./../../../shared/services/refactor-fields.service";
+import { AssociatedPolicyStatusOrderMap, SeverityOrderMap } from "src/app/shared/constants/order-mapping";
 
 @Component({
   selector: "app-pacman-policy-violations",
@@ -122,11 +123,18 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
 
   columnsSortFunctionMap = {
     Status: (a, b, isAsc) => {
-      const order = ["fail", "exempt", "exempted", "pass"];
+      const statusOrderMap = AssociatedPolicyStatusOrderMap;
+      const severityOrderMap = SeverityOrderMap;
       const AStatus = a["Status"].valueText.toLowerCase();
       const BStatus = b["Status"].valueText.toLowerCase();
 
-      return (order.indexOf(AStatus) < order.indexOf(BStatus) ? -1 : 1) * (isAsc ? 1 : -1);
+      const ASeverity = a["Severity"].valueText.toLowerCase();
+      const BSeverity = b["Severity"].valueText.toLowerCase();
+
+      if(statusOrderMap[AStatus]==statusOrderMap[BStatus]){
+        return (severityOrderMap[ASeverity] < severityOrderMap[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
+      }
+      return (statusOrderMap[AStatus] < statusOrderMap[BStatus] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   }
 
