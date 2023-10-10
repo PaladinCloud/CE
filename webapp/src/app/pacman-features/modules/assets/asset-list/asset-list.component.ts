@@ -19,7 +19,7 @@ import { RouterUtilityService } from "../../../../shared/services/router-utility
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
-import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
+import { ComponentKeys } from "src/app/shared/constants/component-keys";
 
 @Component({
   selector: "app-asset-list",
@@ -34,6 +34,7 @@ import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
 })
 export class AssetListComponent implements OnInit, OnDestroy {
   pageTitle = "Asset List";
+  saveStateKey: String = ComponentKeys.AssetList;
   assetListData: any;
   selectedAssetGroup: string;
   breadcrumbArray: any = [];
@@ -214,7 +215,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   getPreservedState(){
-    const state = this.tableStateService.getState(this.pageTitle) || {};
+    const state = this.tableStateService.getState(this.saveStateKey) || {};
     this.headerColName = state.headerColName ?? 'Asset ID';
     this.direction = state.direction ?? 'asc';
     this.bucketNumber = state.bucketNumber ?? 0;
@@ -305,7 +306,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       filterText: this.filterText,
       selectedRowIndex: this.selectedRowIndex
     }
-    this.tableStateService.setState(SaveStateKeys.AssetList, state);
+    this.tableStateService.setState(this.saveStateKey, state);
   }
 
   clearState(){
@@ -393,7 +394,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
         dataArray.push(obj);
       }
 
-      const state = this.tableStateService.getState(SaveStateKeys.AssetList) ?? {};
+      const state = this.tableStateService.getState(this.saveStateKey) ?? {};
       const filters = state?.filters;
 
       if(filters){

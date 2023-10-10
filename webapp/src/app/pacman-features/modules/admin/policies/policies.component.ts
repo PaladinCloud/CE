@@ -30,8 +30,7 @@
  import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
  import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
  import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
-import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
- 
+ import { ComponentKeys } from "src/app/shared/constants/component-keys"; 
  @Component({
    selector: "app-admin-policies",
    templateUrl: "./policies.component.html",
@@ -40,6 +39,7 @@ import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
  })
  export class PoliciesComponent implements OnInit, OnDestroy {
    pageTitle: String = "Policies";
+   saveStateKey: String = ComponentKeys.AdminPolicyList;
    allPolicies: any = [];
  
    filterTypeLabels = [];
@@ -205,7 +205,7 @@ import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
  
    getPreservedState(){
      const stateUpdated =  history.state.dataUpdated;
-     const state = this.tableStateService.getState(SaveStateKeys.AdminPoliciesList) || {};
+     const state = this.tableStateService.getState(this.saveStateKey) || {};
      if(stateUpdated){
        state.data = [];
      }
@@ -463,11 +463,11 @@ import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
        filters: this.filters,
        selectedRowIndex: this.selectedRowIndex
      }
-     this.tableStateService.setState(SaveStateKeys.AdminPoliciesList, state);
+     this.tableStateService.setState(this.saveStateKey, state);
    }
  
    clearState(){
-     // this.tableStateService.clearState(SaveStateKeys.AdminPoliciesList);
+     // this.tableStateService.clearState(this.saveStateKey);
      this.isStatePreserved = false;
    }
  

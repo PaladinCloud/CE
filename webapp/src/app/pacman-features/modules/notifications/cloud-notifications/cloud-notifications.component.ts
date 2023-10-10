@@ -29,7 +29,7 @@ import find from 'lodash/find';
 import map from 'lodash/map';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
-import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
+import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 
 @Component({
     selector: 'app-cloud-notifications',
@@ -49,6 +49,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     domainSubscription: Subscription;
 
     pageTitle = "Notifications";
+    saveStateKey: String = ComponentKeys.NotificationList;
     popRows = ['Download Data'];
     tabSelected = 'asset';
     backButtonRequired;
@@ -162,7 +163,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     getPreservedState(){
-        const state = this.tableStateService.getState(SaveStateKeys.NotificationsList) || {};
+        const state = this.tableStateService.getState(this.saveStateKey) || {};
         if (state) {
             this.headerColName = state.headerColName || '';
             this.direction = state.direction || '';
@@ -294,7 +295,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 dataArray.push(obj);
             }
 
-            const state = this.tableStateService.getState(SaveStateKeys.NotificationsList) ?? {};
+            const state = this.tableStateService.getState(this.saveStateKey) ?? {};
             const filters = state?.filters;
 
             if (filters) {
@@ -522,7 +523,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             filterText: this.filterText,
             selectedRowIndex: this.selectedRowIndex,
         };
-        this.tableStateService.setState(SaveStateKeys.NotificationsList, state);
+        this.tableStateService.setState(this.saveStateKey, state);
     }
 
     clearState() {
