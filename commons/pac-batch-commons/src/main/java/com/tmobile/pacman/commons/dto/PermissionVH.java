@@ -1,15 +1,19 @@
 package com.tmobile.pacman.commons.dto;
 
+import java.util.List;
+import java.util.Map;
+
 public class PermissionVH {
-    ErrorVH errorVH;
+    Map<String, List<String>> assetPermissionIssue;
     String accountNumber;
 
-    public ErrorVH getErrorVH() {
-        return errorVH;
+
+    public Map<String, List<String>> getAssetPermissionIssue() {
+        return assetPermissionIssue;
     }
 
-    public void setErrorVH(ErrorVH errorVH) {
-        this.errorVH = errorVH;
+    public void setAssetPermissionIssue(Map<String, List<String>> assetPermissionIssue) {
+        this.assetPermissionIssue = assetPermissionIssue;
     }
 
     public String getAccountNumber() {

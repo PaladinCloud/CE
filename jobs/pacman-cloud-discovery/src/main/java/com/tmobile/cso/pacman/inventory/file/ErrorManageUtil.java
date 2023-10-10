@@ -150,35 +150,52 @@ public class ErrorManageUtil {
         return errorCode;
     }
 
-	public static void omitOpsAlert() {
-		List<PermissionVH> permissionIssue=new ArrayList<>();
-		for(Map.Entry<String,List<ErrorVH>> entry:errorMap.entrySet())
-		{
-			List<ErrorVH> errorVHList=entry.getValue();
-			for(ErrorVH errorVH:entry.getValue())
-			{
-				if(errorVH.getType().equals("phd")&&(errorVH.getException().contains("AccessDeniedException")||errorVH.getException().contains("SubscriptionRequiredException")))
-				{
-					PermissionVH permissionVH=new PermissionVH();
-					log.info("Omit exception :{}",errorVH.getException());
-					permissionVH.setAccountNumber(entry.getKey());
-					permissionVH.setErrorVH(errorVH);
-					permissionIssue.add(permissionVH);
-					errorVHList.remove(errorVH);
-				}
-				if(((errorVH.getType().equals("kms")||errorVH.getType().equals("s3"))&&errorVH.getException().contains("AccessDeniedException"))||(errorVH.getType().equals("checks")&&errorVH.getException().contains("AWSSupportException")))
-				{
-					PermissionVH permissionVH=new PermissionVH();
-					log.info("Omit exception :{}",errorVH.getException());
-					permissionVH.setAccountNumber(entry.getKey());
-					permissionVH.setErrorVH(errorVH);
-					permissionIssue.add(permissionVH);
-					errorVHList.remove(errorVH);
-				}
-			}
-			if(errorVHList.isEmpty()){errorMap.remove(entry.getKey());}
-		}
-		//commenting to avoid too many requests
-//		NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue,"AWS");
-	}
+    public static void omitOpsAlert() {
+        List<PermissionVH> permissionIssue = new ArrayList<>();
+        for (Map.Entry<String, List<ErrorVH>> entry : errorMap.entrySet()) {
+            PermissionVH permissionVH = new PermissionVH();
+            permissionVH.setAccountNumber(entry.getKey());
+            List<ErrorVH> errorVHList = entry.getValue();
+            Map<String, List<String>> assetPermissionMapping = new HashMap<>();
+            for (ErrorVH errorVH : entry.getValue()) {
+                List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
+                if (errorVH.getType().equals("phd") && (errorVH.getException().contains("AccessDeniedException") || errorVH.getException().contains("SubscriptionRequiredException"))) {
+                    log.info("Omit exception :{}", errorVH.getException());
+                    permissionIssues=new ArrayList<>();
+                    permissionIssues.add(errorVH.getException());
+                    assetPermissionMapping.put(errorVH.getType(), permissionIssues);
+                    errorVHList.remove(errorVH);
+                }
+                if (((errorVH.getType().equals("kms") || errorVH.getType().equals("s3")) && errorVH.getException().contains("AccessDeniedException")) || (errorVH.getType().equals("checks") && errorVH.getException().contains("AWSSupportException"))) {
+                    log.info("Omit exception :{}", errorVH.getException());
+                    shortenMessageforKMS(errorVH);
+                    if (permissionIssues != null) {
+                        permissionIssues.add(errorVH.getException());
+                    } else {
+                        permissionIssues = new ArrayList<>();
+                        permissionIssues.add(errorVH.getException());
+                    }
+                    assetPermissionMapping.put(errorVH.getType(), permissionIssues);
+                    errorVHList.remove(errorVH);
+                }
+            }
+            if (!assetPermissionMapping.isEmpty()) {
+                permissionVH.setAssetPermissionIssue(assetPermissionMapping);
+                permissionIssue.add(permissionVH);
+            }
+            if (errorVHList.isEmpty()) {
+                errorMap.remove(entry.getKey());
+            }
+        }
+        //commenting to avoid too many requests
+        NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue, "AWS");
+    }
+
+    private static void shortenMessageforKMS(ErrorVH errorVH) {
+        String exception=errorVH.getException();
+        if(errorVH.getType().equals("kms")&& (exception.contains("ListResourceTags")||exception.contains("GetKeyRotationStatus")||exception.contains("DescribeKey")))
+        {
+            errorVH.setException(errorVH.getException().substring(exception.indexOf("arn"),exception.indexOf("because")));
+        }
+    }
 }

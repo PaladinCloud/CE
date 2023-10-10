@@ -131,8 +131,11 @@ public class FetchNotificationSettings {
                         ClassLoader classLoader = getClass().getClassLoader();
                         logger.log("key - "+channel+" action- "+action+" notificationtype- "+notificationType+" exemptionType- "+exemptionType);
                         File file = new File(classLoader.getResource(CommonUtils.getTemplateName(channel, action, notificationType, exemptionType)).getFile());
-                        String messageContent = buildPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
-
+                        String messageContent=null;
+                        if(!notificationType.equals("permission"))
+                            messageContent = buildPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
+                        else
+                            messageContent = buildNotificationPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
                         notificationDetailsStr = gsonObj.toJson(getMsgDetailsMap(messageContent,toEmailIdList, subject));
                         logger.log("notification message for channel '"+channel+"' is - "+messageContent);
 
@@ -152,6 +155,31 @@ public class FetchNotificationSettings {
             throw new RuntimeException(e);
         }
         return response;
+    }
+
+    private String buildNotificationPlainTextMail(String mailBody, Map<String, Object> messageContentMap, String source) {
+            mailBody=mailBody.replace("${source}",source);
+            mailBody=mailBody.replace("${message}",messageContentMap.get("message").toString());
+            StringBuilder buf = new StringBuilder();
+        for (Map.Entry<String, Object> permission:messageContentMap.entrySet()) {
+            if(permission.getKey().startsWith("permission"))
+            buf.append("<tr><td class=\"rowkey\">")
+                    .append(makeItReadable(permission.getKey()))
+                    .append("</td><td>")
+                    .append(permission.getValue())
+                    .append("</td></tr>");
+        }
+        mailBody=mailBody.replace("${permissionIssues}",buf.toString());
+        return mailBody;
+    }
+
+    private String makeItReadable(String key) {
+        key= key.replace("permission","Permission ");
+        key= key.replace("Issue","issue ");
+        key= key.replace("For","for ");
+        key= key.replace("In"," in ");
+        key= key.replace("Account","account ");
+        return key;
     }
 
     private String buildPlainTextMail(String mailBody, final Map<String, Object> details, String source) {
