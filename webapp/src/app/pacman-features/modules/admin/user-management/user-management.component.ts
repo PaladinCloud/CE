@@ -17,7 +17,7 @@ import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
-import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
+import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 
 
 @Component({
@@ -28,6 +28,7 @@ import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
 export class UserManagementComponent implements OnInit, AfterViewInit {
 
   pageTitle = "Users";
+  saveStateKey: String = ComponentKeys.UserManagementList;
   dataTableDesc = "";
 
 
@@ -132,7 +133,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   getPreservedState(){
-    const state = this.tableStateService.getState(SaveStateKeys.UserManagementList) ?? {};
+    const state = this.tableStateService.getState(this.saveStateKey) ?? {};
     if(state){
       this.headerColName = state.headerColName ?? 'Email';
       this.direction = state.direction ?? 'asc';
@@ -419,7 +420,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         dataArray.push(obj);
       }
       
-      const state = this.tableStateService.getState(SaveStateKeys.UserManagementList) ?? {};
+      const state = this.tableStateService.getState(this.saveStateKey) ?? {};
       const filters = state?.filters;
       
       if(filters){
@@ -761,7 +762,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         selectedRowIndex: this.selectedRowIndex
         // filterText: this.filterText
       }
-    this.tableStateService.setState(SaveStateKeys.UserManagementList, state);
+    this.tableStateService.setState(this.saveStateKey, state);
   }
 
   clearState(){

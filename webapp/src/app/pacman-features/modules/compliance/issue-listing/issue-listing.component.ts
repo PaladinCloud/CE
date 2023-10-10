@@ -19,7 +19,7 @@ import { PermissionGuardService } from "../../../../core/services/permission-gua
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
-import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
+import { ComponentKeys } from "src/app/shared/constants/component-keys";
 
 @Component({
   selector: "app-issue-listing",
@@ -29,6 +29,7 @@ import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
 })
 export class IssueListingComponent implements OnInit, OnDestroy {
   pageTitle = "Violations";
+  saveStateKey: String = ComponentKeys.ViolationList;
   selectedAssetGroup: string;
   selectedDomain: string;
   breadcrumbArray: any = [];
@@ -187,7 +188,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   async getPreservedState() {
-    const state = this.tableStateService.getState(SaveStateKeys.ViolationsList) ?? {};
+    const state = this.tableStateService.getState(this.saveStateKey) ?? {};
   
     this.headerColName = state.headerColName || 'Severity';
     this.direction = state.direction || 'desc';
@@ -328,7 +329,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         selectedRowIndex: this.selectedRowIndex,
         // filterText: this.filterText
       }
-    this.tableStateService.setState(SaveStateKeys.ViolationsList, state);
+    this.tableStateService.setState(this.saveStateKey, state);
   }
 
   clearState(){

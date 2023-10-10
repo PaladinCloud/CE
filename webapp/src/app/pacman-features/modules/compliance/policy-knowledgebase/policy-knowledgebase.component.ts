@@ -11,7 +11,7 @@ import { TourService } from 'src/app/core/services/tour.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
-import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
+import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
@@ -37,6 +37,7 @@ enum PolicyCategory {
 })
 export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDestroy {
   pageTitle = 'Policies';
+  saveStateKey: String = ComponentKeys.UserPolicyList;
   selectedAssetGroup: string;
   selectedDomain: string;
   subscriptionToAssetGroup: Subscription;
@@ -185,7 +186,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     }
 
   getPreservedState(){
-      const state = this.tableStateService.getState(SaveStateKeys.UserPoliciesList) || {};
+      const state = this.tableStateService.getState(this.saveStateKey) || {};
 
       this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
       this.displayedColumns = Object.keys(this.columnWidths);
@@ -297,7 +298,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       filters: this.filters,
       selectedRowIndex: this.selectedRowIndex
     }
-    this.tableStateService.setState(SaveStateKeys.UserPoliciesList, state);
+    this.tableStateService.setState(this.saveStateKey, state);
   }
 
   /*
