@@ -3071,3 +3071,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
   update pac_v2_ui_options set optionName ="Source" where optionId='32';
   update pac_v2_ui_options set optionName ="Source" where optionId='57';
   update pac_v2_ui_options set optionName ="Source" where optionId='43';
+
+
+
+  update cf_Target set status="finding" where targetName="launchtemplate";
