@@ -3392,5 +3392,49 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         return totalDocumentCount;
     }
+    @Override
+    public List<String> getTargetTypesByDatasource(String datasource) {
+        return rdsRepository.getStringList("select targetName from cf_Target " +
+                "where lower(dataSourceName) = '" + datasource + "' and  (status = 'active' or status = 'enabled')");
+    }
+
+    @Override
+    public List<String> getAliasByIndices(List<String> indices) {
+        Set<String> uniqueAliasNames = new HashSet<>();
+
+        try {
+            for (String index : indices) {
+                String urlToQuery = esUrl + "/" + index + "/_alias";
+                String responseDetails = PacHttpUtils.getHttpGet(urlToQuery, new HashMap<>());
+                JsonNode rootNode = mapper.readTree(responseDetails);
+                JsonNode aliasesNode = rootNode.get(index).get("aliases");
+                Iterator<String> fieldNames = aliasesNode.fieldNames();
+                while (fieldNames.hasNext()) {
+                    String aliasName = fieldNames.next();
+                    uniqueAliasNames.add(aliasName);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while retrieving alias names: " + e.getMessage(), e);
+        }
+
+        return new ArrayList<>(uniqueAliasNames);
+    }
+
+    @Override
+    public List<String> getVisibleAssetGroupsFiltered(List<String> assetListToFilter) {
+
+        String query = "select distinct groupName from cf_AssetGroupDetails where isVisible = true and groupName in " +
+                "('" + String.join("','", assetListToFilter) + "')";
+        return rdsRepository.getStringList(query);
+    }
+
+    @Override
+    public List<String> getAccountsByDatasource(String datasource) {
+
+        String query = "select accountId from cf_Accounts  where platform = '" +
+                datasource + "' and accountStatus= 'configured'";
+        return rdsRepository.getStringList(query);
+    }
 
 }

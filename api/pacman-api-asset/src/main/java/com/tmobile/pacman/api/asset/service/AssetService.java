@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.api.asset.domain.DatasourceData;
 import com.tmobile.pacman.api.asset.domain.FilterRequest;
 import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
@@ -540,5 +541,15 @@ public interface AssetService {
     public Set<String> getSupportedFilters(String filterName);
 
     public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
+
+    /**
+     * Retrieves asset group data for a shipper based on a given datasource. This method
+     * fetches information about asset group domains, target types, and account IDs associated
+     * with the provided datasource.
+     *
+     * @param datasource The name of the datasource for which asset group data is retrieved.
+     * @return A DatasourceData object containing asset group domains and account IDs.
+     */
+    DatasourceData getAssetGroupsDataForShipperByDatasource(String datasource);
 
 }
