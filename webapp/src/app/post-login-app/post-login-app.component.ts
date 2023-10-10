@@ -31,7 +31,8 @@ import { NotificationObservableService } from "../shared/services/notification-o
 import { TableStateService } from "../core/services/table-state.service";
 import { environment } from "src/environments/environment";
 import { CommonResponseService } from "../shared/services/common-response.service";
-import { SaveStateKeys } from "../shared/constants/save-state-keys";
+import { ComponentKeys } from "../shared/constants/component-keys";
+import { CONFIGURATIONS } from "src/config/configurations";
 
 declare var Offline: any;
 
@@ -62,6 +63,8 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   sidenavExpanderLeft = 250;
   rotationVar = 'rotate(180deg)';
   containerModeOverOffset = 0;
+  isClearListStatesEnabled = CONFIGURATIONS.optional.general.SaveState.enableUpdate;
+  releaseVersion = CONFIGURATIONS.optional.general.SaveState.releaseVersion;
 
   sidenavExpanderClicked() {
     this.isExpanded = !this.isExpanded;
@@ -119,7 +122,9 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       this.reloadTimeout = this.setReloadTimeOut(this.pageReloadInterval);
     }
 
-    this.clearListStates();
+    if(this.isClearListStatesEnabled){
+      this.clearListStates();
+    }
     this.getRouteQueryParameters();
   }
 
@@ -301,15 +306,15 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   clearListStates(){
     try{
       const listsToClear = [
-        SaveStateKeys.DashboardList,
-        SaveStateKeys.ViolationsList,
-        SaveStateKeys.AssetList,
-        SaveStateKeys.UserPoliciesList,
-        SaveStateKeys.ComplianceCategoryPolicies,
-        SaveStateKeys.AdminPoliciesList
+        ComponentKeys.Dashboard,
+        ComponentKeys.ViolationList,
+        ComponentKeys.AssetList,
+        ComponentKeys.UserPolicyList,
+        ComponentKeys.ComplianceCategoryPolicyList,
+        ComponentKeys.AdminPolicyList
       ];
       const fieldsToClear = ["whiteListColumns", "headerColName", "direction"];
-      const currentVersion = 'version-1.1';
+      const currentVersion = this.releaseVersion;
       const lastVersion = localStorage.getItem('version');
       if(currentVersion && currentVersion!=lastVersion){
         

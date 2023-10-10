@@ -106,15 +106,12 @@ export class TableStateService {
             this.logger.log("info", `clearing ${componentKey} with fields ${fieldsToClear}`);
             
             const componentState = this.getState(componentKey);
-            const fieldsToClearWhenClearingData = ["bucketNumber", "selectedRowIndex", "totalRows"];
             fieldsToClear.forEach(field => {
                 componentState[field] = undefined;
                 if(field==="data"){
-                    fieldsToClearWhenClearingData.forEach(otherField => {
-                        if(!fieldsToClear.includes(otherField)){
-                            componentState[otherField] = undefined;
-                        }
-                    })
+                    this.clearState(componentKey);
+                } else {
+                    componentState[field] = undefined;
                 }
             })
             

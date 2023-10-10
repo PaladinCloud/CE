@@ -30,7 +30,7 @@ import { MultilineChartService } from 'src/app/pacman-features/services/multilin
 import { OverallComplianceService } from 'src/app/pacman-features/services/overall-compliance.service';
 import { PacmanIssuesService } from 'src/app/pacman-features/services/pacman-issues.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
-import { SaveStateKeys } from 'src/app/shared/constants/save-state-keys';
+import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
@@ -66,6 +66,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     @ViewChild('widget') widgetContainer: ElementRef;
 
     pageTitle = 'Overview';
+    saveStateKey: String = ComponentKeys.Dashboard;
     filterArr: any = [];
     filterText;
     queryParamsWithoutFilter;
@@ -308,7 +309,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
 
     async getPreservedState(){
-      const state = this.tableStateService.getState(SaveStateKeys.DashboardList) ?? {};
+      const state = this.tableStateService.getState(this.saveStateKey) ?? {};
       
       this.headerColName = state.headerColName ?? 'Severity';
       this.direction = state.direction ?? 'desc';
@@ -473,7 +474,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
 
     clearState() {
-        // this.tableStateService.clearState(SaveStateKeys.DashboardList);
+        // this.tableStateService.clearState(this.saveStateKey);
         this.isStatePreserved = false;
     }
 
@@ -490,7 +491,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
          filters: this.filters,
          selectedRowIndex: this.selectedRowIndex
        }
-       this.tableStateService.setState(SaveStateKeys.DashboardList, state);
+       this.tableStateService.setState(this.saveStateKey, state);
      }
 
     getDistributionBySeverity() {

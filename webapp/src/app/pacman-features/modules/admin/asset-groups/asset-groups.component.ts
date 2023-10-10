@@ -31,7 +31,7 @@ import { AssetTilesService } from "src/app/core/services/asset-tiles.service";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import find from "lodash/find";
 import { TourService } from "src/app/core/services/tour.service";
-import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
+import { ComponentKeys } from "src/app/shared/constants/component-keys";
 
 @Component({
   selector: "app-asset-groups",
@@ -41,6 +41,7 @@ import { SaveStateKeys } from "src/app/shared/constants/save-state-keys";
 })
 export class AssetGroupsComponent implements OnInit, AfterViewInit {
   pageTitle: String = "Asset Groups";
+  saveStateKey: String = ComponentKeys.AdminAssetGroupList;
   allAssetGroups: any = [];
 
   breadcrumbArray: any = ["Admin"];
@@ -190,7 +191,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
   }
 
   getPreservedState(){
-    const state = this.tableStateService.getState(SaveStateKeys.AdminAssetGroupsList) ?? {};
+    const state = this.tableStateService.getState(this.saveStateKey) ?? {};
     if(state){
       this.headerColName = state.headerColName ?? 'Name';
       this.direction = state.direction ?? 'asc';
@@ -231,7 +232,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
       filters: this.filters,
       selectedRowIndex: this.selectedRowIndex
     }
-    this.tableStateService.setState(SaveStateKeys.AdminAssetGroupsList, state);
+    this.tableStateService.setState(this.saveStateKey, state);
   }
 
   handleHeaderColNameSelection(event){

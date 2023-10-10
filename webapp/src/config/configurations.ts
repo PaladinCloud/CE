@@ -85,7 +85,11 @@
        },
        Interval:{
          JobInterval: '',
-     }
+      },
+      SaveState: {
+        releaseVersion:'',
+        enableUpdate: false
+      },
  } 
 }
 };
