@@ -595,22 +595,12 @@ public interface AssetRepository {
     public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
 
     /**
-     * Retrieves a list of target types (targetNames) associated with a given datasource,
-     * filtering the results by 'active' or 'enabled' status.
-     *
-     * @param datasource The name of the datasource for which target types are retrieved.
-     * @return A list of target types.
-     */
-    List<String> getTargetTypesByDatasource(String datasource);
-
-    /**
      * Retrieves a list of unique alias names associated with a list of Elasticsearch indices.
      * Sends HTTP requests to Elasticsearch to fetch alias information and stores the unique alias names.
      *
-     * @param indices A list of Elasticsearch index names for which alias names are retrieved.
      * @return A list of unique alias names associated with the specified indices.
      */
-    List<String> getAliasByIndices(List<String> indices);
+    List<String> getAliasByDatasource(String datasource);
 
     /**
      * Retrieves a list of visible asset group names that match a given list of asset group names.

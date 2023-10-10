@@ -7,7 +7,7 @@ public class DatasourceData {
 
     private List<String> accountIds;
 
-    private Map<String, List<String>> assetGroupDomains;
+    private List<String> assetGroups;
 
     public List<String> getAccountIds() {
         return accountIds;
@@ -17,11 +17,11 @@ public class DatasourceData {
         this.accountIds = accountIds;
     }
 
-    public Map<String, List<String>> getAssetGroupDomains() {
-        return assetGroupDomains;
+    public List<String> getAssetGroups() {
+        return assetGroups;
     }
 
-    public void setAssetGroupDomains(Map<String, List<String>> assetGroupDomains) {
-        this.assetGroupDomains = assetGroupDomains;
+    public void setAssetGroups(List<String> assetGroups) {
+        this.assetGroups = assetGroups;
     }
 }

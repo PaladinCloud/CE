@@ -35,9 +35,7 @@ public class DatasourceDataFetcher {
         return instance;
     }
 
-    public DatasourceData fetchDatasourceData(String datasource) throws IOException {
-        DatasourceData datasourceData = new DatasourceData();
-
+    public DatasourceData fetchDatasourceData(String datasource) {
         try {
             String token = AuthManager.getToken();
             String datasourceStringData = HttpUtil.get(ASSET_API_URL
@@ -46,36 +44,11 @@ public class DatasourceDataFetcher {
             JsonNode rootNode = objectMapper.readTree(datasourceStringData);
 
             if (rootNode.has("data")) {
-                JsonNode dataNode = rootNode.get("data");
-
-                if (dataNode.has("accountIds")) {
-                    List<String> accountIds = new ArrayList<>();
-                    JsonNode accountIdsNode = dataNode.get("accountIds");
-                    for (JsonNode accountIdNode : accountIdsNode) {
-                        accountIds.add(accountIdNode.asText());
-                    }
-                    datasourceData.setAccountIds(accountIds);
-                }
-
-                if (dataNode.has("assetGroupDomains")) {
-                    JsonNode domainNode = dataNode.get("assetGroupDomains");
-                    Map<String, List<String>> assetGroupDomains = new HashMap<>();
-                    domainNode.fieldNames().forEachRemaining((nodeName) -> {
-                        List<String> domains = new ArrayList<>();
-                        JsonNode assetGroupsNode = domainNode.get(nodeName);
-                        for (JsonNode assetGroupNode : assetGroupsNode) {
-                            domains.add(assetGroupNode.asText());
-                        }
-                        assetGroupDomains.put(nodeName, domains);
-                    });
-                    datasourceData.setAssetGroupDomains(assetGroupDomains);
-                }
+                return objectMapper.treeToValue(rootNode.get("data"), DatasourceData.class);
             }
         } catch (Exception e) {
             LOGGER.error("Error while constructing datasource related data", e);
-            return null;
         }
-
-        return datasourceData;
+        return null;
     }
 }

@@ -373,6 +373,11 @@ public class AssetController {
     public ResponseEntity<Object> getAssetGroupsDataForShipperByDatasource(
             @RequestParam(name = "datasource") String datasource) {
         try {
+            if (!datasource.matches("^[a-z]+$")) {
+                LOGGER.error("Invalid input for 'datasource'. Only lower case alphabets are allowed.");
+                return ResponseUtils.buildFailureResponse(new Exception(
+                        "Invalid input for 'datasource'. Only lower case alphabets are allowed."));
+            }
             return ResponseUtils.buildSucessResponse(assetService.getAssetGroupsDataForShipperByDatasource(datasource));
         } catch (Exception e) {
             LOGGER.error("Error No assets group found for the specified data source : " + datasource, e);

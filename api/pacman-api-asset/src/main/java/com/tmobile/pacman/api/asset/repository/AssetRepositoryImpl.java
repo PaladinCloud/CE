@@ -3392,38 +3392,22 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         return totalDocumentCount;
     }
-    @Override
-    public List<String> getTargetTypesByDatasource(String datasource) {
-        return rdsRepository.getStringList("select targetName from cf_Target " +
-                "where lower(dataSourceName) = '" + datasource + "' and  (status = 'active' or status = 'enabled')");
-    }
 
     @Override
-    public List<String> getAliasByIndices(List<String> indices) {
-        Set<String> uniqueAliasNames = new HashSet<>();
-
+    public List<String> getAliasByDatasource(String datasource) {
         try {
-            for (String index : indices) {
-                String urlToQuery = esUrl + "/" + index + "/_alias";
-                String responseDetails = PacHttpUtils.getHttpGet(urlToQuery, new HashMap<>());
-                JsonNode rootNode = mapper.readTree(responseDetails);
-                JsonNode aliasesNode = rootNode.get(index).get("aliases");
-                Iterator<String> fieldNames = aliasesNode.fieldNames();
-                while (fieldNames.hasNext()) {
-                    String aliasName = fieldNames.next();
-                    uniqueAliasNames.add(aliasName);
-                }
-            }
+            return fetchAliases().entrySet().stream()
+                    .filter(entry -> entry.getValue().stream().anyMatch(value -> value.startsWith(datasource)))
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             LOGGER.error("An error occurred while retrieving alias names: " + e.getMessage(), e);
         }
-
-        return new ArrayList<>(uniqueAliasNames);
+        return new ArrayList<>();
     }
 
     @Override
     public List<String> getVisibleAssetGroupsFiltered(List<String> assetListToFilter) {
-
         String query = "select distinct groupName from cf_AssetGroupDetails where isVisible = true and groupName in " +
                 "('" + String.join("','", assetListToFilter) + "')";
         return rdsRepository.getStringList(query);
@@ -3431,10 +3415,34 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     @Override
     public List<String> getAccountsByDatasource(String datasource) {
-
         String query = "select accountId from cf_Accounts  where platform = '" +
                 datasource + "' and accountStatus= 'configured'";
         return rdsRepository.getStringList(query);
+    }
+
+    /**
+     * Fetches aliases from Elasticsearch and returns a mapping of aliases to their associated indices.
+     *
+     * @return A mapping of aliases to their associated indices.
+     * @throws IOException If an error occurs during the retrieval of aliases.
+     */
+    private Map<String, List<String>> fetchAliases() throws IOException {
+        String urlToQuery = esUrl + "/_cat/aliases";
+        String responseDetails = PacHttpUtils.getHttpGet(urlToQuery, new HashMap<>());
+
+        String[] lines = responseDetails.split("\n");
+        Map<String, List<String>> aliasIndexMap = new HashMap<>();
+        for (String line : lines) {
+            String[] parts = line.split("\\s+");
+            if (parts.length >= 2) {
+                String alias = parts[0];             // First part is the alias
+                String index = parts[1];             // Second part is the index
+                // If alias already exists in the map, add the index to its list
+                // Otherwise, create a new list for the alias and add the index
+                aliasIndexMap.computeIfAbsent(alias, k -> new ArrayList<>()).add(index);
+            }
+        }
+        return aliasIndexMap;
     }
 
 }

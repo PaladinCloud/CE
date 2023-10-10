@@ -2,6 +2,7 @@ package com.tmobile.cso.pacman.datashipper.entity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,40 +48,17 @@ public class AssetGroupStatsCollector implements Constants{
     private static final String CURR_DATE = new SimpleDateFormat(DATE_FORMAT).format(new java.util.Date());
 
     private List<Map<String,String>> errorList = new ArrayList<>();
+
+    // TODO: Remove this hardcoded value and eliminate the "domain" concept
+    private final List<String> domains = Collections.singletonList("Infra & Platforms");
     
     /**
      * Collect asset group stats.
      */
     public List<Map<String, String>> collectAssetGroupStats(DatasourceData datasourceData) {
-
-        
         log.info("Start Collecting asset group stats");
-        String token;
-        try {
-            token = getToken();
-        } catch (Exception e1) {
-            log.error("collectAssetGroupStats failed as unable to authenticate " , e1);
-            Map<String,String> errorMap = new HashMap<>();
-            errorMap.put(ERROR, "Exception in collectAssetGroupStats. Authorisation failed");
-            errorMap.put(ERROR_TYPE,FATAL);
-            errorMap.put(EXCEPTION, e1.getMessage());
-            errorList.add(errorMap);
-            return errorList;
-        }
-
         ESManager.createIndex(AG_STATS, errorList);
-
-//        ESManager.createType(AG_STATS, "count_type", errorList);
-//        ESManager.createType(AG_STATS, "count_asset", errorList);
-//        ESManager.createType(AG_STATS, "issuecompliance", errorList);
-//        ESManager.createType(AG_STATS, "compliance", errorList);
-//        ESManager.createType(AG_STATS, "tagcompliance", errorList);
-//        ESManager.createType(AG_STATS, "issues", errorList);
-//        if(VULN_API_URL!=null)
-//        	ESManager.createType(AG_STATS, "vulncompliance", errorList);
-
-
-        List<String> assetGroups = new ArrayList<>(datasourceData.getAssetGroupDomains().keySet());
+        List<String> assetGroups = datasourceData.getAssetGroups();
 
         ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -245,15 +223,15 @@ public class AssetGroupStatsCollector implements Constants{
     }
 
     /**
-     * Upload asset group rule compliance.
+     * Uploads asset group rule compliance data for the specified asset groups.
      *
-     * @param assetGroups
-     *            the asset groups
+     * @param datasourceData The data containing asset groups for which rule compliance data is uploaded.
+     * @throws Exception If an error occurs during the upload process.
      */
     public  void uploadAssetGroupRuleCompliance(DatasourceData datasourceData) throws Exception {
         log.info("    Start Collecing Rule  compliance");
         List<Map<String, Object>> docs = new ArrayList<>();
-        datasourceData.getAssetGroupDomains().forEach((ag, domains) -> {
+        datasourceData.getAssetGroups().forEach((ag) -> {
             List<Map<String, Object>> docList = new ArrayList<>();
             try {
                 docList = AssetGroupUtil.fetchPolicyComplianceInfo(COMP_API_URL, ag, domains,getToken());
@@ -279,18 +257,18 @@ public class AssetGroupStatsCollector implements Constants{
         log.info("    End Collecing Rule  compliance");
     }
 
- 
+
 
     /**
-     * Upload asset group compliance.
+     * Uploads asset group compliance data for the specified asset groups.
      *
-     * @param assetGroups
-     *            the asset groups
+     * @param datasourceData The data containing asset groups for which compliance data is uploaded.
+     * @throws Exception If an error occurs during the upload process.
      */
     public void uploadAssetGroupCompliance(DatasourceData datasourceData) throws Exception {
         log.info("    Start Collecing  compliance");
         List<Map<String, Object>> docs = new ArrayList<>();
-        datasourceData.getAssetGroupDomains().forEach((ag, domains) -> {
+        datasourceData.getAssetGroups().forEach((ag) -> {
             try {
                 List<Map<String, Object>> docList = AssetGroupUtil.fetchComplianceInfo(COMP_API_URL, ag, domains,getToken());
                 docList.parallelStream().forEach(doc -> {
@@ -381,15 +359,15 @@ public class AssetGroupStatsCollector implements Constants{
     }
 
     /**
-     * Upload asset group issues.
+     * Uploads asset group issues for the specified asset groups.
      *
-     * @param assetGroups
-     *            the asset groups
+     * @param datasourceData The data containing asset groups for which issues are uploaded.
+     * @throws Exception If an error occurs during the upload process.
      */
     public void uploadAssetGroupIssues(DatasourceData datasourceData) throws Exception {
         log.info("    Start Collecing  issues");
         List<Map<String, Object>> docs = new ArrayList<>();
-        datasourceData.getAssetGroupDomains().forEach((ag, domains) -> {
+        datasourceData.getAssetGroups().forEach((ag) -> {
             try {
                 List<Map<String, Object>> docList = AssetGroupUtil.fetchIssuesInfo(COMP_API_URL, ag, domains,getToken());
                 docList.parallelStream().forEach(doc -> {

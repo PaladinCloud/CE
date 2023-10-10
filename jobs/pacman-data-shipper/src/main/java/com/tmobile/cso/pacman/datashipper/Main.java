@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import com.tmobile.cso.pacman.datashipper.dto.DatasourceData;
 import com.tmobile.cso.pacman.datashipper.entity.DatasourceDataFetcher;
-import com.tmobile.cso.pacman.datashipper.util.AuthManager;
-import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +51,6 @@ public class Main implements Constants {
      * @return 
      */
     public static Map<String, Object> shipData(Map<String, String> params) {
-        List<DatasourceData> datasourceDataList = new ArrayList<>();
     	String jobName = System.getProperty("jobName");
         List<Map<String,String>> errorList = new ArrayList<>();
         try {
@@ -74,9 +71,9 @@ public class Main implements Constants {
             DatasourceData datasourceData = DatasourceDataFetcher.getInstance().fetchDatasourceData(ds);
             if (datasourceData != null) {
                 List<String> accountIds = datasourceData.getAccountIds();
-                Map<String, List<String>> assetGroupDomains = datasourceData.getAssetGroupDomains();
+                List<String> assetGroups = datasourceData.getAssetGroups();
 
-                if (assetGroupDomains != null && !assetGroupDomains.isEmpty()) {
+                if (assetGroups != null && !assetGroups.isEmpty()) {
                     AssetGroupStatsCollector assetGroupStatsCollector = new AssetGroupStatsCollector();
                     errorList.addAll(assetGroupStatsCollector.collectAssetGroupStats(datasourceData));
                 }
@@ -89,7 +86,20 @@ public class Main implements Constants {
                     errorList.addAll(assetsCountManager.populateAssetCount(ds, accountIds));
                 }
             }
+            else {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Unexpected error while fetching accountIds and assetGroups, " +
+                        "DatasourceData is null");
+                errorMap.put(ERROR_TYPE, ERROR);
+                errorList.add(errorMap);
+                LOGGER.error("Datasource data is null");
+            }
         } catch (Exception e) {
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put(ERROR, "Exception in updating stats");
+            errorMap.put(ERROR_TYPE, ERROR);
+            errorMap.put(EXCEPTION, e.getMessage());
+            errorList.add(errorMap);
             LOGGER.error("Error while updating stats", e);
         }
 

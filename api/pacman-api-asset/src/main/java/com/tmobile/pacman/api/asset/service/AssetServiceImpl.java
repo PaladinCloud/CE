@@ -1318,18 +1318,10 @@ public class AssetServiceImpl implements AssetService {
 
     public DatasourceData getAssetGroupsDataForShipperByDatasource(final String datasource) {
         DatasourceData datasourceData = new DatasourceData();
-        Map<String, List<String>> assetGroupDomains = new HashMap<>();
-        List<String> targetTypes = repository.getTargetTypesByDatasource(datasource);
-        List<String> indices = targetTypes.stream().map(targetType ->
-                datasource + Constants.DELIMITER_UNDERSCORE + targetType).collect(Collectors.toList());
-        List<String> aliases = repository.getAliasByIndices(indices);
+        List<String> aliases = repository.getAliasByDatasource(datasource);
         List<String> assetGroups = repository.getVisibleAssetGroupsFiltered(aliases);
-        assetGroups.forEach(assetGroup -> {
-            assetGroupDomains.put(assetGroup, getDomains(assetGroup));
-        });
-        datasourceData.setAssetGroupDomains(assetGroupDomains);
+        datasourceData.setAssetGroups(assetGroups);
         datasourceData.setAccountIds(repository.getAccountsByDatasource(datasource));
         return datasourceData;
-
     }
 }

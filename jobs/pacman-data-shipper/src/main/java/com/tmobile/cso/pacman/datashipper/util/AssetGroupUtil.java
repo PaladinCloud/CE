@@ -34,25 +34,6 @@ public class AssetGroupUtil {
     private AssetGroupUtil(){
         
     }
-    /**
-     * Fetch asset groups.
-     *
-     * @param asstApiUri
-     *            the asst api uri
-     * @return the map
-     * @throws Exception 
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<String, List<String>> fetchAssetGroups(String asstApiUri,String token) throws Exception {
-        String assetGroupJson = HttpUtil.get(asstApiUri + "/list/assetgroup",token);
-        Map<String, Object> assetInfoMap = Util.parseJson(assetGroupJson);
-        Map<String, List<String>> assetGroups = new HashMap<>();
-        if (!assetInfoMap.isEmpty()) {
-            assetGroups = ((List<Map<String, Object>>) assetInfoMap.get("data")).stream().collect(
-                    Collectors.toMap(obj -> obj.get("name").toString(), obj -> (List<String>) obj.get("domains")));
-        }
-        return assetGroups;
-    }
 
     /**
      * Fetch type counts.

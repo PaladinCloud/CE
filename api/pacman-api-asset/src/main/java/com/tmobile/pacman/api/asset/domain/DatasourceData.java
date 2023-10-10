@@ -10,5 +10,5 @@ public class DatasourceData {
 
     private List<String> accountIds;
 
-    private Map<String, List<String>> assetGroupDomains;
+    private List<String> assetGroups;
 }
