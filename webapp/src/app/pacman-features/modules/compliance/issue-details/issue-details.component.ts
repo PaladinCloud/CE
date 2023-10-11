@@ -921,10 +921,14 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
               if(response.message==='success'){
                 this.clearViolationsPreservedData();
                 setTimeout(() => {
+                  this.exceptionAdded = !this.exceptionAdded;
                   this.checkRevoke = false;
                   this.showLoadcompleteRevoke = true;
                 }, 100);
-                this.updateComponent();
+                this.getRuleDesc();
+                // update exempt/open tile
+                // update audit log
+                // update violation modified date
               }
             },
             error => {
@@ -1051,7 +1055,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
               this.check = true;
               this.showLoadcomplete = true;
               this.showTopSection = false;
-              this.updateComponent();
+              this.exceptionAdded = !this.exceptionAdded;
+              this.getRuleDesc();
             }
             else{
               const message = "Adding an exemption has failed!"
