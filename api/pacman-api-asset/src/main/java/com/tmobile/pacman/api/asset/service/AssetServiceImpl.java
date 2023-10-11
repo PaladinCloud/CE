@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.*;
 import com.tmobile.pacman.api.asset.AssetConstants;
 import com.tmobile.pacman.api.asset.client.ComplianceServiceClient;
-import com.tmobile.pacman.api.asset.domain.DatasourceData;
 import com.tmobile.pacman.api.asset.domain.FilterRequest;
 import com.tmobile.pacman.api.asset.domain.Request;
 import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
@@ -1314,14 +1313,5 @@ public class AssetServiceImpl implements AssetService {
         }
         LOGGER.info("setSourceDisplayName Method() Ends here");
         return sourceDisplayName;
-    }
-
-    public DatasourceData getAssetGroupsDataForShipperByDatasource(final String datasource) {
-        DatasourceData datasourceData = new DatasourceData();
-        List<String> aliases = repository.getAliasByDatasource(datasource);
-        List<String> assetGroups = repository.getVisibleAssetGroupsFiltered(aliases);
-        datasourceData.setAssetGroups(assetGroups);
-        datasourceData.setAccountIds(repository.getAccountsByDatasource(datasource));
-        return datasourceData;
     }
 }

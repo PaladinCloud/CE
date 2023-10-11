@@ -367,23 +367,4 @@ public class AssetController {
                     "No Assets found for the asset group with provided tag."));
         }
     }
-
-    @ApiOperation(httpMethod = "GET", value = "Get List of Asset group and accountIds for stats by datasource")
-    @GetMapping(value = "v1/list/assetGroupsByDatasource")
-    public ResponseEntity<Object> getAssetGroupsDataForShipperByDatasource(
-            @RequestParam(name = "datasource") String datasource) {
-        try {
-            if (!datasource.matches("^[a-z]+$")) {
-                LOGGER.error("Invalid input for 'datasource'. Only lower case alphabets are allowed.");
-                return ResponseUtils.buildFailureResponse(new Exception(
-                        "Invalid input for 'datasource'. Only lower case alphabets are allowed."));
-            }
-            return ResponseUtils.buildSucessResponse(assetService.getAssetGroupsDataForShipperByDatasource(datasource));
-        } catch (Exception e) {
-            LOGGER.error("Error No assets group found for the specified data source : " + datasource, e);
-            return ResponseUtils.buildFailureResponse(new Exception(
-                    "No assets group found for the specified data source: " + datasource + ". " +
-                            "Please ensure that the data source name is correct and that the assets group exists."));
-        }
-    }
 }

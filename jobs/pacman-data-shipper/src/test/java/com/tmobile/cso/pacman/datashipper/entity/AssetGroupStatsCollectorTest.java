@@ -78,12 +78,13 @@ public class AssetGroupStatsCollectorTest {
         doNothing().when(ESManager.class);
         ESManager.uploadData(anyString(), anyString(), anyList(), anyString(), anyBoolean());
 
-        Map<String, List<String>> assetGroups = new HashMap<>();
-        List<String> domains = new ArrayList<>();
-        domains.add("infra");
-        assetGroups.put("pacman", domains);
+        List<String> assetGroups = new ArrayList<>();
+        List<String> accountIds = new ArrayList<>();
+        assetGroups.add("test");
+        accountIds.add("test");
         DatasourceData datasourceData = new DatasourceData();
-        datasourceData.setAssetGroupDomains(assetGroups);
+        datasourceData.setAssetGroups(assetGroups);
+        datasourceData.setAccountIds(accountIds);
         assetGroupStatsCollector.uploadAssetGroupRuleCompliance(datasourceData);
     }
     
@@ -107,13 +108,14 @@ public class AssetGroupStatsCollectorTest {
         PowerMockito.mockStatic(ESManager.class);
         doNothing().when(ESManager.class);
         ESManager.uploadData(anyString(), anyString(), anyList(), anyString(), anyBoolean());
-        
-        Map<String, List<String>> assetGroups = new HashMap<>();
-        List<String> domains = new ArrayList<>();
-        domains.add("infra");
-        assetGroups.put("pacman", domains);
+
+        List<String> assetGroups = new ArrayList<>();
+        List<String> accountIds = new ArrayList<>();
+        assetGroups.add("test");
+        accountIds.add("test");
         DatasourceData datasourceData = new DatasourceData();
-        datasourceData.setAssetGroupDomains(assetGroups);
+        datasourceData.setAssetGroups(assetGroups);
+        datasourceData.setAccountIds(accountIds);
         assetGroupStatsCollector.uploadAssetGroupCompliance(datasourceData);
     }
     
@@ -165,12 +167,13 @@ public class AssetGroupStatsCollectorTest {
         doNothing().when(ESManager.class);
         ESManager.uploadData(anyString(), anyString(), anyList(), anyString(), anyBoolean());
         
-        Map<String, List<String>> assetGroups = new HashMap<>();
-        List<String> domains = new ArrayList<>();
-        domains.add("infra");
-        assetGroups.put("pacman", domains);
+        List<String> assetGroups = new ArrayList<>();
+        List<String> accountIds = new ArrayList<>();
+        assetGroups.add("test");
+        accountIds.add("test");
         DatasourceData datasourceData = new DatasourceData();
-        datasourceData.setAssetGroupDomains(assetGroups);
+        datasourceData.setAssetGroups(assetGroups);
+        datasourceData.setAccountIds(accountIds);
         assetGroupStatsCollector.uploadAssetGroupIssues(datasourceData);
     }
     
@@ -178,13 +181,14 @@ public class AssetGroupStatsCollectorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCollectAssetGroupStats() throws Exception{
-        
-        Map<String, List<String>> assetGroups = new HashMap<>();
-        List<String> domains = new ArrayList<>();
-        domains.add("infra");
-        assetGroups.put("pacman", domains);
+
+        List<String> assetGroups = new ArrayList<>();
+        List<String> accountIds = new ArrayList<>();
+        assetGroups.add("test");
+        accountIds.add("test");
         DatasourceData datasourceData = new DatasourceData();
-        datasourceData.setAssetGroupDomains(assetGroups);
+        datasourceData.setAssetGroups(assetGroups);
+        datasourceData.setAccountIds(accountIds);
         
         PowerMockito.mockStatic(AssetGroupUtil.class);
       
