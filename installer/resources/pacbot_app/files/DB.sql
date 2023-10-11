@@ -3055,7 +3055,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
  /* RedHat Index*/
  INSERT IGNORE INTO `cf_AssetGroupDetails` (`groupId`, `groupName`, `dataSource`, `displayName`, `groupType`, `createdBy`, `createdUser`, `createdDate`, `modifiedUser`, `modifiedDate`, `description`, `aliasQuery`, `isVisible`)  
  values('e0008397-f74e-4deb-9066-10bdf1120','redhat','redhat','Red Hat','System','admin@paladincloud.io','admin@paladincloud.io','08/17/2023 06:13',
- 'admin@paladincloud.io','08/17/2023 06:13','Red Hat','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}','1');
+ 'admin@paladincloud.io','08/17/2023 06:13','Red Hat','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}','0');
  
  /* Red Hat asset Node, Cluster */
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
@@ -3071,3 +3071,6 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
   update pac_v2_ui_options set optionName ="Source" where optionId='32';
   update pac_v2_ui_options set optionName ="Source" where optionId='57';
   update pac_v2_ui_options set optionName ="Source" where optionId='43';
+
+ UPDATE `cf_AssetGroupDetails` SET `isVisible` = '0' WHERE `groupName` = 'redhat';
+
