@@ -40,7 +40,7 @@ public class KeyVaultsSecretExpirationDate extends BasePolicy {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "/azure_"+targetType+"/_search";
+            esUrl = url + "/azure_vaults/_search";
         }
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
