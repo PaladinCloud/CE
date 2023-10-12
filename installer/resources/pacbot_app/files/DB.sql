@@ -3077,5 +3077,5 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
   update pac_v2_ui_options set optionName ="Source" where optionId='57';
   update pac_v2_ui_options set optionName ="Source" where optionId='43';
 
-  update cf_Target set status="finding" where targetName="launchtemplate";
+  update cf_Target set status="finding" where targetName in ("launchtemplate","securitypricings") ;
 
