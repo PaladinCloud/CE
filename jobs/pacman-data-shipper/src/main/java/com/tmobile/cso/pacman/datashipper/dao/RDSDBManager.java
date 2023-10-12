@@ -150,4 +150,17 @@ public class RDSDBManager {
             LOGGER.error("Error Executing Query", ex);
         }
     }
+
+    public static List<String> executeStringQuery(String query) {
+        List<String> results = new ArrayList<>();
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                results.add(rs.getString(1));
+            }
+        } catch (Exception ex) {
+            LOGGER.error("Error Executing Query", ex);
+        }
+        return results;
+    }
 }
