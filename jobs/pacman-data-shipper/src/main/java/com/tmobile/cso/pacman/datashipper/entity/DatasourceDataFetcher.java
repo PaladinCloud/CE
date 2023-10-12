@@ -4,34 +4,36 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.dto.DatasourceData;
-import com.tmobile.cso.pacman.datashipper.util.AuthManager;
 import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
-import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class DatasourceDataFetcher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasourceDataFetcher.class);
     private static final String ES_URI = System.getenv("ES_URI");
 
-    private static DatasourceDataFetcher instance;
+    private final ObjectMapper objectMapper;
 
     private DatasourceDataFetcher() {
+        objectMapper = new ObjectMapper();
+    }
+
+    private static final class InstanceHolder {
+        static final DatasourceDataFetcher instance = new DatasourceDataFetcher();
     }
 
     public static DatasourceDataFetcher getInstance() {
-        if (instance == null) {
-            instance = new DatasourceDataFetcher();
-        }
-        return instance;
+        return InstanceHolder.instance;
     }
 
     /**
@@ -63,11 +65,18 @@ public class DatasourceDataFetcher {
      * @return A list of unique alias names associated with the specified indices.
      */
     private List<String> getAliasByDatasource(String datasource) {
+        Set<String> uniqueAliases = new HashSet<>();
         try {
-            return fetchAliases().entrySet().stream()
-                    .filter(entry -> entry.getValue().stream().anyMatch(value -> value.startsWith(datasource + "_")))
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.toList());
+            JsonNode rootNode = objectMapper.readTree(fetchAliases(datasource));
+            // Loop through each root node to get a list of unique aliases
+            rootNode.fields().forEachRemaining(rootNodeEntry -> {
+                JsonNode aliases = rootNodeEntry.getValue().path("aliases");
+                for (Iterator<Map.Entry<String, JsonNode>> it = aliases.fields(); it.hasNext(); ) {
+                    Map.Entry<String, JsonNode> alias = it.next();
+                    uniqueAliases.add(alias.getKey());
+                }
+            });
+            return new ArrayList<>(uniqueAliases);
         } catch (Exception e) {
             LOGGER.error("An error occurred while retrieving alias names: " + e.getMessage(), e);
         }
@@ -83,7 +92,7 @@ public class DatasourceDataFetcher {
     private List<String> getVisibleAssetGroupsFiltered(List<String> assetListToFilter) {
         String query = "select distinct groupName from cf_AssetGroupDetails where isVisible = true and groupName in " +
                 "('" + String.join("','", assetListToFilter) + "')";
-        return  RDSDBManager.executeStringQuery(query);
+        return RDSDBManager.executeStringQuery(query);
     }
 
     /**
@@ -99,27 +108,13 @@ public class DatasourceDataFetcher {
     }
 
     /**
-     * Fetches aliases from Elasticsearch and returns a mapping of aliases to their associated indices.
+     * Fetches aliases from Elasticsearch and returns a mapping of aliases to their associated indices as String.
      *
-     * @return A mapping of aliases to their associated indices.
+     * @return A mapping of aliases to their associated indices as String.
      * @throws IOException If an error occurs during the retrieval of aliases.
      */
-    private Map<String, List<String>> fetchAliases() throws Exception {
-        String urlToQuery = ES_URI + "/_cat/aliases";
-        String responseDetails = HttpUtil.httpGetMethodWithHeaders(urlToQuery, new HashMap<>());
-
-        String[] lines = responseDetails.split("\n");
-        Map<String, List<String>> aliasIndexMap = new HashMap<>();
-        for (String line : lines) {
-            String[] parts = line.split("\\s+");
-            if (parts.length >= 2) {
-                String alias = parts[0];             // First part is the alias
-                String index = parts[1];             // Second part is the index
-                // If alias already exists in the map, add the index to its list
-                // Otherwise, create a new list for the alias and add the index
-                aliasIndexMap.computeIfAbsent(alias, k -> new ArrayList<>()).add(index);
-            }
-        }
-        return aliasIndexMap;
+    private String fetchAliases(String datasource) throws Exception {
+        String urlToQuery = ES_URI + "/_alias?filter_path=" + datasource + "_*.aliases";
+        return HttpUtil.httpGetMethodWithHeaders(urlToQuery, new HashMap<>());
     }
 }
