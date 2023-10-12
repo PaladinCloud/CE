@@ -605,7 +605,9 @@ public class ComplianceController implements Constants {
 
         DitributionDTO distribution = null;
         try {
-            distribution = new DitributionDTO(complianceService.getOverallComplianceByDomain(assetGroup, domain));
+            distribution = new DitributionDTO(complianceService.getComplianceByCategoryAndDomain(assetGroup, domain));
+
+         //   distribution = new DitributionDTO(complianceService.getOverallComplianceByDomain(assetGroup, domain));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
