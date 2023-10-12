@@ -45,6 +45,7 @@ import {
     DashboardArrangementService,
     DashboardContainerIndex,
 } from '../services/dashboard-arrangement.service';
+import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 
 @Component({
     selector: 'app-compliance-dashboard',
@@ -286,26 +287,16 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         private utils: UtilsService,
         private windowExpansionService: WindowExpansionService,
         private workflowService: WorkflowService,
+        private agDomainObservableService: AgDomainObservableService,
         private assetTypeMapService: AssetTypeMapService
     ) {
       this.getPreservedState();
-      this.assetGroupSubscription = this.subscriptionToAssetGroup =
-        this.assetGroupObservableService
-        .getAssetGroup()
-        .subscribe(async(assetGroupName) => {
-              await this.getPreservedState();
-              this.selectedAssetGroup = assetGroupName;
-              this.updateComponent();
-            });
-
-      this.subscriptionDomain = this.domainObservableService
-        .getDomainType()
-        .subscribe((domain) => {
-          this.selectedDomain = domain;
-          if(this.selectedAssetGroup){
-            this.updateComponent();
-          }
-        });
+      this.agDomainObservableService.getAgDomain().subscribe(async([assetGroupName, domain]) => {
+        await this.getPreservedState();
+        this.selectedAssetGroup = assetGroupName;
+        this.selectedDomain = domain;
+        this.updateComponent();
+      })
     }
 
     async getPreservedState(){

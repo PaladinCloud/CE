@@ -20,6 +20,7 @@ import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.s
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
+import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 
 enum PolicyCategory {
     ALL_POLICIES = 'all policies',
@@ -149,14 +150,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   totalRows = 0;
   assetTypeMap: any;
 
-  constructor(private assetGroupObservableService: AssetGroupObservableService,
+  constructor(private agDomainObservableService: AgDomainObservableService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private commonResponseService: CommonResponseService,
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
-    private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService,
     private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService,
@@ -168,7 +168,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     ) {
 
       this.getPreservedState();
-      combineLatest([this.assetGroupObservableService.getAssetGroup(), this.domainObservableService.getDomainType()]).subscribe(([ag, domain]) => {
+      this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
         this.selectedAssetGroup = ag;
         this.selectedDomain = domain;
         this.updateComponent();
