@@ -18,6 +18,7 @@ import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { SharedModule } from './../shared/shared.module';
 import { GraphQLModule } from './graphql/graphql.module';
 import { AdalService } from './services/adal.service';
+import { AgDomainObservableService } from './services/ag-domain-observable.service';
 import { AssetGroupObservableService } from './services/asset-group-observable.service';
 import { AssetTilesService } from './services/asset-tiles.service';
 import { AuthSessionStorageService } from './services/auth-session-storage.service';
@@ -42,6 +43,7 @@ import { WorkflowService } from './services/workflow.service';
     providers: [
         AdalService,
         AssetGroupObservableService,
+        AgDomainObservableService,
         AssetTilesService,
         AuthService,
         AuthSessionStorageService,
