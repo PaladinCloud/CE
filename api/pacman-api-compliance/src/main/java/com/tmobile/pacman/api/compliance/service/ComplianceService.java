@@ -227,6 +227,8 @@ public interface ComplianceService {
      */
     Map<String, Object> getOverallComplianceByDomain(String assetGroup, String domain) throws ServiceException;
 
+    public Map<String, Object> getComplianceByCategoryAndDomain(String assetGroup, String domain) throws ServiceException;
+
     /**
      * Gets the list of targetTypes for given asset group and domain
      * based on project target types configurations.
