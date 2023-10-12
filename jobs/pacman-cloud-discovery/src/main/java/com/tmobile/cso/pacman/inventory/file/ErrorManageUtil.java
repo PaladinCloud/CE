@@ -180,15 +180,14 @@ public class ErrorManageUtil {
                 }
             }
             if (!assetPermissionMapping.isEmpty()) {
-                permissionVH.setAssetPermissionIssue(assetPermissionMapping);
+                permissionVH.setAssetPermissionIssues(assetPermissionMapping);
                 permissionIssue.add(permissionVH);
             }
             if (errorVHList.isEmpty()) {
                 errorMap.remove(entry.getKey());
             }
         }
-        //commenting to avoid too many requests
-        NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue, "AWS");
+        NotificationPermissionUtils.triggerNotificationForPermissionDenied(permissionIssue, "AWS");
     }
 
     private static void shortenMessageforKMS(ErrorVH errorVH) {

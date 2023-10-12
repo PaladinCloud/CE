@@ -149,7 +149,6 @@ public class ErrorManageUtil {
 					PermissionVH permissionVH=new PermissionVH();
 					log.info("Omit exception :{}",errorVH.getException());
 					permissionVH.setAccountNumber(entry.getKey());
-					permissionVH.setErrorVH(errorVH);
 					permissionIssue.add(permissionVH);
 					errorVHList.remove(errorVH);
 				}

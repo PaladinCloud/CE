@@ -4,16 +4,16 @@ import java.util.List;
 import java.util.Map;
 
 public class PermissionVH {
-    Map<String, List<String>> assetPermissionIssue;
+    Map<String, List<String>> assetPermissionIssues;
     String accountNumber;
 
 
-    public Map<String, List<String>> getAssetPermissionIssue() {
-        return assetPermissionIssue;
+    public Map<String, List<String>> getAssetPermissionIssues() {
+        return assetPermissionIssues;
     }
 
-    public void setAssetPermissionIssue(Map<String, List<String>> assetPermissionIssue) {
-        this.assetPermissionIssue = assetPermissionIssue;
+    public void setAssetPermissionIssues(Map<String, List<String>> assetPermissionIssues) {
+        this.assetPermissionIssues = assetPermissionIssues;
     }
 
     public String getAccountNumber() {

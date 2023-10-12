@@ -123,15 +123,6 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
             errorMap.put(ERROR_TYPE, FATAL);
             errorMap.put(EXCEPTION, e.getMessage());
             errorList.add(errorMap);
-//            List<PermissionVH> permissionVHList=new ArrayList<>();
-//            PermissionVH permissionVH=new PermissionVH();
-//            ErrorVH errorVH=new ErrorVH();
-//            errorVH.setException(e.getMessage());
-//            errorVH.setType("ec2");
-//            permissionVH.setAccountNumber("Qualys-connector");
-//            permissionVH.setErrorVH(errorVH);
-//            permissionVHList.add(permissionVH);
-//            NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionVHList,"Qualys");
         }catch (Exception e) {
             LOGGER.error("Error fetching host assets ", e);
             Map<String,String> errorMap = new HashMap<>();
