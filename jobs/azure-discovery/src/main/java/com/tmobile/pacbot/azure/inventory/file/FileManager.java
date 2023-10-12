@@ -88,7 +88,6 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-diagnosticsetting.data", "[", false);
 		FileGenerator.writeToFile("azure-defender.data", "[", false);
 		FileGenerator.writeToFile("azure-kubernetes.data", "[", false);
-		FileGenerator.writeToFile("azure-vaultsrbac.data", "[", false);
 	}
 
 	public static void finalise() throws IOException {
@@ -136,7 +135,6 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-diagnosticsetting.data", "]", true);
 		FileGenerator.writeToFile("azure-defender.data", "]", true);
 		FileGenerator.writeToFile("azure-kubernetes.data", "]", true);
-		FileGenerator.writeToFile("azure-vaultsrbac.data", "]", true);
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -268,10 +266,6 @@ public class FileManager {
 
 	public static void generateVaultFiles(List<VaultVH> vaultList) throws IOException {
 		FileGenerator.generateJson(vaultList, "azure-vaults.data");
-
-	}
-	public static void generateVaultRABCFiles(List<VaultVH> vaultRBACList) throws IOException {
-		FileGenerator.generateJson(vaultRBACList, "azure-vaultsrbac.data");
 
 	}
 

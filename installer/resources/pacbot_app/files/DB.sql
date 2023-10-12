@@ -1388,6 +1388,7 @@ INSERT IGNORE INTO cf_AssetGroupTargetDetails (`id_`, groupId, targetType, attri
 delete from `cf_AssetGroupTargetDetails` where targetType ='ecs';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policydefinitions';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policyevaluationresults';
+delete from `cf_AssetGroupTargetDetails` where targetType = 'vaultsrbac';
 
 /*Insert Domain in required table*/
 
@@ -2753,7 +2754,7 @@ INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `pr
 /* Update DisplayName  to TargetName if the value is null in Target table */
 update cf_Target set displayName = targetName where displayName is null;
 
-Update cf_Target set status = 'disabled' where targetName in ('asgpolicy','cloudwatchalarm','cloudwatchlogs','customergateway','datastream','deliverystream','dhcpoption','directconnect','iamgroup','internetgateway','nat','rdscluster','reservedinstance','route53','routetable','targetgroup','videostream','virtualinterface','vpnconnection','cosmosdb','diagnosticsetting','mariadb','publicipaddress','searchservices','securityalerts','sites');
+Update cf_Target set status = 'disabled' where targetName in ('asgpolicy','cloudwatchalarm','cloudwatchlogs','customergateway','datastream','deliverystream','dhcpoption','directconnect','iamgroup','internetgateway','nat','rdscluster','reservedinstance','route53','routetable','targetgroup','videostream','virtualinterface','vpnconnection','cosmosdb','diagnosticsetting','mariadb','publicipaddress','searchservices','securityalerts','sites','vaultsrbac');
 
 
 /* disable policydefinition , policyevaluationresults and phd */
