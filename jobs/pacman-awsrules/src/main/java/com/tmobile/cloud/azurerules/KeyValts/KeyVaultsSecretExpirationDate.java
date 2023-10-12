@@ -31,7 +31,6 @@ public class KeyVaultsSecretExpirationDate extends BasePolicy {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String successMSG = ruleParam.get(PacmanRuleConstants.SUCCESS);
         String failureMsg = ruleParam.get(PacmanRuleConstants.FAILURE);
-        String targetType=ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);

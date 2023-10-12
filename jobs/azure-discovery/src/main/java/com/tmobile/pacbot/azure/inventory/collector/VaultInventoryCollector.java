@@ -100,7 +100,7 @@ public class VaultInventoryCollector {
 			log.debug("Resource group name: {}", resourceGroupName);
 			vaultVH.setResourceGroupName(resourceGroupName);
 			Vault azureVault = azure.vaults().getById(id);
-			if(vaultVH.isEnableRbacAuthorization()) {
+			if (vaultVH.isEnableRbacAuthorization()) {
 				setKeyExpirationDate(azureVault, vaultVH);
 				setSecretExpirationDate(azureVault, vaultVH);
 			}

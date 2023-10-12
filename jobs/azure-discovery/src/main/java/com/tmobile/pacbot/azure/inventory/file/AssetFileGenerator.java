@@ -12,7 +12,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.pacbot.azure.inventory.collector.*;
-import com.tmobile.pacbot.azure.inventory.vo.VaultVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;

@@ -22,50 +22,49 @@ import com.tmobile.pacman.commons.utils.CommonUtils;
 
 @Component
 public class SecurityAlertsInventoryCollector {
-	
-	@Autowired
-	AzureCredentialProvider azureCredentialProvider;
-	
-	private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/alerts?api-version=2019-01-01";
-	private static Logger log = LoggerFactory.getLogger(SecurityAlertsInventoryCollector.class);
-	
-	public List<SecurityAlertsVH> fetchSecurityAlertsDetails(SubscriptionVH subscription) throws Exception {
 
-		List<SecurityAlertsVH> securityAlertsList = new ArrayList<SecurityAlertsVH>();
-		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+    @Autowired
+    AzureCredentialProvider azureCredentialProvider;
 
-		String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()));
-		try {
-			String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
-			JsonArray securityAlertsObjects = responseObj.getAsJsonArray("value");
-			for (JsonElement securityAlertsElement : securityAlertsObjects) {
-				SecurityAlertsVH securityAlertsVH = new SecurityAlertsVH();
-				JsonObject databricksObject = securityAlertsElement.getAsJsonObject();
-				JsonObject properties = databricksObject.getAsJsonObject("properties");
-				securityAlertsVH.setId(databricksObject.get("id").getAsString());
-				securityAlertsVH.setName(databricksObject.get("name").getAsString());
-				securityAlertsVH.setType(databricksObject.get("type").getAsString());
-				securityAlertsVH.setSubscription(subscription.getSubscriptionId());
-				securityAlertsVH.setSubscriptionName(subscription.getSubscriptionName());
-				String id=securityAlertsVH.getId();
-				String region=id.substring(id.indexOf("locations/")+new String("locations/").length(),id.indexOf("/alerts"));
-				securityAlertsVH.setRegion(Util.getRegionValue(subscription,region));
-				securityAlertsVH.setResourceGroupName(Util.getResourceGroupNameFromId(databricksObject.get("id").getAsString()));
+    private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/alerts?api-version=2019-01-01";
+    private static Logger log = LoggerFactory.getLogger(SecurityAlertsInventoryCollector.class);
 
-				if (properties != null) {
-					HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
-					securityAlertsVH.setPropertiesMap(propertiesMap);
-				}
-				securityAlertsList.add(securityAlertsVH);
-			}
-		} catch (Exception e) {
-			log.error("Error collecting Security Alerts",e);
-			Util.eCount.getAndIncrement();
-		}
+    public List<SecurityAlertsVH> fetchSecurityAlertsDetails(SubscriptionVH subscription) throws Exception {
 
-		log.info("Target Type : {}  Total: {} ","Security Alerts",securityAlertsList.size());
-		return securityAlertsList;
-	}
+        List<SecurityAlertsVH> securityAlertsList = new ArrayList<SecurityAlertsVH>();
+        String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+
+        String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()));
+        try {
+            String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
+            JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+            JsonArray securityAlertsObjects = responseObj.getAsJsonArray("value");
+            for (JsonElement securityAlertsElement : securityAlertsObjects) {
+                SecurityAlertsVH securityAlertsVH = new SecurityAlertsVH();
+                JsonObject databricksObject = securityAlertsElement.getAsJsonObject();
+                String id = databricksObject.get("id").getAsString();
+                JsonObject properties = databricksObject.getAsJsonObject("properties");
+                securityAlertsVH.setId(id);
+                securityAlertsVH.setName(databricksObject.get("name").getAsString());
+                securityAlertsVH.setType(databricksObject.get("type").getAsString());
+                securityAlertsVH.setSubscription(subscription.getSubscriptionId());
+                securityAlertsVH.setSubscriptionName(subscription.getSubscriptionName());
+                String region = id.substring(id.indexOf("locations/") + ("locations/").length(), id.indexOf("/alerts"));
+                securityAlertsVH.setRegion(Util.getRegionValue(subscription, region));
+                securityAlertsVH.setResourceGroupName(Util.getResourceGroupNameFromId(databricksObject.get("id").getAsString()));
+                if (properties != null) {
+                    HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
+                    securityAlertsVH.setPropertiesMap(propertiesMap);
+                }
+                securityAlertsList.add(securityAlertsVH);
+            }
+        } catch (Exception e) {
+            log.error("Error collecting Security Alerts", e);
+            Util.eCount.getAndIncrement();
+        }
+
+        log.info("Target Type : {}  Total: {} ", "Security Alerts", securityAlertsList.size());
+        return securityAlertsList;
+    }
 
 }
