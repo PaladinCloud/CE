@@ -50,7 +50,6 @@ public class NotificationPermissionUtils {
         return notificationBaseRequest;
     }
     private static JSONObject getPermissionNotificationRequest(String cloudType, List<PermissionVH> permissionVHList) {
-        List<PermissionNotificationRequest> permissionNotificationRequestList = new ArrayList<>();
         JSONObject payload = new JSONObject();
         payload.put("cloudType", cloudType);
         payload.put("message", "Unable to collect data due to missing permission");

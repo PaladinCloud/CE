@@ -15,9 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.tmobile.cso.pacman.qualys.exception.UnAuthorisedException;
-import com.tmobile.pacman.commons.dto.ErrorVH;
-import com.tmobile.pacman.commons.dto.PermissionVH;
-import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 import org.apache.http.ParseException;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;

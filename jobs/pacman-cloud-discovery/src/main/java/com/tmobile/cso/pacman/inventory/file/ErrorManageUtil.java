@@ -153,8 +153,6 @@ public class ErrorManageUtil {
     public static void omitOpsAlert() {
         List<PermissionVH> permissionIssue = new ArrayList<>();
         for (Map.Entry<String, List<ErrorVH>> entry : errorMap.entrySet()) {
-            PermissionVH permissionVH = new PermissionVH();
-            permissionVH.setAccountNumber(entry.getKey());
             List<ErrorVH> errorVHList = entry.getValue();
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
             for (ErrorVH errorVH : entry.getValue()) {
@@ -180,6 +178,8 @@ public class ErrorManageUtil {
                 }
             }
             if (!assetPermissionMapping.isEmpty()) {
+                PermissionVH permissionVH = new PermissionVH();
+                permissionVH.setAccountNumber(entry.getKey());
                 permissionVH.setAssetPermissionIssues(assetPermissionMapping);
                 permissionIssue.add(permissionVH);
             }
