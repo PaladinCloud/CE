@@ -91,7 +91,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         {
             from: 0,
             to: 100,
-            color: '#90CAF9',
+            color: '#6FAFE5',
         },
         {
             from: 100,
@@ -222,18 +222,20 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
             return d.y;
         });
 
-        const quantile = d3.scaleQuantile().domain(values).range(d3.range(values.length));
+        const quantile = d3.scaleQuantile().domain(values).range(values);
 
-        let max = -1;
-        max = this.awsResources[maxIndex - 1].count;
+        let maxVal = -1 , minVal = 100000;
 
         for (let j = 0; j < this.treemapData.length; j++) {
             if (this.treemapData[j].y > 0) this.treemapData[j].y = quantile(this.treemapData[j].y + 10);
+            if(minVal == 100000 && this.treemapData[j].y > 0){
+                minVal = this.treemapData[j].y;
+            }
         }
-        const maxVal = this.treemapData[maxIndex - 1].y;
-        const diff = maxVal / 4;
-        let from = 0,
-            to = diff;
+        this.treemapData[maxIndex - 1].y = this.treemapData[maxIndex - 1].y*1.5;
+        maxVal = this.treemapData[maxIndex - 1].y;
+        const diff = (maxVal-minVal) / 4;
+        let from = minVal, to = minVal + diff;
         let r = 0;
 
         for (let i = 0; i < 4; i++) {
