@@ -31,15 +31,21 @@ export class SearchFilterPipe implements PipeTransform {
 
     try {
       return input.filter(item => {
-        for (const key in item) {
-          if (
-            (
-              '' +
-              JSON.stringify(item[key])
-                .toString()
-                .toLowerCase()
-            ).includes(searchQuery.toString().toLowerCase())
-          ) {
+        if(!column){
+          for (const key in item) {
+            if (
+              (
+                '' +
+                JSON.stringify(item[key])
+                  .toString()
+                  .toLowerCase()
+              ).includes(searchQuery.toString().toLowerCase())
+            ) {
+              return true;
+            }
+          }
+        }else{
+          if(item[column].toLowerCase().includes(searchQuery.toLowerCase())){
             return true;
           }
         }
