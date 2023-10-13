@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.tmobile.cso.pacman.datashipper.dto.DatasourceData;
+import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,16 +26,6 @@ import static com.tmobile.cso.pacman.datashipper.es.ESManager.invokeAPI;
  * The Class AssetGroupStatsCollector.
  */
 public class AssetGroupStatsCollector implements Constants{
-
-    /** The Constant asstApiUri. */
-    private static final String ASSET_API_URL = System.getenv("ASSET_API_URL");
-
-    /** The Constant compApiUri. */
-    private static final String COMP_API_URL = System.getenv("CMPL_API_URL");
-    
-    /** The Constant compApiUri. */
-    private static final String VULN_API_URL = System.getenv("VULN_API_URL");
-
     
     /** The ag stats. */
     private static final String AG_STATS = "assetgroup_stats";
@@ -141,23 +132,21 @@ public class AssetGroupStatsCollector implements Constants{
                 }
             }
         });
-        
-        if(VULN_API_URL!=null) {
-	        executor.execute(() -> {
-	            try {
-	                uploadAssetGroupVulnCompliance(assetGroups);
-	            } catch (Exception e) {
-	                log.error("Exception in uploadAssetGroupVulnCompliance " , e);
-	                Map<String,String> errorMap = new HashMap<>();
-	                errorMap.put(ERROR, "Exception in uploadAssetGroupVulnCompliance");
-	                errorMap.put(ERROR_TYPE, WARN);
-	                errorMap.put(EXCEPTION, e.getMessage());
-	                synchronized(errorList){
-	                    errorList.add(errorMap);
-	                }
-	            }
-	        });
-        }
+
+        executor.execute(() -> {
+            try {
+                uploadAssetGroupVulnCompliance(assetGroups);
+            } catch (Exception e) {
+                log.error("Exception in uploadAssetGroupVulnCompliance " , e);
+                Map<String,String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Exception in uploadAssetGroupVulnCompliance");
+                errorMap.put(ERROR_TYPE, WARN);
+                errorMap.put(EXCEPTION, e.getMessage());
+                synchronized(errorList){
+                    errorList.add(errorMap);
+                }
+            }
+        });
 
         executor.execute(() -> {
             try {
@@ -200,7 +189,8 @@ public class AssetGroupStatsCollector implements Constants{
         List<Map<String, Object>> docs = new ArrayList<>();
         for (String ag : assetGroups) {
             try {
-                Map<String, Object> doc = AssetGroupUtil.fetchTaggingSummary(COMP_API_URL, ag, getToken());
+                Map<String, Object> doc = AssetGroupUtil.fetchTaggingSummary(
+                        HttpUtil.getComplianceServiceBaseUrl(), ag, getToken());
                 if (!doc.isEmpty()) {
                     doc.put("ag", ag);
                     doc.put("date", CURR_DATE);
@@ -234,7 +224,8 @@ public class AssetGroupStatsCollector implements Constants{
         datasourceData.getAssetGroups().forEach((ag) -> {
             List<Map<String, Object>> docList = new ArrayList<>();
             try {
-                docList = AssetGroupUtil.fetchPolicyComplianceInfo(COMP_API_URL, ag, domains,getToken());
+                docList = AssetGroupUtil.fetchPolicyComplianceInfo(
+                        HttpUtil.getComplianceServiceBaseUrl(), ag, domains,getToken());
             } catch (Exception e) {
                 log.error("Exception in uploadAssetGroupRuleCompliance" , e);
                 Map<String,String> errorMap = new HashMap<>();
@@ -270,7 +261,8 @@ public class AssetGroupStatsCollector implements Constants{
         List<Map<String, Object>> docs = new ArrayList<>();
         datasourceData.getAssetGroups().forEach((ag) -> {
             try {
-                List<Map<String, Object>> docList = AssetGroupUtil.fetchComplianceInfo(COMP_API_URL, ag, domains,getToken());
+                List<Map<String, Object>> docList = AssetGroupUtil.fetchComplianceInfo(
+                        HttpUtil.getComplianceServiceBaseUrl(), ag, domains,getToken());
                 docList.parallelStream().forEach(doc -> {
                     doc.put("ag", ag);
                     doc.put("date", CURR_DATE);
@@ -308,7 +300,8 @@ public class AssetGroupStatsCollector implements Constants{
         List<Map<String, Object>> docs = new ArrayList<>();
         for (String ag : assetGroups) {
             try {
-                List<Map<String, Object>> typeCounts = AssetGroupUtil.fetchTypeCounts(ASSET_API_URL, ag,getToken());
+                List<Map<String, Object>> typeCounts = AssetGroupUtil.fetchTypeCounts(
+                        HttpUtil.getAssetServiceBaseUrl(), ag,getToken());
                 Map<String, Map<String, Object>> currInfoMap = currentInfo.get(ag);
                 typeCounts.forEach(typeCount -> {
                     String type = typeCount.get("type").toString();
@@ -369,7 +362,8 @@ public class AssetGroupStatsCollector implements Constants{
         List<Map<String, Object>> docs = new ArrayList<>();
         datasourceData.getAssetGroups().forEach((ag) -> {
             try {
-                List<Map<String, Object>> docList = AssetGroupUtil.fetchIssuesInfo(COMP_API_URL, ag, domains,getToken());
+                List<Map<String, Object>> docList = AssetGroupUtil.fetchIssuesInfo(
+                        HttpUtil.getComplianceServiceBaseUrl(), ag, domains,getToken());
                 docList.parallelStream().forEach(doc -> {
                     doc.put("ag", ag);
                     doc.put("date", CURR_DATE);
@@ -404,7 +398,8 @@ public class AssetGroupStatsCollector implements Constants{
         List<Map<String, Object>> docs = new ArrayList<>();
         for (String ag : assetGroups) {
             try {
-                Map<String, Object> doc = AssetGroupUtil.fetchVulnSummary(VULN_API_URL, ag, getToken());
+                Map<String, Object> doc = AssetGroupUtil.fetchVulnSummary(
+                        HttpUtil.getVulnerabilityServiceBaseUrl(), ag, getToken());
                 if (!doc.isEmpty()) {
                     doc.put("ag", ag);
                     doc.put("date", CURR_DATE);
@@ -434,7 +429,8 @@ public class AssetGroupStatsCollector implements Constants{
         for (String ag : assetGroups) {
             log.info("Collecting asset list count for asset group: {}",ag);
             try {
-                Map<String, Object> assetCountResponse = AssetGroupUtil.fetchAssetCounts(ASSET_API_URL, ag,getToken());
+                Map<String, Object> assetCountResponse = AssetGroupUtil.fetchAssetCounts(
+                        HttpUtil.getAssetServiceBaseUrl(), ag,getToken());
                 log.info("Response from asset count API: {}", assetCountResponse);
                 long totalCount = Long.valueOf(assetCountResponse.get("totalassets").toString());
                 long typeCount = Long.valueOf(assetCountResponse.get("assettype").toString());

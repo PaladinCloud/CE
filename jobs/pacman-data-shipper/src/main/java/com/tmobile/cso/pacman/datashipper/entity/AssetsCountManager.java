@@ -4,6 +4,7 @@ import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.util.AssetGroupUtil;
 import com.tmobile.cso.pacman.datashipper.util.AuthManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
+import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public class AssetsCountManager implements Constants {
-
-    private static final String ASSET_API_URL = System.getenv("ASSET_API_URL");
     private static final Logger log = LoggerFactory.getLogger(AssetsCountManager.class);
     private List<Map<String,String>> errorList = new ArrayList<>();
 
@@ -38,7 +37,8 @@ public class AssetsCountManager implements Constants {
                     String[] subscriptionArray = combinedSubscriptionStr.split(",");
                     Integer totalAssetCount = 0;
                     for(String subscriptionStr : subscriptionArray){
-                        String assetCountForSubscription = AssetGroupUtil.fetchAssetCount(ASSET_API_URL, token, platform, subscriptionStr);
+                        String assetCountForSubscription = AssetGroupUtil.fetchAssetCount(
+                                HttpUtil.getAssetServiceBaseUrl(), token, platform, subscriptionStr);
                         Integer aCount = Integer.parseInt(assetCountForSubscription);
                         String query="UPDATE cf_AzureTenantSubscription SET assets="+assetCountForSubscription+" WHERE subscription ='"+subscriptionStr+"'";
                         totalAssetCount+=aCount;
@@ -47,7 +47,8 @@ public class AssetsCountManager implements Constants {
                     assetCount = totalAssetCount.toString();
                 }
                 else {
-                    assetCount = AssetGroupUtil.fetchAssetCount(ASSET_API_URL, token, platform, accountId);
+                    assetCount = AssetGroupUtil.fetchAssetCount(
+                            HttpUtil.getAssetServiceBaseUrl(), token, platform, accountId);
                 }
             } catch (Exception e1) {
                 log.error("fetchAssetCount failed as unable to fetch asset groups ", e1);

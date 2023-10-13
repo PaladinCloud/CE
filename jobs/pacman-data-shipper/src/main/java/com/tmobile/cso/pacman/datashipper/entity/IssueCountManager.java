@@ -2,6 +2,7 @@ package com.tmobile.cso.pacman.datashipper.entity;
 import com.microsoft.azure.management.resources.Subscription;
 import com.tmobile.cso.pacman.datashipper.util.AuthManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
+import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
@@ -10,7 +11,6 @@ import com.tmobile.cso.pacman.datashipper.util.AssetGroupUtil;
 import java.util.*;
 
 public class IssueCountManager implements Constants{
-    private static final String COMP_API_URL = System.getenv("CMPL_API_URL");
     private static final Logger log = LoggerFactory.getLogger(IssueCountManager.class);
     private List<Map<String,String>> errorList = new ArrayList<>();
     public List<Map<String, String>> populateViolationsCount(String platform, List<String> accountIds){
@@ -34,7 +34,8 @@ public class IssueCountManager implements Constants{
                     String[] subscriptionArray = combinedSubscriptionStr.split(",");
                     Integer totalViolationCount = 0;
                     for(String subscriptionStr : subscriptionArray){
-                        String violationCountForSubscription = AssetGroupUtil.fetchViolationsCount(COMP_API_URL, token, platform, subscriptionStr);
+                        String violationCountForSubscription = AssetGroupUtil.fetchViolationsCount(
+                                HttpUtil.getComplianceServiceBaseUrl(), token, platform, subscriptionStr);
                         Integer vCount = Integer.parseInt(violationCountForSubscription);
                         String query="UPDATE cf_AzureTenantSubscription SET violations="+violationCountForSubscription+" WHERE subscription ='"+subscriptionStr+"'";
                         totalViolationCount+=vCount;
@@ -43,7 +44,8 @@ public class IssueCountManager implements Constants{
                     assetCount = totalViolationCount.toString();
                 }
                 else {
-                    assetCount = AssetGroupUtil.fetchViolationsCount(COMP_API_URL, token, platform, accountId);
+                    assetCount = AssetGroupUtil.fetchViolationsCount(
+                            HttpUtil.getComplianceServiceBaseUrl(), token, platform, accountId);
                 }
             } catch (Exception e1) {
                 log.error("populateViolationsCount failed as unable to fetch issues count", e1);

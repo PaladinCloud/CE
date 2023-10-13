@@ -38,11 +38,11 @@ public class DatasourceDataFetcher {
 
     /**
      * Retrieves asset group data for a shipper based on a given datasource. This method
-     * fetches information about asset group domains, target types, and account IDs associated
+     * fetches information about asset groups, and account IDs associated
      * with the provided datasource.
      *
      * @param datasource The name of the datasource for which asset group data is retrieved.
-     * @return A DatasourceData object containing asset group domains and account IDs.
+     * @return A DatasourceData object containing asset groups and account IDs.
      */
     public DatasourceData fetchDatasourceData(String datasource) {
         DatasourceData datasourceData = new DatasourceData();
@@ -51,6 +51,9 @@ public class DatasourceDataFetcher {
             List<String> assetGroups = getVisibleAssetGroupsFiltered(aliases);
             datasourceData.setAssetGroups(assetGroups);
             datasourceData.setAccountIds(getAccountsByDatasource(datasource));
+            LOGGER.info("Successfully collected asset groups and account IDs");
+            LOGGER.info("Count of asset groups : {} and count of account IDs : {}", assetGroups.size(),
+                    datasourceData.getAccountIds().size());
             return datasourceData;
         } catch (Exception e) {
             LOGGER.error("Error while constructing datasource related data", e);
