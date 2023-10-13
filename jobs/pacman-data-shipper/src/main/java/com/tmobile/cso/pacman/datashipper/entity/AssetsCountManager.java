@@ -37,8 +37,7 @@ public class AssetsCountManager implements Constants {
                     String[] subscriptionArray = combinedSubscriptionStr.split(",");
                     Integer totalAssetCount = 0;
                     for(String subscriptionStr : subscriptionArray){
-                        String assetCountForSubscription = AssetGroupUtil.fetchAssetCount(
-                                HttpUtil.getAssetServiceBaseUrl(), token, platform, subscriptionStr);
+                        String assetCountForSubscription = AssetGroupUtil.fetchAssetCount(platform, subscriptionStr);
                         Integer aCount = Integer.parseInt(assetCountForSubscription);
                         String query="UPDATE cf_AzureTenantSubscription SET assets="+assetCountForSubscription+" WHERE subscription ='"+subscriptionStr+"'";
                         totalAssetCount+=aCount;
@@ -47,8 +46,7 @@ public class AssetsCountManager implements Constants {
                     assetCount = totalAssetCount.toString();
                 }
                 else {
-                    assetCount = AssetGroupUtil.fetchAssetCount(
-                            HttpUtil.getAssetServiceBaseUrl(), token, platform, accountId);
+                    assetCount = AssetGroupUtil.fetchAssetCount(platform, accountId);
                 }
             } catch (Exception e1) {
                 log.error("fetchAssetCount failed as unable to fetch asset groups ", e1);

@@ -34,8 +34,7 @@ public class IssueCountManager implements Constants{
                     String[] subscriptionArray = combinedSubscriptionStr.split(",");
                     Integer totalViolationCount = 0;
                     for(String subscriptionStr : subscriptionArray){
-                        String violationCountForSubscription = AssetGroupUtil.fetchViolationsCount(
-                                HttpUtil.getComplianceServiceBaseUrl(), token, platform, subscriptionStr);
+                        String violationCountForSubscription = AssetGroupUtil.fetchViolationsCount(platform, subscriptionStr);
                         Integer vCount = Integer.parseInt(violationCountForSubscription);
                         String query="UPDATE cf_AzureTenantSubscription SET violations="+violationCountForSubscription+" WHERE subscription ='"+subscriptionStr+"'";
                         totalViolationCount+=vCount;
@@ -44,8 +43,7 @@ public class IssueCountManager implements Constants{
                     assetCount = totalViolationCount.toString();
                 }
                 else {
-                    assetCount = AssetGroupUtil.fetchViolationsCount(
-                            HttpUtil.getComplianceServiceBaseUrl(), token, platform, accountId);
+                    assetCount = AssetGroupUtil.fetchViolationsCount(platform, accountId);
                 }
             } catch (Exception e1) {
                 log.error("populateViolationsCount failed as unable to fetch issues count", e1);
