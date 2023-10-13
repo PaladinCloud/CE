@@ -186,6 +186,11 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       name: "Tenable",
       img: "tenable",
       FullName: "Vulnerability Management"
+    },
+    {
+      name: "Contrast",
+      img: "contrast",
+      FullName: "Vulnerability Management"
     }
   ]
 
@@ -402,7 +407,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     this.gaService.event('Button', 'Click', 'Select Plugin');
     this.isValid = true;
     if(account.name.toLowerCase() == "tenable"
-        || account.name.toLowerCase() == "aqua"
+        || account.name.toLowerCase() == "aqua" 
+        || account.name.toLowerCase() == "contrast"
       ){
           this.openSupportInfoDialog(account.name);
           return;
