@@ -23,7 +23,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
+import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
+import com.tmobile.cso.pacman.datashipper.util.AuthManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
+import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.apache.commons.httpclient.HttpStatus;
@@ -404,6 +407,7 @@ public class ESManager implements Constants {
 
         // new code as per the latest ES version changes.
         Set<String> types = ConfigManager.getTypes(ds);
+        Map<String,List<String>> newAssetTypesMap = new HashMap<>();
         for (String _type : types) {
             String indexName = ds + "_" + _type;
             if (!indexExists(indexName)) {
@@ -422,6 +426,15 @@ public class ESManager implements Constants {
                 payLoad.append("}}");
                 payLoad.append("}}}");
 
+                if(newAssetTypesMap.containsKey(ds)){
+                    newAssetTypesMap.get(ds).add(_type);
+                }
+                else{
+                    List<String> assetTypeList = new ArrayList<>();
+                    assetTypeList.add(_type);
+                    newAssetTypesMap.put(ds,assetTypeList);
+                }
+
                 LOGGER.info("Printing payload before creating the index: {}", payLoad);
                 try {
                     invokeAPI("PUT", indexName, payLoad.toString());
@@ -434,12 +447,132 @@ public class ESManager implements Constants {
                 }
             }
         }
+
+        recreateEffectedAssetGroups(newAssetTypesMap);
+
+
         try {
             ESManager.createIndex("exceptions", errorList);
         } catch (Exception exception) {
             LOGGER.error("Index creation Error: {}", exception.getMessage());
             LOGGER.error("Index creation Error Trace: {}", exception.getStackTrace());
         }
+    }
+
+    /**
+     * Recreates relevant asset groups when new asset types are added.
+     * @param newAssetTypesMap
+     */
+    private static void recreateEffectedAssetGroups(Map<String, List<String>> newAssetTypesMap) {
+        LOGGER.info("inside recreateEffectedAssetGroups.");
+        if(!newAssetTypesMap.isEmpty()){
+            LOGGER.info("New asset types added are - {}",newAssetTypesMap);
+            List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery("select groupType, createdBy, groupName, description, aliasQuery, criteriaName,attributeName, attributeValue, agd.groupId from cf_AssetGroupDetails agd, cf_AssetGroupCriteriaDetails agcd WHERE agd.groupId=agcd.groupId AND lower(agd.groupType)<>'system'");
+            Map<String, List<Map<String, String>>> assetGroupMap = assetGroupsList.stream().collect(Collectors.groupingBy(obj -> obj.get("groupId").toString()));
+            assetGroupMap.entrySet().parallelStream().forEach(obj -> {
+                List<Map<String, String>> assetGroupDetails = obj.getValue();
+                Map<String, List<Map<String, String>>> criteriaOfAssetGroupMap = assetGroupsList.stream().filter(map1 -> obj.getKey().equalsIgnoreCase(map1.get("groupId"))).collect(Collectors.groupingBy(row -> row.get("criteriaName")));
+                String aliasQuery = assetGroupDetails.get(0) != null ? assetGroupDetails.get(0).get("aliasQuery") : null;
+                String groupType = assetGroupDetails.get(0) != null ? assetGroupDetails.get(0).get("groupType") : null;
+                if ("user".equalsIgnoreCase(groupType) || isAssetGroupEffected(newAssetTypesMap, criteriaOfAssetGroupMap)) {
+                    if (assetGroupDetails.get(0) != null && aliasQuery != null && !aliasQuery.equalsIgnoreCase("null")) {
+                        //if aliasQuery is available, trigger post request with alias query to recreate asset group.
+                        String assetGroupName = assetGroupDetails.get(0).get("groupName");
+                        try {
+                            LOGGER.debug("Recreating asset group {}",assetGroupName);
+                            invokeAPI("POST", "_aliases/", aliasQuery);
+                        } catch (IOException e) {
+                            LOGGER.error("Failed to update asset group {}. New asset types in this map - {} are not added to it.", assetGroupName, newAssetTypesMap);
+                            LOGGER.error("Error occurred in recreateEffectedAssetGroups.", e);
+                        }
+                    } else if ("user".equalsIgnoreCase(groupType)) {
+                        String combinedTagValuesStr = null;
+                        List<String> cloudConditionList = new ArrayList<>();
+                        String tagConditionStr = "{\"match\":{\"tags.%s.keyword\":\"%s\"}}";
+                        String cloudConditionStr = "{\"add\":{\"filter\":{\"bool\":{\"should\":[%s],\"minimum_should_match\":1}},\"index\":\"<index>\",\"alias\":\"%s\"}}";
+                        String finalQuery = "{\"actions\":[ %s ]}";
+                        for (Map.Entry<String, List<Map<String, String>>> mentry : criteriaOfAssetGroupMap.entrySet()) {
+                            List<String> tagValuesList = new ArrayList<>();
+                            List<Map<String, String>> criteriaRowsList = mentry.getValue();
+                            criteriaRowsList.stream().forEach(row -> tagValuesList.add(String.format(tagConditionStr, row.get("attributeName"), row.get("attributeValue"))));
+                            combinedTagValuesStr = tagValuesList.stream().collect(Collectors.joining(","));
+                        }
+                        String assetGroupName = assetGroupDetails.get(0).get("groupName");
+                        cloudConditionStr = String.format(cloudConditionStr, combinedTagValuesStr, assetGroupName);
+                        String awsEnabled = System.getProperty("aws.enabled");
+                        if ("true".equalsIgnoreCase(awsEnabled)) {
+                            cloudConditionList.add(cloudConditionStr.replaceAll("<index>", "aws_*"));
+                        }
+                        String gcpEnabled = System.getProperty("gcp.enabled");
+                        if ("true".equalsIgnoreCase(gcpEnabled)) {
+                            cloudConditionList.add(cloudConditionStr.replaceAll("<index>", "gcp_*"));
+                        }
+                        String azureEnabled = System.getProperty("azure.enabled");
+                        if ("true".equalsIgnoreCase(azureEnabled)) {
+                            cloudConditionList.add(cloudConditionStr.replaceAll("<index>", "azure_*"));
+                        }
+                        String redhatEnabled = System.getProperty("redhat.enabled");
+                        if ("true".equalsIgnoreCase(redhatEnabled)) {
+                            cloudConditionList.add(cloudConditionStr.replaceAll("<index>", "redhat_*"));
+                        }
+                        String combinedCloudConditionStr = cloudConditionList.stream().collect(Collectors.joining(","));
+                        finalQuery = String.format(finalQuery, combinedCloudConditionStr);
+                        /*
+                        sample final query
+                        {"actions":[ {"add":{"filter":{"bool":{"should":[{"match":{"tags.Application.keyword":"PaladinCloud"}}],"minimum_should_match":1}},"index":"aws_*","alias":"sh-santhosh-challa"}},
+                        {"add":{"filter":{"bool":{"should":[{"match":{"tags.Application.keyword":"PaladinCloud"}}],"minimum_should_match":1}},
+                        "index":"gcp_*","alias":"sh-santhosh-challa"}},{"add":{"filter":{"bool":{"should":[{"match":{"tags.Application.keyword":"PaladinCloud"}}],
+                        "minimum_should_match":1}},"index":"azure_*","alias":"sh-santhosh-challa"}},
+                        {"add":{"filter":{"bool":{"should":[{"match":{"tags.Application.keyword":"PaladinCloud"}}],"minimum_should_match":1}},
+                        "index":"redhat_*","alias":"sh-santhosh-challa"}} ]}
+                         */
+                        try {
+                            LOGGER.debug("Recreating asset group {}",assetGroupName);
+                            invokeAPI("POST", "_aliases/", finalQuery);
+                        } catch (IOException e) {
+                            LOGGER.error("Failed to update asset group {}. New asset types in this map - {} are not added to it.", assetGroupName, newAssetTypesMap);
+                            LOGGER.error("Error occurred in recreateEffectedAssetGroups.", e);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Below method determines whether asset group needs to be recreated based on criteria of asset groups.
+     * @param newAssetTypesMap
+     * @param criteriaOfAssetGroupMap
+     * @return
+     */
+    private static boolean isAssetGroupEffected(Map<String, List<String>> newAssetTypesMap, Map<String, List<Map<String, String>>> criteriaOfAssetGroupMap) {
+        boolean isAgEffected = false;
+        for(Map.Entry<String, List<Map<String, String>>> obj : criteriaOfAssetGroupMap.entrySet()){
+            List<Map<String, String>> list1 = obj.getValue();
+            boolean critHasCloudTypeOrTargetType = false;
+            boolean cloudTypeBool = true;
+            boolean targetTypeBool = true;
+            /*If a criteria of a asset group doesn't contain cloudType or TargetType, then asset group should be recreated. Need not check other criteria.
+            If a criteria has CloudType or/and TargetType, then check whether newly added target type is matching with targettype of criteria.*/
+            for(Map<String,String> mapobj : list1){
+                if("CloudType".equalsIgnoreCase(mapobj.get("attributeName"))){
+                    critHasCloudTypeOrTargetType=true;
+                    cloudTypeBool= newAssetTypesMap.keySet().stream().anyMatch(source -> source.equalsIgnoreCase(mapobj.get("attributeName")));
+                }
+                else if("TargetType".equalsIgnoreCase(mapobj.get("attributeName"))){
+                    critHasCloudTypeOrTargetType=true;
+                    targetTypeBool= newAssetTypesMap.values().stream().anyMatch(targetTypeList -> targetTypeList.contains(mapobj.get("attributeName")));
+                }
+            }
+            if(!critHasCloudTypeOrTargetType){
+                isAgEffected=true;
+                break;
+            }
+            isAgEffected = cloudTypeBool && targetTypeBool;
+            if(isAgEffected)
+                break;
+        }
+        return isAgEffected;
     }
 
     /**

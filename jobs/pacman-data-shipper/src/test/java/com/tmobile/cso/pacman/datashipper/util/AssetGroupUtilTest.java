@@ -26,16 +26,6 @@ public class AssetGroupUtilTest {
     }
 
     @Test
-    public void testFetchAssetGroups() throws Exception {
-
-        String listAgJson = "{\"data\":[{\"name\":\"abcservices\",\"domains\":[\"Infra & Platforms\"]},{\"name\":\"adapt\",\"domains\":[\"Infra & Platforms\"]},{\"name\":\"adapt-workload\",\"domains\":[\"Infra & Platforms\"]}]}";
-        when(HttpUtil.get(anyString(),anyString())).thenReturn(listAgJson);
-
-        Map<String, List<String>> agInfo = AssetGroupUtil.fetchAssetGroups("","");
-        assertThat(agInfo.size(), is(3));
-    }
-
-    @Test
     public void testFetcTypeCounts() throws Exception {
         String typeCountJson = "{\"data\":{\"ag\":\"aws-all\",\"assetcount\":[{\"count\":1949,\"type\":\"subnet\"},{\"count\":5885,\"type\":\"stack\"},{\"count\":714,\"type\":\"asgpolicy\"},{\"count\":3926,\"type\":\"rdssnapshot\"},{\"count\":84,\"type\":\"rdscluster\"},{\"count\":1320,\"type\":\"cert\"},{\"count\":481,\"type\":\"internetgateway\"},{\"count\":419,\"type\":\"rdsdb\"}]}}";
         when(HttpUtil.get(anyString(),anyString())).thenReturn(typeCountJson);

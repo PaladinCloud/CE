@@ -16,7 +16,7 @@ public class AssetsCountManager implements Constants {
     private static final Logger log = LoggerFactory.getLogger(AssetsCountManager.class);
     private List<Map<String,String>> errorList = new ArrayList<>();
 
-    public List<Map<String, String>> populateAssetCount(){
+    public List<Map<String, String>> populateAssetCount(String platform, List<String> accountIds){
         String token;
         try {
             token = getToken();
@@ -29,13 +29,8 @@ public class AssetsCountManager implements Constants {
             errorList.add(errorMap);
             return errorList;
         }
-        List<Map<String, String>> headersfromRDS = RDSDBManager.executeQuery("SELECT accountId,platform FROM cf_Accounts where accountStatus='configured'");
-        Iterator<Map<String, String>> it = headersfromRDS.iterator();
 
-        while(it.hasNext()) {
-            Map<String, String> account = it.next();
-            String accountId = account.get("accountId");
-            String platform = account.get("platform");
+        for (String accountId : accountIds) {
             String assetCount;
             try {
                 if(platform.equals("azure")) {

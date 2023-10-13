@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ * Copyright 2022 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -28,27 +28,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.tenable.Constants;
 import com.tmobile.cso.pacman.tenable.exception.TenableDataImportException;
 
-/**
- * The Class ConfigUtil.
- */
 public class ConfigUtil {
 
-    /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
-    
+
     /**
      * Sets the config properties.
      *
      * @param configCreds the new config properties
      * @throws Exception the exception
      */
-    public static void setConfigProperties(String configCreds) throws Exception{
+    public static void setConfigProperties(String configCreds) throws Exception {
         Properties properties = new Properties();
         properties.putAll(System.getProperties());
         properties.putAll(fetchConfigProperties(configCreds));
         System.setProperties(properties);
     }
-    
+
     /**
      * Fetch config properties.
      *
@@ -57,39 +53,33 @@ public class ConfigUtil {
      * @throws Exception the exception
      */
     @SuppressWarnings("unchecked")
-    public static Map<String,String> fetchConfigProperties(String configCreds) throws Exception {
-        
-        Map<String,String> properties = new HashMap<>();
-        
-        String configUrl = System.getenv("CONFIG_URL");        
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            Map<String,String> appProps = new HashMap<>();
-            Map<String,String> batchProps = new HashMap<>();
-            Map<String,String> invProps = new HashMap<>();
-            Map<String,Object> response = objectMapper.readValue(HttpUtil.httpGetMethodWithHeaders(configUrl, Util.getHeader(configCreds)), new TypeReference<Map<String,Object>>(){});
-            List<Map<String,Object>> propertySources = (List<Map<String,Object>>)response.get("propertySources");
-            for(Map<String,Object> propertySource : propertySources) {
-                if(propertySource.get(Constants.NAME).toString().contains("application")) {
-                    appProps.putAll((Map<String,String>)propertySource.get(Constants.SOURCE));
-                }
-                if(propertySource.get(Constants.NAME).toString().contains("batch")) {
-                    batchProps.putAll((Map<String,String>)propertySource.get(Constants.SOURCE));
-                }
-                if(propertySource.get(Constants.NAME).toString().contains("tenable-enricher")) {
-                    invProps.putAll((Map<String,String>)propertySource.get(Constants.SOURCE));
-                }
-                properties.putAll(appProps);
-                properties.putAll(batchProps);
-                properties.putAll(invProps);
+    public static Map<String, String> fetchConfigProperties(String configCreds) throws Exception {
+        String configUrl = System.getenv("CONFIG_URL");
+        LOGGER.debug("Fetching config from {}", configUrl);
+
+        Map<String, String> properties = new HashMap<>();
+        Map<String, Object> response = new ObjectMapper().readValue(HttpUtil.httpGetMethodWithHeaders(configUrl, Util.getHeader(configCreds)), new TypeReference<Map<String, Object>>() {
+        });
+        List<Map<String, Object>> propertySources = (List<Map<String, Object>>) response.get("propertySources");
+        for (Map<String, Object> propertySource : propertySources) {
+            if (propertySource.get(Constants.NAME).toString().contains("application")) {
+                properties.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
             }
-        } catch (Exception e) {
-            throw e;
+
+            if (propertySource.get(Constants.NAME).toString().contains("batch")) {
+                properties.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
+            }
+
+            if (propertySource.get(Constants.NAME).toString().contains("tenable-enricher")) {
+                properties.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
+            }
         }
-        if(properties.isEmpty()){
-        	throw new TenableDataImportException("No config properties fetched from "+configUrl);
+
+        if (properties.isEmpty()) {
+            throw new TenableDataImportException("No config properties fetched from " + configUrl);
         }
-        LOGGER.info("Config are fetched from {}",configUrl);
+
+        LOGGER.info("Config are fetched from {}", configUrl);
         return properties;
     }
 }

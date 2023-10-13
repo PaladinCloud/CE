@@ -32,6 +32,7 @@ public class ConfigUtil {
             Map<String, String> appProps = new HashMap<>();
             Map<String, String> batchProps = new HashMap<>();
             Map<String, String> invProps = new HashMap<>();
+            Map<String, String> jobSchedulerProps = new HashMap<>();
             Map<String, Object> response = objectMapper.readValue(HttpUtil.httpGetMethodWithHeaders(configUrl, Util.getHeader(configCreds)), new TypeReference<Map<String, Object>>() {
             });
             List<Map<String, Object>> propertySources = (List<Map<String, Object>>) response.get("propertySources");
@@ -45,9 +46,13 @@ public class ConfigUtil {
                 if (propertySource.get(Constants.NAME).toString().contains("data-shipper")) {
                     invProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
                 }
+                if (propertySource.get(Constants.NAME).toString().contains("job-scheduler")) {
+                    jobSchedulerProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
+                }
                 properties.putAll(appProps);
                 properties.putAll(batchProps);
                 properties.putAll(invProps);
+                properties.putAll(jobSchedulerProps);
             }
         } catch (Exception e) {
             LOGGER.error("Error in fetchConfigProperties", e);
