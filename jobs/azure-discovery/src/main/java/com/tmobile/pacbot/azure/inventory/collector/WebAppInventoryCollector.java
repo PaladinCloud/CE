@@ -4,6 +4,7 @@ import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.appservice.DefaultErrorResponseException;
 import com.microsoft.azure.management.appservice.WebApp;
+import com.tmobile.pacbot.azure.inventory.ErrorManageUtil;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacbot.azure.inventory.vo.WebAppVH;
@@ -28,10 +29,9 @@ public class WebAppInventoryCollector {
         Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
 
         PagedList<WebApp> webApps = azure.webApps().list();
-
+        WebAppVH webAppVH = new WebAppVH();
         for (WebApp webApp : webApps) {
             try {
-                WebAppVH webAppVH = new WebAppVH();
                 webAppVH.setRemoteDebuggingEnabled(webApp.remoteDebuggingEnabled());
                 webAppVH.setHostNames(webApp.hostNames());
                 webAppVH.setHttp20Enabled(webApp.http20Enabled());
@@ -63,6 +63,7 @@ public class WebAppInventoryCollector {
 
             } catch(DefaultErrorResponseException exception){
                 log.error(exception.getMessage());
+                ErrorManageUtil.uploadError(webAppVH.getSubscription(),webAppVH.getRegion(),"webapp",exception.getMessage());
             }
             catch (Exception e) {
                 e.printStackTrace();
