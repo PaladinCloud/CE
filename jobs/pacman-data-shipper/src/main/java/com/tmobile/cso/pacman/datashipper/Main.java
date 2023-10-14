@@ -72,16 +72,13 @@ public class Main implements Constants {
             if (datasourceData != null) {
                 List<String> accountIds = datasourceData.getAccountIds();
                 List<String> assetGroups = datasourceData.getAssetGroups();
-
                 if (assetGroups != null && !assetGroups.isEmpty()) {
                     AssetGroupStatsCollector assetGroupStatsCollector = new AssetGroupStatsCollector();
                     errorList.addAll(assetGroupStatsCollector.collectAssetGroupStats(datasourceData));
                 }
-
                 if (accountIds != null && !accountIds.isEmpty()) {
                     IssueCountManager issueCountManager = new IssueCountManager();
                     errorList.addAll(issueCountManager.populateViolationsCount(ds, accountIds));
-
                     AssetsCountManager assetsCountManager = new AssetsCountManager();
                     errorList.addAll(assetsCountManager.populateAssetCount(ds, accountIds));
                 }
@@ -102,10 +99,8 @@ public class Main implements Constants {
             errorList.add(errorMap);
             LOGGER.error("Error while updating stats", e);
         }
-
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ",status);
-
         return status;
     }
 }

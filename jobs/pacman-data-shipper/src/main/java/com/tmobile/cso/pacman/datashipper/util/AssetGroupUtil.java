@@ -37,7 +37,6 @@ public class AssetGroupUtil {
         String url = HttpUtil.getAssetServiceBaseUrl() + "/count?ag=" + ag;
         String typeCountJson = HttpUtil.get(url, AuthManager.getToken());
         Map<String, Object> typeCountMap = Util.parseJson(typeCountJson);
-
         return  (List<Map<String, Object>>) ((Map<String, Object>) typeCountMap.get("data")).get("assetcount");
     }
 
@@ -57,9 +56,9 @@ public class AssetGroupUtil {
         @SuppressWarnings("unchecked")
         Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) vulnMap.get("data");
         Map<String, Object> output = data.get(OUTPUT);
-        if (output != null)
+        if (output != null) {
             patchingInfo.putAll(data.get(OUTPUT));
-
+        }
         return patchingInfo;
     }
 

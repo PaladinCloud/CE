@@ -51,8 +51,7 @@ public class DatasourceDataFetcher {
             List<String> assetGroups = getVisibleAssetGroupsFiltered(aliases);
             datasourceData.setAssetGroups(assetGroups);
             datasourceData.setAccountIds(getAccountsByDatasource(datasource));
-            LOGGER.info("Successfully collected asset groups and account IDs");
-            LOGGER.info("Count of asset groups : {} and count of account IDs : {}", assetGroups.size(),
+            LOGGER.info("SUCCESS: Count of asset groups : {} and count of account IDs : {}", assetGroups.size(),
                     datasourceData.getAccountIds().size());
             return datasourceData;
         } catch (Exception e) {
