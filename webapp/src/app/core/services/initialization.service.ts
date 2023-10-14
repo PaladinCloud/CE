@@ -1,14 +1,17 @@
 import { APP_INITIALIZER, Provider } from '@angular/core';
+import { Store } from '@ngxs/store';
+import { ConfigActions } from '../store/states/config/config.actions';
 
 export const INITIALIZATION: Provider = {
     provide: APP_INITIALIZER,
-    useValue: loadAppData,
+    useFactory: loadAppData,
     multi: true,
+    deps: [Store],
 };
 
-function loadAppData() {
+function loadAppData(store: Store) {
     return () => {
-        console.debug('load data here');
-        return Promise.reject();
+        const config$ = store.dispatch(new ConfigActions.Get());
+        return config$.toPromise();
     };
 }
