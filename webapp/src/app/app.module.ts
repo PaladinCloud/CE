@@ -28,6 +28,7 @@ import { CONFIGURATIONS } from 'src/config/configurations';
 import { AppRoutingModule } from './app-routing.module';
 import { CoreModule } from './core/core.module';
 import { INITIALIZATION } from './core/services/initialization.service';
+import { StoreModule } from './core/store/store.module';
 import { LandingPageModule } from './landing-page/landing-page.module';
 import { FetchResourcesService } from './pacman-features/services/fetch-resources.service';
 import { PostLoginAppModule } from './post-login-app/post-login-app.module';
@@ -53,6 +54,7 @@ import { TokenResolverService } from './resolver/token-resolver.service';
                   NgxGoogleAnalyticsRouterModule,
               ]
             : [],
+        StoreModule,
     ],
     providers: [INITIALIZATION, FetchResourcesService, TokenResolverService],
     bootstrap: [AppComponent],

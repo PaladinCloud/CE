@@ -41,6 +41,14 @@
                 "@angular-eslint/no-empty-lifecycle-method": "off",
                 "prettier/prettier": "warn"
             },
+            "overrides": [
+                {
+                    "files": ["*.actions.ts"],
+                    "rules": {
+                        "@typescript-eslint/no-namespace": "off"
+                    }
+                }
+            ],
             "settings": {
                 "import/resolver": {
                     "typescript": {
