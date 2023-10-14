@@ -61,8 +61,6 @@ public class VMsScannedByTenableRule extends BasePolicy {
      *                           target : Enter the target days <br><br>
      *                           <p>
      *                           discoveredDaysRange : Enter the discovered days Range <br><br>
-     *                           <p>
-     *                           esTenableUrl : Enter the Tenable URL <br><br>
      * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
      * @return the rule result
      */
