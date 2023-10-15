@@ -3419,3 +3419,9 @@ INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `def
 INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('deny_public_access_to_rdp_Port_3389','esSgRulesUrl','/aws_sg/sg_rules/_search','','false','false','false','','');
 INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('deny_public_access_to_rdp_Port_3389','portToCheck','3389','','false','false','false','','');
 INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('deny_public_access_to_rdp_Port_3389','cidripv6','::/0','','false','false','false','','');
+
+ALTER TABLE cf_PolicyTable MODIFY `policyDisplayName` varchar(150) COLLATE utf8_bin DEFAULT NULL;
+update cf_PolicyTable set policyDesc='Security groups for inbound rules that allow unrestricted access (i.e. 0.0.0.0/0 or ::/0) on TCP port 3389 and restrict the access to trusted IP addresses or IP ranges only in order to implement the Principle of Least Privilege (POLP) and reduce the attack surface.' where policyId='deny_public_access_to_rdp_Port_3389';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Vulnerability Assessment (VA) Setting Also Send email Notifications to Admins and Subscription' WHERE policyId ='Enable_Email_Subscription_Admin';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Remove Inactive IAM users after n days' WHERE policyId ='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser';
+
