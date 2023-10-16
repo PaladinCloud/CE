@@ -482,7 +482,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                         if (filterValue == '76%-100%' && !(cv_f >= 76 && cv_f <= 100)) return false;
                     } else if(filterValue.includes('-')){
                         const [min, max] = filterValue.split('-');
-                        return (cellValue >=min && cellValue<=max);
+                        if(cellValue<min || cellValue>max) return false;
                     } else if(this.filterFunctionMap && this.filterFunctionMap[filterKey]){
                         if(!this.filterFunctionMap[filterKey](item, filterKey, filterValue)){
                             return false;
