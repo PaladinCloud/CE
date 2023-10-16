@@ -659,13 +659,10 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                             isLink: true
                         };
                     }else if(col.toLowerCase() == "created"){
-                        const value = this.utils.calculateDateAndTime(
-                            cellData, true
-                          );
+                        
                         cellObj = {
-                            text: value,
-                            titleText: value,
-                            valueText: value,
+                            isDate: true,
+                            ...cellObj
                         }
                     }
 

@@ -15,13 +15,13 @@
                 *ngIf="!isObject(item)"
                 (click)="navigateTo(item.value)"
             >
-                <ng-template #dateTemplate> {{ item.value | date : 'medium' }} </ng-template>
                 <app-text
-                    *ngIf="!isStringDate(item.value);else dateTemplate"
+                    *ngIf="!isStringDate(item.value);else nonDateTemplate"
                     [classNames]="item.value?.includes(windowHostName)?'pointer primary-400':'high-emphasis'"
                     [text]="item.value"
                     >
                 </app-text>
+                <ng-template #nonDateTemplate> {{ item.value | date : 'medium' }} </ng-template>
             </td>
         </tr>
     </tbody>
