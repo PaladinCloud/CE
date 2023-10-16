@@ -63,14 +63,23 @@ public class SubnetInventoryCollector {
 					if (properties != null) {
 						HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
 								HashMap.class);
-						subnetVH.setIpConfigurations((List<Map<String, Object>>) propertiesMap.get("ipConfigurations"));
-						subnetVH.setAddressPrefix(propertiesMap.get("addressPrefix").toString());
-						subnetVH.setPrivateLinkServiceNetworkPolicies(
-								propertiesMap.get("privateLinkServiceNetworkPolicies").toString());
-						subnetVH.setProvisioningState(propertiesMap.get("provisioningState").toString());
-						subnetVH.setPrivateEndpointNetworkPolicies(
-								propertiesMap.get("privateEndpointNetworkPolicies").toString());
-
+						if(propertiesMap.get("ipConfigurations")!=null){
+							subnetVH.setIpConfigurations((List<Map<String, Object>>) propertiesMap.get("ipConfigurations"));
+						}
+						if(propertiesMap.get("addressPrefix")!=null){
+							subnetVH.setAddressPrefix(propertiesMap.get("addressPrefix").toString());
+						}
+						if(propertiesMap.get("privateLinkServiceNetworkPolicies")!=null){
+							subnetVH.setPrivateLinkServiceNetworkPolicies(
+									propertiesMap.get("privateLinkServiceNetworkPolicies").toString());
+						}
+						if(propertiesMap.get("provisioningState")!=null){
+							subnetVH.setProvisioningState(propertiesMap.get("provisioningState").toString());
+						}
+						if(propertiesMap.get("provisioningState")!=null){
+							subnetVH.setPrivateEndpointNetworkPolicies(
+									propertiesMap.get("privateEndpointNetworkPolicies").toString());
+						}
 					}
 					subnetList.add(subnetVH);
 				}
