@@ -19,21 +19,19 @@ import java.util.Map;
 
 import com.tmobile.cso.pacman.tenable.util.ConfigUtil;
 
-/**
- * The Class MainUtil.
- */
 public class MainUtil {
 
     /**
      * Setup.
      *
-     * @param params            the params
+     * @param params the params
      * @throws Exception the exception
      */
     public static void setup(Map<String, String> params) throws Exception {
-      ConfigUtil.setConfigProperties(params.get(Constants.CONFIG_CREDS));
-      if (!params.isEmpty()) {
-        params.forEach(System::setProperty);
-      }
+        ConfigUtil.setConfigProperties(params.get(Constants.CONFIG_CREDS));
+        if (!params.isEmpty()) {
+            params.forEach(System::setProperty);
+        }
     }
+
 }
