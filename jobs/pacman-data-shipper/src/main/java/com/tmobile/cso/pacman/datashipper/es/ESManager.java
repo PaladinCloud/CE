@@ -469,7 +469,8 @@ public class ESManager implements Constants {
             LOGGER.info("New asset types added are - {}",newAssetTypesMap);
             List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery("select groupType, createdBy, groupName, description, aliasQuery, criteriaName,attributeName, attributeValue, agd.groupId from cf_AssetGroupDetails agd, cf_AssetGroupCriteriaDetails agcd WHERE agd.groupId=agcd.groupId AND lower(agd.groupType)<>'system'");
             Map<String, List<Map<String, String>>> assetGroupMap = assetGroupsList.stream().collect(Collectors.groupingBy(obj -> obj.get("groupId").toString()));
-            assetGroupMap.entrySet().parallelStream().forEach(obj -> {
+            assetGroupMap.entrySet().stream().forEach(obj -> {
+
                 List<Map<String, String>> assetGroupDetails = obj.getValue();
                 Map<String, List<Map<String, String>>> criteriaOfAssetGroupMap = assetGroupsList.stream().filter(map1 -> obj.getKey().equalsIgnoreCase(map1.get("groupId"))).collect(Collectors.groupingBy(row -> row.get("criteriaName")));
                 String aliasQuery = assetGroupDetails.get(0) != null ? assetGroupDetails.get(0).get("aliasQuery") : null;
@@ -479,7 +480,7 @@ public class ESManager implements Constants {
                         //if aliasQuery is available, trigger post request with alias query to recreate asset group.
                         String assetGroupName = assetGroupDetails.get(0).get("groupName");
                         try {
-                            LOGGER.debug("Recreating asset group {}",assetGroupName);
+                            LOGGER.debug("Recreating asset group {}", assetGroupName);
                             invokeAPI("POST", "_aliases/", aliasQuery);
                         } catch (IOException e) {
                             LOGGER.error("Failed to update asset group {}. New asset types in this map - {} are not added to it.", assetGroupName, newAssetTypesMap);
@@ -527,7 +528,7 @@ public class ESManager implements Constants {
                         "index":"redhat_*","alias":"sh-santhosh-challa"}} ]}
                          */
                         try {
-                            LOGGER.debug("Recreating asset group {}",assetGroupName);
+                            LOGGER.debug("Recreating asset group {}", assetGroupName);
                             invokeAPI("POST", "_aliases/", finalQuery);
                         } catch (IOException e) {
                             LOGGER.error("Failed to update asset group {}. New asset types in this map - {} are not added to it.", assetGroupName, newAssetTypesMap);
@@ -557,11 +558,11 @@ public class ESManager implements Constants {
             for(Map<String,String> mapobj : list1){
                 if("CloudType".equalsIgnoreCase(mapobj.get("attributeName"))){
                     critHasCloudTypeOrTargetType=true;
-                    cloudTypeBool= newAssetTypesMap.keySet().stream().anyMatch(source -> source.equalsIgnoreCase(mapobj.get("attributeName")));
+                    cloudTypeBool= newAssetTypesMap.keySet().stream().anyMatch(source -> source.equalsIgnoreCase(mapobj.get("attributeValue")));
                 }
                 else if("TargetType".equalsIgnoreCase(mapobj.get("attributeName"))){
                     critHasCloudTypeOrTargetType=true;
-                    targetTypeBool= newAssetTypesMap.values().stream().anyMatch(targetTypeList -> targetTypeList.contains(mapobj.get("attributeName")));
+                    targetTypeBool= newAssetTypesMap.values().stream().anyMatch(targetTypeList -> targetTypeList.contains(mapobj.get("attributeValue")));
                 }
             }
             if(!critHasCloudTypeOrTargetType){
