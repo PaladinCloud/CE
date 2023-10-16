@@ -1,6 +1,6 @@
 from core.terraform.resources.aws.aws_webhook import ApiGateWayAuthorizer, ApiGateWayRoute, ApiGateWayStage, ApiGateway, ApiGatewayIntegration
 from core.terraform.resources.aws.aws_lambda import LambdaPermission
-from resources.cognito.userpool import UserPool,AppCLient
+from resources.cognito.userpool import Appcredentials, UserPool,AppCLient
 from resources.notification.function import InvokeNotificationFunction
 from core.config import Settings
 
@@ -36,7 +36,7 @@ class InvokeApiAuthorization(ApiGateWayAuthorizer):
     identity_sources   = ["$request.header.Authorization"]
     name               = "invoke-jwt-authorizer"
     jwt_configuration = {
-    		"audience" : [AppCLient.get_output_attr('id')],
+    		"audience" : [AppCLient.get_output_attr('id'),Appcredentials.get_output_attr('id')],
     		"issuer"   : "https://cognito-idp." + Settings.AWS_REGION + ".amazonaws.com/" +UserPool.get_output_attr('id') 
   	}
     DEPENDS_ON = [AppCLient,UserPool]

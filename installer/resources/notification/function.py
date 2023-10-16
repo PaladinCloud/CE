@@ -39,10 +39,6 @@ class InvokeNotificationFunction(LambdaFunctionResource):
     }
     DEPENDS_ON = [NotificationSNS,BuildUiAndApis]
     
-class SendNotificationFunctionUrl(LambdaFunctionUrl):
-    function_name = InvokeNotificationFunction.get_output_attr('function_name')
-    authorization_type = "NONE"
-
 class SendNotificationFunction(LambdaFunctionResource):
     function_name = SEND_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
