@@ -63,3 +63,19 @@ class PaladinCloudEc2PermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource)
     role = LambdaRole.get_output_attr('name')
     policy_arn = PaladinCloudEc2PermissionPolicy.get_output_attr('arn')
 
+class PaladinCloudSNSLambdaDocument(iam.IAMPolicyDocumentData):
+	statement = [	 
+        	{
+            	"effect": "Allow",
+            	"actions": ["sns:Publish"],
+            	"resources": ['*']
+        	}
+	]
+class PaladinCloudSNSLambdaPolicy(iam.IAMRolePolicyResource):
+    name = "PaladinCloudSNSAcessForLambda"
+    path = '/'
+    policy = PaladinCloudSNSLambdaDocument.get_output_attr('json')
+
+class PaladinCloudSNSPermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource):
+    role = LambdaRole.get_output_attr('name')
+    policy_arn = PaladinCloudSNSLambdaPolicy.get_output_attr('arn')
