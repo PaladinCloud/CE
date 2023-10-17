@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,275 +15,36 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.google.common.base.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.error.ErrorManager;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.tmobile.cso.pacman.datashipper.util.AppConstants.*;
+import static com.tmobile.pacman.commons.utils.Constants.*;
 
 /**
  * The Class EntityManager.
  */
-public class EntityManager implements Constants {
+public class EntityManager {
 
-    /** The Constant log. */
+    /**
+     * The Constant log.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityManager.class);
-    
-    /** The Constant FIRST_DISCOVERED. */
-    private static final String FIRST_DISCOVERED = "firstdiscoveredon";
-    
-    /** The Constant DISCOVERY_DATE. */
-    private static final String DISCOVERY_DATE = "discoverydate";
-    
-    /** The Constant PAC_OVERRIDE. */
-    private static final String PAC_OVERRIDE = "pac_override_";
-
-    /**
-     * The s 3 account.
-     */
-    private final String s3Account = System.getProperty("base.account");
-
-    /**
-     * The s 3 region.
-     */
-    private final String s3Region = System.getProperty("base.region");
-
-    /**
-     * The s 3 role.
-     */
-    private final String s3Role = System.getProperty("s3.role");
-
-    /**
-     * The bucket name.
-     */
-    private final String bucketName = System.getProperty("s3");
-
-    /**
-     * The data path.
-     */
-    private final String dataPath = System.getProperty("s3.data");
-    private final String attributesToPreserve = System.getProperty("shipper.attributes.to.preserve");
-
-    /**
-     * Upload entity data.
-     *
-     * @param datasource the datasource
-     * @return the list
-     */
-    public List<Map<String, String>> uploadEntityData(String datasource) {
-        List<Map<String, String>> errorList = new ArrayList<>();
-        Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
-        Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
-        String type = "";
-        LOGGER.info("*** Start Colleting Entity Info ***");
-        List<String> filters = new ArrayList<>(Collections.singletonList("_docid"));
-
-        // Preserve attributes from current asset data if exists
-        if (!Strings.isNullOrEmpty(attributesToPreserve)) {
-            String[] attributes = attributesToPreserve.split(",");
-            filters.addAll(Arrays.asList(attributes));
-        }
-
-        EntityAssociationManager childTypeManager = new EntityAssociationManager();
-        ViolationAssociationManager violationAssociatManager = new ViolationAssociationManager();
-        while (itr.hasNext()) {
-            try {
-                Map.Entry<String, String> entry = itr.next();
-                type = entry.getKey();
-                String displayName = entry.getValue();
-                Map<String, Object> stats = new LinkedHashMap<>();
-                String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
-                stats.put("datasource", datasource);
-                stats.put("docType", type);
-                stats.put("start_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
-                LOGGER.info("Fetching {}", type);
-                String indexName = datasource + "_" + type;
-                Map<String, Map<String, String>> currentInfo = ESManager.getExistingInfo(indexName, type, filters);
-                LOGGER.info("Existing no of docs : {}", currentInfo.size());
-
-                List<Map<String, Object>> entities = fetchEntitiyInfoFromS3(datasource, type, errorList);
-                List<Map<String, String>> tags = fetchTagsForEntitiesFromS3(datasource, type);
-
-                LOGGER.info("Fetched from S3");
-                if (!entities.isEmpty()) {
-                    List<Map<String, String>> overridableInfo = RDSDBManager.executeQuery(
-                            "select updatableFields  from cf_pac_updatable_fields where resourceType ='" + type + "'");
-                    List<Map<String, String>> overrides = RDSDBManager.executeQuery(
-                            "select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '"
-                                    + type + "'");
-                    Map<String, List<Map<String, String>>> overridesMap = overrides.parallelStream()
-                            .collect(Collectors.groupingBy(obj -> obj.get("_resourceid")));
-
-                    String keys = ConfigManager.getKeyForType(datasource, type);
-                    String idColumn = ConfigManager.getIdForType(datasource, type);
-                    String[] keysArray = keys.split(",");
-
-                    prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type, datasource, displayName);
-                    Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
-                    Map<String, Object> uploadInfo = ESManager.uploadData(indexName, type, entities, loaddate);
-                    //ESManager.removeViolationForDeletedAssets(entities, indexName);
-                    stats.putAll(uploadInfo);
-                    stats.put("errorUpdates", errUpdateInfo);
-                    errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
-                    errorList.addAll(violationAssociatManager.uploadViolationInfo(datasource, type));
-
-                } else {
-                    Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
-                    ESManager.refresh(indexName);
-                    ESManager.updateLatestStatus(indexName, type, loaddate);
-                    errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
-                    stats.put("errorUpdates", errUpdateInfo);
-                }
-                stats.put("total_docs", entities.size());
-                stats.put("end_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
-                stats.put("newly_discovered",entities.stream().filter(entity->entity.get(DISCOVERY_DATE).equals(entity.get(FIRST_DISCOVERED))).count());
-                String statsJson = ESManager.createESDoc(stats);
-                ESManager.invokeAPI("POST", "/datashipper/_doc", statsJson);
-            } catch (Exception e) {
-                LOGGER.error("Exception in collecting/uploading data for {}" ,type,e);
-                Map<String,String> errorMap = new HashMap<>();
-                errorMap.put(ERROR, "Exception in collecting/uploading data for "+type);
-                errorMap.put(ERROR_TYPE, WARN);
-                errorMap.put(EXCEPTION, e.getMessage());
-                errorList.add(errorMap);
-            }
-           
-        }
-        LOGGER.info("*** End Colleting Entity Info ***");
-        return errorList;
-    }
-
-	private List<Map<String, String>> fetchTagsForEntitiesFromS3(String datasource, String type) {
-		List<Map<String, String>> tags = new ArrayList<>();
-		try {
-			tags = Util.fetchDataFromS3(s3Account,s3Region, s3Role,bucketName,dataPath+"/"+datasource + "-" + type+"-tags.data");
-		} catch (Exception e) {
-			 // Do Nothing as there may not a tag file.
-		}
-		return tags;
-	}
-
-	private List<Map<String, Object>> fetchEntitiyInfoFromS3(String datasource,String type,List<Map<String, String>> errorList) {
-		List<Map<String, Object>> entities = new ArrayList<>() ;
-		try{
-			entities = Util.fetchDataFromS3(s3Account,s3Region, s3Role,bucketName, dataPath+"/"+datasource + "-" + type+".data");
-		} catch (Exception e) {
-			 LOGGER.error("Exception in collecting data for {}" ,type,e);
-		     Map<String,String> errorMap = new HashMap<>();
-		     errorMap.put(ERROR, "Exception in collecting data for "+type);
-		     errorMap.put(ERROR_TYPE, WARN);
-		     errorMap.put(EXCEPTION, e.getMessage());
-		     errorList.add(errorMap);
-		}
-		return entities;
-	}
-	
-
-    
-    /**
-     * Prepare docs.
-     *
-     * @param currentInfo the current info
-     * @param entities the entities
-     * @param tags the tags
-     * @param overridableInfo the overridable info
-     * @param overridesMap the overrides map
-     * @param idColumn the id column
-     * @param _keys the keys
-     * @param _type the type
-     */
-    private  void prepareDocs(Map<String, Map<String, String>> currentInfo, List<Map<String, Object>> entities,
-            List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
-            Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource,String displayName) {
-        entities.parallelStream().forEach(entityInfo -> {
-            String id = entityInfo.get(idColumn).toString();
-            String docId = Util.concatenate(entityInfo, _keys, "_");
-            String resourceName = ConfigManager.getResourceNameType(dataSource, _type);
-            if(entityInfo.containsKey(resourceName)) {
-            	entityInfo.put("_resourcename", entityInfo.get(resourceName).toString());
-            } else {
-            	entityInfo.put("_resourcename", id);
-            }
-            
-            entityInfo.put("_resourceid", id);
-            if("aws".equalsIgnoreCase(dataSource)) {
-            	if(Arrays.asList(_keys).contains("accountid")) {
-            		docId = dataSource+"_"+_type+"_"+docId;
-            	}
-            }
-            entityInfo.put("_docid", docId);
-            entityInfo.put("_entity", "true");
-            entityInfo.put("_entitytype", _type);
-            entityInfo.put("targettypedisplayname",displayName);
-
-            if(entityInfo.containsKey("subscriptionName")){
-                entityInfo.put("accountname",entityInfo.get("subscriptionName"));
-            }
-            else if(entityInfo.containsKey("projectName")){
-                entityInfo.put("accountname",entityInfo.get("projectName"));
-            }
-            if(entityInfo.containsKey("subscription")){
-                entityInfo.put("accountid",entityInfo.get("subscription"));
-            }
-            else if(entityInfo.containsKey("projectId")){
-                entityInfo.put("accountid",entityInfo.get("projectId"));
-            }
-
-            entityInfo.put(Constants.DOC_TYPE, _type);
-            entityInfo.put(_type + "_relations", _type);
-            if (currentInfo != null && !currentInfo.isEmpty()) {
-                Map<String, String> _currInfo = currentInfo.get(docId);
-                if (_currInfo != null) {
-                    if (_currInfo.get(FIRST_DISCOVERED) == null) {
-                    	_currInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE).toString());
-                    }
-                    entityInfo.putAll(_currInfo);
-                } else {
-                    entityInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE));
-                }
-            } else {
-                entityInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE));
-            }
-
-            tags.parallelStream().filter(tag -> Util.contains(tag, entityInfo, _keys)).forEach(_tag -> {
-                String key = _tag.get("key");
-                if (key != null && !"".equals(key)) {
-                    entityInfo.put("tags." + key, _tag.get("value"));
-                }
-            });
-            if ("onpremserver".equals(_type)) {
-                updateOnPremData(entityInfo);
-
-                if (overridesMap.containsKey(id) || !overridableInfo.isEmpty()) {
-                    override(entityInfo, overridesMap.get(id), overridableInfo);
-                }
-            }
-
-            if("gcp".equalsIgnoreCase(entityInfo.get("_cloudType").toString()) && entityInfo.containsKey("tags") && entityInfo.get("tags") instanceof Map){
-                Map<String,Object> tagMap = (Map<String, Object>) entityInfo.get("tags");
-                if(!tagMap.isEmpty()){
-                    tagMap.entrySet().stream().forEach(tagEntry -> {
-                        entityInfo.put("tags."+tagEntry.getKey().substring(0,1).toUpperCase()+tagEntry.getKey().substring(1), tagEntry.getValue());
-                    });
-                }
-            }
-        });
-    }
 
     /**
      * Update on prem data.
      *
-     * @param entity
-     *            the entity
+     * @param entity the entity
      */
     private static void updateOnPremData(Map<String, Object> entity) {
         entity.put("tags.Application", entity.get("u_business_service").toString().toLowerCase());
@@ -294,15 +55,12 @@ public class EntityManager implements Constants {
     /**
      * Override.
      *
-     * @param entity
-     *            the entity
-     * @param overrideList
-     *            the override list
-     * @param overrideFields
-     *            the override fields
+     * @param entity         the entity
+     * @param overrideList   the override list
+     * @param overrideFields the override fields
      */
     private static void override(Map<String, Object> entity, List<Map<String, String>> overrideList,
-            List<Map<String, String>> overrideFields) {
+                                 List<Map<String, String>> overrideFields) {
 
         if (overrideList != null && !overrideList.isEmpty()) {
             overrideList.forEach(obj -> {
@@ -342,5 +100,207 @@ public class EntityManager implements Constants {
                 }
             }
         }
+    }
+
+    /**
+     * Upload entity data.
+     *
+     * @param datasource the datasource
+     * @return the list
+     */
+    public List<Map<String, String>> uploadEntityData(String datasource) {
+        List<Map<String, String>> errorList = new ArrayList<>();
+        Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
+        Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
+        String type = "";
+        LOGGER.info("*** Start Colleting Entity Info ***");
+        List<String> filters = new ArrayList<>(Collections.singletonList("_docid"));
+
+        // Preserve attributes from current asset data if exists
+        if (!Strings.isNullOrEmpty(ATTRIBUTES_TO_PRESERVE)) {
+            String[] attributes = ATTRIBUTES_TO_PRESERVE.split(",");
+            filters.addAll(Arrays.asList(attributes));
+        }
+
+        EntityAssociationManager childTypeManager = new EntityAssociationManager();
+        ViolationAssociationManager violationAssociatManager = new ViolationAssociationManager();
+        while (itr.hasNext()) {
+            try {
+                Map.Entry<String, String> entry = itr.next();
+                type = entry.getKey();
+                String displayName = entry.getValue();
+                Map<String, Object> stats = new LinkedHashMap<>();
+                String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
+                stats.put("datasource", datasource);
+                stats.put("docType", type);
+                stats.put("start_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
+                LOGGER.info("Fetching {}", type);
+                String indexName = datasource + "_" + type;
+                Map<String, Map<String, String>> currentInfo = ESManager.getExistingInfo(indexName, filters);
+                LOGGER.info("Existing no of docs : {}", currentInfo.size());
+
+                List<Map<String, Object>> entities = fetchEntityInfoFromS3(datasource, type, errorList);
+                List<Map<String, String>> tags = fetchTagsForEntitiesFromS3(datasource, type);
+
+                LOGGER.info("Fetched from S3");
+                if (!entities.isEmpty()) {
+                    List<Map<String, String>> overridableInfo = RDSDBManager.executeQuery(
+                            "select updatableFields  from cf_pac_updatable_fields where resourceType ='" + type + "'");
+                    List<Map<String, String>> overrides = RDSDBManager.executeQuery(
+                            "select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '"
+                                    + type + "'");
+                    Map<String, List<Map<String, String>>> overridesMap = overrides.parallelStream()
+                            .collect(Collectors.groupingBy(obj -> obj.get("_resourceid")));
+
+                    String keys = ConfigManager.getKeyForType(datasource, type);
+                    String idColumn = ConfigManager.getIdForType(datasource, type);
+                    String[] keysArray = keys.split(",");
+
+                    prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type, datasource, displayName);
+                    Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
+                    Map<String, Object> uploadInfo = ESManager.uploadData(indexName, type, entities, loaddate);
+                    //ESManager.removeViolationForDeletedAssets(entities, indexName);
+                    stats.putAll(uploadInfo);
+                    stats.put("errorUpdates", errUpdateInfo);
+                    errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
+                    errorList.addAll(violationAssociatManager.uploadViolationInfo(datasource, type));
+
+                } else {
+                    Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
+                    ESManager.refresh(indexName);
+                    ESManager.updateLatestStatus(indexName, type, loaddate);
+                    errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
+                    stats.put("errorUpdates", errUpdateInfo);
+                }
+                stats.put("total_docs", entities.size());
+                stats.put("end_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
+                stats.put("newly_discovered", entities.stream().filter(entity -> entity.get(DISCOVERY_DATE).equals(entity.get(FIRST_DISCOVERED))).count());
+                String statsJson = ESManager.createESDoc(stats);
+                ESManager.invokeAPI("POST", "/datashipper/_doc", statsJson);
+            } catch (Exception e) {
+                LOGGER.error("Exception in collecting/uploading data for {}", type, e);
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Exception in collecting/uploading data for " + type);
+                errorMap.put(ERROR_TYPE, WARN);
+                errorMap.put(EXCEPTION, e.getMessage());
+                errorList.add(errorMap);
+            }
+
+        }
+        LOGGER.info("*** End Colleting Entity Info ***");
+        return errorList;
+    }
+
+    private List<Map<String, String>> fetchTagsForEntitiesFromS3(String datasource, String type) {
+        List<Map<String, String>> tags = new ArrayList<>();
+        try {
+            tags = Util.fetchDataFromS3(S3_ACCOUNT, S3_REGION, S3_ROLE, BUCKET_NAME, DATA_PATH + "/" + datasource + "-" + type + "-tags.data");
+        } catch (Exception e) {
+            // Do Nothing as there may not a tag file.
+        }
+        return tags;
+    }
+
+    private List<Map<String, Object>> fetchEntityInfoFromS3(String datasource, String type, List<Map<String, String>> errorList) {
+        List<Map<String, Object>> entities = new ArrayList<>();
+        try {
+            entities = Util.fetchDataFromS3(S3_ACCOUNT, S3_REGION, S3_ROLE, BUCKET_NAME, DATA_PATH + "/" + datasource + "-" + type + ".data");
+        } catch (Exception e) {
+            LOGGER.error("Exception in collecting data for {}", type, e);
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put(ERROR, "Exception in collecting data for " + type);
+            errorMap.put(ERROR_TYPE, WARN);
+            errorMap.put(EXCEPTION, e.getMessage());
+            errorList.add(errorMap);
+        }
+        return entities;
+    }
+
+    /**
+     * Prepare docs.
+     *
+     * @param currentInfo     the current info
+     * @param entities        the entities
+     * @param tags            the tags
+     * @param overridableInfo the overridable info
+     * @param overridesMap    the overrides map
+     * @param idColumn        the id column
+     * @param _keys           the keys
+     * @param _type           the type
+     */
+    private void prepareDocs(Map<String, Map<String, String>> currentInfo, List<Map<String, Object>> entities,
+                             List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
+                             Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource, String displayName) {
+        entities.parallelStream().forEach(entityInfo -> {
+            String id = entityInfo.get(idColumn).toString();
+            String docId = Util.concatenate(entityInfo, _keys, "_");
+            String resourceName = ConfigManager.getResourceNameType(dataSource, _type);
+            if (entityInfo.containsKey(resourceName)) {
+                entityInfo.put("_resourcename", entityInfo.get(resourceName).toString());
+            } else {
+                entityInfo.put("_resourcename", id);
+            }
+
+            entityInfo.put("_resourceid", id);
+            if ("aws".equalsIgnoreCase(dataSource)) {
+                if (Arrays.asList(_keys).contains("accountid")) {
+                    docId = dataSource + "_" + _type + "_" + docId;
+                }
+            }
+            entityInfo.put("_docid", docId);
+            entityInfo.put("_entity", "true");
+            entityInfo.put("_entitytype", _type);
+            entityInfo.put("targettypedisplayname", displayName);
+
+            if (entityInfo.containsKey("subscriptionName")) {
+                entityInfo.put("accountname", entityInfo.get("subscriptionName"));
+            } else if (entityInfo.containsKey("projectName")) {
+                entityInfo.put("accountname", entityInfo.get("projectName"));
+            }
+            if (entityInfo.containsKey("subscription")) {
+                entityInfo.put("accountid", entityInfo.get("subscription"));
+            } else if (entityInfo.containsKey("projectId")) {
+                entityInfo.put("accountid", entityInfo.get("projectId"));
+            }
+
+            entityInfo.put("docType", _type);
+            entityInfo.put(_type + "_relations", _type);
+            if (currentInfo != null && !currentInfo.isEmpty()) {
+                Map<String, String> _currInfo = currentInfo.get(docId);
+                if (_currInfo != null) {
+                    if (_currInfo.get(FIRST_DISCOVERED) == null) {
+                        _currInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE).toString());
+                    }
+                    entityInfo.putAll(_currInfo);
+                } else {
+                    entityInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE));
+                }
+            } else {
+                entityInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE));
+            }
+
+            tags.parallelStream().filter(tag -> Util.contains(tag, entityInfo, _keys)).forEach(_tag -> {
+                String key = _tag.get("key");
+                if (key != null && !"".equals(key)) {
+                    entityInfo.put("tags." + key, _tag.get("value"));
+                }
+            });
+            if ("onpremserver".equals(_type)) {
+                updateOnPremData(entityInfo);
+
+                if (overridesMap.containsKey(id) || !overridableInfo.isEmpty()) {
+                    override(entityInfo, overridesMap.get(id), overridableInfo);
+                }
+            }
+
+            if ("gcp".equalsIgnoreCase(entityInfo.get("_cloudType").toString()) && entityInfo.containsKey("tags") && entityInfo.get("tags") instanceof Map) {
+                Map<String, Object> tagMap = (Map<String, Object>) entityInfo.get("tags");
+                if (!tagMap.isEmpty()) {
+                    tagMap.entrySet().stream().forEach(tagEntry -> {
+                        entityInfo.put("tags." + tagEntry.getKey().substring(0, 1).toUpperCase() + tagEntry.getKey().substring(1), tagEntry.getValue());
+                    });
+                }
+            }
+        });
     }
 }

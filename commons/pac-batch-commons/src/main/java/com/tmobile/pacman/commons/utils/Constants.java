@@ -35,6 +35,8 @@ public interface Constants {
     String SOURCE = "source";
     String NAME = "name";
 
+    String CONFIG_QUERY = "configquery";
+
     enum NotificationTypes {
         @SerializedName("exemption")
         EXEMPTION("exemption"),

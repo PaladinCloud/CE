@@ -15,7 +15,6 @@ public class AwsErrorManager extends ErrorManager {
 	/**
 	 * Handle error.
 	 *
-	 * @param dataSource the data source
 	 * @param index the index
 	 * @param type the type
 	 * @param loaddate the loaddate

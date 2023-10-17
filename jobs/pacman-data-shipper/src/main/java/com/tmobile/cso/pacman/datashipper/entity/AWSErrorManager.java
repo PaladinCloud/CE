@@ -36,13 +36,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
-import com.tmobile.cso.pacman.datashipper.es.ESManager;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
+
+import static com.amazonaws.services.stepfunctions.builder.internal.PropertyNames.ERROR;
+import static com.tmobile.pacman.commons.utils.Constants.*;
 
 /**
  * The Class AWSErrorManager.
  */
-public class AWSErrorManager implements Constants {
+public class AWSErrorManager {
 	
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(AWSErrorManager.class);

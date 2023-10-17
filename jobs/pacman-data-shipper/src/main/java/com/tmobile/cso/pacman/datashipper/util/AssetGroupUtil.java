@@ -12,9 +12,11 @@ import java.util.*;
 public class AssetGroupUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(AssetGroupUtil.class);
 
+    private static final String ASSET_SVC_BASE_URL = System.getenv("PACMAN_API_URI") + "/asset/v1/";
+    private static final String COMPLIANCE_SVC_BASE_URL = System.getenv("PACMAN_API_URI") + "/compliance/v1";
+    private static final String VULNERABILITY_SVC_BASE_URL = System.getenv("PACMAN_API_URI") + "/vulnerability/v1";
+
     private static final String DISTRIBUTION = "distribution";
-    private static final String SEVERITY = "severity";
-    private static final String COUNT = "count";
     private static final String OUTPUT = "output";
     private static final String TOTAL = "total";
     private static final String COMPLIANT = "compliant";
@@ -30,73 +32,14 @@ public class AssetGroupUtil {
      *
      * @param ag the ag
      * @return the list
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> fetchTypeCounts(String ag) throws Exception {
-        String url = HttpUtil.getAssetServiceBaseUrl() + "/count?ag=" + ag;
+        String url = ASSET_SVC_BASE_URL + "/count?ag=" + ag;
         String typeCountJson = HttpUtil.get(url, AuthManager.getToken());
         Map<String, Object> typeCountMap = Util.parseJson(typeCountJson);
 
-        return  (List<Map<String, Object>>) ((Map<String, Object>) typeCountMap.get("data")).get("assetcount");
-    }
-
-    /**
-     * Fetch patching compliance.
-     *
-     * @param api the api
-     * @param ag  the ag
-     * @return the map
-     * @throws Exception
-     */
-    public static Map<String, Object> fetchPatchingCompliance(String api, String ag) throws Exception {
-        Map<String, Object> patchingInfo = new HashMap<>();
-        String responseJson = HttpUtil.get(api + "/patching?ag=" + ag, AuthManager.getToken());
-        Map<String, Object> vulnMap = Util.parseJson(responseJson);
-
-        @SuppressWarnings("unchecked")
-        Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) vulnMap.get("data");
-        Map<String, Object> output = data.get(OUTPUT);
-        if (output != null)
-            patchingInfo.putAll(data.get(OUTPUT));
-
-        return patchingInfo;
-    }
-
-    /**
-     * Fetch vuln distribution.
-     *
-     * @param api the api
-     * @param ag  the ag
-     * @return the list
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    public static List<Map<String, Object>> fetchVulnDistribution(String api, String ag) throws Exception {
-        List<Map<String, Object>> vulnInfo = new ArrayList<>();
-        String typeCountJson = HttpUtil.get(api + "/vulnerabilities/distribution?ag=" + ag, AuthManager.getToken());
-        Map<String, Object> vulnMap = Util.parseJson(typeCountJson);
-        Map<String, List<Map<String, Object>>> data = (Map<String, List<Map<String, Object>>>) vulnMap.get("data");
-        List<Map<String, Object>> apps = data.get("response");
-        for (Map<String, Object> app : apps) {
-            String application = app.get("application").toString();
-            List<Map<String, Object>> envs = (List<Map<String, Object>>) app.get("applicationInfo");
-            for (Map<String, Object> env : envs) {
-                String environment = env.get("environment").toString();
-                List<Map<String, Object>> sevinfo = (List<Map<String, Object>>) env.get("severityInfo");
-                for (Map<String, Object> sev : sevinfo) {
-                    Map<String, Object> vuln = new HashMap<>();
-                    vuln.put("tags.Application", application);
-                    vuln.put("tags.Environment", environment);
-                    vuln.put("severitylevel", sev.get("severitylevel"));
-                    vuln.put(SEVERITY, sev.get(SEVERITY));
-                    vuln.put(COUNT, sev.get(COUNT));
-                    vulnInfo.add(vuln);
-                }
-            }
-        }
-
-        return vulnInfo;
+        return (List<Map<String, Object>>) ((Map<String, Object>) typeCountMap.get("data")).get("assetcount");
     }
 
     /**
@@ -105,13 +48,12 @@ public class AssetGroupUtil {
      * @param ag      the ag
      * @param domains the domains
      * @return the list
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> fetchComplianceInfo(String ag, List<String> domains) throws Exception {
         List<Map<String, Object>> compInfo = new ArrayList<>();
         for (String domain : domains) {
-            String apiUrl = HttpUtil.getComplianceServiceBaseUrl() + "/overallcompliance?ag=" + ag + "&domain=" + Util.encodeUrl(domain);
+            String apiUrl = COMPLIANCE_SVC_BASE_URL + "/overallcompliance?ag=" + ag + "&domain=" + Util.encodeUrl(domain);
             String typeCountJson = HttpUtil
                     .get(apiUrl, AuthManager.getToken());
             Map<String, Object> complianceMap = Util.parseJson(typeCountJson);
@@ -132,10 +74,9 @@ public class AssetGroupUtil {
      * @param ag      the ag
      * @param domains the domains
      * @return the list
-     * @throws Exception
      */
     public static List<Map<String, Object>> fetchPolicyComplianceInfo(String ag, List<String> domains) throws Exception {
-        String url = HttpUtil.getComplianceServiceBaseUrl() + "/noncompliancepolicy";
+        String url = COMPLIANCE_SVC_BASE_URL + "/noncompliancepolicy";
         List<Map<String, Object>> ruleInfoList = new ArrayList<>();
         for (String domain : domains) {
             String body = "{\"ag\":\"" + ag + "\",\"filter\":{\"domain\":\"" + domain + "\"}}";
@@ -167,11 +108,10 @@ public class AssetGroupUtil {
      *
      * @param ag the ag
      * @return the map
-     * @throws Exception
      */
     public static Map<String, Object> fetchVulnSummary(String ag) throws Exception {
         Map<String, Object> vulnSummary = new HashMap<>();
-        String url = HttpUtil.getVulnerabilityServiceBaseUrl() + "/vulnerabilites?ag=" + ag;
+        String url = VULNERABILITY_SVC_BASE_URL + "/vulnerabilites?ag=" + ag;
         String vulnSummaryResponse = HttpUtil.get(url, AuthManager.getToken());
         JsonObject vulnSummaryJson = new JsonParser().parse(vulnSummaryResponse).getAsJsonObject();
         JsonObject vulnJsonObj = vulnSummaryJson.get("data").getAsJsonObject().get(OUTPUT).getAsJsonObject();
@@ -190,10 +130,9 @@ public class AssetGroupUtil {
      *
      * @param ag the ag
      * @return the map
-     * @throws Exception
      */
     public static Map<String, Object> fetchTaggingSummary(String ag) throws Exception {
-        String url = HttpUtil.getComplianceServiceBaseUrl() + "/tagging?ag=" + ag;
+        String url = COMPLIANCE_SVC_BASE_URL + "/tagging?ag=" + ag;
         Map<String, Object> taggingSummary = new HashMap<>();
         String taggingSummaryResponse = HttpUtil.get(url, AuthManager.getToken());
         JsonObject taggingSummaryJson = new JsonParser().parse(taggingSummaryResponse).getAsJsonObject();
@@ -215,29 +154,28 @@ public class AssetGroupUtil {
      * @param ag      the ag
      * @param domains the domains
      * @return the list
-     * @throws Exception
      */
     public static List<Map<String, Object>> fetchIssuesInfo(String ag, List<String> domains) throws Exception {
         List<Map<String, Object>> issueInfoList = new ArrayList<>();
         Map<String, Object> issuesInfo;
         for (String domain : domains) {
-            String url = HttpUtil.getComplianceServiceBaseUrl() + "/issues/distribution?ag=" + ag + "&domain=" + Util.encodeUrl(domain);
-            String distributionResponse = HttpUtil
-                    .get(url, AuthManager.getToken());
+            String url = COMPLIANCE_SVC_BASE_URL + "/issues/distribution?ag=" + ag + "&domain=" + Util.encodeUrl(domain);
+            String distributionResponse = HttpUtil.get(url, AuthManager.getToken());
             JsonObject distributionJson = new JsonParser().parse(distributionResponse).getAsJsonObject();
-            JsonObject distributionObj = distributionJson.get("data").getAsJsonObject().get(DISTRIBUTION)
-                    .getAsJsonObject();
+            JsonObject distributionObj = distributionJson.get("data").getAsJsonObject().get(DISTRIBUTION).getAsJsonObject();
+
+
             issuesInfo = new HashMap<>();
             issuesInfo.put(DOMAIN, domain);
             issuesInfo.put(TOTAL, distributionObj.get("total_issues").getAsLong());
-            JsonObject distributionSeverity = distributionObj.get("distribution_by_severity").getAsJsonObject();
-            JsonObject distributionCategory = distributionObj.get("distribution_policyCategory").getAsJsonObject();
 
+            JsonObject distributionSeverity = distributionObj.get("distribution_by_severity").getAsJsonObject();
             Set<String> severityKeys = distributionSeverity.keySet();
             for (String severityKey : severityKeys) {
                 issuesInfo.put(severityKey, distributionSeverity.get(severityKey).getAsLong());
             }
 
+            JsonObject distributionCategory = distributionObj.get("distribution_policyCategory").getAsJsonObject();
             Set<String> categoryKeys = distributionCategory.keySet();
             for (String categoryKey : categoryKeys) {
                 issuesInfo.put(categoryKey, distributionCategory.get(categoryKey).getAsLong());
@@ -250,7 +188,7 @@ public class AssetGroupUtil {
     }
 
     public static Map<String, Object> fetchAssetCounts(String ag) throws Exception {
-        String url = HttpUtil.getAssetServiceBaseUrl() + "/count?ag=" + ag;
+        String url = ASSET_SVC_BASE_URL + "/count?ag=" + ag;
         String assetCountJson = HttpUtil.get(url, AuthManager.getToken());
         Map<String, Object> assetCountMap = Util.parseJson(assetCountJson);
 
@@ -258,7 +196,7 @@ public class AssetGroupUtil {
     }
 
     public static String fetchViolationsCount(String platform, String accountId) throws Exception {
-        String uri = HttpUtil.getComplianceServiceBaseUrl() + "/issues/distribution?ag=" + platform + "&accountId=" + accountId;
+        String uri = COMPLIANCE_SVC_BASE_URL + "/issues/distribution?ag=" + platform + "&accountId=" + accountId;
         LOGGER.info("Fetching violation count for account:{} from compliance API: {}", accountId, uri);
 
         String issuesCountJson = HttpUtil.get(uri, AuthManager.getToken());
@@ -279,9 +217,8 @@ public class AssetGroupUtil {
         return "0";
     }
 
-    @SuppressWarnings("unchecked")
     public static String fetchAssetCount(String platform, String accountId) throws Exception {
-        String uri = HttpUtil.getAssetServiceBaseUrl() + "/count?ag=" + platform + "&accountId=" + accountId;
+        String uri = ASSET_SVC_BASE_URL + "/count?ag=" + platform + "&accountId=" + accountId;
         LOGGER.info("Fetching asset count for account:{} from assets API: {}", accountId, uri);
 
         String assetCountJson = HttpUtil.get(uri, AuthManager.getToken());

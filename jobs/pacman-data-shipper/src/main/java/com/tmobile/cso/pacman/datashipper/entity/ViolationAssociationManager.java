@@ -15,16 +15,6 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -34,7 +24,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.tmobile.cso.pacman.datashipper.util.AppConstants.*;
 
 /**
  * The Class ViolationAssociationManager.
@@ -42,11 +44,6 @@ import com.tmobile.cso.pacman.datashipper.util.Constants;
 public class ViolationAssociationManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViolationAssociationManager.class);
 
-    private static final String S3_ACCOUNT = System.getProperty("base.account");
-    private static final String S3_REGION = System.getProperty("base.region");
-    private static final String S3_ROLE = System.getProperty("s3.role");
-    private static final String BUCKET_NAME = System.getProperty("s3");
-    private static final String DATA_PATH = System.getProperty("s3.data");
     private static final String DATE_FORMAT_SEC = "yyyy-MM-dd HH:mm:00Z";
     private static final String CREATED_DATE = "createdDate";
 
@@ -82,7 +79,7 @@ public class ViolationAssociationManager {
             }
 
             String loaddate = new SimpleDateFormat(DATE_FORMAT_SEC).format(new java.util.Date());
-            entities.parallelStream().forEach((obj) -> {
+            entities.parallelStream().forEach(obj -> {
                 obj.put("_loaddate", loaddate);
                 obj.put("docType", docType);
                 obj.put("_docid", obj.get("_resourceid"));
@@ -96,12 +93,12 @@ public class ViolationAssociationManager {
 
             LOGGER.info("Collected : {}", entities.size());
             if (!entities.isEmpty()) {
-                ESManager.uploadData(indexName, entities, dataSource);
+                ESManager.uploadData(indexName, entities);
                 ESManager.deleteOldDocuments(indexName, docType, "_loaddate.keyword", loaddate);
                 String auditDocType = "issue_" + type + "_audit";
                 List<Map<String, Object>> auditLogEntites = createAuditLog(dataSource, type, entities);
                 ESManager.deleteOldDocuments(indexName, auditDocType, "auditdate.keyword", "*");
-                ESManager.uploadAuditLogData(indexName, auditLogEntites, dataSource);
+                ESManager.uploadAuditLogData(indexName, auditLogEntites);
             }
         } catch (Exception e) {
             LOGGER.debug("violation data not exists for Asset type - {}", type);
@@ -118,11 +115,11 @@ public class ViolationAssociationManager {
             Map<String, Object> auditLog = new HashMap<>();
             String issueId = (String) violationObj.get("annotationid");
             try {
-            	String auditDateWithTime = (String)violationObj.get(CREATED_DATE);
-            	String auditDate = auditDateWithTime.indexOf("T") != -1
-						? auditDateWithTime.substring(0, auditDateWithTime.indexOf("T"))
-						: auditDateWithTime;
-                auditLog.put(Constants.DOC_TYPE, docType);
+                String auditDateWithTime = (String) violationObj.get(CREATED_DATE);
+                String auditDate = auditDateWithTime.indexOf("T") != -1
+                        ? auditDateWithTime.substring(0, auditDateWithTime.indexOf("T"))
+                        : auditDateWithTime;
+                auditLog.put("docType", docType);
                 auditLog.put("datasource", dataSource);
                 auditLog.put("targetType", type);
                 auditLog.put("annotationid", issueId);

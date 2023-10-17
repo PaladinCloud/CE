@@ -27,7 +27,6 @@ public class EntityManagerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void uploadEntityDataTest(){
-        
         PowerMockito.mockStatic(ConfigManager.class);
         List<String> types = new ArrayList<>();
         types.add("onpremserver");
@@ -37,16 +36,7 @@ public class EntityManagerTest {
         //doNothing().when(ESManager.class);
         Map<String, Map<String, String>> currentInfo = new HashMap<>();
         currentInfo.put("id",new HashMap<>());
-        when(ESManager.getExistingInfo(anyString(),anyString(), anyList())).thenReturn(currentInfo);
-      /*  
-        PowerMockito.mockStatic(DBManager.class);
-        List<Map<String, String>> entities = new ArrayList<>();
-        Map<String,String> entity = new HashMap<>();
-        entity.put("id", "id");
-        entity.put("discoverydate", new Date().toString());
-        entity.put("u_business_service", "application");
-        entity.put("used_for", "environment");
-        entities.add(entity);*/
+        when(ESManager.getExistingInfo(anyString(), anyList())).thenReturn(currentInfo);
         
         List<Map<String, String>> tags = new ArrayList<>();
         Map<String,String> tag = new HashMap<>();

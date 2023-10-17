@@ -3,15 +3,16 @@ package com.tmobile.cso.pacman.datashipper.entity;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.util.AssetGroupUtil;
 import com.tmobile.cso.pacman.datashipper.util.AuthManager;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
-import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 import java.util.*;
 
-public class AssetsCountManager implements Constants {
+import static com.amazonaws.services.stepfunctions.builder.internal.PropertyNames.ERROR;
+import static com.tmobile.pacman.commons.utils.Constants.*;
+
+public class AssetsCountManager {
     private static final Logger log = LoggerFactory.getLogger(AssetsCountManager.class);
     private List<Map<String,String>> errorList = new ArrayList<>();
 

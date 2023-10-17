@@ -147,19 +147,4 @@ public class HttpUtil {
 
         return json;
     }
-
-    // Method to generate the base URL for the asset service
-    public static String getAssetServiceBaseUrl() {
-        return API_URI + "/asset/v1";
-    }
-
-    // Method to generate the base URL for the compliance service
-    public static String getComplianceServiceBaseUrl() {
-        return API_URI + "/compliance/v1";
-    }
-
-    // Method to generate the base URL for the vulnerability service
-    public static String getVulnerabilityServiceBaseUrl() {
-        return API_URI + "/vulnerability/v1";
-    }
 }

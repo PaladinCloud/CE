@@ -3,7 +3,6 @@ package com.tmobile.cso.pacman.datashipper.entity;
 import com.tmobile.cso.pacman.datashipper.dto.DatasourceData;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.AssetGroupUtil;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,10 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class AssetGroupStatsCollector implements Constants {
+import static com.amazonaws.services.stepfunctions.builder.internal.PropertyNames.ERROR;
+import static com.tmobile.pacman.commons.utils.Constants.*;
+
+public class AssetGroupStatsCollector {
     private static final Logger log = LoggerFactory.getLogger(AssetGroupStatsCollector.class);
 
     private static final String AG_STATS = "assetgroup_stats";

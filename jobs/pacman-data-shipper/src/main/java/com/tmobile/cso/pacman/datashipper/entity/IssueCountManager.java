@@ -1,8 +1,5 @@
 package com.tmobile.cso.pacman.datashipper.entity;
-import com.microsoft.azure.management.resources.Subscription;
 import com.tmobile.cso.pacman.datashipper.util.AuthManager;
-import com.tmobile.cso.pacman.datashipper.util.Constants;
-import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
@@ -10,7 +7,10 @@ import com.tmobile.cso.pacman.datashipper.util.AssetGroupUtil;
 
 import java.util.*;
 
-public class IssueCountManager implements Constants{
+import static com.amazonaws.services.stepfunctions.builder.internal.PropertyNames.ERROR;
+import static com.tmobile.pacman.commons.utils.Constants.*;
+
+public class IssueCountManager{
     private static final Logger log = LoggerFactory.getLogger(IssueCountManager.class);
     private List<Map<String,String>> errorList = new ArrayList<>();
     public List<Map<String, String>> populateViolationsCount(String platform, List<String> accountIds){

@@ -2,6 +2,7 @@ package com.tmobile.cso.pacman.datashipper.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmobile.pacman.commons.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,8 +12,11 @@ import java.util.Map;
 import java.util.Properties;
 
 public class ConfigUtil {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
+
+    private ConfigUtil() {
+        throw new IllegalStateException("ConfigUtil is a utility class");
+    }
 
     public static void setConfigProperties(String configCreds) throws Exception {
         Properties properties = new Properties();
@@ -61,8 +65,8 @@ public class ConfigUtil {
         if (properties.isEmpty()) {
             throw new Exception("No config properties fetched from " + configUrl);
         }
-        LOGGER.info("Config are fetched from {}", configUrl);
 
+        LOGGER.info("Config are fetched from {}", configUrl);
         return properties;
     }
 }
