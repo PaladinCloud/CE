@@ -65,7 +65,8 @@ public abstract class TenableDataImporter {
         String roleName = System.getProperty("s3.role");
 
         BasicSessionCredentials credential = credentialProvider.getBaseAccountCredentials(baseAccount, baseRegion, roleName);
-        String secretData = secretManagerUtil.fetchSecret(secretManagerPrefix + "/tenable", credential, baseRegion);
+        String secretName = secretManagerPrefix + "/" + roleName + "/tenable";
+        String secretData = secretManagerUtil.fetchSecret(secretName, credential, baseRegion);
 
         Map<String, String> dataMap = Util.getJsonData(secretData);
         accessKey = dataMap.get("accessKey");

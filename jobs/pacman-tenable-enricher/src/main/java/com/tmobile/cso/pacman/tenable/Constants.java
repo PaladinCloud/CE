@@ -15,9 +15,6 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.tenable;
 
-/**
- * The Interface Constants.
- */
 public class Constants {
 
     // TODO: Set to true to get detailed debug logs
@@ -39,4 +36,5 @@ public class Constants {
     private Constants() {
         throw new IllegalStateException("Constants is a utility class");
     }
+
 }
