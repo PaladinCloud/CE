@@ -307,7 +307,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
              else{
               this.openSnackBar("User added successfully!","check-circle");
              }
-            this.updatedRoles = ["ReadOnly"];
+            this.updatedRoles = ["ROLE_USER"];
            }
          }
          catch(error){
