@@ -54,7 +54,7 @@
          logout: '',
 
          CloudformationTemplateUrl: ''
-      }
+       }
      },
      pacmanIssue: {
        CREATE_JIRA_TICKET_FOR_PACMAN_ISSUE: false, // Expected values: true || false || ''

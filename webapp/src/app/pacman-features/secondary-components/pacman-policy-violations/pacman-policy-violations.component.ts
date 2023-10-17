@@ -123,16 +123,8 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   columnsSortFunctionMap = {
     Status: (a, b, isAsc) => {
       const order = ["fail", "exempt", "exempted", "pass"];
-      const severityOrder = ["critical", "high", "medium", "low"];
-      
       const AStatus = a["Status"].valueText.toLowerCase();
       const BStatus = b["Status"].valueText.toLowerCase();
-      const ASeverity = a["Severity"].valueText.toLowerCase();
-      const BSeverity = b["Severity"].valueText.toLowerCase();
-
-      if(order.indexOf(AStatus)==order.indexOf(BStatus)){
-        return (severityOrder.indexOf(ASeverity) < severityOrder.indexOf(BSeverity) ? -1 : 1) * (isAsc ? 1 : -1);
-      }
 
       return (order.indexOf(AStatus) < order.indexOf(BStatus) ? -1 : 1) * (isAsc ? 1 : -1);
     },
