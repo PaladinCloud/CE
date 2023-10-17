@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2022 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2023 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -64,7 +64,6 @@ public class VMsScannedByTenableRule extends BasePolicy {
      * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
      * @return the rule result
      */
-
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("{}: execution started .............", POLICY_NAME_FOR_LOGGER);
@@ -107,29 +106,23 @@ public class VMsScannedByTenableRule extends BasePolicy {
 
     private PolicyResult getPolicyResult(Map<String, String> ruleParam, String category, String target, String tenableEsAPI, String instanceID, String entityType) throws ParseException {
         List<JsonObject> tenableAssets = PacmanUtils.checkInstanceIdFromElasticSearchForTenable(instanceID, tenableEsAPI, "aws_ec2_instance_id", null);
-        if (tenableAssets.isEmpty() || tenableAssets.get(0).get(HAS_AGENT_FIELD_NAME).getAsBoolean()) {
-            // FAIL: Tenable doesn't know about this asset or asset doesn't have Tenable agent installed
+
+        // Get the first asset from the list in case we have more than one asset with the same instance ID stored (possible, getting such results from Tenable)
+        JsonObject asset = tenableAssets.get(0);
+        JsonElement terminatedAt = asset.get(TERMINATED_AT_FIELD_NAME);
+        JsonElement lastLicensedScanDate = asset.get(LAST_LICENSED_SCAN_DATE_FIELD_NAME);
+        if (tenableAssets.isEmpty() || tenableAssets.get(0).get(HAS_AGENT_FIELD_NAME).getAsBoolean() || terminatedAt != null) {
+            // FAIL: Tenable doesn't know about this asset, asset doesn't have Tenable agent installed or asset is terminated
             Annotation annotation = getNotScannedAnnotation(ruleParam, category, entityType);
             logger.debug("======== {} completed with annotation: {} =========", POLICY_NAME_FOR_LOGGER, annotation);
 
             return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-        } else {
-            JsonObject asset = tenableAssets.get(0);
-            JsonElement terminatedAt = asset.get(TERMINATED_AT_FIELD_NAME);
-            boolean hasAgent = asset.get(HAS_AGENT_FIELD_NAME).getAsBoolean();
-            JsonElement lastLicensedScanDate = asset.get(LAST_LICENSED_SCAN_DATE_FIELD_NAME);
-            if (terminatedAt != null) {
-                // ??: Tenable marked asset as terminated, but it's still in out inventory.
-                // TODO: return ??? because VM seems terminated (do we believe Tenable data?)
-            } else {
-                if (!checkLastLicensedScanDate(lastLicensedScanDate, target)) {
-                    // FAIL: Tenable scanned this asset more than target days ago
-                    Annotation annotation = getOutdatedScanAnnotaion(ruleParam, category, target, entityType);
-                    logger.debug("======== {} completed with annotation:  {} =========", POLICY_NAME_FOR_LOGGER, annotation);
+        } else if (!checkLastLicensedScanDate(lastLicensedScanDate, target)) {
+            // FAIL: Tenable scanned this asset more than target days ago
+            Annotation annotation = getOutdatedScanAnnotation(ruleParam, category, target, entityType);
+            logger.debug("======== {} completed with annotation:  {} =========", POLICY_NAME_FOR_LOGGER, annotation);
 
-                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-                }
-            }
+            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
         }
 
         logger.debug("======== {} completed with no issue produced =========", POLICY_NAME_FOR_LOGGER);
@@ -157,7 +150,7 @@ public class VMsScannedByTenableRule extends BasePolicy {
         return timeDiffInDays < Long.parseLong(targetTimeDifferenceInDays);
     }
 
-    private static Annotation getOutdatedScanAnnotaion(Map<String, String> ruleParam, String category, String target, String entityType) {
+    private static Annotation getOutdatedScanAnnotation(Map<String, String> ruleParam, String category, String target, String entityType) {
         Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
         annotation.put(PacmanSdkConstants.DESCRIPTION, "" + entityType + " tenable not scanned since "
                 + target + " days");
