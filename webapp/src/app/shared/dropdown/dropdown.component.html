@@ -34,11 +34,14 @@
                 <mat-option (click)="optionClick(item.text)" [class.optionImage]="optionImage" *ngFor="let item of optionList" [value]="item.text" [disabled]="disableOptions && disableOption(item.text)">
                     <div [class.optionImage]="optionImage">
                         <img *ngIf="optionImage" src="{{item.img}}">
-                        <span *ngIf="isFirstCharNumber(item.text); else isNotNumber;">{{item.text}}</span>
-                        <ng-template #isNotNumber>
-                            <span>{{capitalizeFirstLetter(item.text)}}</span>
-                        </ng-template>
+                        <div class="text-wrapper">
+                            <span *ngIf="isFirstCharNumber(item.text); else isNotNumber;">{{item.text}}</span>
+                            <ng-template #isNotNumber>
+                                <span>{{capitalizeFirstLetter(item.text)}}</span>
+                            </ng-template>
+                            <span class="caption-2" *ngIf="menuDescriptionList[item.text]">{{menuDescriptionList[item.text]}}</span>
                         </div>
+                    </div>
                 </mat-option>
                 <div class="apply-btn" *ngIf="showApplyButton">
                     <app-custom-button style="float: right;" [disabled]="listControl.value.length==0" (onclick)="handleSelection($event)" buttonType="flat" label="Apply"></app-custom-button>

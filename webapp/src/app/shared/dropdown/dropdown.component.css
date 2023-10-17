@@ -13,6 +13,11 @@
   align-items: center;
 }
 
+.text-wrapper{
+  display: flex;
+  justify-content: space-between;
+}
+
 /* ::ng-deep .dropdown-wrapper .mat-form-field.mat-focused.mat-primary{
    border: 1px solid var(--primary-400);
 } */

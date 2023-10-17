@@ -30,6 +30,7 @@ export class DropdownComponent implements OnChanges {
   @Input() dropdownTitle;
   @Input() sortValues = false;
   @Input() nonRemovableChips = [];
+  @Input() menuDescriptionList = {};
 
   @Output() selected = new EventEmitter();
   @Output() applyClick = new EventEmitter();
