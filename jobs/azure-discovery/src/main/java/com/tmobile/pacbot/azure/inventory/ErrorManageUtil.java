@@ -144,7 +144,7 @@ public class ErrorManageUtil {
 			List<ErrorVH> errorVHList=entry.getValue();
 			for(ErrorVH errorVH:entry.getValue())
 			{
-				if((errorVH.getType().equals("vault")&&errorVH.getException().contains("DeniedWithNoValidRBAC"))||(errorVH.getType().equals("webapp")&&errorVH.getException().contains("AuthorizationFailed")))
+				if((errorVH.getType().equals("vault")&&errorVH.getException().contains("DeniedWithNoValidRBAC")||errorVH.getException().contains("ForbiddenByFirewall"))||(errorVH.getType().equals("webapp")&&errorVH.getException().contains("AuthorizationFailed")))
 				{
 					PermissionVH permissionVH=new PermissionVH();
 					log.info("Omit exception :{}",errorVH.getException());
