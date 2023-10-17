@@ -14,8 +14,8 @@
 
  <div #policyHistoryContainer class="issue-trend-wrapper">
   <div class='multiline-brush-zoom-container'>
-      <div class="sub-header">
-          <app-title-burger-head [subHeadTitle]="'Compliance Trend'"></app-title-burger-head>
+      <div class="header-wrapper">
+          <span class="body-2 high-emphasis">Compliance Trend</span>
       </div>
       <div *ngIf="dataLoaded" id="PolicyTrend">
         <app-multiline-brush-zoom (error)="setError($event)" [id]="'PolicyTrend'" [singlePercentLine]="singlePercentLine" *ngIf="dataLoaded" [showLegend]="showGraphLegend" [yAxisLabel]="yAxisLabel" [graphWidth]="graphWidth" [graphLinesData]="graphData"></app-multiline-brush-zoom>

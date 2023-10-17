@@ -271,6 +271,10 @@ h6{
   font: var(--text-caption-2);
 }
 
+.body-3{
+  font: var(--text-body-3);
+}
+
 .high-emphasis{
   color: var(--text-high-emphasis);
 }
