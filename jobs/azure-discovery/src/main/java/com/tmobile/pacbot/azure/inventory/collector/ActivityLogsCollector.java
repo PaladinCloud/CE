@@ -38,7 +38,13 @@ public final class ActivityLogsCollector {
                 String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
                 Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),
                         subscription.getSubscriptionId());
-                PagedList<ActivityLogAlert> activityLogAlertList = azure.alertRules().activityLogAlerts().list();
+                PagedList<ActivityLogAlert> activityLogAlertList;
+                try {
+                        activityLogAlertList = azure.alertRules().activityLogAlerts().list();
+                } catch (NullPointerException exception) {
+                        logger.error("NPE occurred in ActivityLogsCollector by azure.alertRules().activityLogAlerts().list()");
+                        return activityLogVHList;
+                }
 
                 logger.info("activityLogAlertList size : {}  ", activityLogAlertList.size());
                 for (ActivityLogAlert activityLogAlert : activityLogAlertList) {
@@ -62,7 +68,6 @@ public final class ActivityLogsCollector {
 
                                 if (activityLogObject != null) {
                                         ActivityLogVH activityLogVH = new ActivityLogVH();
-
                                         activityLogVH.setId(activityLogObject.get("id").getAsString());
                                         activityLogVH.setRegion(Util.getRegionValue(subscription,
                                                 activityLogObject.get("location").getAsString()));
@@ -77,11 +82,8 @@ public final class ActivityLogsCollector {
                                                         HashMap.class);
                                                 activityLogVH.setProperties(propertiesMap);
                                         }
-
                                         activityLogVHList.add(activityLogVH);
-
                                 }
-
                         } catch (Exception e) {
                                 logger.error("Error while fetching activity logs for alert: {}",
                                         activityLogAlert.name(), e);
