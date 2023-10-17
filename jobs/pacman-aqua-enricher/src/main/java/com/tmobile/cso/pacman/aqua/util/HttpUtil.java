@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ * Copyright 2023 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -41,83 +41,80 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 import com.tmobile.cso.pacman.aqua.exception.UnAuthorisedException;
 
-
-/**
- * The Class HttpUtil.
- */
 @SuppressWarnings("unchecked")
 public class HttpUtil {
 
-    /** The log. */
     static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
-    
-    /**
-     * Instantiates a new http util.
-     */
-    private HttpUtil(){
+
+    private HttpUtil() {
     }
-    
+
     /**
-     * Gets the.
+     * GET method.
      *
-     * @param uri            the uri
+     * @param uri         the uri
      * @param bearerToken the bearer token
      * @return the string
      * @throws Exception the exception
      */
-    public static String get(String uri ,String bearerToken) throws Exception  {
+    public static String get(String uri, String bearerToken) throws Exception {
         HttpGet httpGet = new HttpGet(uri);
         httpGet.addHeader("content-type", "application/json");
         httpGet.addHeader("cache-control", "no-cache");
-        if(!Strings.isNullOrEmpty(bearerToken)){
-            httpGet.addHeader("Authorization", "Bearer "+bearerToken);
+        if (!Strings.isNullOrEmpty(bearerToken)) {
+            httpGet.addHeader("Authorization", "Bearer " + bearerToken);
         }
+
         CloseableHttpClient httpClient = getHttpClient();
-        if(httpClient!=null){
+        if (httpClient != null) {
             HttpResponse httpResponse;
-                httpResponse = httpClient.execute(httpGet);
-                if( httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
-                    throw new UnAuthorisedException();
-                }
-                if(null!= httpResponse && null!= httpResponse.getEntity())
-                    return EntityUtils.toString(httpResponse.getEntity());
+            httpResponse = httpClient.execute(httpGet);
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+                throw new UnAuthorisedException();
+            }
+
+            if (null != httpResponse && null != httpResponse.getEntity())
+                return EntityUtils.toString(httpResponse.getEntity());
         }
+
         return "{}";
     }
 
     /**
-     * Post.
+     * POST method.
      *
-     * @param url            the url
-     * @param requestBody            the request body
-     * @param token the token
-     * @param tokeType the toke type
+     * @param url         the url
+     * @param requestBody the request body
+     * @param token       the token
+     * @param tokeType    the toke type
      * @return the string
-     * @throws Exception             the exception
+     * @throws Exception the exception
      */
-    public static String post(String url, String requestBody,String token,String tokeType) throws Exception {
-
-            CloseableHttpClient httpClient = getHttpClient();
-            if(httpClient!=null){
-                HttpPost httppost = new HttpPost(url);
-                httppost.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
-                if(!Strings.isNullOrEmpty(token)){
-                    httppost.addHeader("Authorization", tokeType+" "+token);
-                }
-                httppost.setEntity(new StringEntity(requestBody));
-                HttpResponse httpresponse = httpClient.execute(httppost);
-                if( httpresponse.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
-                    throw new UnAuthorisedException();
-                }
-                if(null!= httpresponse && null!=httpresponse.getEntity())
-                    return EntityUtils.toString(httpresponse.getEntity());
+    public static String post(String url, String requestBody, String token, String tokeType) throws Exception {
+        CloseableHttpClient httpClient = getHttpClient();
+        if (httpClient != null) {
+            HttpPost httppost = new HttpPost(url);
+            httppost.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
+            if (!Strings.isNullOrEmpty(token)) {
+                httppost.addHeader("Authorization", tokeType + " " + token);
             }
-        return null;
 
+            httppost.setEntity(new StringEntity(requestBody));
+            HttpResponse httpresponse = httpClient.execute(httppost);
+            if (httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+                throw new UnAuthorisedException();
+            }
+
+            if (null != httpresponse && null != httpresponse.getEntity()) {
+                return EntityUtils.toString(httpresponse.getEntity());
+            }
+        }
+
+        return null;
     }
-    
+
     /**
-     * Gets the http client.
+     * Creates the http client.
      *
      * @return the http client
      */
@@ -127,27 +124,27 @@ public class HttpUtil {
             httpClient = HttpClientBuilder.create().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                     .setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
                         @Override
-                        public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+                        public boolean isTrusted(X509Certificate[] arg0, String arg1) {
                             return true;
                         }
                     }).build()).build();
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-            LOGGER.error("Error getting getHttpClient " , e);
+            LOGGER.error("Error getting getHttpClient ", e);
         }
+
         return httpClient;
     }
-    
+
     /**
      * Http get method with headers.
      *
-     * @param url the url
+     * @param url     the url
      * @param headers the headers
      * @return the string
      * @throws Exception the exception
      */
-    public static String httpGetMethodWithHeaders(String url,Map<String, Object> headers) throws Exception {
+    public static String httpGetMethodWithHeaders(String url, Map<String, Object> headers) throws Exception {
         String json = null;
-        
         HttpGet get = new HttpGet(url);
         CloseableHttpClient httpClient = null;
         if (headers != null && !headers.isEmpty()) {
@@ -155,9 +152,10 @@ public class HttpUtil {
                 get.setHeader(entry.getKey(), entry.getValue().toString());
             }
         }
+
         try {
             httpClient = getHttpClient();
-            if(httpClient!=null){
+            if (httpClient != null) {
                 CloseableHttpResponse res = httpClient.execute(get);
                 if (res.getStatusLine().getStatusCode() == 200) {
                     json = EntityUtils.toString(res.getEntity());
@@ -169,6 +167,8 @@ public class HttpUtil {
                 httpClient.close();
             }
         }
+
         return json;
     }
+
 }
