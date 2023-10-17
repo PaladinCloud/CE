@@ -242,9 +242,13 @@
         <img class="close-icon" src="/assets/icons/x-icon.svg" (click)="closeDialog()">  
     </div>
     <div class="info-wrapper flex flex-col">
-        <span class="info-text">{{selectedAccountName}} requires manual configuration</span>
-        <span class="supporting-info-text">Please to reach out to Paladin Cloud for assistance in this matter
-            <a href="mailto:Support@paladincloud.io">Support@paladincloud.io</a>
+        <span class="info-text">{{selectedAccountName}} requires manual setup</span>
+        <span class="supporting-info-text">
+            Join our 
+            <a href="https://join.slack.com/t/paladincloudcommunity/shared_invite/zt-1c2ehv1rm-KkIBLKkHZhjs543ZArbiAg" target="_blank" rel="noopener noreferrer">
+                Slack community
+            </a> 
+            for info on connecting {{selectedAccountName}} with Paladin Cloud via plugin.
         </span>
     </div>
 </ng-template>

@@ -290,7 +290,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         private agDomainObservableService: AgDomainObservableService,
         private assetTypeMapService: AssetTypeMapService
     ) {
-      this.getPreservedState();
       this.agDomainObservableService.getAgDomain().subscribe(async([assetGroupName, domain]) => {
         await this.getPreservedState();
         this.selectedAssetGroup = assetGroupName;
