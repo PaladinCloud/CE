@@ -20,6 +20,7 @@ import { SelectComplianceDropdown } from '../../services/select-compliance-dropd
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { DomainTypeObservableService } from '../../../core/services/domain-type-observable.service';
+import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 
 @Component({
   selector: 'app-policy-assets-trend',
@@ -72,6 +73,7 @@ export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy,
                 private selectComplianceDropdown: SelectComplianceDropdown,
                 private autorefreshService: AutorefreshService,
                 private logger: LoggerService,
+                private windowExpansionService: WindowExpansionService,
                 private domainObservableService: DomainTypeObservableService) {
 
                   // Get latest asset group selected and re-plot the graph
@@ -79,6 +81,10 @@ export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy,
                     assetGroupName => {
                         this.selectedAssetGroup = assetGroupName;
                   });
+
+                  this.windowExpansionService.getExpansionStatus().subscribe(()=>{
+                    this.resetGraphWidth();
+                  })
 
                   this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
                       this.selectedDomain = domain;
@@ -155,10 +161,16 @@ export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy,
     }
 
     onResize() {
-      const element = document.getElementById('policyAssetsTrend');
-        if (element) {
-            this.graphWidth = parseInt((window.getComputedStyle(element, null).getPropertyValue('width')).split('px')[0], 10);
-        }
+        this.resetGraphWidth();
+    }
+
+    resetGraphWidth(){
+      setTimeout(()=>
+      {
+        const element = document.getElementById('policyAssetsTrend');
+        if(element)
+          this.graphWidth = parseInt((window.getComputedStyle(element, null).getPropertyValue('width')).split('px')[0], 10);
+      },300);
     }
 
     getData() {
@@ -212,11 +224,10 @@ export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy,
     ngAfterViewInit(){
       if(this.widgetContainer){
         this.graphWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
-        this.init();
       }else{
         this.graphWidth = 700;
-        this.init();
       }
+      this.init();
     }
 
     ngOnDestroy() {
