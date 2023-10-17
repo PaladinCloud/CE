@@ -3425,3 +3425,4 @@ update cf_PolicyTable set policyDesc='Security groups for inbound rules that all
 UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Vulnerability Assessment (VA) Setting Also Send email Notifications to Admins and Subscription' WHERE policyId ='Enable_Email_Subscription_Admin';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Remove Inactive IAM users after n days' WHERE policyId ='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser';
 
+UPDATE cf_PolicyParams SET paramValue = 'check-for-disk-encryption' WHERE policyID='Enable_Encryption_for_Unattached_Disk_Volumes' and paramKey='policyKey';
