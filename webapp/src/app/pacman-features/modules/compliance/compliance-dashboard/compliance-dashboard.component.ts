@@ -142,7 +142,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         severity: 'Severity',
         policyCategory: 'Category',
     };
-    columnWidths = { Policy: 3, Violations: 1, Source: 1, Severity: 1, Category: 1, Compliance: 1 };
+    columnWidths = { Policy: 3, Violations: 1, Source: 1, "Asset Type": 1, Severity: 1, Category: 1, Compliance: 1 };
     selectedRowIndex : number;
     centeredColumns = {
         Policy: false,
@@ -1046,10 +1046,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             let cellObj = {};
             let processedData = [];
             const getData = data;
-            const keynames = Object.keys(getData[0]);
-
+            
             let cellData;
             for (let row = 0; row < getData.length; row++) {
+              const keynames = Object.keys(getData[row]);
                 innerArr = {};
                 keynames.forEach((col) => {
                     const isPolicyCol = col.toLowerCase() === 'policy';
