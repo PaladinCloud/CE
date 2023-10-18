@@ -2345,7 +2345,7 @@ INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`
  VALUES ('policy-engine.invoke.url','submitRuleExecutionJob','compliance-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.host',concat(@PACMAN_HOST_NAME,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.optionalAssetGroupList','azure,gcp','application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.optionalAssetGroupList','azure,gcp,redhat','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.defaultAssetGroup','aws','application','prd','latest',NULL,NULL,NULL,NULL);
 
 UPDATE IGNORE pac_config_properties SET value='us-gov-east-1,us-gov-west-1,cn-north-1,cn-northwest-1,us-iso-east-1,us-iso-west-1,us-isob-east-1' where cfkey='region.ignore';
@@ -3061,7 +3061,7 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
  /* RedHat Index*/
  INSERT IGNORE INTO `cf_AssetGroupDetails` (`groupId`, `groupName`, `dataSource`, `displayName`, `groupType`, `createdBy`, `createdUser`, `createdDate`, `modifiedUser`, `modifiedDate`, `description`, `aliasQuery`, `isVisible`)  
  values('e0008397-f74e-4deb-9066-10bdf1120','redhat','redhat','Red Hat','System','admin@paladincloud.io','admin@paladincloud.io','08/17/2023 06:13',
- 'admin@paladincloud.io','08/17/2023 06:13','Red Hat','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}','1');
+ 'admin@paladincloud.io','08/17/2023 06:13','Red Hat','{\"actions\":[{\"add\":{\"index\":\"redhat_*\",\"alias\":\"redhat\"}}]}','0');
  
  /* Red Hat asset Node, Cluster */
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
@@ -3079,4 +3079,8 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
   update pac_v2_ui_options set optionName ="Source" where optionId='43';
 
   update cf_Target set status="finding" where targetName in ("launchtemplate","securitypricings") ;
+
+  UPDATE `cf_AssetGroupDetails` SET `isVisible` = '0' WHERE `groupName` = 'redhat';
+
+  UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat' WHERE `cfkey` = 'application.optionalAssetGroupList';
 
