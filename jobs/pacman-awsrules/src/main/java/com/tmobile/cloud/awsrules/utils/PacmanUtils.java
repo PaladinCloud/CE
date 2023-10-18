@@ -4087,18 +4087,16 @@ public class PacmanUtils {
                                                                            String severityVulnValue) {
         JsonParser jsonParser = new JsonParser();
         List<JsonObject> resourceVerified = new ArrayList<>();
-        Map<String, Object> mustFilter = new HashMap<>();
-        Map<String, Object> mustNotFilter = new HashMap<>();
-        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-        Map<String, Object> mustTermsFilter = new HashMap<>();
-        mustFilter.put(convertAttributetoKeyword(attributeName), instanceId);
-        if(null!=severityVulnValue)
-            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.TENABLE_SEVERITY_KEY), severityVulnValue);
 
         try {
+            Map<String, Object> mustFilter = new HashMap<>();
+            mustFilter.put(convertAttributetoKeyword(attributeName), instanceId);
+            if(null!=severityVulnValue) {
+                mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.TENABLE_SEVERITY_KEY), severityVulnValue);
+            }
 
             JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(tenableEsAPI+"?size=10000", mustFilter,
-                    mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+                    new HashMap<>(), HashMultimap.create(), null, 0, new HashMap<>(), null, null);
             if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
                 {
                     String hitsJsonString = resultJson.get(PacmanRuleConstants.HITS).toString();
