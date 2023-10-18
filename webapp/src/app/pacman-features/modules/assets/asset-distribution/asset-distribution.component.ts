@@ -87,59 +87,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     backButtonRequired = false;
     pageLevel = 0;
 
-    colors: ColorOptions[] = [
-        {
-          from: 0,
-          to: 100,
-          color: '#6FAFE5',
-        },
-        {
-          from: 100,
-          to: 200,
-          color: '#5F9DC8',
-        },
-        {
-          from: 200,
-          to: 300,
-          color: '#4F8BBB',
-        },
-        {
-          from: 300,
-          to: 400,
-          color: '#3F7AAA',
-        },
-        {
-          from: 400,
-          to: 500,
-          color: '#2F689D',
-        },
-        {
-          from: 500,
-          to: 600,
-          color: '#1F5790',
-        },
-        {
-          from: 600,
-          to: 700,
-          color: '#105581',
-        },
-        {
-          from: 700,
-          to: 800,
-          color: '#004372',
-        },
-        {
-          from: 800,
-          to: 900,
-          color: '#003263',
-        },
-        {
-          from: 900,
-          to: 1000,
-          color: '#002155',
-        },
-      ];
-
+    colors = ['#6FAFE5','#5F9DC8','#4F8BBB','#3F7AAA','#2F689D','#1F5790','#105581','#004372','#003263','#002155']
     isSortedByName = true;
     isSortedByAssetNo = true;
 
@@ -247,35 +195,50 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
             obj.x = this.awsResources[i].displayName.split(' ');
             this.treemapData.push(obj);
         }
-        let maxVal = -1 , minVal = 100000;
-        const values = this.treemapData.map(function (d) {
-            maxVal = Math.max(maxVal,d.y);
-            return d.y;
-        });
 
-        const sqrtScale = d3.scaleSqrt().domain([0, maxVal]).range([0, 20]); 
+       // Initialize variables to store the maximum and minimum values
+        let maxDataValue, minDataValue;
 
+        // Filter out data points with a value of 0
+        this.treemapData = this.treemapData.filter(dataPoint => dataPoint.y !== 0);
 
-        for (let j = 0; j < this.treemapData.length; j++) {
-            if (this.treemapData[j].y > 0) this.treemapData[j].y = sqrtScale(this.treemapData[j].y);
-            if(minVal == 100000 && this.treemapData[j].y > 0){
-                minVal = this.treemapData[j].y;
-            }
-        }
-        maxVal = this.treemapData[maxIndex - 1].y;
-        const diff = (maxVal-minVal) / 10;
-        let from = minVal, to = minVal + diff;
+        // Find the maximum value within the filtered data
+        maxDataValue = this.treemapData[this.treemapData.length - 1].y;
 
-        for (let i = 0; i < 10; i++) {
+        // Create a square root scale for data values, mapping them to a range of [0, 20]
+        const sqrtScale = d3.scaleSqrt().domain([0, maxDataValue]).range([0, 20]);
+
+        // Scale down the data values using the square root scale
+        this.treemapData = this.treemapData.map(dataPoint => ({
+        ...dataPoint,
+        y: sqrtScale(dataPoint.y)
+        }));
+
+        // Find the minimum and maximum values within the scaled data
+        minDataValue = this.treemapData[0].y;
+        maxDataValue = this.treemapData[this.treemapData.length - 1].y;
+
+        // Calculate the difference between the maximum and minimum scaled values
+        const valueRange = (maxDataValue - minDataValue) / this.colors.length;
+
+        // Initialize variables to track the range and color for each value range
+        let fromValue = minDataValue;
+        let toValue = minDataValue + valueRange;
+
+        // Generate color ranges based on the number of colors available
+        for (let i = 0; i < this.colors.length; i++) {
             this.colorRanges.push({
-                from: from,
-                to: to,
-                color: this.colors[i].color,
+                from: fromValue,
+                to: toValue,
+                color: this.colors[i],
             });
-            from = to;
-            to = to + diff;
-            if(i==8){
-                to = maxVal;
+
+            fromValue = toValue;
+            toValue = toValue + valueRange;
+
+            // Ensure the last color range covers the entire remaining value range
+            if (i === this.colors.length - 2) {
+                toValue = maxDataValue;
             }
         }
         
