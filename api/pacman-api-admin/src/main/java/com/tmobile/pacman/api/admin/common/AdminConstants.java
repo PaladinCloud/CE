@@ -217,5 +217,12 @@ public final class AdminConstants {
 	public static final String FAILURE = "Failure";
 	public static final String SUCCESS = "Success";
 
+	public static final String TENANT_ID = "TENANT_ID";
+	public static final String JOB_NAME_SUFFIX = "-data-collection";
+	public static final String DATAMAPPER_SQS_QUEUE_URL = "SCHEDULER_SQS_URL";
+	public static final String SCHEDULER_ROLE = "SCHEDULER_ROLE";
+	public static final String BASE_ACCOUNT = "COGNITO_ACCOUNT";
+	public static final String BASE_REGION = "REGION";
+
 }
 

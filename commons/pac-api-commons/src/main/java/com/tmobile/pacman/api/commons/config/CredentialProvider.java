@@ -25,7 +25,7 @@ public class CredentialProvider {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public BasicSessionCredentials getCredentials(String account, String role) {
-
+        roleName = role != null ? role : roleName;
         BasicSessionCredentials baseAccntCreds = getBaseAccountCredentials(baseAccount, baseRegion, roleName);
         if (baseAccount.equals(account)) {
             return baseAccntCreds;

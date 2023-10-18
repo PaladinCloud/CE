@@ -256,9 +256,15 @@ public class AssetServiceImpl implements AssetService {
             List<Map<String, Object>> targetTypes = repository.getTargetTypesByAssetGroup(assetGroup, "Infra & Platforms", null);
             List<String> validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
                     .collect(Collectors.toList());
-            List<Map<String, Object>> datasourceForAssettypes = repository.getDataSourceForTargetTypes(validTypes);
-            Set<String> mappedProviders = datasourceForAssettypes.stream().map(obj -> obj.get(Constants.PROVIDER).toString()).collect(Collectors.toSet());
-            mappedProviders.forEach(provider -> providerMap.put(provider, 0L));
+            /*repository.getDataSourceForTargetTypes will return all providers if validTypes is empty*/
+            if (validTypes.isEmpty()) {
+                providerMap.put(assetGroup, 0L);
+            } else {
+                List<Map<String, Object>> datasourceForAssettypes = repository.getDataSourceForTargetTypes(validTypes);
+                Set<String> mappedProviders = datasourceForAssettypes.stream()
+                        .map(obj -> obj.get(Constants.PROVIDER).toString()).collect(Collectors.toSet());
+                mappedProviders.forEach(provider -> providerMap.put(provider, 0L));
+            }
         }
 
         providerMap.forEach((k, v) -> {
