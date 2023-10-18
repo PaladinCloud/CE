@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2023 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * <p>
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class DatasourceDataFetcher {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasourceDataFetcher.class);
     private static final String ES_URI = System.getenv("ES_URI");
 
@@ -57,6 +71,7 @@ public class DatasourceDataFetcher {
         } catch (Exception e) {
             LOGGER.error("Error while constructing datasource related data", e);
         }
+
         return null;
     }
 
@@ -82,6 +97,7 @@ public class DatasourceDataFetcher {
         } catch (Exception e) {
             LOGGER.error("An error occurred while retrieving alias names: " + e.getMessage(), e);
         }
+
         return new ArrayList<>();
     }
 
@@ -94,6 +110,7 @@ public class DatasourceDataFetcher {
     private List<String> getVisibleAssetGroupsFiltered(List<String> assetListToFilter) {
         String query = "select distinct groupName from cf_AssetGroupDetails where isVisible = true and groupName in " +
                 "('" + String.join("','", assetListToFilter) + "')";
+
         return RDSDBManager.executeStringQuery(query);
     }
 
@@ -106,6 +123,7 @@ public class DatasourceDataFetcher {
     private List<String> getAccountsByDatasource(String datasource) {
         String query = "select accountId from cf_Accounts  where platform = '" +
                 datasource + "' and accountStatus= 'configured'";
+
         return RDSDBManager.executeStringQuery(query);
     }
 
@@ -117,6 +135,7 @@ public class DatasourceDataFetcher {
      */
     private String fetchAliases(String datasource) throws Exception {
         String urlToQuery = ES_URI + "/_alias?filter_path=" + datasource + "_*.aliases";
+
         return HttpUtil.httpGetMethodWithHeaders(urlToQuery, new HashMap<>());
     }
 }

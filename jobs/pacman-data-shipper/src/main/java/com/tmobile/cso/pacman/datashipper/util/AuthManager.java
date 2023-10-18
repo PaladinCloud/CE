@@ -1,76 +1,95 @@
+/*******************************************************************************
+ * Copyright 2023 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * <p>
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.util;
-
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class AuthManager {
-    
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthManager.class);
+
     private static final String AUTH_API_URL = System.getenv("AUTH_API_URL");
     private static final String API_READ_SCOPE = "API_OPERATION/READ";
-   
-    private static AccessToken accessToken ;
-    
-    private AuthManager(){
-        
+    private static AccessToken accessToken;
+
+    private AuthManager() {
+        throw new IllegalStateException("AuthManager is a utility class");
     }
-    private static void  authorise() throws Exception{
+
+    private static void authorise() throws Exception {
         LOGGER.info("Called Authorise");
         String credentials = System.getProperty(Constants.API_AUTH_INFO);
-        String response = HttpUtil.post(AUTH_API_URL+"/oauth2/token?grant_type=client_credentials&scope="+API_READ_SCOPE,"",credentials,"Basic");
-        Map<String,Object> authInfo = Util.parseJson(response);
+        String response = HttpUtil.post(AUTH_API_URL + "/oauth2/token?grant_type=client_credentials&scope=" + API_READ_SCOPE, "", credentials, "Basic");
+        Map<String, Object> authInfo = Util.parseJson(response);
         Object token = authInfo.get("access_token");
         Object expiresIn = authInfo.get("expires_in"); // In seconds
-        if( token!=null){
-            long tokenExpiresAt = System.currentTimeMillis() + Long.valueOf(expiresIn.toString())*1000 - (20*1000) ; // 20 second buffer
+        if (token != null) {
+            long tokenExpiresAt = System.currentTimeMillis() + Long.valueOf(expiresIn.toString()) * 1000 - (20 * 1000); // 20 second buffer
             accessToken = new AccessToken(token.toString(), tokenExpiresAt);
         }
     }
 
-    public static String getToken(){
-        if(!isTokenValid()){
+    public static String getToken() {
+        if (!isTokenValid()) {
             try {
                 authorise();
             } catch (Exception e) {
-                LOGGER.error("Authorisation Failed",e);
+                LOGGER.error("Authorisation Failed", e);
             }
         }
-        if(accessToken!=null)
+        if (accessToken != null) {
             return accessToken.getToken();
-        else
+        } else {
             return "";
+        }
     }
-    
-    private static boolean isTokenValid(){
-        return accessToken !=null && accessToken.getExpiresAt() > System.currentTimeMillis();
+
+    private static boolean isTokenValid() {
+        return accessToken != null && accessToken.getExpiresAt() > System.currentTimeMillis();
     }
-   
 }
 
 class AccessToken {
     private String token;
     private long expiresAt;
-    
-    AccessToken(String token, long expiresAt){
+
+    AccessToken(String token, long expiresAt) {
         this.token = token;
         this.expiresAt = expiresAt;
     }
+
     public String getToken() {
         return token;
     }
+
     public void setToken(String token) {
         this.token = token;
     }
+
     public long getExpiresAt() {
         return expiresAt;
     }
+
     public void setExpiresAt(long expiresAt) {
         this.expiresAt = expiresAt;
     }
-    public String toString(){
-        return "Token:"+token+" ,ExpiresIn (sec)"+ (expiresAt- System.currentTimeMillis())/1000;
+
+    public String toString() {
+        return "Token:" + token + " ,ExpiresIn (sec)" + (expiresAt - System.currentTimeMillis()) / 1000;
     }
-    
 }
