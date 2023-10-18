@@ -37,10 +37,7 @@ public class AssetGroupStatsCollectorTest {
         PowerMockito.mockStatic(AuthManager.class);
         when(AuthManager.getToken()).thenReturn("");
     }
-    
-  
 
-  
     @SuppressWarnings("unchecked")
     @Test
     public void testUploadAssetGroupTagCompliance() throws Exception{
@@ -49,7 +46,7 @@ public class AssetGroupStatsCollectorTest {
         comSummaryMap.put("total", 1345l);
         comSummaryMap.put("compliant", 1000l);
         comSummaryMap.put("noncompliant", 345l);
-        when(AssetGroupUtil.fetchTaggingSummary(anyString(),anyString(),anyString())).thenReturn(comSummaryMap);
+        when(AssetGroupUtil.fetchTaggingSummary(anyString())).thenReturn(comSummaryMap);
         
         PowerMockito.mockStatic(ESManager.class);
         doNothing().when(ESManager.class);
@@ -72,7 +69,7 @@ public class AssetGroupStatsCollectorTest {
         ruleInfo.put("noncompliant",  345l);
         ruleInfo.put("contribution_percent", 66);
         ruleInfoList.add(ruleInfo);
-        when(AssetGroupUtil.fetchPolicyComplianceInfo(anyString(),anyString(),anyList(),anyString())).thenReturn(ruleInfoList);
+        when(AssetGroupUtil.fetchPolicyComplianceInfo(anyString(),anyList())).thenReturn(ruleInfoList);
         
         PowerMockito.mockStatic(ESManager.class);
         doNothing().when(ESManager.class);
@@ -103,7 +100,7 @@ public class AssetGroupStatsCollectorTest {
         complnInfo.put("governance", 83);
         complnInfo.put("overall",  74);
         ruleInfoList.add(complnInfo);
-        when(AssetGroupUtil.fetchPolicyComplianceInfo(anyString(),anyString(),anyList(),anyString())).thenReturn(ruleInfoList);
+        when(AssetGroupUtil.fetchPolicyComplianceInfo(anyString(),anyList())).thenReturn(ruleInfoList);
         
         PowerMockito.mockStatic(ESManager.class);
         doNothing().when(ESManager.class);
@@ -130,7 +127,7 @@ public class AssetGroupStatsCollectorTest {
         typeCount.put("type", "ec2");
         typeCount.put("count", 125l);
         typeCounts.add(typeCount);
-        when(AssetGroupUtil.fetchTypeCounts(anyString(),anyString(),anyString())).thenReturn(typeCounts);
+        when(AssetGroupUtil.fetchTypeCounts(anyString())).thenReturn(typeCounts);
         
 
         Map<String, Map<String, Map<String, Object>>> currentInfo = new HashMap<>();
@@ -161,7 +158,7 @@ public class AssetGroupStatsCollectorTest {
         issuesInfo.put("domain", "infra");
         issuesInfo.put("total", 123l);
         returnList.add(issuesInfo);
-        when(AssetGroupUtil.fetchIssuesInfo(anyString(),anyString(),anyList(),anyString())).thenReturn(returnList);
+        when(AssetGroupUtil.fetchIssuesInfo(anyString(),anyList())).thenReturn(returnList);
         
         PowerMockito.mockStatic(ESManager.class);
         doNothing().when(ESManager.class);
