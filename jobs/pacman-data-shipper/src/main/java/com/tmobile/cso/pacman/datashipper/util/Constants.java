@@ -1,8 +1,5 @@
 package com.tmobile.cso.pacman.datashipper.util;
 
-/**
- * The Interface Constants.
- */
 public interface Constants {
     String TARGET_TYPE_INFO = "targetTypes";
 

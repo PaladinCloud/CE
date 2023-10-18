@@ -47,7 +47,8 @@ public class ExternalPolicies {
     private final String bucketName = System.getProperty("s3");
     private final String dataPath = System.getProperty("s3.data");
 
-    private ExternalPolicies() { }
+    private ExternalPolicies() {
+    }
 
     public static synchronized ExternalPolicies getInstance() {
         if (instance == null)

@@ -71,7 +71,7 @@ public class RDSDBManager {
     public static int executeUpdate(String query) {
         try (
                 Connection conn = getConnection();
-                Statement stmt = conn.createStatement();) {
+                Statement stmt = conn.createStatement()) {
             return stmt.executeUpdate(query);
         } catch (Exception ex) {
             LOGGER.error("Error Executing Query", ex);

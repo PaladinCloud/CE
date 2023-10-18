@@ -24,9 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
-import com.tmobile.cso.pacman.datashipper.util.AuthManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
-import com.tmobile.cso.pacman.datashipper.util.HttpUtil;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.apache.commons.httpclient.HttpStatus;
@@ -45,27 +43,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * The Class ESManager.
- */
 public class ESManager implements Constants {
-
-    /**
-     * The es host key name.
-     */
     private static final String ES_HOST_KEY_NAME = System.getProperty("elastic-search.host");
-
-    /**
-     * The es http port.
-     */
     private static final Integer ES_HTTP_PORT = getESPort();
-    /**
-     * The log.
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ESManager.class);
-    /**
-     * The rest client.
-     */
     private static RestClient restClient;
 
     /**
@@ -230,7 +211,6 @@ public class ESManager implements Constants {
      */
     public static void uploadData(String index, String type, List<Map<String, Object>> docs, String idKey,
                                   boolean refresh) {
-//        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_id\" : \"%s\"} }%n";
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\"} }%n";
         String endpoint = "/_bulk";
         if (refresh) {
@@ -407,7 +387,7 @@ public class ESManager implements Constants {
 
         // new code as per the latest ES version changes.
         Set<String> types = ConfigManager.getTypes(ds);
-        Map<String,List<String>> newAssetTypesMap = new HashMap<>();
+        Map<String, List<String>> newAssetTypesMap = new HashMap<>();
         for (String _type : types) {
             String indexName = ds + "_" + _type;
             if (!indexExists(indexName)) {
@@ -426,13 +406,12 @@ public class ESManager implements Constants {
                 payLoad.append("}}");
                 payLoad.append("}}}");
 
-                if(newAssetTypesMap.containsKey(ds)){
+                if (newAssetTypesMap.containsKey(ds)) {
                     newAssetTypesMap.get(ds).add(_type);
-                }
-                else{
+                } else {
                     List<String> assetTypeList = new ArrayList<>();
                     assetTypeList.add(_type);
-                    newAssetTypesMap.put(ds,assetTypeList);
+                    newAssetTypesMap.put(ds, assetTypeList);
                 }
 
                 LOGGER.info("Printing payload before creating the index: {}", payLoad);
@@ -461,14 +440,15 @@ public class ESManager implements Constants {
 
     /**
      * Recreates relevant asset groups when new asset types are added.
+     *
      * @param newAssetTypesMap
      */
     private static void recreateEffectedAssetGroups(Map<String, List<String>> newAssetTypesMap) {
         LOGGER.info("inside recreateEffectedAssetGroups.");
-        if(!newAssetTypesMap.isEmpty()){
-            LOGGER.info("New asset types added are - {}",newAssetTypesMap);
+        if (!newAssetTypesMap.isEmpty()) {
+            LOGGER.info("New asset types added are - {}", newAssetTypesMap);
             List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery("select groupType, createdBy, groupName, description, aliasQuery, criteriaName,attributeName, attributeValue, agd.groupId from cf_AssetGroupDetails agd, cf_AssetGroupCriteriaDetails agcd WHERE agd.groupId=agcd.groupId AND lower(agd.groupType)<>'system'");
-            Map<String, List<Map<String, String>>> assetGroupMap = assetGroupsList.stream().collect(Collectors.groupingBy(obj -> obj.get("groupId").toString()));
+            Map<String, List<Map<String, String>>> assetGroupMap = assetGroupsList.stream().collect(Collectors.groupingBy(obj -> obj.get("groupId")));
             assetGroupMap.entrySet().stream().forEach(obj -> {
 
                 List<Map<String, String>> assetGroupDetails = obj.getValue();
@@ -542,35 +522,35 @@ public class ESManager implements Constants {
 
     /**
      * Below method determines whether asset group needs to be recreated based on criteria of asset groups.
+     *
      * @param newAssetTypesMap
      * @param criteriaOfAssetGroupMap
      * @return
      */
     private static boolean isAssetGroupEffected(Map<String, List<String>> newAssetTypesMap, Map<String, List<Map<String, String>>> criteriaOfAssetGroupMap) {
         boolean isAgEffected = false;
-        for(Map.Entry<String, List<Map<String, String>>> obj : criteriaOfAssetGroupMap.entrySet()){
+        for (Map.Entry<String, List<Map<String, String>>> obj : criteriaOfAssetGroupMap.entrySet()) {
             List<Map<String, String>> list1 = obj.getValue();
             boolean critHasCloudTypeOrTargetType = false;
             boolean cloudTypeBool = true;
             boolean targetTypeBool = true;
             /*If a criteria of a asset group doesn't contain cloudType or TargetType, then asset group should be recreated. Need not check other criteria.
             If a criteria has CloudType or/and TargetType, then check whether newly added target type is matching with targettype of criteria.*/
-            for(Map<String,String> mapobj : list1){
-                if("CloudType".equalsIgnoreCase(mapobj.get("attributeName"))){
-                    critHasCloudTypeOrTargetType=true;
-                    cloudTypeBool= newAssetTypesMap.keySet().stream().anyMatch(source -> source.equalsIgnoreCase(mapobj.get("attributeValue")));
-                }
-                else if("TargetType".equalsIgnoreCase(mapobj.get("attributeName"))){
-                    critHasCloudTypeOrTargetType=true;
-                    targetTypeBool= newAssetTypesMap.values().stream().anyMatch(targetTypeList -> targetTypeList.contains(mapobj.get("attributeValue")));
+            for (Map<String, String> mapobj : list1) {
+                if ("CloudType".equalsIgnoreCase(mapobj.get("attributeName"))) {
+                    critHasCloudTypeOrTargetType = true;
+                    cloudTypeBool = newAssetTypesMap.keySet().stream().anyMatch(source -> source.equalsIgnoreCase(mapobj.get("attributeValue")));
+                } else if ("TargetType".equalsIgnoreCase(mapobj.get("attributeName"))) {
+                    critHasCloudTypeOrTargetType = true;
+                    targetTypeBool = newAssetTypesMap.values().stream().anyMatch(targetTypeList -> targetTypeList.contains(mapobj.get("attributeValue")));
                 }
             }
-            if(!critHasCloudTypeOrTargetType){
-                isAgEffected=true;
+            if (!critHasCloudTypeOrTargetType) {
+                isAgEffected = true;
                 break;
             }
             isAgEffected = cloudTypeBool && targetTypeBool;
-            if(isAgEffected)
+            if (isAgEffected)
                 break;
         }
         return isAgEffected;
@@ -758,32 +738,12 @@ public class ESManager implements Constants {
     }
 
     /**
-     * Creates the type.
-     *
-     * @param index  the index
-     * @param type   the type
-     * @param parent the parent
-     */
-//    public static void createType(String index, String type, String parent) {
-//        if (!typeExists(index, type)) {
-//            String endPoint = index + "/_mapping/" + type;
-//            String payLoad = "{\"_parent\": { \"type\": \"" + parent + "\" } }";
-//            try {
-//                invokeAPI("PUT", endPoint, payLoad);
-//            } catch (IOException e) {
-//                LOGGER.error("Error createType ", e);
-//            }
-//        }
-//    }
-
-    /**
      * @param index  the index
      * @param type   child type
      * @param parent parent type
      * @throws IOException ioexception
      */
     public static void createType(String index, String type, String parent) throws IOException {
-        //   if (!typeExists(index, type)) {
         String endPoint = index + "/_mapping";
 
         // Get existing children
@@ -859,10 +819,7 @@ public class ESManager implements Constants {
      * @param docs  the docs
      */
     public static void uploadData(String index, String parentType, String type, List<Map<String, Object>> docs, String[] key, String dataSource) {
-        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"routing\" : \"%s\" } }"; // added
-        // _parent
-        // node
-//        String docTemplate = "%s\n%s\n";
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"routing\" : \"%s\" } }";
         LOGGER.info("*********UPLOADING*** {}:::{}", type, index);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
@@ -892,10 +849,7 @@ public class ESManager implements Constants {
     }
 
     public static void uploadData(String index, List<Map<String, Object>> docs, String dataSource) {
-        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }"; // added
-        // _parent
-        // node
-//        String docTemplate = "%s\n%s\n";
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }";
         LOGGER.info("*********UPLOADING*** {}:::{}", index);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
@@ -920,9 +874,7 @@ public class ESManager implements Constants {
         }
     }
 
-
-    public static void uploadAuditLogData(String index, List<Map<String, Object>> docs, String dataSource) {
-
+    public static void uploadAuditLogData(String index, List<Map<String, Object>> docs) {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }";
         long dateInMillSec = new Date().getTime();
 
@@ -1009,7 +961,6 @@ public class ESManager implements Constants {
      */
     public static long updateLoadDate(String index, String query) {
         LOGGER.info("Error records processed for {} ", index);
-
         try {
             Response updateInfo = invokeAPI("POST", index + "/" + "_update_by_query", query);
             String updateInfoJson = EntityUtils.toString(updateInfo.getEntity());

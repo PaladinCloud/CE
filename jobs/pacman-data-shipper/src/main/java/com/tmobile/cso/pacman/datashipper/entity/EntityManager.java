@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,63 +15,92 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.google.common.base.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.error.ErrorManager;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * The Class EntityManager.
- */
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class EntityManager implements Constants {
-
-    /** The Constant log. */
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityManager.class);
-    
-    /** The Constant FIRST_DISCOVERED. */
     private static final String FIRST_DISCOVERED = "firstdiscoveredon";
-    
-    /** The Constant DISCOVERY_DATE. */
     private static final String DISCOVERY_DATE = "discoverydate";
-    
-    /** The Constant PAC_OVERRIDE. */
     private static final String PAC_OVERRIDE = "pac_override_";
-
-    /**
-     * The s 3 account.
-     */
     private final String s3Account = System.getProperty("base.account");
-
-    /**
-     * The s 3 region.
-     */
     private final String s3Region = System.getProperty("base.region");
-
-    /**
-     * The s 3 role.
-     */
     private final String s3Role = System.getProperty("s3.role");
-
-    /**
-     * The bucket name.
-     */
     private final String bucketName = System.getProperty("s3");
-
-    /**
-     * The data path.
-     */
     private final String dataPath = System.getProperty("s3.data");
     private final String attributesToPreserve = System.getProperty("shipper.attributes.to.preserve");
+
+    /**
+     * Update on prem data.
+     *
+     * @param entity the entity
+     */
+    private static void updateOnPremData(Map<String, Object> entity) {
+        entity.put("tags.Application", entity.get("u_business_service").toString().toLowerCase());
+        entity.put("tags.Environment", entity.get("used_for"));
+        entity.put("inScope", "true");
+    }
+
+    /**
+     * Override.
+     *
+     * @param entity         the entity
+     * @param overrideList   the override list
+     * @param overrideFields the override fields
+     */
+    private static void override(Map<String, Object> entity, List<Map<String, String>> overrideList,
+                                 List<Map<String, String>> overrideFields) {
+
+        if (overrideList != null && !overrideList.isEmpty()) {
+            overrideList.forEach(obj -> {
+                String key = obj.get("fieldname");
+                String value = obj.get("fieldvalue");
+                if (null == value)
+                    value = "";
+                entity.put(key, value);
+            });
+        }
+
+        // Add override fields if not already populated
+        if (overrideFields != null && !overrideFields.isEmpty()) {
+            String strOverrideFields = overrideFields.get(0).get("updatableFields");
+            String[] _strOverrideFields = strOverrideFields.split(",");
+            for (String _strOverrideField : _strOverrideFields) {
+                if (!entity.containsKey(_strOverrideField)) {
+                    entity.put(_strOverrideField, "");
+                }
+
+                String value = entity.get(_strOverrideField).toString();
+                if (_strOverrideField.startsWith(PAC_OVERRIDE)) {
+                    String originalField = _strOverrideField.replace(PAC_OVERRIDE, "");
+                    String finalField = _strOverrideField.replace(PAC_OVERRIDE, "final_");
+                    if (entity.containsKey(originalField)) { // Only if the
+                        // field exists in
+                        // source, we need
+                        // to add
+                        String originalValue = entity.get(originalField).toString();
+                        if ("".equals(value)) {
+                            entity.put(finalField, originalValue);
+                        } else {
+                            entity.put(finalField, value);
+                        }
+                    }
+
+                }
+            }
+        }
+    }
 
     /**
      * Upload entity data.
@@ -145,97 +174,93 @@ public class EntityManager implements Constants {
                 }
                 stats.put("total_docs", entities.size());
                 stats.put("end_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
-                stats.put("newly_discovered",entities.stream().filter(entity->entity.get(DISCOVERY_DATE).equals(entity.get(FIRST_DISCOVERED))).count());
+                stats.put("newly_discovered", entities.stream().filter(entity -> entity.get(DISCOVERY_DATE).equals(entity.get(FIRST_DISCOVERED))).count());
                 String statsJson = ESManager.createESDoc(stats);
                 ESManager.invokeAPI("POST", "/datashipper/_doc", statsJson);
             } catch (Exception e) {
-                LOGGER.error("Exception in collecting/uploading data for {}" ,type,e);
-                Map<String,String> errorMap = new HashMap<>();
-                errorMap.put(ERROR, "Exception in collecting/uploading data for "+type);
+                LOGGER.error("Exception in collecting/uploading data for {}", type, e);
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Exception in collecting/uploading data for " + type);
                 errorMap.put(ERROR_TYPE, WARN);
                 errorMap.put(EXCEPTION, e.getMessage());
                 errorList.add(errorMap);
             }
-           
+
         }
         LOGGER.info("*** End Colleting Entity Info ***");
         return errorList;
     }
 
-	private List<Map<String, String>> fetchTagsForEntitiesFromS3(String datasource, String type) {
-		List<Map<String, String>> tags = new ArrayList<>();
-		try {
-			tags = Util.fetchDataFromS3(s3Account,s3Region, s3Role,bucketName,dataPath+"/"+datasource + "-" + type+"-tags.data");
-		} catch (Exception e) {
-			 // Do Nothing as there may not a tag file.
-		}
-		return tags;
-	}
+    private List<Map<String, String>> fetchTagsForEntitiesFromS3(String datasource, String type) {
+        List<Map<String, String>> tags = new ArrayList<>();
+        try {
+            tags = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, dataPath + "/" + datasource + "-" + type + "-tags.data");
+        } catch (Exception e) {
+            // Do Nothing as there may not a tag file.
+        }
+        return tags;
+    }
 
-	private List<Map<String, Object>> fetchEntitiyInfoFromS3(String datasource,String type,List<Map<String, String>> errorList) {
-		List<Map<String, Object>> entities = new ArrayList<>() ;
-		try{
-			entities = Util.fetchDataFromS3(s3Account,s3Region, s3Role,bucketName, dataPath+"/"+datasource + "-" + type+".data");
-		} catch (Exception e) {
-			 LOGGER.error("Exception in collecting data for {}" ,type,e);
-		     Map<String,String> errorMap = new HashMap<>();
-		     errorMap.put(ERROR, "Exception in collecting data for "+type);
-		     errorMap.put(ERROR_TYPE, WARN);
-		     errorMap.put(EXCEPTION, e.getMessage());
-		     errorList.add(errorMap);
-		}
-		return entities;
-	}
-	
+    private List<Map<String, Object>> fetchEntitiyInfoFromS3(String datasource, String type, List<Map<String, String>> errorList) {
+        List<Map<String, Object>> entities = new ArrayList<>();
+        try {
+            entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, dataPath + "/" + datasource + "-" + type + ".data");
+        } catch (Exception e) {
+            LOGGER.error("Exception in collecting data for {}", type, e);
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put(ERROR, "Exception in collecting data for " + type);
+            errorMap.put(ERROR_TYPE, WARN);
+            errorMap.put(EXCEPTION, e.getMessage());
+            errorList.add(errorMap);
+        }
+        return entities;
+    }
 
-    
     /**
      * Prepare docs.
      *
-     * @param currentInfo the current info
-     * @param entities the entities
-     * @param tags the tags
+     * @param currentInfo     the current info
+     * @param entities        the entities
+     * @param tags            the tags
      * @param overridableInfo the overridable info
-     * @param overridesMap the overrides map
-     * @param idColumn the id column
-     * @param _keys the keys
-     * @param _type the type
+     * @param overridesMap    the overrides map
+     * @param idColumn        the id column
+     * @param _keys           the keys
+     * @param _type           the type
      */
-    private  void prepareDocs(Map<String, Map<String, String>> currentInfo, List<Map<String, Object>> entities,
-            List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
-            Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource,String displayName) {
+    private void prepareDocs(Map<String, Map<String, String>> currentInfo, List<Map<String, Object>> entities,
+                             List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
+                             Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource, String displayName) {
         entities.parallelStream().forEach(entityInfo -> {
             String id = entityInfo.get(idColumn).toString();
             String docId = Util.concatenate(entityInfo, _keys, "_");
             String resourceName = ConfigManager.getResourceNameType(dataSource, _type);
-            if(entityInfo.containsKey(resourceName)) {
-            	entityInfo.put("_resourcename", entityInfo.get(resourceName).toString());
+            if (entityInfo.containsKey(resourceName)) {
+                entityInfo.put("_resourcename", entityInfo.get(resourceName).toString());
             } else {
-            	entityInfo.put("_resourcename", id);
+                entityInfo.put("_resourcename", id);
             }
-            
+
             entityInfo.put("_resourceid", id);
-            if("aws".equalsIgnoreCase(dataSource)) {
-            	if(Arrays.asList(_keys).contains("accountid")) {
-            		docId = dataSource+"_"+_type+"_"+docId;
-            	}
+            if ("aws".equalsIgnoreCase(dataSource)) {
+                if (Arrays.asList(_keys).contains("accountid")) {
+                    docId = dataSource + "_" + _type + "_" + docId;
+                }
             }
             entityInfo.put("_docid", docId);
             entityInfo.put("_entity", "true");
             entityInfo.put("_entitytype", _type);
-            entityInfo.put("targettypedisplayname",displayName);
+            entityInfo.put("targettypedisplayname", displayName);
 
-            if(entityInfo.containsKey("subscriptionName")){
-                entityInfo.put("accountname",entityInfo.get("subscriptionName"));
+            if (entityInfo.containsKey("subscriptionName")) {
+                entityInfo.put("accountname", entityInfo.get("subscriptionName"));
+            } else if (entityInfo.containsKey("projectName")) {
+                entityInfo.put("accountname", entityInfo.get("projectName"));
             }
-            else if(entityInfo.containsKey("projectName")){
-                entityInfo.put("accountname",entityInfo.get("projectName"));
-            }
-            if(entityInfo.containsKey("subscription")){
-                entityInfo.put("accountid",entityInfo.get("subscription"));
-            }
-            else if(entityInfo.containsKey("projectId")){
-                entityInfo.put("accountid",entityInfo.get("projectId"));
+            if (entityInfo.containsKey("subscription")) {
+                entityInfo.put("accountid", entityInfo.get("subscription"));
+            } else if (entityInfo.containsKey("projectId")) {
+                entityInfo.put("accountid", entityInfo.get("projectId"));
             }
 
             entityInfo.put(Constants.DOC_TYPE, _type);
@@ -244,7 +269,7 @@ public class EntityManager implements Constants {
                 Map<String, String> _currInfo = currentInfo.get(docId);
                 if (_currInfo != null) {
                     if (_currInfo.get(FIRST_DISCOVERED) == null) {
-                    	_currInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE).toString());
+                        _currInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE).toString());
                     }
                     entityInfo.putAll(_currInfo);
                 } else {
@@ -268,79 +293,14 @@ public class EntityManager implements Constants {
                 }
             }
 
-            if("gcp".equalsIgnoreCase(entityInfo.get("_cloudType").toString()) && entityInfo.containsKey("tags") && entityInfo.get("tags") instanceof Map){
-                Map<String,Object> tagMap = (Map<String, Object>) entityInfo.get("tags");
-                if(!tagMap.isEmpty()){
+            if ("gcp".equalsIgnoreCase(entityInfo.get("_cloudType").toString()) && entityInfo.containsKey("tags") && entityInfo.get("tags") instanceof Map) {
+                Map<String, Object> tagMap = (Map<String, Object>) entityInfo.get("tags");
+                if (!tagMap.isEmpty()) {
                     tagMap.entrySet().stream().forEach(tagEntry -> {
-                        entityInfo.put("tags."+tagEntry.getKey().substring(0,1).toUpperCase()+tagEntry.getKey().substring(1), tagEntry.getValue());
+                        entityInfo.put("tags." + tagEntry.getKey().substring(0, 1).toUpperCase() + tagEntry.getKey().substring(1), tagEntry.getValue());
                     });
                 }
             }
         });
-    }
-
-    /**
-     * Update on prem data.
-     *
-     * @param entity
-     *            the entity
-     */
-    private static void updateOnPremData(Map<String, Object> entity) {
-        entity.put("tags.Application", entity.get("u_business_service").toString().toLowerCase());
-        entity.put("tags.Environment", entity.get("used_for"));
-        entity.put("inScope", "true");
-    }
-
-    /**
-     * Override.
-     *
-     * @param entity
-     *            the entity
-     * @param overrideList
-     *            the override list
-     * @param overrideFields
-     *            the override fields
-     */
-    private static void override(Map<String, Object> entity, List<Map<String, String>> overrideList,
-            List<Map<String, String>> overrideFields) {
-
-        if (overrideList != null && !overrideList.isEmpty()) {
-            overrideList.forEach(obj -> {
-                String key = obj.get("fieldname");
-                String value = obj.get("fieldvalue");
-                if (null == value)
-                    value = "";
-                entity.put(key, value);
-            });
-        }
-
-        // Add override fields if not already populated
-        if (overrideFields != null && !overrideFields.isEmpty()) {
-            String strOverrideFields = overrideFields.get(0).get("updatableFields");
-            String[] _strOverrideFields = strOverrideFields.split(",");
-            for (String _strOverrideField : _strOverrideFields) {
-                if (!entity.containsKey(_strOverrideField)) {
-                    entity.put(_strOverrideField, "");
-                }
-
-                String value = entity.get(_strOverrideField).toString();
-                if (_strOverrideField.startsWith(PAC_OVERRIDE)) {
-                    String originalField = _strOverrideField.replace(PAC_OVERRIDE, "");
-                    String finalField = _strOverrideField.replace(PAC_OVERRIDE, "final_");
-                    if (entity.containsKey(originalField)) { // Only if the
-                        // field exists in
-                        // source, we need
-                        // to add
-                        String originalValue = entity.get(originalField).toString();
-                        if ("".equals(value)) {
-                            entity.put(finalField, originalValue);
-                        } else {
-                            entity.put(finalField, value);
-                        }
-                    }
-
-                }
-            }
-        }
     }
 }

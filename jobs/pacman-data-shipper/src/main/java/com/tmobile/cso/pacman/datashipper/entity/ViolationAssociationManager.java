@@ -15,16 +15,6 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -35,6 +25,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The Class ViolationAssociationManager.
@@ -101,7 +102,7 @@ public class ViolationAssociationManager {
                 String auditDocType = "issue_" + type + "_audit";
                 List<Map<String, Object>> auditLogEntites = createAuditLog(dataSource, type, entities);
                 ESManager.deleteOldDocuments(indexName, auditDocType, "auditdate.keyword", "*");
-                ESManager.uploadAuditLogData(indexName, auditLogEntites, dataSource);
+                ESManager.uploadAuditLogData(indexName, auditLogEntites);
             }
         } catch (Exception e) {
             LOGGER.debug("violation data not exists for Asset type - {}", type);
@@ -118,10 +119,10 @@ public class ViolationAssociationManager {
             Map<String, Object> auditLog = new HashMap<>();
             String issueId = (String) violationObj.get("annotationid");
             try {
-            	String auditDateWithTime = (String)violationObj.get(CREATED_DATE);
-            	String auditDate = auditDateWithTime.indexOf("T") != -1
-						? auditDateWithTime.substring(0, auditDateWithTime.indexOf("T"))
-						: auditDateWithTime;
+                String auditDateWithTime = (String) violationObj.get(CREATED_DATE);
+                String auditDate = auditDateWithTime.indexOf("T") != -1
+                        ? auditDateWithTime.substring(0, auditDateWithTime.indexOf("T"))
+                        : auditDateWithTime;
                 auditLog.put(Constants.DOC_TYPE, docType);
                 auditLog.put("datasource", dataSource);
                 auditLog.put("targetType", type);

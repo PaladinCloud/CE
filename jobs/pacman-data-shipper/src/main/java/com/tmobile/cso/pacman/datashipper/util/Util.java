@@ -1,24 +1,5 @@
 package com.tmobile.cso.pacman.datashipper.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import org.apache.http.entity.ContentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -32,17 +13,24 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
+import org.apache.http.entity.ContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import java.io.*;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * The Class Util.
- */
 public class Util {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
 
-    private static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy";
-    private Util() { }
+    private Util() {
+        throw new IllegalStateException("Util is a utility class");
+    }
 
     /**
      * Contains.

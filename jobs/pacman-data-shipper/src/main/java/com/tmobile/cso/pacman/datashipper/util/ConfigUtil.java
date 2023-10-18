@@ -11,8 +11,11 @@ import java.util.Map;
 import java.util.Properties;
 
 public class ConfigUtil {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
+
+    private ConfigUtil() {
+        throw new IllegalStateException("ConfigUtil is a utility class");
+    }
 
     public static void setConfigProperties(String configCreds) throws Exception {
         Properties properties = new Properties();
@@ -23,7 +26,6 @@ public class ConfigUtil {
 
     @SuppressWarnings("unchecked")
     public static Map<String, String> fetchConfigProperties(String configCreds) throws Exception {
-
         Map<String, String> properties = new HashMap<>();
 
         String configUrl = System.getenv("CONFIG_URL");
@@ -40,15 +42,19 @@ public class ConfigUtil {
                 if (propertySource.get(Constants.NAME).toString().contains("application")) {
                     appProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
                 }
+
                 if (propertySource.get(Constants.NAME).toString().contains("batch")) {
                     batchProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
                 }
+
                 if (propertySource.get(Constants.NAME).toString().contains("data-shipper")) {
                     invProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
                 }
+
                 if (propertySource.get(Constants.NAME).toString().contains("job-scheduler")) {
                     jobSchedulerProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
                 }
+
                 properties.putAll(appProps);
                 properties.putAll(batchProps);
                 properties.putAll(invProps);
@@ -61,8 +67,8 @@ public class ConfigUtil {
         if (properties.isEmpty()) {
             throw new Exception("No config properties fetched from " + configUrl);
         }
-        LOGGER.info("Config are fetched from {}", configUrl);
 
+        LOGGER.info("Config are fetched from {}", configUrl);
         return properties;
     }
 }
