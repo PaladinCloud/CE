@@ -23,9 +23,6 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * The Class RDSDBManager.
- */
 public class RDSDBManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
 

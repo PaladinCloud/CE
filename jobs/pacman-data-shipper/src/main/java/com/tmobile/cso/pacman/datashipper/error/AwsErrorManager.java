@@ -33,7 +33,6 @@ public class AwsErrorManager extends ErrorManager {
      * @param loaddate    the loaddate
      * @param errorList   the error list
      * @param checkLatest the check latest
-     * @return
      */
     public Map<String, Long> handleError(String index, String type, String loaddate, List<Map<String, String>> errorList, boolean checkLatest) {
         Map<String, List<Map<String, String>>> errorInfo = getErrorInfo(errorList);

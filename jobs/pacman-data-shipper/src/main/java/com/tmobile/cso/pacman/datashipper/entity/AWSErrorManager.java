@@ -37,47 +37,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * The Class AWSErrorManager.
- */
 public class AWSErrorManager implements Constants {
-
-    /**
-     * The Constant LOGGER.
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSErrorManager.class);
-    /**
-     * The error manager.
-     */
+
     private static AWSErrorManager errorManager;
-    /**
-     * The s 3 account.
-     */
     private final String s3Account = System.getProperty("base.account");
-    /**
-     * The s 3 region.
-     */
     private final String s3Region = System.getProperty("base.region");
-    /**
-     * The s 3 role.
-     */
     private final String s3Role = System.getProperty("s3.role");
-    /**
-     * The bucket name.
-     */
     private final String bucketName = System.getProperty("s3");
-    /**
-     * The data path.
-     */
     private final String dataPath = System.getProperty("s3.data");
-    /**
-     * The error info.
-     */
     private Map<String, List<Map<String, String>>> errorInfo;
 
-    /**
-     * Instantiates a new AWS error manager.
-     */
     private AWSErrorManager() {
     }
 
@@ -119,6 +89,7 @@ public class AWSErrorManager implements Constants {
                 errorMap.put(EXCEPTION, e.getMessage());
                 errorList.add(errorMap);
             }
+
             errorInfo = inventoryErrors.parallelStream().collect(Collectors.groupingBy(obj -> obj.get("type")));
         }
     }
@@ -136,7 +107,6 @@ public class AWSErrorManager implements Constants {
         }
 
         return errorInfo;
-
     }
 
     /**
@@ -185,6 +155,7 @@ public class AWSErrorManager implements Constants {
 
                     }
             );
+
             if (!Strings.isNullOrEmpty(type)) {
                 updateJson.deleteCharAt(updateJson.length() - 1);
                 updateJson.append("], \"minimum_should_match\": 1,\"must\":[{\"match\":{\"docType.keyword\":\"");
@@ -199,5 +170,4 @@ public class AWSErrorManager implements Constants {
         }
         return errorUpdateInfo;
     }
-
 }

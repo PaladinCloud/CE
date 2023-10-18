@@ -25,19 +25,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * The Class ConfigManager.
- */
 public class ConfigManager {
-
-    /**
-     * The Constant log.
-     */
     private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
 
-    /**
-     * The type info.
-     */
     private static Map<String, Map<String, String>> typeInfo;
 
     /**
@@ -143,5 +133,4 @@ public class ConfigManager {
         }
         return targetTypeWithDisplayName;
     }
-
 }
