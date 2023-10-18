@@ -89,26 +89,56 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
 
     colors: ColorOptions[] = [
         {
-            from: 0,
-            to: 100,
-            color: '#6FAFE5',
+          from: 0,
+          to: 100,
+          color: '#6FAFE5',
         },
         {
-            from: 100,
-            to: 1000,
-            color: '#42A5F5',
+          from: 100,
+          to: 200,
+          color: '#5F9DC8',
         },
         {
-            from: 1000,
-            to: 10000,
-            color: '#1976D2',
+          from: 200,
+          to: 300,
+          color: '#4F8BBB',
         },
         {
-            from: 10000,
-            to: 100000,
-            color: '#0D47A1',
+          from: 300,
+          to: 400,
+          color: '#3F7AAA',
         },
-    ];
+        {
+          from: 400,
+          to: 500,
+          color: '#2F689D',
+        },
+        {
+          from: 500,
+          to: 600,
+          color: '#1F5790',
+        },
+        {
+          from: 600,
+          to: 700,
+          color: '#105581',
+        },
+        {
+          from: 700,
+          to: 800,
+          color: '#004372',
+        },
+        {
+          from: 800,
+          to: 900,
+          color: '#003263',
+        },
+        {
+          from: 900,
+          to: 1000,
+          color: '#002155',
+        },
+      ];
 
     isSortedByName = true;
     isSortedByAssetNo = true;
@@ -217,37 +247,38 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
             obj.x = this.awsResources[i].displayName.split(' ');
             this.treemapData.push(obj);
         }
-
+        let maxVal = -1 , minVal = 100000;
         const values = this.treemapData.map(function (d) {
+            maxVal = Math.max(maxVal,d.y);
             return d.y;
         });
 
-        const quantile = d3.scaleQuantile().domain(values).range(values);
+        const sqrtScale = d3.scaleSqrt().domain([0, maxVal]).range([0, 20]); 
 
-        let maxVal = -1 , minVal = 100000;
 
         for (let j = 0; j < this.treemapData.length; j++) {
-            if (this.treemapData[j].y > 0) this.treemapData[j].y = quantile(this.treemapData[j].y + 10);
+            if (this.treemapData[j].y > 0) this.treemapData[j].y = sqrtScale(this.treemapData[j].y);
             if(minVal == 100000 && this.treemapData[j].y > 0){
                 minVal = this.treemapData[j].y;
             }
         }
-        this.treemapData[maxIndex - 1].y = this.treemapData[maxIndex - 1].y*1.5;
         maxVal = this.treemapData[maxIndex - 1].y;
-        const diff = (maxVal-minVal) / 4;
+        const diff = (maxVal-minVal) / 10;
         let from = minVal, to = minVal + diff;
-        let r = 0;
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 10; i++) {
             this.colorRanges.push({
                 from: from,
                 to: to,
-                color: this.colors[r++].color,
+                color: this.colors[i].color,
             });
             from = to;
             to = to + diff;
+            if(i==8){
+                to = maxVal;
+            }
         }
-
+        
         this.buildTreeMap();
     }
 
