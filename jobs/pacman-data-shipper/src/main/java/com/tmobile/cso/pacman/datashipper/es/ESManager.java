@@ -564,8 +564,7 @@ public class ESManager implements Constants {
      * @param filters   the filters
      * @return the existing info
      */
-    public static Map<String, Map<String, String>> getExistingInfo(String indexName, String type,
-                                                                   List<String> filters) {
+    public static Map<String, Map<String, String>> getExistingInfo(String indexName, String type, List<String> filters) {
         int count = getTypeCount(indexName, type);
         int _count = count;
         boolean scroll = false;
