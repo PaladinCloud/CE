@@ -267,7 +267,6 @@
     padding: 16px 20px;
     overflow: auto;
     gap: 20px;
-    justify-content: space-between;
     display: flex;
     flex-direction: column;
 }
