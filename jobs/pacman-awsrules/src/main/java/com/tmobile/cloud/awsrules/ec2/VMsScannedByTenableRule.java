@@ -113,7 +113,7 @@ public class VMsScannedByTenableRule extends BasePolicy {
                 || tenableAssets.get(0).get(TERMINATED_AT_FIELD_NAME) != null) {
             // FAIL: Tenable doesn't know about this asset, asset doesn't have Tenable agent installed or asset is terminated
             Annotation annotation = getNotScannedAnnotation(ruleParam, category, entityType);
-            logger.debug("======== {} completed with annotation: {} =========", POLICY_NAME_FOR_LOGGER, annotation);
+            logger.debug("{} completed with annotation: {}", POLICY_NAME_FOR_LOGGER, annotation);
 
             return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
         } else {
@@ -121,13 +121,13 @@ public class VMsScannedByTenableRule extends BasePolicy {
             if (!checkLastLicensedScanDate(lastLicensedScanDate, target)) {
                 // FAIL: Tenable scanned this asset more than target days ago
                 Annotation annotation = getOutdatedScanAnnotation(ruleParam, category, target, entityType);
-                logger.debug("======== {} completed with annotation:  {} =========", POLICY_NAME_FOR_LOGGER, annotation);
+                logger.debug("{} completed with annotation:  {}", POLICY_NAME_FOR_LOGGER, annotation);
 
                 return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             }
         }
 
-        logger.debug("======== {} completed with no issue produced =========", POLICY_NAME_FOR_LOGGER);
+        logger.debug("{} completed with no issue produced", POLICY_NAME_FOR_LOGGER);
 
         return null;
     }
