@@ -108,21 +108,23 @@ public class VMsScannedByTenableRule extends BasePolicy {
         List<JsonObject> tenableAssets = PacmanUtils.checkInstanceIdFromElasticSearchForTenable(instanceID, tenableEsAPI, "aws_ec2_instance_id", null);
 
         // Get the first asset from the list in case we have more than one asset with the same instance ID stored (possible, getting such results from Tenable)
-        JsonObject asset = tenableAssets.get(0);
-        JsonElement terminatedAt = asset.get(TERMINATED_AT_FIELD_NAME);
-        JsonElement lastLicensedScanDate = asset.get(LAST_LICENSED_SCAN_DATE_FIELD_NAME);
-        if (tenableAssets.isEmpty() || tenableAssets.get(0).get(HAS_AGENT_FIELD_NAME).getAsBoolean() || terminatedAt != null) {
+        if (tenableAssets.isEmpty()
+                || !tenableAssets.get(0).get(HAS_AGENT_FIELD_NAME).getAsBoolean()
+                || tenableAssets.get(0).get(TERMINATED_AT_FIELD_NAME) != null) {
             // FAIL: Tenable doesn't know about this asset, asset doesn't have Tenable agent installed or asset is terminated
             Annotation annotation = getNotScannedAnnotation(ruleParam, category, entityType);
             logger.debug("======== {} completed with annotation: {} =========", POLICY_NAME_FOR_LOGGER, annotation);
 
             return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-        } else if (!checkLastLicensedScanDate(lastLicensedScanDate, target)) {
-            // FAIL: Tenable scanned this asset more than target days ago
-            Annotation annotation = getOutdatedScanAnnotation(ruleParam, category, target, entityType);
-            logger.debug("======== {} completed with annotation:  {} =========", POLICY_NAME_FOR_LOGGER, annotation);
+        } else {
+            JsonElement lastLicensedScanDate = tenableAssets.get(0).get(LAST_LICENSED_SCAN_DATE_FIELD_NAME);
+            if (!checkLastLicensedScanDate(lastLicensedScanDate, target)) {
+                // FAIL: Tenable scanned this asset more than target days ago
+                Annotation annotation = getOutdatedScanAnnotation(ruleParam, category, target, entityType);
+                logger.debug("======== {} completed with annotation:  {} =========", POLICY_NAME_FOR_LOGGER, annotation);
 
-            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+            }
         }
 
         logger.debug("======== {} completed with no issue produced =========", POLICY_NAME_FOR_LOGGER);
