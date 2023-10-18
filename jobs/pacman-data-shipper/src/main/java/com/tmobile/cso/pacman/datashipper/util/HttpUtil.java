@@ -42,7 +42,7 @@ import java.util.Map;
 
 public class HttpUtil {
     static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
-    private static final String API_URI = System.getenv("PACMAN_API_URI");
+
 
     private HttpUtil() {
         throw new IllegalStateException("Constants is a utility class");
@@ -160,20 +160,5 @@ public class HttpUtil {
         }
 
         return json;
-    }
-
-    // Method to generate the base URL for the asset service
-    public static String getAssetServiceBaseUrl() {
-        return API_URI + "/asset/v1";
-    }
-
-    // Method to generate the base URL for the compliance service
-    public static String getComplianceServiceBaseUrl() {
-        return API_URI + "/compliance/v1";
-    }
-
-    // Method to generate the base URL for the vulnerability service
-    public static String getVulnerabilityServiceBaseUrl() {
-        return API_URI + "/vulnerability/v1";
     }
 }

@@ -36,6 +36,12 @@ public class AssetGroupUtil {
     private static final String NON_COMPLIANT = "noncompliant";
     private static final String DOMAIN = "domain";
 
+    private static final String API_URL = System.getenv("PACMAN_API_URI");
+
+    public static final String ASSET_SVC_BASE_URL = API_URL + "/asset/v1";
+    public static final String COMPLIANCE_SVC_BASE_URL = API_URL + "/compliance/v1";
+    public static final String VULNERABILITY_SVC_BASE_URL = API_URL+ "/vulnerability/v1";
+
     private AssetGroupUtil() {
         throw new IllegalStateException("AssetGroupUtil is a utility class");
     }
@@ -49,7 +55,7 @@ public class AssetGroupUtil {
      */
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> fetchTypeCounts(String ag) throws Exception {
-        String url = HttpUtil.getAssetServiceBaseUrl() + "/count?ag=" + ag;
+        String url = ASSET_SVC_BASE_URL + "/count?ag=" + ag;
         String typeCountJson = HttpUtil.get(url, AuthManager.getToken());
         Map<String, Object> typeCountMap = Util.parseJson(typeCountJson);
         return  (List<Map<String, Object>>) ((Map<String, Object>) typeCountMap.get("data")).get("assetcount");
@@ -125,7 +131,7 @@ public class AssetGroupUtil {
     public static List<Map<String, Object>> fetchComplianceInfo(String ag, List<String> domains) throws Exception {
         List<Map<String, Object>> compInfo = new ArrayList<>();
         for (String domain : domains) {
-            String apiUrl = HttpUtil.getComplianceServiceBaseUrl() + "/overallcompliance?ag=" + ag + "&domain=" + Util.encodeUrl(domain);
+            String apiUrl = COMPLIANCE_SVC_BASE_URL + "/overallcompliance?ag=" + ag + "&domain=" + Util.encodeUrl(domain);
             String typeCountJson = HttpUtil
                     .get(apiUrl, AuthManager.getToken());
             Map<String, Object> complianceMap = Util.parseJson(typeCountJson);
@@ -149,7 +155,7 @@ public class AssetGroupUtil {
      * @throws Exception
      */
     public static List<Map<String, Object>> fetchPolicyComplianceInfo(String ag, List<String> domains) throws Exception {
-        String url = HttpUtil.getComplianceServiceBaseUrl() + "/noncompliancepolicy";
+        String url = COMPLIANCE_SVC_BASE_URL + "/noncompliancepolicy";
         List<Map<String, Object>> ruleInfoList = new ArrayList<>();
         for (String domain : domains) {
             String body = "{\"ag\":\"" + ag + "\",\"filter\":{\"domain\":\"" + domain + "\"}}";
@@ -167,7 +173,7 @@ public class AssetGroupUtil {
                 ruleInfo.put(COMPLIANT, ruleInfoJson.get("passed").getAsLong());
                 ruleInfo.put(NON_COMPLIANT, ruleInfoJson.get("failed").getAsLong());
                 ruleInfo.put("contribution_percent", ruleInfoJson.get("contribution_percent").getAsDouble());
-                ruleInfo.put("severity", ruleInfoJson.get("severity").getAsString());
+                ruleInfo.put(SEVERITY, ruleInfoJson.get(SEVERITY).getAsString());
                 ruleInfo.put("policyCategory", ruleInfoJson.get("policyCategory").getAsString());
                 ruleInfoList.add(ruleInfo);
             }
@@ -177,15 +183,14 @@ public class AssetGroupUtil {
     }
 
     /**
-     * Fetch vuln summary.
+     * Fetch vulnerability summary.
      *
      * @param ag the ag
      * @return the map
-     * @throws Exception
      */
     public static Map<String, Object> fetchVulnSummary(String ag) throws Exception {
         Map<String, Object> vulnSummary = new HashMap<>();
-        String url = HttpUtil.getVulnerabilityServiceBaseUrl() + "/vulnerabilites?ag=" + ag;
+        String url = VULNERABILITY_SVC_BASE_URL + "/vulnerabilites?ag=" + ag;
         String vulnSummaryResponse = HttpUtil.get(url, AuthManager.getToken());
         JsonObject vulnSummaryJson = new JsonParser().parse(vulnSummaryResponse).getAsJsonObject();
         JsonObject vulnJsonObj = vulnSummaryJson.get("data").getAsJsonObject().get(OUTPUT).getAsJsonObject();
@@ -207,7 +212,7 @@ public class AssetGroupUtil {
      * @throws Exception
      */
     public static Map<String, Object> fetchTaggingSummary(String ag) throws Exception {
-        String url = HttpUtil.getComplianceServiceBaseUrl() + "/tagging?ag=" + ag;
+        String url = COMPLIANCE_SVC_BASE_URL + "/tagging?ag=" + ag;
         Map<String, Object> taggingSummary = new HashMap<>();
         String taggingSummaryResponse = HttpUtil.get(url, AuthManager.getToken());
         JsonObject taggingSummaryJson = new JsonParser().parse(taggingSummaryResponse).getAsJsonObject();
@@ -235,7 +240,7 @@ public class AssetGroupUtil {
         List<Map<String, Object>> issueInfoList = new ArrayList<>();
         Map<String, Object> issuesInfo;
         for (String domain : domains) {
-            String url = HttpUtil.getComplianceServiceBaseUrl() + "/issues/distribution?ag=" + ag + "&domain=" + Util.encodeUrl(domain);
+            String url = COMPLIANCE_SVC_BASE_URL + "/issues/distribution?ag=" + ag + "&domain=" + Util.encodeUrl(domain);
             String distributionResponse = HttpUtil
                     .get(url, AuthManager.getToken());
             JsonObject distributionJson = new JsonParser().parse(distributionResponse).getAsJsonObject();
@@ -264,7 +269,7 @@ public class AssetGroupUtil {
     }
 
     public static Map<String, Object> fetchAssetCounts(String ag) throws Exception {
-        String url = HttpUtil.getAssetServiceBaseUrl() + "/count?ag=" + ag;
+        String url = ASSET_SVC_BASE_URL + "/count?ag=" + ag;
         String assetCountJson = HttpUtil.get(url, AuthManager.getToken());
         Map<String, Object> assetCountMap = Util.parseJson(assetCountJson);
 
@@ -272,7 +277,7 @@ public class AssetGroupUtil {
     }
 
     public static String fetchViolationsCount(String platform, String accountId) throws Exception {
-        String uri = HttpUtil.getComplianceServiceBaseUrl() + "/issues/distribution?ag=" + platform + "&accountId=" + accountId;
+        String uri = COMPLIANCE_SVC_BASE_URL + "/issues/distribution?ag=" + platform + "&accountId=" + accountId;
         LOGGER.info("Fetching violation count for account:{} from compliance API: {}", accountId, uri);
 
         String issuesCountJson = HttpUtil.get(uri, AuthManager.getToken());
@@ -295,7 +300,7 @@ public class AssetGroupUtil {
 
     @SuppressWarnings("unchecked")
     public static String fetchAssetCount(String platform, String accountId) throws Exception {
-        String uri = HttpUtil.getAssetServiceBaseUrl() + "/count?ag=" + platform + "&accountId=" + accountId;
+        String uri = ASSET_SVC_BASE_URL + "/count?ag=" + platform + "&accountId=" + accountId;
         LOGGER.info("Fetching asset count for account:{} from assets API: {}", accountId, uri);
 
         String assetCountJson = HttpUtil.get(uri, AuthManager.getToken());
