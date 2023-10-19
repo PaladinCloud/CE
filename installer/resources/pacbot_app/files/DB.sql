@@ -3084,3 +3084,4 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
   UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat' WHERE `cfkey` = 'application.optionalAssetGroupList';
 
+update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
