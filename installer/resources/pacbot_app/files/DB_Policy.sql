@@ -3426,3 +3426,4 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Vulnerability Assessment (
 UPDATE cf_PolicyTable SET policyDisplayName = 'Remove Inactive IAM users after n days' WHERE policyId ='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser';
 
 UPDATE cf_PolicyParams SET paramValue = 'check-for-disk-encryption' WHERE policyID='Enable_Encryption_for_Unattached_Disk_Volumes' and paramKey='policyKey';
+UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'AWS_account_security_hub_exists_version-1_enable_security_hub_account';
