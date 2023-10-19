@@ -3080,3 +3080,5 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
   update cf_Target set status="finding" where targetName in ("launchtemplate","securitypricings") ;
 
+  update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
+
