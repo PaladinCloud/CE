@@ -43,7 +43,12 @@
                     <span class="body-2 high-emphasis">{{account.name}}</span>
                     <span>{{account.FullName}}</span>
                 </div>
-                <button class="button btn" (click)="selectAccount(account)">Select</button>
+                <div *ngIf="account.name.toLowerCase()=='rapid7' || account.name.toLowerCase()=='contrast';else showSelectRef">
+                    <button class="button btn disabled-plugin">Coming Soon</button>
+                </div>
+                <ng-template #showSelectRef>
+                    <button class="button btn" (click)="selectAccount(account)">Select</button>
+                </ng-template>
             </div>
         </div>
     </div>

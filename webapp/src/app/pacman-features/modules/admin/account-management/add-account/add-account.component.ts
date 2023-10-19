@@ -191,6 +191,11 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       name: "Contrast",
       img: "contrast",
       FullName: "Vulnerability Management"
+    },
+    {
+      name: "Rapid7",
+      img: "rapid7",
+      FullName: "Vulnerability Management"
     }
   ]
 
@@ -408,7 +413,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     this.isValid = true;
     if(account.name.toLowerCase() == "tenable"
         || account.name.toLowerCase() == "aqua" 
-        || account.name.toLowerCase() == "contrast"
       ){
           this.openSupportInfoDialog(account.name);
           return;

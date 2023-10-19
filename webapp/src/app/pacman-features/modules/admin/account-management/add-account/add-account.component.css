@@ -28,6 +28,12 @@
     min-width: 300px;
 }
 
+.disabled-plugin{
+    background-color: var(--background-white) !important;
+    color: var(--text-low-emphasis) !important;
+    pointer-events: none;
+}
+
 .button {
     display: flex;
     flex-direction: row;
