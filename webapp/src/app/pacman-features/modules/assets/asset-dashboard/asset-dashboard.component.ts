@@ -16,6 +16,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { Subscription } from 'rxjs';
 import { OverviewTile } from 'src/app/shared/components/molecules/overview-tile/overview-tile.component';
 import { TourService } from 'src/app/core/services/tour.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 @Component({
     selector: 'app-asset-dashboard',
@@ -105,7 +106,7 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         private assetGroupObservableService: AssetGroupObservableService,
         private multilineChartService: MultilineChartService,
         private commonResponseService: CommonResponseService,
-        private assetGroupsService: AssetTilesService,
+        private utils: UtilsService,
         private fetchResourcesService: FetchResourcesService,
         private tourService: TourService,
         private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
@@ -187,9 +188,6 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             return new Date(a.date) > new Date(b.date);
         });
 
-        if(!this.minDate)
-        this.minDate = new Date(data[0].values[0].date);
-
         data[0].info = {
             id: 'AssetsCountTrend',
             showLegend: true,
@@ -270,8 +268,11 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
                 .subscribe(
                     (response) => {
                         this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
-                        if (response[0].trend.length < 2) {
+                        this.getMinDateForDateSelector(this.totalAssetsCountData[0].values);
+                        if (this.utils.getDifferenceBetweenDateByDays(this.minDate, new Date())<2 && this.totalAssetsCountData[0].values.length < 2) {
                             this.totalAssetsCountDataError = 'waitForData';
+                        } else if(response[0].trend.length==0){
+                            this.totalAssetsCountDataError = 'noDataAvailable';
                         }
                     },
                     (error) => {
@@ -282,6 +283,16 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         } catch (error) {
             this.totalAssetsCountDataError = 'apiResponseError';
             this.logger.log('error', error);
+        }
+    }
+
+    getMinDateForDateSelector(dataList){
+        if(!this.minDate){
+            if(dataList.length>0){
+                this.minDate = new Date(dataList[0].date);
+            }else{
+                this.minDate = new Date();
+            }
         }
     }
 
@@ -345,10 +356,10 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             if (this.trendDataSubscription) {
                 this.trendDataSubscription.unsubscribe();
             }
-            this.taggedTileDataSubscription.unsubscribe();
-            this.unTaggedTileDataSubscription.unsubscribe();
-            this.exemptTileDataSubscription.unsubscribe();
-            this.assetGroupSubscription.unsubscribe();
+            if(this.taggedTileDataSubscription) this.taggedTileDataSubscription.unsubscribe();
+            if(this.unTaggedTileDataSubscription) this.unTaggedTileDataSubscription.unsubscribe();
+            if(this.exemptTileDataSubscription) this.exemptTileDataSubscription.unsubscribe();
+            if(this.assetGroupSubscription) this.assetGroupSubscription.unsubscribe();
             this.dataStore.set('urlToRedirect', this.urlToRedirect);
         } catch (error) {
             this.logger.log('error', '--- Error while unsubscribing ---');
