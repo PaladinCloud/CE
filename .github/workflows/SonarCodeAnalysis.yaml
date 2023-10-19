@@ -39,8 +39,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
         run: |
-          export MAVEN_OPTS="-Xmx3000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
-          export SONAR_SCANNER_OPTS="-Xmx3000m"
+          export MAVEN_OPTS="-Xmx4000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
+          export SONAR_SCANNER_OPTS="-Xmx4000m"
           mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar  -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  -Dsonar.pullrequest.base=master  -Dsonar.pullrequest.key=${{github.event.number}} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=PaladinCloud/CE 
 
       - name: Build and analyze push
@@ -49,6 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
         run: |
-          export MAVEN_OPTS="-Xmx3000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
-          export SONAR_SCANNER_OPTS="-Xmx3000m"
+          export MAVEN_OPTS="-Xmx4000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
+          export SONAR_SCANNER_OPTS="-Xmx4000m"
           mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  
