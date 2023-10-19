@@ -15,16 +15,14 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.domain;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class PluginResponse {
-
-    private String status;
-    private String message;
-    private String errorDetails;
+@Builder
+public class PluginParameters {
+    private String id;
+    private String pluginName;
+    private String secretKey;
+    private String createdBy;
 }

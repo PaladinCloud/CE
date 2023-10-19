@@ -13,18 +13,16 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.admin.domain;
+package com.tmobile.pacman.api.admin.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class PluginResponse {
-
-    private String status;
-    private String message;
-    private String errorDetails;
+@Configuration
+public class AppConfig {
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
 }

@@ -5,10 +5,13 @@ import com.google.gson.Gson;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.domain.GcpPluginRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
 import com.tmobile.pacman.api.admin.domain.PluginResponse;
 import com.tmobile.pacman.api.admin.domain.RedHatPluginRequest;
 import com.tmobile.pacman.api.admin.domain.Response;
+import com.tmobile.pacman.api.admin.exceptions.PluginServiceException;
 import com.tmobile.pacman.api.admin.factory.AccountFactory;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.repository.service.AccountsService;
@@ -57,6 +60,10 @@ public class AccountsController {
     private PluginsService<RedHatPluginRequest> redHatPluginService;
     @Autowired
     private AmazonCognitoConnector amazonCognitoConnector;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private PluginsService<GcpPluginRequest> gcpPluginService;
 
 
     @Value("${application.optionalAssetGroupList}")
@@ -186,28 +193,12 @@ public class AccountsController {
     @ApiOperation(httpMethod = "DELETE", value = "API to delete account", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @DeleteMapping(path = "/{type}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> deletePlugin(@ApiParam(value = "provide account number", required = true) @RequestParam("accountId") String accountId,
-                                               @PathVariable("type") String type) {
+                                               @AuthenticationPrincipal Principal user, @PathVariable("type") String type) {
         try {
-            PluginResponse response = redHatPluginService.deletePlugin(accountId);
-            if (response.getStatus().equals(AdminConstants.SUCCESS)) {
-                List<String> optionalAssetList = null;
-                if (Objects.nonNull(optionalAssetGroupList)) {
-                    optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-                }
-                if (Objects.nonNull(optionalAssetList) && !optionalAssetList.isEmpty() && optionalAssetList.contains(type)) {
-                    List<AccountDetails> findOnlineAccounts = redHatPluginService.findOnlineAccounts("configured", type);
-                    if (Objects.isNull(findOnlineAccounts) || findOnlineAccounts.isEmpty()) {
-                        String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(type, false, "admin");
-                        log.debug("AssetGoup  {}   status {}", type, updateAssetGroupStatus);
-                        Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(type);
-                        log.debug("total user updated with default asset group {}", totalUsers);
-                    }
-                }
-                log.info(type + " plugin created successfully.");
-            } else {
-                log.info("Failed to delete " + type + " plugin.");
-            }
-            return ResponseUtils.buildSucessResponse(response);
+            String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
+            PluginParameters parameters = PluginParameters.builder().pluginName(type).createdBy(createdBy)
+                    .id(accountId).build();
+            return ResponseUtils.buildSucessResponse(redHatPluginService.deletePlugin(parameters));
         } catch (Exception exception) {
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
@@ -217,40 +208,48 @@ public class AccountsController {
     @ApiOperation(httpMethod = "POST", value = "API to create plugin", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(path = "/{type}/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createPlugin(@AuthenticationPrincipal Principal user,
-                                               @RequestBody RedHatPluginRequest request,
+                                               @RequestBody Object request,
                                                @PathVariable("type") String type) {
+        PluginResponse response;
         try {
             String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
-            PluginResponse response = redHatPluginService.createPlugin(request, createdBy);
-            if (response.getStatus().equals(AdminConstants.SUCCESS)) {
-                List<String> optionalAssetList = null;
-                if (Objects.nonNull(optionalAssetGroupList)) {
-                    optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-                }
-                if (Objects.nonNull(optionalAssetList) && !optionalAssetList.isEmpty()
-                        && optionalAssetList.contains(type)) {
-                    String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(type, true, "admin");
-                    log.info("AssetGroup  {} status {}", type, updateAssetGroupStatus);
-                }
-                log.info(type + " plugin created successfully.");
+            PluginParameters parameters = PluginParameters.builder().pluginName(type).createdBy(createdBy).build();
+            if (type.equals("redhat")) {
+                request = objectMapper.convertValue(request, RedHatPluginRequest.class);
+                response = redHatPluginService.createPlugin((RedHatPluginRequest) request, parameters);
+            } else if (type.equals("gcp")) {
+                request = objectMapper.convertValue(request, GcpPluginRequest.class);
+                response = gcpPluginService.createPlugin((GcpPluginRequest) request, parameters);
             } else {
-                log.info("Failed to create " + type + " plugin.");
+                return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED),
+                        "Invalid request body or plugin type");
             }
             return ResponseUtils.buildSucessResponse(response);
+        } catch (PluginServiceException pse) {
+            log.error(pse.getMessage(), pse);
+            return ResponseUtils.buildFailureResponse(pse, pse.getMessage());
         } catch (Exception exception) {
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-            if (redHatPluginService != null) {
-                redHatPluginService.deletePlugin(request.getRedhatAccountId());
-            }
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
         }
     }
 
     @ApiOperation(httpMethod = "POST", value = "API to validate plugin configuration", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(path = "/{type}/validate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> validateAccount(@RequestBody RedHatPluginRequest request, @PathVariable("type") String type) {
+    public ResponseEntity<Object> validateAccount(@RequestBody Object request, @PathVariable("type") String type) {
         try {
-            return ResponseUtils.buildSucessResponse(redHatPluginService.validate(request));
+            if (type.equals("redhat")) {
+                request = objectMapper.convertValue(request, RedHatPluginRequest.class);
+                return ResponseUtils.buildSucessResponse(redHatPluginService
+                        .validate((RedHatPluginRequest) request, type));
+            } else if (type.equals("gcp")) {
+                request = objectMapper.convertValue(request, GcpPluginRequest.class);
+                return ResponseUtils.buildSucessResponse(gcpPluginService
+                        .validate((GcpPluginRequest) request, type));
+            } else {
+                return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED),
+                        "Invalid request body or plugin type");
+            }
         } catch (Exception exception) {
             log.info("Failed to validate " + type + " plugin.");
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
