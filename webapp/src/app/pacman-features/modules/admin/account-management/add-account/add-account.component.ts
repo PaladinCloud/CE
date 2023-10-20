@@ -80,7 +80,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   @ViewChild('videoPlayer') videoplayer: any;
   public startedPlay:boolean = false;
   public show:boolean = false;
-
+  pluginsWithUpdatedEndPoint = ["gcp", "redhat"];
 
   private currentPluginForm: FormGroup;
   private awsPluginForm: FormGroup;
@@ -604,9 +604,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         break;
       case "gcp":
         payload = {
-          "projectId": this.projectId,
-          "platform": provider,
-          "secretData": this.serviceAccount
+          "gcpProjectId": this.projectId,
+          "gcpServiceAccountKey": this.serviceAccount
         }
       break;
       case "azure":
@@ -635,7 +634,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         break;
       case "red hat":
         payload = {
-          platform: "redhat",
           redhatAccountId: this.redHatId,
           redhatAccountName: this.redHatAccountName,
           redhatToken: this.redHatToken,
@@ -709,9 +707,8 @@ onSubmit(){
         break;
       case "gcp":
         payload = {
-          "projectId": this.projectId,
-          "platform": provider,
-          "secretData": this.serviceAccount
+          "gcpProjectId": this.projectId,
+          "gcpServiceAccountKey": this.serviceAccount
           }
         accountid = this.projectId;
       break;
@@ -742,7 +739,6 @@ onSubmit(){
         break;
       case "red hat":
         payload = {
-          platform: "redhat",
           redhatAccountId: this.redHatId,
           redhatAccountName: this.redHatAccountName,
           redhatToken: this.redHatToken,
@@ -753,7 +749,9 @@ onSubmit(){
     }
    const userDetails = this.dataCacheService.getUserDetailsValue();
    let userId = userDetails.getEmail(); 
-   payload['createdBy'] = userId;
+   if(!this.pluginsWithUpdatedEndPoint.includes(this.getImageName())){
+    payload['createdBy'] = userId;
+   }
    const url = this.replaceUrl(environment.createAccount.url, 'create');
    const method = environment.createAccount.method;
    let notificationMessage = "";
@@ -791,7 +789,7 @@ onSubmit(){
 }
 
 replaceUrl(url, action=''){
-  if(this.getImageName()=="redhat"){
+  if(this.pluginsWithUpdatedEndPoint.includes(this.getImageName())){
     return url.replace("{pluginSelected}", this.getImageName());
   }else if(action=='validate'){
     return url.replace("{pluginSelected}/","");
