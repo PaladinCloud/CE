@@ -51,6 +51,7 @@ public interface ComplianceService {
      */
     long getIssuesCount(String assetGroup, String policyId, String domain, String accountId) throws ServiceException;
 
+
     /**
      * Gets Compliance distribution by policy category and severity.
      *
@@ -61,6 +62,7 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     Map<String, Object> getDistribution(String assetGroup, String domain, String accountId) throws ServiceException;
+
 
     /**
      * Gets Compliance Average age distribution by  severity.
@@ -134,6 +136,7 @@ public interface ComplianceService {
     ResponseWithOrder getIssueAuditLog(String datasource, String annotationId, String targetType, int from, int size,
                                        String searchText) throws ServiceException;
 
+
     /**
      * Gets the resource details.
      *
@@ -162,6 +165,8 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     public ResponseWithOrder getPolicyCompliance(Request request) throws ServiceException;
+
+    ResponseWithOrder getComplianceForPolicies(Request request) throws ServiceException;
 
     /**
      * Gets the policy details by application.SearchText is used to match any text
@@ -240,6 +245,7 @@ public interface ComplianceService {
      */
     List<String> getResourceType(String assetGroup, String domain) throws ServiceException;
 
+
     /**
      * Gets the policy severity and category details.
      *
@@ -293,6 +299,7 @@ public interface ComplianceService {
      */
     Map<String, String> getCurrentKernelVersions();
 
+
     /**
      * Adds the multiple issue exception.
      *
@@ -302,6 +309,10 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     IssueExceptionResponse addMultipleIssueException(String assetGroup, IssuesException issuesException,boolean auditTrail) throws ServiceException;
+
+    public List<Map<String, Object>> getCategoryCompDetails(String assetGroup) throws Exception;
+
+    public ResponseWithOrder getPolicyComplianceOverviewAsList(Request request) throws Exception;
 
     /**
      * Revoke multiple issue exception.
@@ -318,5 +329,4 @@ public interface ComplianceService {
 
     ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest) throws ServiceException;
 
-    public List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails) throws ServiceException;
 }
