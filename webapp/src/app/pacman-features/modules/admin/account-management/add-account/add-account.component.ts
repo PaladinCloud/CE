@@ -80,6 +80,8 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   @ViewChild('videoPlayer') videoplayer: any;
   public startedPlay:boolean = false;
   public show:boolean = false;
+  comingSoonPluginList = ["contrast","rapid7"];
+  manualConfiguredAccountList: String[]=["tenable","aqua"];
 
 
   private currentPluginForm: FormGroup;
@@ -122,7 +124,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     redHatToken: '',
     redHatOwner: ''
   }
-
+  
   stepperData = [];
 
   commands = [
@@ -173,11 +175,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       FullName: "Vulnerability Management"
     },
     {
-      name: "Aqua",
-      img: "aqua",
-      FullName: "Vulnerability Management"
-    },
-    {
       name: "Red Hat",
       img: "redhat",
       FullName: "Advanced Cluster Security"
@@ -188,8 +185,18 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       FullName: "Vulnerability Management"
     },
     {
+      name: "Aqua",
+      img: "aqua",
+      FullName: "Vulnerability Management"
+    },
+    {
       name: "Contrast",
       img: "contrast",
+      FullName: "Vulnerability Management"
+    },
+    {
+      name: "Rapid7",
+      img: "rapid7",
       FullName: "Vulnerability Management"
     }
   ]
@@ -267,9 +274,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   pauseVideo(videoplayer)
 {
   videoplayer.nativeElement.play();
-  // this.startedPlay = true;
-  // if(this.startedPlay == true)
-  // {
      setTimeout(() => 
      {
       videoplayer.nativeElement.pause();
@@ -278,7 +282,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         this.show = !this.show;       
       } 
      }, 5000);
-  // }
   }
 
   closebutton(videoplayer){
@@ -328,24 +331,32 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     this.currentStepperIndex = index;
   }
 
-  pageCounter(clickedButton: string){
+  pageCounter(clickedButton: string) {
     if(this.currentStepperIndex == 0 && this.selectedAccount.toLowerCase() == "gcp"){
-        this.createCommand();
+      this.createCommand();
     }
-    if (clickedButton == 'back') {
-      this.gaService.event('Button', 'Click', 'Back');
-      if(this.currentStepperIndex == 0){
-        this.selectedAccount = "";
-      }
-      else
-      this.currentStepperIndex--;
-    } else{
-      this.gaService.event('Button', 'Click', 'Next');
-      this.currentStepperIndex++;
+    this.gaService.event('Button', 'Click', clickedButton === 'back' ? 'Back' : 'Next');
+    
+    if (clickedButton === 'back') {
+      this.handleBackNavigation();
+    } else {
+      this.handleNextNavigation();
     }
     this.displayTemplate();
   }
-
+  
+  private handleBackNavigation() {
+    if (this.currentStepperIndex === 0) {
+      this.selectedAccount = '';
+    } else {
+      this.currentStepperIndex--;
+    }
+  }
+  
+  private handleNextNavigation() {
+    this.currentStepperIndex++;
+  }
+  
     // build the user edit form
     public buildForm() {
       this.awsPluginForm = this.form.group({
@@ -387,6 +398,107 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
       })
     }
 
+    shouldHideAddButton(): boolean {
+      return (
+          (this.pluginSelected === 'gcp' && (this.currentStepperIndex < 2 || this.currentStepperIndex > 2)) ||
+          (this.pluginSelected !== 'gcp' && (this.currentStepperIndex < 1 || this.currentStepperIndex > 1))
+      );
+    }
+  
+    isAddButtonDisabled(): boolean {
+      return this.selectedAccount && this.currentPluginForm?.invalid;
+    }
+    
+    shouldHideNextButton(): boolean {
+        return (
+            (this.currentStepperIndex > 1 && this.pluginSelected === 'gcp') ||
+            (this.currentStepperIndex > 0 && this.pluginSelected !== 'gcp')
+        );
+    }
+    
+    isNextButtonDisabled(): boolean {
+        return this.selectedAccount && this.selectedAccount.toLowerCase() === 'aws' && this.currentPluginForm?.invalid;
+    }
+    
+    shouldHideBackButton(): boolean {
+        return this.currentStepperIndex === 0;
+    }
+    
+    isComingSoonPlugin(pluginName: string): boolean {
+        return this.comingSoonPluginList.includes(pluginName.toLowerCase());
+    }
+
+    selectedAccountImageSrc(displayImage:string): string {
+      // Define a mapping of account names to their corresponding image paths
+      const accountImageMappings: Record<string, string> = {
+          aws: 'aws-color.svg',
+          gcp: 'gcp-color.svg',
+          azure: 'azure-color.svg',
+          qualys: 'qualys-color.svg',
+          aqua: 'aqua-color.svg',
+          tenable: 'tenable-color.svg',
+          contrast: 'contrast-color.svg',
+          rapid7: 'rapid7-color.svg',
+          'red hat': 'redhat-color.svg',
+      };
+
+      // Use the mapping to generate the image source dynamically
+      return '/assets/icons/'+accountImageMappings[displayImage.toLowerCase()];
+  }
+
+    // Determine if the details form should be shown based on the selected plugin
+    shouldShowDetailsForm(): boolean {
+      const pluginSelected = this.getPluginSelected(); // Replace with your logic
+      return !!pluginSelected;
+    }
+
+    getPluginSelected() {
+      return this.pluginSelected;
+    }
+
+    // Get the form group for the selected plugin
+    getPluginForm(): FormGroup {
+          return this.currentPluginForm;
+    }
+
+   // Get form errors based on the selected plugin and field name
+   getFormErrors(): any {
+    const pluginSelected = this.getPluginSelected();
+    let selectedFormError = null;
+  
+    switch (pluginSelected) {
+      case 'aws':
+        selectedFormError = this.awsFormErrors;
+        break;
+  
+      case 'azure':
+        selectedFormError = this.azureFormErrors;
+        break;
+  
+      case 'gcp':
+        selectedFormError = this.gcpFormErrors;
+        break;
+  
+      case 'aqua':
+        selectedFormError = this.aquaFormErrors;
+        break;
+  
+      case 'qualys':
+        selectedFormError = this.qualysFormErrors;
+        break;
+  
+      case 'red hat':
+        selectedFormError = this.redHatFormErrors;
+        break;
+  
+      default:
+        // Handle the case where no plugin is selected
+        return null;
+    }
+  
+    return selectedFormError;
+  }
+
     openSupportInfoDialog(accountName): void {
       this.selectedAccountName = accountName;
       this.dialogRef = this.dialog.open(DialogBoxComponent, {
@@ -406,9 +518,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   selectAccount(account:any){
     this.gaService.event('Button', 'Click', 'Select Plugin');
     this.isValid = true;
-    if(account.name.toLowerCase() == "tenable"
-        || account.name.toLowerCase() == "aqua" 
-        || account.name.toLowerCase() == "contrast"
+    if(this.manualConfiguredAccountList.includes(account.name.toLowerCase()) 
       ){
           this.openSupportInfoDialog(account.name);
           return;

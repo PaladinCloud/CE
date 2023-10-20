@@ -1,69 +1,86 @@
-<div class="page-layout" >
+<div class="page-layout">
+    <!-- Breadcrumb -->
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
-            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <app-breadcrumb *ngIf="breadcrumbLinks.length > 0" [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent">
+        </app-breadcrumb>
     </div>
+
+    <!-- Page Content -->
     <div class="page-content" [class.hide]="!selectedAccount">
         <div class="configuration-header">
-            <h6>
-                {{selectedAccount}} Plugin Configuration
-            </h6>
+            <h6>{{selectedAccount}} Plugin Configuration</h6>
         </div>
-          <div class="stepper">
+
+        <!-- Stepper -->
+        <div class="stepper">
             <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
                 (selectedStepperIndex)="selectedStepperIndex($event)">
                 <ng-template #stepsContent>
-                    <div class="right-wrapper" [class.error-state]="!isValid && addDetailsStepperIndex==currentStepperIndex">
-                        <ng-container [ngTemplateOutlet]="currentTemplateRef">
-                        </ng-container>
+                    <div class="right-wrapper" [class.error-state]="!isValid && addDetailsStepperIndex == currentStepperIndex">
+                        <ng-container [ngTemplateOutlet]="currentTemplateRef"></ng-container>
+
+                        <!-- Action Buttons -->
                         <div class="button-wrapper">
-                            <button class="button btn" [class.hide]="(pluginSelected=='gcp' && (currentStepperIndex<2 || currentStepperIndex>2)) || (pluginSelected!='gcp' && (currentStepperIndex<1 || currentStepperIndex>1))"
-                                (click)="validateAccount()" [class.isDisabled]="selectedAccount && currentPluginForm?.invalid">
-                                Add Plugin</button>
-                            <button class="button btn" [class.hide]="(currentStepperIndex>1 && pluginSelected=='gcp') || (currentStepperIndex>0 && pluginSelected!='gcp')" (click)="pageCounter('next')"
-                                [class.isDisabled]="selectedAccount && (selectedAccount.toLowerCase() == 'aws' && currentPluginForm?.invalid)">
-                                Next</button>
-                            <button class=" button back-btn" [class.hide]="currentStepperIndex==0"
-                                (click)="pageCounter('back')">Back</button>
+                            <button class="button btn" [class.hide]="shouldHideAddButton()"
+                                (click)="validateAccount()" [class.isDisabled]="isAddButtonDisabled()">
+                                Add Plugin
+                            </button>
+                            <button class="button btn" [class.hide]="shouldHideNextButton()"
+                                (click)="pageCounter('next')" [class.isDisabled]="isNextButtonDisabled()">
+                                Next
+                            </button>
+                            <button class="button back-btn" [class.hide]="shouldHideBackButton()"
+                                (click)="pageCounter('back')">Back
+                            </button>
                         </div>
                     </div>
                 </ng-template>
             </app-stepper>
         </div>
     </div>
+
+    <!-- Select Account -->
     <div *ngIf="!pluginSelected" class="select-account">
         <h6>Select Plugin</h6>
         <span class="subtext">
             Select the plugin below that you want to add to your Paladin Cloud.
         </span>
+
+        <!-- Tiles for Plugin Selection -->
         <div class="tile-wrapper">
             <div class="tile flex flex-col" *ngFor="let account of accountsList">
-                <img class="account-img" src="../../../../../../assets/icons/{{account.img}}-color.svg">
+                <img class="account-img" [src]="selectedAccountImageSrc(account.name)">
                 <div class="tile-text-wrapper">
                     <span class="body-2 high-emphasis">{{account.name}}</span>
                     <span>{{account.FullName}}</span>
                 </div>
-                <button class="button btn" (click)="selectAccount(account)">Select</button>
+                <div *ngIf="isComingSoonPlugin(account.name); else showSelectRef">
+                    <button class="button btn disabled-plugin">Coming Soon</button>
+                </div>
+                <ng-template #showSelectRef>
+                    <button class="button btn" (click)="selectAccount(account)">Select</button>
+                </ng-template>
             </div>
         </div>
     </div>
 </div>
 
-<ng-template #validateAccountRef>   
+<ng-template #validateAccountRef>
     <div class="validation-wrapper">
         <div class="validation-inner-wrapper">
             <div class="validation-image-wrapper">
                 <img class="validate-cloud-img" src="/assets/icons/paladin-logo.svg">
                 <img src="/assets/icons/arrows.svg">
-                <img class="validate-cloud-img" src="/assets/icons/{{selectedAccountImage}}-color.svg">
+                <img class="validate-cloud-img" [src]="selectedAccountImageSrc(pluginSelected)">
             </div>
             <div class="validation-text-wrapper" *ngIf="isValidating">
                 <h5 class="high-emphasis">Validating Your {{selectedAccount}} Plugin</h5>
-                <span class="validation-sub-text">Please wait for few minutes till the validation is done. Do not press back button.</span>
+                <span class="validation-sub-text">Please wait for a few minutes until the validation is done. Do not press the back button.</span>
             </div>
             <div class="validation-text-wrapper" *ngIf="isAdding">
                 <h5 class="high-emphasis">Adding Your {{selectedAccount}} Plugin</h5>
-                <span class="validation-sub-text">Please wait for few minutes till the account has been added. Do not press back button.</span>
+                <span class="validation-sub-text">Please wait for a few minutes until the account has been added. Do not press the back button.</span>
             </div>
         </div>
     </div>
@@ -171,83 +188,206 @@
 </ng-template>
 
 <ng-template #addDetailsRef>
-    <div *ngIf="!isValid" class="flex gap-8 body-2" style="padding: 16px 24px; background: #FEF5F5; border-radius: 8px 8px 0;">
-        <div><img src="/assets/icons/alert-icon.svg" alt="" style="height: 16px;"></div>
+    <div *ngIf="!isValid" class="validation-failed-container">
+        <div><img src="/assets/icons/alert-icon.svg" alt="Alert Icon" style="height: 16px;"></div>
         <div class="flex flex-col gap-8">
-            <div class="title high-emphasis">Plugin Validation failed</div>
-            <div class="errorMessage low-emphasis">{{ errorMessage }}</div>
+          <div class="title high-emphasis">Plugin Validation Failed</div>
+          <div class="errorMessage low-emphasis">{{ errorMessage }}</div>
         </div>
-    </div>
+      </div>
     <div class="header">
-        <h6>Add Details</h6>
-        <span class="subtext">
-            Follow the instruction to setup your account.
-        </span>
+      <h6>Add Details</h6>
+      <span class="subtext">
+        Follow the instructions to set up your account.
+      </span>
     </div>
     <div class="configuration-body">
-        <div *ngIf="pluginSelected===('aws')" class="details-wrapper"> 
-            <form class="form-wrapper" [formGroup]="awsPluginForm">
-                <app-input-field [parentForm]="awsPluginForm" formControlName="accountId" [label]="'Account ID'" 
-                                 placeholder="Enter only digits" [(value)]="accountId" [shouldApplyNumericDirective]="true"
-                                 [formErrors]="awsFormErrors" [isRequired]="true">
-                </app-input-field>
-                <app-input-field [label]="'Account Name'"[(value)]="accountName"
-                                 [parentForm]="awsPluginForm"
-                                 hint="Please provide the name of your AWS account">
-                </app-input-field>
-            </form>
-        </div>
-        <div *ngIf="pluginSelected===('azure')" class="details-wrapper">
-            <form class="form-wrapper" [formGroup]="azurePluginForm">
-                <app-input-field [label]="'Application ID'" [(value)]="clientId" [parentForm]="azurePluginForm" formControlName="applicationId" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Directory ID'" [(value)]="tenantId" [parentForm]="azurePluginForm" formControlName="directoryId" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Client Secret Value'" [(value)]="tenantSecret" [parentForm]="azurePluginForm" formControlName="secretValue" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
-            </form>
-        </div>
-        <div *ngIf="pluginSelected===('gcp')" class="details-wrapper">
-            <form class="form-wrapper" [formGroup]="gcpPluginForm">
-                <app-input-field [label]="'Project ID'" [(value)]="projectId" [parentForm]="gcpPluginForm" formControlName="projectId" [formErrors]="gcpFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field type="textarea" height="56px" [label]="'Service Account Key JSON'" [(value)]="serviceAccount" [parentForm]="gcpPluginForm" formControlName="serviceAccount" [formErrors]="gcpFormErrors" [isRequired]="true"></app-input-field>
-            </form>
+      <ng-container *ngIf="shouldShowDetailsForm()">
+        <div [ngSwitch]="pluginSelected">
+            <div *ngSwitchCase="'aws'" class="details-wrapper">
+                <form class="form-wrapper" [formGroup]="getPluginForm()">
+                    <app-input-field
+                    [parentForm]="getPluginForm()"
+                    formControlName="accountId"
+                    [label]="'Account ID'"
+                    placeholder="Enter only digits"
+                    [(value)]="accountId"
+                    [shouldApplyNumericDirective]="true"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true">
+                    </app-input-field>
+                    <app-input-field
+                    [label]="'Account Name'"
+                    [(value)]="accountName"
+                    [parentForm]="getPluginForm()"
+                    hint="Please provide the name of your AWS account">
+                    </app-input-field>
+                </form>
             </div>
-        <div *ngIf="pluginSelected===('qualys')" class="details-wrapper">
-            <form class="form-wrapper" [formGroup]="qualysPluginForm">
-                <app-input-field [label]="'API URL'" [(value)]="qualysApiUrl" [parentForm]="qualysPluginForm" formControlName="qualysApiUrl" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'API Username'" [(value)]="qualysApiUser" [parentForm]="qualysPluginForm" formControlName="qualysApiUser" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Password'" type="password" [(value)]="qualysApiPassword" [parentForm]="qualysPluginForm" formControlName="qualysApiPassword" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
-            </form>
+            <div *ngSwitchCase="'azure'" class="details-wrapper">
+                <form class="form-wrapper" [formGroup]="getPluginForm()">
+                    <app-input-field
+                    [label]="'Application ID'"
+                    [(value)]="clientId"
+                    [parentForm]="getPluginForm()"
+                    formControlName="applicationId"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                  ></app-input-field>
+                  <app-input-field
+                    [label]="'Directory ID'"
+                    [(value)]="tenantId"
+                    [parentForm]="getPluginForm()"
+                    formControlName="directoryId"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                  ></app-input-field>
+                  <app-input-field
+                    [label]="'Client Secret Value'"
+                    [(value)]="tenantSecret"
+                    [parentForm]="getPluginForm()"
+                    formControlName="secretValue"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                  ></app-input-field>
+                </form>
+            </div>
+            <div *ngSwitchCase="'gcp'" class="details-wrapper">
+                <form class="form-wrapper" [formGroup]="getPluginForm()">
+                    <app-input-field
+                    [label]="'Project ID'"
+                    [(value)]="projectId"
+                    [parentForm]="getPluginForm()"
+                    formControlName="projectId"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                  ></app-input-field>
+                  <app-input-field
+                    [label]="'Service Account Key JSON'"
+                    [(value)]="serviceAccount"
+                    [parentForm]="getPluginForm()"
+                    formControlName="serviceAccount"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                    type="textarea"
+                    height="56px"
+                  ></app-input-field>
+                </form>
+            </div>
+            <div *ngSwitchCase="'qualys'" class="details-wrapper">
+                <form class="form-wrapper" [formGroup]="getPluginForm()">
+                    <app-input-field
+                    [label]="'API URL'"
+                    [(value)]="qualysApiUrl"
+                    [parentForm]="getPluginForm()"
+                    formControlName="qualysApiUrl"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                  ></app-input-field>
+                  <app-input-field
+                    [label]="'API Username'"
+                    [(value)]="qualysApiUser"
+                    [parentForm]="getPluginForm()"
+                    formControlName="qualysApiUser"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                  ></app-input-field>
+                  <app-input-field
+                    [label]="'Password'"
+                    [(value)]="qualysApiPassword"
+                    [parentForm]="getPluginForm()"
+                    formControlName="qualysApiPassword"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                    type="password"
+                  ></app-input-field>
+                </form>
+            </div>
+            <div *ngSwitchCase="'red hat'" class="details-wrapper">
+                <form class="form-wrapper" [formGroup]="getPluginForm()">
+                    <app-input-field
+                    [label]="'ID'"
+                    [(value)]="redHatId"
+                    [parentForm]="getPluginForm()"
+                    formControlName="redHatId"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Token'"
+                    [(value)]="redHatToken"
+                    [parentForm]="getPluginForm()"
+                    formControlName="redHatToken"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                    type="textarea"
+                    height="112px"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Account Name (Optional)'"
+                    [(value)]="redHatAccountName"
+                    [parentForm]="getPluginForm()"
+                    formControlName="redHatAccountName"
+                    [formErrors]="getFormErrors()"
+                ></app-input-field>
+                </form>
+            </div>
+            <div *ngSwitchCase="'aqua'" class="details-wrapper">
+                <form class="form-wrapper" [formGroup]="getPluginForm()">
+                    <app-input-field
+                    [label]="'API Username'"
+                    [(value)]="aquaApiUser"
+                    [parentForm]="getPluginForm()"
+                    formControlName="aquaApiUser"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                  ></app-input-field>
+                  <app-input-field
+                    [label]="'Password'"
+                    [(value)]="aquaApiPassword"
+                    [parentForm]="getPluginForm()"
+                    formControlName="aquaApiPassword"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                    type="password"
+                  ></app-input-field>
+                  <app-input-field
+                    [label]="'API URL'"
+                    [(value)]="aquaApiUrl"
+                    [parentForm]="getPluginForm()"
+                    formControlName="aquaApiUrl"
+                    [formErrors]="getFormErrors()"
+                    [isRequired]="true"
+                  ></app-input-field>
+                  <app-input-field
+                    [label]="'Client Domain URL'"
+                    [(value)]="aquaClientDomainUrl"
+                    [parentForm]="getPluginForm()"
+                    formControlName="aquaClientDomainUrl"
+                    [formErrors]="getFormErrors()"
+                    [isDisabled]="true"
+                  ></app-input-field>
+                </form>
+            </div>
         </div>
-        <div *ngIf="pluginSelected===('red hat')" class="details-wrapper">
-            <form class="form-wrapper" [formGroup]="redHatPluginForm">
-                <app-input-field [label]="'ID'" [(value)]="redHatId" [parentForm]="redHatPluginForm" formControlName="redHatId" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Token'" type="textarea" height="112px" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Account Name (Optional)'" [(value)]="redHatAccountName" [parentForm]="redHatPluginForm" formControlName="redHatAccountName" [formErrors]="redHatFormErrors"></app-input-field>
-                <!-- <app-input-field [label]="'Owner (Optional)'" [(value)]="redHatOwner" [parentForm]="redHatPluginForm" formControlName="redHatOwner" [formErrors]="redHatFormErrors"></app-input-field> -->
-            </form>
-        </div>
-        <div *ngIf="pluginSelected===('aqua')" class="details-wrapper">
-            <form class="form-wrapper" [formGroup]="aquaPluginForm">
-                <app-input-field [label]="'API Username'" [(value)]="aquaApiUser" [parentForm]="aquaPluginForm" formControlName="aquaApiUser" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Password'" type="password" [(value)]="aquaApiPassword" [parentForm]="aquaPluginForm" formControlName="aquaApiPassword" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'API URL'" [(value)]="aquaApiUrl" [parentForm]="aquaPluginForm" formControlName="aquaApiUrl" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Client Domain URL'" [(value)]="aquaClientDomainUrl" [isDisabled]="true" [parentForm]="aquaPluginForm" formControlName="aquaClientDomainUrl" [formErrors]="aquaFormErrors"></app-input-field>
-            </form>
-        </div>
+      </ng-container>
+      <!-- Add similar sections for other plugins here -->
     </div>
-</ng-template>
+  </ng-template>
 
-<ng-template #supportInfoRef>
+  <ng-template #supportInfoRef>
     <div class="configuration-body flex flex-around flex-align-center">
-        <img class="info-icon" src="/assets/icons/info-octogon.svg">
-        <img class="close-icon" src="/assets/icons/x-icon.svg" (click)="closeDialog()">  
+      <img class="info-icon" src="/assets/icons/info-octogon.svg">
+      <img class="close-icon" src="/assets/icons/x-icon.svg" (click)="closeDialog()">
     </div>
     <div class="info-wrapper flex flex-col">
-        <span class="info-text">{{selectedAccountName}} requires manual configuration</span>
-        <span class="supporting-info-text">Please to reach out to Paladin Cloud for assistance in this matter
-            <a href="mailto:Support@paladincloud.io">Support@paladincloud.io</a>
-        </span>
+      <span class="info-text">{{selectedAccountName}} requires manual configuration</span>
+      <span class="supporting-info-text">
+        Please reach out to Paladin Cloud for assistance in this matter
+        <a href="mailto:Support@paladincloud.io">Support@paladincloud.io</a>
+      </span>
     </div>
-</ng-template>
+  </ng-template>
 
 <ng-template #connectRef>
     <div class="header">
@@ -313,10 +453,9 @@
 
 <ng-template #redHatStepsVideo>
     <div>
-        <video controls (canplay)="pauseVideo(videoplayer)"
-                #videoPlayer style="width: 100%;height: 100%;">
-            <source src="{{videoSource}}" type="video/mp4">
-            Your browser does not support the video tag
-        </video>
+      <video controls (canplay)="pauseVideo(videoplayer)" #videoPlayer style="width: 100%; height: 100%;">
+        <source [src]="videoSource" type="video/mp4">
+        Your browser does not support the video tag
+      </video>
     </div>
-</ng-template>
+  </ng-template>
