@@ -108,7 +108,7 @@ public class JobScheduler {
             ConfigUtil.setConfigProperties();
 			  azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
 			  gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
-			  awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
+			  awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED)); 
 			  redHatEnabled=Boolean.parseBoolean(System.getProperty(REDHAT_ENABLED));
 
 				
