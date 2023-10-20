@@ -3441,3 +3441,4 @@ UPDATE cf_PolicyTable SET severity ='medium' WHERE policyId IN ('AWSKMSKeyRotati
 
 UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Transparent Data Encryption for SQL Database' WHERE policyId ='Enable_transparent_data_encryption_for_sql_db';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Enable HTTPS for Google Cloud Load Balancers' WHERE policyId ='Enable_HTTPS_For_LoadBalancer';
+UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'AWS_account_security_hub_exists_version-1_enable_security_hub_account';
