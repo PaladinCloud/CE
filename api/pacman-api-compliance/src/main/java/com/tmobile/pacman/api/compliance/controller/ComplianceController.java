@@ -450,12 +450,11 @@ public class ComplianceController implements Constants {
         }
         ResponseWithOrder response = null;
         try {
-            response = (complianceService.getPolicyCompliance(request));
+            response = (complianceService.getComplianceForPolicies(request));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
         return ResponseUtils.buildSucessResponse(response);
-
     }
 
     /**

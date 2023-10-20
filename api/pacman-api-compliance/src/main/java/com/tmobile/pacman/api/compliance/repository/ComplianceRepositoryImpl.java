@@ -30,6 +30,7 @@ import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
+import com.tmobile.pacman.api.compliance.enums.PolicyComplianceFilter;
 import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
 
 import java.io.IOException;
@@ -3111,5 +3112,68 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         issueExceptionResponse.setFailureReason(exemptionReasons);
         issueExceptionResponse.setFailedIssueIds(failedIssueIds);
         return issueExceptionResponse;
+    }
+
+    /**
+     * This method applies all user provided filter criteria and return the policies matching the criteria.
+     * @param filter
+     * @param targetTypeMap
+     * @param isIncludeDisabled
+     * @param domain
+     * @return
+     */
+    public List<Map<String, Object>> getPolicyListByFilterConditions(Map<String, Object> filter, Map<String, String> targetTypeMap, Boolean isIncludeDisabled, Map<String, String> filter1) {
+        List<String> filterConditions = new ArrayList<>();
+
+        if (MapUtils.isNotEmpty(filter)) {
+            List<String> provider = filter.containsKey(PolicyComplianceFilter.PROVIDER.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.PROVIDER.filter) : new ArrayList<>();
+            List<String> reqProviderList = provider.stream().map(str -> str.toLowerCase().replaceAll("\\s", "")).collect(Collectors.toList());
+            if (!provider.isEmpty()) {
+                targetTypeMap = targetTypeMap.entrySet().stream().filter(entry -> reqProviderList.contains(entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+            }
+            List<String> assetType = filter.containsKey(PolicyComplianceFilter.ASSET_TYPE.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.ASSET_TYPE.filter) : new ArrayList<>();
+            if (!assetType.isEmpty()) {
+                targetTypeMap.keySet().retainAll(assetType);
+            }
+            if (!targetTypeMap.isEmpty()) {
+                String combinedTargetTypesStr = targetTypeMap.keySet().stream().map(str -> "'" + str + "'").collect(Collectors.joining(","));
+                filterConditions.add("targetType in (" + combinedTargetTypesStr + ")");
+            }
+            extractAndFillFilterValue(filter, PolicyComplianceFilter.SEVERITY.filter, filterConditions, "severity");
+            extractAndFillFilterValue(filter, PolicyComplianceFilter.CATEGORY.filter, filterConditions, "pt.category");
+            extractAndFillFilterValue(filter, PolicyComplianceFilter.POLICY_NAME.filter, filterConditions, "policyDisplayName");
+            List<String> autoFixAvailable = filter.containsKey(PolicyComplianceFilter.AUTOFIX.filter) ?
+                    (List<String>) filter.get(PolicyComplianceFilter.AUTOFIX.filter) : new ArrayList<>();
+            if (autoFixAvailable.size() == 1) {
+                filterConditions.add("autoFixAvailable = '" + autoFixAvailable.get(0) + "'");
+            }
+        } else if (!targetTypeMap.isEmpty()) {
+            String combinedTargetTypesStr = targetTypeMap.keySet().stream().map(str -> "'" + str + "'").collect(Collectors.joining(","));
+            filterConditions.add("pt.targetType in (" + combinedTargetTypesStr + ")");
+        }
+        if (!isIncludeDisabled) {
+            filterConditions.add("pt.status = 'ENABLED'");
+        }
+        if (filter1.get("policyId.keyword") != null) {
+            filterConditions.add(" pt.policyId = '" + filter1.get("policyId.keyword") + "' ");
+        }
+        String combinedWhereClause = filterConditions.stream().collect(Collectors.joining(" AND "));
+
+        String policyQuery = "SELECT pt.policyId, pt.severity, pt.category, pt.targetType, pt.autoFixAvailable, pt.autoFixEnabled, pt.policyDisplayName, pt.riskScore FROM cf_PolicyTable pt INNER JOIN cf_Target target ON  pt.targetType=target.targetName\n" +
+                " LEFT JOIN cf_PolicyParams pp ON pt.policyId = pp.policyID AND pp.paramKey = 'pluginType' INNER JOIN \n" +
+                " (select distinct(platform) from cf_Accounts where accountStatus='configured') acct \n" +
+                "ON  acct.platform=pp.paramValue OR (pp.paramValue IS NULL AND target.dataSourceName=acct.platform) where\n" +
+                " pt.status = 'ENABLED' AND (target.status='enabled' or target.status='active') AND lower(target.domain)='" + filter1.get("domain").toLowerCase() + "' AND " + combinedWhereClause;
+        return rdsepository.getDataFromPacman(policyQuery);
+    }
+
+    private void extractAndFillFilterValue(Map<String, Object> filter, String filterName, List<String> filterConditions, String column) {
+        List<String> value = filter.containsKey(filterName) ? (List<String>) filter.get(filterName) : new ArrayList<>();
+        String template = " %s in ( %s ) ";
+        if (!value.isEmpty()) {
+            filterConditions.add(String.format(template, column, value.stream().map(str -> "'" + str + "'").collect(Collectors.joining(","))));
+        }
     }
 }

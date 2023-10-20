@@ -659,5 +659,6 @@ public interface ComplianceRepository {
     public Map<String, Object> getSupportedFilters(String filterName, String filterAttribute);
 
     ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest) throws DataException;
+    List<Map<String, Object>> getPolicyListByFilterConditions(Map<String, Object> filter, Map<String, String> targetTypeMap, Boolean isIncludeDisabled, Map<String, String> filter1);
 
 }

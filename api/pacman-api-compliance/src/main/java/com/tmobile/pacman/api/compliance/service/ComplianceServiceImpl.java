@@ -413,7 +413,145 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         }
     }
 
-    /*
+    /**
+     * Get policy details like severity, category, risk score, assets scanned etc for all policies which
+     * fall under asset group based on filter criteria.
+     * @param request
+     * @return
+     * @throws ServiceException
+     */
+
+    public ResponseWithOrder getComplianceForPolicies(Request request) throws ServiceException {
+        String assetGroup = request.getAg();
+        Map<String, String> filters = request.getFilter();
+        Map<String, Object> reqFilters = request.getReqFilter();
+        List<LinkedHashMap<String, Object>> policyDetailsList = new ArrayList<>();
+
+        try {
+            //Get all assets by target type and all violations by policy id by triggering getComplianceDetailsFromElastic method.
+            String response = getComplianceDetailsFromElastic(assetGroup);
+            Map<String, Object> statsMap = processResponseForCompliance(response);
+            Map<String, Integer> assetCountByTargetTypeMap = (Map<String, Integer>) statsMap.get("assetCountByTargetType");
+            Map<String, Integer> violationCountByPolicyIdMap = (Map<String, Integer>) statsMap.get("violationCountByTargetType");
+            final Integer ec2RunningAssets = (Integer) statsMap.get("ec2RunningAssets");
+            final Integer vmRunningAssets = (Integer) statsMap.get("vmRunningAssets");
+            Map<String, String> targetTypeMap = getTargetTypesOfAssetGroup(assetGroup);
+            List<Map<String, Object>> policies = repository.getPolicyListByFilterConditions(reqFilters, targetTypeMap, request.isIncludeDisabled(), filters);
+
+            for (Map<String, Object> policy : policies) {
+                String targetTypeOfPolicy = policy.get(TARGET_TYPE).toString();
+                LinkedHashMap<String, Object> policyDetailsMap = new LinkedHashMap<>();
+                policyDetailsMap.put(SEVERITY, policy.get(SEVERITY));
+                policyDetailsMap.put(POLICY_CATEGORY, policy.get(CATEGORY));
+                policyDetailsMap.put(POLICYID, policy.get(POLICYID));
+                policyDetailsMap.put(AUTOFIX_AVAILABLE, policy.get(AUTOFIX_AVAILABLE));
+                policyDetailsMap.put(AUTOFIX_ENABLED, policy.get(AUTOFIX_ENABLED));
+                policyDetailsMap.put(RESOURCE_TYPE, targetTypeOfPolicy);
+                int failed = violationCountByPolicyIdMap.get(policy.get(POLICYID).toString()) != null ? violationCountByPolicyIdMap.get(policy.get(POLICYID).toString()) : 0;
+                int assetsScanned = assetCountByTargetTypeMap.get(targetTypeOfPolicy) != null ? assetCountByTargetTypeMap.get(targetTypeOfPolicy) : 0;
+                policyDetailsMap.put(FAILED, failed);
+                policyDetailsMap.put(NAME, policy.get(POLICY_DISPAY_NAME));
+                float compliancePercent = 0f;
+                if (policy.get(POLICYID).toString().contains(CLOUD_QUALYS_POLICY) && qualysEnabled) {
+                    if ("ec2".equalsIgnoreCase(targetTypeOfPolicy)) {
+                        policyDetailsMap.put(ASSETS_SCANNED, ec2RunningAssets);
+                        compliancePercent = ec2RunningAssets == 0 ? 100 : (ec2RunningAssets - failed) * 100 / ec2RunningAssets;
+                    } else if ("virtualmachine".equalsIgnoreCase(targetTypeOfPolicy)) {
+                        policyDetailsMap.put(ASSETS_SCANNED, vmRunningAssets);
+                        compliancePercent = vmRunningAssets == 0 ? 100 : (vmRunningAssets - failed) * 100 / vmRunningAssets;
+                    }
+                } else {
+                    policyDetailsMap.put(ASSETS_SCANNED, assetsScanned);
+                    compliancePercent = assetsScanned == 0 ? 100 : (assetsScanned - failed) * 100 / assetsScanned;
+                }
+                policyDetailsMap.put(COMPLIANCE_PERCENT, compliancePercent > 0 ? Math.round(compliancePercent) : 0);
+                policyDetailsMap.put(PROVIDER, getProvideBrandName(targetTypeMap.get(targetTypeOfPolicy)));
+                policyDetailsMap.put(PASSED, (Integer) policyDetailsMap.get(ASSETS_SCANNED) - (Integer) policyDetailsMap.get(FAILED));
+                if ("security".equalsIgnoreCase(policy.get(CATEGORY).toString()) && policy.get(RISK_SCORE) != null) {
+                    policyDetailsMap.put(RISK_SCORE, Integer.parseInt(String.format("%.0f", policy.get(RISK_SCORE))) + Constants.SeverityWeights.valueOf(policy.get(SEVERITY).toString().toUpperCase()).getValue());
+                } else {
+                    policyDetailsMap.put(RISK_SCORE, 0);
+                }
+                policyDetailsList.add(policyDetailsMap);
+            }
+            if (reqFilters != null) {
+                List<Map<String, String>> violations = reqFilters.containsKey(PolicyComplianceFilter.VIOLATIONS.filter) ?
+                        (List<Map<String, String>>) reqFilters.get(PolicyComplianceFilter.VIOLATIONS.filter) : new ArrayList<>();
+                List<Map<String, Object>> compliance = reqFilters.containsKey(PolicyComplianceFilter.COMPLIANCE.filter) ?
+                        (List<Map<String, Object>>) reqFilters.get(PolicyComplianceFilter.COMPLIANCE.filter) : new ArrayList<>();
+                List<Map<String, Object>> riskScore = reqFilters.containsKey(PolicyComplianceFilter.RISK_SCORE.filter) ?
+                        (List<Map<String, Object>>) reqFilters.get(PolicyComplianceFilter.RISK_SCORE.filter) : new ArrayList<>();
+                policyDetailsList = policyDetailsList.stream()
+                        .filter(x -> compliance.size() == 0 || (Long.valueOf(x.get(PolicyComplianceFilter.ASSETS_SCANNED.filter).toString()) > 0 && isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance)))
+                        .filter(x -> riskScore.size() == 0 || isFloatValueInRange(Float.valueOf(x.get(PolicyComplianceFilter.RISK_SCORE.filter) != null ?
+                                x.get(PolicyComplianceFilter.RISK_SCORE.filter).toString() : ""), riskScore))
+                        .filter(x -> violations.size() == 0 || isViolationsInRange(Long.valueOf(x.get(PolicyComplianceFilter.VIOLATIONS.filter).toString()), violations))
+                        .collect(Collectors.toList());
+            }
+            int size = request.getSize();
+            int from = request.getFrom();
+            int totalCount = policyDetailsList.size();
+            policyDetailsList = policyDetailsList.subList(from, size == 0 ? totalCount : size);
+            if (policyDetailsList.isEmpty()) {
+                throw new DataException(NO_DATA_FOUND);
+            }
+            return new ResponseWithOrder(policyDetailsList, totalCount);
+        } catch (Exception e) {
+            logger.error("Error @ getComplianceForPolicies while enumerating policy details", e);
+            throw new ServiceException(e);
+        }
+    }
+
+    private String getProvideBrandName(String provider){
+        if(StringUtils.isEmpty(provider)){
+            return provider;
+        }
+        if(provider.equalsIgnoreCase(AWS) || provider.equalsIgnoreCase(GCP)){
+            return provider.toUpperCase();
+        }
+        if(provider.equalsIgnoreCase(AZURE)){
+            return "Azure";
+        }
+        if(provider.equalsIgnoreCase(REDHAT)){
+            return "Red Hat";
+        }
+        else
+            return provider;
+    }
+
+    /**
+     * Get all target types and its cloud types of a asset group by querying its alias in elastic search.
+     * Sample response map
+     *  {   <"ec2","aws">,
+     *      <"asg","aws">
+     *      <"blobcontainer","azure">
+     *      <"gkecluster","gcp">
+     * }
+     * @param assetGroup
+     * @return
+     */
+
+    private Map<String, String> getTargetTypesOfAssetGroup(String assetGroup) {
+        String urlToQuery = esUrl + "/_alias/" + assetGroup;
+        Map<String, String> targetTypeCloudTypeMap = new HashMap<>();
+        String responseDetails = null;
+        try {
+            responseDetails = PacHttpUtils.getHttpGet(urlToQuery, new HashMap<>());
+            Gson gson = new Gson();
+            Map<String, Object> responseMap = gson.fromJson(responseDetails, Map.class);
+            responseMap.keySet().stream().forEach(indexName -> {
+                int underscoreIndex = indexName.indexOf("_");
+                if (underscoreIndex != -1 && underscoreIndex < indexName.length() - 1) {
+                    targetTypeCloudTypeMap.put(indexName.substring(underscoreIndex + 1), indexName.substring(0, underscoreIndex));
+                }
+            });
+        } catch (Exception e) {
+            logger.error("Exception in getAssetTargetTypes in fetching target types for es :", e);
+        }
+        return targetTypeCloudTypeMap;
+    }
+
+        /*
      * (non-Javadoc)
      *
      * @see
@@ -1046,13 +1184,22 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         return policyCatDistributionWithOverall;
     }
 
+    /**
+     * Below method aggregates all the assets by target type and all violations by policy id of the asset group.
+     * @param assetGroup
+     * @return
+     * @throws Exception
+     */
+
     private String getComplianceDetailsFromElastic(String assetGroup) throws Exception {
         String assetAndViolationsQuery = "{\n" +
                 "  \"size\":0,\n" +
                 "  \"query\": {\n" +
                 "    \"bool\": {\n" +
                 "      \"should\": [\n" +
+                //Clause for violations
                 "        {\"bool\": { \"must\": [{\"term\": { \"issueStatus.keyword\": \"open\" }},{\"term\": {\"type.keyword\": \"issue\"}}]}},\n" +
+                //Clause for assets
                 "        {\"bool\": {\"must\": [{\"term\": {\"latest\": \"true\"}},{\"term\": {\"_entity\": \"true\"}}]}}\n" +
                 "      ]\n" +
                 "    }\n" +
@@ -1102,129 +1249,145 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             return PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), assetAndViolationsQuery);
     }
 
-    private Map<String,Object> processResponseForCompliance(String response){
-        Map<String,Object> statsMap = new HashMap<>();
+    /**
+     * Below method creates assets by target type in a map, violations by policyid in a map. Also determine ec2runningassets
+     * and vmrunningassets and return all 4 details in a single map.
+     * sample response
+     * statsMap{
+     *          <"assetCountByTargetType",Map<TargetType,count>>  ,
+     *          <"violationCountByTargetType",Map<PolicyId,count>> ,
+     *          <"ec2runningassets",34> ,
+     *          <"vmrunningassets",67>
+     *          }
+     * @param response
+     * @return
+     */
+
+    private Map<String, Object> processResponseForCompliance(String response) {
+        Map<String, Object> statsMap = new HashMap<>();
         Gson gson = new Gson();
-        Map<String,Object> responseMap = gson.fromJson(response,Map.class);
-        Map<String,Integer> assetCountByTargetTypeMap = new HashMap<>();
-        Optional<List<Map<String,Object>>> assetsBucketListOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String,Object>)obj.get(AGGREGATIONS)).map(obj -> (Map<String,Object>)obj.get("assets"))
-                .map(obj -> (Map<String,Object>)obj.get("targetType")).map(obj->(List<Map<String,Object>>)obj.get("buckets"));
-        if(assetsBucketListOptional.isPresent()){
-            List<Map<String,Object>> assetsBucketList = assetsBucketListOptional.get();
+        Map<String, Object> responseMap = gson.fromJson(response, Map.class);
+        Map<String, Integer> assetCountByTargetTypeMap = new HashMap<>();
+        Optional<List<Map<String, Object>>> assetsBucketListOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String, Object>) obj.get(AGGREGATIONS)).map(obj -> (Map<String, Object>) obj.get("assets"))
+                .map(obj -> (Map<String, Object>) obj.get("targetType")).map(obj -> (List<Map<String, Object>>) obj.get("buckets"));
+        if (assetsBucketListOptional.isPresent()) {
+            List<Map<String, Object>> assetsBucketList = assetsBucketListOptional.get();
             assetsBucketList.stream().forEach(obj -> {
                 double count = Double.parseDouble(obj.get("doc_count").toString());
-                assetCountByTargetTypeMap.put(obj.get("key").toString(),(int)count);
+                assetCountByTargetTypeMap.put(obj.get("key").toString(), (int) count);
             });
         }
-        statsMap.put("assetCountByTargetType",assetCountByTargetTypeMap);
-        Map<String,Integer> violationCountByPolicyIdMap = new HashMap<>();
-        Optional<List<Map<String,Object>>> violationBucketListOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String,Object>)obj.get(AGGREGATIONS)).map(obj -> (Map<String,Object>)obj.get("violations"))
-                .map(obj -> (Map<String,Object>)obj.get("targetType")).map(obj->(List<Map<String,Object>>)obj.get("buckets"));
-        if(violationBucketListOptional.isPresent()){
-            List<Map<String,Object>> violationsBucketList = violationBucketListOptional.get();
+        statsMap.put("assetCountByTargetType", assetCountByTargetTypeMap);
+        Map<String, Integer> violationCountByPolicyIdMap = new HashMap<>();
+        Optional<List<Map<String, Object>>> violationBucketListOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String, Object>) obj.get(AGGREGATIONS)).map(obj -> (Map<String, Object>) obj.get("violations"))
+                .map(obj -> (Map<String, Object>) obj.get("targetType")).map(obj -> (List<Map<String, Object>>) obj.get("buckets"));
+        if (violationBucketListOptional.isPresent()) {
+            List<Map<String, Object>> violationsBucketList = violationBucketListOptional.get();
             violationsBucketList.stream().forEach(obj -> {
                 double count = Double.parseDouble(obj.get("doc_count").toString());
-                violationCountByPolicyIdMap.put(obj.get("key").toString(),(int)count);
+                violationCountByPolicyIdMap.put(obj.get("key").toString(), (int) count);
             });
         }
-        statsMap.put("violationCountByTargetType",violationCountByPolicyIdMap);
-        Optional<Map<String,Object>> ec2RunningAssetsOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String,Object>)obj.get(AGGREGATIONS)).map(obj -> (Map<String,Object>)obj.get("ec2runningassets"));
-        int runningAssets =0;
-        if(ec2RunningAssetsOptional.isPresent()){
-            Map<String,Object> ec2RunningAssetsMap = ec2RunningAssetsOptional.get();
+        statsMap.put("violationCountByTargetType", violationCountByPolicyIdMap);
+        Optional<Map<String, Object>> ec2RunningAssetsOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String, Object>) obj.get(AGGREGATIONS)).map(obj -> (Map<String, Object>) obj.get("ec2runningassets"));
+        int runningAssets = 0;
+        if (ec2RunningAssetsOptional.isPresent()) {
+            Map<String, Object> ec2RunningAssetsMap = ec2RunningAssetsOptional.get();
             double count = Double.parseDouble(ec2RunningAssetsMap.get("doc_count").toString());
-            runningAssets = (int)count;
+            runningAssets = (int) count;
         }
-        statsMap.put("ec2RunningAssets",runningAssets);
+        statsMap.put("ec2RunningAssets", runningAssets);
 
-        int runningAssets1 =0;
+        int runningAssets1 = 0;
 
-        Optional<Map<String,Object>> vmRunningAssetsOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String,Object>)obj.get(AGGREGATIONS)).map(obj -> (Map<String,Object>)obj.get("vmrunningassets"));
-        if(vmRunningAssetsOptional.isPresent()){
-            Map<String,Object> vmRunningAssetsMap = vmRunningAssetsOptional.get();
+        Optional<Map<String, Object>> vmRunningAssetsOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String, Object>) obj.get(AGGREGATIONS)).map(obj -> (Map<String, Object>) obj.get("vmrunningassets"));
+        if (vmRunningAssetsOptional.isPresent()) {
+            Map<String, Object> vmRunningAssetsMap = vmRunningAssetsOptional.get();
             double count = Double.parseDouble(vmRunningAssetsMap.get("doc_count").toString());
-            runningAssets1 = (int)count;
+            runningAssets1 = (int) count;
         }
-        statsMap.put("vmRunningAssets",runningAssets1);
+        statsMap.put("vmRunningAssets", runningAssets1);
         return statsMap;
     }
 
     @Override
     public Map<String, Object> getComplianceByCategoryAndDomain(String assetGroup, String domain) throws ServiceException {
 
-        Map<String,Object> compPercentByCategoryMap = new HashMap<>();
-        try{
+        Map<String, Object> compPercentByCategoryMap = new HashMap<>();
+        try {
             String response = getComplianceDetailsFromElastic(assetGroup);
-            Map<String,Object> statsMap = processResponseForCompliance(response);
-            Map<String,Integer> assetCountByTargetTypeMap = (Map<String,Integer>)statsMap.get("assetCountByTargetType");
-            Map<String,Integer> violationCountByPolicyIdMap = (Map<String,Integer>)statsMap.get("violationCountByTargetType");
-            final Integer ec2RunningAssets = (Integer)statsMap.get("ec2RunningAssets");
-            final Integer vmRunningAssets = (Integer)statsMap.get("vmRunningAssets");
-
+            Map<String, Object> statsMap = processResponseForCompliance(response);
+            Map<String, Integer> assetCountByTargetTypeMap = (Map<String, Integer>) statsMap.get("assetCountByTargetType");
+            Map<String, Integer> violationCountByPolicyIdMap = (Map<String, Integer>) statsMap.get("violationCountByTargetType");
+            final Integer ec2RunningAssets = (Integer) statsMap.get("ec2RunningAssets");
+            final Integer vmRunningAssets = (Integer) statsMap.get("vmRunningAssets");
             String targetTypeList = repository.getTargetTypeForAG(assetGroup, domain);
-
-            if(!targetTypeList.isEmpty()){
-                List<Map<String,Object>> policyDetailsList = repository.getPolicyIdWithDisplayNameQuery(targetTypeList);
-                Map<String,List<Map<String,Object>>> policiesByCategoryMap = policyDetailsList.stream().collect(Collectors.groupingBy(obj -> obj.get("category").toString()));
+            if (!targetTypeList.isEmpty()) {
+                List<Map<String, Object>> policyDetailsList = repository.getPolicyIdWithDisplayNameQuery(targetTypeList);
+                //group all policies by category. policiesbycategorymap has category as key and policy details list as value.
+                Map<String, List<Map<String, Object>>> policiesByCategoryMap = policyDetailsList.stream().collect(Collectors.groupingBy(obj -> obj.get("category").toString()));
                 policiesByCategoryMap.entrySet().stream().forEach(obj -> {
-                    List<Map<String,Object>> policyDetailsForCategoryList = obj.getValue();
-                    float numerator=0f;
-                    float denominator=0f;
-                    for(Map<String,Object> pDetMap : policyDetailsForCategoryList){
-                        int severityWeightage =  getSeverityWeightage(pDetMap.get("severity").toString());
-                        String targetTypeOfPolicy = pDetMap.get("targetType").toString();
-                        String policyId = pDetMap.get("policyId").toString();
+                    List<Map<String, Object>> policyDetailsForCategoryList = obj.getValue();
+                    float numerator = 0f;
+                    float denominator = 0f;
+                    for (Map<String, Object> pDetMap : policyDetailsForCategoryList) {
+                        int severityWeightage = getSeverityWeightage(pDetMap.get(SEVERITY).toString());
+                        String targetTypeOfPolicy = pDetMap.get(TARGET_TYPE).toString();
+                        String policyId = pDetMap.get(POLICYID).toString();
 
-                        if("tagging".equalsIgnoreCase(obj.getKey())){
-                            Integer assetCount = assetCountByTargetTypeMap.get(targetTypeOfPolicy)==null?0:assetCountByTargetTypeMap.get(targetTypeOfPolicy);
-                            Integer violationCount = violationCountByPolicyIdMap.get(policyId)==null?0:violationCountByPolicyIdMap.get(policyId);
-                            float tagged = (assetCount-violationCount)*100;
-                            numerator += (tagged<0?0:tagged);
+                        //if category is tagging, then formula to calculate compliance will be (total assets - violations of each policy)/total assets
+
+                        if (CATEGORY_TAGGING.equalsIgnoreCase(obj.getKey())) {
+                            Integer assetCount = assetCountByTargetTypeMap.get(targetTypeOfPolicy) == null ? 0 : assetCountByTargetTypeMap.get(targetTypeOfPolicy);
+                            Integer violationCount = violationCountByPolicyIdMap.get(policyId) == null ? 0 : violationCountByPolicyIdMap.get(policyId);
+                            float tagged = (assetCount - violationCount) * 100;
+                            numerator += (tagged < 0 ? 0 : tagged);
                             denominator += assetCount;
                         }
-                        else{
-                            float compPercent=0f;
-                            if(pDetMap.get("policyId").toString().contains(CLOUD_QUALYS_POLICY) && qualysEnabled){
-                                if("ec2".equalsIgnoreCase(targetTypeOfPolicy))
-                                    compPercent = ((ec2RunningAssets-(violationCountByPolicyIdMap.get(policyId)!=null?violationCountByPolicyIdMap.get(policyId):0))*severityWeightage*100)/ec2RunningAssets;
-                                else if("virtualmachine".equalsIgnoreCase(targetTypeOfPolicy))
-                                    compPercent = ((vmRunningAssets-(violationCountByPolicyIdMap.get(policyId)!=null?violationCountByPolicyIdMap.get(policyId):0))*severityWeightage*100)/vmRunningAssets;
-                            }
-                            else{
+
+                        //if category is other than tagging, we shall calculate compliance percent of each policy and calculate weighted average of all policies
+                        // based on severity.
+                        else {
+                            float compPercent = 0f;
+                            Integer violationCount = violationCountByPolicyIdMap.get(policyId);
+                            if (pDetMap.get(POLICYID).toString().contains(CLOUD_QUALYS_POLICY) && qualysEnabled) {
+                                if ("ec2".equalsIgnoreCase(targetTypeOfPolicy)) {
+                                    compPercent = ec2RunningAssets == 0 ? (100 * severityWeightage) : ((ec2RunningAssets - (violationCount != null ? violationCount : 0)) * severityWeightage * 100) / ec2RunningAssets;
+                                } else if ("virtualmachine".equalsIgnoreCase(targetTypeOfPolicy)) {
+                                    compPercent = vmRunningAssets == 0 ? (100 * severityWeightage) : ((vmRunningAssets - (violationCount != null ? violationCount : 0)) * severityWeightage * 100) / vmRunningAssets;
+                                }
+                            } else {
                                 Integer assetCount = assetCountByTargetTypeMap.get(targetTypeOfPolicy);
-                                if(assetCount==null){
-                                    compPercent=100.0f*severityWeightage;
-                                }
-                                else{
-                                    compPercent =  ((assetCount-(violationCountByPolicyIdMap.get(policyId)!=null?violationCountByPolicyIdMap.get(policyId):0))*severityWeightage*100.0f)/assetCount;
+                                //if asset count is zero, compliance percent is considered as 100% for that policy.
+                                if (assetCount == null) {
+                                    compPercent = 100 * severityWeightage;
+                                } else {
+                                    compPercent = ((assetCount - (violationCount != null ? violationCount : 0)) * severityWeightage * 100.0f) / assetCount;
                                 }
                             }
-                            if(compPercent<0){
+                            if (compPercent < 0) {
                                 numerator += 0;
-                            }
-                            else{
+                            } else {
                                 numerator += compPercent;
                             }
                             denominator += severityWeightage;
                         }
                     }
-                    if(denominator>0f){
-                        compPercentByCategoryMap.put(obj.getKey(),Math.round(numerator/denominator));
-                    }
-                    else{
-                        compPercentByCategoryMap.put(obj.getKey(),100);
+                    if (denominator > 0f) {
+                        compPercentByCategoryMap.put(obj.getKey(), Math.round(numerator / denominator));
+                    } else {
+                        compPercentByCategoryMap.put(obj.getKey(), 100);
                     }
                 });
             }
-           // List<Map<String,Object>> policyDetailsList = pacmanRdsRepository.getDataFromPacman("SELECT policyCategory FROM cf_PolicyCategoryWeightage WHERE domain ='"+domain+"'");
-            Arrays.asList("operations","security","tagging","cost").stream().forEach(cat -> {
-                if(!compPercentByCategoryMap.containsKey(cat)){
-                    compPercentByCategoryMap.put(cat,100);
+            // List<Map<String,Object>> policyDetailsList = pacmanRdsRepository.getDataFromPacman("SELECT policyCategory FROM cf_PolicyCategoryWeightage WHERE domain ='"+domain+"'");
+            Arrays.asList("operations", "security", "tagging", "cost").stream().forEach(cat -> {
+                if (!compPercentByCategoryMap.containsKey(cat)) {
+                    compPercentByCategoryMap.put(cat, 100);
                 }
             });
-
         } catch (Exception e) {
-            logger.error("Exception occurred while calculating compliance percent for categories. ",e);
+            logger.error("Exception occurred while calculating compliance percent for categories. ", e);
             throw new ServiceException(e);
         }
         return compPercentByCategoryMap;
