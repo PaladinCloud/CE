@@ -118,9 +118,9 @@ public class JobScheduler {
 				if (azureEnabled) {
 					addCollectorEvent(putEventsRequestEntries, azureBusDetails);
 				}
-				if (gcpEnabled) {
-                   dataCollectorSQSServic.sendSQSMessage(PLUGIN_TYPE_GCP);
-                }
+            if (gcpEnabled) {
+                dataCollectorSQSServic.sendSQSMessage(PLUGIN_TYPE_GCP);
+            }
 				if (redHatEnabled) {
 					dataCollectorSQSServic.sendSQSMessage(PLUGIN_TYPE_REDHAT);
 				}
