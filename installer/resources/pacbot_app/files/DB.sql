@@ -3080,7 +3080,5 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
   update cf_Target set status="finding" where targetName in ("launchtemplate","securitypricings") ;
 
-  UPDATE `cf_AssetGroupDetails` SET `isVisible` = '0' WHERE `groupName` = 'redhat';
-
   UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat' WHERE `cfkey` = 'application.optionalAssetGroupList';
 
