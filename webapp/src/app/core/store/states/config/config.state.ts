@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
+import { CONFIGURATIONS } from './../../../../../config/configurations';
 import { ConfigActions } from './config.actions';
 
 export interface ConfigStateModel {
@@ -21,7 +22,7 @@ export interface ConfigStateModel {
     };
     optional: {
         auth: {
-            AUTH_TYPE: 'azuresso' | 'cognito' | 'db' | 'ldap';
+            AUTH_TYPE: string; // todo: replace string with actual type: 'azuresso' | 'cognito' | 'db' | 'ldap';
             adConfig: {
                 tenant: string;
                 clientId: string;
@@ -87,10 +88,8 @@ export class ConfigState {
         // return configService.get().pipe(
         //     tap((config) => ctx.setState(config))
         // )
-        return Promise.resolve(() => {
-            // set dummy payload
-            const payload = null;
-            ctx.setState(payload);
+        return Promise.resolve().then(() => {
+            ctx.setState(CONFIGURATIONS);
         });
     }
 
