@@ -155,17 +155,17 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   accountsList = [{
     name: "AWS",
     img: "aws",
-    FullName: "Amazon Web Services"
+    FullName: "Cloud Provider"
     },
     {
     name: "Azure",
     img: "azure",
-    FullName: "Microsoft Azure"
+    FullName: "Cloud Provider"
     },
     {
     name:"GCP",
     img: "gcp",
-    FullName: "Google Cloud Services"
+    FullName: "Cloud Provider"
     },
     {
       name: "Qualys",
@@ -190,7 +190,12 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     {
       name: "Contrast",
       img: "contrast",
-      FullName: "Vulnerability Management"
+      FullName: "Assess"
+    },
+    {
+      name: "Rapid7",
+      img: "rapid7",
+      FullName: "InsightVM"
     }
   ]
 
