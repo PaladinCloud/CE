@@ -31,9 +31,10 @@ import { FetchResourcesService } from './pacman-features/services/fetch-resource
 import { TokenResolverService } from './resolver/token-resolver.service';
 import { NgxGoogleAnalyticsModule, NgxGoogleAnalyticsRouterModule } from 'ngx-google-analytics';
 import { CONFIGURATIONS } from "src/config/configurations";
+import { ErrorComponent } from './error/error.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ErrorComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

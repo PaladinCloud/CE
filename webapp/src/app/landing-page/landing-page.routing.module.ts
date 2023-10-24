@@ -21,6 +21,7 @@ import { TokenResolverService } from '../resolver/token-resolver.service';
 
 import { HomePageComponent } from './home-page/home-page.component';
 import { LoginComponent } from './login/login.component';
+import { ErrorComponent } from '../error/error.component';
 
 const routes: Routes = [
     {
@@ -45,6 +46,10 @@ const routes: Routes = [
         path: 'home-page/login',
         redirectTo: '/home/login',
         pathMatch: 'full'
+    },
+    {
+        path: 'error',
+        component: ErrorComponent,
     },
 ];
 

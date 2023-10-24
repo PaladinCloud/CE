@@ -58,9 +58,33 @@ export class LoginComponent implements OnInit {
         private cognitoService: AwsCognitoService,
         private httpService: HttpService,
         private dataCacheService:DataCacheService,
-        ) {
+        ) {}
 
-        console.log('Auth type:', CONFIGURATIONS.optional.auth.AUTH_TYPE)
+    @Input() menuState: string;
+    @Output() onClose = new EventEmitter();
+
+    ngOnInit() {
+        // Check if the configuration is valid; if not, navigate to the error page
+
+        if(this._verifyConfiguration()) this._init();
+        else this.router.navigate(['/error']);
+    }
+
+    private _verifyConfiguration(){
+        if(!CONFIGURATIONS.optional.auth.AUTH_TYPE){
+            console.error('AUTH_TYPE is missing in configuration');
+            return false
+        }
+        if(!CONFIGURATIONS.optional.auth.cognitoConfig.loginURL){
+            console.error('Login URL is missing in configuration');
+            return false
+        }
+        return true;
+    }
+    private _init(){
+        // Private method to initialize the application based on the configuration
+        
+        console.log('Auth type:', CONFIGURATIONS.optional.auth.AUTH_TYPE);
         if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso') {
             this.adalService.login();
         } else if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'cognito') {
@@ -69,14 +93,7 @@ export class LoginComponent implements OnInit {
         } else {
             this.showOnPremLogin = true;
         }
-
-                    this.content = CONTENT;
-    }
-
-    @Input() menuState: string;
-    @Output() onClose = new EventEmitter();
-
-    ngOnInit() {
+        this.content = CONTENT;
     }
 
     login() {
