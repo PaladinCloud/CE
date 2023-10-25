@@ -63,20 +63,20 @@
                     <ng-container *ngIf="!paramErrorMessage">
                         <div class="content-header">
                             <div class="column-wrapper-header">
-                                <div class="col">
+                                <div class="col key">
                                     <span class="col-header body-2 low-emphasis">Key</span>
                                 </div>
-                                <div class="col">
+                                <div class="col value">
                                     <span class="col-header body-2 low-emphasis">Value</span>
                                 </div>
                             </div>
                         </div>
                         <div class="content-wrapper">
                                 <div class="column-wrapper" *ngFor="let param of paramsArray">
-                                    <div class="col">
+                                    <div class="col key">
                                         <span class="param-name nowrap-ellipsis" title="{{param.key}}">{{ param.key }}</span>
                                     </div>
-                                    <div class="col">
+                                    <div class="col value">
                                         <span class="param-value nowrap-ellipsis" title="{{param.value}}">{{ param.value == '' ? 'Unknown' : param.value }}</span>
                                     </div>
                                 </div>
