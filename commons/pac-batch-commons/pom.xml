@@ -33,25 +33,18 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+    <!-- Azure -->
     <dependency>
       <groupId>com.microsoft.azure</groupId>
       <artifactId>azure</artifactId>
       <version>1.41.3</version>
     </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk</artifactId>
-      <version>1.12.290</version>
-    </dependency>
+
+    <!-- AWS -->
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-secretsmanager</artifactId>
       <version>1.12.413</version>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-core</artifactId>
-      <version>1.12.239</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
@@ -140,12 +133,8 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-elasticsearch</artifactId>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-core -->
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-core</artifactId>
-      <version>1.1.0</version>
-    </dependency>
+
+    <!-- GCP -->
     <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
