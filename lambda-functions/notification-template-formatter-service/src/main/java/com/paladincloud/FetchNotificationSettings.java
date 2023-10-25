@@ -20,39 +20,38 @@ import static com.paladincloud.Constants.*;
 public class FetchNotificationSettings {
 
     private static final String CONFIG_DETAILS = "configDetails";
-    public String handleRequest(Map<String,Object> event, Context context)
-    {
+
+    public String handleRequest(Map<String, Object> event, Context context) {
         Gson gsonObj = new Gson();
         LambdaLogger logger = context.getLogger();
 
         String response = new String("hello paladin cloud");
-        logger.log("inside handleRequest "+event);
+        logger.log("inside handleRequest " + event);
         String jsonStr = gsonObj.toJson(event);
-        System.out.println("jsonStr -- "+jsonStr);
+        System.out.println("jsonStr -- " + jsonStr);
         JsonParser jsonParser = new JsonParser();
         JsonObject policyParamsJson = (JsonObject) jsonParser.parse(jsonStr);
 
         JsonElement bodyJson = policyParamsJson.getAsJsonArray("Records").get(0);
-        System.out.println("bodyJson--"+bodyJson.toString());
+        System.out.println("bodyJson--" + bodyJson.toString());
         String requestObjectStr = bodyJson.getAsJsonObject().get("Sns").getAsJsonObject().get("Message").getAsString();
         Map requestMap = gsonObj.fromJson(requestObjectStr, Map.class);
-        String notificationType = ((String)requestMap.get("eventCategory")).toLowerCase();
-        String subject = (String)requestMap.get("subject");
-        String source = (String)requestMap.get("eventSourceName");
+        String notificationType = ((String) requestMap.get("eventCategory")).toLowerCase();
+        String subject = (String) requestMap.get("subject");
+        String source = (String) requestMap.get("eventSourceName");
 
-        Map<String,Object> messageContentMap = (Map<String,Object>)requestMap.get("payload");
-        String action = ((String)messageContentMap.get("action"));
-        String exemptionType = (String)messageContentMap.get("type");
-        System.out.println("notificationtype - "+notificationType+"map--"+requestMap);
+        Map<String, Object> messageContentMap = (Map<String, Object>) requestMap.get("payload");
+        String action = ((String) messageContentMap.get("action"));
+        String exemptionType = (String) messageContentMap.get("type");
+        System.out.println("notificationtype - " + notificationType + "map--" + requestMap);
 
         try {
-            Map<String,String> configDetailsMap = HttpUtil.getConfigDetailsForChannels();
-            String notificationSettingsJson="";
-            if(messageContentMap.containsKey(CONFIG_DETAILS)){
-                Map<String, Object> configMap = (Map<String,Object>)messageContentMap.get("configDetails");
+            Map<String, String> configDetailsMap = HttpUtil.getConfigDetailsForChannels();
+            String notificationSettingsJson = "";
+            if (messageContentMap.containsKey(CONFIG_DETAILS)) {
+                Map<String, Object> configMap = (Map<String, Object>) messageContentMap.get("configDetails");
                 notificationSettingsJson = gsonObj.toJson(configMap);
-            }
-            else{
+            } else {
 
                 /*
             Sample response from notification_settings_url will be like the below
@@ -94,55 +93,57 @@ public class FetchNotificationSettings {
         }
          */
                 String accessToken = HttpUtil.getToken(configDetailsMap.get(apiauthinfo));
-                logger.log(" token -"+accessToken);
+                logger.log(" token -" + accessToken);
                 String notificationSettingsUrl = System.getenv("NOTIFICATION_SETTINGS_URL");
-                notificationSettingsJson = HttpUtil.get(notificationSettingsUrl,accessToken);
+                notificationSettingsJson = HttpUtil.get(notificationSettingsUrl, accessToken);
             }
-            logger.log("notification settings response -"+notificationSettingsJson);
-            
+            logger.log("notification settings response -" + notificationSettingsJson);
+
             JsonObject notifySettingsJsonObject = (JsonObject) jsonParser.parse(notificationSettingsJson);
 
             Optional reqNotificationTypeOptional = Optional.ofNullable(notifySettingsJsonObject).map(obj -> obj.getAsJsonObject("data")).map(obj -> obj.getAsJsonObject("settings")).map(obj -> obj.getAsJsonObject(notificationType));
-            if(reqNotificationTypeOptional.isPresent()) {
+            if (reqNotificationTypeOptional.isPresent()) {
                 JsonObject notifyTypeJsonObj = (JsonObject) reqNotificationTypeOptional.get();
                 Iterator channelIterator = notifyTypeJsonObj.keySet().iterator();
 
                 //iterate the channels for the notificationType of request
                 while (channelIterator.hasNext()) {
                     String channel = (String) channelIterator.next();
-                    Integer sendNotification =  notifyTypeJsonObj.getAsJsonObject(channel).get("isOn").getAsInt();
-                    JsonArray toEmailIdJsonArray =  notifyTypeJsonObj.getAsJsonObject(channel).getAsJsonArray("toAddress");
+                    Integer sendNotification = notifyTypeJsonObj.getAsJsonObject(channel).get("isOn").getAsInt();
+                    JsonArray toEmailIdJsonArray = notifyTypeJsonObj.getAsJsonObject(channel).getAsJsonArray("toAddress");
                     List<String> toEmailIdList = toEmailIdJsonArray.asList().stream().filter(obj -> !Strings.isNullOrEmpty(obj.getAsString())).map(obj -> obj.getAsString()).collect(Collectors.toList());
-                    logger.log("sendNotification - "+sendNotification+" toEmailIdList - "+toEmailIdList);
+                    logger.log("sendNotification - " + sendNotification + " toEmailIdList - " + toEmailIdList);
 
                     //if sendNotification is 1, email will be published. Else, no.
-                    if(Integer.valueOf(1).equals(sendNotification) && !toEmailIdList.isEmpty()){
+                    if (Integer.valueOf(1).equals(sendNotification) && !toEmailIdList.isEmpty()) {
                         AmazonSNS client = AmazonSNSClientBuilder.standard().build();
-                        String notificationDetailsStr="";
-                        if(jira.equalsIgnoreCase(channel) && violation.equalsIgnoreCase(notificationType)){
-                            if("create".equalsIgnoreCase(action)) {
+                        String notificationDetailsStr = "";
+                        if (jira.equalsIgnoreCase(channel) && violation.equalsIgnoreCase(notificationType)) {
+                            if ("create".equalsIgnoreCase(action)) {
                                 //change the subject for jira notification.
                                 subject = String.format(jiraViolationMessage, messageContentMap.get("issueId"));
-                            }
-                            else
+                            } else
                                 continue;
                         }
 
                         ClassLoader classLoader = getClass().getClassLoader();
-                        logger.log("key - "+channel+" action- "+action+" notificationtype- "+notificationType+" exemptionType- "+exemptionType);
+                        logger.log("key - " + channel + " action- " + action + " notificationtype- " + notificationType + " exemptionType- " + exemptionType);
                         File file = new File(classLoader.getResource(CommonUtils.getTemplateName(channel, action, notificationType, exemptionType)).getFile());
-                        String messageContent = buildPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
-
-                        notificationDetailsStr = gsonObj.toJson(getMsgDetailsMap(messageContent,toEmailIdList, subject));
-                        logger.log("notification message for channel '"+channel+"' is - "+messageContent);
-
-
-                        if(configDetailsMap.containsKey("email")){
-                            PublishRequest request = new PublishRequest(configDetailsMap.get("email"),notificationDetailsStr);
-                            PublishResult result = client.publish(request);
-                            logger.log("Notification message sent for "+channel+" with id "+result.getMessageId());
+                        String messageContent = null;
+                        if (!notificationType.equals("permission")) {
+                            messageContent = buildPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
+                        } else {
+                            messageContent = buildNotificationPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
                         }
-                        else{
+                        notificationDetailsStr = gsonObj.toJson(getMsgDetailsMap(messageContent, toEmailIdList, subject));
+                        logger.log("notification message for channel '" + channel + "' is - " + messageContent);
+
+
+                        if (configDetailsMap.containsKey("email")) {
+                            PublishRequest request = new PublishRequest(configDetailsMap.get("email"), notificationDetailsStr);
+                            PublishResult result = client.publish(request);
+                            logger.log("Notification message sent for " + channel + " with id " + result.getMessageId());
+                        } else {
                             logger.log("SNS for email notification is not configured.");
                         }
                     }
@@ -154,12 +155,34 @@ public class FetchNotificationSettings {
         return response;
     }
 
+    private String buildNotificationPlainTextMail(String mailBody, Map<String, Object> messageContentMap, String source) {
+        mailBody = mailBody.replace("${source}", source);
+        mailBody = mailBody.replace("${message}", messageContentMap.get("message").toString());
+        StringBuilder buf = new StringBuilder();
+        for (Map.Entry<String, Object> permission : messageContentMap.entrySet()) {
+            if (permission.getKey().startsWith("permission")) {
+                buf.append("<tr><td class=\"rowkey\">").append(makeKeyReadable(permission.getKey())).append("</td><td>").append(permission.getValue()).append("</td></tr>");
+            }
+        }
+        mailBody = mailBody.replace("${permissionIssues}", buf.toString());
+        return mailBody;
+    }
+
+    private String makeKeyReadable(String key) {
+        key = key.replace("permission", "Permission ");
+        key = key.replace("Issue", "issue ");
+        key = key.replace("For", "for ");
+        key = key.replace("In", " in ");
+        key = key.replace("Account", "account ");
+        return key;
+    }
+
     private String buildPlainTextMail(String mailBody, final Map<String, Object> details, String source) {
-        if(mailBody.contains("${source}")){
-            mailBody=mailBody.replace("${source}",source);
+        if (mailBody.contains("${source}")) {
+            mailBody = mailBody.replace("${source}", source);
         }
         for (Map.Entry<String, Object> entry : details.entrySet()) {
-            if(entry.getValue()!=null &&  !"additionalInfo".equalsIgnoreCase(entry.getKey()) && mailBody.contains("${".concat(entry.getKey()).concat("}"))){
+            if (entry.getValue() != null && !"additionalInfo".equalsIgnoreCase(entry.getKey()) && mailBody.contains("${".concat(entry.getKey()).concat("}"))) {
                 mailBody = mailBody.replace("${".concat(entry.getKey()).concat("}"), entry.getValue().toString());
             }
         }
@@ -167,18 +190,17 @@ public class FetchNotificationSettings {
     }
 
     /**
-     *
      * @param messageContent
      * @param toEmailIdList
      * @param subject
      * @return
      */
-    private Map<String, Object> getMsgDetailsMap(String messageContent,List<String> toEmailIdList, String subject){
-        Map<String,Object> msgDetailsMap = new HashMap<>();
-        msgDetailsMap.put("mailBodyAsString",messageContent);
-        msgDetailsMap.put("from",fromEmail);
-        msgDetailsMap.put("to",toEmailIdList);
-        msgDetailsMap.put("subject",subject);
+    private Map<String, Object> getMsgDetailsMap(String messageContent, List<String> toEmailIdList, String subject) {
+        Map<String, Object> msgDetailsMap = new HashMap<>();
+        msgDetailsMap.put("mailBodyAsString", messageContent);
+        msgDetailsMap.put("from", fromEmail);
+        msgDetailsMap.put("to", toEmailIdList);
+        msgDetailsMap.put("subject", subject);
         msgDetailsMap.put("placeholderValues", Collections.EMPTY_MAP);
         return msgDetailsMap;
     }

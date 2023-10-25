@@ -19,11 +19,13 @@ public class ErrorManageUtil implements Constants{
 
     public static Map<String,Object> formErrorCode(List<Map<String,String>> errorList) {
         Map<String,Object> errorCode = new HashMap<>();
+        //to do write error file
+        
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         errorCode.put("endTime", sdf.format(new Date()));
         
         String status = "";
-        
+        omitOpsAlert(errorList);
         List<Map<String,Object>> errors = new ArrayList<>();
         if(!errorList.isEmpty()) {
             for(Map<String, String> errorDetail :errorList) {
@@ -49,5 +51,15 @@ public class ErrorManageUtil implements Constants{
         errorCode.put("errors", errors);
         errorCode.put("status", status);
         return errorCode;
+    }
+
+    private static void omitOpsAlert(List<Map<String, String>> errorList) {
+        List<Map<String, String>> copyErrorList=new ArrayList<>(errorList);
+        for(Map<String, String> error:copyErrorList)
+        {
+            if(error.get("exception").contains("UnAuthorisedException")) {
+                errorList.remove(error);
+            }
+        }
     }
 }

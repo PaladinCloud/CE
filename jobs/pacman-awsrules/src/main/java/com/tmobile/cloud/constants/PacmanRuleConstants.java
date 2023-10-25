@@ -90,8 +90,10 @@ public class PacmanRuleConstants {
   public static final String AQUA_ENTITY_TYPE = "_entitytype";
   public static final String AQUA_LAST_VULN_SCAN = "last_found_date";
   public static final String AQUA_MORE_INFO = "More Info";
-    public static final String ES_TENABLE_VM_URL = "esTenableVMUrl";
-    public static final String TENABLE_MORE_INFO = "More Info";
+  public static final String ES_TENABLE_VM_URL = "esTenableVMUrl";
+  public static final String ES_TENABLE_ASSETS_URL = "/tenable-vm-asset/_search";
+  public static final String ES_TENABLE_VULNERABILITY_URL = "/tenable-vm-vulnerability/_search";
+  public static final String TENABLE_MORE_INFO = "More Info";
   public static final String HOST_NAME = "hostName";
 
   private PacmanRuleConstants() {

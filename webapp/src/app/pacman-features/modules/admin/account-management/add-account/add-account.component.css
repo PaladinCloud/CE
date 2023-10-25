@@ -45,21 +45,92 @@
     display: flex;
     flex-direction: column;
     width: calc(100% - 200px);
-    padding: 0px 24px;
-    border-left: 2px solid var(--border-200);
+    height: 100%;
+    border: 2px solid var(--border-200);
+    border-radius: 8px;
+    background-color: var(--background-white);
+}
+
+.content-header{
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #DEE3E7;
+    padding: 10px 24px;
+    gap: 4px;
+}
+
+.h6{
+    color: var(--text-high-emphasis);
+}
+
+.sub-text{
+    color: var(--text-low-emphasis);
+}
+
+.redhat-video-wrapper{
+    flex-direction: row !important;
+}
+
+.video-thumbnail-wrapper {
+    position: relative;
+    display: inline-block;
+    height: 20.9%;
+    width: 33.28%;
+    min-width: 255px;
+    min-height: 161px;
+    border-radius: 8px;
+
+    /* Global/Elevation/Bottom.300 */
+    box-shadow: 0px 8px 16px -2px rgba(27, 36, 44, 0.12), 0px 2px 2px -1px rgba(27, 35, 44, 0.04);
+}
+
+.video-thumbnail{
+    border-radius: 8px;
+    height: 20.9%;
+    min-height: 161px;
+    display: block;
+    width: 100%;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.play-button .icon {
+    cursor: pointer;
+    color: white; /* Optional: Set the color of the play button icon */
+    font-size: 24px; /* Optional: Adjust the size of the play button icon */
+}
+
+::ng-deep .video-dialog .mat-dialog-content{
+    padding: 0px;
 }
 
 .configuration-header{
     display: flex;
     gap: 12px;
     align-items: center;
-    padding-bottom: 24px;
 }
 
 .configuration-body{
-    height: calc(100% - 80px);
+    height: calc(100% - 52px);
+    overflow: auto;
 }
 
+.header{
+    border-bottom: 1px solid #DEE3E7;
+    padding: 16px 24px;
+}
+
+.error-state{
+    border: 1px solid red;
+}
 /* img{
     padding: 7px;
     border: 0.5px solid var(--border-200);
@@ -86,10 +157,8 @@
 .steps-wrapper{
     display: flex;
     flex-direction: column;
+    padding-top: 12px;  
     gap: 12px;
-    padding-top: 24px;  
-    border-top: 1px solid var(--border-100);
-    overflow: auto;
 }
 
 .step-wrapper{
@@ -103,15 +172,12 @@
 
 .validation-inner-wrapper{
     height: 100%;
-    width: 60%;
-    min-width: 500px;
     display: flex;
     gap: 24px;
+    min-height: 420px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 1px solid var(--border-200);
-    border-radius: 20px;
 }
 
 .validation-wrapper{
@@ -120,7 +186,6 @@
   justify-content: center;
   height: calc(100% - 36px);
   background-color: var(--background-white);
-  padding: 24px;
   border-radius: 8px;
 }
 
@@ -161,9 +226,12 @@
 }
 
 .back-btn{
+    border-radius: 8px;
+    border: 1px solid var(--gray-300, #D0D5DD);
+    background: var(--base-white, #FFF);
+
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
     color: var(--primary-400);
-    border: none;
-    background-color: var(--background-white);
 }
 
 
@@ -195,24 +263,19 @@
 }
 
 .configure-wrapper{
-    height: calc(100% - 56px);
+    height: 100%;
+    padding: 16px 20px;
     overflow: auto;
-    padding-top: 24px;
-    padding-right: 24px;
     gap: 20px;
     display: flex;
     flex-direction: column;
 }
 
 .form-wrapper{
-    padding-top: 24px;
-    padding-right: 24px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     height: 100%;
-    width: 70%;
-    overflow: auto;
 }
 
 .script-wrapper{
@@ -248,13 +311,24 @@
     height: calc(100% - 36px);
     min-width: 800px;
     border-radius: 8px;
+    background: none !important;
+    padding: 0px !important;
+}
+
+::ng-deep .stepper app-stepper .mat-stepper-vertical{
+    background: none !important;
+}
+
+.stepper{
+    padding: 20px 0px;
 }
 
 .button-wrapper{
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
-    padding: 0;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-200);
   }
 
   .validation-sub-text
@@ -285,6 +359,7 @@
     padding: 7px;
     border: 0.5px solid var(--border-200);
     border-radius: 4px;
+    background-color: var(--background-neutral-subtle);
 }
 
 .input-wrapper{
@@ -327,6 +402,11 @@
       white-space: nowrap;
   }
 
+  .details-wrapper{
+      height: 100%;
+      padding: 16px 20px;
+  }
+
   .details-wrapper ::ng-deep .mat-form-field{
     width: 100% !important;
   }
@@ -359,7 +439,7 @@
     background: white;
 }
 
-.details-header, .configure-header{
+.details-header, .configure-header, .configure-footer{
     font: var(--text-body-2);
     color: var(--text-medium-emphasis);
 }
@@ -460,9 +540,4 @@
     border-radius: 8px;
     cursor: pointer;
     border: 1px solid var(--border-200);
-}
-
-::ng-deep .mat-button-wrapper{
-    display: flex;
-    gap: 8px;
 }

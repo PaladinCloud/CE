@@ -35,3 +35,8 @@
     margin-left: 12px !important;
     display: block !important;
 }
+
+::ng-deep .cdk-overlay-dark-backdrop{
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(6px) !important;
+}

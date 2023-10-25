@@ -45,14 +45,14 @@
                     </div>
                     <div class="dropdown-wrapper">
                         <div class="dropdown">
-                            <app-dropdown [required]="isRequired" [optionImage]="true"
+                            <app-dropdown [class.isDisabled]="selectedAssetGroup == 'redhat'" [required]="isRequired" [optionImage]="true"
                                 [items]="policySeverities" placeholder="Severity"
                                 [selectedItem]="selectedSeverity" name="severity"
                                 (selected)="onSelectSeverity($event)">
                             </app-dropdown>
                         </div>
                         <div class="dropdown">
-                            <app-dropdown [required]="isRequired" [optionImage]="true"
+                            <app-dropdown [class.isDisabled]="selectedAssetGroup == 'redhat'" [required]="isRequired" [optionImage]="true"
                                 [items]="policyCategories" placeholder="Category"
                                 [selectedItem]="selectedCategory" name="category"
                                 (selected)="onSelectCategory($event)">
@@ -65,7 +65,7 @@
                                 <span class="subtitle-2">Policy Parameters</span>
                                  <div class="parameters-wrapper">
                                     <div class="parameter-wrapper" *ngFor="let param of paramsList;let i=index" [class.hide]="!param.isEdit">
-                                            <div class="input-wrapper">
+                                            <div class="input-wrapper" [class.isDisabled]="selectedAssetGroup == 'redhat'">
                                                 <mat-form-field appearance="outline">
                                                     <mat-label>{{param.displayName}}</mat-label>
                                                     <input autocomplete="off" matInput [name]="param.key" [required]="param.isMandatory"
@@ -85,7 +85,7 @@
                                         <span class="subtitle-2">Autofix</span>
                                         <div class="status-wrapper">
                                           <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle [disabled]="!status" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
+                                          <mat-slide-toggle [disabled]="selectedAssetGroup == 'redhat' || !status" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
                                         </div>
                                      </div>
                                   <div class="autofix-wrapper">

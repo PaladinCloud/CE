@@ -98,9 +98,17 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
     );
   }
 
+  replaceUrl(url, action=''){
+    if(this.platform=="redhat"){
+      return url.replace("{pluginSelected}", this.platform)
+    }else{
+      return url.replace("/{pluginSelected}/","").replace(action, '');
+    }
+  }
+
   deleteAccount(){
     // accountId:string,provider:string
-    const url = environment.deleteAccount.url;
+    const url = this.replaceUrl(environment.deleteAccount.url, 'delete');
     const method = environment.deleteAccount.method;
     const queryParams = {
       accountId : this.accountId,
@@ -111,7 +119,7 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
     this.commonResponseService.getData(url,method,{},queryParams).subscribe(responseData=>{
       try{
         const response = responseData.data;
-        const status =response.validationStatus;
+        const status =response.validationStatus || response.status;        
         if(status.toLowerCase() == "success"){
           nofificationMessage = "Account "+ this.accountId +" has been deleted successfully";
           this.notificationObservableService.postMessage(nofificationMessage,3000,"","check-circle");

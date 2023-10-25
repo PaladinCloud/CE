@@ -30,6 +30,7 @@ import { MultilineChartService } from 'src/app/pacman-features/services/multilin
 import { OverallComplianceService } from 'src/app/pacman-features/services/overall-compliance.service';
 import { PacmanIssuesService } from 'src/app/pacman-features/services/pacman-issues.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
@@ -44,6 +45,7 @@ import {
     DashboardArrangementService,
     DashboardContainerIndex,
 } from '../services/dashboard-arrangement.service';
+import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 
 @Component({
     selector: 'app-compliance-dashboard',
@@ -65,6 +67,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     @ViewChild('widget') widgetContainer: ElementRef;
 
     pageTitle = 'Overview';
+    saveStateKey: String = ComponentKeys.Dashboard;
     filterArr: any = [];
     filterText;
     queryParamsWithoutFilter;
@@ -139,7 +142,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         severity: 'Severity',
         policyCategory: 'Category',
     };
-    columnWidths = { Policy: 3, Violations: 1, Source: 1, Severity: 1, Category: 1, Compliance: 1 };
+    columnWidths = { Policy: 3, Violations: 1, Source: 1, "Asset Type": 1, Severity: 1, Category: 1, Compliance: 1 };
     selectedRowIndex : number;
     centeredColumns = {
         Policy: false,
@@ -284,29 +287,19 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         private utils: UtilsService,
         private windowExpansionService: WindowExpansionService,
         private workflowService: WorkflowService,
+        private agDomainObservableService: AgDomainObservableService,
         private assetTypeMapService: AssetTypeMapService
     ) {
-      this.getPreservedState();
-      this.assetGroupSubscription = this.subscriptionToAssetGroup =
-        this.assetGroupObservableService
-          .getAssetGroup()
-          .subscribe((assetGroupName) => {
-            this.selectedAssetGroup = assetGroupName;
-            this.updateComponent();
-          });
-
-      this.subscriptionDomain = this.domainObservableService
-        .getDomainType()
-        .subscribe((domain) => {
-          this.selectedDomain = domain;
-          if(this.selectedAssetGroup){
-            this.updateComponent();
-          }
-        });
+      this.agDomainObservableService.getAgDomain().subscribe(async([assetGroupName, domain]) => {
+        await this.getPreservedState();
+        this.selectedAssetGroup = assetGroupName;
+        this.selectedDomain = domain;
+        this.updateComponent();
+      })
     }
 
-    getPreservedState(){
-      const state = this.tableStateService.getState("dashboard") ?? {};
+    async getPreservedState(){
+      const state = this.tableStateService.getState(this.saveStateKey) ?? {};
       
       this.headerColName = state.headerColName ?? 'Severity';
       this.direction = state.direction ?? 'desc';
@@ -328,7 +321,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       }
       if(state.filters){
         this.filters = state.filters;
-        Promise.resolve().then(() => this.getUpdatedUrl());
+        await Promise.resolve().then(() => this.getUpdatedUrl());
       }
     }
   
@@ -471,7 +464,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
 
     clearState() {
-        // this.tableStateService.clearState('dashboard');
+        // this.tableStateService.clearState(this.saveStateKey);
         this.isStatePreserved = false;
     }
 
@@ -488,7 +481,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
          filters: this.filters,
          selectedRowIndex: this.selectedRowIndex
        }
-       this.tableStateService.setState("dashboard", state);
+       this.tableStateService.setState(this.saveStateKey, state);
      }
 
     getDistributionBySeverity() {
@@ -804,23 +797,18 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
           optionName: value,
         });
         
-        let filtersToBePassed = {};       
-        Object.keys(this.filterText).map(key => {
-          if(key=="domain" || this.currentFilterType.optionValue == key) return;
-          if(key=="failed"){
-            filtersToBePassed[key] = this.filterText[key].split(",").map(filterVal => {
-              const [min, max] = filterVal.split("-");
-              return {min, max}
-            })
-          }else if(key=="compliance_percent"){
-            filtersToBePassed[key] = this.filterText[key].split(",").map(filterVal => {
-              const [min, max] = filterVal.split("-");
-              return {min, max}
-            })
-          }else{
-            filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
+        const excludedKeys = [
+          "domain",
+          this.currentFilterType.optionValue
+        ]
+        let filtersToBePassed = this.getFilterPayloadForDataAPI();
+        filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
+          const normalizedKey = key.replace(".keyword", "");
+          if ((!excludedKeys.includes(normalizedKey))) {
+            result[normalizedKey] = filtersToBePassed[key];
           }
-        })
+          return result;
+        }, {});
         const payload = {
           attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
           ag: this.selectedAssetGroup,
@@ -1058,10 +1046,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             let cellObj = {};
             let processedData = [];
             const getData = data;
-            const keynames = Object.keys(getData[0]);
-
+            
             let cellData;
             for (let row = 0; row < getData.length; row++) {
+              const keynames = Object.keys(getData[row]);
                 innerArr = {};
                 keynames.forEach((col) => {
                     const isPolicyCol = col.toLowerCase() === 'policy';
@@ -1168,27 +1156,27 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             });
     }
 
-    getData() {
-      if(!this.selectedAssetGroup || !this.selectedDomain){
-        return;
-      }
-      const filterToBePassed = {...this.filterText};
-
+    getFilterPayloadForDataAPI(){
+      const filterToBePassed = { ...this.filterText };
       Object.keys(filterToBePassed).forEach(filterKey => {
         if(filterKey=="domain") return;
         filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-        if(filterKey=="failed"){
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-            const [min, max] = filterVal.split("-");
-            return {min, max}
-          })
-        }else if(filterKey=="compliance_percent"){
+        if(filterKey=="failed" || filterKey=="compliance_percent"){
           filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
             const [min, max] = filterVal.split("-");
             return {min, max}
           })
         }
       })
+  
+      return filterToBePassed;
+    }
+
+    getData() {
+      if(!this.selectedAssetGroup || !this.selectedDomain){
+        return;
+      }
+      const filterToBePassed = this.getFilterPayloadForDataAPI();
 
       const filters = {domain: this.selectedDomain};
   
@@ -1341,23 +1329,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
           fileType,
         };
   
-        const filterToBePassed = {...this.filterText};
-  
-        Object.keys(filterToBePassed).forEach(filterKey => {
-          if(filterKey=="domain") return;
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-          if(filterKey=="failed"){
-            filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-              const [min, max] = filterVal.split("-");
-              return {min, max}
-            })
-          }else if(filterKey=="compliance_percent"){
-            filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-              const [min, max] = filterVal.split("-");
-              return {min, max}
-            })
-          }
-        })
+        const filterToBePassed = this.getFilterPayloadForDataAPI();
   
         const downloadRequest = {
           ag: this.selectedAssetGroup,

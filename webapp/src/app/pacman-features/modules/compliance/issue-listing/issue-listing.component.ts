@@ -19,6 +19,7 @@ import { PermissionGuardService } from "../../../../core/services/permission-gua
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
+import { ComponentKeys } from "src/app/shared/constants/component-keys";
 
 @Component({
   selector: "app-issue-listing",
@@ -28,6 +29,7 @@ import { AssetTypeMapService } from "src/app/core/services/asset-type-map.servic
 })
 export class IssueListingComponent implements OnInit, OnDestroy {
   pageTitle = "Violations";
+  saveStateKey: String = ComponentKeys.ViolationList;
   selectedAssetGroup: string;
   selectedDomain: string;
   breadcrumbArray: any = [];
@@ -143,7 +145,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
     .subscribe(async(assetGroupName) => {
-        // whenever ag is changed, all filters are cleared in change-default-asset-group component.
+        // whenever ag is changed, all filters and data are cleared in change-default-asset-group component.
         await this.getPreservedState();
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
@@ -186,7 +188,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   async getPreservedState() {
-    const state = this.tableStateService.getState(this.pageTitle) ?? {};
+    const state = this.tableStateService.getState(this.saveStateKey) ?? {};
   
     this.headerColName = state.headerColName || 'Severity';
     this.direction = state.direction || 'desc';
@@ -327,7 +329,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         selectedRowIndex: this.selectedRowIndex,
         // filterText: this.filterText
       }
-    this.tableStateService.setState(this.pageTitle, state);
+    this.tableStateService.setState(this.saveStateKey, state);
   }
 
   clearState(){
@@ -630,10 +632,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       const index = this.filterOrder?.indexOf(this.currentFilterType.optionValue?.replace(".keyword", ""));
       const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
   
-      const filtersToBePassed = Object.keys(this.filterText).reduce((result, key) => {
+      let filtersToBePassed = this.getFilterPayloadForDataAPI();
+      filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
         const normalizedKey = key.replace(".keyword", "");
         if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) || index>=0) {
-        result[normalizedKey] = this.filterText[key].split(",");
+          result[normalizedKey] = filtersToBePassed[key];
         }
         return result;
       }, {});
@@ -778,12 +781,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  getData(isNextPageCalled=false) {
-    try {
-      if (this.issueListingSubscription) {
-        this.issueListingSubscription.unsubscribe();
-      }
-      const filterToBePassed = { ...this.filterText };
+  getFilterPayloadForDataAPI(){
+    const filterToBePassed = { ...this.filterText };
       filterToBePassed.domain = this.selectedDomain;
 
       Object.keys(filterToBePassed).forEach(filterKey => {
@@ -796,6 +795,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         }
       });
 
+      return filterToBePassed;
+  }
+
+  getData(isNextPageCalled=false) {
+    try {
+      if (this.issueListingSubscription) {
+        this.issueListingSubscription.unsubscribe();
+      }
+      
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+
       const sortFilters = {
         fieldName: this.fieldName,
         fieldType: this.fieldType,
@@ -805,7 +815,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       const payload = {
         ag: this.selectedAssetGroup,
-        filter: filterToBePassed,
+        filter: filtersToBePassed,
         sortFilter: sortFilters,
         from: this.bucketNumber * this.paginatorSize,
         searchtext: this.searchTxt,
@@ -949,18 +959,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         sortOrder: this.sortOrder
       }
 
-      const filterToBePassed = { ...this.filterText };
-      filterToBePassed.domain = this.selectedDomain;
-
-      Object.keys(filterToBePassed).forEach(filterKey => {
-        if (filterKey !== "domain") {
-          filterToBePassed[filterKey] = filterToBePassed[filterKey]?.split(",") || [];
-        }
-      });
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+      filtersToBePassed.domain = this.selectedDomain;
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
-        filter: filterToBePassed,
+        filter: filtersToBePassed,
         sortFilter: sortFilters,
         from: 0,
         searchtext: this.searchTxt,

@@ -58,15 +58,15 @@ public class VirtualMachineScaleSetCollector {
                     for (VirtualMachineScaleSetIPConfiguration ipConfiguration : ipConfigurations) {
                         List<SubResource> backendAddressPools = ipConfiguration.loadBalancerBackendAddressPools();
                         List<String> lbIds = new ArrayList<>();
-                        for (SubResource resource : backendAddressPools) {
-                            lbIds.add(resource.id());
+                        if (backendAddressPools != null) {
+                            for (SubResource resource : backendAddressPools) {
+                                lbIds.add(resource.id());
+                            }
                         }
                         virtualMachineScaleSetVH.setLoadBalancerIds(lbIds);
                     }
                 }
-
-                    vmssList.add(virtualMachineScaleSetVH);
-
+                vmssList.add(virtualMachineScaleSetVH);
             }catch(Exception e) {
                 log.error("Error Collecting info for {} {} ",virtualMachineScaleSet.computerNamePrefix(),e.getMessage());
                 Util.eCount.getAndIncrement();

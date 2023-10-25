@@ -87,29 +87,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     backButtonRequired = false;
     pageLevel = 0;
 
-    colors: ColorOptions[] = [
-        {
-            from: 0,
-            to: 100,
-            color: '#90CAF9',
-        },
-        {
-            from: 100,
-            to: 1000,
-            color: '#42A5F5',
-        },
-        {
-            from: 1000,
-            to: 10000,
-            color: '#1976D2',
-        },
-        {
-            from: 10000,
-            to: 100000,
-            color: '#0D47A1',
-        },
-    ];
-
+    colors = ['#6FAFE5','#5F9DC8','#4F8BBB','#3F7AAA','#2F689D','#1F5790','#105581','#004372','#003263','#002155']
     isSortedByName = true;
     isSortedByAssetNo = true;
 
@@ -218,34 +196,52 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
             this.treemapData.push(obj);
         }
 
-        const values = this.treemapData.map(function (d) {
-            return d.y;
-        });
+       // Initialize variables to store the maximum and minimum values
+        let maxDataValue, minDataValue;
 
-        const quantile = d3.scaleQuantile().domain(values).range(d3.range(values.length));
+        // Filter out data points with a value of 0
+        this.treemapData = this.treemapData.filter(dataPoint => dataPoint.y !== 0);
 
-        let max = -1;
-        max = this.awsResources[maxIndex - 1].count;
+        // Find the maximum value within the filtered data
+        maxDataValue = this.treemapData[this.treemapData.length - 1].y;
 
-        for (let j = 0; j < this.treemapData.length; j++) {
-            if (this.treemapData[j].y > 0) this.treemapData[j].y = quantile(this.treemapData[j].y + 10);
-        }
-        const maxVal = this.treemapData[maxIndex - 1].y;
-        const diff = maxVal / 4;
-        let from = 0,
-            to = diff;
-        let r = 0;
+        // Create a square root scale for data values, mapping them to a range of [0, 20]
+        const sqrtScale = d3.scaleSqrt().domain([0, maxDataValue]).range([0, 20]);
 
-        for (let i = 0; i < 4; i++) {
+        // Scale down the data values using the square root scale
+        this.treemapData = this.treemapData.map(dataPoint => ({
+        ...dataPoint,
+        y: sqrtScale(dataPoint.y)
+        }));
+
+        // Find the minimum and maximum values within the scaled data
+        minDataValue = this.treemapData[0].y;
+        maxDataValue = this.treemapData[this.treemapData.length - 1].y;
+
+        // Calculate the difference between the maximum and minimum scaled values
+        const valueRange = (maxDataValue - minDataValue) / this.colors.length;
+
+        // Initialize variables to track the range and color for each value range
+        let fromValue = minDataValue;
+        let toValue = minDataValue + valueRange;
+
+        // Generate color ranges based on the number of colors available
+        for (let i = 0; i < this.colors.length; i++) {
             this.colorRanges.push({
-                from: from,
-                to: to,
-                color: this.colors[r++].color,
+                from: fromValue,
+                to: toValue,
+                color: this.colors[i],
             });
-            from = to;
-            to = to + diff;
-        }
 
+            fromValue = toValue;
+            toValue = toValue + valueRange;
+
+            // Ensure the last color range covers the entire remaining value range
+            if (i === this.colors.length - 2) {
+                toValue = maxDataValue;
+            }
+        }
+        
         this.buildTreeMap();
     }
 

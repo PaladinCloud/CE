@@ -94,6 +94,27 @@ export class TableStateService {
             componentState["bucketNumber"] = 0;
             componentState["selectedRowIndex"] = undefined;
             componentState["totalRows"] = 0;
+            
+            this.setState(componentKey, componentState);
+        }catch(e){
+            this.logger.log(componentKey, ": Error in clearing state: "+e);
+        }
+    }
+
+    clearStateByFields(componentKey, fieldsToClear){
+        try{
+            this.logger.log("info", `clearing ${componentKey} with fields ${fieldsToClear}`);
+            
+            const componentState = this.getState(componentKey);
+            fieldsToClear.forEach(field => {
+                componentState[field] = undefined;
+                if(field==="data"){
+                    this.clearState(componentKey);
+                } else {
+                    componentState[field] = undefined;
+                }
+            })
+            
             this.setState(componentKey, componentState);
         }catch(e){
             this.logger.log(componentKey, ": Error in clearing state: "+e);

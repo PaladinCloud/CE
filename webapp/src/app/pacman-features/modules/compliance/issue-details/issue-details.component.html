@@ -17,7 +17,7 @@
         <img src="/assets/icons/blue-info.svg">
         <div class="exemption-details-wrapper flex flex-col">
             <span class="body-1 high-emphasis">Exemption Request: {{issueBlocks.policyViolated}}</span>
-            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionRaisedExpiringOn}}</mark></span>
+            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionRaisedExpiringOn | date : 'medium'}}</mark></span>
             <div class="button-wrapper" *ngIf="adminAccess">
                 <app-button
                 (onClickInner)="handleRequest('grant')">Exempt</app-button>
@@ -77,9 +77,9 @@
                     Additional Actions
                 </header>
                 <div class="btn-wrapper-additional-actions">
-                    <app-button-icon (onClickInner)="showOtherDiv()" *ngIf="!exceptionAdded && exemptionDetails.status != 'requested'"> {{addExemption}}
+                    <app-button-icon [class.isDisabled]="issueAssetGroup=='redhat'" (onClickInner)="showOtherDiv()" *ngIf="!exceptionAdded && exemptionDetails.status != 'requested'"> {{addExemption}}
                     </app-button-icon>
-                    <app-button-icon (onClickInner)="showOtherDivRevoke();revokeException()"
+                    <app-button-icon [class.isDisabled]="issueAssetGroup=='redhat'" (onClickInner)="showOtherDivRevoke();revokeException()"
                                      *ngIf="(exceptionAdded && adminAccess) || (!adminAccess && exemptionDetails.status == 'requested' && hasCurrentUserRequested)"> {{revokeExemption}}
                     </app-button-icon>
                 </div>

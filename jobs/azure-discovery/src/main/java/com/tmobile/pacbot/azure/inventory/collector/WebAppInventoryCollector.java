@@ -4,6 +4,7 @@ import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.appservice.DefaultErrorResponseException;
 import com.microsoft.azure.management.appservice.WebApp;
+import com.tmobile.pacbot.azure.inventory.ErrorManageUtil;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacbot.azure.inventory.vo.WebAppVH;
@@ -24,33 +25,27 @@ public class WebAppInventoryCollector {
 
     public List<WebAppVH> fetchWebAppDetails(SubscriptionVH subscription) {
         List<WebAppVH> webAppList = new ArrayList<>();
-
         Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
-
         PagedList<WebApp> webApps = azure.webApps().list();
-
+        WebAppVH webAppVH = new WebAppVH();
         for (WebApp webApp : webApps) {
             try {
-                WebAppVH webAppVH = new WebAppVH();
                 webAppVH.setRemoteDebuggingEnabled(webApp.remoteDebuggingEnabled());
                 webAppVH.setHostNames(webApp.hostNames());
                 webAppVH.setHttp20Enabled(webApp.http20Enabled());
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
                 webAppVH.setSubscription(subscription.getSubscriptionId());
                 webAppVH.setSubscriptionName(subscription.getSubscriptionName());
-                webAppVH.setRegion(Util.getRegionValue(subscription,webApp.regionName()));
+                webAppVH.setRegion(Util.getRegionValue(subscription, webApp.regionName()));
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
-
                 if (webApp.ftpsState() != null) {
                     webAppVH.setFtpsState(webApp.ftpsState());
                     log.info("ftpsState {}", webApp.ftpsState());
                 }
-
                 if (webApp.minTlsVersion() != null) {
                     webAppVH.setMinTlsVersion(webApp.minTlsVersion().toString());
                     log.info("minTlsVersion {}", webApp.minTlsVersion());
                 }
-
                 webAppVH.setAuthEnabled(webApp.getAuthenticationConfig().inner().enabled());
                 webAppVH.setId(webApp.id());
                 webAppVH.setHttpsOnly(webApp.httpsOnly());
@@ -61,10 +56,10 @@ public class WebAppInventoryCollector {
                 webAppVH.setName(webApp.name());
                 webAppList.add(webAppVH);
 
-            } catch(DefaultErrorResponseException exception){
+            } catch (DefaultErrorResponseException exception) {
                 log.error(exception.getMessage());
-            }
-            catch (Exception e) {
+                ErrorManageUtil.uploadError(webAppVH.getSubscription(), webAppVH.getRegion(), "webapp", exception.getMessage());
+            } catch (Exception e) {
                 e.printStackTrace();
                 log.error("Error Collecting info for {} ", e.getMessage());
                 Util.eCount.getAndIncrement();

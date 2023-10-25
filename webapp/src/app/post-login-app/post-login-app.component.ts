@@ -28,6 +28,11 @@ import { SnackbarComponent } from "../shared/components/molecules/snackbar/snack
 import { DownloadService } from "../shared/services/download.service";
 import { LoggerService } from "../shared/services/logger.service";
 import { NotificationObservableService } from "../shared/services/notification-observable.service";
+import { TableStateService } from "../core/services/table-state.service";
+import { environment } from "src/environments/environment";
+import { CommonResponseService } from "../shared/services/common-response.service";
+import { ComponentKeys } from "../shared/constants/component-keys";
+import { CONFIGURATIONS } from "src/config/configurations";
 
 declare var Offline: any;
 
@@ -58,6 +63,8 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   sidenavExpanderLeft = 250;
   rotationVar = 'rotate(180deg)';
   containerModeOverOffset = 0;
+  isClearListStatesEnabled = CONFIGURATIONS.optional.general.SaveState.enableUpdate;
+  releaseVersion = CONFIGURATIONS.optional.general.SaveState.releaseVersion;
 
   sidenavExpanderClicked() {
     this.isExpanded = !this.isExpanded;
@@ -108,11 +115,16 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     private windowExpansionService: WindowExpansionService,
     private notificationObservableService: NotificationObservableService,
     private snackBar: MatSnackBar,
+    private commonResponseService: CommonResponseService,
+    private tableStateService: TableStateService
   ) {
     if (this.pageReloadInterval) {
       this.reloadTimeout = this.setReloadTimeOut(this.pageReloadInterval);
     }
 
+    if(this.isClearListStatesEnabled){
+      this.clearListStates();
+    }
     this.getRouteQueryParameters();
   }
 
@@ -288,6 +300,31 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
         queryParams: this.queryParameters
       });
       this.workflowService.clearAllLevels();
+    }
+  }
+
+  clearListStates(){
+    try{
+      const listsToClear = [
+        ComponentKeys.Dashboard,
+        ComponentKeys.ViolationList,
+        ComponentKeys.AssetList,
+        ComponentKeys.UserPolicyList,
+        ComponentKeys.ComplianceCategoryPolicyList,
+        ComponentKeys.AdminPolicyList
+      ];
+      const fieldsToClear = ["whiteListColumns", "headerColName", "direction"];
+      const currentVersion = this.releaseVersion;
+      const lastVersion = localStorage.getItem('version');
+      if(currentVersion && currentVersion!=lastVersion){
+        
+        listsToClear.forEach(listStateKey => {
+          this.tableStateService.clearStateByFields(listStateKey, fieldsToClear);
+        })
+      }
+      localStorage.setItem('version', currentVersion);
+    }catch(e){
+      this.logger.log("error", e);
     }
   }
 

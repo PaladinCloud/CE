@@ -17,6 +17,7 @@ import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 
 
 @Component({
@@ -27,6 +28,7 @@ import { DataCacheService } from 'src/app/core/services/data-cache.service';
 export class UserManagementComponent implements OnInit, AfterViewInit {
 
   pageTitle = "Users";
+  saveStateKey: String = ComponentKeys.UserManagementList;
   dataTableDesc = "";
 
 
@@ -131,7 +133,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   getPreservedState(){
-    const state = this.tableStateService.getState("user-management") ?? {};
+    const state = this.tableStateService.getState(this.saveStateKey) ?? {};
     if(state){
       this.headerColName = state.headerColName ?? 'Email';
       this.direction = state.direction ?? 'asc';
@@ -273,7 +275,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
         if(response){
           this.getUserList();
-          this.openSnackBar(this.action.toLowerCase()+" user successfully","check-circle");
           this.updateUserRoles([]);
         }
       })
@@ -308,6 +309,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
              else{
               this.openSnackBar("User added successfully!","check-circle");
              }
+            this.updatedRoles = ["ROLE_USER"];
            }
          }
          catch(error){
@@ -378,6 +380,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
   deleteFilters(event?) {
     try {
+      this.pageNumber = 1;
       if (!event) {
         this.filters = [];
         this.storeState();
@@ -417,7 +420,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         dataArray.push(obj);
       }
       
-      const state = this.tableStateService.getState("user-management") ?? {};
+      const state = this.tableStateService.getState(this.saveStateKey) ?? {};
       const filters = state?.filters;
       
       if(filters){
@@ -533,6 +536,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   changeFilterTags(event) {    
+    this.pageNumber = 1;
     let value = event.filterValue;
     this.currentFilterType =  _.find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
@@ -758,7 +762,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         selectedRowIndex: this.selectedRowIndex
         // filterText: this.filterText
       }
-    this.tableStateService.setState("user-management", state);
+    this.tableStateService.setState(this.saveStateKey, state);
   }
 
   clearState(){
@@ -808,8 +812,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             this.hasMoreDataToLoad = false;
             if(!isNextPageCalled) this.tableErrorMessage = "noDataAvailable";
           }else{
-            if(tableData.length==this.paginatorSize) {
-              this.totalRows = (this.pageNumber)*this.paginatorSize;
+            if(isNextPageCalled){
+                this.totalRows = this.totalRows + tableData.length;
             }else{
               this.totalRows = this.totalRows + tableData.length;
             }

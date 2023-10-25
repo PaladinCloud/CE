@@ -30,7 +30,7 @@
  import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
  import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
  import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
- 
+ import { ComponentKeys } from "src/app/shared/constants/component-keys"; 
  @Component({
    selector: "app-admin-policies",
    templateUrl: "./policies.component.html",
@@ -39,6 +39,7 @@
  })
  export class PoliciesComponent implements OnInit, OnDestroy {
    pageTitle: String = "Policies";
+   saveStateKey: String = ComponentKeys.AdminPolicyList;
    allPolicies: any = [];
  
    filterTypeLabels = [];
@@ -204,7 +205,7 @@
  
    getPreservedState(){
      const stateUpdated =  history.state.dataUpdated;
-     const state = this.tableStateService.getState("adminPolicies") || {};
+     const state = this.tableStateService.getState(this.saveStateKey) || {};
      if(stateUpdated){
        state.data = [];
      }
@@ -462,11 +463,11 @@
        filters: this.filters,
        selectedRowIndex: this.selectedRowIndex
      }
-     this.tableStateService.setState("adminPolicies", state);
+     this.tableStateService.setState(this.saveStateKey, state);
    }
  
    clearState(){
-     // this.tableStateService.clearState("adminPolicies");
+     // this.tableStateService.clearState(this.saveStateKey);
      this.isStatePreserved = false;
    }
  

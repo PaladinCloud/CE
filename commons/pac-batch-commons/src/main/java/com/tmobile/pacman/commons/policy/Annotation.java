@@ -24,12 +24,10 @@
 package com.tmobile.pacman.commons.policy;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 
-import com.tmobile.pacman.commons.dao.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,15 +35,8 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 
-/**
- * The Class Annotation.
- */
-
 public class Annotation extends HashMap<String, String> {
 
-
-
-    /** The Constant logger. */
     private static final Logger logger = LoggerFactory.getLogger(Annotation.class);
 	/**
 	 * Instantiates a new annotation.
@@ -72,7 +63,6 @@ public class Annotation extends HashMap<String, String> {
 	 */
 	public static Annotation buildAnnotation(Map<String, String> ruleParam,Annotation.Type type){
 		Annotation annotation = new Annotation();
-		//annotation.put(PacmanSdkConstants.POLICY_NAME,annotation.getPolicyName(ruleParam.get(PacmanSdkConstants.POLICY_ID)));
 		annotation.put(PacmanSdkConstants.POLICY_NAME, ruleParam.get(PacmanSdkConstants.POLICY_DISPLAY_NAME));
 		annotation.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		if (!Objects.isNull(ruleParam.get(PacmanSdkConstants.POLICY_VERSION))) {
@@ -84,12 +74,6 @@ public class Annotation extends HashMap<String, String> {
 		annotation.put(PacmanSdkConstants.TYPE, type.value());
 		return annotation;
 	}
-
-	private  String getPolicyName(String policyId) {
-		List<Map<String,String>> policyDisplayName=RDSDBManager.executeQuery("SELECT policyDisplayName FROM cf_PolicyTable WHERE policyId='"+policyId+"'");
-		return policyDisplayName.get(0).get("policyDisplayName");
-	}
-
 
 	/* (non-Javadoc)
 	 * @see java.util.HashMap#put(java.lang.Object, java.lang.Object)
@@ -104,7 +88,6 @@ public class Annotation extends HashMap<String, String> {
 			return null;
 		}
 	}
-
 
 	/**
 	 * The Enum Type.

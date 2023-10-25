@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import find from 'lodash/find';
 import map from 'lodash/map';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
@@ -11,6 +11,7 @@ import { TourService } from 'src/app/core/services/tour.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
@@ -19,6 +20,7 @@ import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.s
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
+import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 
 enum PolicyCategory {
     ALL_POLICIES = 'all policies',
@@ -36,6 +38,7 @@ enum PolicyCategory {
 })
 export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDestroy {
   pageTitle = 'Policies';
+  saveStateKey: String = ComponentKeys.UserPolicyList;
   selectedAssetGroup: string;
   selectedDomain: string;
   subscriptionToAssetGroup: Subscription;
@@ -147,14 +150,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   totalRows = 0;
   assetTypeMap: any;
 
-  constructor(private assetGroupObservableService: AssetGroupObservableService,
+  constructor(private agDomainObservableService: AgDomainObservableService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private commonResponseService: CommonResponseService,
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
-    private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService,
     private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService,
@@ -166,15 +168,11 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     ) {
 
       this.getPreservedState();
-      this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
-        this.selectedAssetGroup = assetGroupName;
-        this.searchTxt = "";
-        this.updateComponent();
-      });
-      this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
+      this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
+        this.selectedAssetGroup = ag;
         this.selectedDomain = domain;
         this.updateComponent();
-      });
+      })
     }
 
     ngOnInit(): void {
@@ -184,7 +182,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     }
 
   getPreservedState(){
-      const state = this.tableStateService.getState("policyKnowledgebase") || {};
+      const state = this.tableStateService.getState(this.saveStateKey) || {};
 
       this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
       this.displayedColumns = Object.keys(this.columnWidths);
@@ -250,30 +248,14 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         fileType: fileType,
       };
 
-      const filterToBePassed = {...this.filterText};
-
-      Object.keys(filterToBePassed).forEach(filterKey => {
-        if(filterKey=="domain") return;
-        filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-        if(filterKey=="failed"){
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-            const [min, max] = filterVal.split("-");
-            return {min, max}
-          })
-        }else if(filterKey=="compliance_percent"){
-          filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-            const [min, max] = filterVal.split("-");
-            return {min, max}
-          })
-        }
-      })
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
         filter: {
           domain: this.selectedDomain,
         },
-        reqFilter: filterToBePassed,
+        reqFilter: filtersToBePassed,
         from: 0,
         searchtext: event.searchTxt,
         size: this.totalRows,
@@ -312,7 +294,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       filters: this.filters,
       selectedRowIndex: this.selectedRowIndex
     }
-    this.tableStateService.setState("policyKnowledgebase", state);
+    this.tableStateService.setState(this.saveStateKey, state);
   }
 
   /*
@@ -510,11 +492,18 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         optionName: value,
       });
       
-      let filtersToBePassed = {};       
-      Object.keys(this.filterText).map(key => {
-        if(key=="domain" || this.currentFilterType.optionValue == key) return;
-        filtersToBePassed[key.replace(".keyword", "")] = this.filterText[key].split(",");
-      })
+      const excludedKeys = [
+        "domain",
+        this.currentFilterType.optionValue
+      ]
+      let filtersToBePassed = this.getFilterPayloadForDataAPI();
+      filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
+        const normalizedKey = key.replace(".keyword", "");
+        if ((!excludedKeys.includes(normalizedKey))) {
+          result[normalizedKey] = filtersToBePassed[key];
+        }
+        return result;
+      }, {});
       const payload = {
         attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
         ag: this.selectedAssetGroup,
@@ -540,15 +529,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
                 filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
               });
             });
-          }
-          else if(value.toLowerCase()=="violations" || value.toLowerCase()=="compliance"){
-            const numOfIntervals = 5;
-            const min = response[0].data.optionRange.min;
-            const max = response[0].data.optionRange.max;
-            const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
-            intervals.forEach(interval => {
-              filterTagsData.push({id: interval.lowerBound + "-" + interval.upperBound, name: interval.lowerBound + "-" + interval.upperBound});
-            })
           }
           this.filterTagOptions[value] = filterTagsData;
           this.filterTagLabels = {
@@ -798,6 +778,17 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     return newData;
   }
 
+  getFilterPayloadForDataAPI(){
+    const filterToBePassed = {...this.filterText};
+
+    Object.keys(filterToBePassed).forEach(filterKey => {
+      if(filterKey=="domain") return;
+      filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+    })
+
+    return filterToBePassed;
+  }
+
   getData() {
     if(!this.selectedAssetGroup || !this.selectedDomain){
       return;
@@ -807,25 +798,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
-    const filterToBePassed = {...this.filterText};
-
-    Object.keys(filterToBePassed).forEach(filterKey => {
-      if(filterKey=="domain") return;
-      filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-      if(filterKey=="failed" || filterKey=="compliance_percent"){
-        filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
-          const [min, max] = filterVal.split("-");
-          return {min, max}
-        })
-      }
-    })
 
     const filters = {domain: this.selectedDomain};
 
     const payload = {
       ag: this.selectedAssetGroup,
       filter: filters,
-      reqFilter: filterToBePassed,
+      reqFilter: this.getFilterPayloadForDataAPI(),
       "includeDisabled" : false 
     };
 
@@ -896,6 +875,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
 
   async applyFilterByCategory(policyCategory: PolicyCategory) {
+      if(this.policyCategoryDic[policyCategory]==0) return;
       const key = 'Category';
       this.filters = [];
       await Promise.resolve().then(() => this.getUpdatedUrl());

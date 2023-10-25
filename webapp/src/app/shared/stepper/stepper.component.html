@@ -4,7 +4,10 @@
         <mat-stepper orientation="vertical" [linear]="false" [selectedIndex]="currentStepperIndex"
             (selectionChange)="selectionChange($event)">
             <mat-step *ngFor="let data of stepperData" [stepControl]="data" state="form">
-                <ng-template matStepLabel>{{data.name}}</ng-template>
+                <ng-template matStepLabel>
+                    {{data.name}}
+                    <div class="subtext" *ngIf="data.stepInfo">{{data.stepInfo}}</div>
+                </ng-template>
             </mat-step>
         </mat-stepper>
     </div>

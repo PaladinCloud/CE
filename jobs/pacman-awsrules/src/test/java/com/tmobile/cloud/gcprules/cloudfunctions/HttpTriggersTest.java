@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
+
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
@@ -12,10 +12,12 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.PolicyResult;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -34,7 +36,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
-@PowerMockIgnore({"javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*"})
+@PowerMockIgnore({"javax.net.ssl.*", "javax.management.*", "jdk.internal.reflect.*"})
 public class HttpTriggersTest {
 
     @InjectMocks
@@ -46,38 +48,72 @@ public class HttpTriggersTest {
         mockStatic(GCPUtils.class);
     }
 
-
     @Test
     public void executeSuccessTest() throws Exception {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForEnableHttpsRule());
-        Map<String, String> map = getMapString("r_123 ");
-        assertThat(httpTriggerRule.execute(map, map).getStatus(),
+        //positive case when httpTrigger is 1
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getJsonObjectForEnableHttpsRule());
+        Map<String, String> map = getMapString("r_123");
+        PolicyResult executedPolicyResult = httpTriggerRule.execute(map, map);
+        assertThat(executedPolicyResult.getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
     }
 
-    private JsonArray getHitsJsonArrayForEnableHttpsRule(){
+    /**
+     * Mock the ES source data for asset type gcp_cloudfunction
+     *
+     * @return JsonArray contains mocked data(i.e Shipper ship mapped data which be saved at elastic search under index "gcp_cloudfunction"
+     */
+    private JsonArray getHitsJsonArrayForEnableHttpsRule() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
+        //Changes made as per CQ/Mapper Generated data
         jsonObject.add("_source", gson.fromJson(
-                " {\n" +
-                        "          \"discoveryDate\": \"2022-12-08 17:00:00+0530\",\n" +
-                        "          \"_cloudType\": \"GCP\",\n" +
-                        "          \"region\": \"us-central1\",\n" +
-                        "          \"id\": \"projects/central-run-349616/locations/us-central1/functions/function-2\",\n" +
-                        "          \"projectName\": \"Paladin cloud\",\n" +
-                        "          \"projectId\": \"central-run-349616\",\n" +
-                        "          \"functionName\": \"projects/central-run-349616/locations/us-central1/functions/function-2\",\n" +
-                        "          \"ingressSetting\": \"ALLOW_ALL\",\n" +
-                        "          \"vpcConnector\": \"projects/central-run-349616/locations/us-central1/connectors/CONNECTOR_NAME\",\n" +
-                        "          \"httpTrigger\": \"1\",\n" +
-                        "          \"discoverydate\": \"2022-12-08 11:48:00+0000\"\n" +
-                        "        }\n" ,
+                "{" +
+                        "    \"ingressSetting\": \"ALLOW_ALL\"," +
+                        "    \"httpTrigger\": 1," +
+                        "    \"functionName\": \"projects/central-run-349616/locations/us-central1/functions/function-2\"," +
+                        "    \"discoverydate\": \"2023-10-13 21:27:00+0530\"," +
+                        "    \"vpcConnector\": \"\"," +
+                        "    \"_cloudType\": \"gcp\"," +
+                        "    \"id\": \"projects/central-run-349616/locations/us-central1/functions/function-2\"," +
+                        "    \"region\": \"us-central1\"," +
+                        "    \"projectId\": \"central-run-349616\"," +
+                        "    \"tags\": {" +
+                        "      \"deployment-tool\": \"console-cloud\"" +
+                        "    }" +
+                        "}",
                 JsonElement.class));
         JsonArray array = new JsonArray();
         array.add(jsonObject);
         return array;
+    }
+
+    /**
+     * Mock the ES source data for asset type gcp_cloudfunction
+     *
+     * @return jsonObject contains mocked data(i.e Shipper ship mapped generated data, which be saved at elastic search under index "gcp_cloudfunction"
+     */
+    private JsonObject getJsonObjectForEnableHttpsRule() {
+        Gson gson = new Gson();
+        String mapperResultJsonForGcpFunction = "{" +
+                "    \"ingressSetting\": \"ALLOW_ALL\"," +
+                "    \"httpTrigger\": 1," +
+                "    \"functionName\": \"projects/central-run-349616/locations/us-central1/functions/function-2\"," +
+                "    \"discoverydate\": \"2023-10-13 21:27:00+0530\"," +
+                "    \"vpcConnector\": \"\"," +
+                "    \"_cloudType\": \"gcp\"," +
+                "    \"id\": \"projects/central-run-349616/locations/us-central1/functions/function-2\"," +
+                "    \"region\": \"us-central1\"," +
+                "    \"projectId\": \"central-run-349616\"," +
+                "    \"tags\": {" +
+                "      \"deployment-tool\": \"console-cloud\"" +
+                "    }" +
+                "}";
+        JsonObject jsonObject = gson.fromJson(mapperResultJsonForGcpFunction, JsonObject.class);
+        return jsonObject;
     }
 
     @Test
@@ -93,14 +129,13 @@ public class HttpTriggersTest {
 
     private JsonObject getFailureHitsJsonObjForIngressSettingRule() {
         JsonArray hitsJsonArray = getFailureHitsJsonArrayForEnableHttpsRule();
-        JsonObject sourceData= null;
-        if (hitsJsonArray != null && hitsJsonArray.size() > 0){
+        JsonObject sourceData = null;
+        if (hitsJsonArray != null && hitsJsonArray.size() > 0) {
             sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
         }
         return sourceData;
     }
-
 
     private JsonArray getFailureHitsJsonArrayForEnableHttpsRule() {
         Gson gson = new Gson();
@@ -118,7 +153,7 @@ public class HttpTriggersTest {
                         "          \"vpcConnector\": null,\n" +
                         "          \"httpTrigger\": \"2\",\n" +
                         "          \"discoverydate\": \"2022-12-08 11:48:00+0000\"\n" +
-                        "        }\n" ,
+                        "        }\n",
                 JsonElement.class));
         JsonArray array = new JsonArray();
         array.add(jsonObject);
@@ -131,7 +166,7 @@ public class HttpTriggersTest {
                 false);
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureHitsJsonArrayForEnableHttpsRule());
         mockStatic(Annotation.class);
-        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(getMockAnnotation());
         Map<String, String> map = getMapString("r_123 ");
         assertThatThrownBy(() -> httpTriggerRule.execute(map, map)).isInstanceOf(InvalidInputException.class);
     }
@@ -151,8 +186,8 @@ public class HttpTriggersTest {
     }
 
     private Annotation getMockAnnotation() {
-        Annotation annotation=new Annotation();
-        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        Annotation annotation = new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME, "Mock policy name");
         annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
         annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
         annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");

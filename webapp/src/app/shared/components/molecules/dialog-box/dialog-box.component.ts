@@ -9,6 +9,7 @@ interface DialogData {
   noButtonLabel: string;
   yesButtonLabel: string;
   formGroup: FormGroup
+  customClass?:string
 }
 
 @Component({
