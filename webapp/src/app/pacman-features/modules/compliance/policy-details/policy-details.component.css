@@ -298,8 +298,17 @@
   align-items: center;
   padding: 16px 24px;
   gap: 12px;
-  width: 50%;
   height: 100%;
+}
+
+.params-content .key{
+  flex: 4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.params-content .value{
+  flex: 1;
 }
 
 .column-wrapper {
@@ -322,9 +331,4 @@
 
 .sort-img.sorted {
   transform: rotate(0deg);
-}
-
-.content-wrapper{
-  max-height: 356px;
-  overflow: scroll;
 }
