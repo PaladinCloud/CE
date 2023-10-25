@@ -3161,7 +3161,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         String combinedWhereClause = filterConditions.stream().collect(Collectors.joining(" AND "));
 
-        String policyQuery = "SELECT pt.policyId, pt.severity, pt.category, pt.targetType, pt.autoFixAvailable, pt.autoFixEnabled, pt.policyDisplayName, pt.riskScore FROM cf_PolicyTable pt INNER JOIN cf_Target target ON  pt.targetType=target.targetName\n" +
+        String policyQuery = "SELECT pt.policyId, pt.severity, pt.category, pt.targetType, pt.autoFixAvailable, pt.autoFixEnabled, pt.policyDisplayName FROM cf_PolicyTable pt INNER JOIN cf_Target target ON  pt.targetType=target.targetName\n" +
                 " LEFT JOIN cf_PolicyParams pp ON pt.policyId = pp.policyID AND pp.paramKey = 'pluginType' INNER JOIN \n" +
                 " (select distinct(platform) from cf_Accounts where accountStatus='configured') acct \n" +
                 "ON  acct.platform=pp.paramValue OR (pp.paramValue IS NULL AND target.dataSourceName=acct.platform) where\n" +

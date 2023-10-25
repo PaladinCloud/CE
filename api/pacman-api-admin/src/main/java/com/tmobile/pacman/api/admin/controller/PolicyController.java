@@ -3,10 +3,13 @@ package com.tmobile.pacman.api.admin.controller;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
+import com.tmobile.pacman.api.commons.utils.ListRequest;
 import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,15 +64,16 @@ public class PolicyController {
      * @param searchTerm - searchTerm to be searched.
      * @return All Policies details
      */
-	@ApiOperation(httpMethod = "GET", value = "API to get all Policies", response = Page.class,  produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/list", method = RequestMethod.GET,  produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getPolicies(
-			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
-			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
-			@ApiParam(value = "provide valid search term", required = false) @RequestParam(defaultValue="", name = "searchTerm", required = false) String searchTerm) {
+	@ApiOperation(httpMethod = "POST", value = "API to get all Policies", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/list", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getPolicies(@RequestBody(required = true) ListRequest requestBody) {
 		try {
-			searchTerm = searchTerm != null ? searchTerm.trim() : "";
-			return ResponseUtils.buildSucessResponse(policyService.getPolicies(searchTerm, page, size));
+			List<Map<String, Object>> policyDetailsList = policyService.getAdminPoliciesByFilterCriteria(requestBody);
+			int count = policyDetailsList.isEmpty() ? 0 : Math.round(Float.parseFloat(policyDetailsList.get(0).get("totalCount").toString()));
+			Map<String, Object> responseMap = new HashMap<>();
+			responseMap.put("response", policyDetailsList);
+			responseMap.put("total", count);
+			return ResponseUtils.buildSucessResponse(responseMap);
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());

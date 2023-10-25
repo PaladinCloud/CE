@@ -9,23 +9,22 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.EMAIL_REGEX_PAT
 import static com.tmobile.pacman.api.admin.common.AdminConstants.INVALID_USER_ATTRIBUTES;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 import static com.tmobile.pacman.api.admin.util.AdminUtils.addDays;
+import static com.tmobile.pacman.api.commons.Constants.*;
 
 import java.nio.ByteBuffer;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.google.common.base.Strings;
+import com.tmobile.pacman.api.admin.domain.*;
 import com.tmobile.pacman.api.admin.repository.*;
 import com.tmobile.pacman.api.admin.repository.model.*;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
+import com.tmobile.pacman.api.commons.utils.ListRequest;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +61,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
-import com.tmobile.pacman.api.admin.domain.CognitoUserResponse;
-import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
-import com.tmobile.pacman.api.admin.domain.EnableDisablePolicy;
-import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.service.AmazonClientBuilderService;
 import com.tmobile.pacman.api.admin.service.AmazonCognitoConnector;
@@ -117,6 +112,8 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Autowired
 	private NotificationService notificationService;
+	@Autowired
+	PacmanRdsRepository pacmanRdsRepository;
 
 	@Override
 	public List<Policy> getAllPoliciesByTargetType(String targetType) {
@@ -167,6 +164,91 @@ public class PolicyServiceImpl implements PolicyService {
 							addDays(policyExemption.getExpireDate(), 1))));
 		}
 		return policy;
+	}
+
+	/**
+	 * This method reads filter criteria from the payload for few fields and create where clause for RDS policy table query.
+	 * @param filterConditions
+	 * @param column
+	 * @param filterValue
+	 */
+
+	private String createFilterCondition(String column, Object filterValue) {
+		String template = " pt.%s in ( %s ) ";
+		List<String> filterValueList = (List<String>) filterValue;
+		if (!filterValueList.isEmpty()) {
+			String combinedFilterConditionStr = filterValueList.stream().map(str -> "'" + str + "'").collect(Collectors.joining(","));
+			return String.format(template, column, combinedFilterConditionStr);
+		}
+		return "";
+	}
+
+	/**
+	 * This method returns list of policies and each policy details. Policies which are disabled
+	 * by the user also are enumerated in this response.
+	 * @param request
+	 * @return
+	 */
+
+	public List<Map<String, Object>> getAdminPoliciesByFilterCriteria(ListRequest request) {
+		Map<String, Object> filters = request.getFilter();
+		List<String> filterConditions = new ArrayList<>();
+		if(filters!=null){
+			filters.entrySet().stream().forEach(mentry -> {
+					filterConditions.add(createFilterCondition(mentry.getKey(), mentry.getValue()));
+			});
+		}
+		Map<String, Object> sortConditionsMap = request.getSortFilter();
+		StringBuilder sortCondition = new StringBuilder();
+		if (sortConditionsMap != null && !sortConditionsMap.isEmpty() && !Strings.isNullOrEmpty((String) sortConditionsMap.get("fieldName"))) {
+			String sortField = (String) sortConditionsMap.get("fieldName");
+			if (Arrays.asList(SEVERITY, CATEGORY).contains(sortField)) {
+				List<String> sortOrderList = (List<String>) sortConditionsMap.get("sortOrder");
+				if (!sortOrderList.isEmpty()) {
+					sortCondition.append(" CASE ").append(sortField);
+					int sortValue = 1;
+					for (String str : sortOrderList) {
+						sortCondition.append(" WHEN '").append(str).append("' THEN " + sortValue);
+						sortValue++;
+					}
+					sortCondition.append(" END ");
+				} else {
+					sortCondition.append(" " + sortField);
+				}
+			} else {
+				sortCondition.append(" upper("+sortField + ") ");
+			}
+		} else {
+			sortCondition.append(" policyId ");
+		}
+
+		if (sortConditionsMap!=null && !Strings.isNullOrEmpty((String) sortConditionsMap.get(ORDER))) {
+			String sortOrder = (String) sortConditionsMap.get(ORDER);
+			sortCondition.append(sortOrder + " ");
+		} else {
+			sortCondition.append(" DESC ");
+		}
+
+		String policyQuery = "select policyId, severity, category, targetType, autoFixAvailable, autoFixEnabled, policyDisplayName,  \n" +
+				"  assetGroup, @c as totalCount, targetDisplayName, status FROM \n" +
+				" (SELECT  pt.policyId, pt.severity, pt.category, pt.targetType, pt.autoFixAvailable, pt.autoFixEnabled, pt.policyDisplayName,\n" +
+				"  pt.assetGroup, @c:=@c+1, target.displayName as targetDisplayName, " +
+				" pt.status FROM cf_PolicyTable pt INNER JOIN cf_Target target ON  pt.targetType=target.targetName\n" +
+				" LEFT JOIN cf_PolicyParams pp ON pt.policyId = pp.policyID AND pp.paramKey = 'pluginType' INNER JOIN \n" +
+				" (select distinct(platform) from cf_Accounts where accountStatus='configured') acct \n" +
+				"ON  acct.platform=pp.paramValue OR (pp.paramValue IS NULL AND target.dataSourceName=acct.platform) " +
+				"JOIN (SELECT 'critical' as severity, 500 as weight UNION SELECT 'high' as severity, 300 as weight \n" +
+				"UNION SELECT 'medium' as severity, 200 as weight UNION SELECT 'low' as severity, 100 as weight) sweights ON sweights.severity=pt.severity\n" +
+				"JOIN (SELECT @c:=0) temp  where\n" +
+				" (target.status='enabled' or target.status='active') %s \n" +
+				" ) policyDet  ORDER BY %s LIMIT %d, %d";
+
+		int size = request.getSize();
+		int from = request.getFrom();
+		String combinedFilterCondition = !filterConditions.isEmpty() ? " AND " + filterConditions.stream().collect(Collectors.joining(" AND ")) : "";
+		policyQuery = String.format(policyQuery, combinedFilterCondition, sortCondition, from, size);
+		log.info(" admin policies query is {}", policyQuery);
+		return pacmanRdsRepository.getDataFromPacman(policyQuery);
 	}
 
 	@Override

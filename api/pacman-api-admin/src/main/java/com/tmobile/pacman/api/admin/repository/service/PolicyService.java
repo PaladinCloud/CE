@@ -1,9 +1,12 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
+import com.tmobile.pacman.api.commons.utils.ListRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -178,5 +181,6 @@ public interface PolicyService {
      */
 	public String enablePolicyForExpiredExemption( final String policyId)throws PacManException;
 
-	
+	List<Map<String,Object>> getAdminPoliciesByFilterCriteria(ListRequest requestBody);
+
 }
