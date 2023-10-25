@@ -1,4 +1,5 @@
-<div class="page-layout" >
+<div class="page-layout" [style.backgroundColor]="!showStepper()? 'white' : '#f2f3f5'">
+    <!-- Breadcrumb -->
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
         <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
@@ -9,7 +10,9 @@
                 {{selectedAccount}} Plugin Configuration
             </h6>
         </div>
-          <div class="stepper">
+
+        <!-- Stepper -->
+        <div class="stepper" *ngIf="showStepper();else hideStepperRef">
             <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
                 (selectedStepperIndex)="selectedStepperIndex($event)">
                 <ng-template #stepsContent>
@@ -30,6 +33,9 @@
                 </ng-template>
             </app-stepper>
         </div>
+        <ng-template #hideStepperRef>
+            <ng-container [ngTemplateOutlet]="tenableRef"></ng-container>
+        </ng-template>
     </div>
     <div *ngIf="!pluginSelected" class="select-account">
         <h6>Select Plugin</h6>
@@ -157,16 +163,20 @@
                         <strong class="high-emphasis">IMPORTANT: </strong>Be sure to safely store the copied token. Once generated, it won't be visible again for security reasons
                     </div>
                 </div>
-                <div class="flex flex-col gap-16 flex-align-center">
-                    <div class="video-thumbnail-wrapper">
-                        <img class="video-thumbnail" src="/assets/images/plugin-thumbnails/redhat-steps.png" alt="Red hat image">
-                        <div class="play-button">
-                            <img class="icon" (click)="openVideoDialog()" src="/assets/icons/play-button.svg" alt="play button">
-                        </div>
-                    </div>
-                    <div class="body-1">Watch Video</div>
-                </div>
+                <ng-container [ngTemplateOutlet]="videoThumbnailRef"></ng-container>
             </div>
+    </div>
+</ng-template>
+
+<ng-template #videoThumbnailRef>
+    <div class="flex flex-col gap-16 thumbnail-wrapper">
+        <div class="video-thumbnail-wrapper">
+            <img class="video-thumbnail" src="/assets/images/plugin-thumbnails/tenable-steps.png" alt="Tenable Steps Image">
+            <div class="play-button">
+                <img class="icon" (click)="openVideoDialog()" src="/assets/icons/play-button.svg" alt="play button">
+            </div>
+        </div>
+        <div class="caption-2 medium-emphasis">Learn how to integrate Tenable with Paladin Cloud in this video.</div>
     </div>
 </ng-template>
 
@@ -323,4 +333,103 @@
             Your browser does not support the video tag
         </video>
     </div>
-</ng-template>
+  </ng-template>
+
+  <ng-template #tenableRef>
+      <div class="tenable-wrapper">
+        <span class="body-1 low-emphasis tenable-subheader" >Integrate with Paladin Cloud using your Tenable’s secret and API keys.</span>
+        <div class="flex flex-row video-instructions-wrapper">
+            <div class="flex flex-col instructions-form-wrapper">
+                    <div class="instructions-wrapper">
+                    <img src="/assets/icons/info-fill.svg" alt="info icon">
+                        <div class="instructions flex flex-col gap-8">
+                            <span class="instructions-header body-2 high-emphasis">How to create access keys?</span>
+                            <div class="steps content-container" [ngClass]="{ 'show-all': showAllSteps }">
+                            <div class="flex flex-row gap-12">
+                                <span class="index-wrapper body-2 medium-emphasis">1.</span>
+                                <span class="body-2 medium-emphasis">
+                                Go to <a class="primary-400" href="https://cloud.tenable.com/tio/app.html#/login" target="_blank">cloud.tenable.io</a>.
+                                </span>
+                            </div>
+                            <div class="flex flex-row gap-12">
+                                <span class="index-wrapper body-2 medium-emphasis">2.</span>
+                                <span class="body-2 medium-emphasis">
+                                Access <span style="font-weight: bold;">Settings</span> from the sidebar
+                                </span>
+                            </div>
+                            <div class="flex flex-row gap-12">
+                                <span class="index-wrapper body-2 medium-emphasis">3.</span>
+                                <span class="body-2 medium-emphasis">
+                                    Find Account management section and select <span style="font-weight: bold;">"My account"</span> 
+                                </span>
+                            </div>
+                            <div class="flex flex-row gap-12">
+                                <span class="index-wrapper body-2 medium-emphasis">4.</span>
+                                <span class="body-2 medium-emphasis">
+                                    Select <span style="font-weight: bold;">API keys</span> step in the vertical stepper
+                                </span>
+                            </div>
+                            <div class="flex flex-row gap-12">
+                                <span class="index-wrapper body-2 medium-emphasis">5.</span>
+                                <span class="body-2 medium-emphasis">
+                                    Click the <span style="font-weight: bold;">generate</span> button in the footer 
+                                </span>
+                            </div>
+                            <div class="flex flex-row gap-12">
+                                <span class="index-wrapper body-2 medium-emphasis">6.</span>
+                                <span class="body-2 medium-emphasis">
+                                    In the dialog box, click 
+                                    <span style="font-weight: bold;">generate</span> again. 
+                                    <span style="color: red;">Note: </span>
+                                    Existing keys will be overridden 
+                                </span>
+                            </div>
+                            <div class="flex flex-row gap-12">
+                                <span class="index-wrapper body-2 medium-emphasis">7.</span>
+                                <span class="body-2 medium-emphasis">
+                                    <span style="font-weight: bold;">API</span>
+                                    and
+                                    <span style="font-weight: bold;">Secret</span>
+                                    Keys will be generated.
+                                    <span style="color: red;">Note: </span>
+                                    Remember to copy API keys before leaving
+                                </span>
+                            </div>
+                            </div>
+                            <button class="show-more" (click)="toggleSteps()">
+                            {{ showAllSteps ? 'Show Less Instructions' : 'Show More Instructions' }}
+                            </button>
+                        </div>
+                    </div>
+                    <div style="padding: 20px 24px 20px 0px;"> 
+                        <form class="form-wrapper" [formGroup]="tenablePluginForm">
+                        <app-input-field
+                        [label]="'Access Key'"
+                        [(value)]="tenableAccessKey"    
+                        [parentForm]="tenablePluginForm"
+                        formControlName="tenableAccessKey"
+                        [formErrors]="tenableFormErrors"
+                        [isRequired]="true"
+                        placeholder="Eg: 1233455433211233278865"
+                        ></app-input-field>
+                        <app-input-field
+                        [label]="'Secret Key'"
+                        [(value)]="tenableSecretKey"
+                        [parentForm]="tenablePluginForm"
+                        formControlName="tenableSecretKey"
+                        [formErrors]="tenableFormErrors"
+                        [isRequired]="true"
+                        type="password"
+                        placeholder="Eg: 1233455433211233278865"
+                        ></app-input-field>
+                        </form>
+                    </div>
+                    <button class="button btn" [class.hide]="shouldHideAddButton()" style="width:200px"
+                            (click)="validateAccount()" [class.isDisabled]="isAddButtonDisabled()">
+                            Add Plugin
+                    </button>
+            </div>
+            <ng-container [ngTemplateOutlet]="videoThumbnailRef"></ng-container>
+        </div>
+      </div>
+  </ng-template>

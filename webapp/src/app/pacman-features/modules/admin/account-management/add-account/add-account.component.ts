@@ -62,6 +62,9 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   firstGcpCommand = "";
   secondGcpCommand = "";
   thirdGcpCommand = "";
+  tenableAccessKey = "";
+  tenableSecretKey = "";
+  tenableAPIUrl = "https://cloud.tenable.com";
   errorList = [];
   pluginSelected: string = "";
   @ViewChild("selectAccountRef") selectAccountRef: TemplateRef<any>;
@@ -69,10 +72,12 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   @ViewChild("validateAccountRef") validateAccountRef: TemplateRef<any>;
   @ViewChild("addDetailsRef") addDetailsRef: TemplateRef<any>;
   @ViewChild("reviewRef") reviewRef: TemplateRef<any>;
+  @ViewChild("tenableRef") tenableRef: TemplateRef<any>;
   currentTemplateRef : TemplateRef<ElementRef>;
   @ViewChild('accountForm', {static: false}) accountForm: NgForm;
   @ViewChild('supportInfoRef') supportInfoRef: TemplateRef<any>;
   @ViewChild("connectRef") connectRef: TemplateRef<any>;
+  @ViewChild("videoThumbnailRef") videoThumbnailRef:TemplateRef<any>;
 
   @ViewChild("redHatStepsVideo") redHatStepsVideo: TemplateRef<any>;
   name = 'Video events';
@@ -80,6 +85,9 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   @ViewChild('videoPlayer') videoplayer: any;
   public startedPlay:boolean = false;
   public show:boolean = false;
+  comingSoonPluginList = ["contrast","rapid7"];
+  manualConfiguredAccountList: String[]=["aqua"];
+  showAllSteps = false;
   pluginsWithUpdatedEndPoint = ["gcp", "redhat"];
 
   private currentPluginForm: FormGroup;
@@ -89,6 +97,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   private qualysPluginForm: FormGroup;
   private aquaPluginForm: FormGroup;
   private redHatPluginForm: FormGroup;
+  private tenablePluginForm: FormGroup;
 
 
   
@@ -122,7 +131,11 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
     redHatToken: '',
     redHatOwner: ''
   }
-
+  public tenableFormErrors = {
+    tenableAccessKey: '',
+    tenableSecretKey: ''
+  }
+  
   stepperData = [];
 
   commands = [
@@ -207,6 +220,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   isAdding: boolean = false;
   errorMessage: any;
   selectedAccountImage: any;
+  accountsWithoutSteppers = ["tenable"];
   addDetailsStepperIndex: number;
   
   constructor(private workflowService: WorkflowService,
@@ -262,6 +276,17 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   getImageName(){
     const imageName = this.selectedAccount.replace(/\s/g, '').toLowerCase();
     return imageName;
+  }
+
+  toggleSteps() {
+    this.showAllSteps = !this.showAllSteps;
+  }
+
+  showStepper(){
+    if(this.accountsWithoutSteppers.includes(this.selectedAccount.toLowerCase())){
+        return false;
+    }
+    return true;
   }
 
   pauseVideo(videoplayer)
@@ -385,7 +410,116 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         redHatAccountName: [''],
         redHatOwner: [''],
       })
+
+      this.tenablePluginForm = this.form.group({
+        tenableAccessKey: ['', [Validators.required,CustomValidators.alphanumericValidator]],
+        tenableSecretKey: ['',[Validators.required,CustomValidators.alphanumericValidator]]
+      })
     }
+
+    shouldHideAddButton(): boolean {
+      if(this.accountsWithoutSteppers.includes(this.selectedAccount.toLowerCase())){
+        return false;
+      }
+      return (
+          (this.pluginSelected === 'gcp' && (this.currentStepperIndex < 2 || this.currentStepperIndex > 2)) ||
+          (this.pluginSelected !== 'gcp' && (this.currentStepperIndex < 1 || this.currentStepperIndex > 1))
+      );
+    }
+  
+    isAddButtonDisabled(): boolean {
+      return this.selectedAccount && this.currentPluginForm?.invalid;
+    }
+    
+    shouldHideNextButton(): boolean {
+        return (
+            (this.currentStepperIndex > 1 && this.pluginSelected === 'gcp') ||
+            (this.currentStepperIndex > 0 && this.pluginSelected !== 'gcp')
+        );
+    }
+    
+    isNextButtonDisabled(): boolean {
+        return this.selectedAccount && this.selectedAccount.toLowerCase() === 'aws' && this.currentPluginForm?.invalid;
+    }
+    
+    shouldHideBackButton(): boolean {
+        return this.currentStepperIndex === 0;
+    }
+    
+    isComingSoonPlugin(pluginName: string): boolean {
+        return this.comingSoonPluginList.includes(pluginName.toLowerCase());
+    }
+
+    selectedAccountImageSrc(displayImage:string): string {
+      // Define a mapping of account names to their corresponding image paths
+      const accountImageMappings: Record<string, string> = {
+          aws: 'aws-color.svg',
+          gcp: 'gcp-color.svg',
+          azure: 'azure-color.svg',
+          qualys: 'qualys-color.svg',
+          aqua: 'aqua-color.svg',
+          tenable: 'tenable-color.svg',
+          contrast: 'contrast-color.svg',
+          rapid7: 'rapid7-color.svg',
+          'red hat': 'redhat-color.svg',
+      };
+
+      // Use the mapping to generate the image source dynamically
+      return '/assets/icons/'+accountImageMappings[displayImage.toLowerCase()];
+  }
+
+    // Determine if the details form should be shown based on the selected plugin
+    shouldShowDetailsForm(): boolean {
+      const pluginSelected = this.getPluginSelected(); // Replace with your logic
+      return !!pluginSelected;
+    }
+
+    getPluginSelected() {
+      return this.pluginSelected;
+    }
+
+    // Get the form group for the selected plugin
+    getPluginForm(): FormGroup {
+          return this.currentPluginForm;
+    }
+
+   // Get form errors based on the selected plugin and field name
+   getFormErrors(): any {
+    const pluginSelected = this.getPluginSelected();
+    let selectedFormError = null;
+  
+    switch (pluginSelected) {
+      case 'aws':
+        selectedFormError = this.awsFormErrors;
+        break;
+  
+      case 'azure':
+        selectedFormError = this.azureFormErrors;
+        break;
+  
+      case 'gcp':
+        selectedFormError = this.gcpFormErrors;
+        break;
+  
+      case 'aqua':
+        selectedFormError = this.aquaFormErrors;
+        break;
+  
+      case 'qualys':
+        selectedFormError = this.qualysFormErrors;
+        break;
+  
+      case 'red hat':
+        selectedFormError = this.redHatFormErrors;
+        break;
+  
+      default:
+        // Handle the case where no plugin is selected
+        return null;
+    }
+  
+    return selectedFormError;
+  }
 
     openSupportInfoDialog(accountName): void {
       this.selectedAccountName = accountName;
@@ -553,6 +687,18 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           "Hit the 'Validate' button to confirm and successfully add the plugin to Paladin Cloud"
         ];
           break;
+      case "tenable":
+        this.currentPluginForm = this.tenablePluginForm;
+        this.configureSteps = [
+          'Access Settings from the sidebar',
+          'Find Account management and select "My account"',
+          'Select API keys in the vertical stepper',
+          'Click the generate button in the footer',
+          'Click the generate button in the dialog',
+          'API Keys will be generated'
+        ]
+        break;
+        
     }
     this.displayTemplate();
   }
@@ -638,6 +784,13 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           redhatAccountName: this.redHatAccountName,
           redhatToken: this.redHatToken,
           redhatOwner: this.redHatOwner
+        }
+        break;
+      case "tenable":
+        payload = { 
+          "platform":this.selectedAccount.toLowerCase(),
+          "tenableAccessKey": this.tenableAccessKey,
+          "tenableSecretKey": this.tenableSecretKey,
         }
         break;
     }
@@ -745,7 +898,14 @@ onSubmit(){
           redhatOwner: this.redHatOwner
         }
         break;
-
+        case "tenable":
+          payload = { 
+            "platform":this.selectedAccount.toLowerCase(),
+            "tenableAccessKey": this.tenableAccessKey,
+            "tenableSecretKey": this.tenableSecretKey,
+            "createdBy": this.createdBy
+          }
+          break;
     }
    const userDetails = this.dataCacheService.getUserDetailsValue();
    let userId = userDetails.getEmail(); 

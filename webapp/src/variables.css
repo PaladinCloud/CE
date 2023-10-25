@@ -1,6 +1,8 @@
 :root {
   --border-radius: 8px;
 
+  --Large: 8px;
+
   --primary-100: #ccdaf1;
   --primary-200: #99b5e4;
   --primary-300: #6691d6;
@@ -55,6 +57,7 @@
   --content-primary: #272E35;
   --content-secondary: #4E5963;
   --border-normal : #E9ECEF;
+  --interaction-border-subtle-normal: #CFD6DD
 
   --spacing-xs: 2px;
   --spacing-sm: 4px;
