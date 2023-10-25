@@ -310,9 +310,9 @@ public interface ComplianceService {
      */
     IssueExceptionResponse addMultipleIssueException(String assetGroup, IssuesException issuesException,boolean auditTrail) throws ServiceException;
 
-    public List<Map<String, Object>> getCategoryCompDetails(String assetGroup) throws Exception;
+    Map<Object,Object> getCategoryCompDetails(String assetGroup) throws Exception;
 
-    public ResponseWithOrder getPolicyComplianceOverviewAsList(Request request) throws Exception;
+    ResponseWithOrder getPolicyComplianceOverviewAsList(Request request) throws Exception;
 
     /**
      * Revoke multiple issue exception.
@@ -324,6 +324,9 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     IssueExceptionResponse revokeMultipleIssueException(String assetGroup, List<String> issueIds, String revokedBy) throws ServiceException;
+
+    List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails)
+            throws ServiceException;
 
     ResponseEntity<Object> validateIssuesExemptionRequest(ExemptionRequest exemptionRequest) throws ParseException;
 

@@ -414,7 +414,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     }
 
     /**
-     * Get policy details like severity, category, risk score, assets scanned etc for all policies which
+     * Get policy details like severity, category, assets scanned etc for all policies which
      * fall under asset group based on filter criteria.
      * @param request
      * @return
@@ -467,11 +467,6 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                 policyDetailsMap.put(COMPLIANCE_PERCENT, compliancePercent > 0 ? Math.round(compliancePercent) : 0);
                 policyDetailsMap.put(PROVIDER, getProvideBrandName(targetTypeMap.get(targetTypeOfPolicy)));
                 policyDetailsMap.put(PASSED, (Integer) policyDetailsMap.get(ASSETS_SCANNED) - (Integer) policyDetailsMap.get(FAILED));
-                if ("security".equalsIgnoreCase(policy.get(CATEGORY).toString()) && policy.get(RISK_SCORE) != null) {
-                    policyDetailsMap.put(RISK_SCORE, Integer.parseInt(String.format("%.0f", policy.get(RISK_SCORE))) + Constants.SeverityWeights.valueOf(policy.get(SEVERITY).toString().toUpperCase()).getValue());
-                } else {
-                    policyDetailsMap.put(RISK_SCORE, 0);
-                }
                 policyDetailsList.add(policyDetailsMap);
             }
             if (reqFilters != null) {
@@ -479,12 +474,8 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                         (List<Map<String, String>>) reqFilters.get(PolicyComplianceFilter.VIOLATIONS.filter) : new ArrayList<>();
                 List<Map<String, Object>> compliance = reqFilters.containsKey(PolicyComplianceFilter.COMPLIANCE.filter) ?
                         (List<Map<String, Object>>) reqFilters.get(PolicyComplianceFilter.COMPLIANCE.filter) : new ArrayList<>();
-                List<Map<String, Object>> riskScore = reqFilters.containsKey(PolicyComplianceFilter.RISK_SCORE.filter) ?
-                        (List<Map<String, Object>>) reqFilters.get(PolicyComplianceFilter.RISK_SCORE.filter) : new ArrayList<>();
                 policyDetailsList = policyDetailsList.stream()
                         .filter(x -> compliance.size() == 0 || (Long.valueOf(x.get(PolicyComplianceFilter.ASSETS_SCANNED.filter).toString()) > 0 && isComplianceInRange(Double.parseDouble(x.get(PolicyComplianceFilter.COMPLIANCE.filter).toString()), compliance)))
-                        .filter(x -> riskScore.size() == 0 || isFloatValueInRange(Float.valueOf(x.get(PolicyComplianceFilter.RISK_SCORE.filter) != null ?
-                                x.get(PolicyComplianceFilter.RISK_SCORE.filter).toString() : ""), riskScore))
                         .filter(x -> violations.size() == 0 || isViolationsInRange(Long.valueOf(x.get(PolicyComplianceFilter.VIOLATIONS.filter).toString()), violations))
                         .collect(Collectors.toList());
             }
@@ -2029,6 +2020,154 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         } catch (DataException e) {
             throw new ServiceException(e);
         }
+    }
+
+    /**
+     * return object is a list of map objects. Each map object is for a category with other details like number of passed checks and
+     * total checks. Sample return object as below -
+     * [{ category:'security',passed:45,failed:67,assetsScanned:134},
+     * { category:'cost',passed:21,failed:33,assetsScanned:54},
+     * { category:'governance',passed:17,failed:20,assetsScanned:37}]
+     *
+     * @param assetGroup
+     * @return
+     */
+
+    @Override
+    public Map<Object,Object> getCategoryCompDetails(String assetGroup) throws Exception {
+        List<Object> policies = null;
+        Map<Object,Object> categoryCompDetailsListMap = new HashMap<>();
+        List<LinkedHashMap<String, Object>> complainceByPolicies = null;
+        List<Map<String,Object>> categoryCompDetailsList = new ArrayList();
+        try {
+            policies = getPolicies(repository.getTargetTypeForAG(assetGroup, null));
+            Request request = new Request("", 0, policies.size(), Collections.emptyMap(), assetGroup);
+            ResponseWithOrder response = getPolicyCompliance(request);
+            if (null != response) {
+                complainceByPolicies = response.getResponse();
+            }
+            Map<String, Map<String, Double>> policiesComplianceByCategory = getPoliciesComplianceByCategory(complainceByPolicies,
+                    assetGroup);
+            int totalCategories = policiesComplianceByCategory.entrySet().size();
+            LinkedHashMap<String, Object> policyCatWeightage = getPolicyCategoryBWeightage("Infra & Platforms", totalCategories,
+                    policiesComplianceByCategory);
+
+            LinkedHashMap<String, Object> policyCatDistributionWithOverall = new LinkedHashMap<>();
+            int totalWeightage = 0;
+            double overallcompliance = 0;
+            for (Map.Entry<String, Object> entry : policyCatWeightage.entrySet()) {
+                String policyCatKey = entry.getKey();
+                Object policyCatValue = entry.getValue();
+
+                // Check if the category exists in policiesComplianceByCategory
+                if (policiesComplianceByCategory.containsKey(policyCatKey)) {
+
+                    double numerator = 0;
+                    double denominator = 0;
+                    int policyCategoryWeightage = 1;
+
+                    Map<String, Double> categoryDistribution = policiesComplianceByCategory.get(policyCatKey);
+
+                    policyCategoryWeightage = (null != policyCatValue) ? Integer.valueOf(policyCatValue.toString()) : 1;
+                    totalWeightage += policyCategoryWeightage;
+
+                    denominator = categoryDistribution.get(DENOMINATOR);
+                    numerator = categoryDistribution.get(NUMERATOR);
+                    double issueCompliance = calculateIssueCompliance(numerator, denominator);
+
+                    policyCatDistributionWithOverall.put(policyCatKey, issueCompliance);
+                    overallcompliance += (policyCategoryWeightage * issueCompliance);
+
+                }
+            }
+            overallcompliance = overallcompliance / totalWeightage;
+            overallcompliance = Math.floor(overallcompliance);
+            policyCatDistributionWithOverall.put("overall", overallcompliance);
+
+            if (policyCatDistributionWithOverall.isEmpty()) {
+                throw new ServiceException(NO_DATA_FOUND);
+            }
+
+            Map<String,List<LinkedHashMap<String, Object>>> categoryCompDetailsMap = complainceByPolicies.stream().collect(Collectors.groupingBy(obj->obj.get("policyCategory")!=null?((String)obj.get("policyCategory")).toLowerCase():"none"));
+            categoryCompDetailsMap.remove("none");
+            categoryCompDetailsMap.entrySet().stream().forEach(obj -> {
+                Map<String,Object> detailsMap = new HashMap();
+                detailsMap.put("category",obj.getKey());
+                detailsMap.put("passed", obj.getValue().stream().map(imap -> (Long)imap.get("passed")).reduce(0l,(a,b)-> a+b));
+                detailsMap.put("failed", obj.getValue().stream().map(imap -> (Long)imap.get("failed")).reduce(0l,(a,b)-> a+b));
+                detailsMap.put("assetsScanned", obj.getValue().stream().map(imap -> (Long)imap.get("assetsScanned")).reduce(0l,(a,b)-> a+b));
+                categoryCompDetailsList.add(detailsMap);
+            });
+
+            categoryCompDetailsListMap.put("response",categoryCompDetailsList);
+            policyCatDistributionWithOverall.entrySet().stream().forEach(obj->{
+                if(obj.getKey().equalsIgnoreCase("overall")){
+                    categoryCompDetailsListMap.put("overall_percent",obj.getValue());
+                }
+            });
+        } catch (Exception e) {
+            logger.debug("Exception occurred inside ComplianceServiceImpl.getCategoryCompDetails -  "+e.getMessage());
+            throw new Exception(e);
+        }
+        return categoryCompDetailsListMap;
+    }
+
+    @Override
+    public ResponseWithOrder getPolicyComplianceOverviewAsList(Request request) throws Exception {
+        String assetGroup = request.getAg();
+        Map<String, String> filterMap = request.getFilter();
+        String domain = filterMap.get(DOMAIN);
+        String searchText = request.getSearchtext() ==null ? "" : request.getSearchtext().toLowerCase();
+        List<Object> rules = getPolicies(repository.getTargetTypeForAG(assetGroup, domain));
+        List<LinkedHashMap<String, Object>> policyDetList = getComplainceByPolicies(domain, assetGroup, rules);
+
+        if(filterMap != null){
+            if(filterMap.containsKey(Constants.NAME)){
+                policyDetList =  policyDetList.stream().filter(x -> x.containsKey(Constants.NAME)).filter(x -> x.get(Constants.NAME).toString().toLowerCase().equals(filterMap.get(Constants.NAME).toLowerCase())).collect(Collectors.toList());
+            }
+            if(filterMap.containsKey(Constants.SEVERITY)){
+                policyDetList =  policyDetList.stream().filter(x -> x.containsKey(Constants.SEVERITY)).filter(x -> x.get(Constants.SEVERITY).toString().toLowerCase().equals(filterMap.get(Constants.SEVERITY).toLowerCase())).collect(Collectors.toList());
+            }
+            if(filterMap.containsKey(Constants.CLOUD)){
+                policyDetList =  policyDetList.stream().filter(x -> x.containsKey(Constants.PROVIDER)).filter(x -> x.get(Constants.PROVIDER).toString().toLowerCase().equals(filterMap.get(Constants.CLOUD).toLowerCase())).collect(Collectors.toList());
+            }
+            if(filterMap.containsKey(Constants.CATEGORY) && filterMap.get(Constants.CATEGORY) != null){
+                List<String> catgoryList = Arrays.asList(filterMap.get(Constants.CATEGORY).split(",")).stream().map(x -> x.trim()).collect(Collectors.toList());
+                policyDetList =  policyDetList.stream().filter(x -> x.containsKey(Constants.POLICY_CATEGORY))
+                        .filter(x -> catgoryList.contains(x.get(Constants.POLICY_CATEGORY).toString().toLowerCase()))
+                        .collect(Collectors.toList());
+            }
+        }
+        if(!StringUtils.isEmpty(searchText)){
+            policyDetList = policyDetList.stream().filter(x -> x.get(Constants.NAME).toString().toLowerCase().contains(searchText) || x.get(Constants.SEVERITY).toString().toLowerCase().contains(searchText)
+                            || x.get(Constants.FAILED).toString().toLowerCase().contains(searchText) || x.get(Constants.POLICY_CATEGORY).toString().toLowerCase().contains(searchText) || x.get(Constants.COMPLIANCE_PERCENT).toString().toLowerCase().contains(searchText))
+                    .collect(Collectors.toList());
+        }
+        Collections.sort(policyDetList, (first, second) -> {
+            String firstValue = (String)first.get(Constants.NAME);
+            String secondValue = (String) second.get(Constants.NAME);
+            return firstValue.compareTo(secondValue);
+        });
+
+        int from = request.getFrom();
+        int size = request.getSize() == 0 ? 1000 : request.getSize();
+        int end = from+size;
+        if(from+size >= policyDetList.size())
+            end = policyDetList.size();
+        return new ResponseWithOrder(org.springframework.util.CollectionUtils.isEmpty(policyDetList) ? policyDetList : policyDetList.subList(from,end), policyDetList.size());
+    }
+
+    private List<LinkedHashMap<String, Object>> getComplainceByPolicies(String domain, String assetGroup,
+                                                                        List<Object> policies) throws ServiceException {
+        List<LinkedHashMap<String, Object>> complainceByPolicies = null;
+        Map<String, String> filter = new HashMap<>();
+        filter.put(DOMAIN, domain);
+        Request request = new Request("", 0, policies.size(), filter, assetGroup);
+        ResponseWithOrder response = getPolicyCompliance(request);
+        if (null != response) {
+            complainceByPolicies = response.getResponse();
+        }
+        return complainceByPolicies;
     }
 
 }
