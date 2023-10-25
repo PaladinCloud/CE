@@ -17,6 +17,28 @@
     flex-grow: 0;
 }
 
+.tenable-subheader{
+    padding-top: 20px;
+}
+
+.tenable-wrapper{
+    display: flex;
+    height: calc(100% - 28px);
+    flex-direction: column;
+    gap: 20px;
+    overflow: hidden;
+}
+
+
+.instructions-wrapper{
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    border-radius: var(--Large);
+    border: 1px solid var(--interaction-border-subtle-normal);
+}
+
 .left-wrapper{
     border-right: 2px solid var(--border-200);
     padding-right: 24px;
@@ -309,10 +331,38 @@
 
 .page-content{
     height: calc(100% - 36px);
-    min-width: 800px;
+    min-width: 70%;
     border-radius: 8px;
     background: none !important;
     padding: 0px !important;
+}
+
+.video-instructions-wrapper{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 82%;
+    gap: 24px;
+}
+
+.thumbnail-wrapper{
+    align-items: center;
+    height: 255px;
+    width: 285px;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--interaction-border-subtle-normal);
+    background: var(--interaction-neutral-subtle-normal);
+}
+
+.show-more{
+    width: 180px;
+    font: var(--text-body-2);
+    color: var(--primary-400);
+    background-color: var(--background-white);
+    border: none;
+    padding-top: 8px;
+    cursor: pointer;
 }
 
 ::ng-deep .stepper app-stepper .mat-stepper-vertical{
@@ -541,3 +591,25 @@
     cursor: pointer;
     border: 1px solid var(--border-200);
 }
+
+.steps.content-container {
+    max-height: 40px; /* Set your desired max-height for initially showing less content */
+    overflow: hidden;
+    transition: max-height 0.3s ease-in;
+  }
+
+  .instructions-form-wrapper{
+      overflow: auto;
+      height: 100%;
+      padding-right: 24px;
+  }
+  
+  .steps.content-container.show-all {
+    max-height: none; /* Show all content when 'show-all' class is applied */
+  }
+  
+  .show-more {
+    display: block;
+    cursor: pointer;
+  }
+  
