@@ -29,7 +29,7 @@ class InvokeNotificationFunction(LambdaFunctionResource):
     timeout = 180
     memory_size = 512
     timeout = 180
-    runtime = "java11"
+    runtime = "java17"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = Settings.RESOURCE_NAME_PREFIX + PATH + INVOKE_NOTIFICATION + ".jar"
     environment = {
@@ -47,7 +47,7 @@ class SendNotificationFunction(LambdaFunctionResource):
     function_name = SEND_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.InvokeNotificationsApi::handleRequest"
-    runtime = "java11"
+    runtime = "java17"
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
@@ -66,7 +66,7 @@ class TemplateFormatterFunction(LambdaFunctionResource):
     function_name = TEMPLATE_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.FetchNotificationSettings::handleRequest"
-    runtime = "java11"
+    runtime = "java17"
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
@@ -103,7 +103,7 @@ class LogEsNotificationFunction(LambdaFunctionResource):
     function_name = NOTIFICATION_LOG_TO_ES
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.notification_log.LogNotificationToOpenSearch::handleRequest"
-    runtime = "java8"
+    runtime = "java17"
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')

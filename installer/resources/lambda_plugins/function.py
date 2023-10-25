@@ -11,7 +11,7 @@ class SubmitDataMapperLambdaFunction(LambdaFunctionResource):
     function_name = 'datamapper'
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.datamapper.StartMapper::handleRequest"
-    runtime = "java8"
+    runtime = "java17"
     memory_size = 1024
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
