@@ -229,15 +229,21 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
     this.tableScrollTop = state?.tableScrollTop;
 
-    if(this.tableData && this.tableData.length>0){
+    if(state.data){
       this.isStatePreserved = true;
     }else{
       this.isStatePreserved = false;
     }
     const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
-    if(!isTempFilter && state.filters){
+    if((!isTempFilter || isTempFilter=="false") && (state.filters || state.filterText)){
       this.filters = state.filters || [];
       Promise.resolve().then(() => this.getUpdatedUrl());
+    }else{
+      this.isStatePreserved = false;
+    }
+
+    if(this.isStatePreserved){
+      this.tableData = state.data || [];
     }
   }
 

@@ -196,19 +196,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.totalRows = state.totalRows || 0;
     this.searchTxt = state.searchTxt || '';
     this.tableDataLoaded = true;
-    this.tableData = state.data || [];
     this.displayedColumns = ['Policy', 'Asset ID', 'Severity', 'Category'];
     this.whiteListColumns = state.whiteListColumns || this.displayedColumns;
     this.tableScrollTop = state.tableScrollTop;
     this.selectedRowIndex = state.selectedRowIndex;
     
-    if (this.tableData && this.tableData.length > 0) {
+    if (state.data) {
       this.isStatePreserved = true;
     } else {
       this.isStatePreserved = false;
     }
 
-    if(!this.isStatePreserved) this.preApplyStatusFilter(state);
     // below code is to apply filters which are in saved state and update the URL (just to keep URL in sync and also getData method is dependent) 
     // and it does this only if URL doesn't contain filter attribute.
     // if url contains filter attribute, below code is not executed and thus they are overridden with the filters
@@ -217,14 +215,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     // however, one thing to note here is that getData method does not depend on filters array directly
     // but rather it depends on filterText object which is build on URL queryParams.
-    const currentQueryParams =
-        this.routerUtilityService.getQueryParametersFromSnapshot(
-          this.router.routerState.snapshot.root
-        );
-    if (state.filters && !currentQueryParams.filter) {
-      this.filters = state.filters;
-      this.storeState();
-      await Promise.resolve().then(() => this.getUpdatedUrl());
+    const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
+    if((!isTempFilter || isTempFilter=="false") && (state.filters || state.filterText)){
+      this.filters = state.filters || [];
+      Promise.resolve().then(() => this.getUpdatedUrl());
+    }else{
+      this.preApplyStatusFilter(state);    
+      this.isStatePreserved = false;
+    }
+
+    if(this.isStatePreserved){
+      this.tableData = state.data || [];
     }
   }
   
