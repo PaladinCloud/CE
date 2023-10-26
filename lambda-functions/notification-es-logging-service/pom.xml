@@ -23,11 +23,6 @@
 			<artifactId>aws-lambda-java-events</artifactId>
 			<version>3.11.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.4</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-log4j2 -->
 
 		<dependency>
