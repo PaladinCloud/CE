@@ -66,7 +66,10 @@ export class WorkflowService {
 
         const url = this.routerUtilityService.getFullUrlFromSnapshopt(routerSnapshot);
         const queryParams =
-            this.routerUtilityService.getQueryParametersFromSnapshot(routerSnapshot);
+            {...this.routerUtilityService.getQueryParametersFromSnapshot(routerSnapshot)};
+        if(queryParams.hasOwnProperty('tempFilters')){
+            queryParams['tempFilters'] = false;
+        }
 
         const obj = {
             title,
