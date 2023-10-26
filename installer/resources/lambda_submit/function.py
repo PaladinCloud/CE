@@ -126,7 +126,7 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     target_id = 'DataShipperTarger'  # Unique identifier
     target_input = json.dumps({
         'jobName': "aws-redshift-es-data-shipper",
-        'jobUuid': "data-shipper-jar-with-dependencies",
+        'jobUuid': "data-shipper",
         'jobType': "jar",
         'jobDesc': "Ship aws data periodically from redshfit to ES",
         'environmentVariables': [
@@ -526,7 +526,7 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     target_id = 'AzureDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "data-shipper-azure",
-        'jobUuid': "data-shipper-azure",
+        'jobUuid': "data-shipper",
         'jobType': "jar",
         'jobDesc': "Ship Azure Data from S3 to PacBot ES",
         'environmentVariables': [
@@ -634,7 +634,7 @@ class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     target_id = 'GCPDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "data-shipper-gcp",
-        'jobUuid': "data-shipper-gcp",
+        'jobUuid': "data-shipper",
         'jobType': "jar",
         'jobDesc': "Ship GCP Data from S3 to PacBot ES",
         'environmentVariables': [
@@ -781,7 +781,7 @@ class RedHatDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     target_id = 'RedHatDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "data-shipper-redhat",
-        'jobUuid': "data-shipper-redhat",
+        'jobUuid': "data-shipper",
         'jobType': "jar",
         'jobDesc': "Ship RedHat Data from S3 to PaladinCloud ES",
         'environmentVariables': [
