@@ -3,7 +3,6 @@ package com.tmobile.pacman.commons.utils;
 import com.google.gson.Gson;
 import com.tmobile.pacman.commons.dto.NotificationBaseRequest;
 import com.tmobile.pacman.commons.dto.PaladinAccessToken;
-import com.tmobile.pacman.commons.dto.PermissionNotificationRequest;
 import com.tmobile.pacman.commons.dto.PermissionVH;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -25,7 +24,9 @@ public class NotificationPermissionUtils {
         try {
             Gson gson = new Gson();
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
-            notificationDetailsList.add(getNotificationBaseRequest(permissionVHList, cloudType));
+            if (!permissionVHList.isEmpty()) {
+                notificationDetailsList.add(getNotificationBaseRequest(permissionVHList, cloudType));
+            }
             if (!notificationDetailsList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationDetailsList);
                 invokeNotificationUrl(notificationDetailsStr);

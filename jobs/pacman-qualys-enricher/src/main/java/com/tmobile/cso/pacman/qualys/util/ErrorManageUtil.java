@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.tmobile.cso.pacman.qualys.Constants;
-
+import com.tmobile.pacman.commons.dto.PermissionVH;
+import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 
 
 public class ErrorManageUtil implements Constants{
@@ -55,11 +56,23 @@ public class ErrorManageUtil implements Constants{
 
     private static void omitOpsAlert(List<Map<String, String>> errorList) {
         List<Map<String, String>> copyErrorList=new ArrayList<>(errorList);
+        List<PermissionVH> permissionIssue = new ArrayList<>();
+        Map<String, List<String>> assetPermissionMapping = new HashMap<>();
         for(Map<String, String> error:copyErrorList)
         {
             if(error.get("exception").contains("UnAuthorisedException")) {
+                List<String> permissionIssues=new ArrayList<>();
+                permissionIssues.add(error.get("exception"));
+                assetPermissionMapping.put("ec2,virtual machines,onpremserver", permissionIssues);
                 errorList.remove(error);
             }
         }
+        if (!assetPermissionMapping.isEmpty()) {
+            PermissionVH permissionVH = new PermissionVH();
+            permissionVH.setAccountNumber("Qualys");
+            permissionVH.setAssetPermissionIssues(assetPermissionMapping);
+            permissionIssue.add(permissionVH);
+        }
+        NotificationPermissionUtils.triggerNotificationForPermissionDenied(permissionIssue,"Qualys");
     }
 }
