@@ -16,67 +16,67 @@
 
 package com.tmobile.pacman.commons;
 
-/**
- * The Interface PacmanSdkConstants.
- */
-public interface PacmanSdkConstants {
+public class PacmanSdkConstants {
 
-    String CLIENT = "client";
-    Integer TEMPORARY_CREDS_VALID_SECONDS = 3600;
-    String DEFAULT_SESSION_NAME = "PAC_GET_DATA_SESSION";
-    String PACMAN_DEV_PROFILE_NAME = "pacman-dev";
-    String ACCOUNT_ID = "accountid";
-    String REGION = "region";
-    String ROLE_ARN_PREFIX = "arn:aws:iam::";
-    String RESOURCE_ID = "_resourceid";
-    String POLICY_ID = "policyId";
-    String POLICY_NAME = "policyName";
-    String POLICY_DISPLAY_NAME = "policyDisplayName";
-    String POLICY_VERSION = "policyVersion";
-    String Role_IDENTIFYING_STRING = "roleIdentifyingString";
-    String SPLITTER_CHAR = "splitterChar";
-    String DESCRIPTION = "desc";
-    String EXCEPTION = "Exception";
-    String TARGET_TYPE = "targetType";
-    String TYPE = "type";
-    String SEV_HIGH = "high";
-    String SEV_MEDIUM = "medium";
-    String SEV_LOW = "low";
-    String SECURITY = "security";
-    String GOVERNANCE = "governance";
-    String PAC_TIME_ZONE = "UTC";
-    String ISSUE_STATUS_KEY = "issueStatus";
-    String DATA_SOURCE_KEY = "pac_ds";
-    String BASE_AWS_ACCOUNT_ENV_VAR_NAME = "BASE_AWS_ACCOUNT";
-    String ES_DOC_ID_KEY = "_id";
-    String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    String ES_URI_ENV_VAR_NAME = "ES_URI";
-    String PARENT_ID = "_docid";
-    Object RESOURCE_ID_COL_NAME_FROM_ES = "_resourceid";
-    String EXECUTION_ID = "executionId";
-    Integer ES_PAGE_SIZE = 1000;
-    String ES_PAGE_SCROLL_TTL = "5m";
-    String ACCOUNT_NAME = "accountname";
-    String ES_DOC_PARENT_KEY = "_parent";
-    String ES_DOC_ROUTING_KEY = "_routing";
-    String STATUS_OPEN = "open";
-    String STATUS_SUCCESS = "success";
-    String STATUS_FAILURE = "fail";
-    String STATUS_UNKNOWN = "unknown";
-    String STATUS_UNKNOWN_MESSAGE = "unable to determine for this resource";
-    String CURRENT_APP_TAG_KEY = "current_application_tag";
-    String CORRECT_APP_TAG_KEY = "correct_application_tag";
-    String CONFIG_CREDENTIALS = "CONFIG_CREDENTIALS";
-    String CONFIG_SERVICE_URL = "CONFIG_SERVICE_URL";
-    String MISSING_CONFIGURATION = "Missing value in the env configuration";
-    String MISSING_DB_CONFIGURATION = "Missing db configurations";
-    String NAME = "name";
-    String SOURCE = "source";
-    String TAGGING_MANDATORY_TAGS = "tagging.mandatoryTags";
-    String CLOUD_INSIGHT_SQL_SERVER = "CLOUD_INSIGHT_SQL_SERVER";
-    String CLOUD_INSIGHT_USER = "CLOUD_INSIGHT_USER";
-    String CLOUD_INSIGHT_PASSWORD = "CLOUD_INSIGHT_PASSWORD";
-    String OPERATIONS = "operations";
-    String PROJECT_ID = "projectId";
-    Integer MAX_RETRY_COUNT = 3;
+    private PacmanSdkConstants() {
+        throw new IllegalStateException("PacmanSdkConstants is a utility class");
+    }
+
+    public static final String CLIENT = "client";
+    public static final Integer TEMPORARY_CREDS_VALID_SECONDS = 3600;
+    public static final String DEFAULT_SESSION_NAME = "PAC_GET_DATA_SESSION";
+    public static final String PACMAN_DEV_PROFILE_NAME = "pacman-dev";
+    public static final String ACCOUNT_ID = "accountid";
+    public static final String REGION = "region";
+    public static final String ROLE_ARN_PREFIX = "arn:aws:iam::";
+    public static final String RESOURCE_ID = "_resourceid";
+    public static final String POLICY_ID = "policyId";
+    public static final String POLICY_NAME = "policyName";
+    public static final String POLICY_DISPLAY_NAME = "policyDisplayName";
+    public static final String POLICY_VERSION = "policyVersion";
+    public static final String Role_IDENTIFYING_STRING = "roleIdentifyingString";
+    public static final String SPLITTER_CHAR = "splitterChar";
+    public static final String DESCRIPTION = "desc";
+    public static final String EXCEPTION = "Exception";
+    public static final String TARGET_TYPE = "targetType";
+    public static final String TYPE = "type";
+    public static final String SEV_HIGH = "high";
+    public static final String SEV_MEDIUM = "medium";
+    public static final String SEV_LOW = "low";
+    public static final String SECURITY = "security";
+    public static final String GOVERNANCE = "governance";
+    public static final String PAC_TIME_ZONE = "UTC";
+    public static final String ISSUE_STATUS_KEY = "issueStatus";
+    public static final String DATA_SOURCE_KEY = "pac_ds";
+    public static final String BASE_AWS_ACCOUNT_ENV_VAR_NAME = "BASE_AWS_ACCOUNT";
+    public static final String ES_DOC_ID_KEY = "_id";
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String ES_URI_ENV_VAR_NAME = "ES_URI";
+    public static final String PARENT_ID = "_docid";
+    public static final String EXECUTION_ID = "executionId";
+    public static final Integer ES_PAGE_SIZE = 1000;
+    public static final String ES_PAGE_SCROLL_TTL = "5m";
+    public static final String ACCOUNT_NAME = "accountname";
+    public static final String ES_DOC_PARENT_KEY = "_parent";
+    public static final String ES_DOC_ROUTING_KEY = "_routing";
+    public static final String STATUS_OPEN = "open";
+    public static final String STATUS_SUCCESS = "success";
+    public static final String STATUS_FAILURE = "fail";
+    public static final String STATUS_UNKNOWN = "unknown";
+    public static final String STATUS_UNKNOWN_MESSAGE = "unable to determine for this resource";
+    public static final String CURRENT_APP_TAG_KEY = "current_application_tag";
+    public static final String CORRECT_APP_TAG_KEY = "correct_application_tag";
+    public static final String CONFIG_CREDENTIALS = "CONFIG_CREDENTIALS";
+    public static final String CONFIG_SERVICE_URL = "CONFIG_SERVICE_URL";
+    public static final String MISSING_CONFIGURATION = "Missing value in the env configuration";
+    public static final String MISSING_DB_CONFIGURATION = "Missing db configurations";
+    public static final String NAME = "name";
+    public static final String SOURCE = "source";
+    public static final String TAGGING_MANDATORY_TAGS = "tagging.mandatoryTags";
+    public static final String CLOUD_INSIGHT_SQL_SERVER = "CLOUD_INSIGHT_SQL_SERVER";
+    public static final String CLOUD_INSIGHT_USER = "CLOUD_INSIGHT_USER";
+    public static final String CLOUD_INSIGHT_PASSWORD = "CLOUD_INSIGHT_PASSWORD";
+    public static final String OPERATIONS = "operations";
+    public static final Integer MAX_RETRY_COUNT = 3;
+
 }
