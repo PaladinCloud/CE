@@ -16,7 +16,7 @@
 
 package com.tmobile.pacman.commons;
 
-public class PacmanSdkConstants {
+public final class PacmanSdkConstants {
 
     private PacmanSdkConstants() {
         throw new IllegalStateException("PacmanSdkConstants is a utility class");
