@@ -70,9 +70,15 @@ public class Main {
             break;
         }
         ArrayList errors= (ArrayList) errorInfo.get("errors");
+
         if(!errors.isEmpty()){
             //Below logger message is used by datadog to create notification in slack
             log.error("Error occurred in atleast one collector for jobId : {}",jobHint);
+            errors.stream().forEach(error -> {
+                Map<String, Object> err = (Map<String, Object>) error;
+                log.error("error in main - {}", err.get("error"));
+                log.error("exception in main - {}", err.get("exception"));
+            });
         }
         return  errorInfo;
     }
