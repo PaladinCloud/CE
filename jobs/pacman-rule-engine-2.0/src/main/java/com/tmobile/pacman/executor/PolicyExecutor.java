@@ -234,6 +234,9 @@ public class PolicyExecutor {
             if (!Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.RESOURCE_ID)))
                 filter.put(ESUtils.createKeyword(PacmanSdkConstants.RESOURCE_ID),
                         policyParam.get(PacmanSdkConstants.RESOURCE_ID));
+            if ("kms".equalsIgnoreCase(policyParam.get(PacmanSdkConstants.TARGET_TYPE))) {
+                filter.put(ESUtils.createKeyword(PacmanSdkConstants.KEY_MANAGER), PacmanSdkConstants.KEY_MANAGER_TYPE_CUSTOMER);
+            }
 
             if (!filter.isEmpty()) {
                 logger.debug("found filters in rule config, resources will be filtered");
