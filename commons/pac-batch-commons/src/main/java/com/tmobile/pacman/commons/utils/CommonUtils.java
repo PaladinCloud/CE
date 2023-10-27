@@ -81,6 +81,7 @@ public class CommonUtils {
 
 	 /** The Constant logger. */
  	static final Logger logger = LoggerFactory.getLogger(CommonUtils.class);
+	private static final String API_READ_SCOPE = "API_OPERATION/READ";
 
 	/**
 	 * Checks if is env variable exists.
