@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.UnknownHostException;
 
 @Service
-public class RedHatPluginServiceImpl extends AbstractPluginService implements PluginsService<RedHatPluginRequest> {
+public class RedHatPluginServiceImpl extends AbstractPluginService implements PluginsService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedHatPluginServiceImpl.class);
     private static final String PARAM_ACCOUNT_ID = "redhatAccountId";
@@ -45,8 +45,9 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
 
     @Override
     @Transactional
-    public PluginResponse createPlugin(RedHatPluginRequest request, PluginParameters parameters)
+    public PluginResponse createPlugin(Object pluginRequest, PluginParameters parameters)
             throws PluginServiceException {
+        RedHatPluginRequest request = objectMapper.convertValue(pluginRequest, RedHatPluginRequest.class);
         parameters.setId(request.getRedhatAccountId());
         try {
             LOGGER.info(String.format(VALIDATING_MSG, parameters.getPluginName()));
@@ -79,23 +80,19 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
     }
 
     @Override
-    public PluginResponse validate(RedHatPluginRequest accountData, String pluginName) {
+    public PluginResponse validate(Object pluginRequest, String pluginName) {
+        RedHatPluginRequest accountData = objectMapper.convertValue(pluginRequest, RedHatPluginRequest.class);
         LOGGER.info(String.format(VALIDATING_MSG, pluginName));
-
         PluginResponse validationResponse = validateRedhatPluginRequest(accountData, pluginName);
-
         if (validationResponse.getStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
             LOGGER.info(VALIDATION_FAILED);
             return validationResponse;
         }
-
         String apiUrl = String.format(REDHAT_URL_TEMPLATE, accountData.getRedhatAccountId()) + SUMMARY_COUNTS_URL_PATH;
         String redhatToken = accountData.getRedhatToken();
-
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(apiUrl);
             request.setHeader(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + redhatToken);
-
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 int statusCode = response.getStatusLine().getStatusCode();
 
@@ -120,17 +117,13 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
     private PluginResponse validateRedhatPluginRequest(RedHatPluginRequest pluginData, String pluginName) {
         PluginResponse response = new PluginResponse();
         StringBuilder validationErrorDetails = new StringBuilder();
-
         if (StringUtils.isEmpty(pluginData.getRedhatAccountId())) {
             validationErrorDetails.append(String.format(MISSING_MANDATORY_PARAMETER, PARAM_ACCOUNT_ID));
         }
-
         if (StringUtils.isEmpty(pluginData.getRedhatToken())) {
             validationErrorDetails.append(String.format(MISSING_MANDATORY_PARAMETER, PARAM_TOKEN));
         }
-
         String validationError = validationErrorDetails.toString();
-
         if (!validationError.isEmpty()) {
             response.setStatus(AdminConstants.FAILURE);
             response.setMessage(String.format(INVALID_PLUGIN_REQUEST_MSG, pluginName));
@@ -140,5 +133,4 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
         }
         return response;
     }
-
 }
