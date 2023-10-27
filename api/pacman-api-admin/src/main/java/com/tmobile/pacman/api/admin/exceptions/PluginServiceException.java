@@ -13,18 +13,17 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.admin.domain;
+package com.tmobile.pacman.api.admin.exceptions;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+/**
+ * Custom exception class for the plugin service to handle unexpected errors.
+ */
+public class PluginServiceException extends Exception {
+    public PluginServiceException(String message) {
+        super(message);
+    }
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class PluginResponse {
-
-    private String status;
-    private String message;
-    private String errorDetails;
+    public PluginServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
