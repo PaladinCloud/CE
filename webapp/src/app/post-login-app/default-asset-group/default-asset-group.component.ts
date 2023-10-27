@@ -32,6 +32,7 @@ import { combineLatest, Subscription } from "rxjs";
 import { WorkflowService } from "../../core/services/workflow.service";
 import { FetchResourcesService } from "../../pacman-features/services/fetch-resources.service";
 import { AwsResourceTypeSelectionService } from "src/app/pacman-features/services/aws-resource-type-selection.service";
+import { AgDomainObservableService } from "src/app/core/services/ag-domain-observable.service";
 
 @Component({
   selector: "app-default-asset-group",
@@ -42,8 +43,9 @@ import { AwsResourceTypeSelectionService } from "src/app/pacman-features/service
 export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
   awsResourceDetails: any;
   agAndDomain: any;
+  agDomainSubscription: Subscription;
   constructor(
-    private route: ActivatedRoute,
+    private agDomainObservableService: AgDomainObservableService,
     private fetchResourcesService: FetchResourcesService,
     private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
     private dataStore: DataCacheService,
@@ -85,7 +87,7 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
 
 
   getResources() {
-    combineLatest([this.assetGroupObservableService.getAssetGroup(), this.domainTypeObservableService.getDomainType()]).subscribe(([ag, domain]) => {
+    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
       this.agAndDomain = {ag, domain};      
       this.fetchResourcesService
         .getResourceTypesAndCount(this.agAndDomain).then(results => {
@@ -299,6 +301,9 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
+      if(this.agDomainSubscription){
+        this.agDomainSubscription.unsubscribe();
+      }
       if (this.assetGroupSubscription) {
         this.assetGroupSubscription.unsubscribe();
       }

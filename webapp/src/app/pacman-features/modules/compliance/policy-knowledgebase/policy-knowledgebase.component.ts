@@ -149,6 +149,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   doLocalSearch = true; // should be removed once tiles data is available from backend
   totalRows = 0;
   assetTypeMap: any;
+  agDomainSubscription: Subscription;
 
   constructor(private agDomainObservableService: AgDomainObservableService,
     private router: Router,
@@ -168,7 +169,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     ) {
 
       this.getPreservedState();
-      this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
+      this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {        
         this.selectedAssetGroup = ag;
         this.selectedDomain = domain;
         this.updateComponent();
@@ -896,6 +897,9 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnDestroy() {
     try {
+      if(this.agDomainSubscription){
+        this.agDomainSubscription.unsubscribe();
+      }
       if (this.complianceTableSubscription) {
         this.complianceTableSubscription.unsubscribe();
       }

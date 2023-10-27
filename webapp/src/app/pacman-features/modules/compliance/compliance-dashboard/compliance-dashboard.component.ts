@@ -265,13 +265,12 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         [DashboardContainerIndex.ASSET_GRAPH]: 'Asset Graph',
         [DashboardContainerIndex.POLICY_OVERVIEW]: 'Policy Compliance Overview',
     };
+  agDomainSubscription: Subscription;
 
     constructor(
         private activatedRoute: ActivatedRoute,
-        private assetGroupObservableService: AssetGroupObservableService,
         private commonResponseService: CommonResponseService,
         private dashboardArrangementService: DashboardArrangementService,
-        private domainObservableService: DomainTypeObservableService,
         private downloadService: DownloadService,
         private errorHandling: ErrorHandlingService,
         private issueFilterService: IssueFilterService,
@@ -290,7 +289,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         private agDomainObservableService: AgDomainObservableService,
         private assetTypeMapService: AssetTypeMapService
     ) {
-      this.agDomainObservableService.getAgDomain().subscribe(async([assetGroupName, domain]) => {
+       this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(async([assetGroupName, domain]) => {
         await this.getPreservedState();
         this.selectedAssetGroup = assetGroupName;
         this.selectedDomain = domain;
@@ -1402,8 +1401,8 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         try {
-            if (this.assetGroupSubscription) {
-                this.assetGroupSubscription.unsubscribe();
+            if(this.agDomainSubscription){
+              this.agDomainSubscription.unsubscribe();
             }
             if (this.onFilterChange) {
                 this.onFilterChange.unsubscribe();
