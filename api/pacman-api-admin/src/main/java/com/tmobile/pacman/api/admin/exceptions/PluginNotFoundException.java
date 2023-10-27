@@ -13,17 +13,17 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.admin.repository.service;
+package com.tmobile.pacman.api.admin.exceptions;
 
-import com.tmobile.pacman.api.admin.domain.PluginParameters;
-import com.tmobile.pacman.api.admin.domain.PluginResponse;
-import com.tmobile.pacman.api.admin.exceptions.PluginServiceException;
+/**
+ * Custom exception class for the plugin service to handle unexpected errors.
+ */
+public class PluginNotFoundException extends Exception {
+    public PluginNotFoundException(String message) {
+        super(message);
+    }
 
-public interface PluginsService {
-
-    PluginResponse createPlugin(Object request, PluginParameters parameters) throws PluginServiceException;
-
-    PluginResponse deletePlugin(PluginParameters parameters);
-
-    PluginResponse validate(Object request, String pluginName);
+    public PluginNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

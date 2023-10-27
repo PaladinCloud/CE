@@ -41,14 +41,15 @@ import java.security.GeneralSecurityException;
 import java.util.Optional;
 
 @Service
-public class GcpPluginServiceImpl extends AbstractPluginService implements PluginsService<GcpPluginRequest> {
+public class GcpPluginServiceImpl extends AbstractPluginService implements PluginsService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GcpPluginServiceImpl.class);
 
     @Override
     @Transactional
-    public PluginResponse createPlugin(GcpPluginRequest request, PluginParameters parameters)
+    public PluginResponse createPlugin(Object pluginRequest, PluginParameters parameters)
             throws PluginServiceException {
+        GcpPluginRequest request = objectMapper.convertValue(pluginRequest, GcpPluginRequest.class);
         parameters.setId(request.getGcpProjectId());
         parameters.setSecretKey(request.getGcpServiceAccountKey());
         try {
@@ -96,7 +97,8 @@ public class GcpPluginServiceImpl extends AbstractPluginService implements Plugi
     }
 
     @Override
-    public PluginResponse validate(GcpPluginRequest accountData, String pluginName) {
+    public PluginResponse validate(Object pluginRequest, String pluginName) {
+        GcpPluginRequest accountData = objectMapper.convertValue(pluginRequest, GcpPluginRequest.class);
         LOGGER.info(String.format(VALIDATING_MSG, pluginName));
         PluginResponse validationResponse = validateRedhatPluginRequest(accountData, pluginName);
         if (validationResponse.getStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
@@ -170,5 +172,4 @@ public class GcpPluginServiceImpl extends AbstractPluginService implements Plugi
         }
         return Optional.of(project.getName());
     }
-
 }

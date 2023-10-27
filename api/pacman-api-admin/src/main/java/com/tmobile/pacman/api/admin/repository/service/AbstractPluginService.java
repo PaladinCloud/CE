@@ -60,21 +60,21 @@ import java.util.Optional;
 @Service
 public abstract class AbstractPluginService {
 
-    public static final String MISSING_MANDATORY_PARAMETER = "%s cannot be null or empty ";
-    public static final String HTTP_STATUS_CODE_TEMPLATE = " with HTTP status code: %d";
-    public static final String VALIDATION_SUCCESSFUL = "Validation successful";
-    public static final String BEARER_PREFIX = "Bearer ";
-    public static final String VALIDATION_FAILED = "Validation failed";
-    public static final String TOKEN_VALIDATION_FAILED = "Validation failed due to invalid token";
-    public static final String ACCOUNT_ID_VALIDATION_FAILED = "Validation failed due to invalid accountId";
-    public static final String ACCOUNT_EXISTS = "Account already exists";
-    public static final String UNEXPECTED_ERROR_MSG = " due to an unexpected error: {}";
-    public static final String UNKNOWN_HOST_ERROR_MSG = " due to an unknown host: {}";
-    public static final String VALIDATING_MSG = "Validating %s account details";
-    public static final String ADDING_ACCOUNT = "Adding %s account";
-    public static final String INVALID_PLUGIN_REQUEST_MSG = "Invalid %s plugin request";
+    protected static final String MISSING_MANDATORY_PARAMETER = "%s cannot be null or empty ";
+    protected static final String HTTP_STATUS_CODE_TEMPLATE = " with HTTP status code: %d";
+    protected static final String VALIDATION_SUCCESSFUL = "Validation successful";
+    protected static final String BEARER_PREFIX = "Bearer ";
+    protected static final String VALIDATION_FAILED = "Validation failed";
+    protected static final String TOKEN_VALIDATION_FAILED = "Validation failed due to invalid token";
+    protected static final String ACCOUNT_ID_VALIDATION_FAILED = "Validation failed due to invalid accountId";
+    protected static final String ACCOUNT_EXISTS = "Account already exists";
+    protected static final String UNEXPECTED_ERROR_MSG = " due to an unexpected error: {}";
+    protected static final String UNKNOWN_HOST_ERROR_MSG = " due to an unknown host: {}";
+    protected static final String VALIDATING_MSG = "Validating %s account details";
+    protected static final String ADDING_ACCOUNT = "Adding %s account";
+    protected static final String INVALID_PLUGIN_REQUEST_MSG = "Invalid %s plugin request";
     /* This code need to revisited during SAAS in share mode.   */
-    public static final String TENANT_ID = System.getenv(AdminConstants.TENANT_ID);
+    protected static final String TENANT_ID = System.getenv(AdminConstants.TENANT_ID);
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPluginService.class);
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
     private static final String ACCOUNTS_TABLE_DATE_FORMAT = "dd/MM/yyyy HH:mm:ss";
@@ -130,9 +130,9 @@ public abstract class AbstractPluginService {
     @Value("${application.optionalAssetGroupList}")
     private String optionalAssetGroupList;
     @Autowired
-    private ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
-    public PluginResponse deleteAccountFromDB(String accountId) {
+    protected PluginResponse deleteAccountFromDB(String accountId) {
         try {
             Optional<AccountDetails> existingAccount = accountsRepository.findById(accountId);
             if (!existingAccount.isPresent()) {
@@ -153,13 +153,20 @@ public abstract class AbstractPluginService {
         }
     }
 
-    public PluginResponse updateConfigProperty(String key, String value, String application) {
+    /**
+     * Updates a configuration property with the specified key and value for job-scheduler.
+     *
+     * @param key   The configuration property key, e.g., "redhat.enabled," "gcp.enabled," "aws.enabled," etc.
+     * @param value The new value to set for the configuration property, which should be either "true" or "false."
+     * @return A PluginResponse indicating the result of the update operation.
+     */
+    protected PluginResponse updateConfigProperty(String key, String value) {
         try {
             ConfigPropertyRequest configPropertyRequest = new ConfigPropertyRequest();
             ConfigPropertyItem config = new ConfigPropertyItem();
             config.setConfigKey(key);
             config.setConfigValue(value);
-            config.setApplication(application);
+            config.setApplication(JOB_SCHEDULER);
             List<ConfigPropertyItem> configList = new ArrayList<>();
             configList.add(config);
             configPropertyRequest.setConfigProperties(configList);
@@ -179,7 +186,7 @@ public abstract class AbstractPluginService {
         }
     }
 
-    public PluginResponse createAccountInDb(PluginParameters parameters, String accountName) {
+    protected PluginResponse createAccountInDb(PluginParameters parameters, String accountName) {
         String accountId = parameters.getId();
         Optional<AccountDetails> account = accountsRepository.findById(accountId);
         if (account.isPresent()) {
@@ -209,7 +216,7 @@ public abstract class AbstractPluginService {
         }
     }
 
-    public List<AccountDetails> findOnlineAccounts(String status, String platform) {
+    protected List<AccountDetails> findOnlineAccounts(String status, String platform) {
         try {
             return accountsRepository.findByAccountStatusAndPlatform(status, platform);
         } catch (DataAccessException e) {
@@ -221,7 +228,7 @@ public abstract class AbstractPluginService {
         }
     }
 
-    public PluginResponse createSecretAndSendSQSMessage(PluginParameters parameters) {
+    protected PluginResponse createSecretAndSendSQSMessage(PluginParameters parameters) {
         PluginResponse response;
         try {
             BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
@@ -234,7 +241,7 @@ public abstract class AbstractPluginService {
             CreateSecretResult createSecretResponse = secretClient.createSecret(createRequest);
             LOGGER.info(SECRET_CREATION_RESPONSE, createSecretResponse);
             PluginResponse configUpdateResponse = updateConfigProperty(String.format(PLUGIN_ENABLED,
-                    parameters.getPluginName()), Boolean.TRUE.toString(), JOB_SCHEDULER);
+                    parameters.getPluginName()), Boolean.TRUE.toString());
             if (configUpdateResponse.getStatus().equals(AdminConstants.FAILURE)) {
                 LOGGER.error(FAILED_TO_UPDATE_CONFIG_MSG, configUpdateResponse.getErrorDetails());
             }
@@ -260,7 +267,7 @@ public abstract class AbstractPluginService {
         return response;
     }
 
-    public void deleteSecret(String accountId, String plugin) {
+    protected void deleteSecret(String accountId, String plugin) {
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         Regions region = Regions.fromName(System.getenv(REGION));
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder.standard()
@@ -268,11 +275,10 @@ public abstract class AbstractPluginService {
         DeleteSecretRequest deleteRequest = new DeleteSecretRequest().withSecretId(secretManagerPrefix + "/" +
                 TENANT_ID + "/" + plugin + "/" + accountId).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
-        String DELETE_SECRET_RESPONSE = "Delete secret response: {} ";
-        LOGGER.info(DELETE_SECRET_RESPONSE, deleteResponse);
+        LOGGER.info("Delete secret response: {} ", deleteResponse);
     }
 
-    public void checkAndDisableOnlineAccounts(String plugin) {
+    protected void checkAndDisableOnlineAccounts(String plugin) {
         List<AccountDetails> onlineAccounts = findOnlineAccounts(STATUS_CONFIGURED, plugin);
         if (!Objects.isNull(onlineAccounts) && !onlineAccounts.isEmpty()) {
             LOGGER.info("There are {} online account(s). " +
@@ -281,13 +287,13 @@ public abstract class AbstractPluginService {
         }
         LOGGER.info(String.format("%s accounts have been deleted, so disabling the enable flag for %s.", plugin, plugin));
         PluginResponse configUpdateResponse = updateConfigProperty(String.format(PLUGIN_ENABLED, plugin),
-                Boolean.FALSE.toString(), JOB_SCHEDULER);
+                Boolean.FALSE.toString());
         if (configUpdateResponse.getStatus().equals(AdminConstants.FAILURE)) {
             LOGGER.error(FAILED_TO_UPDATE_CONFIG_MSG, configUpdateResponse.getErrorDetails());
         }
     }
 
-    public void processAssetGroup(String pluginName) throws PacManException {
+    protected void processAssetGroup(String pluginName) throws PacManException {
         if (Objects.isNull(optionalAssetGroupList) || optionalAssetGroupList.isEmpty()) {
             LOGGER.error("Asset group update failed: The optionalAssetGroupList is null or empty.");
             return;
@@ -310,7 +316,7 @@ public abstract class AbstractPluginService {
         LOGGER.info("Total users have been updated with the default asset group. The new count is: {}", totalUsers);
     }
 
-    public void invokeActivityLogging(PluginParameters parameters, String action) {
+    protected void invokeActivityLogging(PluginParameters parameters, String action) {
         try {
             ObjectNode objectNode = objectMapper.convertValue(parameters, ObjectNode.class);
             //removing secret key for audit log
@@ -329,7 +335,7 @@ public abstract class AbstractPluginService {
         }
     }
 
-    public PluginResponse deletePlugin(PluginParameters parameters) {
+    protected PluginResponse deletePlugin(PluginParameters parameters) {
         LOGGER.info(String.format("Deleting %s account", parameters.getPluginName()));
         PluginResponse response;
         try {
@@ -349,7 +355,7 @@ public abstract class AbstractPluginService {
         return response;
     }
 
-    public void updateAssetGroupStatusForOptionalAssetType(PluginParameters parameters) {
+    protected void updateAssetGroupStatusForOptionalAssetType(PluginParameters parameters) {
         try {
             List<String> optionalAssetList = null;
             if (Objects.nonNull(optionalAssetGroupList)) {
@@ -363,5 +369,4 @@ public abstract class AbstractPluginService {
             LOGGER.error("Could not activity log for plugin {} with account id {}", parameters.getPluginName(), parameters.getId());
         }
     }
-
 }
