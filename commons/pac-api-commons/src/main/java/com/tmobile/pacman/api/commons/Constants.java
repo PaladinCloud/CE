@@ -459,7 +459,6 @@ public interface Constants {
     String ASSET_DETAILS_UI_PATH  =  "#pl#assets#asset-list#".replace("#","/");
 
     String DATA_SOURCE_KEY = "pac_ds";
-    String TENABLE = "tenable";
 
     String RELATIONS = "_relations";
 
@@ -571,4 +570,6 @@ public interface Constants {
         add("DOUBLE");
         add("FLOAT");
     } };
+
+    String TENABLE_API_URL = "https://cloud.tenable.com";
 }
