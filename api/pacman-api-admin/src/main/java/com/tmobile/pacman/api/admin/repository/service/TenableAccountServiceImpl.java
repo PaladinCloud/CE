@@ -189,7 +189,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         String template="{\"accessKey\":\"%s\",\"secretKey\":\"%s\",\"apiURL\":\"%s\",\"userAgent\":\"%s\"}";
         return String.format(template,accountRequest.getTenableAccessKey(),
                 accountRequest.getTenableSecretKey(),
-                accountRequest.getTenableAPIUrl(),
+                Constants.TENABLE_API_URL,
                 tenableUserAgent);
     }
 }
