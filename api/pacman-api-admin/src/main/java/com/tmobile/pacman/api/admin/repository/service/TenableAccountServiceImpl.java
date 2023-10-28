@@ -30,9 +30,11 @@ import org.springframework.stereotype.Service;
 public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
 
     private static final Logger LOGGER= LoggerFactory.getLogger(TenableAccountServiceImpl.class);
-    public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
-    public static final String FAILURE = "FAILURE";
-    public static final String SUCCESS = "SUCCESS";
+
+    private static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
+    private static final String FAILURE = "FAILURE";
+    private static final String SUCCESS = "SUCCESS";
+    private static final String TENABLE = "tenable";
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
@@ -47,7 +49,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     public static final String TENABLE_ENABLED = "tenable.enabled";
     @Override
     public String serviceType() {
-        return Constants.TENABLE;
+        return TENABLE;
     }
 
     @Override
@@ -62,33 +64,33 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     }
 
     private void validateTenableAccount(CreateAccountRequest accountData, AccountValidationResponse validateResponse) {
-
-
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(accountData.getTenableAPIUrl());
-        String apiKey = "accessKey="+accountData.getTenableAccessKey()+";secretKey="+accountData.getTenableSecretKey()+";";
+        // Requesting scan that doesn't exist to validate the account data.
+        HttpGet request = new HttpGet(Constants.TENABLE_API_URL + "/scans/0");
+        String apiKey = "accessKey=" + accountData.getTenableAccessKey() + ";secretKey=" + accountData.getTenableSecretKey() + ";";
         request.addHeader("X-ApiKeys", apiKey);
         request.addHeader("content-type", "application/json");
         request.addHeader("cache-control", "no-cache");
         request.addHeader("Accept", "application/json");
         try {
+            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             CloseableHttpResponse response = httpClient.execute(request);
-            if(response.getEntity() != null && response.getStatusLine().getStatusCode()==200){
-                    validateResponse.setValidationStatus(SUCCESS);
-                    validateResponse.setMessage("Tenable validation successful");
-            }
-            else{
-                    validateResponse.setValidationStatus(FAILURE);
-                    validateResponse.setErrorDetails("API returned status code : "+response.getStatusLine().getStatusCode());
+
+            if (response.getEntity() != null && response.getStatusLine().getStatusCode() == 401) {
+                // If the response is 401, then the account data is not valid.
+                validateResponse.setValidationStatus(FAILURE);
+                validateResponse.setErrorDetails("API returned status code : " + response.getStatusLine().getStatusCode());
+            } else {
+                validateResponse.setValidationStatus(SUCCESS);
+                validateResponse.setMessage("Tenable validation successful");
             }
         } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Failed to validate the tenable account ",e);
+            LOGGER.error("Failed to validate the tenable account ", e);
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setMessage("Tenable validation Failed");
         } catch (IOException e) {
-            LOGGER.error("Failed to validate the tenable account ",e.getMessage());
+            LOGGER.error("Failed to validate the tenable account ", e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Tenable validation Failed: "+e.getMessage());
+            validateResponse.setMessage("Tenable validation Failed: " + e.getMessage());
         }
     }
 
@@ -115,13 +117,13 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
         LOGGER.info("Create secret response: {}",createResponse);
         String accountId = UUID.randomUUID().toString();
-        createAccountInDb(accountId,"Tenable-Connector", Constants.TENABLE,accountData.getCreatedBy());
+        createAccountInDb(accountId,"Tenable-Connector", TENABLE,accountData.getCreatedBy());
 
         updateConfigProperty(TENABLE_ENABLED,TRUE,JOB_SCHEDULER);
         validateResponse.setValidationStatus(SUCCESS);
         validateResponse.setAccountId(accountId);
         validateResponse.setAccountName("Tenable-Connector");
-        validateResponse.setType(Constants.TENABLE);
+        validateResponse.setType(TENABLE);
         validateResponse.setMessage("Account added successfully. Account id: "+accountId);
         return validateResponse;
     }
@@ -175,7 +177,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         //delete entry from db
         deleteAccountFromDB(accountId);
         updateConfigProperty(TENABLE_ENABLED,FALSE,JOB_SCHEDULER);
-        response.setType(Constants.TENABLE);
+        response.setType(TENABLE);
         response.setAccountId(accountId);
         response.setValidationStatus(SUCCESS);
         response.setMessage("Account deleted successfully");
@@ -187,7 +189,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         String template="{\"accessKey\":\"%s\",\"secretKey\":\"%s\",\"apiURL\":\"%s\",\"userAgent\":\"%s\"}";
         return String.format(template,accountRequest.getTenableAccessKey(),
                 accountRequest.getTenableSecretKey(),
-                accountRequest.getTenableAPIUrl(),
+                Constants.TENABLE_API_URL,
                 tenableUserAgent);
     }
 }
