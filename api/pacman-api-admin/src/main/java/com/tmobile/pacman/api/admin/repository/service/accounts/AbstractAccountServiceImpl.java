@@ -123,7 +123,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService {
                 case AdminConstants.PLATFORM:
                     return accountsRepository.findDistinctPlatform();
                 default:
-                    return new ArrayList<String>();
+                    return new ArrayList<>();
             }
         } catch (Exception e) {
             return new ArrayList<>();
@@ -174,7 +174,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService {
             response.setMessage("Account deleted successfully");
             response.setValidationStatus(SUCCESS);
         } catch (EmptyResultDataAccessException exception) {
-            logger.error("Error in deleting account: {}", exception);
+            logger.error("Error in deleting account: {}", exception, exception.getMessage());
             response.setValidationStatus(FAILURE);
             response.setErrorDetails("Account doesn't exists");
             response.setMessage("Account deletion failed");
@@ -202,7 +202,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService {
             accountDetails.setAssets("0");
             accountDetails.setAccountName(accountName);
             accountDetails.setPlatform(platform);
-            accountDetails.setAccountStatus("configured");
+            accountDetails.setAccountStatus(STATUS_CONFIGURED);
             accountDetails.setCreatedBy(createdBy);
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             Date date = new Date();
