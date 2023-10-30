@@ -22,6 +22,7 @@ import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.repository.service.ConfigPropertyService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +48,14 @@ public abstract class AbstractAccountServiceImpl implements AccountsService {
     protected static final String FALSE = "false";
     protected static final String JOB_SCHEDULER = "job-scheduler";
     protected static final String STATUS_CONFIGURED = "configured";
+    protected static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameters: ";
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractAccountServiceImpl.class);
 
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
+
+    @Autowired
+    protected CredentialProvider credentialProvider;
 
     @Autowired
     private AccountsRepository accountsRepository;
