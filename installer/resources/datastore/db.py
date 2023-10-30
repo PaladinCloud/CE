@@ -28,7 +28,7 @@ class MySQLDatabase(RDSResource):
     identifier = "data"
     storage_type = "gp2"
     engine = "mysql"
-    engine_version = "5.7.37"
+    engine_version = "5.7.43"
     allocated_storage = 10
     username =  Settings.DB_USERNAME
     password = Settings.DB_PASSWORD                 
