@@ -1,4 +1,4 @@
-package com.tmobile.pacman.api.admin.repository.service;
+package com.tmobile.pacman.api.admin.repository.service.accounts;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
+public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService {
 
     private static final Logger LOGGER= LoggerFactory.getLogger(TenableAccountServiceImpl.class);
 
