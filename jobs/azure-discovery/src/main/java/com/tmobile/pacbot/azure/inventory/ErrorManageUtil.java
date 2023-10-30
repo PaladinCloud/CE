@@ -141,21 +141,32 @@ public class ErrorManageUtil {
 		List<PermissionVH> permissionIssue=new ArrayList<>();
 		for(Map.Entry<String,List<ErrorVH>> entry:errorMap.entrySet())
 		{
+			Map<String, List<String>> assetPermissionMapping = new HashMap<>();
 			List<ErrorVH> errorVHList=entry.getValue();
 			for(ErrorVH errorVH:entry.getValue())
 			{
+				List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
 				if((errorVH.getType().equals("vault")&&errorVH.getException().contains("DeniedWithNoValidRBAC")||errorVH.getException().contains("ForbiddenByFirewall"))||(errorVH.getType().equals("webapp")&&errorVH.getException().contains("AuthorizationFailed")))
 				{
-					PermissionVH permissionVH=new PermissionVH();
 					log.info("Omit exception :{}",errorVH.getException());
-					permissionVH.setAccountNumber(entry.getKey());
-					permissionIssue.add(permissionVH);
+					if (permissionIssues != null) {
+						permissionIssues.add(errorVH.getException());
+					} else {
+						permissionIssues = new ArrayList<>();
+						permissionIssues.add(errorVH.getException());
+					}
+					assetPermissionMapping.put(errorVH.getType(), permissionIssues);
 					errorVHList.remove(errorVH);
 				}
 			}
+			if (!assetPermissionMapping.isEmpty()) {
+				PermissionVH permissionVH = new PermissionVH();
+				permissionVH.setAccountNumber(entry.getKey());
+				permissionVH.setAssetPermissionIssues(assetPermissionMapping);
+				permissionIssue.add(permissionVH);
+			}
 			if(errorVHList.isEmpty()){errorMap.remove(entry.getKey());}
 		}
-		//commenting to avoid too many requests
-		//NotificationPermissionUtils.triggerNotificationsForPermissionDenied(permissionIssue,"Azure");
+		NotificationPermissionUtils.triggerNotificationForPermissionDenied(permissionIssue,"Azure");
 	}
 }
