@@ -54,16 +54,16 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
     @Override
     public AccountValidationResponse validate(CreateAccountRequest accountData) {
-        AccountValidationResponse validateResponse=validateRequest(accountData);
+        AccountValidationResponse validateResponse= validateRequestData(accountData);
         if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
-        validateTenableAccount(accountData, validateResponse);
+        validateAccountCredentials(accountData, validateResponse);
         return validateResponse;
     }
 
-    private void validateTenableAccount(CreateAccountRequest accountData, AccountValidationResponse validateResponse) {
+    private void validateAccountCredentials(CreateAccountRequest accountData, AccountValidationResponse validateResponse) {
         // Requesting scan that doesn't exist to validate the account data.
         HttpGet request = new HttpGet(Constants.TENABLE_API_URL + "/scans/0");
         String apiKey = "accessKey=" + accountData.getTenableAccessKey() + ";secretKey=" + accountData.getTenableSecretKey() + ";";
@@ -97,7 +97,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     @Override
     public AccountValidationResponse addAccount(CreateAccountRequest accountData) {
         LOGGER.info("Adding new Tenable account....");
-        AccountValidationResponse validateResponse=validateRequest(accountData);
+        AccountValidationResponse validateResponse= validateRequestData(accountData);
         if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
@@ -128,30 +128,29 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         return validateResponse;
     }
 
-    private AccountValidationResponse validateRequest(CreateAccountRequest accountData) {
-        AccountValidationResponse response=new AccountValidationResponse();
-        StringBuilder validationErrorDetails=new StringBuilder();
-        String tenableAPIUrl= accountData.getTenableAPIUrl();
-        String tenableAccessKey= accountData.getTenableAccessKey();
-        String tenableSecretKey= accountData.getTenableSecretKey();
+    private AccountValidationResponse validateRequestData(CreateAccountRequest accountData) {
+        AccountValidationResponse response = new AccountValidationResponse();
+        StringBuilder validationErrorDetails = new StringBuilder();
+        String tenableAccessKey = accountData.getTenableAccessKey();
+        String tenableSecretKey = accountData.getTenableSecretKey();
 
-        if(StringUtils.isEmpty(tenableAccessKey)){
-            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" Tenable Access Key\n");
+        if (StringUtils.isEmpty(tenableAccessKey)) {
+            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER + " Tenable Access Key\n");
         }
-        if(StringUtils.isEmpty(tenableSecretKey)){
-            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" Tenable Secret Key\n");
+
+        if (StringUtils.isEmpty(tenableSecretKey)) {
+            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER + " Tenable Secret Key\n");
         }
-        if(StringUtils.isEmpty(tenableAPIUrl)){
-            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER +" Tenable API URl\n");
-        }
-        String validationError=validationErrorDetails.toString();
-        if(!validationError.isEmpty()){
-            validationError=validationError.replace("\n","");
+
+        String validationError = validationErrorDetails.toString();
+        if (!validationError.isEmpty()) {
+            validationError = validationError.replace("\n", "");
             response.setErrorDetails(validationError);
             response.setValidationStatus(FAILURE);
-        }else {
+        } else {
             response.setValidationStatus(SUCCESS);
         }
+
         return response;
     }
 
