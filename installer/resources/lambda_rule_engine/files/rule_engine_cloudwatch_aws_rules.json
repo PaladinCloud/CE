@@ -186,5 +186,5 @@
 	"aws_iamuser_shouldnothave_corenetwork_privileges",
 	"deny_public_access_to_rdp_Port_3389",
 	"enable_aws_config_service",
-	"aws_rds_unencrypted_rule"
+	"aws_enable_encryption_for_rds_instance"
 ]
