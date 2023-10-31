@@ -169,14 +169,14 @@
 </ng-template>
 
 <ng-template #videoThumbnailRef>
-    <div class="flex flex-col gap-16 thumbnail-wrapper">
-        <div class="video-thumbnail-wrapper">
-            <img class="video-thumbnail" src="/assets/images/plugin-thumbnails/tenable-steps.png" alt="Tenable Steps Image">
+    <div class="video-thumbnail-wrapper">
+        <div class="play-button-wrapper">
+            <img class="video-thumbnail" src="/assets/images/plugin-thumbnails/{{getImageName()}}-steps.png" alt="{{getImageName() | titlecase}} Steps">
             <div class="play-button">
                 <img class="icon" (click)="openVideoDialog()" src="/assets/icons/play-button.svg" alt="play button">
             </div>
         </div>
-        <div class="caption-2 medium-emphasis">Learn how to integrate Tenable with Paladin Cloud in this video.</div>
+        <div class="video-desc caption-2 medium-emphasis">Learn how to integrate {{pluginSelected | titlecase}} with Paladin Cloud in this video.</div>
     </div>
 </ng-template>
 
@@ -401,7 +401,7 @@
                             </button>
                         </div>
                     </div>
-                    <div style="padding: 20px 24px 20px 0px;"> 
+                    <div style="padding: 20px 0px;"> 
                         <form class="form-wrapper" [formGroup]="tenablePluginForm">
                         <app-input-field
                         [label]="'Access Key'"
