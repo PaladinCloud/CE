@@ -689,14 +689,6 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           break;
       case "tenable":
         this.currentPluginForm = this.tenablePluginForm;
-        this.configureSteps = [
-          'Access Settings from the sidebar',
-          'Find Account management and select "My account"',
-          'Select API keys in the vertical stepper',
-          'Click the generate button in the footer',
-          'Click the generate button in the dialog',
-          'API Keys will be generated'
-        ]
         break;
         
     }
@@ -808,6 +800,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           this.displayTemplate(this.addDetailsStepperIndex);
           this.closeDialog();
           this.errorMessage = data.message;
+          this.notificationObservableService.postMessage("Validation has been failed!", 3000, "error", "Error");
           this.errorList = data.errorDetails?.split(",");
         }else {
           this.isValidating = false;
