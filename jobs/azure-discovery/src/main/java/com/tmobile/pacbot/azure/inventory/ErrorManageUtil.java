@@ -146,7 +146,7 @@ public class ErrorManageUtil {
 			for(ErrorVH errorVH:entry.getValue())
 			{
 				List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
-				if((errorVH.getType().equals("vault")&&errorVH.getException().contains("DeniedWithNoValidRBAC")||errorVH.getException().contains("ForbiddenByFirewall"))||(errorVH.getType().equals("webapp")&&errorVH.getException().contains("AuthorizationFailed")))
+				if((errorVH.getType().equals("vault")&&errorVH.getException().contains("DeniedWithNoValidRBAC")||errorVH.getException().contains("ForbiddenByFirewall"))||(errorVH.getType().equals("webapp")&&errorVH.getException().contains("AuthorizationFailed"))||(errorVH.getType().equals("all")&&errorVH.getException().contains("AuthenticationException")))
 				{
 					log.info("Omit exception :{}",errorVH.getException());
 					if (permissionIssues != null) {

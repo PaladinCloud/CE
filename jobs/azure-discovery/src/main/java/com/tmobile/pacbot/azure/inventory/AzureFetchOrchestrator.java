@@ -1,10 +1,7 @@
 package com.tmobile.pacbot.azure.inventory;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;
@@ -20,6 +17,8 @@ import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.file.AssetFileGenerator;
 import com.tmobile.pacbot.azure.inventory.file.S3Uploader;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
+
+import static com.tmobile.pacbot.azure.inventory.ErrorManageUtil.triggerNotificationforPermissionDenied;
 
 @Component
 public class AzureFetchOrchestrator {
@@ -97,15 +96,22 @@ public class AzureFetchOrchestrator {
 			tenantList.add(account.get("accountId"));
 		}
 		for(String tenant : tenantList){
+			try {
 				Authenticated azure = azureCredentialProvider.authenticate(tenant);
 				PagedList<Subscription> subscriptions = azure.subscriptions().list();
-				for(Subscription subscription : subscriptions) {
-					SubscriptionVH subscriptionVH= new SubscriptionVH();
+				for (Subscription subscription : subscriptions) {
+					SubscriptionVH subscriptionVH = new SubscriptionVH();
 					subscriptionVH.setTenant(tenant);
 					subscriptionVH.setSubscriptionId(subscription.subscriptionId());
 					subscriptionVH.setSubscriptionName(subscription.displayName());
 					subscriptionList.add(subscriptionVH);
 				}
+			}catch (Exception e)
+			{
+				rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE tenant=?", Arrays.asList(tenant));
+				ErrorManageUtil.uploadError(tenant,"all","all",e.getMessage());
+				triggerNotificationforPermissionDenied();
+			}
 			populateTenantsSubscription(tenant,subscriptionList);
 		}
 		log.info("Total Subscription in Scope : {}",subscriptionList.size());
