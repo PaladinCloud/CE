@@ -17,43 +17,29 @@
 
 package com.tmobile.pacman.executor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
-import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
-import com.tmobile.pacman.commons.autofix.manager.IAutofixManger;
-import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.commons.policy.PacmanPolicy;
-import com.tmobile.pacman.commons.policy.PolicyResult;
-import com.tmobile.pacman.commons.utils.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
+import com.tmobile.pacman.commons.autofix.manager.IAutofixManger;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+import com.tmobile.pacman.commons.utils.Constants;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
 import com.tmobile.pacman.reactors.PacEventHandler;
 import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
-import com.tmobile.pacman.util.AuditUtils;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
-import com.tmobile.pacman.util.ProgramExitUtils;
-import com.tmobile.pacman.util.ReflectionUtils;
-import com.tmobile.pacman.util.PolicyExecutionUtils;
-import com.tmobile.pacman.util.NotificationUtils;
+import com.tmobile.pacman.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 // TODO: Auto-generated Javadoc
@@ -234,10 +220,6 @@ public class PolicyExecutor {
             if (!Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.RESOURCE_ID)))
                 filter.put(ESUtils.createKeyword(PacmanSdkConstants.RESOURCE_ID),
                         policyParam.get(PacmanSdkConstants.RESOURCE_ID));
-            /** we dont want to evaluate kms - aws managed keys because they are completely managed by AWS and cannot be changed by user */
-            if ("kms".equalsIgnoreCase(policyParam.get(PacmanSdkConstants.TARGET_TYPE))) {
-                filter.put(ESUtils.createKeyword(PacmanSdkConstants.KEY_MANAGER), PacmanSdkConstants.KEY_MANAGER_TYPE_CUSTOMER);
-            }
 
             if (!filter.isEmpty()) {
                 logger.debug("found filters in rule config, resources will be filtered");
