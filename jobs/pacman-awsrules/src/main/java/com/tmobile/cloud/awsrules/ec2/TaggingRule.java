@@ -95,16 +95,6 @@ public class TaggingRule extends BasePolicy {
 
 		if (resourceAttributes!=null) {
 
-			String assetType=resourceAttributes.get("_entitytype");
-
-			if(assetType.equalsIgnoreCase("kms")){
-				String keyManager=resourceAttributes.get("keymanager");
-				// Check if the keyManager is aws
-				if ( keyManager.equalsIgnoreCase("aws")){
-					logger.info(targetType, " ", entityId, " is an AWS Managed Resource and is exempt from mandatory tagging.");
-					return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
-				}
-			}
 			if(targetType.equalsIgnoreCase(PacmanRuleConstants.TARGET_TYPE_EC2)){
 				if(resourceAttributes.get(PacmanRuleConstants.STATE_NAME).equalsIgnoreCase(PacmanRuleConstants.RUNNING_STATE)||resourceAttributes.get(PacmanRuleConstants.STATE_NAME).equalsIgnoreCase(PacmanRuleConstants.STOPPED_STATE)){
 				missingTags = PacmanUtils.getMissingTagsfromResourceAttribute(mandatoryTagsList,resourceAttributes);
