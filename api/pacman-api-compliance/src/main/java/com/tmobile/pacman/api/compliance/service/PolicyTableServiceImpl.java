@@ -143,11 +143,12 @@ public class PolicyTableServiceImpl implements PolicyTableService, Constants {
     @Override
     public PolicyTable getPolicyTableByPolicyUUID(String policyUUID) {
         PolicyTable policy = policyTableRepository.findPoicyTableByPolicyUUID(policyUUID);
-        Optional<List<PolicyParams>> policyParams = policyParamsRepository
-                .findByPolicyId(policy.getPolicyId());
-        if (policyParams.isPresent() && !policyParams.get().isEmpty()) {
-            policy.setPolicyParams(generatePolicyParamJson(policy.getPolicyId(),
-                    policyParams.get()));
+        if (policy != null) {
+            Optional<List<PolicyParams>> policyParams = policyParamsRepository.findByPolicyId(policy.getPolicyId());
+            if (policyParams.isPresent() && !policyParams.get().isEmpty()) {
+                policy.setPolicyParams(generatePolicyParamJson(policy.getPolicyId(),
+                        policyParams.get()));
+            }
         }
         return policy;
     }
