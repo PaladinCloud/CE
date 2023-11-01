@@ -85,7 +85,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   @ViewChild('videoPlayer') videoplayer: any;
   public startedPlay:boolean = false;
   public show:boolean = false;
-  comingSoonPluginList = ["contrast","rapid7"];
+  comingSoonPluginList = [];
   manualConfiguredAccountList: String[]=["aqua"];
   showAllSteps = false;
   pluginsWithUpdatedEndPoint = ["gcp", "redhat"];
@@ -258,6 +258,21 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   ngOnInit(): void {
     this.buildForm();
     this.CloudformationTemplateUrl = CONFIGURATIONS.optional.auth.cognitoConfig.CloudformationTemplateUrl;
+    const featureFlags = CONFIGURATIONS.optional.general.featureFlags;
+    
+    const featureFlagMap = {
+      contrastPluginEnabled: "contrast",
+      tenablePluginEnabled: "tenable",
+      rapid7PluginEnabled: "rapid7",
+    };
+
+    for (const key in featureFlags) {
+      if (!featureFlags[key]) {
+        const plugin = featureFlagMap[key];
+        this.comingSoonPluginList.push(plugin);
+      }
+    }
+
     this.urlToRedirect = this.router.routerState.snapshot.url;
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
 
