@@ -289,7 +289,7 @@
        }
    
        let filterTagsData = await this.getFilterTagsData(payload, currentFilterType.optionURL);
-       filterTagsData = updateFilterTags(filterTagsData, currentFilterType.optionName);
+       if(updateFilterTags) filterTagsData = updateFilterTags(filterTagsData, currentFilterType.optionName);
        const filterTagOptions = filterTagsData;
        let filterTagLabels = filterTagsData.map(option => option.name);
  

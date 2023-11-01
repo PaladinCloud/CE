@@ -46,7 +46,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
 
         this.syncFiltersDictWithFiltersArray();
         // TODO: REMOVE IF STATEMENT WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
-        if (Object.keys(this.appliedFiltersDict).length && !this.enableMultiValuedFilter) {
+        if (Object.keys(this.appliedFiltersDict).length && (!this.enableMultiValuedFilter || this.isDateFilter)) {
             this.appliedFiltersDict = Object.keys(this.appliedFiltersDict).reduce((acc, next) => {
                 acc[next] = optionDict[next] ? optionDict[next] : this.appliedFiltersDict[next];
                 return acc;
@@ -175,7 +175,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         // TODO: REMOVE WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
         const uncheckedOptionsDict = Object.entries(this.appliedFiltersDict[filterCategory]).reduce(
             (prev, [name]) => {
-                if (name !== event.filterName && !this.enableMultiValuedFilter) {
+                if (name !== event.filterName && (!this.enableMultiValuedFilter || this.isDateFilter)) {
                     prev[name] = false;
                 }
                 return prev;
