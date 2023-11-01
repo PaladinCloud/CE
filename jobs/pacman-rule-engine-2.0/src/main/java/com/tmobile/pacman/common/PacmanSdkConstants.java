@@ -682,6 +682,4 @@ public interface PacmanSdkConstants {
     String ACCOUNT_ID = "accountid";
     String TAGGING_MANDATORY_TAGS = "tagging.mandatoryTags";
     String POLICY_NAME = "policyName";
-    String KEY_MANAGER = "keymanager";
-    String KEY_MANAGER_TYPE_CUSTOMER = "CUSTOMER";
 }
