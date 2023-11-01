@@ -81,6 +81,9 @@ public interface AccountsRepository extends JpaRepository<AccountDetails, String
     @Query("SELECT a.accountId, a.accountName,a.assets, a.violations ,a.accountStatus, a.platform, a.createdBy, a.createdTime  FROM AccountDetails a WHERE a.accountId LIKE %:filterValue% ")
     Page<AccountDetails> findById(Pageable pageable,@Param("filterValue") String filterValue);
 
+    @Query("SELECT a.accountId, a.accountName,a.assets, a.violations ,a.accountStatus, a.platform, a.createdBy, a.createdTime  FROM AccountDetails a WHERE a.platform LIKE %:platform% ")
+    List<AccountDetails> findByPlatform(@Param("platform") String platform);
+
     List<AccountDetails> findByAccountStatusAndPlatform(String accountStatus, String platform);
     List<AccountDetails> findByAccountStatus(String accountStatus);
 

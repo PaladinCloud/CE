@@ -28,7 +28,6 @@ import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
@@ -48,6 +47,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TenableAccountServiceImpl.class);
 
+    // TODO: Both to move into common constants when common projects unified.
     private static final String TENABLE = "tenable";
     private static final String TENABLE_ENABLED = "tenable.enabled";
 
@@ -68,18 +68,29 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
-        validateAccountCredentials(accountData, validateResponse);
-        return validateResponse;
+
+        return validateAccountCredentials(accountData);
     }
 
     @Override
     public AccountValidationResponse addAccount(CreateAccountRequest accountData) {
         LOGGER.info("Adding new Tenable account....");
-        AccountValidationResponse validateResponse = validateRequestData(accountData);
-        if (validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)) {
-            LOGGER.info("Validation failed due to missing parameters");
+        AccountValidationResponse validateResponse;
+
+        if (getListAccountsByPlatform(TENABLE).size() > 0) {
+            LOGGER.info("Tenable account already exists");
+            validateResponse = new AccountValidationResponse();
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage("Tenable account already exists");
             return validateResponse;
         }
+
+        validateResponse = validate(accountData);
+        if (validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)) {
+            LOGGER.info("Adding account failed: {}", validateResponse.getMessage());
+            return validateResponse;
+        }
+
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
         String roleName = System.getenv(PALADINCLOUD_RO);
@@ -94,15 +105,19 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
         LOGGER.info("Create secret response: {}", createResponse);
+
         String accountId = UUID.randomUUID().toString();
         createAccountInDb(accountId, "Tenable-Connector", TENABLE, accountData.getCreatedBy());
 
         updateConfigProperty(TENABLE_ENABLED, TRUE, JOB_SCHEDULER);
+
+        validateResponse = new AccountValidationResponse();
         validateResponse.setValidationStatus(SUCCESS);
         validateResponse.setAccountId(accountId);
         validateResponse.setAccountName("Tenable-Connector");
         validateResponse.setType(TENABLE);
-        validateResponse.setMessage("Account added successfully. Account id: " + accountId);
+        validateResponse.setMessage("Account added successfully. ID: " + accountId);
+
         return validateResponse;
     }
 
@@ -153,7 +168,6 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         if (!missingParams.isEmpty()) {
             String errorMessage = MISSING_MANDATORY_PARAMETER + String.join(", ", missingParams);
             response.setMessage(errorMessage);
-            response.setErrorDetails(errorMessage);
             response.setValidationStatus(FAILURE);
         } else {
             response.setValidationStatus(SUCCESS);
@@ -162,7 +176,8 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         return response;
     }
 
-    private void validateAccountCredentials(CreateAccountRequest accountData, AccountValidationResponse validateResponse) {
+    private AccountValidationResponse validateAccountCredentials(CreateAccountRequest accountData) {
+        AccountValidationResponse validationResponse = new AccountValidationResponse();
         // Requesting scan that doesn't exist to validate the account data.
         HttpGet request = new HttpGet(Constants.TENABLE_API_URL + "/scans/0");
         String apiKey = "accessKey=" + accountData.getTenableAccessKey() + ";secretKey=" + accountData.getTenableSecretKey() + ";";
@@ -170,28 +185,26 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         request.addHeader("content-type", "application/json");
         request.addHeader("cache-control", "no-cache");
         request.addHeader("Accept", "application/json");
+
         try {
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             CloseableHttpResponse response = httpClient.execute(request);
 
             if (response.getEntity() != null && response.getStatusLine().getStatusCode() == 401) {
                 // If the response is 401, then the account data is not valid.
-                validateResponse.setValidationStatus(FAILURE);
-                validateResponse.setMessage("Couldn't access Tenable API using provided keys.");
-                validateResponse.setErrorDetails("Couldn't access Tenable API using provided keys.");
+                validationResponse.setValidationStatus(FAILURE);
+                validationResponse.setMessage("Tenable API keys validation failed.");
             } else {
-                validateResponse.setValidationStatus(SUCCESS);
-                validateResponse.setMessage("Tenable validation successful");
+                validationResponse.setValidationStatus(SUCCESS);
+                validationResponse.setMessage("Tenable account validation passed");
             }
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Failed to validate the tenable account ", e);
-            validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Tenable validation Failed");
         } catch (IOException e) {
             LOGGER.error("Failed to validate the tenable account ", e.getMessage());
-            validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Tenable validation Failed: " + e.getMessage());
+            validationResponse.setValidationStatus(FAILURE);
+            validationResponse.setMessage("Tenable account validation failed");
         }
+
+        return validationResponse;
     }
 
     private String getTenableSecret(CreateAccountRequest accountRequest) {

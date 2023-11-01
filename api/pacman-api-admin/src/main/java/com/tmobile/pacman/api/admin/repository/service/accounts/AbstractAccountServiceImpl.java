@@ -215,6 +215,10 @@ public abstract class AbstractAccountServiceImpl implements AccountsService {
         return response;
     }
 
+    protected List<AccountDetails> getListAccountsByPlatform(String platform) {
+        return accountsRepository.findByPlatform(platform);
+    }
+
     protected void updateConfigProperty(String key, String value, String application) {
         ConfigPropertyItem config = new ConfigPropertyItem();
         config.setConfigKey(key);
