@@ -262,7 +262,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i] , filters});
             this.filters = filters;
           }
-          this.storeState();
         } catch (error) {
           this.errorMessage = this.errorHandler.handleJavascriptError(error);
           this.logger.log("error", error);
@@ -338,7 +337,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
           this.errorMessage = this.errorHandler.handleJavascriptError(error);
           this.logger.log("error", error);
         }
-    }
+      }
 
 
     getFormattedDate(dateString: string, isEndDate: boolean = false): string {
