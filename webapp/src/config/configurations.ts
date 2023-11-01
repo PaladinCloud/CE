@@ -90,6 +90,11 @@
         releaseVersion:'',
         enableUpdate: false
       },
- } 
-}
+      featureFlags:{
+        contrastPluginEnabled: false,
+        tenablePluginEnabled: true,
+        rapid7PluginEnabled: false
+      }
+    }
+  }
 };
