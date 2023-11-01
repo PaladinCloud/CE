@@ -1342,9 +1342,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                             float compPercent = 0f;
                             Integer violationCount = violationCountByPolicyIdMap.get(policyId);
                             if (pDetMap.get(POLICYID).toString().contains(CLOUD_QUALYS_POLICY) && qualysEnabled) {
-                                if ("ec2".equalsIgnoreCase(targetTypeOfPolicy)) {
+                                if ("ec2".equalsIgnoreCase(targetTypeOfPolicy) && ec2RunningAssets > 0) {
                                     compPercent = ec2RunningAssets == 0 ? (100 * severityWeightage) : ((ec2RunningAssets - (violationCount != null ? violationCount : 0)) * severityWeightage * 100) / ec2RunningAssets;
-                                } else if ("virtualmachine".equalsIgnoreCase(targetTypeOfPolicy)) {
+                                } else if ("virtualmachine".equalsIgnoreCase(targetTypeOfPolicy) && vmRunningAssets > 0) {
                                     compPercent = vmRunningAssets == 0 ? (100 * severityWeightage) : ((vmRunningAssets - (violationCount != null ? violationCount : 0)) * severityWeightage * 100) / vmRunningAssets;
                                 }
                             } else {

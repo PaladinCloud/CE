@@ -1279,7 +1279,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         String ttypesTemp;
         String ttypes = null;
-        AssetApi assetApi = assetServiceClient.getTargetTypeList(assetGroup, domain);
+        AssetApi assetApi;
+        try {
+            assetApi = assetServiceClient.getTargetTypeList(assetGroup, domain);
+        } catch (Exception exception) {
+            logger.error(exception.getMessage());
+            return "";
+        }
         AssetApiData data = assetApi.getData();
         AssetCountDTO[] targetTypes = data.getTargettypes();
         for (AssetCountDTO name : targetTypes) {
