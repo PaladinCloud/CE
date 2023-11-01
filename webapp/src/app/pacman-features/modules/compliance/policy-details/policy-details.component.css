@@ -302,7 +302,7 @@
 }
 
 .params-content .key{
-  flex: 4;
+  flex: 3;
   overflow: hidden;
   text-overflow: ellipsis;
 }

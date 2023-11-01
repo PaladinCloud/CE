@@ -73,11 +73,11 @@
                         </div>
                         <div class="content-wrapper">
                                 <div class="column-wrapper" *ngFor="let param of paramsArray">
-                                    <div class="col key">
+                                    <div class="col key nowrap-ellipsis">
                                         <span class="param-name nowrap-ellipsis" title="{{param.key}}">{{ param.key }}</span>
                                     </div>
-                                    <div class="col value">
-                                        <span class="param-value nowrap-ellipsis" title="{{param.value}}">{{ param.value == '' ? 'Unknown' : param.value }}</span>
+                                    <div class="col value nowrap-ellipsis">
+                                        <span class="param-value nowrap-ellipsis" title="{{param.value}}">{{ param.value }}</span>
                                     </div>
                                 </div>
                         
