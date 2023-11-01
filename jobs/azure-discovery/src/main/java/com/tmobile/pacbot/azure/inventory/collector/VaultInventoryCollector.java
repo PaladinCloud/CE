@@ -60,14 +60,20 @@ public class VaultInventoryCollector {
 				log.info("********* valutInventory *****>{}", properties);
 				HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
 						HashMap.class);
-				vaultVH.setEnabledForDeployment((boolean) propertiesMap.get("enabledForDeployment"));
-				vaultVH.setEnabledForDiskEncryption((boolean) propertiesMap.get("enabledForDiskEncryption"));
-				vaultVH.setEnabledForTemplateDeployment(
-						(boolean) propertiesMap.get("enabledForTemplateDeployment"));
-				vaultVH.setTenantId(propertiesMap.get("tenantId").toString());
-				vaultVH.setProvisioningState(propertiesMap.get("provisioningState").toString());
-				vaultVH.setSku((Map<String, Object>) propertiesMap.get("sku"));
-				vaultVH.setVaultUri(propertiesMap.get("vaultUri").toString());
+				if (propertiesMap.get("enabledForDeployment") != null) {
+					vaultVH.setEnabledForDeployment((boolean) propertiesMap.get("enabledForDeployment"));
+				}
+				if (propertiesMap.get("enabledForDiskEncryption") != null) {
+					vaultVH.setEnabledForDeployment((boolean) propertiesMap.get("enabledForDiskEncryption"));
+				}
+				if (propertiesMap.get("enabledForTemplateDeployment") != null) {
+					vaultVH.setEnabledForDeployment((boolean) propertiesMap.get("enabledForTemplateDeployment"));
+				}
+
+				vaultVH.setTenantId(propertiesMap.get("tenantId") != null ? propertiesMap.get("tenantId").toString() : null);
+				vaultVH.setProvisioningState(propertiesMap.get("provisioningState") != null ? propertiesMap.get("provisioningState").toString() : null);
+				vaultVH.setSku(propertiesMap.get("sku") != null ? (Map<String, Object>) propertiesMap.get("sku") : null);
+				vaultVH.setVaultUri(propertiesMap.get("vaultUri") != null ? propertiesMap.get("vaultUri").toString() : null);
 				if (propertiesMap.get("enablePurgeProtection") != null) {
 					vaultVH.setEnablePurgeProtection((boolean) propertiesMap.get("enablePurgeProtection"));
 				}
