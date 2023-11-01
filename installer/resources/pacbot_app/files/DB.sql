@@ -3086,7 +3086,7 @@ update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribu
 
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (17,'admin-policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Policy','policyId','/compliance/v1/filters/policy');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'prs','riskScore','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'PRS','riskScore','/compliance/v1/filters/policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Asset Type','targetType','/compliance/v1/filters/policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Severity','severity','/compliance/v1/filters/policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Category','category','/compliance/v1/filters/policy');
