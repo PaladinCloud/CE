@@ -28,6 +28,8 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     @Input() areAllFiltersEnabled = false;
     @Input() filtersToExcludeFromCasing = [];
     isDateFilter: boolean = false;
+    calendarMinDate: Date;
+    calendarMaxDate: Date;
     @Input() set appliedFilters(filters: FilterItem[] | undefined) {
         this._appliedFilters = filters || [];
         const optionDict = this._appliedFilters.reduce((prev, next) => {
@@ -79,7 +81,18 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         return this._categories;
     }
 
-    @Input() categoryOptions: { [key: string]: string[] } = {};
+    @Input() set categoryOptions(values){
+        this._categoryOptions = values;
+        
+        if(this.isDateFilter && this._categoryOptions[this.selectedCategory].length){
+            this.calendarMinDate = new Date(this._categoryOptions[this.selectedCategory][0]);
+            this.calendarMaxDate = new Date(this._categoryOptions[this.selectedCategory][1]);
+        }
+    };
+
+    get categoryOptions(){
+        return this._categoryOptions;
+    }
 
     @Output() categoryChange = new EventEmitter<string>();
     @Output() categoryClear = new EventEmitter<string>();
@@ -99,6 +112,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     categoryFilterQuery = '';
     categoryOptionFilterQuery = '';
 
+    private _categoryOptions: { [key: string]: string[] } = {};
     private _appliedFilters: FilterItem[] = [];
     private _categories: string[] = [];
     private filterTextChange = new Subject<any>();

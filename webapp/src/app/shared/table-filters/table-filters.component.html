@@ -68,6 +68,8 @@
         <ng-container *ngIf="isCategoryOptionsMenuOpen && isDateFilter">
                 <div class="date-selection-modal">
                     <app-date-selection
+                        [minDate]="calendarMinDate"
+                        [maxDate]="calendarMaxDate"
                         (datesSelected)="dateIntervalSelected($event.from, $event.to)"
                     ></app-date-selection>
                 </div>

@@ -20,6 +20,7 @@ export class DateSelectionComponent implements OnInit {
     readonly today = new Date();
 
     @Input("minDate") minDate : Date;
+    @Input() maxDate: Date = this.today;
 
     @Input() selectedRange?: DateRange<Date>;
 

@@ -319,11 +319,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 .subscribe((response) => {
                     this.filterTypeLabels = map(response[0].response, 'optionName');
                     this.filterTypeOptions = response[0].response;
-                    this.filterTypeLabels.push("Created Date");
-                    this.filterTypeOptions.push({
-                        "optionName": "Created Date",
-                        "optionValue": "_loaddate"
-                    })
                     this.filterTypeLabels.sort();
 
                     this.routerParam();
@@ -337,9 +332,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     async changeFilterType(value, searchText='') {
-        if(value.toLowerCase() == "created date"){
-            return;
-        }
         try {
           const currentQueryParams =
             this.routerUtilityService.getQueryParametersFromSnapshot(
@@ -349,17 +341,28 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
           const filtersToBePassed = this.getFilterPayloadForDataAPI();
           const filterText = this.filterText;
           const currentFilterType = this.currentFilterType;
+          const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
     
-          const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags: undefined, labelsToExcludeSort: []});
+          const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags, labelsToExcludeSort});
           this.filterTagOptions[value] = filterTagOptions;
           this.filterTagLabels[value] = filterTagLabels;
+
+          this.filterTagLabels = {...this.filterTagLabels};          
           this.storeState();
       
         } catch (error) {
           this.errorMessage = this.errorHandler.handleJavascriptError(error);
           this.logger.log("error", error);
         }
-      }
+    }
+
+    getUpdateFilterTagsCallback(){
+        const labelsToExcludeSort = ['created date'];
+        const updateFilterTags = (filterTagsData, value) => {
+          return filterTagsData;
+        }
+        return [updateFilterTags, labelsToExcludeSort];
+    }
 
     getFormattedDate(dateString: string, isEndDate: boolean = false): string {
         const localDate = new Date(dateString);
@@ -598,7 +601,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             if(filterKey=='_loaddate'){
 
                 const [fromDate, toDate] = filterToBePassed[filterKey].split(" - ");
-                const filterIndex = this.filters.findIndex(filter => filter.keyDisplayValue.toLowerCase()==="created date");
                 const dateRangeString = `${this.getFormattedDate(fromDate)} - ${this.getFormattedDate(toDate, true)}`;
                 filterToBePassed[filterKey] = dateRangeString;
             }
