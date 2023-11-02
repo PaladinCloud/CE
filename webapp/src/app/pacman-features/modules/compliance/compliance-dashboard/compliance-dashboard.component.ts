@@ -1023,10 +1023,13 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
                 .getAssetTrendData(queryParams)
                 .subscribe(
                     (response) => {
-                        this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
-                        if (response[0].trend.length < 2) {
-                            this.totalAssetsCountDataError = 'waitForData';
-                        }
+                      this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
+                      this.getMinDateForDateSelector(this.totalAssetsCountData[0].values);
+                      if (this.utils.getDifferenceBetweenDateByDays(this.minDate, new Date())<2 && this.totalAssetsCountData[0].values.length < 2) {
+                          this.totalAssetsCountDataError = 'waitForData';
+                      } else if(this.totalAssetsCountData[0].values.length==0){
+                          this.totalAssetsCountDataError = 'noDataAvailable';
+                      }
                     },
                     (error) => {
                         this.logger.log('error', error);
@@ -1093,6 +1096,16 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             this.logger.log('error', error);
         }
     }
+
+    getMinDateForDateSelector(dataList){
+      if(!this.minDate){
+        if(dataList.length>0){
+            this.minDate = new Date(dataList[0].date);
+        }else{
+            this.minDate = new Date();
+        }
+      }
+    }  
 
     private getComplianceData() {
         if (!this.selectedAssetGroup || !this.selectedDomain) {

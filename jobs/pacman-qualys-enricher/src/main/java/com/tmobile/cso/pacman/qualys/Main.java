@@ -69,7 +69,8 @@ public class Main {
             errorInfo =  new KBDataImporter().execute();
             break;
         }
-        if(!errorInfo.isEmpty()){
+        ArrayList errors= (ArrayList) errorInfo.get("errors");
+        if(!errors.isEmpty()){
             //Below logger message is used by datadog to create notification in slack
             log.error("Error occurred in atleast one collector for jobId : {}",jobHint);
         }

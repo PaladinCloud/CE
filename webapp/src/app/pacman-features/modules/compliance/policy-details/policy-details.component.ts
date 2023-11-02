@@ -212,9 +212,9 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
               this.paramErrorMessage = 'noDataAvailable';
               return;
             }
-            this.paramsArray = JSON.parse(response.policyParams).params
+            this.paramsArray = (JSON.parse(response.policyParams).params??[])
             .filter(item => item.isEdit && item.isEdit=="true")
-            .map(item => {return {key: item.key, value: item.value}});
+            .map(item => {return {key: item.displayName || item.key, value: item.value}});
             if(this.paramsArray.length==0){
               this.paramErrorMessage = 'noDataAvailable';
             }else{

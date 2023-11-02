@@ -85,8 +85,12 @@
       <version>3.8.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-core</artifactId>
+      <version>1.2.2</version>
+    </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>

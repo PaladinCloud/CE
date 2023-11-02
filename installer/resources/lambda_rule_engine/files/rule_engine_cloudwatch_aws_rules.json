@@ -3,7 +3,7 @@
 	"aws_ami_unused",
 	"aws_ec2_instance_generation",
 	"aws_kms_key_rotation_enabled",
-	"aws_rds_unencrypted_public_access",
+	"aws_rds_public_access",
 	"aws_check_for_expired_acm_certificate",
 	"aws_enable_cloudtrail_global_services",
 	"aws_enable_emr_clusters_encryption",
@@ -184,5 +184,7 @@
 	"aws_account_should_have_vpclogs_enabled",
 	"aws_cloudfront_shouldnothave_unauthorized_html_content",
 	"aws_iamuser_shouldnothave_corenetwork_privileges",
-	"deny_public_access_to_rdp_Port_3389"
+	"deny_public_access_to_rdp_Port_3389",
+	"enable_aws_config_service",
+	"aws_enable_encryption_for_rds_instance"
 ]
