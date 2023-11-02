@@ -7,8 +7,11 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
+import { DateRange } from '@angular/material/datepicker';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
@@ -38,19 +41,26 @@ export class CardComponent implements OnInit {
   @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
   isCustomSelected = false;
   @Input("fromDate") fromDate: Date;
+  @Input("minDate") minDate: Date;
+  selectedRange?: DateRange<Date>;
   toDate: Date = new Date();
-  selectedItem = "All time";
+  @Input() selectedItem = "All time";
   breadcrumbPresent: string = "Dashboard";
+  agDomainSubscription: Subscription;
 
-
-    constructor(
-        private errorHandling: ErrorHandlingService,
-        private utils: UtilsService,
-        private loggerService: LoggerService,
-        private workflowService: WorkflowService,
-        private router: Router,
-        private activatedRoute: ActivatedRoute
-    ) {}
+  constructor(
+    private errorHandling: ErrorHandlingService,
+    private utils: UtilsService,
+    private loggerService: LoggerService,
+    private workflowService: WorkflowService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private agDomainObservableService:AgDomainObservableService
+  ) { 
+    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(async([assetGroupName, domain]) => {
+        this.selectedRange = null;
+      })
+  }
 
     ngOnInit() {}
 
@@ -76,11 +86,12 @@ export class CardComponent implements OnInit {
                 this.isCustomSelected = true;
                 return;
             }
-            this.dateIntervalSelected(new Date(2022, 0, 1), this.toDate);
+            this.dateIntervalSelected(this.minDate, this.toDate);
             return;
         }
         const date = new Date();
         this.isCustomSelected = false;
+        this.selectedRange = null;
         switch (e) {
             case '1 week':
                 date.setDate(date.getDate() - 7);
@@ -100,6 +111,9 @@ export class CardComponent implements OnInit {
     };
 
     dateIntervalSelected(fromDate?, toDate?) {
+        if(this.isCustomSelected){
+            this.selectedRange = new DateRange<Date>(fromDate, toDate);
+          }
         const queryParamObj = {};
         if (fromDate) {
             queryParamObj['from'] = fromDate;
@@ -107,6 +121,7 @@ export class CardComponent implements OnInit {
         if (toDate) {
             queryParamObj['to'] = toDate;
         }
+        queryParamObj['graphInterval']=this.selectedItem;
         this.isCustomSelected = false;
         this.matMenuTrigger.closeMenu();
         this.graphIntervalSelected.emit(queryParamObj);
@@ -179,5 +194,9 @@ export class CardComponent implements OnInit {
                 this.widgetWidth = widthValue;
             }
         }
+    }
+
+    ngOnDestroy(){
+        if(this.agDomainSubscription) this.agDomainSubscription.unsubscribe();
     }
 }

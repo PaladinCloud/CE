@@ -73,7 +73,9 @@
                     [card]="cards[2]"
                     [dataError]="totalAssetsCountDataError"
                     [data]="totalAssetsCountData"
-                    [fromDate] = "minDate"
+                    [fromDate] = "fromDate"
+                    [minDate] = "minDate"
+                    [selectedItem]="graphInterval"
                     (graphIntervalSelected)="getAssetsCountData($event)"
                 ></app-card>
             </mat-grid-tile>

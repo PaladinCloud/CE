@@ -21,7 +21,7 @@ export class DateSelectionComponent implements OnInit {
 
     @Input("minDate") minDate : Date;
 
-    selectedRange?: DateRange<Date>;
+    @Input() selectedRange?: DateRange<Date>;
 
     @Output() datesSelected = new EventEmitter<{ from: Date; to: Date }>();
 
@@ -32,6 +32,7 @@ export class DateSelectionComponent implements OnInit {
             from: this.selectedRange.start,
             to: this.selectedRange.end,
         });
+        this.selectedRange = null;
     }
 
     selectedDateChange(event: Date) {

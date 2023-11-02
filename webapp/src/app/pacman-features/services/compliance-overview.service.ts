@@ -79,6 +79,17 @@ export class ComplianceOverviewService {
         // *************************************************************** //
         const finalData = [];
         const apiResponse = data['compliance_info'];
+        let mostKeysObject;
+        let mostKeysCount = 0;
+        
+        apiResponse.forEach(obj => {
+          const objKeys = Object.keys(obj);
+          if (objKeys.length > mostKeysCount) {
+            mostKeysObject = obj;
+            mostKeysCount = objKeys.length;
+          }
+        });
+        let minDate = new Date();
         if (apiResponse.length) {
             const types = Object.keys(apiResponse[0]);
             types.splice(types.indexOf('date'), 1);
@@ -86,10 +97,15 @@ export class ComplianceOverviewService {
                 const values = [];
                 let formattedObject = {};
                 apiResponse.forEach(details => {
+                    const curr_date = new Date(details['date']);
+                    if(curr_date<minDate){
+                        minDate = curr_date;
+                    }
                     const obj = {
-                        'date' : new Date(details['date']),
-                        'value': details[type],
-                        'zero-value': details[type] === 0 ? true : false
+                        'date' : curr_date,
+                        'value': details[type] ? details[type] : null,
+                        'zero-value': details[type] && details[type] == 0 ? true : false,
+                        "no-data": !details[type] ? true : false
                     };
                     values.push(obj);
                 });
@@ -105,7 +121,7 @@ export class ComplianceOverviewService {
             });
         }
 
-        return finalData;
+        return {finalData,minDate};
 
     }
 
