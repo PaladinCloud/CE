@@ -13,7 +13,9 @@
         </div>
         <app-custom-card
             [card]="card"
-            [fromDate]="minDate"
+            [fromDate]="fromDate"
+            [minDate]="minDate"
+            [selectedItem]="graphInterval"
             (graphIntervalSelected)="getAssetsCountData($event)"
             [showDateDropdown]="true"
         >

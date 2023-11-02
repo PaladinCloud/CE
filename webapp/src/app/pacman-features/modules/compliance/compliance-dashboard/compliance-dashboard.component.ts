@@ -135,6 +135,8 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     breadcrumbArray = [];
     breadcrumbLinks = [];
     breadcrumbPresent = 'Dashboard';
+    graphInterval: string = "All time";
+
     columnNamesMap = {
         name: 'Policy',
         failed: 'Violations',
@@ -192,10 +194,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
 
             if (a == 'NR') isAsc ? (a = '101%') : (a = '-1%');
             if (b == 'NR') isAsc ? (b = '101%') : (b = '-1%');
-
-            a = a.substring(0, a.length - 1);
-            b = b.substring(0, b.length - 1);
-
             const aNum = parseFloat(a);
             const bNum = parseFloat(b);
 
@@ -959,55 +957,48 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       this.getComplianceData();
     }
 
-    // changeFilterTags(value) {
-    //   try {
-    //     if (this.currentFilterType) {
-    //       const filterTag = _.find(this.filterTagOptions, { name: value.value });
-    //       this.utils.addOrReplaceElement(
-    //         this.filters,
-    //         {
-    //           typeName: this.currentFilterType.optionName,
-    //           typeValue: this.currentFilterType.optionValue,
-    //           tagName: filterTag.name,
-    //           tagValue: filterTag["id"],
-    //           key: this.currentFilterType.optionName,
-    //           value: filterTag.name,
-    //         },
-    //         (el) => {
-    //           return el.key === this.currentFilterType.optionName;
-    //         }
-    //       );
-    //       this.updateComponent();
-    //     }
-    //     this.utils.clickClearDropdown();
-    //   } catch (error) {
-    //     this.errorMessage = this.errorHandling.handleJavascriptError(error);
-    //     this.logger.log("error", error);
-    //   }
-    // }
-
-    getFormattedDate(date: Date) {
-        const offset = date.getTimezoneOffset();
-        const formattedDate = new Date(date.getTime() - offset * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
-        return formattedDate;
+    getFormattedDate(date: Date){
+      const offset = date.getTimezoneOffset()
+      const formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+      return formattedDate;
+    }
+  
+    getMinDateForDateSelector(dataList){
+      if(this.graphInterval == "All time"){
+        if(dataList.length>0){
+            this.minDate = new Date(dataList[0].date);
+        }else{
+            this.minDate = new Date();
+        }
+      }
     }
 
-    getAssetsCountData(queryObj) {
-        if (!this.selectedAssetGroup) {
-            return;
+  getAssetsCountData(dateIntervalObj) {
+        if(!this.selectedAssetGroup){
+          return;
         }
-        if (this.trendDataSubscription) {
-            this.trendDataSubscription.unsubscribe();
+        if(this.trendDataSubscription){
+          this.trendDataSubscription.unsubscribe();
         }
-        if (queryObj.from) {
-            this.graphFromDate = queryObj.from;
+        
+        if(dateIntervalObj.from){
+          this.graphFromDate = dateIntervalObj.from;
+        }else{
+          this.graphFromDate = new Date(2022, 1, 1);
         }
 
-        if (queryObj.to) {
-            this.graphToDate = queryObj.to;
+        if(dateIntervalObj.to){
+          this.graphToDate = dateIntervalObj.to;
+        }else{
+          this.graphToDate = new Date();
         }
+        
+        if(dateIntervalObj.graphInterval){
+          this.graphInterval = dateIntervalObj.graphInterval;
+        }else{
+          this.graphInterval = "All time";
+        }  
+
         const queryParams = {
             ag: this.selectedAssetGroup,
             domain: this.selectedDomain,
@@ -1096,16 +1087,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             this.logger.log('error', error);
         }
     }
-
-    getMinDateForDateSelector(dataList){
-      if(!this.minDate){
-        if(dataList.length>0){
-            this.minDate = new Date(dataList[0].date);
-        }else{
-            this.minDate = new Date();
-        }
-      }
-    }  
 
     private getComplianceData() {
         if (!this.selectedAssetGroup || !this.selectedDomain) {

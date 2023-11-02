@@ -101,21 +101,21 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         eventName: 'Event',
         eventCategoryName: 'Type',
         eventSourceName: 'Source',
-        _loaddate: 'Created'
+        _loaddate: 'Created Date'
     };
 
     columnWidths = {
         'Event': 2,
         'Type': 0.7,
         'Source': 0.7,
-        'Created': 0.7
+        'Created Date': 0.7
     };
 
     centeredColumns = {
         Event: false,
         Type: true,
         Source: true,
-        Created: true,
+        "Created Date": true,
     };
 
     FullQueryParams: any;
@@ -658,7 +658,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                             ...cellObj,
                             isLink: true
                         };
-                    }else if(col.toLowerCase() == "created"){
+                    }else if(col.toLowerCase() == "created date"){
                         
                         cellObj = {
                             isDate: true,

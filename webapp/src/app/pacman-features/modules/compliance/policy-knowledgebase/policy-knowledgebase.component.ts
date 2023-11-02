@@ -183,7 +183,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   getPreservedState(){
       const state = this.tableStateService.getState(this.saveStateKey) || {};
-
+      
       this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
       this.displayedColumns = Object.keys(this.columnWidths);
 
@@ -198,6 +198,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.filters = state?.filters || [];
       this.totalRows = this.tableData.length;
       this.selectedRowIndex = state?.selectedRowIndex;
+      this.policyCategoryDic = state?.policyCategoryDic;
 
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
@@ -292,7 +293,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       searchTxt: this.searchTxt,
       tableScrollTop: this.tableScrollTop,
       filters: this.filters,
-      selectedRowIndex: this.selectedRowIndex
+      selectedRowIndex: this.selectedRowIndex,
+      policyCategoryDic: this.policyCategoryDic
     }
     this.tableStateService.setState(this.saveStateKey, state);
   }
