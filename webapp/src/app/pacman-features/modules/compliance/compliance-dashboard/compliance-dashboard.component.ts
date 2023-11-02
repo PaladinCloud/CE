@@ -254,6 +254,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   graphFromDate: Date = new Date(2022, 0, 1);
   graphToDate: Date = new Date();
   minDate: Date;
+  graphInterval: string = "All time";
 
   dashboardContainers: DashboardArrangementItems;
   dashcobardCollapsedContainers: DasbhoardCollapsedDict;
@@ -993,51 +994,56 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     return formattedDate;
   }
 
-  getAssetsCountData(queryObj) {
-    if (!this.selectedAssetGroup) {
+  getAssetsCountData(dateIntervalObj) {
+    if(!this.selectedAssetGroup){
       return;
     }
-    if (this.trendDataSubscription) {
+    if(this.trendDataSubscription){
       this.trendDataSubscription.unsubscribe();
     }
-    if (queryObj.from) {
-      this.graphFromDate = queryObj.from;
+
+    if(dateIntervalObj.from){
+      this.graphFromDate = dateIntervalObj.from;
+    }else{
+      this.graphFromDate = new Date(2022, 1, 1);
     }
 
-    if (queryObj.to) {
-      this.graphToDate = queryObj.to;
+    if(dateIntervalObj.to){
+      this.graphToDate = dateIntervalObj.to;
+    }else{
+      this.graphToDate = new Date();
     }
+
+    if(dateIntervalObj.graphInterval){
+      this.graphInterval = dateIntervalObj.graphInterval;
+    }else{
+      this.graphInterval = "All time";
+    }  
+
     const queryParams = {
       ag: this.selectedAssetGroup,
       domain: this.selectedDomain,
       from: this.getFormattedDate(this.graphFromDate),
-      to: this.getFormattedDate(this.graphToDate),
+      to: this.getFormattedDate(this.graphToDate)
     };
-
     this.totalAssetsCountDataError = '';
     this.totalAssetsCountData = [];
-
     try {
-      this.trendDataSubscription = this.multilineChartService
-        .getAssetTrendData(queryParams)
-        .subscribe(
-          (response) => {
-            this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
-            this.getMinDateForDateSelector(this.totalAssetsCountData[0].values);
-            if (this.utils.getDifferenceBetweenDateByDays(this.minDate, new Date()) < 2 && this.totalAssetsCountData[0].values.length < 2) {
+        this.trendDataSubscription = this.multilineChartService.getAssetTrendData(queryParams).subscribe(response => {
+          this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
+          this.getMinDateForDateSelector(this.totalAssetsCountData[0].values);
+          if (this.utils.getDifferenceBetweenDateByDays(this.minDate, new Date())<2 && this.totalAssetsCountData[0].values.length < 2) {
               this.totalAssetsCountDataError = 'waitForData';
-            } else if (this.totalAssetsCountData[0].values.length == 0) {
+          } else if(this.totalAssetsCountData[0].values.length==0){
               this.totalAssetsCountDataError = 'noDataAvailable';
-            }
-          },
-          (error) => {
-            this.logger.log('error', error);
-            this.totalAssetsCountDataError = 'apiResponseError';
-          },
-        );
+          }
+        }, (error) => {
+          this.logger.log("error", error);
+          this.totalAssetsCountDataError = "apiResponseError";
+        });
     } catch (error) {
-      this.totalAssetsCountDataError = 'apiResponseError';
-      this.logger.log('error', error);
+        this.totalAssetsCountDataError = "apiResponseError";
+        this.logger.log("error", error);
     }
   }
 
@@ -1096,12 +1102,12 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMinDateForDateSelector(dataList) {
-    if (!this.minDate) {
-      if (dataList.length > 0) {
-        this.minDate = new Date(dataList[0].date);
-      } else {
-        this.minDate = new Date();
+  getMinDateForDateSelector(dataList){
+    if(this.graphInterval == "All time"){
+      if(dataList.length>0){
+          this.minDate = new Date(dataList[0].date);
+      }else{
+          this.minDate = new Date();
       }
     }
   }

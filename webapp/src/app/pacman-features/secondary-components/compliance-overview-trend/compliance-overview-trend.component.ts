@@ -224,7 +224,8 @@ export class ComplianceOverviewTrendComponent
           (response) => {
             try {
               this.setDataLoaded();
-              this.graphData = response.sort(
+              const responseData = response.finalData;
+              this.graphData = responseData.sort(
                 (a, b) => complianceTypeOrder[a.key] - complianceTypeOrder[b.key],
               );
               if (

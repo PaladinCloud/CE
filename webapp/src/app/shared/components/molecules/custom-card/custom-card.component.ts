@@ -1,6 +1,9 @@
 
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { DateRange } from '@angular/material/datepicker';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { Subscription } from 'rxjs';
+import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 
 @Component({
   selector: 'app-custom-card',
@@ -14,15 +17,23 @@ export class CustomCardComponent implements OnInit {
   @Input() selectedItem = "All time";
   @Input() fromDate: Date;
   @Input() toDate: Date = new Date();
+  @Input() minDate: Date = new Date();
+  selectedRange?: DateRange<Date>;
   @Input() showDateDropdown = false;
   @Input() card = {
     header: "Default title"
   };
   isCustomSelected: boolean = false;
   @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
+  @Output() switchTabs = new EventEmitter<any>();
+  agDomainSubscription: Subscription;
 
 
-  constructor() { }
+  constructor(private agDomainObservableService:AgDomainObservableService) {
+    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(async([assetGroupName, domain]) => {
+      this.selectedRange = null;
+    })
+   }
 
   ngOnInit(): void {
   }
@@ -37,11 +48,12 @@ export class CustomCardComponent implements OnInit {
         this.matMenuTrigger.openMenu()
         return;
       }
-      this.dateIntervalSelected(new Date(2022, 0, 1), this.toDate);
+      this.dateIntervalSelected(this.minDate, this.toDate);
       return;
     }
     let date = new Date();
     this.isCustomSelected = false;
+    this.selectedRange = null;
     switch(e){
       case "1 week":
         date.setDate(date.getDate() - 7);
@@ -59,11 +71,14 @@ export class CustomCardComponent implements OnInit {
     this.dateIntervalSelected(date, this.toDate);
   }
 
-  dateIntervalSelected(from?, to?){
+  dateIntervalSelected(from:Date, to:Date){
+    if(this.isCustomSelected){
+      this.selectedRange = new DateRange<Date>(from, to);
+    }
     let event = {
       from: from,
       to: to,
-      selectedItem: this.selectedItem
+      graphInterval: this.selectedItem
     }
     this.graphIntervalSelected.emit(event);
     this.matMenuTrigger.closeMenu();
@@ -81,4 +96,7 @@ export class CustomCardComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(){
+    if(this.agDomainSubscription) this.agDomainSubscription.unsubscribe();
+  }
 }

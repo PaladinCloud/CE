@@ -91,7 +91,7 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         },
     ];
 
-    selectedItem = 'All time';
+    graphInterval = 'All time';
     isCustomSelected = false;
     fromDate: Date = new Date(2022, 0, 1);
     toDate: Date = new Date();
@@ -127,18 +127,6 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
 
     ngOnInit() {
         this.graphHeight = 320;
-    }
-
-    ifCustomSelected() {
-        if (this.selectedItem == 'Custom') {
-            this.selectedItem = '';
-        }
-    }
-
-    onDropdownClose() {
-        if (this.selectedItem == '') {
-            this.selectedItem = 'Custom';
-        }
     }
 
     getFormattedDate(date: Date) {
@@ -237,7 +225,7 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         }
     }
 
-    getAssetsCountData(queryObj) {
+    getAssetsCountData(dateIntervalObj) {
         if (!this.assetGroupName) {
             return;
         }
@@ -245,13 +233,25 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         if (this.trendDataSubscription) {
             this.trendDataSubscription.unsubscribe();
         }
-        if (queryObj.from) {
-            this.fromDate = queryObj.from;
-        }
 
-        if (queryObj.to) {
-            this.toDate = queryObj.to;
-        }
+        if(dateIntervalObj.from){
+            this.fromDate = dateIntervalObj.from;
+          }else{
+            this.fromDate = new Date(2022, 1, 1);
+          }
+      
+          if(dateIntervalObj.to){
+            this.toDate = dateIntervalObj.to;
+          }else{
+            this.toDate = new Date();
+          }
+          
+          if(dateIntervalObj.graphInterval){
+            this.graphInterval = dateIntervalObj.graphInterval;
+          }else{
+            this.graphInterval = "All time";
+          }  
+
         const queryParams = {
             ag: this.assetGroupName,
             domain: this.domainName,
@@ -287,7 +287,7 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     getMinDateForDateSelector(dataList){
-        if(!this.minDate){
+        if(this.graphInterval == "All time"){
             if(dataList.length>0){
                 this.minDate = new Date(dataList[0].date);
             }else{
@@ -341,14 +341,15 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
                 this.pageLevel,
             );
             this.assetGroupName = assetGroupName;
-            this.getAssetsCountData({
-                from: this.fromDate,
-                to: this.toDate,
-            });
-            this.getAssetsTileData();
-            this.getExemtedAssetsCount();
-            this.getResourceTypeAndCountAndRecommendation();
+            this.updateComponent();
         });
+    }
+
+    updateComponent(){
+        this.getAssetsCountData({});
+        this.getAssetsTileData();
+        this.getExemtedAssetsCount();
+        this.getResourceTypeAndCountAndRecommendation();
     }
 
     ngOnDestroy() {

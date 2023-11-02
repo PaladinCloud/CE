@@ -182,29 +182,30 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
   }
 
-  getPreservedState() {
-    const state = this.tableStateService.getState(this.saveStateKey) || {};
+  getPreservedState(){
+      const state = this.tableStateService.getState(this.saveStateKey) || {};
+      
+      this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
+      this.displayedColumns = Object.keys(this.columnWidths);
 
-    this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
-    this.displayedColumns = Object.keys(this.columnWidths);
+      this.headerColName = state?.headerColName || 'Severity';
+      this.direction = state?.direction || 'desc';
+      this.displayedColumns = Object.keys(this.columnWidths);
+      this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+      this.searchTxt = state?.searchTxt || '';
+      this.tableData = state?.data || [];
+      this.tableDataLoaded = true;
+      this.tableScrollTop = state?.tableScrollTop;
+      this.filters = state?.filters || [];
+      this.totalRows = this.tableData.length;
+      this.selectedRowIndex = state?.selectedRowIndex;
+      this.policyCategoryDic = state?.policyCategoryDic;
 
-    this.headerColName = state?.headerColName || 'Severity';
-    this.direction = state?.direction || 'desc';
-    this.displayedColumns = Object.keys(this.columnWidths);
-    this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-    this.searchTxt = state?.searchTxt || '';
-    this.tableData = state?.data || [];
-    this.tableDataLoaded = true;
-    this.tableScrollTop = state?.tableScrollTop;
-    this.filters = state?.filters || [];
-    this.totalRows = this.tableData.length;
-    this.selectedRowIndex = state?.selectedRowIndex;
-
-    if (this.tableData && this.tableData.length > 0) {
-      this.isStatePreserved = true;
-    } else {
-      this.isStatePreserved = false;
-    }
+      if(this.tableData && this.tableData.length>0){
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
 
     if (state.filters) {
       this.filters = state.filters;
@@ -293,7 +294,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       searchTxt: this.searchTxt,
       tableScrollTop: this.tableScrollTop,
       filters: this.filters,
-      selectedRowIndex: this.selectedRowIndex
+      selectedRowIndex: this.selectedRowIndex,
+      policyCategoryDic: this.policyCategoryDic
     }
     this.tableStateService.setState(this.saveStateKey, state);
   }
