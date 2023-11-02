@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.tmobile.cso.pacman.qualys.exception.UnAuthorisedException;
+import com.tmobile.pacman.commons.dto.ErrorVH;
+import com.tmobile.pacman.commons.dto.PermissionVH;
 import org.apache.http.ParseException;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -117,7 +119,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
         {
             Map<String,String> errorMap = new HashMap<>();
             errorMap.put(ERROR, "Error fetching host assets");
-            errorMap.put(ERROR_TYPE, FATAL);
+            errorMap.put(ERROR_TYPE,FAILED);
             errorMap.put(EXCEPTION, e.getMessage());
             errorList.add(errorMap);
         }catch (Exception e) {

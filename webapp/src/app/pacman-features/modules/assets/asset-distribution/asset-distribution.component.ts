@@ -199,10 +199,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
        // Initialize variables to store the maximum and minimum values
         let maxDataValue, minDataValue;
 
-        // Filter out data points with a value of 0
-        this.treemapData = this.treemapData.filter(dataPoint => dataPoint.y !== 0);
-
-        // Find the maximum value within the filtered data
+        // Find the maximum value within the treemap data
         maxDataValue = this.treemapData[this.treemapData.length - 1].y;
 
         // Create a square root scale for data values, mapping them to a range of [0, 20]
@@ -214,9 +211,12 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         y: sqrtScale(dataPoint.y)
         }));
 
+        // Filter out data points with a value of 0
+        const filteredTreemapData = this.treemapData.filter(dataPoint => dataPoint.y !== 0);
+
         // Find the minimum and maximum values within the scaled data
-        minDataValue = this.treemapData[0].y;
-        maxDataValue = this.treemapData[this.treemapData.length - 1].y;
+        minDataValue = filteredTreemapData[0].y;
+        maxDataValue = filteredTreemapData[filteredTreemapData.length - 1].y;
 
         // Calculate the difference between the maximum and minimum scaled values
         const valueRange = (maxDataValue - minDataValue) / this.colors.length;

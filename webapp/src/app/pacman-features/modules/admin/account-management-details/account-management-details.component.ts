@@ -99,7 +99,7 @@ export class AccountManagementDetailsComponent implements OnInit, OnDestroy {
   }
 
   replaceUrl(url, action=''){
-    if(this.platform=="redhat"){
+    if(this.platform=="redhat" || this.platform=="gcp"){
       return url.replace("{pluginSelected}", this.platform)
     }else{
       return url.replace("/{pluginSelected}/","").replace(action, '');

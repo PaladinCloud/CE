@@ -2347,9 +2347,13 @@ public class InventoryUtil {
 					if(!regionKeys.isEmpty()) {
 						List<KMSKeyVH> kmsKeysList = new ArrayList<>();
 						for(KeyListEntry key : regionKeys) {
-							KMSKeyVH kmsKey = new KMSKeyVH();
 							try {
 								DescribeKeyResult result = awskms.describeKey(new DescribeKeyRequest().withKeyId(key.getKeyId()));
+								/** we dont want to collect and evaluate kms - aws managed keys for now because they are completely managed by AWS and cannot be changed by user */
+								if("aws".equalsIgnoreCase(result.getKeyMetadata().getKeyManager())) {
+									continue;
+								}
+								KMSKeyVH kmsKey = new KMSKeyVH();
 								kmsKey.setKey(result.getKeyMetadata());
 								try{
 									kmsKey.setTags(awskms.listResourceTags(new ListResourceTagsRequest().withKeyId(key.getKeyId())).getTags());

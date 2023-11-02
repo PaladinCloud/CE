@@ -2,14 +2,17 @@ package com.tmobile.pacman.api.admin.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.domain.GcpPluginRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
 import com.tmobile.pacman.api.admin.domain.PluginResponse;
 import com.tmobile.pacman.api.admin.domain.RedHatPluginRequest;
 import com.tmobile.pacman.api.admin.domain.Response;
+import com.tmobile.pacman.api.admin.exceptions.PluginServiceException;
 import com.tmobile.pacman.api.admin.factory.AccountFactory;
+import com.tmobile.pacman.api.admin.factory.PluginFactory;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.repository.service.AccountsService;
 import com.tmobile.pacman.api.admin.repository.service.AssetGroupService;
@@ -29,14 +32,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
@@ -52,11 +61,12 @@ public class AccountsController {
 
     @Autowired
     UserPreferencesService userPreferencesService;
-
-    @Autowired
-    private PluginsService<RedHatPluginRequest> redHatPluginService;
     @Autowired
     private AmazonCognitoConnector amazonCognitoConnector;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private PluginFactory pluginFactory;
 
 
     @Value("${application.optionalAssetGroupList}")
@@ -186,28 +196,13 @@ public class AccountsController {
     @ApiOperation(httpMethod = "DELETE", value = "API to delete account", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @DeleteMapping(path = "/{type}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> deletePlugin(@ApiParam(value = "provide account number", required = true) @RequestParam("accountId") String accountId,
-                                               @PathVariable("type") String type) {
+                                               @AuthenticationPrincipal Principal user, @PathVariable("type") String type) {
         try {
-            PluginResponse response = redHatPluginService.deletePlugin(accountId);
-            if (response.getStatus().equals(AdminConstants.SUCCESS)) {
-                List<String> optionalAssetList = null;
-                if (Objects.nonNull(optionalAssetGroupList)) {
-                    optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-                }
-                if (Objects.nonNull(optionalAssetList) && !optionalAssetList.isEmpty() && optionalAssetList.contains(type)) {
-                    List<AccountDetails> findOnlineAccounts = redHatPluginService.findOnlineAccounts("configured", type);
-                    if (Objects.isNull(findOnlineAccounts) || findOnlineAccounts.isEmpty()) {
-                        String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(type, false, "admin");
-                        log.debug("AssetGoup  {}   status {}", type, updateAssetGroupStatus);
-                        Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(type);
-                        log.debug("total user updated with default asset group {}", totalUsers);
-                    }
-                }
-                log.info(type + " plugin created successfully.");
-            } else {
-                log.info("Failed to delete " + type + " plugin.");
-            }
-            return ResponseUtils.buildSucessResponse(response);
+            String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
+            PluginParameters parameters = PluginParameters.builder().pluginName(type).createdBy(createdBy)
+                    .id(accountId).build();
+            PluginsService plugin = pluginFactory.getService(type);
+            return ResponseUtils.buildSucessResponse(plugin.deletePlugin(parameters));
         } catch (Exception exception) {
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
@@ -217,45 +212,31 @@ public class AccountsController {
     @ApiOperation(httpMethod = "POST", value = "API to create plugin", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(path = "/{type}/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createPlugin(@AuthenticationPrincipal Principal user,
-                                               @RequestBody RedHatPluginRequest request,
-                                               @PathVariable("type") String type) {
+                                               @RequestBody Object request, @PathVariable("type") String type) {
         try {
+            PluginsService plugin = pluginFactory.getService(type);
             String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
-            PluginResponse response = redHatPluginService.createPlugin(request, createdBy);
-            if (response.getStatus().equals(AdminConstants.SUCCESS)) {
-                List<String> optionalAssetList = null;
-                if (Objects.nonNull(optionalAssetGroupList)) {
-                    optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-                }
-                if (Objects.nonNull(optionalAssetList) && !optionalAssetList.isEmpty()
-                        && optionalAssetList.contains(type)) {
-                    String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(type, true, "admin");
-                    log.info("AssetGroup  {} status {}", type, updateAssetGroupStatus);
-                }
-                log.info(type + " plugin created successfully.");
-            } else {
-                log.info("Failed to create " + type + " plugin.");
-            }
-            return ResponseUtils.buildSucessResponse(response);
+            PluginParameters parameters = PluginParameters.builder().pluginName(type).createdBy(createdBy).build();
+            return ResponseUtils.buildSucessResponse(plugin.createPlugin(request, parameters));
+        } catch (PluginServiceException pse) {
+            log.error(pse.getMessage(), pse);
+            return ResponseUtils.buildFailureResponse(pse, pse.getMessage());
         } catch (Exception exception) {
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-            if (redHatPluginService != null) {
-                redHatPluginService.deletePlugin(request.getRedhatAccountId());
-            }
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
         }
     }
 
     @ApiOperation(httpMethod = "POST", value = "API to validate plugin configuration", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(path = "/{type}/validate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> validateAccount(@RequestBody RedHatPluginRequest request, @PathVariable("type") String type) {
+    public ResponseEntity<Object> validateAccount(@RequestBody Object request, @PathVariable("type") String type) {
         try {
-            return ResponseUtils.buildSucessResponse(redHatPluginService.validate(request));
+            PluginsService plugin = pluginFactory.getService(type);
+            return ResponseUtils.buildSucessResponse(plugin.validate(request, type));
         } catch (Exception exception) {
             log.info("Failed to validate " + type + " plugin.");
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
         }
     }
-
 }

@@ -23,7 +23,7 @@ package com.tmobile.pacman.common;
 /**
  * The Interface PacmanSdkConstants.
  */
-public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdkConstants {
+public interface PacmanSdkConstants {
 
     /**
      * The client.
@@ -674,4 +674,12 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String APPLICATION_PREFIX = "application.prefix";
     String ROLE_PREFIX = "role/";
     String ROLE_SUFFIX = "_ro";
+    String REGION = "region";
+    String PROJECT_ID = "projectId";
+    Object RESOURCE_ID_COL_NAME_FROM_ES = "_resourceid";
+    String RESOURCE_ID = "_resourceid";
+    String POLICY_ID = "policyId";
+    String ACCOUNT_ID = "accountid";
+    String TAGGING_MANDATORY_TAGS = "tagging.mandatoryTags";
+    String POLICY_NAME = "policyName";
 }

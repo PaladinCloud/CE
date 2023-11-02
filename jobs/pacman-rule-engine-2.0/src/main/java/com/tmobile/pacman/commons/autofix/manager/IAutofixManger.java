@@ -1,7 +1,6 @@
 package com.tmobile.pacman.commons.autofix.manager;
 
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.opensearch.AmazonOpenSearch;
 import com.amazonaws.util.CollectionUtils;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -26,20 +25,19 @@ import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
 import com.tmobile.pacman.commons.gcp.clients.GCPCredentialsProvider;
 import com.tmobile.pacman.dto.AutoFixTransaction;
 import com.tmobile.pacman.dto.IssueException;
-import com.tmobile.pacman.dto.ResourceOwner;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
 import com.tmobile.pacman.publisher.impl.ElasticSearchDataPublisher;
 import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
-import com.tmobile.pacman.service.ResourceOwnerService;
-import com.tmobile.pacman.util.*;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ESUtils;
+import com.tmobile.pacman.util.NotificationUtils;
+import com.tmobile.pacman.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-//import software.amazon.awssdk.services.opensearch.OpenSearchClient;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
