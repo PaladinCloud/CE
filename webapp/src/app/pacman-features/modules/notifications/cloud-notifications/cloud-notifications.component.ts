@@ -96,25 +96,17 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     tableScrollTop: any;
     isTableStatePreserved = false;
 
-    columnNamesMap = {
-        eventName: 'Event',
-        eventCategoryName: 'Type',
-        eventSourceName: 'Source',
-        _loaddate: 'Created'
-    };
+    columnNamesMap = {};
 
     columnWidths = {
         'Event': 2,
-        'Type': 0.7,
-        'Source': 0.7,
-        'Created': 0.7
     };
 
     centeredColumns = {
         Event: false,
         Type: true,
         Source: true,
-        "Created": true,
+        "Created Date": true,
     };
 
     FullQueryParams: any;
@@ -123,6 +115,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     sortOrder: any;
     fieldType: string;
     fieldName: any;
+    dateCategoryList: string[] = ['Created Date'];
 
     constructor(
         private agDomainObservableService: AgDomainObservableService,
@@ -170,7 +163,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             this.tableDataLoaded = true;
 
             this.tableData = state?.data || [];
-            this.displayedColumns = Object.keys(this.columnWidths);
+            this.displayedColumns = ['Event', 'Type', 'Source', 'Created Date'];
             this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
             this.tableScrollTop = state?.tableScrollTop;
 
@@ -321,6 +314,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     this.filterTypeOptions = response[0].response;
                     this.filterTypeLabels.sort();
 
+                    this.columnNamesMap = this.utils.getColumnNamesMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, []);
+                    this.columnWidths = {...this.columnWidths};
                     this.routerParam();
                     this.getFilterArray();
                     this.updateComponent();
@@ -341,9 +336,9 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
           const filtersToBePassed = this.getFilterPayloadForDataAPI();
           const filterText = this.filterText;
           const currentFilterType = this.currentFilterType;
-          const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
+          const labelsToExcludeSort = ['created date'];
     
-          const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags, labelsToExcludeSort});
+          const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags: undefined, labelsToExcludeSort});
           this.filterTagOptions[value] = filterTagOptions;
           this.filterTagLabels[value] = filterTagLabels;
 
@@ -356,13 +351,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
     }
 
-    getUpdateFilterTagsCallback(){
-        const labelsToExcludeSort = ['created date'];
-        const updateFilterTags = (filterTagsData, value) => {
-          return filterTagsData;
-        }
-        return [updateFilterTags, labelsToExcludeSort];
-    }
 
     getFormattedDate(dateString: string, isEndDate: boolean = false): string {
         const localDate = new Date(dateString);
@@ -411,18 +399,18 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     updateSortFieldName(){
-        if(!this.headerColName || !this.direction) return;
-        this.selectedOrder = this.direction;        
-        let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
-        if(!apiColName){
-            apiColName =  find(this.filterTypeOptions, {
-            optionName: this.headerColName,
+        try{
+            if(!this.headerColName || !this.direction) return;        
+            this.selectedOrder = this.direction;        
+            const apiColName =  find(this.filterTypeOptions, {
+                optionName: this.headerColName,
             })["optionValue"];
-        }else{
-            apiColName = apiColName+".keyword";
+            this.fieldType = "string";
+            this.fieldName = apiColName+'.keyword';
+        }catch(e){
+            this.logger.log('Sort error', e);
+            this.headerColName = '';
         }
-        this.fieldType = "string";
-        this.fieldName = apiColName;
     }
 
     handleHeaderColNameSelection(event) {
@@ -544,7 +532,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     ...cellObj,
                     isLink: true
                 };
-            }else if(col.toLowerCase() == "created"){
+            }else if(col.toLowerCase() == "created date"){
                 
                 cellObj = {
                     ...cellObj,

@@ -6,6 +6,7 @@
         [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
         [options]="categoryOptions[appliedFilter.keyDisplayValue]"
         [filtersToExcludeFromCasing]="filtersToExcludeFromCasing"
+        [isDateFilter]="isDateFilter"
         (clear)="clearFilter($event)"
         (update)="updateFilter($event)"
         (click)="openFilterCategory(appliedFilter.keyDisplayValue)"

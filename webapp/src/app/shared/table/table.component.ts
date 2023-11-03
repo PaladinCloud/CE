@@ -40,6 +40,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Input() centeredColumns: { [key: string]: boolean } = {};
     @Input() columnsSortFunctionMap;
     @Input() filterFunctionMap;
+    @Input() dateCategoryList;
     @Input() set columnWidths(value: { [key: string]: number }) {
         this._columnWidths = value;
         this.denominator = Object.keys(value).reduce((acc, next) => acc + value[next], 0);

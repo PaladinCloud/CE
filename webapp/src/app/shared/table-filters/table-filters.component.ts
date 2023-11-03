@@ -62,6 +62,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         return this._appliedFilters;
     }
 
+    @Input() dateCategoryList = [];
     @Input() set categories(values) {
         this.syncFiltersDictWithFiltersArray();
         this._categories = values;
@@ -145,7 +146,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     openFilterCategory(filterCategory: string) {
         this.isCategoryOptionsMenuOpen = true;
         this.selectedCategory = filterCategory;
-        if(this.selectedCategory == "Created Date"){
+        if(this.dateCategoryList?.includes(this.selectedCategory)){
             this.isDateFilter = true;
         }else{
             this.isDateFilter = false;
