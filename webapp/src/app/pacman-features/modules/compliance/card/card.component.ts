@@ -57,7 +57,7 @@ export class CardComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private agDomainObservableService:AgDomainObservableService
   ) { 
-    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(async([assetGroupName, domain]) => {
+    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(() => {
         this.selectedRange = null;
       })
   }
