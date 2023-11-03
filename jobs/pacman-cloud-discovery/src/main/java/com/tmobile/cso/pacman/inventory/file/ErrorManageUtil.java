@@ -159,7 +159,7 @@ public class ErrorManageUtil {
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
             for (ErrorVH errorVH : entry.getValue()) {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
-                if ((errorVH.getType().equals("phd") && (errorVH.getException().contains("AccessDeniedException") || errorVH.getException().contains("SubscriptionRequiredException"))) || (errorVH.getType().equals("all") && errorVH.getException().contains("AWSSecurityTokenService"))) {
+                if ((errorVH.getType().equals("phd") && (errorVH.getException().contains("AccessDeniedException") || errorVH.getException().contains("SubscriptionRequiredException"))) || (errorVH.getType().equals("all") && (errorVH.getException().contains("AWSSecurityTokenService") && errorVH.getException().contains("is not authorized to perform: sts:AssumeRole")))) {
                     log.info("Omit exception :{}", errorVH.getException());
                     permissionIssues = new ArrayList<>();
                     permissionIssues.add(errorVH.getException());
