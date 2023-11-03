@@ -20,17 +20,20 @@
  import { UtilsService } from "../../../../shared/services/utils.service";
  import { LoggerService } from "../../../../shared/services/logger.service";
  import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
- import { RefactorFieldsService } from "./../../../../shared/services/refactor-fields.service";
  import { WorkflowService } from "../../../../core/services/workflow.service";
  import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
  import { AdminService } from "../../../services/all-admin.service";
  import { TableStateService } from "src/app/core/services/table-state.service";
- import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
  import { MatDialog } from "@angular/material/dialog";
  import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
  import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
+ import { ComponentKeys } from "src/app/shared/constants/component-keys";
+ import { find, map } from "lodash";
+ import { IFilterOption } from "src/app/shared/table/interfaces/table-filters.interface";
+ import { FilterManagementService } from "src/app/shared/services/filter-management.service";
+ import { CategoryOrderMap, SeverityOrderMap } from "src/app/shared/constants/order-mapping";
  import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
- import { ComponentKeys } from "src/app/shared/constants/component-keys"; 
+ 
  @Component({
    selector: "app-admin-policies",
    templateUrl: "./policies.component.html",
@@ -59,26 +62,31 @@
    seekdata: boolean = false;
    showLoader: boolean = true;
  
-   headerColName;
-   direction;
-   columnNamesMap = {"policyDisplayName": "Policy","targetType": "Asset Type",  "severity": "Severity", "category":"Category", "status": "Status", "assetGroup":"Source"};
-   columnWidths = {"Policy": 2.4, "Asset Type": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8, "Source":0.7}
+   headerColName: string;
+   direction: string;
+   columnNamesMap = {"policyDisplayName": "Policy","targetDisplayName": "Asset Type",  "severity": "Severity", "category":"Category", "status": "Status", "assetGroup":"Source"};
+   columnWidths = {"Policy": 2.5, "Asset Type": 0.7, "Severity": 0.5, "Category": 0.5, "Status": 0.5, "Source":0.5}
+   centeredColumns = {
+     Severity: true,
+     Category: true,
+     Source: true,
+   };
    whiteListColumns;
    isStatePreserved = false;
    tableScrollTop = 0;
    @ViewChild("enableOrDisablePolicyRef") enableOrDisablePolicyRef: TemplateRef<any>;
    onScrollDataLoader: Subject<any> = new Subject<any>();
    filterFunctionMap = {
-    'Autofix status': (item, filterKey, filterValue) => {
-      if(filterValue=="available"){
-        return item[filterKey].valueText.toLowerCase()=="enabled" || item[filterKey].valueText.toLowerCase()=="available";  
-      }else if(filterValue=="enabled"){
-        return item[filterKey].valueText.toLowerCase()=="enabled";
-      }else{
-        return item[filterKey].valueText.toLowerCase()!="enabled" && item[filterKey].valueText.toLowerCase()!="available";
-      }
-    }
-  }
+     'Autofix status': (item, filterKey, filterValue) => {
+       if(filterValue=="available"){
+         return item[filterKey].valueText.toLowerCase()=="enabled" || item[filterKey].valueText.toLowerCase()=="available";  
+       }else if(filterValue=="enabled"){
+         return item[filterKey].valueText.toLowerCase()=="enabled";
+       }else{
+         return item[filterKey].valueText.toLowerCase()!="enabled" && item[filterKey].valueText.toLowerCase()!="available";
+       }
+     }
+   }
    columnsSortFunctionMap = {
      Severity: (a, b, isAsc) => {
        let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
@@ -129,24 +137,24 @@
            imageOnly: true
        },
        aws:{
-        image: "aws-color",
-        imageOnly: true
-      },
-      azure:{
-        image: "azure-color",
-        imageOnly: true
-      },
-      gcp:{
-        image: "gcp-color",
-        imageOnly: true
-      },
-      "red hat":{
-        image: "redhat-color",
-        imageOnly: true
-      }
+         image: "aws-color",
+         imageOnly: true
+       },
+       azure:{
+         image: "azure-color",
+         imageOnly: true
+       },
+       gcp:{
+         image: "gcp-color",
+         imageOnly: true
+       },
+       "red hat":{
+         image: "redhat-color",
+         imageOnly: true
+       }
    }
  
-   paginatorSize: number = 1000;
+   paginatorSize: number = 100;
    isLastPage: boolean;
    isFirstPage: boolean;
    totalPages: number;
@@ -174,22 +182,30 @@
    private previousUrlSubscription: Subscription;
    selectedRowTitle: any;
    action: any;
-   assetTypeMap: any;
+   filtersDataSubscription: Subscription;
+   filterTypeOptions: IFilterOption[] = [];
+   filterTagOptions: any = {};
+   currentFilterType: IFilterOption;
+   fieldType: string;
+   fieldName: string;
+   selectedOrder: string;
+   sortOrder: string[];
+   dataSubscription: Subscription;
  
    constructor(
      private activatedRoute: ActivatedRoute,
      private router: Router,
      private utils: UtilsService,
+     private filterManagementService: FilterManagementService,
      private logger: LoggerService,
      private errorHandling: ErrorHandlingService,
-     private refactorFieldsService: RefactorFieldsService,
      private workflowService: WorkflowService,
      private routerUtilityService: RouterUtilityService,
      private adminService: AdminService,
      private tableStateService: TableStateService,
      private notificationObservableService: NotificationObservableService,
+     private assetTypeMapService: AssetTypeMapService,
      public dialog: MatDialog,
-     private assetTypeMapService: AssetTypeMapService
    ) { }
  
    ngOnInit() {
@@ -199,8 +215,158 @@
        this.pageLevel
      );
      this.getPreservedState();
-     this.routerParam();
-     this.updateComponent();
+     this.backButtonRequired =
+       this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+     this.getFilters();
+   }
+ 
+   getFilters() {
+     try {
+       this.filtersDataSubscription = this.filterManagementService
+       .getFilters(17)
+         .subscribe(async(filterOptions) => {
+           this.filterTypeOptions = filterOptions;
+           this.filterTypeLabels = map(filterOptions, "optionName");
+           
+           this.filterTypeLabels.sort();
+           this.routerParam();
+           await this.getFilterArray();
+           await Promise.resolve().then(() => this.getUpdatedUrl());
+           this.updateComponent();
+         });
+     } catch (error) {
+       this.errorMessage = this.errorHandling.handleJavascriptError(error);
+       this.logger.log("error", error);
+     }
+   }
+ 
+   async changeFilterType(value, searchText='') {  
+     try {
+       const currentQueryParams =
+         this.routerUtilityService.getQueryParametersFromSnapshot(
+           this.router.routerState.snapshot.root
+         );
+       this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
+       const filtersToBePassed = this.getFilterPayloadForDataAPI();
+       const filterText = this.filterText;
+       const currentFilterType = this.currentFilterType;
+ 
+       const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
+       const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags, labelsToExcludeSort});
+       this.filterTagOptions[value] = filterTagOptions;
+       this.filterTagLabels[value] = filterTagLabels;
+       this.storeState();
+   
+     } catch (error) {
+       this.errorMessage = this.errorHandling.handleJavascriptError(error);
+       this.logger.log("error", error);
+     }
+   }
+ 
+   getUpdateFilterTagsCallback(){
+     const labelsToExcludeSort = [];
+     const updateFilterTags = (filterTagsData, value) => {      
+       if (value.toLowerCase() === "asset type") {
+         this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+           filterTagsData.forEach(filterOption => {
+               filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
+           });
+         });
+       }
+       return filterTagsData;
+     }
+     return [updateFilterTags, labelsToExcludeSort];
+   }
+ 
+   /*
+    * this functin passes query params to filter component to show filter
+    */
+   async getFilterArray() {
+     try {
+       const filterText = this.filterText;
+       const filterTypeOptions = this.filterTypeOptions;
+       let filters = this.filters;
+       
+       const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
+ 
+       for (let i = 0; i < formattedFilters.length; i++) {
+         filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i] , filters});
+         this.filters = filters;
+       }
+       this.storeState();
+     } catch (error) {
+       this.errorMessage = this.errorHandling.handleJavascriptError(error);
+       this.logger.log("error", error);
+     }
+   }
+ 
+   async processAndAddFilterItem({formattedFilterItem, filters}){
+ 
+     const keyDisplayValue = this.getFilterKeyDisplayValue(formattedFilterItem);
+     const filterKey = formattedFilterItem.filterkey;
+       
+     const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
+     if(existingFilterObjIndex<0){
+       // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+       await this.changeFilterType(keyDisplayValue);
+       const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+       const filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+ 
+       filters.push(filterObj);
+     }
+     filters = [...filters];
+     return filters;
+   }
+ 
+   getFilterKeyDisplayValue(formattedFilterItem){
+     let keyDisplayValue = formattedFilterItem.keyDisplayValue;
+     if(!keyDisplayValue){
+       keyDisplayValue = find(this.filterTypeOptions, {
+         optionValue: formattedFilterItem.filterkey,
+       })["optionName"];
+     }
+     return keyDisplayValue;
+   }
+ 
+   getUpdatedUrl() {
+     let updatedQueryParams = {};
+       this.filterText = this.utils.arrayToObject(
+       this.filters,
+       "filterkey",
+       "value"
+     ); // <-- TO update the queryparam which is passed in the filter of the api
+     this.filterText = this.utils.makeFilterObj(this.filterText);
+ 
+     /**
+      * To change the url
+      * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+      */
+ 
+     updatedQueryParams = {
+       filter: this.filterText.filter,
+     }
+ 
+ 
+     /**
+      * Finally after changing URL Link
+      * api is again called with the updated filter
+      */
+     this.filterText = this.utils.processFilterObj(this.filterText);
+ 
+     this.router.navigate([], {
+       relativeTo: this.activatedRoute,
+       queryParams: updatedQueryParams,
+       queryParamsHandling: 'merge',
+   });
+   }
+ 
+   getFilterPayloadForDataAPI(){
+     const filterToBePassed = {...this.filterText};
+     Object.keys(filterToBePassed).forEach(filterKey => {
+       filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+     })
+ 
+     return filterToBePassed;
    }
  
    getPreservedState(){
@@ -222,10 +388,6 @@
      this.tableScrollTop = state?.tableScrollTop;
      this.filters = state?.filters || [];
      this.selectedRowIndex = state?.selectedRowIndex;
- 
-     if(this.filters){
-       this.getFiltersData(this.tableData);
-     }
    
      if(this.tableData && this.tableData.length>0){
        this.isStatePreserved = true;
@@ -238,6 +400,7 @@
      this.headerColName = event.headerColName;
      this.direction = event.direction;
      this.storeState();
+     this.updateComponent();
    }
  
    handleWhitelistColumnsChange(event){
@@ -246,14 +409,13 @@
    }
  
    deleteFilters(event?) {
-     try {
-       if (!event) {
-         this.filters = [];
-       } else if (event.clearAll) {
-         this.filters = [];
-       }
-       this.storeState();
-     } catch (error) { }
+     let shouldUpdateComponent = false;
+     [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);      
+     if(shouldUpdateComponent){
+       this.getUpdatedUrl();
+       this.updateComponent();
+     }
+     this.storeState();
    }
  
    handleFilterSelection(){    
@@ -276,97 +438,37 @@
      }
    }
  
-   massageData(data){
-     const refactoredService = this.refactorFieldsService;
-     const columnNamesMap = this.columnNamesMap;
-     const newData = [];
-     data.map(function (row) {
-       const KeysTobeChanged = Object.keys(row);
- 
-       let newObj = {};
-       KeysTobeChanged.forEach((element) => {
-         let elementnew;
-         if(columnNamesMap[element]) {
-           elementnew = columnNamesMap[element];
-           newObj = Object.assign(newObj, { [elementnew]: row[element] });
-         }
-         else {
-         elementnew =
-           refactoredService.getDisplayNameForAKey(
-             element.toLocaleLowerCase()
-           ) || element;
-           newObj = Object.assign(newObj, { [elementnew]: row[element] });
-         }
-         // change data value
-         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
-       });
-       newObj["Actions"] = "";
-       newObj["autofix info"] = newObj["autoFixAvailable"]=="true"?(newObj["autoFixEnabled"]=="true"?"autofix enabled":"autofix available"):"not available";
-       newObj["Autofix status"] = newObj["autoFixAvailable"]=="true"?(newObj["autoFixEnabled"]=="true"?"enabled":"available"):"not available";
-       newData.push(newObj);
-     });
-     return newData;
-   }
- 
-   getFiltersData(data){
-     this.filterTypeLabels = [];
-     this.filterTagLabels = {};
-     const filtersList = [...Object.keys(this.columnWidths), "Autofix status"];
-     filtersList.forEach(column => {
-       if(column.toLowerCase()=='actions'){
-         return;
-       }
-       let filterTags = [];
-       this.filterTypeLabels.push(column);
-       if(column=='Severity'){
-         filterTags = ["low", "medium", "high", "critical"];
-       }else if(column=='Autofix status'){
-         filterTags = ["available", "enabled", "not available"];
-       }else if(column=='Category'){
-         filterTags = ["security", "cost", "operations", "tagging"];
-       }else{
-         const set = new Set();
-         data.forEach(row => {
-          if(row[column] && row[column].valueText) 
-               set.add(row[column].valueText);
-         });
-         filterTags = Array.from(set);
-         filterTags.sort((a, b) => a.localeCompare(b));
-       }
- 
-       this.filterTagLabels[column] = filterTags;
-     });
- 
-     this.filterTypeLabels.sort();
-   }
- 
    getPolicyDetails(isNextPageCalled?) {
-     var url = environment.policyDetails.url;
-     var method = environment.policyDetails.method;
+     const url = environment.policyDetails.url;
+     const method = environment.policyDetails.method;
  
-     var queryParams = {
-       page: this.pageNumber,
+     const sortFilters = {
+       fieldName: this.fieldName,
+       fieldType: this.fieldType,
+       order: this.selectedOrder,
+       sortOrder: this.sortOrder
+     }
+ 
+     const payload = {
+       sortFilter: sortFilters,
+       from: this.pageNumber * this.paginatorSize,
+       filter:this.getFilterPayloadForDataAPI(),
        size: this.paginatorSize,
      };
- 
-     if (this.searchTxt !== undefined && this.searchTxt !== "") {
-       queryParams["searchTerm"] = this.searchTxt;
-     }
  
      this.errorMessage = '';
  
      try{
-       this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
-       (reponse) => {
+       this.dataSubscription = this.adminService.executeHttpAction(url, method, payload, {}).subscribe(
+       (reponse) => {        
          this.showLoader = false;
-         if (reponse[0].content && reponse[0].content.length>0) {
-           this.allPolicies = reponse[0].content;
+         if (reponse[0].data.response) {
+           this.allPolicies = reponse[0].data.response;
            this.errorValue = 1;
            this.searchCriteria = undefined;
-           var data = reponse[0];
            this.tableDataLoaded = true;
-           let updatedResponse = this.massageData(reponse[0].content);
-           let processedData = this.processData(updatedResponse)
+           let updatedResponse = this.utils.massageTableData(reponse[0].data.response, this.columnNamesMap);
+           let processedData = this.processData(updatedResponse);
            if(isNextPageCalled){
              this.onScrollDataLoader.next(processedData)
            }else{
@@ -375,8 +477,7 @@
                this.errorMessage = "noDataAvailable";
              }
            }
-           this.getFiltersData(this.tableData);
-           this.totalRows = data.totalElements;
+           this.totalRows = reponse[0].data.total;
            this.dataLoaded = true;
          }
        },
@@ -393,6 +494,21 @@
      }catch(e){
        this.logger.log("error: ", e);
      }
+   }
+ 
+   async changeFilterTags(event) {
+     let filterValues = event.filterValue;
+     if(!filterValues){
+       return;
+     }
+     this.currentFilterType =  find(this.filterTypeOptions, {
+       optionName: event.filterKeyDisplayValue,
+     });
+ 
+     this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+     this.getUpdatedUrl();
+     this.storeState();
+     this.updateComponent();
    }
  
    /*
@@ -439,14 +555,40 @@
     */
  
    updateComponent() {
+     this.updateSortFieldName();
      if(this.isStatePreserved){
        this.tableDataLoaded = true;
        this.clearState();
      }else{
        this.tableDataLoaded = false;
-       this.bucketNumber = 0;
+       this.pageNumber = 0;
        this.tableData = [];
        this.getPolicyDetails();
+     }
+   }
+ 
+   updateSortFieldName(){
+     const sortColName = this.headerColName.toLowerCase();
+     this.selectedOrder = this.direction;
+     this.sortOrder = null;
+     this.fieldType = 'string';
+     if(sortColName==='policy'){
+       this.fieldName = 'policyDisplayName';
+     }else if(sortColName==='asset type'){
+       this.fieldName = 'targetDisplayName';
+     }else if(sortColName=='severity' || sortColName=='category'){
+       this.fieldName = sortColName;
+       const mapOfOrderMaps = {'severity': SeverityOrderMap, 'category': CategoryOrderMap}
+       this.sortOrder = Object.keys(mapOfOrderMaps[sortColName]).sort((a,b) => SeverityOrderMap[a]-SeverityOrderMap[b]);
+     } else{
+       try{
+         let apiColName =  find(this.filterTypeOptions, {
+           optionName: this.headerColName,
+         })["optionValue"];
+         this.fieldName = apiColName;
+       }catch(e){
+         this.logger.log("error", e);
+       }
      }
    }
  
@@ -483,112 +625,45 @@
  
    processData(data) {
      try {
-       var innerArr = {};
-       var totalVariablesObj = {};
-       var cellObj = {};
-       let processedData = [];
-       var getData = data;
-       const keynames = Object.keys(getData[0]);
- 
-       this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-         this.assetTypeMap = assetTypeMap;
-       });
- 
-       let cellData;
-       for (var row = 0; row < getData.length; row++) {
-         const autoFixAvailable = getData[row].autoFixAvailable;
-         const autoFixEnabled = getData[row].autoFixEnabled;
-         innerArr = {};
-         keynames.forEach(col => {
-           cellData = getData[row][col];
-           cellObj = {
-             text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
-             titleText: cellData, // text to show on hover
-             valueText: cellData,
-             hasPostImage: false,
-             imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
-             postImgSrc: "",
-             isChip: "",
-             isMenuBtn: false,
-             properties: "",
-             isLink: false,
-             imageTitleText: "",
-             // chipVariant: "", // this value exists if isChip is true,
-             // menuItems: [], // add this if isMenuBtn
+       return this.utils.processTableData(data, this.tableImageDataMap, (row, col, cellObj) => {
+         if(col.toLowerCase()=="policy"){
+           const autoFixAvailable = row.autoFixAvailable;
+           const autoFixEnabled = row.autoFixEnabled;
+           let imgSrc = 'noImg';
+           let imageTitleText = "";
+           
+           if (autoFixAvailable=="true") {
+             imgSrc = autoFixEnabled=="true" ? 'autofix' : 'no-autofix';
+             imageTitleText = autoFixEnabled=="true" ? 'Autofix Enabled': 'Autofix Available'
            }
-           if(col.toLowerCase()=="policy"){
-             let imgSrc = 'noImg';
-             let imageTitleText = "";
-             
-             if (autoFixAvailable=="true") {
-               imgSrc = autoFixEnabled=="true" ? 'autofix' : 'no-autofix';
-               imageTitleText = autoFixEnabled=="true" ? 'Autofix Enabled': 'Autofix Available'
-             }
-               cellObj = {
-               ...cellObj,
-               imgSrc: imgSrc,
-               isLink: true,
-               imageTitleText: imageTitleText
-             };
-           }
-           else if(col.toLowerCase()=="asset type"){
-             const currentAssetType = this.assetTypeMap.get(cellData);
-               cellObj = {
-               ...cellObj,
-               text: currentAssetType?currentAssetType:cellData,
-               titleText:  currentAssetType?currentAssetType:cellData, // text to show on hover
-               valueText:  currentAssetType?currentAssetType:cellData
-             };
-           }
-           // else if (col.toLowerCase() == "actions") {
-           //   let dropDownItems: Array<String> = ["Edit"];
-           // if (autoFixAvailable === "true"){ 
-           //    if(autoFixEnabled == "true") {
-           //     dropDownItems.push("Disable Autofix");
-           //    } else {
-           //     dropDownItems.push("Enable Autofix");
-           //   }
-           // }
-           //   if (getData[row].Status.toLowerCase() === "enabled") {
-           //     dropDownItems.push("Disable Policy");
-           //   } else {
-           //     dropDownItems.push("Enable Policy");
-           //   }
-           // dropDownItems.push("Run Policy");
-           //   cellObj = {
-           //     ...cellObj,
-           //     isMenuBtn: true,
-           //     menuItems: dropDownItems,
-           //   };
-           // } 
-           else if(col.toLowerCase() == "status"){
-             let chipBackgroundColor,chipTextColor;
-             if(getData[row]["Status"].toLowerCase() === "enabled"){
-               chipBackgroundColor = "#E6F5EC";
-               chipTextColor = "#00923f";
-             }else{
-               chipBackgroundColor = "#F2F3F5";
-               chipTextColor = "#73777D";
-             }
              cellObj = {
-               ...cellObj,
-               chipList: [getData[row][col]],
-               text: getData[row][col],
-               isChip: true,
-               chipBackgroundColor: chipBackgroundColor,
-               chipTextColor: chipTextColor
-             };
+             ...cellObj,
+             imgSrc: imgSrc,
+             isLink: true,
+             imageTitleText: imageTitleText
+           };
+         }
+         else if(col.toLowerCase() == "status"){
+           let chipBackgroundColor,chipTextColor;
+           if(row["Status"].toLowerCase() === "enabled"){
+             chipBackgroundColor = "#E6F5EC";
+             chipTextColor = "#00923f";
+           }else{
+             chipBackgroundColor = "#F2F3F5";
+             chipTextColor = "#73777D";
            }
-           innerArr[col] = cellObj;
-           totalVariablesObj[col] = "";
-         });
-         processedData.push(innerArr);
-       }
-       if (processedData.length > getData.length) {
-         var halfLength = processedData.length / 2;
-         processedData = processedData.splice(halfLength);
-       }
-       return processedData;
+           cellObj = {
+             ...cellObj,
+             chipList: [row[col]],
+             text: row[col],
+             isChip: true,
+             chipBackgroundColor: chipBackgroundColor,
+             chipTextColor: chipTextColor
+           };
+         }
+         return cellObj;
+       });
+       
      } catch (error) {
        this.errorMessage = this.errorHandling.handleJavascriptError(error);
        this.logger.log("error", error);
@@ -679,7 +754,7 @@
      
      const row = event.rowSelected;
      const data = event.data;
-     const policyId = event.rowSelected["Policy ID"].text;
+     const policyId = row["Policy ID"].valueText;
      this.tableScrollTop = event.tableScrollTop;
      this.selectedRowIndex = event.selectedRowIndex;
      this.storeState(data);
@@ -754,6 +829,9 @@
  
    ngOnDestroy() {
      try {
+       if(this.dataSubscription){
+         this.dataSubscription.unsubscribe();
+       }
        if (this.routeSubscription) {
          this.routeSubscription.unsubscribe();
        }
@@ -765,4 +843,3 @@
      }
    }
  }
- 
