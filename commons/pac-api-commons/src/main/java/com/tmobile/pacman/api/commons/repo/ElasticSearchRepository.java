@@ -24,6 +24,7 @@ package com.tmobile.pacman.api.commons.repo;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 import javax.annotation.PostConstruct;
@@ -1108,13 +1109,16 @@ public class ElasticSearchRepository implements Constants {
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
 		String order = "";
+		sortList = sortList.stream().filter(obj -> obj!=null).collect(Collectors.toList());
 		if(null != sortList && !sortList.isEmpty()) {
 			for (Map<String, Object> sortFieldMapList : sortList) {
+				if(sortFieldMapList==null)
+					continue;
 				Map<String, Object> sortScript = new HashMap<>();
 				Map<String, Object> paramsList = new HashMap<>();
 				Map<String, Object> script = new HashMap<>();
 				Map<String, Object> Outerscript = new HashMap<>();
-				order = sortFieldMapList.get(ORDER).toString();
+				order = sortFieldMapList.get("order") == null ? "asc" : sortFieldMapList.get("order").toString();
 				if (sortFieldMapList.get("sortOrder") != null) {
 					sortScript.put("type", sortFieldMapList.get("fieldType"));
 					String fieldName = (String) sortFieldMapList.get(FIELD_NAME);

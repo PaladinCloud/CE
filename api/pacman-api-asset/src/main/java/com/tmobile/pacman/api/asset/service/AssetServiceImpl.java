@@ -501,16 +501,6 @@ public class AssetServiceImpl implements AssetService {
             addAttributeIfNotEmpty(attributeForInstancesRole, attributesList);
         }
 
-        try {
-            Map<String, Object> createInfo = repository.getResourceCreateInfo(resourceId);
-            if (createInfo != null) {
-                String[] attrFields = {AssetConstants.CREATED_BY, AssetConstants.CREATION_DATE, AssetConstants.EMAIL};
-                attributesList.addAll(createAttributes(createInfo, attrFields, "Creators"));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error Fetching created info for resource " + resourceId, e);
-        }
-
         // Qualys was earlier a separate api. Lets add it to the generic EC2 API
         // just like RHN INFO - A separate category
         try {
@@ -590,16 +580,6 @@ public class AssetServiceImpl implements AssetService {
                 }
             }
         });
-
-        try {
-            Map<String, Object> createInfo = repository.getResourceCreateInfo(resourceId);
-            if (createInfo != null) {
-                String[] attrFields = {AssetConstants.CREATED_BY, AssetConstants.CREATION_DATE, AssetConstants.EMAIL};
-                attributesList.addAll(createAttributes(createInfo, attrFields, "Creators"));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error Fetching created info for resrouce " + resourceId, e);
-        }
 
         Set<String> mandatoryTags = getMandatoryTagsNames(AssetConstants.ASSETLISTING);
         for(String mandatoryTag : mandatoryTags){
