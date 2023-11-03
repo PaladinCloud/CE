@@ -31,7 +31,7 @@
      domain?: string;
      type?: string;
      attributeName: any;
-     searchText: any;
+     searchText?: any;
      filter: any;
  }
  
@@ -127,7 +127,9 @@
      }
  
      async getFilterTagsData(payload, optionUrl) {
-         return this.issueFilterService.getFilters({}, environment.base + this.utils.getParamsFromUrlSnippet(optionUrl).url, "POST", payload)
+         return this.issueFilterService.getFilters({}, 
+          environment.base  
+          + this.utils.getParamsFromUrlSnippet(optionUrl).url, "POST", payload)
              .toPromise()
              .then(response => response[0].data.response);
      }
@@ -182,8 +184,9 @@
          filters = [];
        } else if (event.removeOnlyFilterValue) {
          filters = this.removeFiltersOnRightOfIndex(filters, event.index);
-       } else if (event.index !== undefined && !filters[event.index].filterValue) {
-         filters.splice(event.index, 1);
+        } else if (event.index !== undefined && !filters[event.index].filterValue) {
+          filters.splice(event.index, 1);
+          shouldUpdateComponent = false;
        } else if (!event.clearAll) {
          filters.splice(event.index, 1);
        } else {
@@ -270,7 +273,6 @@
        let payload: IFilterPayload = {
          type,
          attributeName: currentFilterType["optionValue"]?.replace(".keyword", ""),
-         searchText,
          filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
        };
  
@@ -279,6 +281,13 @@
              ...payload,
              ag, domain
          };
+       }
+
+       if(searchText){
+        payload = {
+          ...payload,
+          searchText
+        }
        }
  
        if(type){

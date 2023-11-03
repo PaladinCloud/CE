@@ -11,8 +11,8 @@
                     <div class="relative">
                         <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths" (rowSelectEventEmitter)="handleRowClick($event)"
                             [headerColName]="headerColName" [direction]="direction" (actionSelected)="goToDetails($event)"
-                            [doLocalSearch]="false" [doLocalSort]="true" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
-                            [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true" [showAddRemoveCol]="true"
+                            [doLocalSearch]="false" [doLocalSort]="false" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
+                            [searchQuery]="searchTxt" [showSearchBar]="false" [showMoreMenu]="true" [showAddRemoveCol]="true"
                             [showDownloadBtn]="false" [showFilterBtn]="true" (selectedFilterType)='changeFilterType($event)'
                             (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
                              [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
@@ -20,7 +20,8 @@
                             [rowClickable]="true" [rowSize]="'SM'" [centeredColumns]="centeredColumns" (headerColNameSelected)="handleHeaderColNameSelection($event)"
                             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
                             [selectedRowIndex]="selectedRowIndex" [onScrollDataLoader]="onScrollDataLoader"
-                            (nextPageCalled)="nextPg($event)">
+                            (nextPageCalled)="nextPg($event)"
+                            [enableMultiValuedFilter]="true">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>
