@@ -204,7 +204,7 @@ public class PolicyServiceImpl implements PolicyService {
 			String sortField = (String) sortConditionsMap.get("fieldName");
 			if (Arrays.asList(SEVERITY, CATEGORY).contains(sortField)) {
 				List<String> sortOrderList = (List<String>) sortConditionsMap.get("sortOrder");
-				if (!sortOrderList.isEmpty()) {
+				if (sortOrderList!=null && !sortOrderList.isEmpty()) {
 					sortCondition.append(" CASE ").append(sortField);
 					int sortValue = 1;
 					for (String str : sortOrderList) {
