@@ -88,7 +88,7 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
 
   getResources() {
     this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
-      this.agAndDomain = {ag, domain};      
+      this.agAndDomain = { ag, domain };
       this.fetchResourcesService
         .getResourceTypesAndCount(this.agAndDomain).then(results => {
           this.assetCount = results[1].totalassets;
@@ -123,19 +123,19 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
     });
   }
 
-  getAssetsCount(){
+  getAssetsCount() {
     const assetDetailUrl = environment.assetTilesdata.url;
     const assetDetailMethod = environment.assetTilesdata.method;
 
     const queryParams = {
       'ag': this.assetGroupName
     };
-     if (this.assetGroupName) {
+    if (this.assetGroupName) {
       this.assetTileService.getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod).subscribe(
         response => {
           this.assetCount = response[0].assetcount;
         });
-     }
+    }
   }
 
   openOverlay(): void {
@@ -301,7 +301,7 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
-      if(this.agDomainSubscription){
+      if (this.agDomainSubscription) {
         this.agDomainSubscription.unsubscribe();
       }
       if (this.assetGroupSubscription) {
