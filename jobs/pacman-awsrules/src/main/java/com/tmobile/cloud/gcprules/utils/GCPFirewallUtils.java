@@ -54,7 +54,10 @@ public class GCPFirewallUtils {
         }
 
         for (JsonElement jsonElement : allow) {
-            String resourceProtocol = jsonElement.getAsJsonObject().get(PacmanRuleConstants.PROTOCOL).getAsString();
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            String resourceProtocol = jsonObject.get(PacmanRuleConstants.PROTOCOL) == null ?
+                    (jsonObject.get("I_p_protocol") == null ? null : jsonObject.get("I_p_protocol").getAsString())
+                    : jsonObject.get(PacmanRuleConstants.PROTOCOL).getAsString();
             if (resourceProtocol.equalsIgnoreCase(PacmanRuleConstants.ICMP) ||
                     resourceProtocol.equalsIgnoreCase(PacmanRuleConstants.ALL)) {
                 return true;
