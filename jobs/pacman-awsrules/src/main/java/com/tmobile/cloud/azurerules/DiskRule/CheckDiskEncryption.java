@@ -120,21 +120,11 @@ public class CheckDiskEncryption extends BasePolicy {
                         .get("diskInner").getAsJsonObject();
                 if (diskInner != null) {
                     if (!isAttachedToVirtualMachine) {
-                        JsonObject encryptionSettings = diskInner.getAsJsonObject()
-                                .get("properties.encryptionSettings").getAsJsonObject();
-
-                        if (encryptionSettings == null) {
+                        JsonElement encryptionSettings = diskInner.get("properties.encryptionSettingsCollection");
+                        if (encryptionSettings.isJsonNull()
+                                || !encryptionSettings.getAsJsonObject().get("enabled").getAsBoolean()) {
                             validationResult = false;
-                        } else {
-                            boolean isEnabled = jsonDataItem.getAsJsonObject()
-                                    .get("enabled").getAsBoolean();
-                            if (isEnabled == false) {
-                                validationResult = false;
-
-                            }
-
                         }
-
                     }
                 } else {
                     logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
