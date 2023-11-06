@@ -3083,3 +3083,7 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
   UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat' WHERE `cfkey` = 'application.optionalAssetGroupList';
 
 update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
+
+/* Plugin developed using PluginEngine V1 */
+ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
+ VALUES ('plugins.in.v1','gcp,redhat,contrast','job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
