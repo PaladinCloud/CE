@@ -33,9 +33,10 @@ import { LandingPageModule } from './landing-page/landing-page.module';
 import { FetchResourcesService } from './pacman-features/services/fetch-resources.service';
 import { PostLoginAppModule } from './post-login-app/post-login-app.module';
 import { TokenResolverService } from './resolver/token-resolver.service';
+import { ErrorComponent } from './error/error.component';
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, ErrorComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
