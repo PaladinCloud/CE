@@ -4,10 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
-import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
-import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
-import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
+import com.amazonaws.services.secretsmanager.model.*;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
@@ -119,11 +116,26 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
 
-        CreateSecretRequest createRequest=new CreateSecretRequest()
-                .withName(getTenableSecretId()).withSecretString(getTenableSecretString(accountData));
+        String secretId = getTenableSecretId();
+        ListSecretsRequest listSecretsRequest = new ListSecretsRequest()
+                .withFilters(new Filter().withKey("name").withValues(secretId))
+                .withIncludePlannedDeletion(true);
+        ListSecretsResult getListResponse = secretClient.listSecrets(listSecretsRequest);
 
+        if (getListResponse.getSecretList().size() > 0) {
+            LOGGER.info("Secret already exists. Deleting in progress.");
+            validateResponse = new AccountValidationResponse();
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage("Similar account is being deleted. Please try again later.");
+            return validateResponse;
+        }
+
+        CreateSecretRequest createRequest = new CreateSecretRequest()
+                .withName(secretId).withSecretString(getTenableSecretString(accountData));
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
-        LOGGER.info("Create secret response: {}",createResponse);
+        LOGGER.info("Create secret response: {}", createResponse);
+
+
         String accountId = UUID.randomUUID().toString();
         createAccountInDb(accountId,"Tenable-Connector", TENABLE,accountData.getCreatedBy());
 
