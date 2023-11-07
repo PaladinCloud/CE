@@ -219,6 +219,8 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         }
     }
 
-
+    protected List<AccountDetails> getListAccountsByPlatform(String platform) {
+        return accountsRepository.findByPlatform(platform);
+    }
 
 }
