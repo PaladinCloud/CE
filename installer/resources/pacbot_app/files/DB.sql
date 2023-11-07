@@ -3109,4 +3109,3 @@ VALUES('application','Application','Compute','contrast','{\"key\":\"id\",\"id\":
  update pac_config_properties set value = 'azure,gcp,redhat,contrast' where cfkey = 'application.optionalAssetGroupList';
  
   /* -------------- Contrast config end -----------------*/
- 
