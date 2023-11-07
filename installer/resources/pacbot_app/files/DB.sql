@@ -2870,9 +2870,9 @@ INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (12,'plugins')
 
 
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account ID','accountId','/admin/accounts/filter/attribute?attribute=accountId');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account Name','accountName','/admin/accounts/filter/attribute?attribute=accountName');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Assets','assets','/admin/accounts/filter/attribute?attribute=assets');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Violations','violations','/admin/accounts/filter/attribute?attribute=violations');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Account Name','accountName','/admin/accounts/filter/attribute?attribute=accountName');1
+--INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Assets','assets','/admin/accounts/filter/attribute?attribute=assets');
+--INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Violations','violations','/admin/accounts/filter/attribute?attribute=violations');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Status','accountStatus','/admin/accounts/filter/attribute?attribute=accountStatus');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Created By','createdBy','/admin/accounts/filter/attribute?attribute=createdBy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (12,'Platform','platform','/admin/accounts/filter/attribute?attribute=platform');
