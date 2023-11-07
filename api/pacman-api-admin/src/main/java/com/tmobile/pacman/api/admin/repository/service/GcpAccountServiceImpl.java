@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService {
+public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
 
     private static final Logger LOGGER= LoggerFactory.getLogger(GcpAccountServiceImpl.class);
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";

@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService {
+public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
 
     private static final Logger LOGGER= LoggerFactory.getLogger(AzureAccountServiceImpl.class);
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";

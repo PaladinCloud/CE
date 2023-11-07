@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService {
+public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
 
     private static final Logger LOGGER= LoggerFactory.getLogger(AquaAccountServiceImpl.class);
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
