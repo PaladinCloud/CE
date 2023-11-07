@@ -325,7 +325,7 @@
     </div>
 </ng-template>
 
-<ng-template #redHatStepsVideo>
+<ng-template #redHatStepsVideoRef>
     <div>
         <video controls (canplay)="pauseVideo(videoplayer)"
                 #videoPlayer style="width: 100%;height: 100%;">
@@ -401,7 +401,7 @@
                             </button>
                         </div>
                     </div>
-                    <div style="padding: 20px 0px;"> 
+                    <div class="tenable-form" style="padding: 20px 0px;"> 
                         <form class="form-wrapper" [formGroup]="tenablePluginForm">
                         <app-input-field
                         [label]="'Access Key'"
