@@ -126,7 +126,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
             LOGGER.info("Secret already exists. Deleting in progress.");
             validateResponse = new AccountValidationResponse();
             validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Similar account is being deleted. Please try again later.");
+            validateResponse.setMessage("Prior account is being deleted. Try again in a couple of minutes.");
             return validateResponse;
         }
 
