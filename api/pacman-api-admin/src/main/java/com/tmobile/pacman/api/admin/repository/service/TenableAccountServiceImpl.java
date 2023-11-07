@@ -4,17 +4,13 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
-import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
-import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
-import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
+import com.amazonaws.services.secretsmanager.model.*;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -25,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import java.util.*;
 
 @Service
 public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
@@ -59,11 +56,12 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
-        validateAccountCredentials(accountData, validateResponse);
-        return validateResponse;
+
+        return validateAccountCredentials(accountData);
     }
 
-    private void validateAccountCredentials(CreateAccountRequest accountData, AccountValidationResponse validateResponse) {
+    private AccountValidationResponse validateAccountCredentials(CreateAccountRequest accountData) {
+        AccountValidationResponse validationResponse = new AccountValidationResponse();
         // Requesting scan that doesn't exist to validate the account data.
         HttpGet request = new HttpGet(Constants.TENABLE_API_URL + "/scans/0");
         String apiKey = "accessKey=" + accountData.getTenableAccessKey() + ";secretKey=" + accountData.getTenableSecretKey() + ";";
@@ -77,75 +75,98 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
             if (response.getEntity() != null && response.getStatusLine().getStatusCode() == 401) {
                 // If the response is 401, then the account data is not valid.
-                validateResponse.setValidationStatus(FAILURE);
-                validateResponse.setErrorDetails("API returned status code : " + response.getStatusLine().getStatusCode());
+                validationResponse.setValidationStatus(FAILURE);
+                validationResponse.setMessage("Tenable API keys validation failed.");
             } else {
-                validateResponse.setValidationStatus(SUCCESS);
-                validateResponse.setMessage("Tenable validation successful");
+                validationResponse.setValidationStatus(SUCCESS);
+                validationResponse.setMessage("Tenable account validation passed");
             }
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Failed to validate the tenable account ", e);
-            validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Tenable validation Failed");
         } catch (IOException e) {
             LOGGER.error("Failed to validate the tenable account ", e.getMessage());
-            validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Tenable validation Failed: " + e.getMessage());
+            validationResponse.setValidationStatus(FAILURE);
+            validationResponse.setMessage("Tenable account validation failed");
         }
+
+        return validationResponse;
     }
 
     @Override
     public AccountValidationResponse addAccount(CreateAccountRequest accountData) {
         LOGGER.info("Adding new Tenable account....");
-        AccountValidationResponse validateResponse= validateRequestData(accountData);
-        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
-            LOGGER.info("Validation failed due to missing parameters");
+        AccountValidationResponse validateResponse;
+
+        if (getListAccountsByPlatform(TENABLE).size() > 0) {
+            LOGGER.info("Tenable account already exists");
+            validateResponse = new AccountValidationResponse();
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage("Tenable account already exists");
+            return validateResponse;
+        }
+
+        validateResponse = validate(accountData);
+        if (validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)) {
+            LOGGER.info("Adding account failed: {}", validateResponse.getMessage());
             return validateResponse;
         }
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
-        String roleName= System.getenv(PALADINCLOUD_RO);
 
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
 
-        CreateSecretRequest createRequest=new CreateSecretRequest()
-                .withName(secretManagerPrefix+ "/" + roleName + "/tenable").withSecretString(getTenableSecret(accountData));
+        String secretId = getTenableSecretId();
+        ListSecretsRequest listSecretsRequest = new ListSecretsRequest()
+                .withFilters(new Filter().withKey("name").withValues(secretId))
+                .withIncludePlannedDeletion(true);
+        ListSecretsResult getListResponse = secretClient.listSecrets(listSecretsRequest);
 
+        if (getListResponse.getSecretList().size() > 0) {
+            LOGGER.info("Secret already exists. Deleting in progress.");
+            validateResponse = new AccountValidationResponse();
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage("Prior account is being deleted. Try again in a couple of minutes.");
+            return validateResponse;
+        }
+
+        CreateSecretRequest createRequest = new CreateSecretRequest()
+                .withName(secretId).withSecretString(getTenableSecretString(accountData));
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
-        LOGGER.info("Create secret response: {}",createResponse);
+        LOGGER.info("Create secret response: {}", createResponse);
+
+
         String accountId = UUID.randomUUID().toString();
         createAccountInDb(accountId,"Tenable-Connector", TENABLE,accountData.getCreatedBy());
 
         updateConfigProperty(TENABLE_ENABLED,TRUE,JOB_SCHEDULER);
+        validateResponse = new AccountValidationResponse();
         validateResponse.setValidationStatus(SUCCESS);
         validateResponse.setAccountId(accountId);
         validateResponse.setAccountName("Tenable-Connector");
         validateResponse.setType(TENABLE);
-        validateResponse.setMessage("Account added successfully. Account id: "+accountId);
+        validateResponse.setMessage("Account added successfully. ID: " + accountId);
+
         return validateResponse;
     }
 
     private AccountValidationResponse validateRequestData(CreateAccountRequest accountData) {
         AccountValidationResponse response = new AccountValidationResponse();
-        StringBuilder validationErrorDetails = new StringBuilder();
+        List<String> missingParams = new ArrayList<>();
         String tenableAccessKey = accountData.getTenableAccessKey();
         String tenableSecretKey = accountData.getTenableSecretKey();
 
         if (StringUtils.isEmpty(tenableAccessKey)) {
-            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER + " Tenable Access Key\n");
+            missingParams.add("Access Key");
         }
 
         if (StringUtils.isEmpty(tenableSecretKey)) {
-            validationErrorDetails.append(MISSING_MANDATORY_PARAMETER + " Tenable Secret Key\n");
+            missingParams.add("Secret Key");
         }
 
-        String validationError = validationErrorDetails.toString();
-        if (!validationError.isEmpty()) {
-            validationError = validationError.replace("\n", "");
-            response.setErrorDetails(validationError);
+        if (!missingParams.isEmpty()) {
+            String errorMessage = MISSING_MANDATORY_PARAMETER + String.join(", ", missingParams);
+            response.setMessage(errorMessage);
             response.setValidationStatus(FAILURE);
         } else {
             response.setValidationStatus(SUCCESS);
@@ -162,14 +183,13 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         //find and delete cred file for account
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
-        String roleName= System.getenv(PALADINCLOUD_RO);
 
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
-        String secretId=secretManagerPrefix+ "/" + roleName + "/tenable";
-        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
+
+        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(getTenableSecretId()).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
         LOGGER.info("Delete secret response: {} ",deleteResponse);
 
@@ -184,11 +204,18 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         return response;
     }
 
-    private String getTenableSecret(CreateAccountRequest accountRequest){
+    private String getTenableSecretString(CreateAccountRequest accountRequest){
         String template="{\"accessKey\":\"%s\",\"secretKey\":\"%s\",\"apiURL\":\"%s\",\"userAgent\":\"%s\"}";
         return String.format(template,accountRequest.getTenableAccessKey(),
                 accountRequest.getTenableSecretKey(),
                 Constants.TENABLE_API_URL,
                 tenableUserAgent);
     }
+
+    private String getTenableSecretId() {
+        String roleName = System.getenv(PALADINCLOUD_RO);
+        String secretId = secretManagerPrefix + "/" + roleName + "/tenable";
+        return secretId;
+    }
+
 }
