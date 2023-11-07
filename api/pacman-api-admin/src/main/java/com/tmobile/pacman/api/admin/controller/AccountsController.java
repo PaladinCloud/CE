@@ -11,7 +11,7 @@ import com.tmobile.pacman.api.admin.exceptions.PluginServiceException;
 import com.tmobile.pacman.api.admin.factory.AccountFactory;
 import com.tmobile.pacman.api.admin.factory.PluginFactory;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
-import com.tmobile.pacman.api.admin.repository.service.accounts.AccountsService;
+import com.tmobile.pacman.api.admin.repository.service.AccountsService;
 import com.tmobile.pacman.api.admin.repository.service.AssetGroupService;
 import com.tmobile.pacman.api.admin.repository.service.PluginsService;
 import com.tmobile.pacman.api.admin.repository.service.UserPreferencesService;

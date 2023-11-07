@@ -1,4 +1,4 @@
-package com.tmobile.pacman.api.admin.repository.service.accounts;
+package com.tmobile.pacman.api.admin.repository.service;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

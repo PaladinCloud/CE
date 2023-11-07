@@ -13,14 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.admin.repository.service.accounts;
+package com.tmobile.pacman.api.admin.repository.service;
 
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.*;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
-import com.tmobile.pacman.api.admin.repository.service.ConfigPropertyService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import org.apache.commons.lang.StringUtils;

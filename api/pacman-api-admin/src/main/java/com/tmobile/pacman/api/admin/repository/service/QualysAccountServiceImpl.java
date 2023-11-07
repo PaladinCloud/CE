@@ -1,4 +1,4 @@
-package com.tmobile.pacman.api.admin.repository.service.accounts;
+package com.tmobile.pacman.api.admin.repository.service;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
