@@ -113,7 +113,6 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         }
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
-        String roleName= System.getenv(PALADINCLOUD_RO);
 
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
@@ -121,7 +120,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
                 .withRegion(region).build();
 
         CreateSecretRequest createRequest=new CreateSecretRequest()
-                .withName(secretManagerPrefix+ "/" + roleName + "/tenable").withSecretString(getTenableSecret(accountData));
+                .withName(getTenableSecretId()).withSecretString(getTenableSecretString(accountData));
 
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
         LOGGER.info("Create secret response: {}",createResponse);
@@ -134,7 +133,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         validateResponse.setAccountId(accountId);
         validateResponse.setAccountName("Tenable-Connector");
         validateResponse.setType(TENABLE);
-        validateResponse.setMessage("Account added successfully. ID: "+accountId);
+        validateResponse.setMessage("Account added successfully. ID: " + accountId);
 
         return validateResponse;
     }
@@ -166,22 +165,22 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
     @Override
     public AccountValidationResponse deleteAccount(String accountId) {
-        LOGGER.info("Inside deleteAccount method of TenableAccountServiceImpl. AccountId: {}", accountId);
+        LOGGER.info("Inside deleteAccount method of TenableAccountServiceImpl. AccountId: {}",accountId);
         AccountValidationResponse response=new AccountValidationResponse();
 
         //find and delete cred file for account
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
-        String roleName= System.getenv(PALADINCLOUD_RO);
+
 
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
-        String secretId=secretManagerPrefix+ "/" + roleName + "/tenable";
-        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
+
+        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(getTenableSecretId()).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
-        LOGGER.info("Delete secret response: {} ", deleteResponse);
+        LOGGER.info("Delete secret response: {} ",deleteResponse);
 
         //delete entry from db
         deleteAccountFromDB(accountId);
@@ -194,11 +193,18 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         return response;
     }
 
-    private String getTenableSecret(CreateAccountRequest accountRequest) {
+    private String getTenableSecretString(CreateAccountRequest accountRequest){
         String template="{\"accessKey\":\"%s\",\"secretKey\":\"%s\",\"apiURL\":\"%s\",\"userAgent\":\"%s\"}";
         return String.format(template,accountRequest.getTenableAccessKey(),
                 accountRequest.getTenableSecretKey(),
                 Constants.TENABLE_API_URL,
                 tenableUserAgent);
     }
+
+    private String getTenableSecretId() {
+        String roleName = System.getenv(PALADINCLOUD_RO);
+        String secretId = secretManagerPrefix + "/" + roleName + "/tenable";
+        return secretId;
+    }
+
 }
