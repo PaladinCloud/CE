@@ -572,7 +572,7 @@
     },
     policyDetails: {
         url: '{{baseUrl}}/admin/policy/list',
-        method: 'GET'
+        method: 'POST'
     },
     allPolicyIds: {
         url: '{{baseUrl}}/admin/policy/list-ids',

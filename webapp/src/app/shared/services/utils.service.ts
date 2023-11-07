@@ -28,7 +28,8 @@ export class UtilsService {
   constructor(
               private datePipe: DatePipe,
               private logger: LoggerService,
-              private refactorFieldsService: RefactorFieldsService) {}
+              private refactorFieldsService: RefactorFieldsService
+            ) {}
 
   setTimeoutPromise(milliseconds) {
     const promise = new Promise((resolve: any, reject: any) => {
@@ -110,77 +111,70 @@ export class UtilsService {
     */
     const refactoredService = this.refactorFieldsService;
     const newData = [];
-    data.map(function(row) {
-      const KeysTobeChanged = Object.keys(row);
-      let newObj = {};
-      KeysTobeChanged.forEach(element => {
-        let elementnew;
-        if(columnNamesMap[element]) {
-          elementnew = columnNamesMap[element];
-          newObj = Object.assign(newObj, { [elementnew]: row[element] });
-        }else{
-          elementnew =
-            refactoredService.getDisplayNameForAKey(
-              element.toLocaleLowerCase()
-            ) || element;
-        }
-        newObj = Object.assign(newObj, { [elementnew]: row[element] });
-        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
-      });
-      newData.push(newObj);
+
+    data.forEach((row) => {
+        const keysToBeChanged = Object.keys(row);
+
+        const newObj = {};
+
+        keysToBeChanged.forEach((element) => {
+            let elementNew;
+
+            if (columnNamesMap[element]) {
+                elementNew = columnNamesMap[element];
+            } else {
+                elementNew = refactoredService.getDisplayNameForAKey(element.toLowerCase()) || element;
+            }
+
+            let newDataValue = DATA_MAPPING[typeof row[element] === "string" ? row[element].toLowerCase() : row[element]];
+
+            if (newDataValue === undefined) {
+                newDataValue = row[element];
+            }
+            newObj[elementNew] = newDataValue;
+        });
+
+        newData.push(newObj);
     });
     return newData;
   }
 
-  processTableData(data,tableImageDataMap={},dataMap={}) {
+  processTableData(data,tableImageDataMap={}, transformCallback?) {
     try {
-      var innerArr = {};
-      var totalVariablesObj = {};
-      var cellObj = {};
-      let processedData = [];
-      var getData = data;
-      const keynames = Object.keys(getData[0]);
-
-      let cellData;
-      for (var row = 0; row < getData.length; row++) {
-        innerArr = {};
-        keynames.forEach(col => {
-          cellData = getData[row][col];
-          cellObj = {
-            text: tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
-            titleText: cellData, // text to show on hover
-            valueText: cellData,
-            hasPostImage: false,
-            imgSrc: tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
-            postImgSrc: "",
-            isChip: "",
-            isMenuBtn: false,
-            properties: "",
-            isLink: false,
-            imageTitleText: ""
-          }
+      const processedData = [];
+      
+      for (const row of data) {
+        const innerArr = {};
+        for (const col in row) {
+          const cellData = row[col];
+          const tableImageData = tableImageDataMap[typeof cellData === "string" ? cellData.toLowerCase() : cellData];
+          
+          let cellObj = {
+              text: tableImageData?.imageOnly ? "" : cellData,
+              titleText: cellData,
+              valueText: cellData,
+              hasPostImage: false,
+              imgSrc: tableImageData?.image || "",
+              postImgSrc: "",
+              isChip: "",
+              isMenuBtn: false,
+              properties: "",
+              isLink: false,
+              imageTitleText: "",
+              isDate: false
+          };
           if(this.isDateStringValid(cellData)){
             cellObj = {
               ...cellObj,
               isDate: true
             };
           }
-          if(dataMap[cellData]){
-            cellObj = {
-              ...cellObj,
-              text: dataMap[cellData],
-              titleText: dataMap[cellData],
-              valueText: dataMap[cellData]
-            };
+          if(transformCallback){
+            cellObj = transformCallback(row, col, cellObj);
           }
           innerArr[col] = cellObj;
-          totalVariablesObj[col] = "";
-        });
+        };
         processedData.push(innerArr);
-      }
-      if (processedData.length > getData.length) {
-        var halfLength = processedData.length / 2;
-        processedData = processedData.splice(halfLength);
       }
       return processedData;
     } catch (error) {

@@ -26,16 +26,18 @@
                             [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
                             (searchCalledEventEmitter)="callNewSearch($event)"
                             [searchQuery]="searchTxt" [tableErrorMessage]='errorMessage'
-                            [showSearchBar]="true" [showAddRemoveCol]="true" [showFilterBtn]="true" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
+                            [showAddRemoveCol]="true" [showFilterBtn]="true" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
                             [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap"
-                            [rowClickable]="true" [doLocalFilter]="true" [doLocalSearch]="true"
+                            [rowClickable]="true" [doLocalFilter]="false" [doLocalSearch]="false" [doLocalSort]="false" [centeredColumns]="centeredColumns"
                             [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters"
                             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-                            (selectedFilter)="handleFilterSelection()"
-                            (selectedFilterType)="handleFilterTypeSelection()"
+                            (selectedFilter)="changeFilterTags($event)"
+                            (selectedFilterType)="changeFilterType($event)"
                             (deleteFilters)="deleteFilters($event)"
                             [selectedRowIndex]="selectedRowIndex"
-                            [filterFunctionMap]="filterFunctionMap">
+                            [enableMultiValuedFilter]="true"
+                            [filterTypeOptions]="filterTypeOptions"
+                            (nextPageCalled)="nextPage($event)">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>

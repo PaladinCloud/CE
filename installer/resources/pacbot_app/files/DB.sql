@@ -3084,6 +3084,11 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
 update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
 
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (10,'Created Date','_loaddate','/compliance/v1/filters/eventdate');
+DELETE from pac_v2_ui_options where filterId='10' AND optionName='Event';
+
+delete from pac_v2_ui_options where filterId=12 and optionValue in ("assets", "violations");
+
 /* Plugin developed using PluginEngine V1 */
  INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
  VALUES ('plugins.in.v1','gcp,redhat,contrast','job-scheduler','prd','latest',NULL,NULL,NULL,NULL);

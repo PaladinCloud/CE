@@ -6,3 +6,5 @@ export const DATA_MAPPING = {
     azure: "Azure",
     redhat: "Red Hat"
 }
+
+// change this to service with getDataMap and also include asset type maps in datamap using assettypemap service
