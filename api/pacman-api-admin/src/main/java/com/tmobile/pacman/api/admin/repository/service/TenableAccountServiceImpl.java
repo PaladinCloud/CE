@@ -55,7 +55,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     @Override
     public AccountValidationResponse validate(CreateAccountRequest accountData) {
         AccountValidationResponse validateResponse= validateRequestData(accountData);
-        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)) {
+        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
@@ -72,7 +72,6 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         request.addHeader("content-type", "application/json");
         request.addHeader("cache-control", "no-cache");
         request.addHeader("Accept", "application/json");
-
         try {
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             CloseableHttpResponse response = httpClient.execute(request);
@@ -93,7 +92,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
         return validationResponse;
     }
-    
+
     @Override
     public AccountValidationResponse addAccount(CreateAccountRequest accountData) {
         LOGGER.info("Adding new Tenable account....");
@@ -126,17 +125,16 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
         LOGGER.info("Create secret response: {}",createResponse);
-
         String accountId = UUID.randomUUID().toString();
-        createAccountInDb(accountId,"Tenable-Connector",TENABLE,accountData.getCreatedBy());
+        createAccountInDb(accountId,"Tenable-Connector", TENABLE,accountData.getCreatedBy());
 
-        updateConfigProperty(TENABLE_ENABLED, TRUE, JOB_SCHEDULER);
+        updateConfigProperty(TENABLE_ENABLED,TRUE,JOB_SCHEDULER);
         validateResponse = new AccountValidationResponse();
         validateResponse.setValidationStatus(SUCCESS);
         validateResponse.setAccountId(accountId);
         validateResponse.setAccountName("Tenable-Connector");
         validateResponse.setType(TENABLE);
-        validateResponse.setMessage("Account added successfully. ID: " + accountId);
+        validateResponse.setMessage("Account added successfully. ID: "+accountId);
 
         return validateResponse;
     }
@@ -169,25 +167,25 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     @Override
     public AccountValidationResponse deleteAccount(String accountId) {
         LOGGER.info("Inside deleteAccount method of TenableAccountServiceImpl. AccountId: {}", accountId);
-        AccountValidationResponse response = new AccountValidationResponse();
+        AccountValidationResponse response=new AccountValidationResponse();
 
         //find and delete cred file for account
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
-        String roleName = System.getenv(PALADINCLOUD_RO);
+        String roleName= System.getenv(PALADINCLOUD_RO);
 
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
-        String secretId = secretManagerPrefix + "/" + roleName + "/tenable";
-        DeleteSecretRequest deleteRequest = new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
+        String secretId=secretManagerPrefix+ "/" + roleName + "/tenable";
+        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
         LOGGER.info("Delete secret response: {} ", deleteResponse);
 
         //delete entry from db
         deleteAccountFromDB(accountId);
-        updateConfigProperty(TENABLE_ENABLED, FALSE, JOB_SCHEDULER);
+        updateConfigProperty(TENABLE_ENABLED,FALSE,JOB_SCHEDULER);
         response.setType(TENABLE);
         response.setAccountId(accountId);
         response.setValidationStatus(SUCCESS);
@@ -197,8 +195,8 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     }
 
     private String getTenableSecret(CreateAccountRequest accountRequest) {
-        String template = "{\"accessKey\":\"%s\",\"secretKey\":\"%s\",\"apiURL\":\"%s\",\"userAgent\":\"%s\"}";
-        return String.format(template, accountRequest.getTenableAccessKey(),
+        String template="{\"accessKey\":\"%s\",\"secretKey\":\"%s\",\"apiURL\":\"%s\",\"userAgent\":\"%s\"}";
+        return String.format(template,accountRequest.getTenableAccessKey(),
                 accountRequest.getTenableSecretKey(),
                 Constants.TENABLE_API_URL,
                 tenableUserAgent);
