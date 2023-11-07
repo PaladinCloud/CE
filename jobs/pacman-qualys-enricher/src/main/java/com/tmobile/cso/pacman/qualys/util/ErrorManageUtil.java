@@ -1,15 +1,13 @@
 package com.tmobile.cso.pacman.qualys.util;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.tmobile.cso.pacman.qualys.Constants;
 import com.tmobile.pacman.commons.dto.PermissionVH;
 import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class ErrorManageUtil implements Constants{
@@ -17,6 +15,8 @@ public class ErrorManageUtil implements Constants{
     private ErrorManageUtil() {
         
     }
+
+    private static Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
 
     public static Map<String,Object> formErrorCode(List<Map<String,String>> errorList) {
         Map<String,Object> errorCode = new HashMap<>();
@@ -32,10 +32,10 @@ public class ErrorManageUtil implements Constants{
             for(Map<String, String> errorDetail :errorList) {
                 Map<String,Object> error = new HashMap<>();
                 error.put(ERROR, errorDetail.get(ERROR));
-                
                 List<Map<String,String>> details = new ArrayList<>();
                 Map<String,String> detail = new HashMap<>();
                 detail.put(EXCEPTION,errorDetail.get(EXCEPTION));
+                log.error("error detail - {} ,  exception - {}", errorDetail.get(ERROR), errorDetail.get(EXCEPTION));
                 details.add(detail);
                 error.put("details",details);
                 errors.add(error);

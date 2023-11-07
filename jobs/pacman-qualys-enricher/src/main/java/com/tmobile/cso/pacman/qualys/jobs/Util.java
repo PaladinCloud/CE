@@ -315,11 +315,7 @@ public class Util {
         LOGGER.info("fetchEc2EniInfo payLoad: {}",payLoad);
         List<Map<String, String>> data = new ArrayList<>();
         String scrollId = fetchDataAndScrollId(endPoint, data, payLoad);
-        do {
-            endPoint =endPoint+ SCROLL_URI + scrollId;
-            scrollId = fetchDataAndScrollId(endPoint, data, payLoad);
-        } while (scrollId != null);
-
+        extractDataUsingScrollId(scrollId, data);
         Map<String, List<String>> ec2EniMap = new HashMap<>();
         data.stream().collect(Collectors.groupingBy(obj -> obj.get("instanceid"))).entrySet().stream()
                 .forEach(entry -> {
@@ -344,14 +340,25 @@ public class Util {
         LOGGER.info("fetchEniMacInfo payLoad: {}",payLoad);
         List<Map<String, String>> data = new ArrayList<>();
         String scrollId = fetchDataAndScrollId(endPoint, data, payLoad);
-        do {
-            endPoint = SCROLL_URI + scrollId;
-            scrollId = fetchDataAndScrollId(endPoint, data, null);
-        } while (scrollId != null);
+
+        extractDataUsingScrollId(scrollId, data);
 
         return data.stream().collect(Collectors.toMap(info -> info.get("_resourceid").toLowerCase(),
                 info -> info.get("macaddress").toLowerCase()));
 
+    }
+
+    private static void extractDataUsingScrollId(String scrollId, List<Map<String, String>> data) {
+        String payLoad;
+        String endPoint;
+        while (scrollId != null) {
+            endPoint = "/_search/scroll";
+            payLoad = "{\n" +
+                    "  \"scroll\" : \"2m\", \n" +
+                    "  \"scroll_id\" : \"%s\" \n" +
+                    "}";
+            scrollId = fetchDataAndScrollId(endPoint, data, String.format(payLoad, scrollId));
+        }
     }
 
     /**
