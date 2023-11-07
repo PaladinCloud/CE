@@ -54,8 +54,8 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
     @Override
     public AccountValidationResponse validate(CreateAccountRequest accountData) {
-        AccountValidationResponse validateResponse = validateRequestData(accountData);
-        if (validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)) {
+        AccountValidationResponse validateResponse= validateRequestData(accountData);
+        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)) {
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
@@ -81,27 +81,25 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
             LOGGER.info("Adding account failed: {}", validateResponse.getMessage());
             return validateResponse;
         }
-
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
-        String roleName = System.getenv(PALADINCLOUD_RO);
+        String roleName= System.getenv(PALADINCLOUD_RO);
 
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
 
-        CreateSecretRequest createRequest = new CreateSecretRequest()
-                .withName(secretManagerPrefix + "/" + roleName + "/tenable").withSecretString(getTenableSecret(accountData));
+        CreateSecretRequest createRequest=new CreateSecretRequest()
+                .withName(secretManagerPrefix+ "/" + roleName + "/tenable").withSecretString(getTenableSecret(accountData));
 
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
-        LOGGER.info("Create secret response: {}", createResponse);
+        LOGGER.info("Create secret response: {}",createResponse);
 
         String accountId = UUID.randomUUID().toString();
-        createAccountInDb(accountId, "Tenable-Connector", TENABLE, accountData.getCreatedBy());
+        createAccountInDb(accountId,"Tenable-Connector",TENABLE,accountData.getCreatedBy());
 
         updateConfigProperty(TENABLE_ENABLED, TRUE, JOB_SCHEDULER);
-
         validateResponse = new AccountValidationResponse();
         validateResponse.setValidationStatus(SUCCESS);
         validateResponse.setAccountId(accountId);
@@ -110,6 +108,31 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
         validateResponse.setMessage("Account added successfully. ID: " + accountId);
 
         return validateResponse;
+    }
+
+    private AccountValidationResponse validateRequestData(CreateAccountRequest accountData) {
+        AccountValidationResponse response = new AccountValidationResponse();
+        List<String> missingParams = new ArrayList<>();
+        String tenableAccessKey = accountData.getTenableAccessKey();
+        String tenableSecretKey = accountData.getTenableSecretKey();
+
+        if (StringUtils.isEmpty(tenableAccessKey)) {
+            missingParams.add("Access Key");
+        }
+
+        if (StringUtils.isEmpty(tenableSecretKey)) {
+            missingParams.add("Secret Key");
+        }
+
+        if (!missingParams.isEmpty()) {
+            String errorMessage = MISSING_MANDATORY_PARAMETER + String.join(", ", missingParams);
+            response.setMessage(errorMessage);
+            response.setValidationStatus(FAILURE);
+        } else {
+            response.setValidationStatus(SUCCESS);
+        }
+
+        return response;
     }
 
     @Override
@@ -141,32 +164,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
         return response;
     }
-
-    private AccountValidationResponse validateRequestData(CreateAccountRequest accountData) {
-        AccountValidationResponse response = new AccountValidationResponse();
-        List<String> missingParams = new ArrayList<>();
-        String tenableAccessKey = accountData.getTenableAccessKey();
-        String tenableSecretKey = accountData.getTenableSecretKey();
-
-        if (StringUtils.isEmpty(tenableAccessKey)) {
-            missingParams.add("Access Key");
-        }
-
-        if (StringUtils.isEmpty(tenableSecretKey)) {
-            missingParams.add("Secret Key");
-        }
-
-        if (!missingParams.isEmpty()) {
-            String errorMessage = MISSING_MANDATORY_PARAMETER + String.join(", ", missingParams);
-            response.setMessage(errorMessage);
-            response.setValidationStatus(FAILURE);
-        } else {
-            response.setValidationStatus(SUCCESS);
-        }
-
-        return response;
-    }
-
+    
     private AccountValidationResponse validateAccountCredentials(CreateAccountRequest accountData) {
         AccountValidationResponse validationResponse = new AccountValidationResponse();
         // Requesting scan that doesn't exist to validate the account data.

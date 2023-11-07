@@ -126,7 +126,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             response.setErrorDetails("Account doesn't exists");
             response.setMessage("Account deletion failed");
         }
-        return response;
+         return response;
     }
 
     public AccountValidationResponse createAccountInDb(String accountId, String accountName, String platform,String createdBy) {
