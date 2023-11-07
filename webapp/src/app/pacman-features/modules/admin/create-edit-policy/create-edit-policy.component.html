@@ -23,8 +23,8 @@
                         Policy Details
                     </div>
                     <div class="button-wrapper">
-                        <button class="button submit-btn" [disabled]="!enableUpdate || updateButtonClicked || (isAutofixEnabled && notificationsForm?.dirty &&  notificationsForm?.invalid)"
-                        [class.disabled-button]="!enableUpdate || updateButtonClicked || (isAutofixEnabled && notificationsForm?.dirty &&  notificationsForm?.invalid)" 
+                        <button class="button submit-btn" [disabled]="isUpdateDisabled()"
+                        [class.disabled-button]="isUpdateDisabled()" 
                         (click)="onSubmit()">Save</button>
                         <!-- <button class="button cancel-btn" 
                             (click)="onReset()" [disabled]="!enableUpdate" [class.disabled-button]="!enableUpdate">Cancel</button> -->
@@ -132,18 +132,26 @@
 
 
 <ng-template #disablePolicyRef>
-    <div class="mat-body-wrapper flex flex-col gap-20">
-        <div class="reason-wrapper flex flex-col gap-8">
-            <span class="reason-header">Reason</span>
-            <div class="input-wrapper">
-                <mat-form-field appearance="outline" style="width: 100%;">
-                    <textarea type="textarea" autocomplete="off" matInput (ngModelChange)="onValueChange($event)"  [(ngModel)]="disableDescription" [style.height]="'116px'"></textarea>
-                </mat-form-field>
+    <form [formGroup]="disablePolicyForm" class="form-wrapper">
+        <div class="disable-policy mat-body-wrapper flex flex-col gap-20">
+            <div class="reason-wrapper flex flex-col gap-8">
+                <app-input-field 
+                            [parentForm]="disablePolicyForm"
+                            formControlName="reason"
+                            label='Reason'
+                            placeholder="Enter valid Reason"
+                            [(value)]="reason"
+                            [formErrors]="disablePolicyFormErrors" 
+                            [isRequired]="true"
+                            type="textarea"
+                            height="56px"
+                            (ngModelChange)="onValueChange($event)">
+                </app-input-field>
+            </div>
+            <div class="date-wrapper flex flex-col gap-8">
+                <span class="expiry-header">Expiry Date</span>
+                <app-date-dropdown [date]="expiryDate" [minDate]="currentDate" [dataForm]="'user'" (dataSent)='getDateData($event)'></app-date-dropdown>
             </div>
         </div>
-        <div class="date-wrapper flex flex-col gap-8">
-            <span class="expiry-header">Expiry Date</span>
-            <app-date-dropdown [date]="expiryDate" [minDate]="currentDate" [dataForm]="'user'" (dataSent)='getDateData($event)'></app-date-dropdown>
-        </div>
-    </div>
+    </form>
 </ng-template>

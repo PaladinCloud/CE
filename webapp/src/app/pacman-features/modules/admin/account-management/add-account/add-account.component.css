@@ -425,6 +425,10 @@
     color: var(--text-low-emphasis);
     display: block !important;
   }
+
+  .tenable-form ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
+    display: block !important;
+  }
   
   .right-wrapper ::ng-deep .mat-form-field-label{
     padding: 3px 8px !important;

@@ -647,8 +647,12 @@ gap: 20px;
 
 .autofix-wrapper ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label
 {
-margin-left: 12px !important;
-display: block !important;
+  margin-left: 12px !important;
+  display: block !important;
+}
+
+.disable-policy ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
+  display: block !important;
 }
 
 .autofix-wrapper ::ng-deep .mat-form-field-label{
