@@ -1,18 +1,3 @@
-/*******************************************************************************
- * Copyright 2023 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- ******************************************************************************/
 package com.tmobile.pacman.api.admin.repository.service;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -26,12 +11,9 @@ import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
-
+import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.List;
-
+import java.io.UnsupportedEncodingException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -39,23 +21,32 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import java.util.*;
 
 @Service
-public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService {
+public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TenableAccountServiceImpl.class);
+    private static final Logger LOGGER= LoggerFactory.getLogger(TenableAccountServiceImpl.class);
 
-    // TODO: Both to move into common constants when common projects unified.
+    private static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
+    private static final String FAILURE = "FAILURE";
+    private static final String SUCCESS = "SUCCESS";
     private static final String TENABLE = "tenable";
-    private static final String TENABLE_ENABLED = "tenable.enabled";
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
+
+
     @Value("${tenable.user-agent}")
     private String tenableUserAgent;
 
+
+    @Autowired
+    CredentialProvider credentialProvider;
+    public static final String TENABLE_ENABLED = "tenable.enabled";
     @Override
     public String serviceType() {
         return TENABLE;

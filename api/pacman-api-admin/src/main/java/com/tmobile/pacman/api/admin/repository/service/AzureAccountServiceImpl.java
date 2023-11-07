@@ -246,9 +246,4 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
         return response;
     }
 
-    private String getSecretData(String secret){
-        String jsonTemplate="{\"secretdata\": \"%s\"}";
-        return String.format(jsonTemplate,secret);
-    }
-
 }
