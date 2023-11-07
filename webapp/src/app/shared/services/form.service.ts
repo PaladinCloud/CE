@@ -34,6 +34,7 @@ export class FormService {
       invalidField: 'This field contains invalid characters',
       invalidURL: 'Please enter a valid Url',
       maxlength: 'This field is exceeding maximum characters',
+      minlength: 'This field must contain atleast 6 characters',
       max: 'This field should not exceed maximum value',
       notMultipleOf24: 'This field should contain only multiples of 24',
       invalid_characters: (matches: any[]) => {

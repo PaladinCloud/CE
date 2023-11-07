@@ -105,6 +105,7 @@
    expireDate: string;
    currentDate;
    headerColName = "";
+   reason: string = "";
    columnsSortFunctionMap = {
      Date: (a, b, isAsc) => {
        return (a["Date"].valueText < b["Date"].valueText ? -1 : 1) * (isAsc ? 1 : -1) ;
@@ -125,6 +126,10 @@
    @ViewChild('policyForm') policyForm!: NgForm;
    @ViewChild('disablePolicyRef') disablePolicyRef: TemplateRef<any>;
    notificationsForm: FormGroup;
+   disablePolicyForm: FormGroup;
+   public disablePolicyFormErrors = {
+     reason: ''
+   }
    public notificationFormErrors = {
      waitingTime: '',
      maxEmailNotification: ''
@@ -248,6 +253,7 @@
    logsTableErrorMessage: string = "";
    logsTableDataLoaded : boolean = false;
    jobInterval: number;
+   isUpdateButtonDisabled: boolean = false;
  
    constructor(
      private datePipe: DatePipe,
@@ -298,8 +304,14 @@
      this.navigateBack();
      // this.policyForm.reset(this.formData);
    }
- 
-   buildForm(){
+
+  buildDisbalePolicyForm(){
+    this.disablePolicyForm = this.form.group({
+      reason: ['', [Validators.required, Validators.minLength(6)]],
+    });
+  }
+
+  buildAutofixForm(){
        const maxEmailNotificationValue =  parseInt((this.waitingTime / this.jobInterval).toString(), 10)
        this.countTooltipText =  "Count should not exceed the limit value " + maxEmailNotificationValue;
        this.notificationsForm = this.form.group({
@@ -391,6 +403,15 @@
          this.showLoader = false;
        });
    }
+
+   isUpdateDisabled(){
+    this.isUpdateButtonDisabled = !this.enableUpdate 
+                                  || this.updateButtonClicked 
+                                  || (this.isAutofixEnabled 
+                                        && this.notificationsForm?.dirty 
+                                        && this.notificationsForm?.invalid);
+    return this.isUpdateButtonDisabled;
+  }
  
    onSubmit() {
      this.hideContent = true;
@@ -662,7 +683,7 @@
        })
        this.formData["maxEmailNotification"]=this.maxEmailNotification;
        this.formData["waitingTime"] = this.waitingTime;
-       this.buildForm();
+       this.buildAutofixForm();
      },
        error => {
          this.logger.log("Error",error);
@@ -725,6 +746,7 @@
  
  
    openDisablePolicyDialog(): void {
+    this.buildDisbalePolicyForm();
      const dialogRef = this.dialog.open(DialogBoxComponent, {
        width: '500px',
        data: { 
@@ -732,6 +754,7 @@
              noButtonLabel: "Cancel",
              yesButtonLabel: "Confirm",
              template: this.disablePolicyRef,
+             formGroup: this.disablePolicyForm
            } 
      });
      dialogRef.afterClosed().subscribe(result => {
@@ -753,6 +776,7 @@
      this.tableDataLoaded = false;
      this.dataLoaded = false;
      this.seekdata = false;
+     this.reason = "";
      this.errorValue = 0;
      this.showGenericMessage = false;
      this.getData(action);
@@ -801,7 +825,7 @@
          }
          if(action.toLowerCase()=="disabled"){
            payload["expireDate"] = this.expireDate,
-           payload["description"] = this.disableDescription
+           payload["description"] = this.reason
          }
          this.adminService.executeHttpAction(url, method, payload, params).subscribe(response => {
              this.updateComponent(action.toLowerCase());

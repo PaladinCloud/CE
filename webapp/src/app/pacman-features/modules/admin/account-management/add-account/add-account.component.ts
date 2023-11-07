@@ -79,9 +79,11 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
   @ViewChild("connectRef") connectRef: TemplateRef<any>;
   @ViewChild("videoThumbnailRef") videoThumbnailRef:TemplateRef<any>;
 
-  @ViewChild("redHatStepsVideo") redHatStepsVideo: TemplateRef<any>;
+  @ViewChild("redHatStepsVideoRef") redHatStepsVideoRef: TemplateRef<any>;
   name = 'Video events';
-  videoSource = "https://paladincloud-production-video.s3.amazonaws.com/redhat-setup-video.mp4";
+  videoSource = "";
+  redHatStepsVideo = "https://paladincloud-production-video.s3.amazonaws.com/redhat-setup-video.mp4";
+  tenableStepsVideo = "https://paladincloud-production-video.s3.amazonaws.com/tenable-setup-video.mp4";
   @ViewChild('videoPlayer') videoplayer: any;
   public startedPlay:boolean = false;
   public show:boolean = false;
@@ -675,6 +677,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
           ];
           break;
       case "red hat":
+        this.videoSource = this.redHatStepsVideo;
         this.stepperData = [
           {
             id: 1,
@@ -703,6 +706,7 @@ export class AddAccountComponent implements OnInit,AfterViewInit {
         ];
           break;
       case "tenable":
+        this.videoSource = this.tenableStepsVideo;
         this.currentPluginForm = this.tenablePluginForm;
         break;
         
@@ -1004,7 +1008,7 @@ copyToClipboard(commands) {
       width: '800px',
       data: { 
             customClass: 'video-dialog',
-            template: this.redHatStepsVideo,
+            template: this.redHatStepsVideoRef,
           } 
     });
   }
