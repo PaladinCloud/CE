@@ -223,28 +223,23 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.searchTxt = state?.searchTxt ?? '';
     this.selectedRowIndex = state?.selectedRowIndex;
 
-    this.tableData = state?.data ?? [];
     this.tableDataLoaded = true;
     this.displayedColumns = ['Asset ID', 'Asset Name', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Source'];
     this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
     this.tableScrollTop = state?.tableScrollTop;
 
-    if(state.data){
-      this.isStatePreserved = true;
-    }else{
-      this.isStatePreserved = false;
-    }
-    const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
-    if((!isTempFilter || isTempFilter=="false") && (state.filters || state.filterText)){
-      this.filters = state.filters || [];
-      Promise.resolve().then(() => this.getUpdatedUrl());
-    }else{
-      this.isStatePreserved = false;
-    }
+    this.isStatePreserved = false;
+    const navDirection = this.workflowService.getNavigationDirection();
 
-    if(this.isStatePreserved){
-      this.tableData = state.data || [];
-    }
+    if(navDirection<=0){
+      this.filters = state.filters || [];
+      if (state.data && state.data.length > 0) {
+        this.isStatePreserved = true;
+        this.tableData = state.data;
+      }
+      Promise.resolve().then(() => this.getUpdatedUrl());
+    }    
+    
   }
 
   ngOnInit() {
@@ -265,7 +260,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     this.bucketNumber = 0;
 
-    this.storeState();
+    
     this.updateComponent();
   }
 
@@ -295,13 +290,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
-    this.storeState();
+    
   }
 
-  storeState(data?){
+  storeState(){
     const state = {
       totalRows: this.totalRows,
-      data: data,
+      data: this.tableData,
       headerColName: this.headerColName,
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
@@ -359,21 +354,21 @@ export class AssetListComponent implements OnInit, OnDestroy {
     try {
       if (!event) {
         this.filters = [];
-        this.storeState();
+        
       } else if(event.removeOnlyFilterValue){
         this.getUpdatedUrl();
         this.updateComponent();
-        this.storeState();
+        
       } else if(event.index && !this.filters[event.index].filterValue){
         this.filters.splice(event.index, 1);
-        this.storeState();
+        
       } else {
         if (event.clearAll) {
           this.filters = [];
         } else {
           this.filters.splice(event.index, 1);
         }
-        this.storeState();
+        
         this.getUpdatedUrl();
         this.updateComponent();
       }
@@ -448,7 +443,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
               this.filters.push(eachObj);
             }
             this.filters = [...this.filters];
-            this.storeState();
+            
           }
         })
       }
@@ -781,7 +776,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
     const row = event.rowSelected;
     this.tableScrollTop = event.tableScrollTop;
     this.selectedRowIndex = event.selectedRowIndex;
-    this.storeState(event.data);
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
@@ -819,7 +813,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.tableScrollTop = e;
       if(this.bucketNumber*this.paginatorSize<this.totalRows){
         this.bucketNumber++;
-        this.storeState();
+        
         this.getData(true);
       }
     } catch (error) {
@@ -899,7 +893,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   callNewSearch(searchVal){
     this.searchTxt = searchVal;
     // this.state.searchValue = searchVal;
-    this.storeState();
+    
     this.updateComponent();
     // this.getUpdatedUrl();
   }
@@ -1028,7 +1022,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
               },
           };
           resolve(this.filterTagOptions[value]);
-          this.storeState();
+          
         });
       }else{
         const queryParams = {
@@ -1059,7 +1053,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
             },
         };
         resolve(this.filterTagOptions[value]);
-        this.storeState();
+        
       });
       }
       } catch (error) {
@@ -1100,7 +1094,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           }
         );
       }
-      this.storeState();
+      
       this.getUpdatedUrl();
       this.utils.clickClearDropdown();
       this.updateComponent();
@@ -1146,6 +1140,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     try {
+      this.storeState();
       if (this.assetGroupSubscription) {
         this.assetGroupSubscription.unsubscribe();
       }
