@@ -45,9 +45,9 @@ public class EnableNodeAutoRepair extends BasePolicy {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_gkecluster/_search";
+            vmEsURL = vmEsURL + "/gcp_gke/_search";
         }
-        logger.debug("========gcp_gkecluster URL after concatenation param {}  =========", vmEsURL);
+        logger.debug("========gcp_gke URL after concatenation param {}  =========", vmEsURL);
         boolean isKeyEnabled = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
