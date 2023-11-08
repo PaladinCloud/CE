@@ -88,7 +88,7 @@ public class ConfigureApiRestriction extends BasePolicy {
             JsonObject apiKeys = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
             //handling "restrictions" attribute being NULL
-           // String nullJSonString = "null";
+         
             if(apiKeys.get(PacmanRuleConstants.RESTRICTIONS).isJsonNull())
                 return true;
             if (apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject()!=null &&apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().size()>0) {
