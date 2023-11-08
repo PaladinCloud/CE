@@ -1,6 +1,10 @@
 package com.tmobile.cloud.gcprules.APIKeys;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -95,14 +99,20 @@ public class RotateAPIKeysRule extends BasePolicy {
         if (hitsJsonArray.size() > 0) {
             logger.info("hit array size {}", hitsJsonArray.size());
             JsonObject apiKeys = (JsonObject) ((JsonObject) hitsJsonArray.get(0)).get(PacmanRuleConstants.SOURCE);
-            String cdDate=apiKeys.get("createdDate").getAsString();
-            SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
-            TimeZone timeZone=TimeZone.getTimeZone("IST");
-            sdf.setTimeZone(timeZone);
-            cdDate=cdDate.replace("GMT ", "");
-            Date date=  sdf.parse(cdDate);
-           if (TimeUnit.DAYS.convert(new Date().getTime()-date.getTime(), TimeUnit.MILLISECONDS)<=90){
-                    validationResult= true;
+            String createdDateStr = apiKeys.get("createdDate").getAsString();
+            String istZoneIdStr = "Asia/Kolkata";
+            ZoneId istZoneId = ZoneId.of(istZoneIdStr);
+            java.util.Date parsedCreatedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS")
+                    .parse(createdDateStr);
+            Instant createdDateInstant = parsedCreatedDate.toInstant();
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(createdDateInstant, istZoneId);
+            ZonedDateTime zonedDateTime = localDateTime.atZone(istZoneId);
+            long millis = zonedDateTime.toInstant().toEpochMilli();
+            int ageInDays = (int) TimeUnit.DAYS.convert(new Date().getTime() - millis, TimeUnit.MILLISECONDS);
+            logger.debug("ageInDays:{}", ageInDays);
+
+            if (ageInDays <= 90) {
+                validationResult = true;
             }
 
         }
