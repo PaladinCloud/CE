@@ -44,13 +44,36 @@ export class WorkflowService {
         private router: Router,
     ) {}
 
+    getCurrentLevel(){
+        return this.level["level0"]?.length || 0;
+    }
+
+    getLastLevel(){
+        const lastLevel = sessionStorage.getItem("lastLevel");
+        return lastLevel?parseInt(lastLevel):0;
+    }
+
+    getNavigationDirection(){
+        const curLevel = this.getCurrentLevel();
+        const lastLevel = this.getLastLevel();
+        const navDirection = curLevel-lastLevel;
+        // 0 if same level i.e., L[i] to L[i]
+        // +ve if L[i] to L[i+n] (here L[i] is last level, L[i+n] is current level -> forward navigation)
+        // -ve if L[i] to L[i-n] (here L[i] is last level, L[i-n] is current level -> backward navigation)
+        return navDirection;
+    }
+
+    storeLastLevel(lastLevel){
+        sessionStorage.setItem('lastLevel', String(lastLevel));
+    }
+
     addRouterSnapshotToLevel(
         routerSnapshot: ActivatedRouteSnapshot,
         currentLevel = 0,
         title = null,
     ) {
         this.level = this.getDetailsFromStorage();
-
+        this.storeLastLevel(this.level['level0']?.length || 0);
         if (!this.level['level' + currentLevel]) {
             this.level['level' + currentLevel] = [];
         }
@@ -127,6 +150,7 @@ export class WorkflowService {
 
     clearAllLevels() {
         this.level = {};
+        this.storeLastLevel(0);
         this.saveToStorage(this.level);
     }
 
@@ -185,6 +209,7 @@ export class WorkflowService {
 
     goToLevel(level: number) {
         const currentLevel = this.level['level0'].length;
+        this.storeLastLevel(currentLevel);
         this.level['level0'].splice(level, currentLevel);
         this.saveToStorage(this.level);
     }
@@ -194,6 +219,7 @@ export class WorkflowService {
     }
 
     getIndexByTitleIfLevelAlreadyExists(title){
+        if(!title) return;
         const levels = this.level["level0"];
         const levelIdx = _.findIndex(levels, {"title": title});
         return levelIdx;
@@ -201,13 +227,14 @@ export class WorkflowService {
 
     navigateTo({urlArray, queryParams, relativeTo, currPagetitle, nextPageTitle=undefined, state=undefined}){
         try{
-            if(nextPageTitle){
-                const index = this.getIndexByTitleIfLevelAlreadyExists(nextPageTitle);
-                if(index>=0){
-                    this.goToLevel(index);
-                }
+            const index = this.getIndexByTitleIfLevelAlreadyExists(nextPageTitle);                
+            if(index>=0){
+                const currentLevel = this.level['level0'].length;
+                
+                this.level['level0'].splice(index, currentLevel-index);
+                this.saveToStorage(this.level);
             }
-            if(currPagetitle) this.addRouterSnapshotToLevel(
+            if(currPagetitle && index<0) this.addRouterSnapshotToLevel(
                 this.router.routerState.snapshot.root, 0, currPagetitle
               );
             this.router.navigate(

@@ -281,16 +281,16 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getAllData() {
-    this.getUsers();
+    // this.getUsers();
     this.getAssetSummary();
     this.getPolicyData();
-    this.getHostData();
-    this.getcpuData();
-    this.getdiskData();
+    // this.getHostData();
+    // this.getcpuData();
+    // this.getdiskData();
     this.getAssetDetailsData();
-    this.getAwsNotificationData();
-    this.getAssetCostData();
-    this.getAccessGroupData();
+    // this.getAwsNotificationData();
+    // this.getAssetCostData();
+    // this.getAccessGroupData();
   }
 
   updateComponent() {
