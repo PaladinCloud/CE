@@ -92,6 +92,10 @@ public class EnableAPIApplicationRestriction extends BasePolicy {
             logger.info("hit array size {}",hitsJsonArray.size());
            JsonObject apiKeys = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                    .get(PacmanRuleConstants.SOURCE);
+           //handling "restrictions" attribute being NULL
+            String nullJSonString = "null";
+            if(apiKeys.get(PacmanRuleConstants.RESTRICTIONS).isJsonNull())
+                return true;
 
             if (apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject()!=null &&apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().size()>0) {
                 logger.info("android Key {} {} {} {} ",apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("androidKeyRestrictions").getAsJsonObject().size(),apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("serverKeyRestrictions").getAsJsonObject().size(),apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("iosKeyRestrictions").getAsJsonObject().size(),apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("browserKeyRestrictions").getAsJsonObject().size());
