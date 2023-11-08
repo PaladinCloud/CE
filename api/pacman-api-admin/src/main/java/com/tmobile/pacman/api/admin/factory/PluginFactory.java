@@ -16,7 +16,7 @@
 package com.tmobile.pacman.api.admin.factory;
 
 import com.tmobile.pacman.api.admin.exceptions.PluginNotFoundException;
-import com.tmobile.pacman.api.admin.repository.service.PluginsService;
+import com.tmobile.pacman.api.admin.repository.service.plugins.PluginsService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

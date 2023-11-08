@@ -13,12 +13,12 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.admin.repository.service;
+package com.tmobile.pacman.api.admin.repository.service.plugins;
 
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginResponse;
-import com.tmobile.pacman.api.admin.domain.RedHatPluginRequest;
+import com.tmobile.pacman.api.admin.domain.plugin.RedHatPluginRequest;
 import com.tmobile.pacman.api.admin.exceptions.PluginServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;

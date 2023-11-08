@@ -13,15 +13,34 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.admin.domain;
+package com.tmobile.pacman.api.admin.exceptions;
 
-import lombok.Data;
+/**
+ * Custom exception class for the plugin service to handle unexpected errors.
+ */
+public class PluginApiResponseException extends RuntimeException {
 
-@Data
-public class RedHatPluginRequest {
+    private int statusCode;
 
-    private String redhatAccountId;
-    private String redhatAccountName;
-    private String redhatToken;
-    private String owner;
+    public PluginApiResponseException(String message) {
+        super(message);
+    }
+
+    public PluginApiResponseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public PluginApiResponseException(String message, int statusCode) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+
+    public PluginApiResponseException(String message, int statusCode, Throwable cause) {
+        super(message, cause);
+        this.statusCode = statusCode;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
 }

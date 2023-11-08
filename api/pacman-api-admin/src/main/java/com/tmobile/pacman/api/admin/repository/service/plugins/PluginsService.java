@@ -13,7 +13,7 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.admin.repository.service;
+package com.tmobile.pacman.api.admin.repository.service.plugins;
 
 import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginResponse;

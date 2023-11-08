@@ -13,7 +13,7 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.admin.repository.service;
+package com.tmobile.pacman.api.admin.repository.service.plugins;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
@@ -25,7 +25,7 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.collect.Lists;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
-import com.tmobile.pacman.api.admin.domain.GcpPluginRequest;
+import com.tmobile.pacman.api.admin.domain.plugin.GcpPluginRequest;
 import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginResponse;
 import com.tmobile.pacman.api.admin.exceptions.PluginServiceException;
