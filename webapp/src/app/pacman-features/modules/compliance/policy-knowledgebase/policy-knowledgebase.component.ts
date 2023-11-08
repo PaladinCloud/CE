@@ -45,6 +45,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   domainSubscription: Subscription;
   complianceTableSubscription: Subscription;
   issueFilterSubscription: Subscription;
+  agDomainSubscription: Subscription;
   tableDataLoaded = false;
   searchTxt = '';
   breadcrumbPresent;
@@ -168,7 +169,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     ) {
 
       this.getPreservedState();
-      this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
+      this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => { 
         this.selectedAssetGroup = ag;
         this.selectedDomain = domain;
         this.updateComponent();
@@ -198,7 +199,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.filters = state?.filters || [];
       this.totalRows = this.tableData.length;
       this.selectedRowIndex = state?.selectedRowIndex;
-      this.policyCategoryDic = state?.policyCategoryDic;
+      if(state?.policyCategoryDic)
+      this.policyCategoryDic = state.policyCategoryDic;
 
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
@@ -711,9 +713,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
 
   getTilesData(){
-    if(this.policyCategoryDic["all policies"]){
-      return;
-    }
     const newPolicyDic: {[key in PolicyCategory]: number} = {
             [PolicyCategory.ALL_POLICIES]: 0,
             [PolicyCategory.COST]: 0,
@@ -906,6 +905,9 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       }
       if (this.domainSubscription) {
         this.domainSubscription.unsubscribe();
+      }
+      if(this.agDomainSubscription){
+         this.agDomainSubscription.unsubscribe();
       }
     } catch (error) {
       this.logger.log('error', '--- Error while unsubscribing ---');
