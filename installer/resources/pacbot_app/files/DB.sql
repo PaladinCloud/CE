@@ -3084,6 +3084,14 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
 update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
 
+/* updating targetName and displayName for azure kubernetes */
+UPDATE cf_Target t SET t.targetName='aks', t.displayName='AKS', t.endpoint=concat(@eshost,':',@esport,'/azure_aks/aks') WHERE targetName='kubernetes' AND datasourceName='azure';
+UPDATE cf_AssetGroupTargetDetails SET targetType='aks' WHERE targetType='kubernetes';
+
+/* updating targetName and displayName for gcp gkecluster */
+UPDATE cf_Target t SET t.targetName='gke', t.displayName='GKE', t.endpoint=concat(@eshost,':',@esport,'/gcp_gke/gke') WHERE targetName='gkecluster' AND datasourceName='gcp';
+UPDATE cf_AssetGroupTargetDetails SET targetType='gke' WHERE targetType='gkecluster';
+
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (10,'Created Date','_loaddate','/compliance/v1/filters/eventdate');
 DELETE from pac_v2_ui_options where filterId='10' AND optionName='Event';
 

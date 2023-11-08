@@ -87,7 +87,7 @@ public class EnableIntraNodeVisibilityRuleTest {
                         "          \"_resourceid\": \"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\n" +
                         "          \"_docid\": \"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\n" +
                         "          \"_entity\": \"true\",\n" +
-                        "          \"_entitytype\": \"gkecluster\",\n" +
+                        "          \"_entitytype\": \"gke\",\n" +
                         "          \"firstdiscoveredon\": \"2022-10-27 12:00:00+0000\",\n" +
                         "          \"latest\": true,\n" +
                         "          \"_loaddate\": \"2022-10-27 12:30:00+0000\"\n" +
@@ -145,7 +145,7 @@ public class EnableIntraNodeVisibilityRuleTest {
                         "          \"_resourceid\": \"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\n" +
                         "          \"_docid\": \"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\n" +
                         "          \"_entity\": \"true\",\n" +
-                        "          \"_entitytype\": \"gkecluster\",\n" +
+                        "          \"_entitytype\": \"gke\",\n" +
                         "          \"firstdiscoveredon\": \"2022-10-27 12:00:00+0000\",\n" +
                         "          \"latest\": true,\n" +
                         "          \"_loaddate\": \"2022-10-27 12:30:00+0000\"\n" +
@@ -164,7 +164,7 @@ public class EnableIntraNodeVisibilityRuleTest {
         commonMap.put("ruleCategory", "security");
         commonMap.put("accountid", "12345");
         commonMap.put("violationReason", "if intraNode Visibility flag is disabled");
-        commonMap.put("esSgRulesUrl", "/gcp_gkecluster/_search");
+        commonMap.put("esSgRulesUrl", "/gcp_gke/_search");
         return commonMap;
     }
 
