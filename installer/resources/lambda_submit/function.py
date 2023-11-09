@@ -15,13 +15,65 @@ from resources.eventbus.custom_event_bus import CloudWatchEventBusPlugin, CloudW
 from resources.pacbot_app.utils import  get_azure_tenants,  get_gcp_project_ids, get_aws_account_details
 import json
 from core.config import Settings
+from resources.iam.eventbridge_role import EventBridgePolicyRole
 
+class EventTrigger(CloudWatchEventRuleResource):
+    name = "Trigger-event"
+    event_pattern = {
+        "$or": [
+            {
+                "detail-type": ["Batch Job State Change"],
+                "source": ["aws.batch"],
+                "detail": {
+                    "status": ["SUCCEEDED"],
+                    "jobName": ["AWS-Data-Collector-job"],
+                    "jobQueue": [BatchJobsQueue.get_output_attr('arn')]
+                }
+            },
+            {
+                "detail-type": ["Batch Job State Change"],
+                "source": ["aws.batch"],
+                "detail": {
+                    "status": ["SUCCEEDED"],
+                    "jobName": ["qualys-kb-collector-job"],
+                    "jobQueue": [BatchJobsQueue.get_output_attr('arn')]
+                }
+            },
+            {
+                "detail-type": ["Batch Job State Change"],
+                "source": ["aws.batch"],
+                "detail": {
+                    "status": ["SUCCEEDED"],
+                    "jobName": ["azure-discovery-job"],
+                    "jobQueue": [BatchJobsQueue.get_output_attr('arn')]
+                }
+            }
+        ]
+    }
+
+class AwsEventsTarget(CloudWatchEventTargetResource):
+    rule = EventTrigger.get_output_attr('name')
+    arn = CloudWatchEventBusaws.get_output_attr('arn')
+    target_id = 'target-aws-bus'  # Unique identifier
+    role_arn = EventBridgePolicyRole.get_output_attr('arn')
+
+class AzureEventsTarget(CloudWatchEventTargetResource):
+    rule = EventTrigger.get_output_attr('name')
+    arn = CloudWatchEventBusazure.get_output_attr('arn')
+    target_id = 'target-azure-bus'  # Unique identifier
+    role_arn = EventBridgePolicyRole.get_output_attr('arn')
+
+class QualysEventsTarget(CloudWatchEventTargetResource):
+    rule = EventTrigger.get_output_attr('name')
+    arn = CloudWatchEventBusPlugin.get_output_attr('arn')
+    target_id = 'target-plugin-bus'  # Unique identifier
+    role_arn = EventBridgePolicyRole.get_output_attr('arn')
 
 class SubmitJobLambdaFunction(LambdaFunctionResource):
     function_name = "datacollector"
     role = LambdaRole.get_output_attr('arn')
     handler = BATCH_JOB_FILE_NAME + ".lambda_handler"
-    runtime = "python3.11"
+    runtime = "python3.8"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaSubmitJobZipFile.get_output_attr('id') 
     environment = {
@@ -97,15 +149,12 @@ class DataShipperEventRule(CloudWatchEventRuleResource):
     name = "aws-redshift-es-data-shipper"
     event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
     event_pattern = {
-    "detail-type": [Settings.JOB_DETAIL_TYPE],
-    "source": [Settings.JOB_SOURCE],
+    "detail-type": ["Batch Job State Change"],
+    "source": ["aws.batch"],
     "detail": {
-        "batchNo": [1],
-        "cloudName": ["aws"],
-        "isCollector": [False],
-        "isShipper":[True],
-        "isRule": [False],
-        "submitJob": [True]
+        "status": ["SUCCEEDED"],
+        "jobName": ["AWS-Data-Collector-job"],
+        "jobQueue": [BatchJobsQueue.get_output_attr('arn')]
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
@@ -126,7 +175,7 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     target_id = 'DataShipperTarger'  # Unique identifier
     target_input = json.dumps({
         'jobName': "aws-redshift-es-data-shipper",
-        'jobUuid': "data-shipper",
+        'jobUuid': "data-shipper-jar-with-dependencies",
         'jobType': "jar",
         'jobDesc': "Ship aws data periodically from redshfit to ES",
         'environmentVariables': [
@@ -158,15 +207,12 @@ class RecommendationsCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-Recommendations-Collector"
     event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
     event_pattern = {
-    "detail-type": [Settings.JOB_DETAIL_TYPE],
-    "source": [Settings.JOB_SOURCE],
+    "detail-type": ["Batch Job State Change"],
+    "source": ["aws.batch"],
     "detail": {
-        "batchNo": [1],
-        "cloudName": ["aws"],
-        "isCollector": [False],
-        "isShipper":[True],
-        "isRule": [False],
-        "submitJob": [True]
+        "status": ["SUCCEEDED"],
+        "jobName": ["AWS-Data-Collector-job"],
+        "jobQueue": [BatchJobsQueue.get_output_attr('arn')]
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction]
@@ -217,15 +263,12 @@ class CloudNotificationCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-CloudNotification-Collector"
     event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
     event_pattern = {
-    "detail-type": [Settings.JOB_DETAIL_TYPE],
-    "source": [Settings.JOB_SOURCE],
+    "detail-type": ["Batch Job State Change"],
+    "source": ["aws.batch"],
     "detail": {
-        "batchNo": [1],
-        "cloudName": ["aws"],
-        "isCollector": [False],
-        "isShipper":[True],
-        "isRule": [False],
-        "submitJob": [True]
+        "status": ["SUCCEEDED"],
+        "jobName": ["AWS-Data-Collector-job"],
+        "jobQueue": [BatchJobsQueue.get_output_attr('arn')]
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction]
@@ -320,15 +363,12 @@ class QualysAssetDataImporterEventRule(CloudWatchEventRuleResource):
     name = "qualys-asset-data-importer"
     event_bus_name = CloudWatchEventBusPlugin.get_output_attr('arn')
     event_pattern = {
-    "detail-type": [Settings.JOB_DETAIL_TYPE],
-    "source": [Settings.JOB_SOURCE],
+    "detail-type": ["Batch Job State Change"],
+    "source": ["aws.batch"],
     "detail": {
-        "batchNo": [1],
-        "cloudName": ["qualys-aws"],
-        "isCollector": [False],
-        "isShipper": [True],
-        "isRule": [False],
-        "submitJob": [True]
+        "status": ["SUCCEEDED"],
+        "jobName": ["qualys-kb-collector-job"],
+        "jobQueue": [BatchJobsQueue.get_output_attr('arn')]
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction]
@@ -495,15 +535,12 @@ class AzureDataShipperEventRule(CloudWatchEventRuleResource):
     name = "data-shipper-azure"
     event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
     event_pattern = {
-    "detail-type": [Settings.JOB_DETAIL_TYPE],
-    "source": [Settings.JOB_SOURCE],
+    "detail-type": ["Batch Job State Change"],
+    "source": ["aws.batch"],
     "detail": {
-        "batchNo": [1],
-        "cloudName": ["azure"],
-        "isCollector": [False],
-        "isShipper":[True],
-        "isRule": [False],
-        "submitJob": [True]
+        "status": ["SUCCEEDED"],
+        "jobName": ["pacbot-azure-discovery-job"],
+        "jobQueue": [BatchJobsQueue.get_output_attr('arn')]
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
@@ -526,7 +563,7 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     target_id = 'AzureDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "data-shipper-azure",
-        'jobUuid': "data-shipper",
+        'jobUuid': "data-shipper-azure",
         'jobType': "jar",
         'jobDesc': "Ship Azure Data from S3 to PacBot ES",
         'environmentVariables': [
@@ -634,7 +671,7 @@ class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     target_id = 'GCPDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "data-shipper-gcp",
-        'jobUuid': "data-shipper",
+        'jobUuid': "data-shipper-gcp",
         'jobType': "jar",
         'jobDesc': "Ship GCP Data from S3 to PacBot ES",
         'environmentVariables': [
@@ -781,7 +818,7 @@ class RedHatDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     target_id = 'RedHatDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "data-shipper-redhat",
-        'jobUuid': "data-shipper",
+        'jobUuid': "data-shipper-redhat",
         'jobType': "jar",
         'jobDesc': "Ship RedHat Data from S3 to PaladinCloud ES",
         'environmentVariables': [
@@ -802,7 +839,7 @@ class LongRunningLambdaFunction(LambdaFunctionResource):
     function_name = "longrunningjob"
     role = LambdaRole.get_output_attr('arn')
     handler = BATCH_LONG_RUNNING_JOB_FILE_NAME + ".lambda_handler"
-    runtime = "python3.11"
+    runtime = "python3.8"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaLongRunningJobZipFile.get_output_attr('id') 
 
