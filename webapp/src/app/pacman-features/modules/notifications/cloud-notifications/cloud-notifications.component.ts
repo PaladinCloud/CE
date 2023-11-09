@@ -96,7 +96,9 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     tableScrollTop: any;
     isTableStatePreserved = false;
 
-    columnNamesMap = {};
+    columnNamesMap = {
+        eventName: 'Event',
+    };
 
     columnWidths = {
         'Event': 2,
@@ -314,7 +316,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     this.filterTypeOptions = response[0].response;
                     this.filterTypeLabels.sort();
 
-                    this.columnNamesMap = this.utils.getColumnNamesMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, []);
+                    const columnNamesMap = this.utils.getColumnNamesMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, []);
+                    this.columnNamesMap = {...columnNamesMap, ...this.columnNamesMap}
                     this.columnWidths = {...this.columnWidths};
                     this.routerParam();
                     this.getFilterArray();
