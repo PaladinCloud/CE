@@ -44,6 +44,7 @@ import java.util.Optional;
 public class GcpPluginServiceImpl extends AbstractPluginService implements PluginsService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GcpPluginServiceImpl.class);
+    private static final String PLUGIN_NAME = "gcp";
 
     @Override
     @Transactional
@@ -133,6 +134,11 @@ public class GcpPluginServiceImpl extends AbstractPluginService implements Plugi
             return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED,
                     "Validation failed due to an unexpected error.");
         }
+    }
+
+    @Override
+    public String getPluginType() {
+        return PLUGIN_NAME;
     }
 
     private PluginResponse validateRedhatPluginRequest(GcpPluginRequest pluginData, String pluginName) {

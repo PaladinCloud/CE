@@ -25,7 +25,6 @@ import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
 import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
 import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
 import com.amazonaws.services.secretsmanager.model.ResourceExistsException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
@@ -35,7 +34,6 @@ import com.tmobile.pacman.api.admin.domain.ConfigPropertyRequest;
 import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginResponse;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
-import com.tmobile.pacman.api.admin.exceptions.PluginApiResponseException;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.repository.model.ConfigProperty;
@@ -47,10 +45,6 @@ import com.tmobile.pacman.api.admin.util.AdminUtils;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +52,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -379,25 +371,6 @@ public abstract class AbstractPluginService {
             }
         } catch (Exception exception) {
             LOGGER.error("Could not activity log for plugin {} with account id {}", parameters.getPluginName(), parameters.getId());
-        }
-    }
-
-    protected JsonNode getApiResponse(HttpUriRequest request) {
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            try (CloseableHttpResponse response = httpClient.execute(request)) {
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == 200) {
-                    return objectMapper.readTree(response.getEntity().getContent());
-                } else {
-                    throw new PluginApiResponseException("HTTP request failed", statusCode);
-                }
-            }
-        } catch (UnknownHostException e) {
-            LOGGER.error("Unknown host error: " + e.getMessage(), e);
-            throw new PluginApiResponseException("Request failed due to Unknown Host", 1000, e);
-        } catch (IOException e) {
-            LOGGER.error("Unexpected error: " + e.getMessage(), e);
-            throw new PluginApiResponseException("Unexpected error occurred", e);
         }
     }
 }

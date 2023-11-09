@@ -42,6 +42,7 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
     private static final String REDHAT_TOKEN_TEMPLATE = "{\"token\":\"%s\"}";
     private static final String REDHAT_URL_TEMPLATE = "https://acs-%s.acs.rhcloud.com";
     private static final String SUMMARY_COUNTS_URL_PATH = "/v1/summary/counts";
+    private static final String PLUGIN_NAME = "redhat";
 
     @Override
     @Transactional
@@ -112,6 +113,11 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
             LOGGER.error(VALIDATION_FAILED + UNEXPECTED_ERROR_MSG, e.getMessage());
             return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED, e.getMessage());
         }
+    }
+
+    @Override
+    public String getPluginType() {
+        return PLUGIN_NAME;
     }
 
     private PluginResponse validateRedhatPluginRequest(RedHatPluginRequest pluginData, String pluginName) {

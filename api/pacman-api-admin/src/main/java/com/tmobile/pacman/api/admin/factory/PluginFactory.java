@@ -38,7 +38,7 @@ public class PluginFactory {
      */
     public PluginsService getService(String type) throws PluginNotFoundException {
         return services.stream()
-                .filter(service -> service.getClass().getSimpleName().toLowerCase().startsWith(type))
+                .filter(service -> service.getPluginType().equalsIgnoreCase(type))
                 .findFirst()
                 .orElseThrow(() -> new PluginNotFoundException("PluginsService not found for plugin type: " + type));
     }

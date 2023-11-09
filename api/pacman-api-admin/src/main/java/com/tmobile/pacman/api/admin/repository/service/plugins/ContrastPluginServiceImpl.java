@@ -20,11 +20,13 @@ import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginResponse;
 import com.tmobile.pacman.api.admin.domain.plugin.ContrastPluginRequest;
-import com.tmobile.pacman.api.admin.exceptions.PluginApiResponseException;
 import com.tmobile.pacman.api.admin.exceptions.PluginServiceException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -32,6 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.UnknownHostException;
 import java.util.Base64;
 
 @Service
@@ -42,6 +45,7 @@ public class ContrastPluginServiceImpl extends AbstractPluginService implements 
             "\"authorization\":\"%s\",\"env_name\":\"%s\"}";
     private static final String CONTRAST_URL_TEMPLATE = "https://%s.contrastsecurity.com";
     private static final String ORGANIZATIONS_URL_PATH = "/api/v4/organizations/";
+    private static final String PLUGIN_NAME = "contrast";
 
     @Override
     @Transactional
@@ -57,7 +61,12 @@ public class ContrastPluginServiceImpl extends AbstractPluginService implements 
                 return validationResponse;
             }
             LOGGER.info(String.format(ADDING_ACCOUNT, parameters.getPluginName()));
-            String organizationName = getOrganizationNameFromApiResponse(request);
+            PluginResponse organizationNameApiResponse = getOrganizationName(request);
+            if (!organizationNameApiResponse.getStatus().equalsIgnoreCase(AdminConstants.SUCCESS)) {
+                return organizationNameApiResponse;
+            }
+            String organizationName = organizationNameApiResponse.getMessage();
+            LOGGER.info("Organization name for orgId : {} is {}", request.getOrganizationId(), organizationName);
             PluginResponse createResponse = createAccountInDb(parameters, organizationName);
             if (createResponse.getStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
                 LOGGER.info(ACCOUNT_EXISTS);
@@ -69,9 +78,6 @@ public class ContrastPluginServiceImpl extends AbstractPluginService implements 
                     request.getEnvironmentName());
             parameters.setSecretKey(secretKey);
             return createSecretAndSendSQSMessage(parameters);
-        } catch (PluginApiResponseException pare) {
-            LOGGER.error(VALIDATION_FAILED + pare.getMessage());
-            return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED, pare.getMessage());
         } catch (Exception e) {
             deletePlugin(parameters);
             throw new PluginServiceException("Unknown Exception occurred while creating plugin", e);
@@ -93,20 +99,22 @@ public class ContrastPluginServiceImpl extends AbstractPluginService implements 
             return validationResponse;
         }
         try {
-            String organizationName = getOrganizationNameFromApiResponse(accountData);
-            LOGGER.info("Organization name for orgId : {} is {}", accountData.getOrganizationId(), organizationName);
-            if (StringUtils.isEmpty(organizationName)) {
-                return new PluginResponse(AdminConstants.FAILURE, "Couldn't read Organization name",
-                        "Organization name is null, terminating sequence");
+            PluginResponse organizationNameApiResponse = getOrganizationName(accountData);
+            if (organizationNameApiResponse.getStatus().equalsIgnoreCase(AdminConstants.FAILURE)) {
+                return organizationNameApiResponse;
             }
+            String organizationName = organizationNameApiResponse.getMessage();
+            LOGGER.info("Organization name for orgId : {} is {}", accountData.getOrganizationId(), organizationName);
             return new PluginResponse(AdminConstants.SUCCESS, VALIDATION_SUCCESSFUL, null);
-        } catch (PluginApiResponseException pare) {
-            LOGGER.error(VALIDATION_FAILED + pare.getMessage());
-            return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED, pare.getMessage());
         } catch (Exception e) {
             LOGGER.error(VALIDATION_FAILED + UNEXPECTED_ERROR_MSG, e.getMessage());
-            return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED, e.getMessage());
+            return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED, "Unexpected error occurred");
         }
+    }
+
+    @Override
+    public String getPluginType() {
+        return PLUGIN_NAME;
     }
 
     private PluginResponse validateContrastPluginRequest(ContrastPluginRequest pluginData, String pluginName) {
@@ -135,7 +143,7 @@ public class ContrastPluginServiceImpl extends AbstractPluginService implements 
         return response;
     }
 
-    public String getOrganizationNameFromApiResponse(ContrastPluginRequest accountData) {
+    private PluginResponse getOrganizationName(ContrastPluginRequest accountData) {
         try {
             String apiUrl = new URIBuilder(String.format(CONTRAST_URL_TEMPLATE, accountData.getEnvironmentName()))
                     .setPath(ORGANIZATIONS_URL_PATH + accountData.getOrganizationId()).build().toString();
@@ -145,31 +153,41 @@ public class ContrastPluginServiceImpl extends AbstractPluginService implements 
             request.setHeader(HttpHeaders.AUTHORIZATION, authKey);
             request.setHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
             request.setHeader("API-Key", accountData.getApiKey());
-            JsonNode jsonResponse = getApiResponse(request);
-            return jsonResponse.get("name").textValue();
-        } catch (PluginApiResponseException pare) {
-            String message;
-            switch (pare.getStatusCode()) {
-                case 400:
-                    message = "The request could not be understood by the server. " +
-                            "Check the Organization ID and Keys and make sure they are correct.";
-                    break;
-                case 401:
-                    message = "The request requires authentication. " +
-                            "The User Id and Keys may be incorrect or the User is locked.";
-                    break;
-                case 1000:
-                    message = "The server could not be found. " +
-                            "The Environment name may be incorrect or the server may be down.";
-                    break;
-                default:
-                    message = "The server does not have the necessary credentials to authenticate the user. " +
-                            "Check your credentials and make sure they are correct.";
-                    break;
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                try (CloseableHttpResponse response = httpClient.execute(request)) {
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    if (statusCode != 200) {
+                        String errorMessage = handleErrorResponse(response.getStatusLine().getStatusCode());
+                        return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED, errorMessage);
+                    }
+                    JsonNode jsonResponse = objectMapper.readTree(response.getEntity().getContent());
+                    String organizationName = jsonResponse.get("name").textValue();
+                    if (StringUtils.isEmpty(organizationName)) {
+                        return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED,
+                                "Couldn't read Organization name");
+                    }
+                    return new PluginResponse(AdminConstants.SUCCESS, organizationName, null);
+                }
             }
-            throw new PluginApiResponseException(message);
+        } catch (UnknownHostException e) {
+            LOGGER.error("Unknown host error: " + e.getMessage(), e);
+            return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED, "Server not found: " +
+                    "The Environment name may be incorrect or the server may be down.");
         } catch (Exception e) {
-            throw new PluginApiResponseException(e.getMessage(), e);
+            LOGGER.error("Unexpected error: " + e.getMessage(), e);
+            return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED, "Unexpected error occurred");
+        }
+    }
+
+    private String handleErrorResponse(int statusCode) {
+        switch (statusCode) {
+            case 400:
+            case 404:
+                return "Bad request: Check the Organization ID and Keys and make sure they are correct.";
+            case 401:
+                return "Unauthorized: The User Id and Keys may be incorrect or the User is locked.";
+            default:
+                return "Authentication failed: Check your credentials and make sure they are correct.";
         }
     }
 }

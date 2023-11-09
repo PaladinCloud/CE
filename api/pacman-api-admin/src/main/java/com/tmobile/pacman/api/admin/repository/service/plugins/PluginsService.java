@@ -26,4 +26,6 @@ public interface PluginsService {
     PluginResponse deletePlugin(PluginParameters parameters);
 
     PluginResponse validate(Object request, String pluginName);
+
+    String getPluginType();
 }
