@@ -76,7 +76,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	}
 
 	@Override
-	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter, int size,
+	public List<Map<String, Object>> getNotifications(String assetGroup,  Map<String, List<String>> filter, int size,
 													  int from, Map<String,Object> sortFilter, Date startDate, Date endDate) {
 		LOGGER.info("Inside getNotifications");
 		notifications = new ArrayList<>();
@@ -402,7 +402,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	 * CloudNotificationsRepositoryImpl# getGlobalNotifications(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> getCloudNotifications(String index, String type, Map<String, String> filter,
+	public List<Map<String, Object>> getCloudNotifications(String index, String type,  Map<String, List<String>> filter,
 			int size, int from,Map<String,Object> sortFilter, Date startDate, Date endDate) throws DataException {
 		Map<String, Object> eventMap = new HashMap<>();
 		int docSize=0;
@@ -434,10 +434,10 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			String lte = null;
 
 			if ( startDate!= null) {
-				gte = "\"gte\": \"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate) + "\"";
+				gte = "\"gte\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startDate) + "\"";
 			}
 			if ( endDate != null) {
-				lte = "\"lte\": \"" + new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\"";
+				lte = "\"lte\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endDate) + "\"";
 			}
 
 			if (gte != null && lte != null) {
@@ -712,11 +712,11 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		return autofixPlanDet;
 	}
 
-	private String filterkey(Map<String, String> filter, String keyText) {
+	private String filterkey( Map<String, List<String>> filter, String keyText) {
 		String searchterm = "";
-		if (filter.containsKey(keyText) && StringUtils.isNotBlank(filter.get(keyText))) {
+		if (filter.containsKey(keyText) && StringUtils.isNotBlank(filter.get(keyText).toString())) {
 			searchterm = "[";
-			String[] splitted = filter.get(keyText).split(",");
+			List<String>splitted = filter.get(keyText);
 			for (String _categoryList : splitted) {
 				searchterm = searchterm + "\"" + _categoryList + "\",";
 			}

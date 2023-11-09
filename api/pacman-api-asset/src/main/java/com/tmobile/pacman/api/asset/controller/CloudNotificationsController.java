@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.tmobile.pacman.api.asset.domain.NotificationRequest;
 import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,7 +58,7 @@ public class CloudNotificationsController {
 
 		@ApiOperation(httpMethod = "POST", value = "Get the list of  Cloud Notifications by a asset Group. Mandatory Filter -'Global Notifications'")
 		@PostMapping(value = "/v1/cloud/notifications")
-		public ResponseEntity<Object> getlistOfCloudNotifications(@RequestBody(required = true) Request request ) {
+		public ResponseEntity<Object> getlistOfCloudNotifications(@RequestBody(required = true) NotificationRequest request ) {
 
 			String assetGroup = request.getAg();
 			if (Strings.isNullOrEmpty(assetGroup)) {
@@ -74,14 +75,17 @@ public class CloudNotificationsController {
 			Date endDate=null;
 
 			String searchText = request.getSearchtext();
-			Map<String, String> filter = request.getFilter();
+			Map<String,List<String>> filter = request.getFilter();
 			Map<String,Object> sortFilter=request.getSortFilter();
 
 			if(filter.get("_loaddate")!=null) {
-				String dateRange = filter.get("_loaddate");
-				String[] dates = dateRange.split(" - ");
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+				List<String> dateRangeList = filter.get("_loaddate");
+				StringBuilder dateRange= new StringBuilder();
+				for(String range:dateRangeList){
+					dateRange.append(range);
+				}
+				String[] dates = dateRange.toString().split(" - ");
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				try {
 					startDate = dateFormat.parse(dates[0]);
 					endDate = dateFormat.parse(dates[1]);

@@ -148,7 +148,7 @@ public interface FilterService {
      * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    public List<Map<String, Object>> getNotificationTypes() throws ServiceException;
+    public List<Map<String, Object>> getNotificationTypes(Map<String, List<String>> filter) throws ServiceException;
     
     /**
      * Gets the Notification source.
@@ -156,10 +156,12 @@ public interface FilterService {
      * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    public List<Map<String, Object>> getNotificationSource() throws ServiceException;
-    public List<Map<String, Object>> getNotificationEventName() throws ServiceException;
+    public List<Map<String, Object>> getNotificationSource(Map<String, List<String>> filter) throws ServiceException;
+    public List<Map<String, Object>> getNotificationEventName(Map<String, List<String>> filter) throws ServiceException;
 
     List<Map<String, Object>> getAttributeValuesForAssetGroup(String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName,String searchText) throws ServiceException;
 
     ResponseData getPolicycompliance(FilterRequest request) throws ServiceException;
+
+    public List<Map<String, Object>> getNotificationDate(Map<String, List<String>> filters) throws ServiceException;
 }

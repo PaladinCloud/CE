@@ -153,7 +153,7 @@ public interface FilterRepository {
      * @return Map<String, Long>
      * @throws DataException the data exception
      */
-    public Map<String, Long> getNotificationTypesFromES() throws DataException;
+    public Map<String, Long> getNotificationTypesFromES(Map<String, List<String>> filter) throws DataException;
 
     /**
      * Gets the list of Notification source.
@@ -161,8 +161,10 @@ public interface FilterRepository {
      * @return Map<String, Long>
      * @throws DataException the data exception
      */
-    public Map<String, Long> getNotificationSourceFromES() throws DataException;
-    public Map<String, Long> getNotificationEventNamesFromES() throws DataException;
+    public Map<String, Long> getNotificationSourceFromES(Map<String, List<String>> filter) throws DataException;
+    public Map<String, Long> getNotificationEventNamesFromES(Map<String, List<String>> filter) throws DataException;
+    public Map<String, Long> getNotificationDateFromES(Map<java.lang.String, List<java.lang.String>> filter) throws DataException;
+
 
 
     public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName, String targetTypes,String searchText) throws DataException;
