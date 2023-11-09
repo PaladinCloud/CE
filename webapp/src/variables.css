@@ -50,6 +50,11 @@
   --vizualization-minor-color: #F5B66F;
   --vizualization-insignificant-color: #D6D6D6;
   --vizualization-informational-color: #506EA7;
+  --interaction-border-subtle-normal: #CFD6DD;
+  --interaction-neutral-subtle-normal: #F5F7F9; 
+  --content-primary: #272E35;
+  --content-secondary: #4E5963;
+  --border-normal : #E9ECEF;
 
   --spacing-xs: 2px;
   --spacing-sm: 4px;
@@ -57,6 +62,11 @@
   --spacing-lg: 16px;
   --spacing-xl: 24px;
   --spacing-2xl: 32px;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 32px;
 
   --text-high-emphasis: #1e2022;
   --text-medium-emphasis: #515459;
