@@ -173,4 +173,6 @@
 
   --border-interaction-focus: var(--color-brand-p1);
 
+  --action-primary-normal: var(--color-brand-p0);
+
 }
