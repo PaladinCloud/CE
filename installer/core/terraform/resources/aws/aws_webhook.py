@@ -69,4 +69,25 @@ class ApiGateWayRoute(TerraformResource):
         'api_id': {'required': True},
         'route_key' : {'required':True},
         'target' : {'required': False},
+        'authorization_type': {'required': False},
+        'authorizer_id' :{'required': False} 
+    }
+
+class ApiGateWayAuthorizer(TerraformResource):
+    """
+    Base resource class for Terraform AWS apigateway route resource
+
+    Attributes:
+        resource_instance_name (str): Type of resource instance
+        available_args (dict): Instance configurations
+    """
+    resource_instance_name = "aws_apigatewayv2_authorizer"
+    available_args = {
+        'api_id': {'required': True},
+        'authorizer_type' : {'required': True},
+        'authorizer_uri'  : {'required': False},
+        'identity_sources'  : {'required': True},
+        'name'    : {'required': True},
+        'authorizer_payload_format_version' : {'required': False},
+        'jwt_configuration': {'required': True}
     }
