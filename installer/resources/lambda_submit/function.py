@@ -268,7 +268,7 @@ class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResourc
 
 
 class CloudNotificationCollectorEventRule(CloudWatchEventRuleResource):
-    name = "aws-cloudNotification-collector"
+    name = "aws-cloud-notification-collector"
     event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
     event_pattern = {
     "detail-type": ["Batch Job State Change"],
@@ -462,8 +462,6 @@ class TenableVMVulnerabilityCollectorLambdaPermission(LambdaPermission):
     principal = "events.amazonaws.com"
     source_arn = TenableVMVulnerabilityCollectorEventRule.get_output_attr('arn')
 
-
-
 class TenableVMVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = TenableVMVulnerabilityCollectorEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
@@ -501,8 +499,6 @@ class AzureDataCollectorEventRule(CloudWatchEventRuleResource):
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction]
-    # PROCESS = need_to_enable_azure()
-
 
 class AzureDataCollectorEventRuleLambdaPermission(LambdaPermission):
     statement_id = "AllowExecutionFromAzureDataCollectorEvent"
@@ -510,7 +506,6 @@ class AzureDataCollectorEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = AzureDataCollectorEventRule.get_output_attr('arn')
-    # PROCESS = need_to_enable_azure()
 
 
 class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -551,8 +546,6 @@ class AzureDataShipperEventRule(CloudWatchEventRuleResource):
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
-    # PROCESS = need_to_enable_azure()
-
 
 class AzureDataShipperEventRuleLambdaPermission(LambdaPermission):
     statement_id = "AllowExecutionFromAzureDataShipper"
@@ -560,8 +553,6 @@ class AzureDataShipperEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = AzureDataShipperEventRule.get_output_attr('arn')
-    # PROCESS = need_to_enable_azure()
-
 
 class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = AzureDataShipperEventRule.get_output_attr('name')
@@ -585,7 +576,6 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
             {'encrypt': False, 'key': "s3.data", 'value': "azure-inventory"}
         ]
     })
-    # PROCESS = need_to_enable_azure()
 
 
 class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
@@ -604,7 +594,6 @@ class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction]
-    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataCollectorEventRuleLambdaPermission(LambdaPermission):
@@ -613,7 +602,6 @@ class GCPDataCollectorEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = GCPDataCollectorEventRule.get_output_attr('arn')
-    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -640,7 +628,6 @@ class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
                 'value': get_gcp_project_ids()}
         ]
     })
-    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataShipperEventRule(CloudWatchEventRuleResource):
@@ -656,7 +643,6 @@ class GCPDataShipperEventRule(CloudWatchEventRuleResource):
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
-    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataShipperEventRuleLambdaPermission(LambdaPermission):
@@ -665,8 +651,6 @@ class GCPDataShipperEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = GCPDataShipperEventRule.get_output_attr('arn')
-    # PROCESS = need_to_enable_gcp()
-
 
 class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = GCPDataShipperEventRule.get_output_attr('name')
@@ -690,7 +674,7 @@ class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
             {'encrypt': False, 'key': "s3.data", 'value': "gcp-inventory"}
         ]
     })
-    # PROCESS = need_to_enable_gcp()
+
 
 class AquaImageVulnerabilityCollectorEventRule(CloudWatchEventRuleResource):
     name = "aqua-image-vulnerability-collector"
