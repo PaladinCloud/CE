@@ -3088,3 +3088,27 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 DELETE from pac_v2_ui_options where filterId='10' AND optionName='Created Date';
 
 delete from pac_v2_ui_options where filterId=12 and optionValue in ("assets", "violations");
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (17,'admin-policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Policy','policyId','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'PRS','riskScore','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Asset Type','targetType','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Severity','severity','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Category','category','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Status','status','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Source','assetGroup','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'AutoFix','autoFixAvailable','/compliance/v1/filters/policy');
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (18,'admin-plugin');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Account Name','accountName','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Account ID','accountId','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Status','accountStatus','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Assets','assets','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Violations','violations','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Created By','createdBy','/admin/accounts/filters/attribute');
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (19,'admin-asset-groups');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Name','displayName','/admin/asset-group/filter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Type','groupType','/admin/asset-group/filter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Number of Assets','assetCount','/admin/asset-group/filter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Created By','createdBy','/admin/asset-group/filter');
