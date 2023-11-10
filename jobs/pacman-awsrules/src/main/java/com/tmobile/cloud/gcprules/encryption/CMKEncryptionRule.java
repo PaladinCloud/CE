@@ -86,7 +86,7 @@ public class CMKEncryptionRule extends BasePolicy {
             logger.debug("Data retrieved from ES: {}", sourceData);
             boolean isKmsKeyNamePresent = sourceData.getAsJsonObject().keySet().contains(PacmanRuleConstants.KMS_KEY_NAME);
             if(!isKmsKeyNamePresent)
-             return false;
+             return true;
 
             return sourceData.getAsJsonObject().get(PacmanRuleConstants.KMS_KEY_NAME).isJsonNull();
         } else {
