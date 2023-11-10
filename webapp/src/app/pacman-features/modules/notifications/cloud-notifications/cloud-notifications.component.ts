@@ -163,7 +163,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             this.filters = state.filters || [];
             if (state.data && state.data.length > 0) {
                 this.isTableStatePreserved = true;
-                this.tableData = state.data;
+                this.tableData = state.data || [];
             }
             Promise.resolve().then(() => this.getUpdatedUrl());
         }
@@ -244,7 +244,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             this.getUpdatedUrl();
             this.updateComponent();
         }
-        this.storeState();
     }
 
     /*
@@ -331,7 +330,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
           this.filterTagLabels[value] = filterTagLabels;
 
           this.filterTagLabels = {...this.filterTagLabels};          
-          this.storeState();
+
       
         } catch (error) {
           this.errorMessage = this.errorHandler.handleJavascriptError(error);
@@ -368,7 +367,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         if(event.filterKeyDisplayValue.toLowerCase() !== "created date"){
             this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
         }
-        this.storeState();
         this.getUpdatedUrl();
         this.updateComponent();
     }
@@ -408,20 +406,17 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         this.headerColName = event.headerColName;
         this.direction = event.direction;
         this.updateComponent();
-        this.storeState();
     }
 
-    handleWhitelistColumnsChange(event) {
-        this.whiteListColumns = event;
-        this.storeState();
+    handleWhitelistColumnsChange(columns) {
+        columns = columns.sort((a, b) => this.displayedColumns.indexOf(a) - this.displayedColumns.indexOf(b));
+        this.whiteListColumns = columns;
     }
 
-    storeState(data?) {
-        const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
-        if(isTempFilter) return;
+    storeState() {
         const state = {
             totalRows: this.totalRows,
-            data: data,
+            data: this.tableData,
             headerColName: this.headerColName,
             direction: this.direction,
             whiteListColumns: this.whiteListColumns,
@@ -545,8 +540,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         const data = event.data;
         this.selectedRowIndex = event.selectedRowIndex;
         this.tableScrollTop = event.tableScrollTop;
-
-        this.storeState(data);
         try {
             const eventId = encodeURIComponent(rowSelected['eventId'].valueText);
             this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
@@ -567,7 +560,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         try {
             this.tableScrollTop = e;
             this.bucketNumber++;
-            this.storeState();
+
             this.getData(true);
         } catch (error) {
             this.logger.log("error", error);
@@ -635,11 +628,11 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     callNewSearch(searchVal) {
         this.searchTxt = searchVal;
         this.isTableStatePreserved = false;
-        this.storeState();
         this.updateComponent();
     }
 
     ngOnDestroy() {
+        this.storeState();
         if (this.agDomainSubscription) {
             this.agDomainSubscription.unsubscribe();
         }
