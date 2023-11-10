@@ -3082,7 +3082,7 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
   UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat' WHERE `cfkey` = 'application.optionalAssetGroupList';
 
-update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
+update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName="Assets";
 
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (17,'admin-policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Policy','policyId','/compliance/v1/filters/policy');
@@ -3107,8 +3107,6 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Type','groupType','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Number of Assets','assetCount','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Created By','createdBy','/admin/asset-group/filter');
-
-
 
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (10,'Created Date','_loaddate','/compliance/v1/filters/eventdate');
 DELETE from pac_v2_ui_options where filterId='10' AND optionName='Event';
