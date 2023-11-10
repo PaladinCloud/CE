@@ -198,7 +198,7 @@
 						<phase>install</phase>
 						<configuration>
 							<target>
-								<copy file="target/pacman-aws-discovery-jar-with-dependencies.jar" tofile="../../dist/jobs/pacman-aws-inventory-jar-with-dependencies.jar"/>
+								<copy file="target/pacman-aws-discovery-jar-with-dependencies.jar" tofile="../../dist/jobs/aws-data-collector.jar"/>
 							</target>
 						</configuration>
 						<goals>

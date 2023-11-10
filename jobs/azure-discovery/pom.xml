@@ -75,7 +75,7 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>pacbot-azure-discovery</finalName>
+                            <finalName>azure-data-collector</finalName>
                         </configuration>
                         <phase>package</phase>
                         <goals>
@@ -93,7 +93,7 @@
 						<phase>install</phase>
 						<configuration>
 							<target>
-								<copy file="target/pacbot-azure-discovery-jar-with-dependencies.jar" tofile="../../dist/jobs/pacbot-azure-discovery.jar"/>
+								<copy file="target/azure-data-collector-jar-with-dependencies.jar" tofile="../../dist/jobs/azure-data-collector.jar"/>
 							</target>
 						</configuration>
 						<goals>

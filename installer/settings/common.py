@@ -82,7 +82,7 @@ PROCESS_RESOURCES = {
 }
 
 
-LAMBDA_PATH = "V7"
+LAMBDA_PATH = "V10"
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
 LOG_DIR = os.path.join(BASE_APP_DIR, 'log')
 PROVISIONER_FILES_DIR_TO_COPY = os.path.join(BASE_APP_DIR, 'files')
@@ -161,7 +161,7 @@ METADATA_XML_FILE = ""  #metadatafile
 JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event" #please do not change these, as this may stop scheduling of jobs
 JOB_SOURCE = "paladincloud.jobs-scheduler"
 
-CURRENT_RELEASE = "v3.0.3"
+CURRENT_RELEASE = "v3.0.1"
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
