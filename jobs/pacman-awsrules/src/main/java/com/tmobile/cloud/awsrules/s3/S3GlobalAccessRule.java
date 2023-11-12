@@ -164,7 +164,16 @@ public class S3GlobalAccessRule extends BasePolicy {
         String accessType = "READ,WRITE,READ_ACP";
         Set<Permission> permissions = new HashSet<>();
         if(isRequiredAclCheck){
-        	permissions = S3PacbotUtils.checkACLPermissions(awsS3Client, s3BucketName, accessType);
+            try {
+                permissions = S3PacbotUtils.checkACLPermissions(awsS3Client, s3BucketName, accessType);
+            }catch (RuntimeException exception)
+            {
+                Annotation annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+                annotation.put(PacmanRuleConstants.SEVERITY, severity);
+                annotation.put(PacmanRuleConstants.CATEGORY, category);
+                annotation.put(PacmanRuleConstants.RESOURCE_ID, s3BucketName);
+                return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,annotation);
+            }
         }
   		if (!permissions.isEmpty()) {
 

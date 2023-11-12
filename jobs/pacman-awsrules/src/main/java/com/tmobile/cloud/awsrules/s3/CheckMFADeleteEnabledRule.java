@@ -50,6 +50,7 @@ public class CheckMFADeleteEnabledRule extends BasePolicy {
 		Map<String, Object> map = null;
 		AmazonS3Client awsS3Client = null;
 		Annotation annotation = null;
+		BucketVersioningConfiguration configuration=null;
 		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
 		String s3BucketName = ruleParam.get(PacmanSdkConstants.RESOURCE_ID);
 		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
@@ -73,8 +74,15 @@ public class CheckMFADeleteEnabledRule extends BasePolicy {
 				logger.error("unable to get client for following input", e);
 				throw new InvalidInputException(e.toString());
 			}
-
-			BucketVersioningConfiguration configuration = awsS3Client.getBucketVersioningConfiguration(s3BucketName);
+			try {
+				configuration = awsS3Client.getBucketVersioningConfiguration(s3BucketName);
+			}catch (Exception exception) {
+				annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+				annotation.put(PacmanRuleConstants.SEVERITY, severity);
+				annotation.put(PacmanRuleConstants.CATEGORY, category);
+				annotation.put(PacmanRuleConstants.RESOURCE_ID, s3BucketName);
+				return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,annotation);
+			}
 				if(configuration.isMfaDeleteEnabled()==null || !configuration.isMfaDeleteEnabled()){
 					annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
 					annotation.put(PacmanSdkConstants.DESCRIPTION,"S3 with no MFA delete enabled found!!");

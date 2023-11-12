@@ -107,6 +107,10 @@ public class S3PacbotUtils {
 			}
 		} catch (AmazonS3Exception s3Exception) {
 			logger.error("error : ", s3Exception);
+			if(s3Exception.getMessage().contains("The specified bucket does not exist"))
+			{
+				throw new RuntimeException(s3Exception);
+			}
 			throw new RuleExecutionFailedExeption(s3Exception.getMessage());
 		}
 		return permissionList;
