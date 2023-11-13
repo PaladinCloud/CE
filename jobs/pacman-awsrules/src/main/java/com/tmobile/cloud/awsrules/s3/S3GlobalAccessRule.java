@@ -1,18 +1,3 @@
-/*******************************************************************************
- * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- ******************************************************************************/
 package com.tmobile.cloud.awsrules.s3;
 
 import java.util.ArrayList;
@@ -52,27 +37,25 @@ public class S3GlobalAccessRule extends BasePolicy {
 
     /**
      * The method will get triggered from Rule Engine with following parameters
-     * 
+     * <p>
      * ************* Following are the Rule Parameters********* <br>
      * ruleKey : check-for-s3-global-access <br>
      * <br>
-     * 
+     * <p>
      * severity : Enter the value of severity <br>
      * <br>
-     * 
+     * <p>
      * ruleCategory : Enter the value of category <br>
      * <br>
-     * 
+     * <p>
      * roleIdentifyingString : Configure it as role/pacbot_ro <br>
      * <br>
-     * 
+     * <p>
      * esServiceURL : Enter the Elastic search URL <br>
      * <br>
-     * 
-     * @param resourceAttributes
-     *            this is a resource in context which needs to be scanned this
-     *            is provided by execution engine
      *
+     * @param resourceAttributes this is a resource in context which needs to be scanned this
+     *                           is provided by execution engine
      */
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
@@ -97,8 +80,8 @@ public class S3GlobalAccessRule extends BasePolicy {
         boolean aclFound = false;
         boolean bucketPolicyFound = false;
         Boolean isRequiredAclCheck = true;
-		Boolean isRequiredPublicPolicyCheck = true;
-		Boolean isRequiredTrustedAdvisorCheck = true;
+        Boolean isRequiredPublicPolicyCheck = true;
+        Boolean isRequiredTrustedAdvisorCheck = true;
         Map<String, Boolean> s3HasOpenAccess = new HashMap<>();
         String checkId = ruleParam.get(PacmanRuleConstants.CHECK_ID);
         List<String> sourcesverified = new ArrayList<>();
@@ -111,71 +94,68 @@ public class S3GlobalAccessRule extends BasePolicy {
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
         if (!resourceAttributes.isEmpty()) {
-            logger.info("=========================region {}",resourceAttributes.get("region"));
+            logger.info("=========================region {}", resourceAttributes.get("region"));
             try {
-                if(StringUtils.isEmpty(resourceAttributes.get("region")))
+                if (StringUtils.isEmpty(resourceAttributes.get("region")))
                     throw new IllegalArgumentException("Region cannot be empty");
                 map = getClientFor(AWSService.S3, roleIdentifyingString, ruleParam);
                 awsS3Client = (AmazonS3Client) map.get(PacmanSdkConstants.CLIENT);
             } catch (UnableToCreateClientException e) {
                 logger.error("unable to get client for following input", e);
                 throw new InvalidInputException(e.toString());
-            }catch (IllegalArgumentException e)
-            {
+            } catch (IllegalArgumentException e) {
                 logger.error("IllegalArgumentException thrown..{}", e.getMessage());
-                Annotation annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+                Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 annotation.put(PacmanRuleConstants.RESOURCE_ID, s3BucketName);
-                return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,annotation);
+                return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE, annotation);
             }
         }
-		       
-			if (null != awsS3Client) {
-				GetPublicAccessBlockRequest publicAccessBlockRequest = new GetPublicAccessBlockRequest();
-				publicAccessBlockRequest.setBucketName(s3BucketName);
-				try {
-					GetPublicAccessBlockResult accessBlockResult = awsS3Client.getPublicAccessBlock(publicAccessBlockRequest);
-					PublicAccessBlockConfiguration accessBlockConfiguration = accessBlockResult.getPublicAccessBlockConfiguration();
-					
-					if (accessBlockConfiguration.getBlockPublicAcls() && accessBlockConfiguration.getIgnorePublicAcls() && accessBlockConfiguration.getBlockPublicPolicy() && accessBlockConfiguration.getRestrictPublicBuckets()) {
-						logger.debug(s3BucketName,"This Bucket is not publicly accessible");
-						return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
-					}
-					if(accessBlockConfiguration.getBlockPublicAcls() || accessBlockConfiguration.getIgnorePublicAcls()){
-						isRequiredAclCheck = false;
-					}
-					if(accessBlockConfiguration.getBlockPublicPolicy() || accessBlockConfiguration.getRestrictPublicBuckets()){
-						isRequiredPublicPolicyCheck = false;
-					}
-				
-				} catch (Exception e) {
-					if(e.getMessage().contains("Access Denied")){
-						logger.debug(s3BucketName,"This Bucket is not publicly accessable");
-						return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
-					}
-					logger.debug("no PublicAccessBlockConfiguration found, proceeding with ACL, policy and trusted advisor check {}",e);
-				}
-			}
-        
-        
-        
+
+        if (null != awsS3Client) {
+            GetPublicAccessBlockRequest publicAccessBlockRequest = new GetPublicAccessBlockRequest();
+            publicAccessBlockRequest.setBucketName(s3BucketName);
+            try {
+                GetPublicAccessBlockResult accessBlockResult = awsS3Client.getPublicAccessBlock(publicAccessBlockRequest);
+                PublicAccessBlockConfiguration accessBlockConfiguration = accessBlockResult.getPublicAccessBlockConfiguration();
+
+                if (accessBlockConfiguration.getBlockPublicAcls() && accessBlockConfiguration.getIgnorePublicAcls() && accessBlockConfiguration.getBlockPublicPolicy() && accessBlockConfiguration.getRestrictPublicBuckets()) {
+                    logger.debug(s3BucketName, "This Bucket is not publicly accessible");
+                    return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+                }
+                if (accessBlockConfiguration.getBlockPublicAcls() || accessBlockConfiguration.getIgnorePublicAcls()) {
+                    isRequiredAclCheck = false;
+                }
+                if (accessBlockConfiguration.getBlockPublicPolicy() || accessBlockConfiguration.getRestrictPublicBuckets()) {
+                    isRequiredPublicPolicyCheck = false;
+                }
+
+            } catch (Exception e) {
+                if (e.getMessage().contains("Access Denied")) {
+                    logger.debug(s3BucketName, "This Bucket is not publicly accessable");
+                    return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+                }
+                logger.debug("no PublicAccessBlockConfiguration found, proceeding with ACL, policy and trusted advisor check {}", e);
+            }
+        }
+
+
         logger.info("checking bucket has public access through ACL");
         String accessType = "READ,WRITE,READ_ACP";
         Set<Permission> permissions = new HashSet<>();
-        if(isRequiredAclCheck){
+        if (isRequiredAclCheck) {
             try {
                 permissions = S3PacbotUtils.checkACLPermissions(awsS3Client, s3BucketName, accessType);
-            }catch (RuntimeException exception)
-            {
-                Annotation annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+            } catch (RuntimeException exception) {
+                Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 annotation.put(PacmanRuleConstants.RESOURCE_ID, s3BucketName);
-                return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,annotation);
+                return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE, annotation);
             }
         }
-  		if (!permissions.isEmpty()) {
+        if (!permissions.isEmpty()) {
 
             description = description + " through ACL";
             sourcesverified.add("ACL");
@@ -185,11 +165,11 @@ public class S3GlobalAccessRule extends BasePolicy {
                     PacmanUtils.createS3Annotation(ruleParam, description, severity, category,
                             PacmanRuleConstants.GLOBAL_ACCESS, sourcesverified, accessLevels,
                             resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID)));
-            
-        } else if (isRequiredPublicPolicyCheck && isPolicyTrue(awsS3Client, s3BucketName, accessType,checkPolicyMap)) {
-        	List<String> policyTypeList = new ArrayList<>();
-        	for(Map.Entry<String, Boolean> policyType : checkPolicyMap.entrySet()){
-            	policyTypeList.add(policyType.getKey());
+
+        } else if (isRequiredPublicPolicyCheck && isPolicyTrue(awsS3Client, s3BucketName, accessType, checkPolicyMap)) {
+            List<String> policyTypeList = new ArrayList<>();
+            for (Map.Entry<String, Boolean> policyType : checkPolicyMap.entrySet()) {
+                policyTypeList.add(policyType.getKey());
             }
             logger.info("checking bucket has public access through BucketPolicy");
             sourcesverified.add("ACL");
@@ -197,13 +177,13 @@ public class S3GlobalAccessRule extends BasePolicy {
             description = description + PacmanRuleConstants.THROUGH_BUCKET_POLICY;
             sourcesverified.add("BucketPolicy");
             accessLevels.put("Bucket Policy", PacmanRuleConstants.PUBLIC);
-            accessLevels.put("permisssions",  String.join(",", sourcesverified));
+            accessLevels.put("permisssions", String.join(",", sourcesverified));
             return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                     PacmanUtils.createS3Annotation(ruleParam, description, severity, category,
                             PacmanRuleConstants.GLOBAL_ACCESS, sourcesverified, accessLevels,
                             resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID)));
-            
-        }else if(isRequiredTrustedAdvisorCheck){
+
+        } else if (isRequiredTrustedAdvisorCheck) {
 
             // check bucket is opened through TA
             logger.info("checking S3 bucket has public access from Trusted Advisor");
@@ -214,29 +194,29 @@ public class S3GlobalAccessRule extends BasePolicy {
              * access through ACL/BucketPolicy
              */
             try {
-				s3HasOpenAccess = S3PacbotUtils.checkS3HasOpenAccess(checkId, accountId, checkEsUrl, s3BucketName);
-			} catch (Exception e) {
-				logger.error("unable to get the details", e);
-				throw new RuleExecutionFailedExeption(e.getMessage());
-			}
+                s3HasOpenAccess = S3PacbotUtils.checkS3HasOpenAccess(checkId, accountId, checkEsUrl, s3BucketName);
+            } catch (Exception e) {
+                logger.error("unable to get the details", e);
+                throw new RuleExecutionFailedExeption(e.getMessage());
+            }
             if (!s3HasOpenAccess.isEmpty()) {
                 aclFound = s3HasOpenAccess.get("acl_found");
                 bucketPolicyFound = s3HasOpenAccess.get("bucketPolicy_found");
                 description = description + "through Trusted Advisor";
                 if (aclFound) {
                     accessLevels.put("ACL", PacmanRuleConstants.PUBLIC);
-                } else if(bucketPolicyFound) {
+                } else if (bucketPolicyFound) {
                     accessLevels.put("Bucket Policy", PacmanRuleConstants.PUBLIC);
                 }
-                if(aclFound ||bucketPolicyFound){
-                sourcesverified.add("Trusted advisor");
-                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
-                        PacmanUtils.createS3Annotation(ruleParam, description, severity, category,
-                                PacmanRuleConstants.READ_ACCESS, sourcesverified, accessLevels,
-                                resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID)));
+                if (aclFound || bucketPolicyFound) {
+                    sourcesverified.add("Trusted advisor");
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                            PacmanUtils.createS3Annotation(ruleParam, description, severity, category,
+                                    PacmanRuleConstants.READ_ACCESS, sourcesverified, accessLevels,
+                                    resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID)));
                 }
             }
-        
+
         }
         logger.info(s3BucketName, "This Bucket is not publicly accessable");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
@@ -244,7 +224,7 @@ public class S3GlobalAccessRule extends BasePolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.tmobile.pacman.commons.rule.Rule#getHelpText()
      */
     @Override
@@ -252,11 +232,11 @@ public class S3GlobalAccessRule extends BasePolicy {
         return null;
     }
 
-    private boolean isPolicyTrue(AmazonS3Client awsS3Client, String s3BucketName, String accessType,Map<String,Boolean> checkPolicyMap) {
+    private boolean isPolicyTrue(AmazonS3Client awsS3Client, String s3BucketName, String accessType, Map<String, Boolean> checkPolicyMap) {
         Map<String, Boolean> checkPolicy = S3PacbotUtils.getPublicAccessPolicy(awsS3Client, s3BucketName, accessType);
         if (!checkPolicy.isEmpty()) {
-        	checkPolicyMap.putAll(checkPolicy);
-          return (checkPolicy.containsKey("Read") || checkPolicy.containsKey("Write"));
+            checkPolicyMap.putAll(checkPolicy);
+            return (checkPolicy.containsKey("Read") || checkPolicy.containsKey("Write"));
         }
         return false;
     }
