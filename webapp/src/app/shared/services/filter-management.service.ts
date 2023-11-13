@@ -23,7 +23,7 @@
  import {RefactorFieldsService} from './refactor-fields.service';
  import { map } from 'rxjs/operators';
  import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
- import { IFilterOption } from '../table/interfaces/table-filters.interface';
+ import { IFilterOption } from '../table/interfaces/table-props.interface';
  import { find } from 'lodash';
  
  interface IFilterPayload {
@@ -128,7 +128,8 @@
  
      async getFilterTagsData(payload, optionUrl) {
          return this.issueFilterService.getFilters({}, 
-          environment.base  
+          'http://localhost:9081/api'
+          // environment.base  
           + this.utils.getParamsFromUrlSnippet(optionUrl).url, "POST", payload)
              .toPromise()
              .then(response => response[0].data.response);
@@ -240,8 +241,11 @@
        }
    }
  
-   async changeFilterType({currentFilterType, searchText, filterText, currentQueryParams, filtersToBePassed, type, agAndDomain, updateFilterTags, labelsToExcludeSort}){
-     const {ag, domain} = agAndDomain;
+   async changeFilterType({currentFilterType, searchText, includeDotKeyword=false, filterText, currentQueryParams, filtersToBePassed, type, agAndDomain, updateFilterTags, labelsToExcludeSort, ignoreAttributeName=false}){
+    if(!currentFilterType){
+      return [{}, []];
+    }; 
+    const {ag, domain} = agAndDomain;
      const filterOrder = this.getFiltersAppliedOrderFromURL(currentQueryParams.filter);;
      const urlObj = this.utils.getParamsFromUrlSnippet(currentFilterType.optionURL);
        const excludedKeys = [
@@ -258,7 +262,7 @@
        filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
          const normalizedKey = key.replace(".keyword", "");
          if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) || index>=0) {
-           result[normalizedKey] = filtersToBePassed[key];
+           result[normalizedKey+(includeDotKeyword?'.keyword':'')] = filtersToBePassed[key];
          }
          return result;
        }, {});
@@ -272,7 +276,7 @@
    
        let payload: IFilterPayload = {
          type,
-         attributeName: currentFilterType["optionValue"]?.replace(".keyword", ""),
+         attributeName: ignoreAttributeName?undefined:currentFilterType["optionValue"]?.replace(".keyword", ""),
          filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
        };
  

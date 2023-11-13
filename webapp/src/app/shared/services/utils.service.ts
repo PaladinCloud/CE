@@ -21,6 +21,8 @@ import { LoggerService } from './logger.service';
 import { RefactorFieldsService } from './refactor-fields.service';
 import { DATA_MAPPING } from '../constants/data-mapping';
 import { DatePipe } from '@angular/common';
+import { find } from 'lodash';
+import { IColumnNamesMap, IColumnWidthsMap } from '../table/interfaces/table-props.interface';
 
 @Injectable()
 export class UtilsService {
@@ -183,24 +185,37 @@ export class UtilsService {
   }
 
   // get map of column display name and api name and updates the column widths map
-  getColumnNamesMap(filterTypeLabels, filterTypeOptions, columnWidths, excludedColumnNames){
+  getColumnNamesMapAndColumnWidthsMap(filterTypeLabels, filterTypeOptions, columnWidths: IColumnWidthsMap, columnNamesMap:IColumnNamesMap, excludedColumnNames)
+  : [IColumnNamesMap, IColumnWidthsMap]
+  {
     excludedColumnNames = new Set(excludedColumnNames);
-    const columnNamesMap = {};
     filterTypeLabels.forEach(label => {
         if (!excludedColumnNames.has(label)) {
             if (!Object.keys(columnWidths).includes(label)) {
                 columnWidths[label] = 0.7;
             }
 
-            const apiColName = filterTypeOptions
+            if(!Object.values(columnNamesMap).includes(label)){
+              const apiColName = filterTypeOptions
                 .find(option => option.optionName === label)?.optionValue;
 
-            if (apiColName) {
-                columnNamesMap[apiColName.replace(".keyword", "")] = label;
+              if (apiColName) {
+                  columnNamesMap[apiColName.replace(".keyword", "")] = label;
+              }
             }
         }
     });
-    return columnNamesMap;
+    return [{...columnNamesMap}, {...columnWidths}];
+  }
+
+  getFilterKeyDisplayValue(formattedFilterItem, filterTypeOptions){
+    let keyDisplayValue = formattedFilterItem.keyDisplayValue;
+    if(!keyDisplayValue){
+      keyDisplayValue = find(filterTypeOptions, {
+        optionValue: formattedFilterItem.filterkey,
+      })["optionName"];
+    }
+    return keyDisplayValue;
   }
 
   addOrReplaceElement(array, toAddElement, comparator) {
