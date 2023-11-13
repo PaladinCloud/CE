@@ -250,6 +250,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
+
+    window.onbeforeunload = () => this.storeState();
   }
 
   handleAddFilterClick(e){}

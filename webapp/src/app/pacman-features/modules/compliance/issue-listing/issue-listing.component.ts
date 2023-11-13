@@ -237,6 +237,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     // check for admin access
     this.adminAccess = this.permissions.checkAdminPermission();
+
+    window.onbeforeunload = () => this.storeState();
   }
 
   preApplyStatusFilter(state){
