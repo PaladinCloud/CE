@@ -153,13 +153,17 @@ public class VMInstanceWithPublicAccess extends BasePolicy {
         for (int j = 0; j < accessConfigJsonArray.size(); j++) {
             JsonObject accessConfigDataItem = ((JsonObject) accessConfigJsonArray
                     .get(j));
-
-            String natIp = accessConfigDataItem.getAsJsonObject()
-                    .get(PacmanRuleConstants.GCP_NAT_IP).getAsString();
-
-            if (!StringUtils.isNullOrEmpty(natIp)) {
-                validationResult = false;
-                break;
+            boolean isNatIpNull = accessConfigDataItem.getAsJsonObject()
+                    .get(PacmanRuleConstants.GCP_NAT_IP).isJsonNull();
+            if (isNatIpNull) {
+                validationResult = true;
+            } else {
+                String natIp = accessConfigDataItem.getAsJsonObject()
+                        .get(PacmanRuleConstants.GCP_NAT_IP).getAsString();
+                if (!StringUtils.isNullOrEmpty(natIp)) {
+                    validationResult = false;
+                    break;
+                }
             }
         }
         return validationResult;
