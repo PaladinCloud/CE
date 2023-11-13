@@ -92,23 +92,23 @@ public class CloudStorageWithPublicAccessRule extends BasePolicy {
 
             logger.debug("Validating the data item: {}", vmInstanceObject);
             boolean usersPresent = vmInstanceObject.getAsJsonObject().keySet().contains(PacmanRuleConstants.USERS);
-                if (usersPresent) {
-                    JsonArray usersArray = vmInstanceObject.getAsJsonObject()
-                            .get(PacmanRuleConstants.USERS).getAsJsonArray();
+            if (usersPresent) {
+                JsonArray usersArray = vmInstanceObject.getAsJsonObject()
+                        .get(PacmanRuleConstants.USERS).getAsJsonArray();
 
-                    if (usersArray.size() > 0) {
-                        for (int i = 0; i < usersArray.size(); i++) {
-                            String userDataItem = usersArray
-                                    .get(i).getAsString();
-                            if (userDataItem.equalsIgnoreCase(PacmanRuleConstants.ALL_USERS) || userDataItem.equalsIgnoreCase(PacmanRuleConstants.ALL_AUTH_USERS)) {
-                                logger.debug("GCP cloud storage is public");
-                                validationResult = true;
-                                break;
-                            }
+                if (usersArray.size() > 0) {
+                    for (int i = 0; i < usersArray.size(); i++) {
+                        String userDataItem = usersArray
+                                .get(i).getAsString();
+                        if (userDataItem.equalsIgnoreCase(PacmanRuleConstants.ALL_USERS) || userDataItem.equalsIgnoreCase(PacmanRuleConstants.ALL_AUTH_USERS)) {
+                            logger.debug("GCP cloud storage is public");
+                            validationResult = true;
+                            break;
                         }
-
                     }
-                }else {
+
+                }
+            } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
 
