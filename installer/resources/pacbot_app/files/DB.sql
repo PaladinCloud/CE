@@ -1239,7 +1239,7 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `categ
 
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('serviceaccounts','Service Accounts','Service Account','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_serviceaccounts'),'2022-06-29','2022-06-29','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('defender','Defender for Cloud','Azure defender','Governance','azure','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_defender/defender'),'2022-10-14','2022-10-14','Infra & Platforms');
-INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('kubernetes','AKS','Azure kubernetes cluster','Governance','azure','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_kubernetes/kubernetes'),'2022-10-27','2022-10-27','Infra & Platforms');
+INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('aks','AKS','Azure kubernetes cluster','Governance','azure','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_aks/aks'),'2022-10-27','2022-10-27','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('apikeys','Api Keys','GCP API Keys','security','gcp','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/gcp_apikeys/apikeys'),'2022-12-5','2022-12-5','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('iamusers','IAMUser','collects IAMUser details','security','gcp','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/gcp_iamusers/iamusers'),'2019-09-19','2019-09-19','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('gcploadbalancer','GCP Load balancer','load balancer data','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_loadbalancer'),'2022-12-07','2022-12-07','Infra & Platforms');
@@ -2744,7 +2744,7 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSource
 INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudstorage','GCP cloud storage','Compute','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudstorage/cloudstorage'),'2022-06-01','2022-06-01','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('pubsub','GCP pub sub topic','Compute','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_pubsub/pubsub'),'2022-06-29','2022-06-29','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('dataproc','GCP dataproc clusters','Compute','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_dataproc/dataproc'),'2022-07-19','2022-07-19','Infra & Platforms');
-INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('gkecluster','GKE Cluster','GKE Cluster','Compute','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_gkecluster/gkecluster'),'2022-06-29','2022-06-29','Infra & Platforms');
+INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('gke','GKE Cluster','GKE Cluster','Compute','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_gke/gke'),'2022-06-29','2022-06-29','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('functionapp','Function App','Azure functionapp','','azure','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_functionapp/functionapp'),'2019-08-23','2022-08-23','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('mysqlflexible','My SQL Flexible Server','Azure mysqlflexible','','azure','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_mysqlflexible/mysqlflexible'),'2019-09-05','2022-09-05','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('diagnosticsetting','Diagnostic Setting','Azure diagnosticsetting','','azure','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_diagnosticsetting/diagnosticsetting'),'2019-09-26','2022-09-26','Infra & Platforms');
@@ -2765,13 +2765,13 @@ delete from cf_AssetGroupTargetDetails where targetType in ( 'policydefinitions'
 /* Updating display name can be removed in future  */
 Update cf_Target set displayName = 'Subnet (AWS)' where targetName = 'subnet';
 Update cf_Target set displayName = 'Databricks' where targetName = 'databricks';
-Update cf_Target set displayName = 'AKS' where targetName = 'kubernetes';
+Update cf_Target set displayName = 'AKS' where targetName = 'aks';
 Update cf_Target set displayName = 'MySQL Server (Azure)' where targetName = 'mysqlserver';
 Update cf_Target set displayName = 'MySQL Server (GCP)' where targetName = 'cloudsql_mysqlserver';
 Update cf_Target set displayName = 'Subnet (Azure)' where targetName = 'subnets';
 Update cf_Target set displayName = 'VM (Azure)' where targetName = 'virtualmachine';
 Update cf_Target set displayName = 'PostgreSQL' where targetName = 'cloudsql_postgres';
-Update cf_Target set displayName = 'GKE Cluster' where targetName = 'gkecluster';
+Update cf_Target set displayName = 'GKE' where targetName = 'gke';
 Update cf_Target set displayName = 'VM (GCP)' where targetName = 'vminstance';
 Update cf_Target set displayName = 'KMS Key (AWS)' where targetName = 'kms';
 Update cf_Target set displayName = 'KMS Key (GCP)' where targetName = 'kmskey';
@@ -3005,7 +3005,7 @@ CALL update_filter_for_tag(@MANDATORY_TAGS);
 /* Updating resourceName for Azure target Type */
 update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('batchaccounts','blobcontainer', 'blobservice', 'databricks', 'defender', 'disk', 'loadbalancer', 'mysqlserver', 'namespaces', 'networkinterface', 'nsg', 'postgresql', 'rediscache', 'securitypricings', 'sqldatabase', 'sqlserver', 'storageaccount', 'subnets', 'vaults', 'vaultsrbac', 'virtualmachine', 'vnet', 'webapp', 'workflows','virtualmachinescaleset');
 
-update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('functionapp','kubernetes', 'mysqlflexible', 'resourcegroup', 'securitycenter', 'subscription');
+update  cf_Target set targetConfig ="{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}" where targetName in ('functionapp','aks', 'mysqlflexible', 'resourcegroup', 'securitycenter', 'subscription');
 
 
 update pac_config_properties set value = 'role/PaladinCloudIntegrationRole' where cfkey = 'pacman.auto.fix.role.name';
@@ -3085,12 +3085,14 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
 
 /* updating targetName and displayName for azure kubernetes */
-UPDATE cf_Target t SET t.targetName='aks', t.displayName='AKS', t.endpoint=concat(@eshost,':',@esport,'/azure_aks/aks') WHERE targetName='kubernetes' AND datasourceName='azure';
+DELETE IGNORE FROM cf_Target WHERE targetName='kubernetes';
 UPDATE cf_AssetGroupTargetDetails SET targetType='aks' WHERE targetType='kubernetes';
+UPDATE cf_AssetGroupCriteriaDetails SET attributeValue='aks' WHERE attributeValue='kubernetes';
 
 /* updating targetName and displayName for gcp gkecluster */
-UPDATE cf_Target t SET t.targetName='gke', t.displayName='GKE', t.endpoint=concat(@eshost,':',@esport,'/gcp_gke/gke') WHERE targetName='gkecluster' AND datasourceName='gcp';
+DELETE IGNORE FROM cf_Target WHERE targetName='gkecluster';
 UPDATE cf_AssetGroupTargetDetails SET targetType='gke' WHERE targetType='gkecluster';
+UPDATE cf_AssetGroupCriteriaDetails SET attributeValue='gke' WHERE attributeValue='gkecluster';
 
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (10,'Created Date','_loaddate','/compliance/v1/filters/eventdate');
 DELETE from pac_v2_ui_options where filterId='10' AND optionName='Event';
