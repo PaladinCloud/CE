@@ -27,7 +27,7 @@ import java.util.*;
 
 
 @PacmanPolicy(key = "Check-for-API-Key-Application-Restrictions", desc = "Check for API Key Application Restrictions", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class EnableAPIApplicationRestriction extends BasePolicy {
+public class    EnableAPIApplicationRestriction extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(EnableAPIApplicationRestriction.class);
     @Override
@@ -92,8 +92,10 @@ public class EnableAPIApplicationRestriction extends BasePolicy {
             logger.info("hit array size {}",hitsJsonArray.size());
            JsonObject apiKeys = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                    .get(PacmanRuleConstants.SOURCE);
-
-            if (apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject()!=null &&apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().size()>0) {
+            if (apiKeys.get(PacmanRuleConstants.RESTRICTIONS).isJsonNull()) {
+                validationResult = false;
+            }
+            else if (apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject()!=null &&apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().size()>0) {
                 logger.info("android Key {} {} {} {} ",apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("androidKeyRestrictions").getAsJsonObject().size(),apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("serverKeyRestrictions").getAsJsonObject().size(),apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("iosKeyRestrictions").getAsJsonObject().size(),apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("browserKeyRestrictions").getAsJsonObject().size());
                 if(apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("androidKeyRestrictions").getAsJsonObject().size()==0 &&apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("serverKeyRestrictions").getAsJsonObject().size()==0&& apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("iosKeyRestrictions").getAsJsonObject().size()==0&&apiKeys.get(PacmanRuleConstants.RESTRICTIONS).getAsJsonObject().get("browserKeyRestrictions").getAsJsonObject().size()==0){
                         validationResult=true;
