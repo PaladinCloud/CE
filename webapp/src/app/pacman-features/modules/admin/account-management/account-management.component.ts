@@ -18,6 +18,7 @@ import map from 'lodash/map';
 import { TourService } from 'src/app/core/services/tour.service';
 import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+import { IColumnNamesMap, IColumnWidthsMap } from 'src/app/shared/table/interfaces/table-props.interface';
 
 @Component({
   selector: 'app-account-management',
@@ -54,8 +55,8 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   tableData = [];
   headerColName;
   direction;
-  columnNamesMap = {"accountName": "Account Name","accountId":"Account ID", "assets": "Assets",  "violations": "Violations", "accountStatus": "Status","source":"Source","createdBy": "Created By"};
-  columnWidths = {"Account Name": 1.5, "Account ID": 1.5, "Assets": 0.5, "Violations": 0.5, "Status": 0.5, "Created By": 1};
+  columnNamesMap: IColumnNamesMap = {source: 'Source'};
+  columnWidths: IColumnWidthsMap = {"Account Name": 1.5, "Account ID": 1.5, "Assets": 0.5, "Violations": 0.5, "Status": 0.5, "Created By": 1};
   whiteListColumns;
   tableScrollTop = 0;
   centeredColumns = {
@@ -139,15 +140,14 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     private filterManagementService: FilterManagementService,
     private tableStateService: TableStateService,
     private tourService: TourService,
-    private notificationObservableService: NotificationObservableService) {
-      this.getPreservedState();
-      this.getFilters();
-  }
+    private notificationObservableService: NotificationObservableService) { }
   ngAfterViewInit(): void {
     this.tourService.setComponentReady();
   }
 
   ngOnInit() {
+    this.getPreservedState();
+    this.getFilters();
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
   }
 
@@ -606,7 +606,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
 
   async processAndAddFilterItem({formattedFilterItem, filters}){
 
-    const keyDisplayValue = this.getFilterKeyDisplayValue(formattedFilterItem);
+    const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
     const filterKey = formattedFilterItem.filterkey;
       
     const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
@@ -620,16 +620,6 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     }
     filters = [...filters];
     return filters;
-  }
-
-  getFilterKeyDisplayValue(formattedFilterItem){
-    let keyDisplayValue = formattedFilterItem.keyDisplayValue;
-    if(!keyDisplayValue){
-      keyDisplayValue = find(this.filterTypeOptions, {
-        optionValue: formattedFilterItem.filterkey,
-      })["optionName"];
-    }
-    return keyDisplayValue;
   }
 
   /**
@@ -646,6 +636,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
           this.filterTypeOptions = filterOptions;
           this.filterTypeLabels = map(filterOptions, "optionName");
           this.filterTypeLabels.sort();
+          [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, []);
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
@@ -708,7 +699,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     Object.keys(filterToBePassed).forEach(filterKey => {
       filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
 
-      if(filterKey.toLowerCase()=="assets" || filterKey.toLowerCase()=="violations"){
+      if(this.columnNamesMap[filterKey]?.toLowerCase()=="assets" || this.columnNamesMap[filterKey]?.toLowerCase()=="violations"){
         filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
           const [min, max] = filterVal.split("-");
           return {min: parseFloat(min), max: parseFloat(max)};

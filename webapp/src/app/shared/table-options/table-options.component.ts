@@ -12,7 +12,7 @@ export class TableOptionsComponent implements OnInit {
     @Input() availableColumns: string[] = [];
     @Input() set selectedColumns(values) {
         this._selectedColumns = values;
-        this.selectedColumnsDict = values.reduce((acc, next) => {
+        this.selectedColumnsDict = values?.reduce((acc, next) => {
             acc[next] = true;
             return acc;
         }, {});
