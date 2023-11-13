@@ -3445,3 +3445,4 @@ INSERT IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDispl
 INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('AWSRdsUnencrypted_version-1_AwsRdsUnencrypted','policyKey','check-for-rds-db-unencrypted','','false','false','false','','');
 
 UPDATE cf_PolicyTable SET severity ='critical' WHERE policyId IN ('Enable_HTTPS_For_LoadBalancer','Enable_transparent_data_encryption_for_sql_db');
+UPDATE cf_PolicyTable SET autoFixAvailable ='false' WHERE policyId IN ('AWSVMScannedByTenable','CriticalImageVulnerabilitiesScannedByAqua','CriticalVMVulnerabilitiesScannedByTenable','HighImageVulnerabilitiesScannedByAqua','HighVMVulnerabilitiesScannedByTenable','ImagesScannedByAqua','MediumImageVulnerabilitiesScannedByAqua','MediumVMVulnerabilitiesScannedByTenable','enable_aws_config_service');
