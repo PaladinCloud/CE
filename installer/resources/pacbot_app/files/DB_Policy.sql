@@ -3438,8 +3438,8 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Enable HTTPS for Google Cloud Loa
 UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'AWS_account_security_hub_exists_version-1_enable_security_hub_account';
 
 /* Updating target types for policies related to azure_kubernetes and gcp_gkecluster since targetName has changed */
-update cf_PolicyTable set targetType='aks' where targetType='kubernetes' and assetGroup='azure';
-update cf_PolicyTable set targetType='gke' where targetType='gkecluster' and assetGroup='gcp';
+update cf_PolicyTable set targetType='aks', policyParams=replace(policyParams,'\"targetType\":\"kubernetes\"','\"targetType\":\"aks\"') where targetType='kubernetes' and assetGroup='azure';
+update cf_PolicyTable set targetType='gke', policyParams=replace(policyParams,'\"targetType\":\"gkecluster\"','\"targetType\":\"gke\"') where targetType='gkecluster' and assetGroup='gcp';
 
 DELETE IGNORE FROM  cf_PolicyTable  where policyId='AWSRdsUnencryptedPublicInstances_version-1_AwsRdsUnencryptedPublicAccess_rdsdb';
 DELETE IGNORE FROM  cf_PolicyParams where policyId='AWSRdsUnencryptedPublicInstances_version-1_AwsRdsUnencryptedPublicAccess_rdsdb';
