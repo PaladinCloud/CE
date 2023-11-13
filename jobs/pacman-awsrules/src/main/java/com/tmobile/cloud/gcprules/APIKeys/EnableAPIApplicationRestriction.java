@@ -27,7 +27,7 @@ import java.util.*;
 
 
 @PacmanPolicy(key = "Check-for-API-Key-Application-Restrictions", desc = "Check for API Key Application Restrictions", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class    EnableAPIApplicationRestriction extends BasePolicy {
+public class   EnableAPIApplicationRestriction extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(EnableAPIApplicationRestriction.class);
     @Override
