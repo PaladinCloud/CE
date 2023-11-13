@@ -128,8 +128,7 @@
  
      async getFilterTagsData(payload, optionUrl) {
          return this.issueFilterService.getFilters({}, 
-          'http://localhost:9081/api'
-          // environment.base  
+          environment.base  
           + this.utils.getParamsFromUrlSnippet(optionUrl).url, "POST", payload)
              .toPromise()
              .then(response => response[0].data.response);
