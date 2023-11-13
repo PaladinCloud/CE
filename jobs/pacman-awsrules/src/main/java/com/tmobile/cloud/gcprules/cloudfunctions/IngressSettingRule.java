@@ -18,7 +18,7 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanPolicy(key = "GCP-Cloud-Function-configured-with-overly-permissive-Ingress-setting", desc = "GCP Cloud Function configured with overly permissive Ingress setting", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+@PacmanPolicy(key = "GCP_Cloud_Function_configured_with_overly_permissive_Ingress_setting", desc = "GCP Cloud Function configured with overly permissive Ingress setting", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class IngressSettingRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(IngressSettingRule.class);
     @Override
