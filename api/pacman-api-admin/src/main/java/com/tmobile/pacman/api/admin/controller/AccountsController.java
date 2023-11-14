@@ -130,9 +130,12 @@ public class AccountsController {
 
     @ApiOperation(httpMethod = "POST", value = "API to create account", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createAccount(@RequestBody final CreateAccountRequest accountDetails){
+    public ResponseEntity<Object> createAccount(@AuthenticationPrincipal Principal user,
+                                                @RequestBody final CreateAccountRequest accountDetails){
         AccountsService accountsService=null;
         try{
+            String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
+            accountDetails.setCreatedBy(createdBy);
         	String pluginType = accountDetails.getPlatform();
             accountsService= AccountFactory.getService(pluginType);
             AccountValidationResponse accountValidationResponse = accountsService.addAccount(accountDetails);

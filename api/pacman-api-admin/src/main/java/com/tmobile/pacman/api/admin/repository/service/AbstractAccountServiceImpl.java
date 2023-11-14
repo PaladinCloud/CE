@@ -1,24 +1,43 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.secretsmanager.AWSSecretsManager;
+import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
+import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
+import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
+import com.amazonaws.services.secretsmanager.model.ResourceExistsException;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
-import com.tmobile.pacman.api.admin.domain.*;
+import com.tmobile.pacman.api.admin.domain.AccountList;
+import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
+import com.tmobile.pacman.api.admin.domain.ConfigPropertyItem;
+import com.tmobile.pacman.api.admin.domain.ConfigPropertyRequest;
+import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TimeZone;
 
 
 public abstract class AbstractAccountServiceImpl implements AccountsService{
@@ -31,9 +50,13 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
 
     @Autowired
     ConfigPropertyService configPropertyService;
+    @Autowired
+    private CredentialProvider credentialProvider;
+    @Autowired
+    private DataCollectorSQSService dataCollectorSQSService;
+    @Value("${secret.manager.path}")
+    private String secretManagerPrefix;
     public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
-    public static final String FAILURE = "Failure";
-    public static final String SUCCESS = "Success";
     public static final String SECRET_ALREADY_EXIST_FOR_ACCOUNT = "Secret already exist for account";
     public static final String PALADINCLOUD_RO = "PALADINCLOUD_RO";
     public static final String ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE = "Error in assuming sts role, check permission configured for base account role";
@@ -42,6 +65,11 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     public static final String FALSE = "false";
     public static final String JOB_SCHEDULER = "job-scheduler";
     public static final String STATUS_CONFIGURED = "configured";
+
+    protected static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
+    protected static final String FAILURE = "FAILURE";
+    protected static final String SUCCESS = "SUCCESS";
+    protected static final String TENANT_ID = System.getenv(AdminConstants.TENANT_ID);
 
 
     private static final Logger logger=LoggerFactory.getLogger(AbstractAccountServiceImpl.class);
@@ -223,4 +251,34 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         return accountsRepository.findByPlatform(platform);
     }
 
+    protected void sendSQSMessage(String pluginName, String id) {
+        try {
+            List<AccountDetails> onlineAccounts = findOnlineAccounts(STATUS_CONFIGURED, pluginName);
+            /* Send SQS message to DataCollector SQS to trigger collector, mapper, shipper */
+            dataCollectorSQSService.sendSQSMessage(pluginName, TENANT_ID, onlineAccounts);
+        } catch (ResourceExistsException ree) {
+            logger.error("Secret key for plugin already exists", ree);
+            deleteSecret(id, pluginName);
+            deleteAccountFromDB(id);
+        } catch (Exception e) {
+            logger.error("Error occured while creating secret key for {}", pluginName, e);
+            deleteAccountFromDB(id);
+        }
+    }
+
+    protected DeleteSecretResult deleteSecret(String accountId, String plugin) {
+        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+        Regions region = Regions.fromName(System.getenv("REGION"));
+        AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(region).build();
+        DeleteSecretRequest deleteRequest = new DeleteSecretRequest().withSecretId(secretManagerPrefix + "/" +
+                TENANT_ID + "/" + plugin + "/" + accountId).withForceDeleteWithoutRecovery(true);
+        DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
+        logger.info("Delete secret response: {} ", deleteResponse);
+        return deleteResponse;
+    }
+
+    protected String getSecretId(String id, String pluginName) {
+        return secretManagerPrefix + "/" + TENANT_ID + "/" + pluginName + "/" + id;
+    }
 }
