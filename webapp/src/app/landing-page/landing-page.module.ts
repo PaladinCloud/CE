@@ -27,6 +27,7 @@ import { LandingPageHeaderComponent } from './common/landing-page-header/landing
 import { LandingDiamondComponent } from './common/landing-diamond/landing-diamond.component';
 import { TopGlowTravellerComponent } from './common/top-glow-traveller/top-glow-traveller.component';
 import { AwsCognitoService } from '../core/services/aws-cognito.service';
+import { ErrorComponent } from './error/error.component';
 
 
 
@@ -42,7 +43,8 @@ import { AwsCognitoService } from '../core/services/aws-cognito.service';
     GlowTravellerComponent,
     LandingPageHeaderComponent,
     LandingDiamondComponent,
-    TopGlowTravellerComponent
+    TopGlowTravellerComponent,
+    ErrorComponent
   ],
   providers: [
     AwsCognitoService

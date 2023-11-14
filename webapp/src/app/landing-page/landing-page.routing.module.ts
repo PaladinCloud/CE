@@ -21,7 +21,8 @@ import { TokenResolverService } from '../resolver/token-resolver.service';
 
 import { HomePageComponent } from './home-page/home-page.component';
 import { LoginComponent } from './login/login.component';
-import { ErrorComponent } from '../error/error.component';
+import { ErrorComponent } from './error/error.component';
+import { RefreshGuard } from '../shared/services/refresh-guard.service';
 
 const routes: Routes = [
     {
@@ -50,6 +51,7 @@ const routes: Routes = [
     {
         path: 'error',
         component: ErrorComponent,
+        canActivate: [RefreshGuard]
     },
 ];
 
