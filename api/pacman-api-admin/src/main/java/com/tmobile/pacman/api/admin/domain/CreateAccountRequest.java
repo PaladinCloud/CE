@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,13 +52,19 @@ public class CreateAccountRequest {
     private String tenableSecretKey;
 
     //contrast plugin
-    private String organizationId;
-    private String organizationName;
-    private String apiKey;
-    private String userId;
-    private String serviceKey;
+    @JsonProperty("organizationId")
+    private String contrastOrganizationId;
+    @JsonProperty("organizationName")
+    private String contrastOrganizationName;
+    @JsonProperty("apiKey")
+    private String contrastApiKey;
+    @JsonProperty("userId")
+    private String contrastUserId;
+    @JsonProperty("serviceKey")
+    private String contrastServiceKey;
     @Builder.Default
-    private String environmentName = "eval";
+    @JsonProperty("environmentName")
+    private String contrastEnvironmentName = "eval";
 
     private String createdBy;
 }

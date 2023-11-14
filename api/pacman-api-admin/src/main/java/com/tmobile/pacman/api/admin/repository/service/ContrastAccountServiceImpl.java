@@ -88,14 +88,14 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
         validationResponse.setValidationStatus(FAILURE);
         validationResponse.setMessage(VALIDATION_FAILED);
         try {
-            String apiUrl = new URIBuilder(String.format(CONTRAST_URL_TEMPLATE, pluginData.getEnvironmentName()))
-                    .setPath(ORGANIZATIONS_URL_PATH + pluginData.getOrganizationId()).build().toString();
-            String authKey = Base64.getEncoder().encodeToString((pluginData.getUserId() + ":"
-                    + pluginData.getServiceKey()).getBytes());
+            String apiUrl = new URIBuilder(String.format(CONTRAST_URL_TEMPLATE, pluginData.getContrastEnvironmentName()))
+                    .setPath(ORGANIZATIONS_URL_PATH + pluginData.getContrastOrganizationId()).build().toString();
+            String authKey = Base64.getEncoder().encodeToString((pluginData.getContrastUserId() + ":"
+                    + pluginData.getContrastServiceKey()).getBytes());
             HttpGet request = new HttpGet(apiUrl);
             request.setHeader(HttpHeaders.AUTHORIZATION, authKey);
             request.setHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-            request.setHeader("API-Key", pluginData.getApiKey());
+            request.setHeader("API-Key", pluginData.getContrastApiKey());
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                 try (CloseableHttpResponse response = httpClient.execute(request)) {
                     int statusCode = response.getStatusLine().getStatusCode();
@@ -110,7 +110,7 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
                         validationResponse.setErrorDetails("Couldn't read Organization name");
                         return validationResponse;
                     }
-                    pluginData.setOrganizationName(organizationName);
+                    pluginData.setContrastOrganizationName(organizationName);
                     validationResponse.setValidationStatus(SUCCESS);
                     validationResponse.setErrorDetails(null);
                     validationResponse.setMessage("Connection established successfully");
@@ -153,14 +153,14 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
             LOGGER.info("Adding account failed: {}", validationResponse.getMessage());
             return validationResponse;
         }
-        String organizationName = accountData.getOrganizationName();
+        String organizationName = accountData.getContrastOrganizationName();
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
-        String secretId = getSecretId(accountData.getOrganizationId(), CONTRAST);
+        String secretId = getSecretId(accountData.getContrastOrganizationId(), CONTRAST);
         ListSecretsRequest listSecretsRequest = new ListSecretsRequest()
                 .withFilters(new Filter().withKey("name").withValues(secretId))
                 .withIncludePlannedDeletion(true);
@@ -177,9 +177,9 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
         LOGGER.info("Create secret response: {}", createResponse);
         String accountId = UUID.randomUUID().toString();
-        createAccountInDb(accountData.getOrganizationId(), organizationName, CONTRAST, accountData.getCreatedBy());
+        createAccountInDb(accountData.getContrastOrganizationId(), organizationName, CONTRAST, accountData.getCreatedBy());
         updateConfigProperty(CONTRAST_ENABLED, TRUE, JOB_SCHEDULER);
-        sendSQSMessage(CONTRAST, accountData.getOrganizationId());
+        sendSQSMessage(CONTRAST, accountData.getContrastOrganizationId());
         validationResponse = new AccountValidationResponse();
         validationResponse.setValidationStatus(SUCCESS);
         validationResponse.setAccountId(accountId);
@@ -192,16 +192,16 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
     private AccountValidationResponse validateRequestData(CreateAccountRequest accountData) {
         AccountValidationResponse response = new AccountValidationResponse();
         List<String> missingParams = new ArrayList<>();
-        if (StringUtils.isEmpty(accountData.getOrganizationId())) {
+        if (StringUtils.isEmpty(accountData.getContrastOrganizationId())) {
             missingParams.add("organizationId");
         }
-        if (StringUtils.isEmpty(accountData.getServiceKey())) {
+        if (StringUtils.isEmpty(accountData.getContrastServiceKey())) {
             missingParams.add("serviceKey");
         }
-        if (StringUtils.isEmpty(accountData.getApiKey())) {
+        if (StringUtils.isEmpty(accountData.getContrastApiKey())) {
             missingParams.add("apiKey");
         }
-        if (StringUtils.isEmpty(accountData.getUserId())) {
+        if (StringUtils.isEmpty(accountData.getContrastUserId())) {
             missingParams.add("userId");
         }
         if (!missingParams.isEmpty()) {
@@ -230,9 +230,9 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
     }
 
     private String getContrastSecretString(CreateAccountRequest accountRequest) {
-        String authKey = Base64.getEncoder().encodeToString((accountRequest.getUserId() + ":"
-                + accountRequest.getServiceKey()).getBytes());
-        return String.format(CONTRAST_TOKEN_TEMPLATE, accountRequest.getApiKey(), authKey,
-                accountRequest.getEnvironmentName());
+        String authKey = Base64.getEncoder().encodeToString((accountRequest.getContrastUserId() + ":"
+                + accountRequest.getContrastServiceKey()).getBytes());
+        return String.format(CONTRAST_TOKEN_TEMPLATE, accountRequest.getContrastApiKey(), authKey,
+                accountRequest.getContrastEnvironmentName());
     }
 }
