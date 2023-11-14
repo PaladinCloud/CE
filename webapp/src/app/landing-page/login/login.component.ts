@@ -66,8 +66,8 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
         // Check if the configuration is valid; if not, navigate to the error page
 
-        if(this._verifyConfiguration()) this._init();
-        else this.router.navigate(['/error']);
+        if (this._verifyConfiguration()) this._init();
+        else window.location.href = 'error';
     }
 
     private _verifyConfiguration(){

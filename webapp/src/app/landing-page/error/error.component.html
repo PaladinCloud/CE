@@ -1,0 +1,27 @@
+<div class="error-page">
+    <div class="error-tile flex flex-col gap-20">
+        <div class="error-details">
+            <img src="/assets/images/Paladin_Logo.svg" style="height: 28px" />
+            <div class="error-text">
+                <span class="text-wrapper headline-3">Oops! We encountered an error</span>
+            </div>
+        </div>
+        <div class="button-wrapper">
+            <a href="{{ slackLink }}" target="_blank">
+                <button class="button contact-btn">Contact us</button>
+            </a>
+            <button class="button home-btn" (click)="redirectToHomePage()">Take me home</button>
+        </div>
+    </div>
+    <div class="img-wrapper">
+        <a href="{{ githubLink }}" target="_blank">
+            <img src="/assets/images/github-mark.svg" style="height: 34px" />
+        </a>
+        <a href="{{ slackLink }}" target="_blank">
+            <img src="/assets/images/slack-icon.svg" style="height: 34px" />
+        </a>
+        <a href="{{ discordLink }}" target="_blank">
+            <img src="/assets/images/discord-icon.svg" style="height: 34px" />
+        </a>
+    </div>
+</div>
