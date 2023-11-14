@@ -293,8 +293,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
      const newUrl = url.replace("{username}",this.emailID);
 
      const payload = {
-       "userName": this.emailID,
-       "email": this.emailID,
        "roles": this.updatedRoles
      }
 
