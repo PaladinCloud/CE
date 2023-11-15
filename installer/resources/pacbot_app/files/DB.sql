@@ -3084,7 +3084,7 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
 update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName="Assets";
 
-INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (17,'admin-policy');
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (17,'admin-policy') ON DUPLICATE KEY UPDATE filterName='admin-policy';
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Policy','policyId','/compliance/v1/filters/policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'PRS','riskScore','/compliance/v1/filters/policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Asset Type','targetType','/compliance/v1/filters/policy');
@@ -3094,15 +3094,15 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Source','assetGroup','/compliance/v1/filters/policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'AutoFix','autoFixAvailable','/compliance/v1/filters/policy');
 
-INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (18,'admin-plugin');
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (18,'admin-plugin') ON DUPLICATE KEY UPDATE filterName='admin-plugin';
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Account Name','accountName','/admin/accounts/filters/attribute');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Account Id','accountId','/admin/accounts/filters/attribute');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Account Status','accountStatus','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Account ID','accountId','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Status','accountStatus','/admin/accounts/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Assets','assets','/admin/accounts/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Violations','violations','/admin/accounts/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Created By','createdBy','/admin/accounts/filters/attribute');
 
-INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (19,'admin-asset-groups');
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (19,'admin-asset-groups') ON DUPLICATE KEY UPDATE filterName='admin-asset-groups';
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Name','displayName','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Type','groupType','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Number of Assets','assetCount','/admin/asset-group/filter');
@@ -3112,3 +3112,6 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 DELETE from pac_v2_ui_options where filterId='10' AND optionName='Event';
 
 delete from pac_v2_ui_options where filterId=12 and optionValue in ("assets", "violations");
+
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Policy ID','policyId.keyword','/compliance/v1/filters/policyList',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Compliant','compliant','/asset/v1/getCompliantFilterValue',"String");
