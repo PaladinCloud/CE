@@ -1298,8 +1298,8 @@ public class AssetServiceImpl implements AssetService {
     private String setSourceDisplayName(Object value) {
 
         LOGGER.info("setSourceDisplayName Method() Starts here");
-        String sourceDisplayName = null;
-        if (StringUtils.isNotEmpty(value.toString())) {
+        String sourceDisplayName = "";
+        if (value != null) {
             LOGGER.debug("Source Value {}",value.toString());
             String couldSourceValue = value.toString();
             if (AssetConstants.AWS_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
@@ -1310,6 +1310,9 @@ public class AssetServiceImpl implements AssetService {
                 sourceDisplayName = AssetConstants.GCP_CLOUD_SOURCE_DISPLAY_NAME;
             else if (AssetConstants.AZURE_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
                 sourceDisplayName = AssetConstants.AZURE_CLOUD_SOURCE_DISPLAY_NAME;
+            else {
+                sourceDisplayName = StringUtils.capitalize(value.toString());
+            }
         }
         LOGGER.info("setSourceDisplayName Method() Ends here");
         return sourceDisplayName;
