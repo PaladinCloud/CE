@@ -25,76 +25,81 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 @PacmanPolicy(key = "check-for-s3-MFA-delete-enabled", desc = "checks s3 bucket has MFA delete enabled or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
 public class CheckMFADeleteEnabledRule extends BasePolicy {
 
-	private static final Logger logger = LoggerFactory.getLogger(CheckMFADeleteEnabledRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(CheckMFADeleteEnabledRule.class);
 
-	/**
-	 * The method will get triggered from Rule Engine with following parameters
-	 * 
-	 * @param ruleParam
-	 ************** Following are the Rule Parameters********* <br><br>
-	 * 
-	 * ruleKey : check-for-s3-MFA-delete-enabled <br><br>
-	 * 
-	 * severity : Enter the value of severity <br><br>
-	 * 
-	 * ruleCategory : Enter the value of category <br><br>
-	 * 
-	 * roleIdentifyingString : Configure it as role/paladincloud_ro <br><br>
-	 * 
-	 * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
-	 *
-	 */
+    /**
+     * The method will get triggered from Rule Engine with following parameters
+     *
+     * @param ruleParam          ************* Following are the Rule Parameters********* <br><br>
+     *                           <p>
+     *                           ruleKey : check-for-s3-MFA-delete-enabled <br><br>
+     *                           <p>
+     *                           severity : Enter the value of severity <br><br>
+     *                           <p>
+     *                           ruleCategory : Enter the value of category <br><br>
+     *                           <p>
+     *                           roleIdentifyingString : Configure it as role/paladincloud_ro <br><br>
+     * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
+     */
 
-	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-		logger.debug("========CheckMFADeleteEnabledRule started=========");
-		Map<String, Object> map = null;
-		AmazonS3Client awsS3Client = null;
-		Annotation annotation = null;
-		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
-		String s3BucketName = ruleParam.get(PacmanSdkConstants.RESOURCE_ID);
-		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
-		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+        logger.debug("========CheckMFADeleteEnabledRule started=========");
+        Map<String, Object> map = null;
+        AmazonS3Client awsS3Client = null;
+        Annotation annotation = null;
+        BucketVersioningConfiguration configuration = null;
+        String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
+        String s3BucketName = ruleParam.get(PacmanSdkConstants.RESOURCE_ID);
+        String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
+        String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
-		MDC.put("executionId", ruleParam.get("executionId")); 
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
-		
-		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
-		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
+        MDC.put("executionId", ruleParam.get("executionId"));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
-		if (!PacmanUtils.doesAllHaveValue(severity, category)) {
-			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
-			throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
-		}
-		if (!resourceAttributes.isEmpty()) {
-			try {
-				map = getClientFor(AWSService.S3, roleIdentifyingString, ruleParam);
-				awsS3Client = (AmazonS3Client) map.get(PacmanSdkConstants.CLIENT);
-			} catch (UnableToCreateClientException e) {
-				logger.error("unable to get client for following input", e);
-				throw new InvalidInputException(e.toString());
-			}
+        List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
+        LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
-			BucketVersioningConfiguration configuration = awsS3Client.getBucketVersioningConfiguration(s3BucketName);
-				if(configuration.isMfaDeleteEnabled()==null || !configuration.isMfaDeleteEnabled()){
-					annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
-					annotation.put(PacmanSdkConstants.DESCRIPTION,"S3 with no MFA delete enabled found!!");
-					annotation.put(PacmanRuleConstants.SEVERITY, severity);
-					annotation.put(PacmanRuleConstants.CATEGORY, category);
-					
-					issue.put(PacmanRuleConstants.VIOLATION_REASON, "S3 with no MFA delete enabled found!!");
-					issueList.add(issue);
-					annotation.put("issueDetails",issueList.toString());
-					logger.debug("========CheckMFADeleteEnabledRule ended with annotation {} :=========",annotation);
-					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-				}
+        if (!PacmanUtils.doesAllHaveValue(severity, category)) {
+            logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
+            throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
+        }
+        if (!resourceAttributes.isEmpty()) {
+            try {
+                map = getClientFor(AWSService.S3, roleIdentifyingString, ruleParam);
+                awsS3Client = (AmazonS3Client) map.get(PacmanSdkConstants.CLIENT);
+            } catch (UnableToCreateClientException e) {
+                logger.error("unable to get client for following input", e);
+                throw new InvalidInputException(e.toString());
+            }
+            try {
+                configuration = awsS3Client.getBucketVersioningConfiguration(s3BucketName);
+            } catch (Exception exception) {
+                annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+                annotation.put(PacmanRuleConstants.SEVERITY, severity);
+                annotation.put(PacmanRuleConstants.CATEGORY, category);
+                annotation.put(PacmanRuleConstants.RESOURCE_ID, s3BucketName);
+                return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE, annotation);
+            }
+            if (configuration.isMfaDeleteEnabled() == null || !configuration.isMfaDeleteEnabled()) {
+                annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+                annotation.put(PacmanSdkConstants.DESCRIPTION, "S3 with no MFA delete enabled found!!");
+                annotation.put(PacmanRuleConstants.SEVERITY, severity);
+                annotation.put(PacmanRuleConstants.CATEGORY, category);
 
-		}
-		logger.debug("========CheckMFADeleteEnabledRule ended=========");
-		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+                issue.put(PacmanRuleConstants.VIOLATION_REASON, "S3 with no MFA delete enabled found!!");
+                issueList.add(issue);
+                annotation.put("issueDetails", issueList.toString());
+                logger.debug("========CheckMFADeleteEnabledRule ended with annotation {} :=========", annotation);
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+            }
 
-	}
+        }
+        logger.debug("========CheckMFADeleteEnabledRule ended=========");
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
-	public String getHelpText() {
-		return "This rule checks s3 bucket has MFA delete enabled or not";
-	}
+    }
+
+    public String getHelpText() {
+        return "This rule checks s3 bucket has MFA delete enabled or not";
+    }
 }
