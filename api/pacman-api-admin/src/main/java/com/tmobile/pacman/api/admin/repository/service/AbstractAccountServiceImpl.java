@@ -51,7 +51,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     @Autowired
     ConfigPropertyService configPropertyService;
     @Autowired
-    private CredentialProvider credentialProvider;
+    protected CredentialProvider credentialProvider;
     @Autowired
     private DataCollectorSQSService dataCollectorSQSService;
     @Value("${secret.manager.path}")
@@ -251,34 +251,34 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         return accountsRepository.findByPlatform(platform);
     }
 
-    protected void sendSQSMessage(String pluginName, String id) {
+    protected void sendSQSMessage(String pluginName, String accountId, String tenantId) {
         try {
             List<AccountDetails> onlineAccounts = findOnlineAccounts(STATUS_CONFIGURED, pluginName);
             /* Send SQS message to DataCollector SQS to trigger collector, mapper, shipper */
-            dataCollectorSQSService.sendSQSMessage(pluginName, TENANT_ID, onlineAccounts);
+            dataCollectorSQSService.sendSQSMessage(pluginName, tenantId, onlineAccounts);
         } catch (ResourceExistsException ree) {
             logger.error("Secret key for plugin already exists", ree);
-            deleteSecret(id, pluginName);
-            deleteAccountFromDB(id);
+            deleteSecret(accountId, pluginName, tenantId);
+            deleteAccountFromDB(accountId);
         } catch (Exception e) {
             logger.error("Error occured while creating secret key for {}", pluginName, e);
-            deleteAccountFromDB(id);
+            deleteAccountFromDB(accountId);
         }
     }
 
-    protected DeleteSecretResult deleteSecret(String accountId, String plugin) {
+    protected DeleteSecretResult deleteSecret(String accountId, String plugin, String tenantId) {
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         Regions region = Regions.fromName(System.getenv("REGION"));
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(region).build();
         DeleteSecretRequest deleteRequest = new DeleteSecretRequest().withSecretId(secretManagerPrefix + "/" +
-                TENANT_ID + "/" + plugin + "/" + accountId).withForceDeleteWithoutRecovery(true);
+                tenantId + "/" + plugin + "/" + accountId).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
         logger.info("Delete secret response: {} ", deleteResponse);
         return deleteResponse;
     }
 
-    protected String getSecretId(String id, String pluginName) {
-        return secretManagerPrefix + "/" + TENANT_ID + "/" + pluginName + "/" + id;
+    protected String getSecretId(String id, String pluginName, String tenantId) {
+        return secretManagerPrefix + "/" + tenantId + "/" + pluginName + "/" + id;
     }
 }
