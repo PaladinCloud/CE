@@ -43,6 +43,10 @@ public class GCPFirewallUtils {
                         .equalsIgnoreCase(direction)) {
             return true;
         }
+        boolean isSourceRangeNull = vpcFirewall.getAsJsonObject().get(PacmanRuleConstants.SOURCERANGES).isJsonNull();
+        if (isSourceRangeNull) {
+            return false;
+        }
         JsonArray sourceRanges = vpcFirewall.getAsJsonObject().get(PacmanRuleConstants.SOURCERANGES)
                 .getAsJsonArray();
         JsonArray allow = vpcFirewall.getAsJsonObject().get(PacmanRuleConstants.ALLOW.toLowerCase())

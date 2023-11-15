@@ -182,7 +182,7 @@
                                     </includes>
                                 </dependencySet>
                             </dependencySets>-->
-                            <finalName>pacbot-gcp-discovery</finalName>
+                            <finalName>gcp-data-collector</finalName>
                         </configuration>
                         <phase>package</phase>
                         <goals>
@@ -204,7 +204,7 @@
                  </executions>
                  <configuration>
                  <createDependencyReducedPom>false</createDependencyReducedPom>
-                     <finalName>pacbot-gcp-discovery-jar-with-dependencies</finalName>
+                     <finalName>gcp-data-collector-jar-with-dependencies</finalName>
                      <filters>
                          <filter>
                              <artifact>org.languagetool:*</artifact>
@@ -231,8 +231,8 @@
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <copy file="target/pacbot-gcp-discovery-jar-with-dependencies.jar"
-                                      tofile="../../dist/jobs/pacbot-gcp-discovery.jar"/>
+                                <copy file="target/gcp-data-collector-jar-with-dependencies.jar"
+                                      tofile="../../dist/jobs/gcp-data-collector.jar"/>
                             </target>
                         </configuration>
                         <goals>

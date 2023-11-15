@@ -40,6 +40,8 @@ public class EntityManager implements Constants {
     private final String bucketName = System.getProperty("s3");
     private final String dataPath = System.getProperty("s3.data");
     private final String attributesToPreserve = System.getProperty("shipper.attributes.to.preserve");
+    private Map<String,String> accountIdNameMap   = new HashMap<>();
+
 
     /**
      * Update on prem data.
@@ -262,7 +264,32 @@ public class EntityManager implements Constants {
             } else if (entityInfo.containsKey("projectId")) {
                 entityInfo.put("accountid", entityInfo.get("projectId"));
             }
+            //For GCP CQ Collector accountName will be fetched from RDS using accountId
+            if ("gcp".equalsIgnoreCase(dataSource)) {
+                String projectId = String.valueOf(entityInfo.get("projectId"));
+                if (null != projectId && !projectId.isEmpty()) {
+                    boolean isAccountIdAlreadyExists = accountIdNameMap.containsKey(projectId);
+                    String accountName = null;
+                    String accountNameIdentifier = "accountName";
+                    String singleQuote = "'";
+                    //RDS Call will only be made if HashMap does not contain entry for accountId {ie accountName}
+                    if (!isAccountIdAlreadyExists) {
+                        LOGGER.info("RDS Call is invoked for fetching accountName for specific accountId");
+                        String accountNameQueryStr = Constants.ACCOUNT_ID_SQL_QUERY + singleQuote + projectId + singleQuote;
+                        LOGGER.debug("Printing accountNameQueryStr:{}", accountNameQueryStr);
+                        List<Map<String, String>> accountNameMapList = RDSDBManager.executeQuery(accountNameQueryStr);
+                        if (accountNameMapList != null && accountNameMapList.size() > 0) {
+                            accountName = accountNameMapList.get(0).get(accountNameIdentifier);
+                            accountIdNameMap.putIfAbsent(projectId, accountName);
+                        }
+                    }
+                    accountName = accountIdNameMap.get(projectId);
+                    //add to ES doc
+                    entityInfo.put("accountname", accountName);
 
+                }
+
+            }
             entityInfo.put(Constants.DOC_TYPE, _type);
             entityInfo.put(_type + "_relations", _type);
             if (currentInfo != null && !currentInfo.isEmpty()) {

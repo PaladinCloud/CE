@@ -90,13 +90,15 @@ public class DeleteUnusedVMDisk extends BasePolicy {
                     .get(PacmanRuleConstants.SOURCE);
 
             logger.debug("Validating the data item: {}", disksObject);
-
-            JsonArray users=disksObject.get(PacmanRuleConstants.USERS).getAsJsonArray();
-
-            if(users.isEmpty()){
-                validationResult=true;
+            boolean isUsersObjectNull = disksObject.get(PacmanRuleConstants.USERS).isJsonNull();
+            if (isUsersObjectNull)
+                validationResult = true;
+            else {
+                JsonArray users = disksObject.get(PacmanRuleConstants.USERS).getAsJsonArray();
+                if (users.isEmpty()) {
+                    validationResult = true;
+                }
             }
-
         } else {
             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }

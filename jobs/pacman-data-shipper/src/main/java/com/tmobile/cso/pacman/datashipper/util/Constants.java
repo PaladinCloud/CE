@@ -37,4 +37,5 @@ public interface Constants {
     String NAME = "name";
 
     String DOC_TYPE = "docType";
+    String ACCOUNT_ID_SQL_QUERY = "SELECT accountName FROM pacmandata.cf_Accounts WHERE accountId =";
 }
