@@ -16,10 +16,6 @@
 package com.tmobile.cso.pacman.tenable;
 
 public class Constants {
-
-    // TODO: Set to true to get detailed debug logs
-    public static final boolean IS_DEBUG_MODE = true;
-
     public static final String FAILED = "failed";
     public static final String ERROR = "error";
     public static final String EXCEPTION = "exception";

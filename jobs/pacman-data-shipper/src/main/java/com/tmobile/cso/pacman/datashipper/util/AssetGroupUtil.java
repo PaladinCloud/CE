@@ -172,7 +172,6 @@ public class AssetGroupUtil {
                 ruleInfo.put(TOTAL, ruleInfoJson.get("assetsScanned").getAsLong());
                 ruleInfo.put(COMPLIANT, ruleInfoJson.get("passed").getAsLong());
                 ruleInfo.put(NON_COMPLIANT, ruleInfoJson.get("failed").getAsLong());
-                ruleInfo.put("contribution_percent", ruleInfoJson.get("contribution_percent").getAsDouble());
                 ruleInfo.put(SEVERITY, ruleInfoJson.get(SEVERITY).getAsString());
                 ruleInfo.put("policyCategory", ruleInfoJson.get("policyCategory").getAsString());
                 ruleInfoList.add(ruleInfo);

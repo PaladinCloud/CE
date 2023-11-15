@@ -121,7 +121,7 @@ public class ElasticSearchManager {
     public static void uploadData(String index, String type, List<Map<String, Object>> docs, String idKey) {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\"} }%n";
 
-        LOGGER.info("*********UPLOADING*** {}", type);
+        LOGGER.info("Uploading type \"{}\"", type);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;

@@ -78,7 +78,7 @@ PROCESS_RESOURCES = {
     'notification.function' : {'tags' : ["notification"]},
     'notification.appsync' : {'tags' : ["notification"]},
     'notification.apigateway' : {'tags' : ["notification"]},
-    # 'lambda_plugins.function':  {'tags': ["submit-job", "batch", "infra"]}
+    'iam.eventbridge_role' : {'tags': ["roles"]},    
 }
 
 
