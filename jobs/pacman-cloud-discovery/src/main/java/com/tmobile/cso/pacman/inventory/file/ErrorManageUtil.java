@@ -1,29 +1,41 @@
+/*******************************************************************************
+ * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.file;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.pacman.commons.dto.ErrorVH;
 import com.tmobile.pacman.commons.dto.PermissionVH;
 import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.tmobile.cso.pacman.inventory.InventoryConstants;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ErrorManageUtil {
 
+    public static final String OMIT_EXCEPTION = "Omit exception :{}";
     private static Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
-
     private static Map<String, List<ErrorVH>> errorMap = new ConcurrentHashMap<>();
 
     private ErrorManageUtil() {
-
     }
 
     public static Map<String, List<ErrorVH>> getErrorMap() {
@@ -47,8 +59,6 @@ public class ErrorManageUtil {
     }
 
     /**
-     * Upload error.
-     *
      * @param account   the account
      * @param region    the region
      * @param type      the type
@@ -121,26 +131,11 @@ public class ErrorManageUtil {
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
             for (ErrorVH errorVH : entry.getValue()) {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
-                if ((errorVH.getType().equals("phd") && (errorVH.getException().contains("AccessDeniedException") || errorVH.getException().contains("SubscriptionRequiredException"))) || (errorVH.getType().equals("all") && (errorVH.getException().contains("AWSSecurityTokenService") && errorVH.getException().contains("is not authorized to perform: sts:AssumeRole")))) {
-                    log.info("Omit exception :{}", errorVH.getException());
-                    permissionIssues = new ArrayList<>();
-                    permissionIssues.add(errorVH.getException());
-                    assetPermissionMapping.put(errorVH.getType(), permissionIssues);
-                    errorVHList.remove(errorVH);
-                }
-                if (((errorVH.getType().equals("kms") || errorVH.getType().equals("s3")) && errorVH.getException().contains("AccessDeniedException")) || (errorVH.getType().equals("checks") && errorVH.getException().contains("AWSSupportException"))) {
-                    log.info("Omit exception :{}", errorVH.getException());
-                    shortenMessageforKMS(errorVH);
-                    if (permissionIssues != null) {
-                        permissionIssues.add(errorVH.getException());
-                    } else {
-                        permissionIssues = new ArrayList<>();
-                        permissionIssues.add(errorVH.getException());
-                    }
-                    assetPermissionMapping.put(errorVH.getType(), permissionIssues);
-                    errorVHList.remove(errorVH);
-                }
+                omitPermissionErrors(errorVHList, assetPermissionMapping, errorVH, permissionIssues);
+                // omit the region disabled error
+                omitDisabledRegionErrors(errorVHList, errorVH);
             }
+
             if (!assetPermissionMapping.isEmpty()) {
                 PermissionVH permissionVH = new PermissionVH();
                 permissionVH.setAccountNumber(entry.getKey());
@@ -151,10 +146,54 @@ public class ErrorManageUtil {
                 errorMap.remove(entry.getKey());
             }
         }
-        NotificationPermissionUtils.triggerNotificationForPermissionDenied(permissionIssue, "AWS");
+
+        // print the remaining errors that need to be looked into
+        errorMap.forEach((account, errors) -> {
+            log.error("Printing errors for Account: {}", account);
+            errors.forEach(errorVH -> {
+                log.error("Error: {} for type: {}", errorVH.getException(), errorVH.getType());
+            });
+        });
+
+        if (!permissionIssue.isEmpty()) {
+            NotificationPermissionUtils.triggerNotificationForPermissionDenied(permissionIssue, "AWS");
+        }
     }
 
-    private static void shortenMessageforKMS(ErrorVH errorVH) {
+    private static void omitPermissionErrors(List<ErrorVH> errorVHList, Map<String, List<String>> assetPermissionMapping, ErrorVH errorVH, List<String> permissionIssues) {
+        if (errorVH.getType().equals("phd") && (errorVH.getException().contains("AccessDeniedException")
+                || errorVH.getException().contains("SubscriptionRequiredException"))) {
+            permissionIssues = new ArrayList<>();
+            permissionIssues.add(errorVH.getException());
+            assetPermissionMapping.put(errorVH.getType(), permissionIssues);
+            errorVHList.remove(errorVH);
+        }
+        if (((errorVH.getType().equals("kms") || errorVH.getType().equals("s3")) && errorVH.getException().contains("AccessDeniedException"))
+                || (errorVH.getType().equals("checks") && (errorVH.getException().contains("AWSSupportException")
+                || (errorVH.getException().contains("Amazon Web Services Premium Support Subscription is required to use this service"))))
+                || (errorVH.getType().equals("security hub") && errorVH.getException().contains("not subscribed to AWS Security Hub"))
+                || (errorVH.getType().equals("all") && (errorVH.getException().contains("AWSSecurityTokenService") && errorVH.getException().contains("is not authorized to perform: sts:AssumeRole")))) {
+            shortenMessageForKMS(errorVH);
+            if (permissionIssues != null) {
+                permissionIssues.add(errorVH.getException());
+            } else {
+                permissionIssues = new ArrayList<>();
+                permissionIssues.add(errorVH.getException());
+            }
+            assetPermissionMapping.put(errorVH.getType(), permissionIssues);
+            errorVHList.remove(errorVH);
+        }
+    }
+
+    private static void omitDisabledRegionErrors(List<ErrorVH> errorVHList, ErrorVH errorVH) {
+        if (errorVH.getException().contains("AWS was not able to validate the provided access credentials")
+                || errorVH.getException().contains("The security token included in the request is invalid")
+                || errorVH.getException().contains("Unable to execute HTTP request: elasticbeanstalk")) {
+            errorVHList.remove(errorVH);
+        }
+    }
+
+    private static void shortenMessageForKMS(ErrorVH errorVH) {
         String exception = errorVH.getException();
         if (errorVH.getType().equals("kms") && (exception.contains("ListResourceTags") || exception.contains("GetKeyRotationStatus") || exception.contains("DescribeKey"))) {
             errorVH.setException(errorVH.getException().substring(exception.indexOf("arn"), exception.indexOf("because")));
