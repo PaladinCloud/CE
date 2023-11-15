@@ -1,16 +1,22 @@
 <div class="table-filters-container flex flex-align-center flex-wrap gap-16">
-    <app-table-filter-chip
-    [isDisabled]="i!=appliedFilters.length-1 && !areAllFiltersEnabled"
+    <div class="chip-wrapper" 
+        [class.cursor-not-allowed]="i!=appliedFilters.length-1 && !areAllFiltersEnabled"
         *ngFor="let appliedFilter of appliedFilters; let i=index;trackBy: trackByAppliedFilter"
-        [category]="appliedFilter.keyDisplayValue"
-        [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
-        [options]="categoryOptions[appliedFilter.keyDisplayValue]"
-        [filtersToExcludeFromCasing]="filtersToExcludeFromCasing"
-        (clear)="clearFilter($event)"
-        (update)="updateFilter($event)"
-        (click)="openFilterCategory(appliedFilter.keyDisplayValue)"
-        (filterSearchTextChange)="handleSearchTextChangeForCategory($event)"
-    ></app-table-filter-chip>
+    >
+        <app-table-filter-chip
+            [isDisabled]="i!=appliedFilters.length-1 && !areAllFiltersEnabled"
+            [category]="appliedFilter.keyDisplayValue"
+            [class.pointer-events-none]="i!=appliedFilters.length-1 && !areAllFiltersEnabled"
+            [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
+            [options]="categoryOptions[appliedFilter.keyDisplayValue]"
+            [filtersToExcludeFromCasing]="filtersToExcludeFromCasing"
+            [isDateFilter]="isDateFilter"
+            (clear)="clearFilter($event)"
+            (update)="updateFilter($event)"
+            (click)="openFilterCategory(appliedFilter.keyDisplayValue)"
+            (filterSearchTextChange)="handleSearchTextChangeForCategory($event)"
+        ></app-table-filter-chip>
+    </div>
 
     <button
         type="button"
