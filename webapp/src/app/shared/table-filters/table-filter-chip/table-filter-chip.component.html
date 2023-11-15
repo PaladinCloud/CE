@@ -1,9 +1,10 @@
 <div
     class="flex flex-align-center table-filter-chip"
+    [class.disabled]="isDisabled"
     cdkOverlayOrigin
     #optionsMenuTrigger="cdkOverlayOrigin"
 >
-    <div class="tfc-text-container" [class.disabled]="isDisabled" (click)="toggleOptionsMenu()">
+    <div class="tfc-text-container" (click)="toggleOptionsMenu()">
         <span class="tfc-name"> {{ category }}:&nbsp;</span>
 
         <span class="tfc-value" [title]="appliedFilters.length === 1 ? appliedFilters[0].name : ''">

@@ -59,3 +59,11 @@
     pointer-events: none;
     color: var(--text-low-emphasis);
 }
+
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
+
+.pointer-events-none{
+    pointer-events: none;
+}
