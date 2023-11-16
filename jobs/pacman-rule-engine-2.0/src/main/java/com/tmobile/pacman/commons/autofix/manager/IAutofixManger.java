@@ -194,8 +194,8 @@ public interface IAutofixManger {
                 continue;
             }
             logger.debug("processing for{} ", resourceId);
-            if ((!isResourceTypeExemptedFromCutOfDateCriteria(targetType)
-                    && resourceCreatedBeforeCutoffData(resourceId, targetType))
+            if ((!isResourceTypeExemptedFromCutOfDateCriteria(targetType))
+                    //&& resourceCreatedBeforeCutoffData(resourceId, targetType))
                     || !isresourceIdMatchesCriteria(resourceId) || !isAFixCandidate(isFixCandidateMethod, fixObject, resourceId, targetType, clientMap, policyParam, annotation)) {
                 logger.debug("exempted by various conditions -->{} ", resourceId);
                 continue;
