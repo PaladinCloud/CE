@@ -307,7 +307,7 @@
        const filterTagOptions = filterTagsData;
        let filterTagLabels = filterTagsData.map(option => option.name);
  
-       if (!labelsToExcludeSort.includes(currentFilterType.optionName)) {
+       if (!labelsToExcludeSort?.toString().toLowerCase().includes(currentFilterType.optionName.toLowerCase())) {
          filterTagLabels = filterTagLabels.sort((a, b) => a.localeCompare(b));
        }
        return [filterTagOptions, filterTagLabels];
