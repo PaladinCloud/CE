@@ -26,4 +26,8 @@ server:
   servlet:
     context-path: /api/config
 
+logging:
+  level:
+    root: ERROR
+
  
