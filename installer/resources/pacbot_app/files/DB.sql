@@ -2345,7 +2345,7 @@ INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`
  VALUES ('policy-engine.invoke.url','submitRuleExecutionJob','compliance-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.host',concat(@PACMAN_HOST_NAME,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.optionalAssetGroupList','azure,gcp,redhat','application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.optionalAssetGroupList','azure,gcp,redhat,contrast','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.defaultAssetGroup','aws','application','prd','latest',NULL,NULL,NULL,NULL);
 
 UPDATE IGNORE pac_config_properties SET value='us-gov-east-1,us-gov-west-1,cn-north-1,cn-northwest-1,us-iso-east-1,us-iso-west-1,us-isob-east-1' where cfkey='region.ignore';
@@ -3080,7 +3080,7 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
   update cf_Target set status="finding" where targetName in ("launchtemplate","securitypricings") ;
 
-  UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat' WHERE `cfkey` = 'application.optionalAssetGroupList';
+  UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat,contrast' WHERE `cfkey` = 'application.optionalAssetGroupList';
 
 update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
 

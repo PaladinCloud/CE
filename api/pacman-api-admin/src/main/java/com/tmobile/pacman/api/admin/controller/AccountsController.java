@@ -4,11 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
-import com.tmobile.pacman.api.admin.domain.GcpPluginRequest;
 import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
-import com.tmobile.pacman.api.admin.domain.PluginResponse;
-import com.tmobile.pacman.api.admin.domain.RedHatPluginRequest;
 import com.tmobile.pacman.api.admin.domain.Response;
 import com.tmobile.pacman.api.admin.exceptions.PluginServiceException;
 import com.tmobile.pacman.api.admin.factory.AccountFactory;
@@ -129,44 +126,46 @@ public class AccountsController {
     }
 
     @ApiOperation(httpMethod = "POST", value = "API to create account", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-    @PostMapping(produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createAccount(@RequestBody final CreateAccountRequest accountDetails){
-        AccountsService accountsService=null;
-        try{
-        	String pluginType = accountDetails.getPlatform();
-            accountsService= AccountFactory.getService(pluginType);
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> createAccount(@AuthenticationPrincipal Principal user,
+                                                @RequestBody final CreateAccountRequest accountDetails) {
+        AccountsService accountsService = null;
+        try {
+            String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
+            accountDetails.setCreatedBy(createdBy);
+            String pluginType = accountDetails.getPlatform();
+            accountsService = AccountFactory.getService(pluginType);
             AccountValidationResponse accountValidationResponse = accountsService.addAccount(accountDetails);
-			if (accountValidationResponse.getValidationStatus().equalsIgnoreCase("success")) {
-				ObjectMapper oMapper = new ObjectMapper();
-				Gson gson = new Gson();
-				Map<String, Object> responseMap = oMapper.convertValue(accountValidationResponse, Map.class);
-				responseMap.keySet().retainAll(Arrays.asList("accountId", "accountName", "type"));
-				String acctDetails = gson.toJson(responseMap);
-				/*
-				 * By default Azure and GCP asset groups are disabled. Enabled after creating
-				 * the Cloud Plugins .
-				 */
-				List<String> optionalAssetList = null;
-				if (optionalAssetGroupList != null) {
-					optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-				}
-				if (optionalAssetList != null && optionalAssetList.size() > 0
-						&& optionalAssetList.contains(pluginType)) {
-					String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(pluginType, true, "admin");
-					log.info("AssetGoup  {} status {}", pluginType, updateAssetGroupStatus);
-				}
-
-
-			}
+            if (accountValidationResponse.getValidationStatus().equalsIgnoreCase("success")) {
+                ObjectMapper oMapper = new ObjectMapper();
+                Gson gson = new Gson();
+                Map<String, Object> responseMap = oMapper.convertValue(accountValidationResponse, Map.class);
+                responseMap.keySet().retainAll(Arrays.asList("accountId", "accountName", "type"));
+                String acctDetails = gson.toJson(responseMap);
+                /*
+                 * By default Azure and GCP asset groups are disabled. Enabled after creating
+                 * the Cloud Plugins .
+                 */
+                List<String> optionalAssetList = null;
+                if (optionalAssetGroupList != null) {
+                    optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
+                }
+                if (optionalAssetList != null && optionalAssetList.size() > 0
+                        && optionalAssetList.contains(pluginType)) {
+                    String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(pluginType, true, "admin");
+                    log.info("AssetGoup  {} status {}", pluginType, updateAssetGroupStatus);
+                }
+            }
             return ResponseUtils.buildSucessResponse(accountValidationResponse);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-            if(accountsService!=null) {
+            if (accountsService != null) {
                 accountsService.deleteAccount(accountDetails.getAccountId());
             }
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
         }
     }
+    
     @ApiOperation(httpMethod = "POST", value = "API to validate account configuration", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(path = "/validate", produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> validateAccount(@RequestBody final CreateAccountRequest accountDetails){
