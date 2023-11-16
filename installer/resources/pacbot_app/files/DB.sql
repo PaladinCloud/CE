@@ -3107,3 +3107,11 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Status','status','/compliance/v1/filters/policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Source','assetGroup','/compliance/v1/filters/policy');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'AutoFix','autoFixAvailable','/compliance/v1/filters/policy');
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (18,'admin-plugin') ON DUPLICATE KEY UPDATE filterName='admin-plugin';
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Account Name','accountName','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Account ID','accountId','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Status','accountStatus','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Assets','assets','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Violations','violations','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Created By','createdBy','/admin/accounts/filters/attribute');
