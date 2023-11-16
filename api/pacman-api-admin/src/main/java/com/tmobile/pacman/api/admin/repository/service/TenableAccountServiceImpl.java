@@ -63,7 +63,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     private AccountValidationResponse validateAccountCredentials(CreateAccountRequest accountData) {
         AccountValidationResponse validationResponse = new AccountValidationResponse();
         // Requesting scan that doesn't exist to validate the account data.
-        HttpGet request = new HttpGet(Constants.TENABLE_API_URL + "/scans/0");
+        HttpGet request = new HttpGet(Constants.TENABLE_API_URL + "/session");
         String apiKey = "accessKey=" + accountData.getTenableAccessKey() + ";secretKey=" + accountData.getTenableSecretKey() + ";";
         request.addHeader("X-ApiKeys", apiKey);
         request.addHeader("content-type", "application/json");
@@ -73,13 +73,13 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             CloseableHttpResponse response = httpClient.execute(request);
 
-            if (response.getEntity() != null && response.getStatusLine().getStatusCode() == 401) {
+            if (response.getStatusLine().getStatusCode() == 200) {
+                validationResponse.setValidationStatus(SUCCESS);
+                validationResponse.setMessage("Tenable account validation passed");
+            } else {
                 // If the response is 401, then the account data is not valid.
                 validationResponse.setValidationStatus(FAILURE);
                 validationResponse.setMessage("Tenable API keys validation failed.");
-            } else {
-                validationResponse.setValidationStatus(SUCCESS);
-                validationResponse.setMessage("Tenable account validation passed");
             }
         } catch (IOException e) {
             LOGGER.error("Failed to validate the tenable account ", e.getMessage());
