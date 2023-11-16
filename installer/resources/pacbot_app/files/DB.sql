@@ -3115,3 +3115,9 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Assets','assets','/admin/accounts/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Violations','violations','/admin/accounts/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Created By','createdBy','/admin/accounts/filters/attribute');
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (19,'admin-asset-groups') ON DUPLICATE KEY UPDATE filterName='admin-asset-groups';
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Name','displayName','/admin/asset-group/filter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Type','groupType','/admin/asset-group/filter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Number of Assets','assetCount','/admin/asset-group/filter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Created By','createdBy','/admin/asset-group/filter');
