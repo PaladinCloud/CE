@@ -581,39 +581,44 @@ public class InventoryUtil {
 	 * Fetch document DB tables.
 	 *
 	 * @param temporaryCredentials the temporary credentials
-	 * @param skipRegions the skip regions
-	 * @param accountId the accountId
-	 * @param accountName the account name
+	 * @param skipRegions          the skip regions
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
 	 * @return the map
 	 */
-	public static Map<String,List<DocumentDBVH>> fetchDocumentDBTables(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
-		Map<String,List<DocumentDBVH>> documentDBClusters = new LinkedHashMap<>();
+	public static Map<String, List<DocumentDBVH>> fetchDocumentDBTables(BasicSessionCredentials temporaryCredentials, String skipRegions, String accountId, String accountName) {
+		Map<String, List<DocumentDBVH>> documentDBClusters = new LinkedHashMap<>();
 
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DynamoDB\" , \"region\":\"" ;
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DynamoDB\" , \"region\":\"";
 		List<DocumentDBVH> documentDBVHList = new ArrayList<>();
-		for(Region region : RegionUtils.getRegions()){
-			try{
-				if(!skipRegions.contains(region.getName())){
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
 					AmazonDocDB awsDocDBClient = AmazonDocDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
 					String marker = null;
 					List<com.amazonaws.services.docdb.model.DBCluster> clusters = new ArrayList<>();
-						do {
-							com.amazonaws.services.docdb.model.DescribeDBClustersResult describeDBClusters = awsDocDBClient.describeDBClusters(new com.amazonaws.services.docdb.model.DescribeDBClustersRequest()).withMarker(marker);
-							marker = describeDBClusters.getMarker();
-							clusters.addAll(describeDBClusters.getDBClusters());
-						}while (marker != null);
+					do {
+						com.amazonaws.services.docdb.model.DescribeDBClustersRequest dbClustersRequest = new com.amazonaws.services.docdb.model.DescribeDBClustersRequest();
+						com.amazonaws.services.docdb.model.Filter filter = new com.amazonaws.services.docdb.model.Filter();
+						filter.setName("engine");
+						filter.setValues(Collections.singletonList("docdb"));
+						dbClustersRequest.setFilters(Collections.singletonList(filter));
+						com.amazonaws.services.docdb.model.DescribeDBClustersResult describeDBClusters = awsDocDBClient.describeDBClusters(dbClustersRequest).withMarker(marker);
+						marker = describeDBClusters.getMarker();
+						clusters.addAll(describeDBClusters.getDBClusters());
+					} while (marker != null);
 
-					if(!clusters.isEmpty() ){
+					if (!clusters.isEmpty()) {
 						documentDBVHList.add(new DocumentDBVH(clusters));
-						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : DocumentDB "+region.getName() + " >> "+documentDBVHList.size());
-						documentDBClusters.put(accountId+delimiter+accountName+delimiter+region.getName(), documentDBVHList);
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : DocumentDB " + region.getName() + " >> " + documentDBVHList.size());
+						documentDBClusters.put(accountId + delimiter + accountName + delimiter + region.getName(), documentDBVHList);
 					}
 
 				}
-			}catch(Exception e){
-				if(region.isServiceSupported(AmazonDynamoDB.ENDPOINT_PREFIX)){
-					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
-					ErrorManageUtil.uploadError(accountId,region.getName(),"DocumentDB",e.getMessage());
+			} catch (Exception e) {
+				if (region.isServiceSupported(AmazonDynamoDB.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(accountId, region.getName(), "DocumentDB", e.getMessage());
 				}
 			}
 		}
