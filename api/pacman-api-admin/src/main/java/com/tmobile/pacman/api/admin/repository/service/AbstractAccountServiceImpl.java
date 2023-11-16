@@ -69,8 +69,6 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     protected static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
     protected static final String FAILURE = "FAILURE";
     protected static final String SUCCESS = "SUCCESS";
-    protected static final String TENANT_ID = System.getenv(AdminConstants.TENANT_ID);
-
 
     private static final Logger logger=LoggerFactory.getLogger(AbstractAccountServiceImpl.class);
     @Override

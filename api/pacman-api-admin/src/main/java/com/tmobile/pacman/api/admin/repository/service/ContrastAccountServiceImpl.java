@@ -81,8 +81,6 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
 
     private AccountValidationResponse validateAccountCredentials(CreateAccountRequest pluginData) {
         AccountValidationResponse validationResponse = new AccountValidationResponse();
-        validationResponse.setValidationStatus(FAILURE);
-        validationResponse.setMessage("Contrast validation Failed");
         try {
             String apiUrl = new URIBuilder(String.format(CONTRAST_URL_TEMPLATE, pluginData.getContrastEnvironmentName()))
                     .setPath(ORGANIZATIONS_URL_PATH + pluginData.getContrastOrganizationId()).build().toString();
@@ -95,13 +93,15 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
                 try (CloseableHttpResponse response = httpClient.execute(request)) {
                     int statusCode = response.getStatusLine().getStatusCode();
                     if (statusCode != 200) {
-                        String errorMessage = handleErrorResponse(response.getStatusLine().getStatusCode());
-                        validationResponse.setErrorDetails(errorMessage);
+                        validationResponse.setValidationStatus(FAILURE);
+                        validationResponse.setMessage("Contrast validation Failed");
+                        validationResponse.setErrorDetails("Check your credentials and make sure they are correct.");
                         return validationResponse;
                     }
                     JsonNode jsonResponse = objectMapper.readTree(response.getEntity().getContent());
                     String organizationName = jsonResponse.get("name").textValue();
                     if (StringUtils.isEmpty(organizationName)) {
+                        validationResponse.setValidationStatus(FAILURE);
                         validationResponse.setErrorDetails("Couldn't read Organization details");
                         validationResponse.setMessage("Couldn't read Organization details");
                         return validationResponse;
@@ -112,24 +112,13 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
                     return validationResponse;
                 }
             }
-        } catch (UnknownHostException e) {
-            LOGGER.error("Unknown host error: " + e.getMessage(), e);
-            validationResponse.setErrorDetails("The Environment name may be incorrect or the server may be down.");
         } catch (Exception e) {
             LOGGER.error("Unexpected error: " + e.getMessage(), e);
+            validationResponse.setValidationStatus(FAILURE);
+            validationResponse.setMessage("Contrast validation Failed");
             validationResponse.setErrorDetails("Unexpected error occurred");
         }
         return validationResponse;
-    }
-
-    private String handleErrorResponse(int statusCode) {
-        switch (statusCode) {
-            case 400:
-            case 404:
-                return "Check the Organization ID make sure it is correct.";
-            default:
-                return "Check your credentials and make sure they are correct.";
-        }
     }
 
     @Override
@@ -186,16 +175,16 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
         AccountValidationResponse response = new AccountValidationResponse();
         List<String> missingParams = new ArrayList<>();
         if (org.apache.commons.lang.StringUtils.isEmpty(accountData.getContrastOrganizationId())) {
-            missingParams.add("Organization Id");
+            missingParams.add("Organization ID");
         }
         if (org.apache.commons.lang.StringUtils.isEmpty(accountData.getContrastServiceKey())) {
-            missingParams.add("Service Key");
+            missingParams.add("Secret Key");
         }
         if (org.apache.commons.lang.StringUtils.isEmpty(accountData.getContrastApiKey())) {
-            missingParams.add("API-KEY");
+            missingParams.add("API Key");
         }
         if (StringUtils.isEmpty(accountData.getContrastUserId())) {
-            missingParams.add("User Id");
+            missingParams.add("Email ID");
         }
         if (!missingParams.isEmpty()) {
             String errorMessage = MISSING_MANDATORY_PARAMETER + String.join(", ", missingParams);
@@ -214,12 +203,12 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
         AccountValidationResponse response = new AccountValidationResponse();
         DeleteSecretResult deleteResponse = deleteSecret(organizationId, CONTRAST, tenantId);
         LOGGER.info("Delete secret response: {} ", deleteResponse);
-        deleteAccountFromDB(organizationId);
-        updateConfigProperty(CONTRAST_ENABLED, FALSE, JOB_SCHEDULER);
+        response = deleteAccountFromDB(organizationId);
+        if (response.getValidationStatus().equalsIgnoreCase(SUCCESS)) {
+            updateConfigProperty(CONTRAST_ENABLED, FALSE, JOB_SCHEDULER);
+        }
         response.setType(CONTRAST);
         response.setAccountId(organizationId);
-        response.setValidationStatus(SUCCESS);
-        response.setMessage("Account deleted successfully");
         return response;
     }
 
