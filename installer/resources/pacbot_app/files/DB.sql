@@ -3054,7 +3054,7 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
  VALUES('deployment','Deployment','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
  concat(@eshost,':',@esport,'/redhat_deployment'),'2023-08-07','2023-08-07','Infra & Platforms','Deployment');
- 
+
  /* Red Hat asset Node, Cluster */
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
  VALUES('cluster','Cluster','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
@@ -3117,9 +3117,12 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 /* Plugin developed using PluginEngine V1 */
  INSERT INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
  VALUES ('plugins.in.v1','gcp,redhat,contrast','job-scheduler','prd','latest',NULL,NULL,NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp,redhat,contrast';
- 
+
 /* Contrast asset application, organization */
   INSERT  INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
 VALUES('application','Application','Compute','contrast','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
  concat(@eshost,':',@esport,'/contrast_application'),'2023-11-06','2023-11-06','Infra & Platforms','Application')
  ON DUPLICATE KEY UPDATE targetName='application', dataSourceName='contrast', displayName='Application';
+
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Policy ID','policyId.keyword','/compliance/v1/filters/policyList',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Compliant','compliant','/asset/v1/getCompliantFilterValue',"String");
