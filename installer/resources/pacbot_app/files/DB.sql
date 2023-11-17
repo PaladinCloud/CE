@@ -2345,7 +2345,7 @@ INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`
  VALUES ('policy-engine.invoke.url','submitRuleExecutionJob','compliance-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.host',concat(@PACMAN_HOST_NAME,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.optionalAssetGroupList','azure,gcp,redhat','application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.optionalAssetGroupList','azure,gcp,redhat,contrast','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.defaultAssetGroup','aws','application','prd','latest',NULL,NULL,NULL,NULL);
 
 UPDATE IGNORE pac_config_properties SET value='us-gov-east-1,us-gov-west-1,cn-north-1,cn-northwest-1,us-iso-east-1,us-iso-west-1,us-isob-east-1' where cfkey='region.ignore';
@@ -3080,7 +3080,7 @@ delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve'
 
   update cf_Target set status="finding" where targetName in ("launchtemplate","securitypricings") ;
 
-  UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat' WHERE `cfkey` = 'application.optionalAssetGroupList';
+  UPDATE `pac_config_properties` SET `value` = 'azure,gcp,redhat,contrast' WHERE `cfkey` = 'application.optionalAssetGroupList';
 
 update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribute=assets" where filterId=12 and optionName ="Assets";
 
@@ -3091,21 +3091,22 @@ delete from pac_v2_ui_options where filterId=12 and optionValue in ("assets", "v
 
 /* Plugin developed using PluginEngine V1 */
  INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
- VALUES ('plugins.in.v1','gcp,redhat,contrast','job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+ VALUES ('plugins.in.v1','gcp,redhat,contrast','job-scheduler','prd','latest',NULL,NULL,NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp,redhat,contrast';
  
- /* -------------- Contrast config start -----------------*/
+
   /* Contrast asset application, organization */
   INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
 VALUES('application','Application','Compute','contrast','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
  concat(@eshost,':',@esport,'/contrast_application'),'2023-11-06','2023-11-06','Infra & Platforms','Application');
  
- INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
- VALUES ('contrast.enabled','false','job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
  
-  INSERT IGNORE INTO `cf_AssetGroupDetails` (`groupId`, `groupName`, `dataSource`, `displayName`, `groupType`, `createdBy`, `createdUser`, `createdDate`, `modifiedUser`, `modifiedDate`, `description`, `aliasQuery`, `isVisible`)  
- values('e0008397-f74e-4deb-9066-10bdf1234','contrast','contrast','Contrast','System','admin@paladincloud.io','admin@paladincloud.io','11/07/2023 06:13',
- 'admin@paladincloud.io','11/07/2023 06:13','Contrast','{\"actions\":[{\"add\":{\"index\":\"contrast_*\",\"alias\":\"contrast\"}}]}','0');
- 
- update pac_config_properties set value = 'azure,gcp,redhat,contrast' where cfkey = 'application.optionalAssetGroupList';
- 
-  /* -------------- Contrast config end -----------------*/
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (17,'admin-policy') ON DUPLICATE KEY UPDATE filterName='admin-policy';
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Policy','policyId','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Asset Type','targetType','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Severity','severity','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Category','category','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Status','status','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'Source','assetGroup','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'AutoFix','autoFixAvailable','/compliance/v1/filters/policy');
+

@@ -72,7 +72,7 @@ public class Main {
                 log.info("Job executed successfully");
             }
         } else {
-            log.warn("Job hint is not supplied!");
+            log.warn("Job hint is not supplied");
         }
     }
 

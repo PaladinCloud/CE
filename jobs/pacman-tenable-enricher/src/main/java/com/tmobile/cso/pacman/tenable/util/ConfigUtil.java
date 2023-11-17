@@ -79,7 +79,7 @@ public class ConfigUtil {
             throw new TenableDataImportException("No config properties fetched from " + configUrl);
         }
 
-        LOGGER.info("Config are fetched from {}", configUrl);
+        LOGGER.debug("Config are fetched from {}", configUrl);
         return properties;
     }
 }
