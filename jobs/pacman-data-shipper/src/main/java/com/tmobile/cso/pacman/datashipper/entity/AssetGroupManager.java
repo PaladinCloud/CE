@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 public class AssetGroupManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(AssetGroupManager.class);
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm";
-    private static final String EMPTY_STRING = "";
     private static final String ASSET_GROUP_FOR_ALL_RESOURCES = "all-resources";
     private static final String FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE = "SELECT DISTINCT agd.groupId, agd.groupName, " +
             "agd.groupType, agd.aliasQuery FROM cf_AssetGroupDetails AS agd " +
@@ -149,7 +148,7 @@ public class AssetGroupManager {
     }
 
     public void updateImpactedAliases(List<String> newIndices, String datasource) {
-        LOGGER.info("Updating impacted Aliases for following indices {}", newIndices);
+        LOGGER.info("Updating impacted Aliases for following indices {} and datasource {}", newIndices, datasource);
         boolean skipUserAssetGroups = false;
         List<String> updatedAssetGroupsList = new ArrayList<>();
         List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery(String
@@ -198,12 +197,12 @@ public class AssetGroupManager {
                     aliasUpdateQuery = createAliasForStakeholderAssetGroup(alias, assetGroupTags, datasource);
                 } else if (alias.equalsIgnoreCase(ASSET_GROUP_FOR_ALL_RESOURCES)
                         || alias.equalsIgnoreCase(datasource)) {
-                    filter = EMPTY_STRING;
+                    filter = "";
                     aliasUpdateQuery = String.format(UPDATE_ES_ALIAS_TEMPLATE, filter, index, alias);
                 } else if (groupType.equalsIgnoreCase("user") || (existingAliasQuery != null &&
                         existingAliasQuery.contains("_*"))) {
                     String filterContents = getFilterFromExistingAliasQuery(existingAliasQuery);
-                    filter = filterContents.isEmpty() ? EMPTY_STRING :
+                    filter = filterContents.isEmpty() ? "" :
                             String.format(FILTER_TEMPLATE, filterContents);
                     aliasUpdateQuery = String.format(UPDATE_ES_ALIAS_TEMPLATE, filter, index, alias);
                 } else {
@@ -227,7 +226,8 @@ public class AssetGroupManager {
             LOGGER.info("Updated {} asset groups having names {} from {} of the {} for index {}",
                     updatedAssetGroups, updatedAssetGroupsList, assetGroupsList.size(), assetGroupsForUpdate, index);
         }
-        LOGGER.info("Finished Updating impacted Aliases");
+        LOGGER.info("Finished Updating impacted Aliases for following indices {} and datasource {}",
+                newIndices, datasource);
     }
 
     private void createDefaultAssetGroup(String aliasQuery) {
@@ -268,7 +268,7 @@ public class AssetGroupManager {
         } catch (JsonProcessingException e) {
             LOGGER.error("Exception in creating alias query", e);
         }
-        return EMPTY_STRING;
+        return "";
     }
 
     /**
@@ -304,7 +304,7 @@ public class AssetGroupManager {
     private String getFilterFromExistingAliasQuery(String existingAliasQuery) {
         try {
             JsonNode rootNode = objectMapper.readTree(existingAliasQuery);
-            if (rootNode != null && !rootNode.get("actions").isEmpty()) {
+            if (rootNode != null && rootNode.has("actions")) {
                 rootNode = rootNode.get("actions");
                 for (JsonNode actionNode : rootNode) {
                     JsonNode addNode = actionNode.path("add");
@@ -320,7 +320,7 @@ public class AssetGroupManager {
         } catch (Exception e) {
             LOGGER.error("Error while extracting filter from existingAliasQuery : {}", existingAliasQuery, e);
         }
-        return EMPTY_STRING;
+        return "";
     }
 
     private String createAliasForStakeholderAssetGroup(String assetGroup, List<Map<String, String>> assetGroupTags,
@@ -348,7 +348,7 @@ public class AssetGroupManager {
         } catch (Exception exception) {
             LOGGER.error("Exception in creating alias query", exception);
         }
-        return EMPTY_STRING;
+        return "";
     }
 
     private static final class InstanceHolder {
