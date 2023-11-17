@@ -2250,3 +2250,11 @@ g.arc .bubble-text {
 .mat-checkbox-ripple .mat-ripple-element {
   background-color: var(--primary-400) !important;
 }
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+.pointer-events-none{
+  pointer-events: none;
+}

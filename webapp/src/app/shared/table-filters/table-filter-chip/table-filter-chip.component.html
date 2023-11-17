@@ -4,7 +4,7 @@
     cdkOverlayOrigin
     #optionsMenuTrigger="cdkOverlayOrigin"
 >
-    <div class="tfc-text-container" (click)="toggleOptionsMenu()">
+    <div class="tfc-text-container" [class.pointer-events-none]="isDisabled" (click)="toggleOptionsMenu()">
         <span class="tfc-name"> {{ category }}:&nbsp;</span>
 
         <span class="tfc-value" [title]="appliedFilters.length === 1 ? appliedFilters[0].name : ''">
