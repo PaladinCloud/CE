@@ -3455,3 +3455,5 @@ INSERT INTO cf_PolicyParams (policyID, paramKey, paramValue, defaultVal, isEdit,
 INSERT INTO cf_PolicyParams (policyID, paramKey, paramValue, defaultVal, isEdit, isMandatory, encrypt, displayName, description) VALUES ('AWSRdsPublicInstances_version-1_AwsRdsPublicAccess_rdsdb','cidripv6','::/0','','false','false','false','','') ON DUPLICATE KEY UPDATE paramValue = '::/0';
 INSERT INTO cf_PolicyParams (policyID, paramKey, paramValue, defaultVal, isEdit, isMandatory, encrypt, displayName, description) VALUES ('AWSRdsPublicInstances_version-1_AwsRdsPublicAccess_rdsdb','internetGateWay','igw','','false','false','false','','') ON DUPLICATE KEY UPDATE paramValue = 'igw';
 INSERT INTO cf_PolicyParams (policyID, paramKey, paramValue, defaultVal, isEdit, isMandatory, encrypt, displayName, description) VALUES ('enable_aws_config_service','defaultRegion','us-east-1','','false','false','false','','') ON DUPLICATE KEY UPDATE paramValue = 'us-east-1';
+
+UPDATE cf_PolicyTable SET severity ='critical' WHERE policyId ='SGWithAnywhereAccess_version-1_SgWithSshPort22OpenToInternetAccess_sg';
