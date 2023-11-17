@@ -73,6 +73,8 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
 
     private static final String UNDERSCORE_ENTITY="_entity";
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     /*
      * (non-Javadoc)
      * @see com.tmobile.pacman.api.compliance.repository.FilterRepository# getFiltersFromDb(int)
@@ -307,23 +309,24 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         List<String> eventSource = filter.get(NOTIFICATION_SOURCE_NAME);
         List<String> eventName = filter.get(NOTIFICATION_EVENT_NAME);
 
-        if(eventSource!=null && !eventSource.isEmpty()) {
+        if (eventSource != null && !eventSource.isEmpty()) {
             mustFilter.put("eventSourceName.keyword", eventSource);
         }
 
-        if(eventName!=null && !eventName.isEmpty()) {
+        if (eventName != null && !eventName.isEmpty()) {
             mustFilter.put("eventName.keyword", eventName);
         }
 
-        if(!mustFilter.isEmpty()) {
+        if (!mustFilter.isEmpty()) {
             mustTermsFilter.putAll(mustFilter);
         }
 
-        Map<String ,Object> dateFilterMap=getDateFilter(filter);
+        Map<String, Object> dateFilterMap = getDateFilter(filter);
 
-        if(dateFilterMap!=null  && !dateFilterMap.isEmpty()){
-            mustFilter.put("range",dateFilterMap);
+        if (dateFilterMap != null && !dateFilterMap.isEmpty()) {
+            mustFilter.put("range", dateFilterMap);
         }
+
         String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_CATEGEORY_NAME);
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
@@ -349,22 +352,22 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         List<String> eventCategory = filter.get(NOTIFICATION_CATEGEORY_NAME);
         List<String> eventName = filter.get(NOTIFICATION_EVENT_NAME);
 
-        if(eventCategory!=null && !eventCategory.isEmpty()) {
+        if (eventCategory != null && !eventCategory.isEmpty()) {
             mustFilter.put("eventCategoryName.keyword", eventCategory);
         }
 
-        if(eventName!=null && !eventName.isEmpty()) {
+        if (eventName != null && !eventName.isEmpty()) {
             mustFilter.put("eventName.keyword", eventName);
         }
 
-        if(!mustFilter.isEmpty()) {
+        if (!mustFilter.isEmpty()) {
             mustTermsFilter.putAll(mustFilter);
         }
 
-        Map<String ,Object> dateFilterMap=getDateFilter(filter);
+        Map<String, Object> dateFilterMap = getDateFilter(filter);
 
-        if(dateFilterMap!=null  && !dateFilterMap.isEmpty()){
-            mustFilter.put("range",dateFilterMap);
+        if (dateFilterMap != null && !dateFilterMap.isEmpty()) {
+            mustFilter.put("range", dateFilterMap);
         }
         String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_SOURCE_NAME);
         try {
@@ -611,22 +614,22 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         List<String> eventCategory = filter.get(NOTIFICATION_CATEGEORY_NAME);
         List<String>  eventSource = filter.get( NOTIFICATION_SOURCE_NAME);
 
-        if(eventCategory!=null && !eventCategory.isEmpty()){
-            mustFilter.put("eventCategoryName.keyword",eventCategory);
+        if (eventCategory != null && !eventCategory.isEmpty()) {
+            mustFilter.put("eventCategoryName.keyword", eventCategory);
         }
 
-        if(eventSource!=null && !eventSource.isEmpty()) {
+        if (eventSource != null && !eventSource.isEmpty()) {
             mustFilter.put("eventSourceName.keyword", eventSource);
         }
 
-        if(!mustFilter.isEmpty()) {
+        if (!mustFilter.isEmpty()) {
             mustTermsFilter.putAll(mustFilter);
         }
 
-        Map<String ,Object> dateFilterMap=getDateFilter(filter);
+        Map<String, Object> dateFilterMap = getDateFilter(filter);
 
-        if(dateFilterMap!=null  && !dateFilterMap.isEmpty()){
-            mustFilter.put("range",dateFilterMap);
+        if (dateFilterMap != null && !dateFilterMap.isEmpty()) {
+            mustFilter.put("range", dateFilterMap);
         }
         String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_EVENT_NAME);
         try {
@@ -685,7 +688,7 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
                 dateRange.append(range);
             }
             String[] dates = dateRange.toString().split(" - ");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
             try {
                 startDate = dateFormat.parse(dates[0]);
                 endDate = dateFormat.parse(dates[1]);
@@ -694,27 +697,32 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
                 logger.error("Error in Date Format");
             }
         }
-
+        /*
+		   gte stands for Greater than or equal to
+		*/
         String gte = null;
+        /*
+			lte stands for Less than or equal to
+	    */
         String lte = null;
 
-        if ( startDate!= null) {
-            gte = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startDate);
+        if (startDate != null) {
+            gte = new SimpleDateFormat(DATE_FORMAT).format(startDate);
         }
-        if ( endDate != null) {
-            lte = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endDate);
+        if (endDate != null) {
+            lte = new SimpleDateFormat(DATE_FORMAT).format(endDate);
         }
-        Map<String ,Object> loaddateMap=new HashMap<>();
+        Map<String, Object> loaddateMap = new HashMap<>();
 
-        if(gte!=null){
-            loaddateMap.put("gte",gte);
+        if (gte != null) {
+            loaddateMap.put("gte", gte);
         }
 
-        if(lte!=null){
-            loaddateMap.put("lte",lte);
+        if (lte != null) {
+            loaddateMap.put("lte", lte);
         }
-        if(loaddateMap!=null && !loaddateMap.isEmpty()){
-            dateFilterMap.put("_loaddate.keyword",loaddateMap);
+        if (loaddateMap != null && !loaddateMap.isEmpty()) {
+            dateFilterMap.put("_loaddate.keyword", loaddateMap);
         }
 
         return dateFilterMap;
@@ -727,22 +735,22 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         Map<String, Object> mustTermsFilter = new HashMap<>();
 
         List<String> eventCategory = filter.get(NOTIFICATION_CATEGEORY_NAME);
-        List<String>  eventSource = filter.get( NOTIFICATION_SOURCE_NAME);
+        List<String> eventSource = filter.get(NOTIFICATION_SOURCE_NAME);
         List<String> eventName = filter.get(NOTIFICATION_EVENT_NAME);
 
-        if(eventCategory!=null && !eventCategory.isEmpty()){
-            mustFilter.put("eventCategoryName.keyword",eventCategory);
+        if (eventCategory != null && !eventCategory.isEmpty()) {
+            mustFilter.put("eventCategoryName.keyword", eventCategory);
         }
 
-        if(eventSource!=null && !eventSource.isEmpty()) {
+        if (eventSource != null && !eventSource.isEmpty()) {
             mustFilter.put("eventSourceName.keyword", eventSource);
         }
 
-        if(eventName!=null && !eventName.isEmpty()) {
+        if (eventName != null && !eventName.isEmpty()) {
             mustFilter.put("eventName.keyword", eventName);
         }
 
-        if(!mustFilter.isEmpty()) {
+        if (!mustFilter.isEmpty()) {
             mustTermsFilter.putAll(mustFilter);
         }
 
@@ -750,7 +758,7 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
                     NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
-                    THOUSAND,mustTermsFilter);
+                    THOUSAND, mustTermsFilter);
         } catch (Exception e) {
             throw new DataException(e);
         }

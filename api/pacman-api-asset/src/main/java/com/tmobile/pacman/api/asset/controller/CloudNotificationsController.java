@@ -45,6 +45,8 @@ public class CloudNotificationsController {
 	CloudNotificationService cloudService;
 
 	private static final Log LOGGER = LogFactory.getLog(AssetListController.class);
+
+	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
 	 /**
 		 * Fetches the Cloud Notifications for the rule id passed in the filter.
@@ -60,7 +62,7 @@ public class CloudNotificationsController {
 		@PostMapping(value = "/v1/cloud/notifications")
 		public ResponseEntity<Object> getlistOfCloudNotifications(@RequestBody(required = true) NotificationRequest request ) {
 
-			String assetGroup = request.getAg();
+			String assetGroup = request.getAssetGroup();
 			if (Strings.isNullOrEmpty(assetGroup)) {
 				return ResponseUtils.buildFailureResponse(new Exception(Constants.ASSET_MANDATORY));
 			}
@@ -85,7 +87,7 @@ public class CloudNotificationsController {
 					dateRange.append(range);
 				}
 				String[] dates = dateRange.toString().split(" - ");
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 				try {
 					startDate = dateFormat.parse(dates[0]);
 					endDate = dateFormat.parse(dates[1]);

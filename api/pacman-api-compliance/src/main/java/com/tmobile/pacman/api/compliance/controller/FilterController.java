@@ -412,6 +412,7 @@ public class FilterController implements Constants {
         }
         return ResponseUtils.buildSucessResponse(response.getRes());
     }
+
     @PostMapping(path = "/v1/filters/eventdate")
     public ResponseEntity<Object> getEventDate(@RequestBody NotificationFilterRequest filterRequest) {
         ResponseData response = null;

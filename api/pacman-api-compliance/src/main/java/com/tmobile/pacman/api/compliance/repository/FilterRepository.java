@@ -150,20 +150,34 @@ public interface FilterRepository {
     /**
      * Gets the list of Notification types.
      *
-     * @return Map<String, Long>
+     * @return Map<String,List<String>>
      * @throws DataException the data exception
      */
-    public Map<String, Long> getNotificationTypesFromES(Map<String, List<String>> filter) throws DataException;
+    public Map<String, Long> getNotificationTypesFromES(Map<String,List<String>> filter) throws DataException;
 
     /**
      * Gets the list of Notification source.
      *
-     * @return Map<String, Long>
+     * @return Map<String,List<String>>
      * @throws DataException the data exception
      */
-    public Map<String, Long> getNotificationSourceFromES(Map<String, List<String>> filter) throws DataException;
-    public Map<String, Long> getNotificationEventNamesFromES(Map<String, List<String>> filter) throws DataException;
-    public Map<String, Long> getNotificationDateFromES(Map<java.lang.String, List<java.lang.String>> filter) throws DataException;
+    public Map<String, Long> getNotificationSourceFromES(Map<String,List<String>> filter) throws DataException;
+
+    /**
+     * Gets the list of Notification event.
+     *
+     * @return Map<String,List<String>>
+     * @throws DataException the data exception
+     */
+    public Map<String, Long> getNotificationEventNamesFromES(Map<String,List<String>> filter) throws DataException;
+
+    /**
+     * Gets the list of Notification eventDate.
+     *
+     * @return Map<String,List<String>>
+     * @throws DataException the data exception
+     */
+    public Map<String, Long> getNotificationDateFromES(Map<String,List<String>> filter) throws DataException;
 
 
 

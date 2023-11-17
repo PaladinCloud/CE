@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public interface CloudNotificationService {
 
-	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, List<String>> filter, int size, int from, Map<String,Object> sortFilter, Date startDate, Date endDate);
+	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String,List<String>>filter, int size, int from, Map<String,Object> sortFilter, Date startDate, Date endDate);
 	public List<Map<String,Object>> getCloudNotificationsSummary(String assetGroup, boolean globalNotifier, String resourceId, String eventStatus);
 	public Map<String,Object> getCloudNotificationDetail(String eventArn, String assetGroup);
 	public Map<String,Object> getCloudNotificationInfo(String eventArn, boolean globalNotifier, String assetGroup);

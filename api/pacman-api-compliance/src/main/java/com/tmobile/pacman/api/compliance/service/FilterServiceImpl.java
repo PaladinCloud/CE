@@ -436,7 +436,7 @@ public class FilterServiceImpl implements FilterService, Constants {
      * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
      * )
      */
-    public List<Map<String, Object>> getNotificationTypes(Map<String, List<String>> filters) throws ServiceException {
+    public List<Map<String, Object>> getNotificationTypes(Map<String,List<String>> filters) throws ServiceException {
         Map<String, Long> notificationMap;
         try {
             notificationMap = repository.getNotificationTypesFromES(filters);
@@ -454,7 +454,7 @@ public class FilterServiceImpl implements FilterService, Constants {
      * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
      * )
      */
-    public List<Map<String, Object>> getNotificationSource(Map<String, List<String>> filters) throws ServiceException {
+    public List<Map<String, Object>> getNotificationSource(Map<String,List<String>> filters) throws ServiceException {
         Map<String, Long> sourceMap;
         try {
             sourceMap = repository.getNotificationSourceFromES(filters);
@@ -527,7 +527,7 @@ public class FilterServiceImpl implements FilterService, Constants {
         return valueList;
     }
 
-    public List<Map<String, Object>> getNotificationEventName(Map<String, List<String>> filter) throws ServiceException {
+    public List<Map<String, Object>> getNotificationEventName(Map<String,List<String>> filter) throws ServiceException {
         Map<String, Long> sourceMap;
         try {
             sourceMap = repository.getNotificationEventNamesFromES(filter);
@@ -610,8 +610,9 @@ public class FilterServiceImpl implements FilterService, Constants {
         }
         return rangeMap;
     }
+
     @Override
-    public List<Map<String, Object>> getNotificationDate(Map<String, List<String>> filter) throws ServiceException {
+    public List<Map<String, Object>> getNotificationDate(Map<String,List<String>> filter) throws ServiceException {
         Map<String, Long> sourceMap;
         try {
             sourceMap = repository.getNotificationDateFromES(filter);
