@@ -25,7 +25,6 @@ import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -149,10 +148,9 @@ public class AssetGroupManager {
 
     public void updateImpactedAliases(List<String> newIndices, String datasource) {
         LOGGER.info("Updating impacted Aliases for following indices {} and datasource {}", newIndices, datasource);
-        boolean skipUserAssetGroups = false;
-        List<String> updatedAssetGroupsList = new ArrayList<>();
         List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery(String
                 .format(FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE, "%_*%", datasource, "%" + datasource + "_*%"));
+        LOGGER.info("Found {} asset groups", assetGroupsList.size());
         // If the assetGroupsList is empty then the asset group for current datasource is not available
         if (assetGroupsList.isEmpty()) {
             LOGGER.error("Cannot update because assetGroupsList is empty for datasource : {}", datasource);
@@ -171,63 +169,93 @@ public class AssetGroupManager {
                 LOGGER.error("Unexpected error occurred while creating default asset group", e);
             }
         }
-        List<String> assetGroupsForUpdate = assetGroupsList.stream().map(row -> row.get("groupName"))
-                .collect(Collectors.toList());
         String filter;
-        String aliasUpdateQuery;
-        for (String index : newIndices) {
-            int updatedAssetGroups = 0;
-            for (Map<String, String> assetGroup : assetGroupsList) {
-                String alias = assetGroup.get("groupName");
-                String groupType = assetGroup.get("groupType");
-                String existingAliasQuery = assetGroup.get("aliasQuery");
-                String groupId = assetGroup.get("groupId");
-                if (alias == null || groupType == null || groupId == null) {
-                    LOGGER.info("Cannot update because one of the fields is null. Alias: " + alias + ", GroupType: " +
-                            groupType + ", GroupId: " + groupId);
-                    continue;
-                }
-                if ((existingAliasQuery == null || existingAliasQuery.equalsIgnoreCase("null"))
-                        && groupType.equalsIgnoreCase("user") && !skipUserAssetGroups) {
-                    List<Map<String, String>> assetGroupTags = getCachedAssetGroupTagsOrFetch(groupId);
-                    if (assetGroupTags.isEmpty()) {
-                        LOGGER.error("assetGroupTags is empty for groupId : {}", groupId);
-                        continue;
-                    }
-                    aliasUpdateQuery = createAliasForStakeholderAssetGroup(alias, assetGroupTags, datasource);
-                } else if (alias.equalsIgnoreCase(ASSET_GROUP_FOR_ALL_RESOURCES)
-                        || alias.equalsIgnoreCase(datasource)) {
-                    filter = "";
-                    aliasUpdateQuery = String.format(UPDATE_ES_ALIAS_TEMPLATE, filter, index, alias);
-                } else if (groupType.equalsIgnoreCase("user") || (existingAliasQuery != null &&
-                        existingAliasQuery.contains("_*"))) {
-                    String filterContents = getFilterFromExistingAliasQuery(existingAliasQuery);
-                    filter = filterContents.isEmpty() ? "" :
-                            String.format(FILTER_TEMPLATE, filterContents);
-                    aliasUpdateQuery = String.format(UPDATE_ES_ALIAS_TEMPLATE, filter, index, alias);
-                } else {
-                    LOGGER.error("Cannot update alias {} for existingAliasQuery {}", alias, existingAliasQuery);
-                    continue;
-                }
-                try {
-                    if (aliasUpdateQuery == null || aliasUpdateQuery.length() == 0) {
-                        LOGGER.error("Update failed, aliasUpdateQuery is empty for asset group {}", assetGroup);
-                        continue;
-                    }
-                    ESManager.invokeAPI("POST", "_aliases/", aliasUpdateQuery);
-                    updatedAssetGroups++;
-                    updatedAssetGroupsList.add(alias);
-                } catch (IOException e) {
-                    LOGGER.error("Error while updating alias for new index {} and asset group {}", index, alias, e);
-                }
+        List<String> updatedAssetGroupsList = new ArrayList<>();
+        List<String> jsonStringsForActions = new ArrayList<>();
+        int updatedAssetGroups = 0;
+        for (Map<String, String> assetGroup : assetGroupsList) {
+            String alias = assetGroup.get("groupName");
+            String groupType = assetGroup.get("groupType");
+            String existingAliasQuery = assetGroup.get("aliasQuery");
+            String groupId = assetGroup.get("groupId");
+            if (alias == null || groupType == null || groupId == null) {
+                LOGGER.info("Cannot update because one of the fields is null. Alias: " + alias + ", GroupType: " +
+                        groupType + ", GroupId: " + groupId);
+                continue;
             }
-            // We need to update User asset groups only once if aliasQuery is null, because we already created it
-            skipUserAssetGroups = true;
-            LOGGER.info("Updated {} asset groups having names {} from {} of the {} for index {}",
-                    updatedAssetGroups, updatedAssetGroupsList, assetGroupsList.size(), assetGroupsForUpdate, index);
+            boolean isUserAssetGroupWithNullAliasQuery = (existingAliasQuery == null ||
+                    existingAliasQuery.equalsIgnoreCase("null")) && groupType.equalsIgnoreCase("user");
+            if (isUserAssetGroupWithNullAliasQuery) {
+                List<Map<String, String>> assetGroupTags = getCachedAssetGroupTagsOrFetch(groupId);
+                if (assetGroupTags.isEmpty()) {
+                    LOGGER.error("assetGroupTags is empty for groupId : {}", groupId);
+                    continue;
+                }
+                jsonStringsForActions.add(createAliasForStakeholderAssetGroup(alias, assetGroupTags, datasource));
+                updatedAssetGroups++;
+                updatedAssetGroupsList.add(alias);
+            } else if ((alias.equalsIgnoreCase(ASSET_GROUP_FOR_ALL_RESOURCES)
+                    || alias.equalsIgnoreCase(datasource))) {
+                filter = "";
+                jsonStringsForActions.add(String.format(UPDATE_ES_ALIAS_TEMPLATE, filter, datasource + "_*", alias));
+                updatedAssetGroups++;
+                updatedAssetGroupsList.add(alias);
+            } else if ((groupType.equalsIgnoreCase("user") && existingAliasQuery != null &&
+                    !existingAliasQuery.equalsIgnoreCase("null") &&
+                    !alias.equalsIgnoreCase(ASSET_GROUP_FOR_ALL_RESOURCES) &&
+                    !alias.equalsIgnoreCase(datasource)) ||
+                    (existingAliasQuery != null && existingAliasQuery.contains("_*"))) {
+                String filterContents = getFilterFromExistingAliasQuery(existingAliasQuery);
+                filter = filterContents.isEmpty() ? "" :
+                        String.format(FILTER_TEMPLATE, filterContents);
+                jsonStringsForActions.add(String.format(UPDATE_ES_ALIAS_TEMPLATE, filter, datasource + "_*", alias));
+                updatedAssetGroups++;
+                updatedAssetGroupsList.add(alias);
+            } else {
+                LOGGER.error("Cannot update alias {} for existingAliasQuery {}", alias, existingAliasQuery);
+            }
         }
-        LOGGER.info("Finished Updating impacted Aliases for following indices {} and datasource {}",
-                newIndices, datasource);
+        try {
+            JsonNode combinedActions = mergeActions(jsonStringsForActions);
+            if (combinedActions == null || combinedActions.toString().length() == 0) {
+                LOGGER.error("Update failed, aliasUpdateQuery is empty for datasource {}", datasource);
+                return;
+            }
+            String combinedJson = "{\"actions\":" + combinedActions + "}";
+            ESManager.invokeAPI("POST", "_aliases/", combinedJson);
+        } catch (Exception e) {
+            LOGGER.error("Error while updating alias for datasource {}", datasource, e);
+        }
+        // We need to update asset groups only once, because we added datasource_* in its ES query
+        LOGGER.info("Finished Updating impacted Aliases for following indices {} and datasource {}. " +
+                        "Updated {} asset groups having names {}", newIndices, datasource, updatedAssetGroups,
+                updatedAssetGroupsList);
+    }
+
+    private JsonNode mergeActions(List<String> jsonStrings) {
+        List<JsonNode> actionsList = new ArrayList<>();
+        for (String jsonString : jsonStrings) {
+            try {
+                JsonNode jsonObj = objectMapper.readTree(jsonString);
+                if (jsonObj.has("actions")) {
+                    JsonNode actions = jsonObj.get("actions");
+                    actionsList.addAll(convertToList(actions));
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error in combining actions", e);
+            }
+        }
+        return objectMapper.valueToTree(actionsList);
+    }
+
+    private List<JsonNode> convertToList(JsonNode node) {
+        List<JsonNode> list = new ArrayList<>();
+        if (node.isArray()) {
+            node.forEach(list::add);
+        } else {
+            list.add(node);
+        }
+        return list;
     }
 
     private void createDefaultAssetGroup(String aliasQuery) {
