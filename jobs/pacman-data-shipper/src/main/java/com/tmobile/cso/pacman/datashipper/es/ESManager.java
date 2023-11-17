@@ -363,13 +363,13 @@ public class ESManager implements Constants {
      * @return true, if successful
      */
     private static boolean indexExists(String indexName) {
-
         try {
             Response response = invokeAPI("HEAD", indexName, null);
             if (response != null) {
+                LOGGER.debug("indexExists end status code {}", response.getStatusLine().getStatusCode());
                 return response.getStatusLine().getStatusCode() == 200;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("Error indexExists", e);
         }
         return false;
@@ -421,12 +421,14 @@ public class ESManager implements Constants {
      * @param errorList the error list
      */
     public static void configureIndexAndTypes(String ds, List<Map<String, String>> errorList) {
+        LOGGER.info("Starting to configure Index for datasource {}", ds);
         List<String> newAssets = new ArrayList<>();
         // new code as per the latest ES version changes.
         Set<String> types = ConfigManager.getTypes(ds);
         for (String _type : types) {
             String indexName = ds + "_" + _type;
             if (!indexExists(indexName)) {
+                LOGGER.info("Index doesn't exists for {}", indexName);
                 String _payLoad = "{\"settings\" : { \"number_of_shards\" : 1,\"number_of_replicas\" : 1 , \"index.mapping.ignore_malformed\" : true,  \"index.mapping.total_fields.limit\": 2000 },\"mappings\": {";
 
                 StringBuilder payLoad = new StringBuilder(_payLoad);
@@ -469,9 +471,11 @@ public class ESManager implements Constants {
             LOGGER.error("Index creation Error: {}", exception.getMessage());
             LOGGER.error("Index creation Error Trace: {}", exception.getStackTrace());
         }
+        LOGGER.info("Finished configuring Indices for datasource {}", ds);
     }
 
     private static void updateImpactedAliases(List<String> newIndices, String datasource) {
+        LOGGER.info("Started updating impacted aliases for datasource {} and indices {}", datasource, newIndices);
         ObjectMapper objectMapper = new ObjectMapper();
         List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery(String
                 .format(FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE, "%_*%", datasource, "%" + datasource + "_*%"));
@@ -527,13 +531,14 @@ public class ESManager implements Constants {
             LOGGER.info("Updated {} asset groups from {} for index {}", updatedAssetGroups,
                     assetGroupsList.size(), index);
         }
+        LOGGER.info("Finished updating impacted aliases for datasource {} and indices {}", datasource, newIndices);
     }
 
     private static String getFilterFromExistingAliasQuery(String existingAliasQuery) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(existingAliasQuery);
-            if (rootNode != null && !rootNode.get("actions").isEmpty()) {
+            if (rootNode != null && rootNode.has("actions")) {
                 rootNode = rootNode.get("actions");
                 for (JsonNode actionNode : rootNode) {
                     JsonNode addNode = actionNode.path("add");
