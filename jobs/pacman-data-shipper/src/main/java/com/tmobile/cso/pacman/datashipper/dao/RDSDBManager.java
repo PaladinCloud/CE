@@ -19,9 +19,20 @@ import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringJoiner;
 
 public class RDSDBManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
@@ -174,5 +185,31 @@ public class RDSDBManager {
             LOGGER.error("Error Executing Query", ex);
         }
         return results;
+    }
+
+    /**
+     * Inserts a single record into the specified table using the provided data.
+     *
+     * @param tableName The name of the table where the record will be inserted.
+     * @param data      A Map containing the data to be inserted, with keys representing column names
+     *                  and values representing values for the columns.
+     */
+    public static void insertRecord(String tableName, Map<String, String> data) {
+        StringJoiner joiner = new StringJoiner(",");
+        List<String> columns = new ArrayList<>(data.keySet());
+        for (int i = 0; i < columns.size(); i++) {
+            joiner.add("?");
+        }
+        String insertQuery = "INSERT INTO " + tableName + " (" + String.join(",", columns)
+                + ") VALUES (" + joiner + ")";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+            for (int i = 0; i < columns.size(); i++) {
+                statement.setString(i + 1, data.get(columns.get(i)));
+            }
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.error("Error Executing Query", e);
+        }
     }
 }
