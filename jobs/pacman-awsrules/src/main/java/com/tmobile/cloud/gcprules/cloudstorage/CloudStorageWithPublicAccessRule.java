@@ -91,7 +91,8 @@ public class CloudStorageWithPublicAccessRule extends BasePolicy {
                     .get(PacmanRuleConstants.SOURCE);
 
             logger.debug("Validating the data item: {}", vmInstanceObject);
-            boolean usersPresent = vmInstanceObject.getAsJsonObject().keySet().contains(PacmanRuleConstants.USERS);
+            boolean usersPresent = vmInstanceObject.getAsJsonObject().keySet().contains(PacmanRuleConstants.USERS) && !vmInstanceObject.getAsJsonObject()
+                    .get(PacmanRuleConstants.USERS).isJsonNull();
             if (usersPresent) {
                 JsonArray usersArray = vmInstanceObject.getAsJsonObject()
                         .get(PacmanRuleConstants.USERS).getAsJsonArray();
