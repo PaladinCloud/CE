@@ -30,6 +30,9 @@ public class IngressSettingRule extends BasePolicy {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
+        if (!StringUtils.isNullOrEmpty(esUrl)) {
+            esUrl = esUrl + "/gcp_cloudfunction/_search";
+        }
         logger.debug("========gcp_cloudfunction URL after concatenation param {}  =========", esUrl);
         MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get(PacmanSdkConstants.EXECUTION_ID));
         MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
