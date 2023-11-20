@@ -85,7 +85,7 @@ public class GCPUtils {
     public static String getEsUrl(Map<String, String> ruleParam){
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String collectorSpecificUrl = ruleParam.get(PacmanRuleConstants.ES_URL_PARAM);
-        if (!StringUtils.isNullOrEmpty(esUrl)) {
+        if (!StringUtils.isNullOrEmpty(esUrl) && !StringUtils.isNullOrEmpty(collectorSpecificUrl)) {
             esUrl = esUrl + collectorSpecificUrl;
         }
         return esUrl;
