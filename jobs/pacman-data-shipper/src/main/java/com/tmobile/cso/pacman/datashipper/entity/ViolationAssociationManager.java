@@ -163,10 +163,10 @@ public class ViolationAssociationManager {
    	 	}
     	 Map<String, Map<String, List<Map<String, Object>>>> groupedData = new HashMap<>();
          for (Map<String, Object> map : originalList) {
-             String annotationId = (String)map.get(PacmanSdkConstants.ANNOTATION_ID);
+             String resourceId = (String)map.get(PacmanSdkConstants.RESOURCE_ID);
              String policyId = (String)map.get(PacmanSdkConstants.POLICY_ID);
 
-             groupedData.computeIfAbsent(annotationId, k -> new HashMap<>())
+             groupedData.computeIfAbsent(resourceId, k -> new HashMap<>())
                      .computeIfAbsent(policyId, k -> new ArrayList<>())
                      .add(map);
          }
