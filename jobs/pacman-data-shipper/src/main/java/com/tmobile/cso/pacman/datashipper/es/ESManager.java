@@ -19,19 +19,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
-import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.entity.AssetGroupManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.ParseException;
@@ -44,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,10 +49,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ESManager implements Constants {
@@ -436,13 +428,11 @@ public class ESManager implements Constants {
                 }
             }
         }
-        if (!newAssets.isEmpty()) {
-            try {
-                AssetGroupManager assetGroupManager = AssetGroupManager.getInstance();
-                assetGroupManager.updateImpactedAliases(newAssets, ds);
-            } catch (Exception e) {
-                LOGGER.error("Alias update failed", e);
-            }
+        try {
+            AssetGroupManager assetGroupManager = AssetGroupManager.getInstance();
+            assetGroupManager.updateImpactedAliases(newAssets, ds);
+        } catch (Exception e) {
+            LOGGER.error("Alias update failed", e);
         }
         try {
             ESManager.createIndex("exceptions", errorList);

@@ -147,6 +147,25 @@ public class AssetGroupManager {
     }
 
     public void updateImpactedAliases(List<String> newIndices, String datasource) {
+        // IS_ALL_RESOURCE_EXISTS_QUERY returns 1 if ASSET_GROUP_FOR_ALL_RESOURCES present in DB
+        try {
+            String queryForAllResources = "SELECT EXISTS (SELECT 1 FROM " +
+                    "cf_AssetGroupDetails WHERE groupName = '" + ASSET_GROUP_FOR_ALL_RESOURCES + "') AS row_exists";
+            Optional<String> isAllResourceExists = RDSDBManager.executeStringQuery(queryForAllResources)
+                    .stream().findFirst();
+            if (isAllResourceExists.isPresent() && isAllResourceExists.get().equalsIgnoreCase("0")) {
+                // Creates ASSET_GROUP_FOR_ALL_RESOURCES if not present
+                String aliasQuery = getAliasQueryForDefaultAssetGroup(datasource);
+                createDefaultAssetGroup(aliasQuery);
+                ESManager.invokeAPI("POST", "_aliases/", aliasQuery);
+                LOGGER.info("Created default asset group with group name as {}", ASSET_GROUP_FOR_ALL_RESOURCES);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Unexpected error occurred while creating default asset group", e);
+        }
+        if (newIndices.isEmpty()) {
+            return;
+        }
         LOGGER.info("Updating impacted Aliases for following indices {} and datasource {}", newIndices, datasource);
         List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery(String
                 .format(FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE, "%_*%", datasource, "%" + datasource + "_*%"));
@@ -155,19 +174,6 @@ public class AssetGroupManager {
         if (assetGroupsList.isEmpty()) {
             LOGGER.error("Cannot update because assetGroupsList is empty for datasource : {}", datasource);
             return;
-        }
-        // FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE returns ASSET_GROUP_FOR_ALL_RESOURCES if its present in DB
-        if (assetGroupsList.stream().noneMatch(row -> row.get("groupName")
-                .equalsIgnoreCase(ASSET_GROUP_FOR_ALL_RESOURCES))) {
-            try {
-                // Creates ASSET_GROUP_FOR_ALL_RESOURCES if not present
-                String aliasQuery = getAliasQueryForDefaultAssetGroup(datasource);
-                createDefaultAssetGroup(aliasQuery);
-                ESManager.invokeAPI("POST", "_aliases/", aliasQuery);
-                LOGGER.info("Created default asset group with group name as {}", ASSET_GROUP_FOR_ALL_RESOURCES);
-            } catch (Exception e) {
-                LOGGER.error("Unexpected error occurred while creating default asset group", e);
-            }
         }
         String filter;
         List<String> updatedAssetGroupsList = new ArrayList<>();
