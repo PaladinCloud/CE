@@ -49,8 +49,8 @@ public class DefineAuthorisedIPRangesTest {
         Gson gson=new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("hits", gson.fromJson("{\n    \"hits\": [\n   {\n" +
-                "        \"_index\": \"azure_kubernetes\",\n" +
-                "        \"_type\": \"kubernetes\",\n" +
+                "        \"_index\": \"azure_aks\",\n" +
+                "        \"_type\": \"aks\",\n" +
                 "        \"_id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "        \"_score\": 1,\n" +
                 "        \"_source\": {\n" +
@@ -226,7 +226,7 @@ public class DefineAuthorisedIPRangesTest {
                 "          \"_resourceid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "          \"_docid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "          \"_entity\": \"true\",\n" +
-                "          \"_entitytype\": \"kubernetes\",\n" +
+                "          \"_entitytype\": \"aks\",\n" +
                 "          \"firstdiscoveredon\": \"2022-11-22 12:00:00+0530\",\n" +
                 "          \"latest\": true,\n" +
                 "          \"_loaddate\": \"2022-11-22 11:08:00+0000\"\n" +
@@ -255,8 +255,8 @@ public class DefineAuthorisedIPRangesTest {
         Gson gson=new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("hits", gson.fromJson("{\n    \"hits\": [\n{\n" +
-                "        \"_index\": \"azure_kubernetes\",\n" +
-                "        \"_type\": \"kubernetes\",\n" +
+                "        \"_index\": \"azure_aks\",\n" +
+                "        \"_type\": \"aks\",\n" +
                 "        \"_id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/testRBAC\",\n" +
                 "        \"_score\": 1,\n" +
                 "        \"_source\": {\n" +
@@ -457,7 +457,7 @@ public class DefineAuthorisedIPRangesTest {
                 "          \"_resourceid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/testRBAC\",\n" +
                 "          \"_docid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/testRBAC\",\n" +
                 "          \"_entity\": \"true\",\n" +
-                "          \"_entitytype\": \"kubernetes\",\n" +
+                "          \"_entitytype\": \"aks\",\n" +
                 "          \"firstdiscoveredon\": \"2022-11-22 16:00:00+0530\",\n" +
                 "          \"latest\": true,\n" +
                 "          \"_loaddate\": \"2022-11-22 11:08:00+0000\"\n" +

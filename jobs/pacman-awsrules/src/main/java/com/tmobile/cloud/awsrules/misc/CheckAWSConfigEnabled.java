@@ -22,10 +22,7 @@
  **/
 package com.tmobile.cloud.awsrules.misc;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +75,10 @@ public class CheckAWSConfigEnabled extends BasePolicy {
 		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
 		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+		String defaultRegion=ruleParam.get("defaultRegion");
+
+		Map<String ,String> localRuleParam=new HashMap<>(ruleParam);
+		localRuleParam.putIfAbsent(PacmanRuleConstants.REGION, defaultRegion);
 
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
@@ -91,7 +92,7 @@ public class CheckAWSConfigEnabled extends BasePolicy {
 		}
 		Annotation annotation = null;
 		try {
-			map = getClientFor(AWSService.CONFIG, roleIdentifyingString, ruleParam);
+			map = getClientFor(AWSService.CONFIG, roleIdentifyingString,localRuleParam);
 			awsConfigClient = (AmazonConfigClient) map.get(PacmanSdkConstants.CLIENT);
 			// Check AWS Config Enabled
             DescribeConfigurationRecordersResult describeConfigurationRecordersResult = awsConfigClient.describeConfigurationRecorders();

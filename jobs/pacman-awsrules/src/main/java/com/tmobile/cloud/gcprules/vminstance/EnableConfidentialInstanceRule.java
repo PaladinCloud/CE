@@ -92,7 +92,9 @@ public class EnableConfidentialInstanceRule extends BasePolicy {
                     .get(PacmanRuleConstants.SOURCE);
 
             logger.debug("Validating the data item: {}", vmInstanceObject.toString());
-             if (vmInstanceObject.getAsJsonObject().get(PacmanRuleConstants.CONFIDENTIAL_COMPUTING)!=null){
+             boolean isConfidentialComputingJsonNull = vmInstanceObject.getAsJsonObject().get(PacmanRuleConstants.CONFIDENTIAL_COMPUTING).isJsonNull();
+
+             if (!isConfidentialComputingJsonNull && vmInstanceObject.getAsJsonObject().get(PacmanRuleConstants.CONFIDENTIAL_COMPUTING)!=null){
                  validationResult=vmInstanceObject.getAsJsonObject().get(PacmanRuleConstants.CONFIDENTIAL_COMPUTING).getAsBoolean();
              }
             else {

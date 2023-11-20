@@ -30,6 +30,7 @@ public class VpnConnectorRule extends BasePolicy {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
+        esUrl = esUrl + "/gcp_cloudfunction/_search";
         logger.debug("========gcp_gcploadbalancer URL after concatenation param {}  =========", esUrl);
         MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get("executionId"));
         MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));

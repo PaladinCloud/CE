@@ -19,18 +19,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
-import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
+import com.tmobile.cso.pacman.datashipper.entity.AssetGroupManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.ParseException;
@@ -48,12 +45,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,30 +57,7 @@ public class ESManager implements Constants {
     private static final Integer ES_HTTP_PORT = getESPort();
     private static final Logger LOGGER = LoggerFactory.getLogger(ESManager.class);
     private static RestClient restClient;
-    private static final String FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE = "SELECT DISTINCT agd.groupId, agd.groupName, " +
-            "agd.groupType, agd.aliasQuery FROM cf_AssetGroupDetails AS agd " +
-            //Checks if data source is selected as cloudType
-            "WHERE (agd.groupId NOT IN ( " +
-            "    SELECT DISTINCT agcd.groupId " +
-            "    FROM cf_AssetGroupCriteriaDetails AS agcd " +
-            "    WHERE agcd.attributeName = 'CloudType') AND agd.groupType <> 'user' AND agd.groupType <> 'System' " +
-            "AND agd.groupName <> 'all-cloud' and aliasQuery like '%s') " +
-            //for all user asset groups
-            "OR (agd.groupType = 'user') " +
-            //for current data source
-            "OR (agd.groupName = '%s' AND agd.groupType = 'System') " +
-            //for current all-cloud
-            "OR (agd.groupName = 'all-cloud') " +
-            "OR (agd.groupType <> 'user' " +
-            "    AND agd.groupType <> 'System' AND agd.groupName <> 'all-cloud' and aliasQuery like '%s')";
-    private static final String UPDATE_ES_ALIAS_TEMPLATE = "{\"actions\": [{\"add\": {%s \"index\": \"%s\"," +
-            "\"alias\": \"%s\"}}]}";
-    private static final String FILTER_TEMPLATE = "\"filter\": %s,";
-    public static final String ES_ATTRIBUTE_TAG = "tags.";
-    public static final String ES_ATTRIBUTE_KEYWORD = ".keyword";
-    public static final String DISTINCT_DATA_SOURCES_QUERY_TEMPLATE = "SELECT DISTINCT dataSourceName FROM cf_Target";
-    public static final String CRITERIA_DETAILS_QUERY_TEMPLATE =
-            "SELECT attributeName, attributeValue FROM cf_AssetGroupCriteriaDetails WHERE groupId = '%s'";
+
     /**
      * Gets the ES port.
      *
@@ -456,192 +428,17 @@ public class ESManager implements Constants {
                 }
             }
         }
-        if (!newAssets.isEmpty()) {
-            try {
-                updateImpactedAliases(newAssets, ds);
-            } catch (Exception e) {
-                LOGGER.error("Alias update failed", e);
-            }
+        try {
+            AssetGroupManager assetGroupManager = AssetGroupManager.getInstance();
+            assetGroupManager.updateImpactedAliases(newAssets, ds);
+        } catch (Exception e) {
+            LOGGER.error("Alias update failed", e);
         }
         try {
             ESManager.createIndex("exceptions", errorList);
         } catch (Exception exception) {
             LOGGER.error("Index creation Error: {}", exception.getMessage());
             LOGGER.error("Index creation Error Trace: {}", exception.getStackTrace());
-        }
-    }
-
-    private static void updateImpactedAliases(List<String> newIndices, String datasource) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery(String
-                .format(FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE, "%_*%", datasource, "%" + datasource + "_*%"));
-        if (assetGroupsList.isEmpty()) {
-            LOGGER.error("assetGroupsList is empty for datasource : {}", datasource);
-            return;
-        }
-        String filter;
-        String aliasUpdateQuery;
-        for (String index : newIndices) {
-            int updatedAssetGroups = 0;
-            for (Map<String, String> assetGroup : assetGroupsList) {
-                String alias = assetGroup.get("groupName");
-                String groupType = assetGroup.get("groupType");
-                String existingAliasQuery = assetGroup.get("aliasQuery");
-                String groupId = assetGroup.get("groupId");
-                if (alias == null || groupType == null || groupId == null) {
-                    LOGGER.info("At least one of the fields is null. Alias: " + alias + ", GroupType: " +
-                            groupType + ", GroupId: " + groupId);
-                    continue;
-                }
-                if ((existingAliasQuery == null || existingAliasQuery.equalsIgnoreCase("null"))
-                        && groupType.equalsIgnoreCase("user")) {
-                    List<Map<String, String>> assetGroupTags = RDSDBManager.executeQuery(String.format(
-                            CRITERIA_DETAILS_QUERY_TEMPLATE, groupId));
-                    try {
-                        aliasUpdateQuery = objectMapper.writeValueAsString(createAliasForStakeholderAssetGroup(alias,
-                                assetGroupTags));
-                    } catch (JsonProcessingException e) {
-                        LOGGER.error("Error while updating alias for asset group {}", alias, e);
-                        continue;
-                    }
-                } else if (alias.equalsIgnoreCase("all-clouds") || alias.equalsIgnoreCase(datasource)) {
-                    filter = StringUtils.EMPTY;
-                    aliasUpdateQuery = String.format(UPDATE_ES_ALIAS_TEMPLATE, filter, index, alias);
-                } else if (groupType.equalsIgnoreCase("user") || (existingAliasQuery != null &&
-                        existingAliasQuery.contains("_*"))) {
-                    String filterContents = getFilterFromExistingAliasQuery(existingAliasQuery);
-                    filter = filterContents.isEmpty() ? StringUtils.EMPTY :
-                            String.format(FILTER_TEMPLATE, filterContents);
-                    aliasUpdateQuery = String.format(UPDATE_ES_ALIAS_TEMPLATE, filter, index, alias);
-                } else {
-                    LOGGER.error("Cannot update alias {} for existingAliasQuery {}", alias, existingAliasQuery);
-                    continue;
-                }
-                try {
-                    invokeAPI("POST", "_aliases/", aliasUpdateQuery);
-                    updatedAssetGroups++;
-                } catch (IOException e) {
-                    LOGGER.error("Error while updating alias for new index {} and asset group {}", index, alias, e);
-                }
-            }
-            LOGGER.info("Updated {} asset groups from {} for index {}", updatedAssetGroups,
-                    assetGroupsList.size(), index);
-        }
-    }
-
-    private static String getFilterFromExistingAliasQuery(String existingAliasQuery) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(existingAliasQuery);
-            if (rootNode != null && !rootNode.get("actions").isEmpty()) {
-                rootNode = rootNode.get("actions");
-                for (JsonNode actionNode : rootNode) {
-                    JsonNode addNode = actionNode.path("add");
-                    if (addNode.get("index").isMissingNode() || !addNode.get("index").toString().contains("_*")) {
-                        continue;
-                    }
-                    JsonNode filterNode = addNode.get("filter");
-                    if (filterNode != null && !filterNode.isMissingNode()) {
-                        return filterNode.toString();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error while extracting filter from existingAliasQuery : {}", existingAliasQuery, e);
-        }
-        return StringUtils.EMPTY;
-    }
-
-    public static Map<String, Object> createAliasForStakeholderAssetGroup(String assetGroup,
-                                                                          List<Map<String, String>> assetGroupTags) {
-        Map<String, Object> alias = Maps.newHashMap();
-        List<Object> action = Lists.newArrayList();
-        try {
-            List<String> dataSourceList = RDSDBManager.executeStringQuery(DISTINCT_DATA_SOURCES_QUERY_TEMPLATE);
-            if (dataSourceList.isEmpty()) {
-                LOGGER.error("");
-                return Maps.newHashMap();
-            }
-            if (assetGroupTags.isEmpty()) {
-                LOGGER.error("");
-                return Maps.newHashMap();
-            }
-            dataSourceList = dataSourceList.stream().filter(ds -> isDataStreamOrIndexOrAliasExists(ds + "_*"))
-                    .collect(Collectors.toList());
-            if (dataSourceList.isEmpty()) {
-                LOGGER.error("");
-                return Maps.newHashMap();
-            }
-            Map<String, Object> tagMap = buildQueryForUserAssetGroup(assetGroupTags);
-            for (String datasource : dataSourceList) {
-                Map<String, Object> addObj = Maps.newHashMap();
-                addObj.put("index", datasource.toLowerCase().trim() + "_*");
-                addObj.put("alias", assetGroup);
-                Map<String, Object> filterDetails = Maps.newHashMap();
-                filterDetails.put("bool", tagMap);
-                addObj.put("filter", filterDetails);
-                Map<String, Object> add = Maps.newHashMap();
-                add.put("add", addObj);
-                action.add(add);
-            }
-            alias.put("actions", action);
-            return alias;
-        } catch (Exception exception) {
-            LOGGER.error("", exception);
-            return Maps.newHashMap();
-        }
-    }
-
-    private static Map<String, Object> buildQueryForUserAssetGroup(List<Map<String, String>> assetGroupTags) {
-        List<Object> mustList = new ArrayList<>();
-        Map<String, Object> mustObj = Maps.newHashMap();
-        Map<String, List<String>> groupedTags = assetGroupTags.stream()
-                .collect(Collectors.groupingBy(
-                        map -> map.get("attributeName"),
-                        Collectors.mapping(map -> map.get("attributeValue"), Collectors.toList())
-                ));
-        groupedTags.forEach((tagName, tags) -> {
-            mustList.add(getShouldMapForStakeholderAssetGroup(tagName, tags));
-        });
-        mustObj.put("must", mustList);
-        return mustObj;
-    }
-
-    private static Map<String, Object> getShouldMapForStakeholderAssetGroup(String tagName, List<String> tags) {
-        List<Object> matchList = new ArrayList<>();
-        Map<String, Object> shouldObj = Maps.newHashMap();
-        if (tags.size() == 1) {
-            Map<String, Object> attributeObj = Maps.newHashMap();
-            Map<String, Object> match = Maps.newHashMap();
-            attributeObj.put(ES_ATTRIBUTE_TAG + tagName + ES_ATTRIBUTE_KEYWORD, tags.get(0));
-            match.put("match", attributeObj);
-            return match;
-        } else {
-            Map<String, Object> boolObj = Maps.newHashMap();
-            tags.forEach(value -> {
-                Map<String, Object> attributeObj = Maps.newHashMap();
-                Map<String, Object> match = Maps.newHashMap();
-                attributeObj.put(ES_ATTRIBUTE_TAG + tagName + ES_ATTRIBUTE_KEYWORD, value);
-                match.put("match", attributeObj);
-                matchList.add(match);
-            });
-            shouldObj.put("should", matchList);
-            shouldObj.put("minimum_should_match", 1);
-            boolObj.put("bool", shouldObj);
-            return boolObj;
-        }
-    }
-
-    public static boolean isDataStreamOrIndexOrAliasExists(String target) {
-        try {
-            Response response = invokeAPI("GET", target + "?allow_no_indices=false", null);
-            if (Objects.isNull(response) || Objects.isNull(response.getStatusLine())) {
-                return false;
-            }
-            return response.getStatusLine().getStatusCode() == 200;
-        } catch (Exception exception) {
-            LOGGER.error("", exception);
-            return false;
         }
     }
 
