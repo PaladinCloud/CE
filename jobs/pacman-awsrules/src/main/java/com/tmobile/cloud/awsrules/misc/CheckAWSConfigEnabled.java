@@ -75,7 +75,7 @@ public class CheckAWSConfigEnabled extends BasePolicy {
 		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
 		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-		String defaultRegion=ruleParam.get("defaultregion");
+		String defaultRegion=ruleParam.get("defaultRegion");
 
 		Map<String ,String> localRuleParam=new HashMap<>(ruleParam);
 		localRuleParam.putIfAbsent(PacmanRuleConstants.REGION, defaultRegion);
