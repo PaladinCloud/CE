@@ -130,7 +130,11 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                     result.getAnnotation().put(PacmanSdkConstants.RESOURCE_ID,
                             resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
                     populateAnnotationParams(result,resource,policyParam);
-                    result.getAnnotation().put(PacmanSdkConstants.REGION, resource.get("region"));
+                    if(resource.get("region") != null){
+                        result.getAnnotation().put(PacmanSdkConstants.REGION, resource.get("region"));
+                    } else {
+                        result.getAnnotation().put(PacmanSdkConstants.REGION, policyParam.get("defaultRegion"));
+                    }
                     result.getAnnotation().put(PacmanSdkConstants.POLICY_CATEGORY, PolicyExecutionUtils
                             .getPolicyAttribute(result, policyParam, policyAnnotation, PacmanSdkConstants.POLICY_CATEGORY));
                     result.getAnnotation().put(PacmanSdkConstants.POLICY_SEVERITY, PolicyExecutionUtils
