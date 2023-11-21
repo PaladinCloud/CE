@@ -2946,7 +2946,7 @@ public class InventoryUtil {
 
 								});
 							}
-							trailVHList.add(new CloudTrailVH(trail, trailStatus.getIsLogging(), eventSelectorVHList));
+							trailVHList.add(new CloudTrailVH(trail, trailStatus.getIsLogging(), eventSelectorVHList,trailStatus.getLatestCloudWatchLogsDeliveryTime().toString()));
 						}
 					});
 					if (!trailVHList.isEmpty()) {
