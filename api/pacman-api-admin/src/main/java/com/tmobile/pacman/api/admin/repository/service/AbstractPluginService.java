@@ -33,7 +33,7 @@ import com.tmobile.pacman.api.admin.domain.ConfigPropertyItem;
 import com.tmobile.pacman.api.admin.domain.ConfigPropertyRequest;
 import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginResponse;
-import com.tmobile.pacman.api.admin.exceptions.PacManException;
+import com.tmobile.pacman.api.admin.factory.AccountFactory;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.repository.model.ConfigProperty;
@@ -50,7 +50,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -127,8 +126,6 @@ public abstract class AbstractPluginService {
     private UserPreferencesService userPreferencesService;
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
-    @Value("${application.optionalAssetGroupList}")
-    private String optionalAssetGroupList;
     @Autowired
     protected ObjectMapper objectMapper;
 
@@ -228,7 +225,7 @@ public abstract class AbstractPluginService {
         }
     }
 
-    protected PluginResponse createSecretAndSendSQSMessage(PluginParameters parameters) {
+    protected PluginResponse createAndTriggerSQSForPlugin(PluginParameters parameters) {
         PluginResponse response;
         try {
             BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
@@ -250,7 +247,8 @@ public abstract class AbstractPluginService {
             dataCollectorSQSService.sendSQSMessage(parameters.getPluginName(), TENANT_ID, onlineAccounts);
             response = new PluginResponse(AdminConstants.SUCCESS, String.format(ACCOUNT_ADDED_SUCCESSFULLY,
                     parameters.getId()), null);
-            updateAssetGroupStatusForOptionalAssetType(parameters);
+            assetGroupService.createOrUpdatePluginAssetGroup(parameters.getPluginName(),
+                    parameters.getPluginDisplayName());
             invokeActivityLogging(parameters, "create");
         } catch (ResourceExistsException ree) {
             LOGGER.error(String.format(ERROR_MESSAGE_TEMPLATE, CREATING) + ree.getMessage());
@@ -293,29 +291,6 @@ public abstract class AbstractPluginService {
         }
     }
 
-    protected void processAssetGroup(String pluginName) throws PacManException {
-        if (Objects.isNull(optionalAssetGroupList) || optionalAssetGroupList.isEmpty()) {
-            LOGGER.error("Asset group update failed: The optionalAssetGroupList is null or empty.");
-            return;
-        }
-        List<String> optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-        if (!optionalAssetList.contains(pluginName)) {
-            LOGGER.info("The plugin '{}' is not found in the optionalAssetGroupList. " +
-                    "Therefore, no updates to asset groups are required.", pluginName);
-            return;
-        }
-        List<AccountDetails> onlineAccounts = findOnlineAccounts("configured", pluginName);
-        if (!Objects.isNull(onlineAccounts) && !onlineAccounts.isEmpty()) {
-            LOGGER.info("There are {} online account(s). " +
-                    "Therefore, no updates to asset groups are required.", onlineAccounts.size());
-            return;
-        }
-        String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(pluginName, false, "admin");
-        LOGGER.info("AssetGroup {} status {}", pluginName, updateAssetGroupStatus);
-        Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(pluginName);
-        LOGGER.info("Total users have been updated with the default asset group. The new count is: {}", totalUsers);
-    }
-
     protected void invokeActivityLogging(PluginParameters parameters, String action) {
         try {
             ObjectNode objectNode = objectMapper.convertValue(parameters, ObjectNode.class);
@@ -344,7 +319,10 @@ public abstract class AbstractPluginService {
             if (response.getStatus().equals(AdminConstants.FAILURE)) {
                 return response;
             }
-            processAssetGroup(parameters.getPluginName());
+            //TODO: Remove plugin services (AbstractPluginService) and use Account service.
+            // disableAssetGroup is a common function hence using contrast
+            AccountsService accountsService = AccountFactory.getService("contrast");
+            accountsService.disableAssetGroup(parameters.getPluginName());
             checkAndDisableOnlineAccounts(parameters.getPluginName());
             invokeActivityLogging(parameters, "delete");
         } catch (Exception e) {
@@ -353,20 +331,5 @@ public abstract class AbstractPluginService {
                     String.format(ERROR_MESSAGE_TEMPLATE, DELETING) + e.getMessage());
         }
         return response;
-    }
-
-    protected void updateAssetGroupStatusForOptionalAssetType(PluginParameters parameters) {
-        try {
-            List<String> optionalAssetList = null;
-            if (Objects.nonNull(optionalAssetGroupList)) {
-                optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-            }
-            if (Objects.nonNull(optionalAssetList) && !optionalAssetList.isEmpty() && optionalAssetList.contains(parameters.getPluginName())) {
-                String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(parameters.getPluginName(), true, "admin");
-                LOGGER.info("Plugin name {} status {}", parameters.getPluginName(), updateAssetGroupStatus);
-            }
-        } catch (Exception exception) {
-            LOGGER.error("Could not activity log for plugin {} with account id {}", parameters.getPluginName(), parameters.getId());
-        }
     }
 }

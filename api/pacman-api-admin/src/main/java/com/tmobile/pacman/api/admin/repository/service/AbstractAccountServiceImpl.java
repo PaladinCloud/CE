@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TimeZone;
 
@@ -54,6 +55,10 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     protected CredentialProvider credentialProvider;
     @Autowired
     private DataCollectorSQSService dataCollectorSQSService;
+    @Autowired
+    protected AssetGroupService assetGroupService;
+    @Autowired
+    private UserPreferencesService userPreferencesService;
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
     public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
@@ -278,5 +283,22 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
 
     protected String getSecretId(String id, String pluginName, String tenantId) {
         return secretManagerPrefix + "/" + tenantId + "/" + pluginName + "/" + id;
+    }
+
+    public void disableAssetGroup(String pluginName) {
+        try {
+            List<AccountDetails> onlineAccounts = findOnlineAccounts("configured", pluginName);
+            if (!Objects.isNull(onlineAccounts) && !onlineAccounts.isEmpty()) {
+                logger.info("There are {} online account(s). " +
+                        "Therefore, no updates to asset groups are required.", onlineAccounts.size());
+                return;
+            }
+            String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(pluginName, false, "admin");
+            logger.info("AssetGroup {} status {}", pluginName, updateAssetGroupStatus);
+            Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(pluginName);
+            logger.info("Total users have been updated with the default asset group. The new count is: {}", totalUsers);
+        } catch (Exception e) {
+            logger.error("Unable to make changes to required asset groups for {}", pluginName);
+        }
     }
 }

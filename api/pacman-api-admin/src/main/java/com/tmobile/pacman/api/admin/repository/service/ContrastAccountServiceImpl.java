@@ -42,7 +42,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -162,6 +161,7 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
         createAccountInDb(accountData.getContrastOrganizationId(), organizationName, CONTRAST, accountData.getCreatedBy());
         updateConfigProperty(CONTRAST_ENABLED, TRUE, JOB_SCHEDULER);
         sendSQSMessage(CONTRAST, accountData.getContrastOrganizationId(), tenantId);
+        assetGroupService.createOrUpdatePluginAssetGroup(CONTRAST, "Contrast");
         validationResponse = new AccountValidationResponse();
         validationResponse.setValidationStatus(SUCCESS);
         validationResponse.setAccountId(accountData.getContrastOrganizationId());
@@ -174,13 +174,13 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
     private AccountValidationResponse validateRequestData(CreateAccountRequest accountData) {
         AccountValidationResponse response = new AccountValidationResponse();
         List<String> missingParams = new ArrayList<>();
-        if (org.apache.commons.lang.StringUtils.isEmpty(accountData.getContrastOrganizationId())) {
+        if (StringUtils.isEmpty(accountData.getContrastOrganizationId())) {
             missingParams.add("Organization ID");
         }
-        if (org.apache.commons.lang.StringUtils.isEmpty(accountData.getContrastServiceKey())) {
+        if (StringUtils.isEmpty(accountData.getContrastServiceKey())) {
             missingParams.add("Secret Key");
         }
-        if (org.apache.commons.lang.StringUtils.isEmpty(accountData.getContrastApiKey())) {
+        if (StringUtils.isEmpty(accountData.getContrastApiKey())) {
             missingParams.add("API Key");
         }
         if (StringUtils.isEmpty(accountData.getContrastUserId())) {
@@ -200,11 +200,11 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
     public AccountValidationResponse deleteAccount(String organizationId) {
         LOGGER.info("Deleting contrast with organizationId: {}", organizationId);
         String tenantId = System.getenv(AdminConstants.TENANT_ID);
-        AccountValidationResponse response = new AccountValidationResponse();
         DeleteSecretResult deleteResponse = deleteSecret(organizationId, CONTRAST, tenantId);
         LOGGER.info("Delete secret response: {} ", deleteResponse);
-        response = deleteAccountFromDB(organizationId);
+        AccountValidationResponse response = deleteAccountFromDB(organizationId);
         if (response.getValidationStatus().equalsIgnoreCase(SUCCESS)) {
+            disableAssetGroup(CONTRAST);
             updateConfigProperty(CONTRAST_ENABLED, FALSE, JOB_SCHEDULER);
         }
         response.setType(CONTRAST);

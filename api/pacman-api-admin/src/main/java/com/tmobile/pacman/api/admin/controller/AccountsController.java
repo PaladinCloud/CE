@@ -66,10 +66,6 @@ public class AccountsController {
     private PluginFactory pluginFactory;
 
 
-    @Value("${application.optionalAssetGroupList}")
-	private String optionalAssetGroupList;
-
-
     @ApiOperation(httpMethod = "POST", value = "API to fetch list of accounts", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(path = "/list", produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAccounts(@RequestBody PluginRequestBody requestBody){
@@ -99,26 +95,9 @@ public class AccountsController {
     public ResponseEntity<Object> deleteAccount(@ApiParam(value = "provide account number", required = true) @RequestParam("accountId") String accountId,
                                                 @ApiParam(value = "provide provider type", required = true) @RequestParam("provider") String type){
 		try {
-			AccountsService accountsService = AccountFactory.getService(type);
-			AccountValidationResponse response = accountsService.deleteAccount(accountId);
-			/*
-			 * Disable asset group if no cloud type not exists
-			 */
-			List<String> optionalAssetList = null;
-			if (optionalAssetGroupList != null) {
-				optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-			}
-			if (optionalAssetList != null && optionalAssetList.size() > 0 && optionalAssetList.contains(type)) {
-				List<AccountDetails> findOnlineAccounts = accountsService.findOnlineAccounts("configured", type);
-				if (findOnlineAccounts == null || findOnlineAccounts.size() <= 0) {
-					String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(type, false, "admin");
-					log.debug("AssetGoup  {}   status {}", type, updateAssetGroupStatus);
-					Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(type);
-					log.debug("total user updated with default asset group {}", totalUsers);
-				}
-			}
-			return ResponseUtils.buildSucessResponse(response);
-
+            AccountsService accountsService = AccountFactory.getService(type);
+            AccountValidationResponse response = accountsService.deleteAccount(accountId);
+            return ResponseUtils.buildSucessResponse(response);
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
@@ -142,19 +121,6 @@ public class AccountsController {
                 Map<String, Object> responseMap = oMapper.convertValue(accountValidationResponse, Map.class);
                 responseMap.keySet().retainAll(Arrays.asList("accountId", "accountName", "type"));
                 String acctDetails = gson.toJson(responseMap);
-                /*
-                 * By default Azure and GCP asset groups are disabled. Enabled after creating
-                 * the Cloud Plugins .
-                 */
-                List<String> optionalAssetList = null;
-                if (optionalAssetGroupList != null) {
-                    optionalAssetList = Arrays.asList(optionalAssetGroupList.split(","));
-                }
-                if (optionalAssetList != null && optionalAssetList.size() > 0
-                        && optionalAssetList.contains(pluginType)) {
-                    String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(pluginType, true, "admin");
-                    log.info("AssetGoup  {} status {}", pluginType, updateAssetGroupStatus);
-                }
             }
             return ResponseUtils.buildSucessResponse(accountValidationResponse);
         } catch (Exception exception) {

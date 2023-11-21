@@ -5,7 +5,11 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.*;
+import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
+import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
+import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
+import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
+import com.amazonaws.services.secretsmanager.model.ResourceExistsException;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.microsoft.azure.AzureEnvironment;
 import com.microsoft.azure.PagedList;
@@ -27,7 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
@@ -145,6 +152,7 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
             LOGGER.info("Create secret response: {}", createResponse);
             //update azure enable flag for scheduler job
             updateConfigProperty(AZURE_ENABLED, TRUE, JOB_SCHEDULER);
+            assetGroupService.createOrUpdatePluginAssetGroup(Constants.AZURE, "Azure");
             validateResponse.setValidationStatus(SUCCESS);
             validateResponse.setMessage("Account added successfully. Tenant id: "+tenantId);
             PagedList<Subscription> subscriptions = authenticateAzureAccount(accountData);
@@ -233,7 +241,8 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
             }
             List<AccountDetails> onlineAccounts=findOnlineAccounts(STATUS_CONFIGURED,Constants.AZURE);
             if(onlineAccounts==null || onlineAccounts.isEmpty()){
-                LOGGER.debug("Last account for Azure is deleted, disabling aws enable flag");
+                LOGGER.debug("Last account for Azure is deleted, disabling aws enable flag and asset group");
+                disableAssetGroup(Constants.AZURE);
                 updateConfigProperty(AZURE_ENABLED,FALSE,JOB_SCHEDULER);
             }
             response.setType(Constants.AZURE);
