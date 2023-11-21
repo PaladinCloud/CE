@@ -56,7 +56,7 @@ public class FileManager {
         FileGenerator.writeToFile(InventoryConstants.GCP_KMS_KEY_FILE, "[", false);
         FileGenerator.writeToFile("gcp-dataproc.data", "[", false);
         FileGenerator.writeToFile("gcp-pubsub.data", "[", false);
-        FileGenerator.writeToFile("gcp-gkecluster.data", "[", false);
+        FileGenerator.writeToFile("gcp-gke.data", "[", false);
         FileGenerator.writeToFile("gcp-clouddns.data", "[", false);
         FileGenerator.writeToFile("gcp-cloudsql_sqlserver.data", "[", false);
         FileGenerator.writeToFile("gcp-cloudsql_mysqlserver.data", "[", false);
@@ -83,7 +83,7 @@ public class FileManager {
         FileGenerator.writeToFile(InventoryConstants.GCP_KMS_KEY_FILE, "]", true);
         FileGenerator.writeToFile("gcp-pubsub.data", "]", true);
         FileGenerator.writeToFile("gcp-dataproc.data", "]", true);
-        FileGenerator.writeToFile("gcp-gkecluster.data", "]", true);
+        FileGenerator.writeToFile("gcp-gke.data", "]", true);
         FileGenerator.writeToFile("gcp-clouddns.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudsql_sqlserver.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudsql_mysqlserver.data", "]", true);
@@ -143,7 +143,7 @@ public class FileManager {
     }
 
     public static void generateGKEClusterFiles(List<GKEClusterVH> clustList) {
-        FileGenerator.generateJson(clustList, "gcp-gkecluster.data");
+        FileGenerator.generateJson(clustList, "gcp-gke.data");
     }
     public static void generateCloudDnsFiles(List<CloudDNSVH> dnsList) {
         FileGenerator.generateJson(dnsList, "gcp-clouddns.data");

@@ -1,5 +1,7 @@
 package com.tmobile.cso.pacman.inventory.vo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SQS {
 
     private String QueueArn;

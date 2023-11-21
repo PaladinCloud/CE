@@ -19,6 +19,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +42,17 @@ public class AssetGroupUtil {
     public static final String ASSET_SVC_BASE_URL = API_URL + "/asset/v1";
     public static final String COMPLIANCE_SVC_BASE_URL = API_URL + "/compliance/v1";
     public static final String VULNERABILITY_SVC_BASE_URL = API_URL+ "/vulnerability/v1";
+    public static final Map<String, Integer> categoryWeightageMap = new HashMap<>();
 
     private AssetGroupUtil() {
         throw new IllegalStateException("AssetGroupUtil is a utility class");
+    }
+
+    static {
+        List<Map<String, String>> categoryWeightsList = RDSDBManager.executeQuery("SELECT * FROM cf_PolicyCategoryWeightage");
+        categoryWeightsList.stream().forEach(map -> {
+            categoryWeightageMap.put(map.get("policyCategory"), Integer.parseInt(map.get("weightage")));
+        });
     }
 
     /**
@@ -137,6 +146,19 @@ public class AssetGroupUtil {
             Map<String, Object> complianceMap = Util.parseJson(typeCountJson);
             Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) complianceMap.get("data");
             Map<String, Object> complianceStats = data.get(DISTRIBUTION);
+            int numerator = 0;
+            int denominator = 0;
+            for (Map.Entry<String, Object> entry : complianceStats.entrySet()) {
+                if (categoryWeightageMap.get(entry.getKey()) != null && entry.getValue() != null) {
+                    numerator += (Integer.parseInt(entry.getValue().toString()) * categoryWeightageMap.get(entry.getKey()));
+                    denominator += categoryWeightageMap.get(entry.getKey());
+                }
+            }
+            if (denominator > 0) {
+                complianceStats.put("overall", numerator / denominator);
+            } else {
+                complianceStats.put("overall", 0);
+            }
             if (complianceStats != null) {
                 complianceStats.put(DOMAIN, domain);
                 compInfo.add(complianceStats);

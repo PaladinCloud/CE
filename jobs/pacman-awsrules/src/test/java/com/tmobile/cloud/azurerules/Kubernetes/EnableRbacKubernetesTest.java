@@ -38,8 +38,8 @@ public class EnableRbacKubernetesTest {
                 "    \"max_score\": 1,\n" +
                 "    \"hits\": [\n" +
                 "      {\n" +
-                "        \"_index\": \"azure_kubernetes\",\n" +
-                "        \"_type\": \"kubernetes\",\n" +
+                "        \"_index\": \"azure_aks\",\n" +
+                "        \"_type\": \"aks\",\n" +
                 "        \"_id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "        \"_score\": 1,\n" +
                 "        \"_source\": {\n" +
@@ -54,7 +54,7 @@ public class EnableRbacKubernetesTest {
                 "          \"_resourceid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "          \"_docid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "          \"_entity\": \"true\",\n" +
-                "          \"_entitytype\": \"kubernetes\",\n" +
+                "          \"_entitytype\": \"aks\",\n" +
                 "          \"firstdiscoveredon\": \"2022-10-27 19:00:00+0530\",\n" +
                 "          \"latest\": true,\n" +
                 "          \"_loaddate\": \"2022-10-27 14:49:00+0000\"\n" +
@@ -73,8 +73,8 @@ public class EnableRbacKubernetesTest {
                 "    \"max_score\": 1,\n" +
                 "    \"hits\": [\n" +
                 "      {\n" +
-                "        \"_index\": \"azure_kubernetes\",\n" +
-                "        \"_type\": \"kubernetes\",\n" +
+                "        \"_index\": \"azure_aks\",\n" +
+                "        \"_type\": \"aks\",\n" +
                 "        \"_id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "        \"_score\": 1,\n" +
                 "        \"_source\": {\n" +
@@ -89,7 +89,7 @@ public class EnableRbacKubernetesTest {
                 "          \"_resourceid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "          \"_docid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourcegroups/dev-paladincloud/providers/Microsoft.ContainerService/managedClusters/demo\",\n" +
                 "          \"_entity\": \"true\",\n" +
-                "          \"_entitytype\": \"kubernetes\",\n" +
+                "          \"_entitytype\": \"aks\",\n" +
                 "          \"firstdiscoveredon\": \"2022-10-27 19:00:00+0530\",\n" +
                 "          \"latest\": true,\n" +
                 "          \"_loaddate\": \"2022-10-27 14:49:00+0000\"\n" +

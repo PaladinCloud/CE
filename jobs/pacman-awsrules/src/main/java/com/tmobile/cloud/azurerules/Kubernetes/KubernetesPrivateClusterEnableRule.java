@@ -37,7 +37,7 @@ public class KubernetesPrivateClusterEnableRule extends BasePolicy {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "/azure_kubernetes/_search";
+            esUrl = url + "/azure_aks/_search";
         }
         boolean isValid = false;
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
