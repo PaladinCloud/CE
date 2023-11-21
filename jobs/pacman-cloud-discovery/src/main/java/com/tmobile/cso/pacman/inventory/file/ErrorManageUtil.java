@@ -151,7 +151,7 @@ public class ErrorManageUtil {
         errorMap.forEach((account, errors) -> {
             log.error("Printing errors for Account: {}", account);
             errors.forEach(errorVH -> {
-                log.error("Error: {} for type: {}", errorVH.getException(), errorVH.getType());
+                log.error("Error: {} for type: {} for region", errorVH.getException(), errorVH.getType(), errorVH.getRegion());
             });
         });
 
