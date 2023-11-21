@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ViolationAssociationManager {
@@ -70,8 +71,6 @@ public class ViolationAssociationManager {
             indexName = dataSource + "_" + type;
             String filePrefix = dataSource + "-issues-" + type;
             String docType = String.format("issue_%s", type);
-
-
             List<Map<String, Object>> entities;
             S3Object entitiesData = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, DATA_PATH + "/" + filePrefix + ".data"));
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(entitiesData.getObjectContent()))) {
@@ -84,31 +83,31 @@ public class ViolationAssociationManager {
             if(hasMultipleViolations(entities)) {
         		entities = convertManyToOneViolation(entities);
         	}
-            String loaddate = new SimpleDateFormat(DATE_FORMAT_SEC).format(new java.util.Date());
-            entities.parallelStream().forEach((obj) -> {
-                obj.put("_loaddate", loaddate);
-                obj.put("docType", docType);
-                obj.put("_docid", obj.get("_resourceid"));
-                obj.put("targetType", type);
-
-                Map<String, Object> relMap = new HashMap<>();
-                relMap.put("name", docType);
-                relMap.put("parent", obj.get("_resourceid"));
-                obj.put(type + "_relations", relMap);
-            });
-
-            LOGGER.info("Collected : {}", entities.size());
-            if (!entities.isEmpty()) {
-                ESManager.uploadData(indexName, entities, dataSource);
-                ESManager.deleteOldDocuments(indexName, docType, "_loaddate.keyword", loaddate);
-                String auditDocType = "issue_" + type + "_audit";
-                List<Map<String, Object>> auditLogEntites = createAuditLog(dataSource, type, entities);
-                ESManager.deleteOldDocuments(indexName, auditDocType, "auditdate.keyword", "*");
-                ESManager.uploadAuditLogData(indexName, auditLogEntites);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("violation data not exists for Asset type - {}", type);
-        }
+			if (Objects.isNull(entities)) {
+				LOGGER.debug("violation data object is empty for Asset type - {}", type);
+				return errorList;
+			}
+			String loaddate = new SimpleDateFormat(DATE_FORMAT_SEC).format(new java.util.Date());
+			entities.parallelStream().forEach((obj) -> {
+				obj.put("_loaddate", loaddate);
+				obj.put("docType", docType);
+				obj.put("_docid", obj.get("_resourceid"));
+				obj.put("targetType", type);
+				Map<String, Object> relMap = new HashMap<>();
+				relMap.put("name", docType);
+				relMap.put("parent", obj.get("_resourceid"));
+				obj.put(type + "_relations", relMap);
+			});
+			LOGGER.info("Collected : {}", entities.size());
+			ESManager.uploadData(indexName, entities, dataSource);
+			ESManager.deleteOldDocuments(indexName, docType, "_loaddate.keyword", loaddate);
+			String auditDocType = "issue_" + type + "_audit";
+			List<Map<String, Object>> auditLogEntites = createAuditLog(dataSource, type, entities);
+			ESManager.deleteOldDocuments(indexName, auditDocType, "auditdate.keyword", "*");
+			ESManager.uploadAuditLogData(indexName, auditLogEntites);
+		} catch (Exception e) {
+			LOGGER.debug("violation data not exists for Asset type - {}", type);
+		}
 
         LOGGER.info("Completed EntityAssociationDataCollector for {}", type);
         return errorList;
@@ -175,29 +174,23 @@ public class ViolationAssociationManager {
     
 	private static List<Map<String, Object>> convertManyToOneViolation(List<Map<String, Object>> originalList) {
 		Map<String, Map<String, List<Map<String, Object>>>> groupedData = groupingViolationByAssetAndPolicy(originalList);
-		if (groupedData.isEmpty()) {
+		if (groupedData == null || groupedData.isEmpty()) {
 			return null;
 		}
-
 		List<Map<String, Object>> modifiedList = new ArrayList<>();
-
 		for (Map.Entry<String, Map<String, List<Map<String, Object>>>> entry : groupedData.entrySet()) {
 			Map<String, List<Map<String, Object>>> policyMap = entry.getValue();
-		
 				for (Map.Entry<String, List<Map<String, Object>>> policyEntry : policyMap.entrySet()) {
 					List<Map<String, Object>> violationList = policyEntry.getValue();
 					Map<String, Object> modifiedMap = new HashMap<>(violationList.get(0));
 					modifiedMap.put(PacmanSdkConstants.VULNERABILITY_DETAILS, getViolationStringFromViolationList(violationList));
 					modifiedList.add(modifiedMap);
 				}
-
 		}
-
 		return modifiedList;
 	}
 	
 	private static String getViolationStringFromViolationList(List<Map<String, Object>> violationList) {
-		
 		if(violationList == null || violationList.isEmpty()) {
 			return "";
 		}
@@ -208,14 +201,12 @@ public class ViolationAssociationManager {
 			violationMap.put(PacmanSdkConstants.VULNERABILITY_URL,(String)violation.get(PacmanSdkConstants.FIELD_URL));
 			violationDetailMap.add(violationMap);
 			});
-		
 		return listToJsonString(violationDetailMap);
 		
 	}
 	
 	private static String listToJsonString(List<Map<String, String>> list) {
         ObjectMapper objectMapper = new ObjectMapper();
-
         try {
             return objectMapper.writeValueAsString(list);
         } catch (JsonProcessingException e) {
