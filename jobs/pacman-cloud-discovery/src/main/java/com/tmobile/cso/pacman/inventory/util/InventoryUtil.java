@@ -1868,81 +1868,82 @@ public class InventoryUtil {
 	 * Fetch trusterd advisors checks.
 	 *
 	 * @param temporaryCredentials the temporary credentials
-	 * @param accountId the accountId
-	 * @param accountName the account name
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
 	 * @return the list
 	 */
-	public static Map<String,List<CheckVH>> fetchTrusterdAdvisorsChecks(BasicSessionCredentials temporaryCredentials,String accountId,String accountName ) {
-		Map<String,List<CheckVH>> checkMap = new HashMap<>();
+	public static Map<String, List<CheckVH>> fetchTrusterdAdvisorsChecks(BasicSessionCredentials temporaryCredentials, String accountId, String accountName) {
+		Map<String, List<CheckVH>> checkMap = new HashMap<>();
 		List<CheckVH> checkList = new ArrayList<>();
 		AWSSupport awsSupportClient = AWSSupportClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion("us-east-1").build();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource\" ,\"type\": \"Trusted Advisor Check\"" ;
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId + "\",\"Message\": \"Exception in fetching info for resource\" ,\"type\": \"Trusted Advisor Check\"";
 		List<String> checkids = new ArrayList<>();
-		try{
+		try {
 			DescribeTrustedAdvisorChecksResult rslt = awsSupportClient.describeTrustedAdvisorChecks(new DescribeTrustedAdvisorChecksRequest().withLanguage("en"));
 			List<TrustedAdvisorCheckDescription> trstdAdvsrList = rslt.getChecks();
-			for(TrustedAdvisorCheckDescription check : trstdAdvsrList){
-				try{
+			for (TrustedAdvisorCheckDescription check : trstdAdvsrList) {
+				try {
 					checkids.add(check.getId());
 					DescribeTrustedAdvisorCheckResultResult result =
-								awsSupportClient.describeTrustedAdvisorCheckResult(new DescribeTrustedAdvisorCheckResultRequest().withCheckId(check.getId()));
+							awsSupportClient.describeTrustedAdvisorCheckResult(new DescribeTrustedAdvisorCheckResultRequest().withCheckId(check.getId()));
 					List<String> metadata = check.getMetadata();
 
-					if(!"OK".equalsIgnoreCase(result.getResult().getStatus())){
+					if (!"OK".equalsIgnoreCase(result.getResult().getStatus())) {
 
-						CheckVH checkVH = new CheckVH(check,result.getResult().getStatus());
+						CheckVH checkVH = new CheckVH(check, result.getResult().getStatus());
 						List<Resource> resources = new ArrayList<>();
 						checkVH.setResources(resources);
 						// TODO : Raise a ticket with AWS to fix this API issue
-						if( ("ePs02jT06w".equalsIgnoreCase(check.getId()) || "rSs93HQwa1".equalsIgnoreCase(check.getId())) && !result.getResult().getFlaggedResources().isEmpty() ){
-							int dataSize = result.getResult().getFlaggedResources().get(0).getMetadata().size() ;
-							if(dataSize == metadata.size()+1 && !metadata.contains("Status")){
+						if (("ePs02jT06w".equalsIgnoreCase(check.getId()) || "rSs93HQwa1".equalsIgnoreCase(check.getId())) && !result.getResult().getFlaggedResources().isEmpty()) {
+							int dataSize = result.getResult().getFlaggedResources().get(0).getMetadata().size();
+							if (dataSize == metadata.size() + 1 && !metadata.contains("Status")) {
 								metadata.add(0, "Status");
 							}
 						}
 
 						result.getResult().getFlaggedResources().forEach(
-							rsrc -> {
-								List<String> data = rsrc.getMetadata();
-								StringBuilder resounceInfo =  new StringBuilder("{");
-								if(data.size() == metadata.size() ){
+								rsrc -> {
+									List<String> data = rsrc.getMetadata();
+									StringBuilder resounceInfo = new StringBuilder("{");
+									if (data.size() == metadata.size()) {
 
-									for(int i=0;i<metadata.size();i++){
-										resounceInfo.append("\""+metadata.get(i)+"\":\""+data.get(i)+"\",");
+										for (int i = 0; i < metadata.size(); i++) {
+											resounceInfo.append("\"" + metadata.get(i) + "\":\"" + data.get(i) + "\",");
+										}
+										resounceInfo.deleteCharAt(resounceInfo.length() - 1);
 									}
-									resounceInfo.deleteCharAt(resounceInfo.length()-1);
-								}
-								resounceInfo.append("}");
-								resources.add(new Resource(check.getId(),rsrc.getResourceId(),rsrc.getStatus(),resounceInfo.toString()));
+									resounceInfo.append("}");
+									resources.add(new Resource(check.getId(), rsrc.getResourceId(), rsrc.getStatus(), resounceInfo.toString()));
 
-							}
-					    );
+								}
+						);
 						checkList.add(checkVH);
 					}
-				}catch(Exception e){
-					log.debug("Erro fetching Advisor Check ",e);
-					ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
+				} catch (Exception e) {
+					log.debug("Error fetching Advisor Check ", e);
+					ErrorManageUtil.uploadError(accountId, "", "checks", e.getMessage());
 				}
 			}
-		}catch (Exception e)
-		{
-			log.error(expPrefix +", \"cause\":\"" +e.getMessage()+"\"}");
-			ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
+		} catch (Exception e) {
+			log.error(expPrefix + ", \"cause\":\"" + e.getMessage() + "\"}");
+			ErrorManageUtil.uploadError(accountId, "", "checks", e.getMessage());
 		}
-		log.debug(InventoryConstants.ACCOUNT + accountId + " Type : Trusted Advisor Check " +checkList.size());
+		log.debug(InventoryConstants.ACCOUNT + accountId + " Type : Trusted Advisor Check " + checkList.size());
 
-		for(String checkId : checkids){
-			try{
+		for (String checkId : checkids) {
+			try {
 				awsSupportClient.refreshTrustedAdvisorCheck(new RefreshTrustedAdvisorCheckRequest().withCheckId(checkId));
-			}catch(Exception e){
+			} catch (Exception e) {
 				log.info(e.getMessage());
-				ErrorManageUtil.uploadError(accountId,"","checks",e.getMessage());
+				// some checks are not refreshable. We do not need to worry about them.
+				if (!e.getMessage().contains("is not refreshable")) {
+					ErrorManageUtil.uploadError(accountId, "", "checks", e.getMessage());
+				}
 			}
 		}
-		if(!checkList.isEmpty()){
-			checkMap.put(accountId+delimiter+accountName, checkList);
+		if (!checkList.isEmpty()) {
+			checkMap.put(accountId + delimiter + accountName, checkList);
 		}
-
 		return checkMap;
 	}
 
