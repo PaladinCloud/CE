@@ -589,7 +589,7 @@ public class InventoryUtil {
 	public static Map<String, List<DocumentDBVH>> fetchDocumentDBTables(BasicSessionCredentials temporaryCredentials, String skipRegions, String accountId, String accountName) {
 		Map<String, List<DocumentDBVH>> documentDBClusters = new LinkedHashMap<>();
 
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DynamoDB\" , \"region\":\"";
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DocumentDB\" , \"region\":\"";
 		List<DocumentDBVH> documentDBVHList = new ArrayList<>();
 		for (Region region : RegionUtils.getRegions()) {
 			try {
@@ -616,7 +616,7 @@ public class InventoryUtil {
 
 				}
 			} catch (Exception e) {
-				if (region.isServiceSupported(AmazonDynamoDB.ENDPOINT_PREFIX)) {
+				if (region.isServiceSupported("docdb")) {
 					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
 					ErrorManageUtil.uploadError(accountId, region.getName(), "DocumentDB", e.getMessage());
 				}
