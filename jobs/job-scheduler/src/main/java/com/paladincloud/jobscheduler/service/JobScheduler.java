@@ -117,12 +117,8 @@ public class JobScheduler {
 				}
 				// Sending SQS message to trigger Data-Collector
 				String[] plugins = pluginUsingV1.split(",");
-				for (int i = 0; i < plugins.length; i++) {
-					String plugin = plugins[i];
-					if (plugin != null && Boolean.parseBoolean(System.getProperty(plugin + ".enabled"))) {
-						dataCollectorSQSServic.sendSQSMessage(plugin);
-					}
-				}
+				List<String> configuredPlugins = dataCollectorSQSServic.pulginsUsingVersion1AndConfigured(plugins);
+				configuredPlugins.forEach(plugin -> dataCollectorSQSServic.sendSQSMessage(plugin));
 				if (!putEventsRequestEntries.isEmpty()) {
 					PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries)
 							.build();
