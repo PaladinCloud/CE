@@ -48,7 +48,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -198,9 +201,7 @@ public abstract class AbstractPluginService {
         accountDetails.setPlatform(parameters.getPluginName());
         accountDetails.setAccountStatus(STATUS_CONFIGURED);
         accountDetails.setCreatedBy(parameters.getCreatedBy());
-        SimpleDateFormat formatter = new SimpleDateFormat(ACCOUNTS_TABLE_DATE_FORMAT);
-        Date date = new Date();
-        accountDetails.setCreatedTime(formatter.format(date));
+        accountDetails.setCreatedTime(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
         try {
             accountsRepository.save(accountDetails);
             return new PluginResponse(AdminConstants.SUCCESS, ACCOUNT_ADDED_MSG, null);
