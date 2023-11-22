@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class AssetGroupManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(AssetGroupManager.class);
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm";
-    private static final String ASSET_GROUP_FOR_ALL_RESOURCES = "all-resources";
+    private static final String ASSET_GROUP_FOR_ALL_RESOURCES = "all-sources";
     private static final String FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE = "SELECT DISTINCT agd.groupId, agd.groupName, " +
             "agd.groupType, agd.aliasQuery FROM cf_AssetGroupDetails AS agd " +
             //Checks if data source is selected as cloudType
@@ -46,7 +46,7 @@ public class AssetGroupManager {
             "    SELECT DISTINCT agcd.groupId " +
             "    FROM cf_AssetGroupCriteriaDetails AS agcd " +
             "    WHERE agcd.attributeName = 'CloudType') AND agd.groupType <> 'user' AND agd.groupType <> 'System' " +
-            "AND agd.groupName <> 'all-cloud' and aliasQuery like '%s') " +
+            "AND agd.groupName <> '" + ASSET_GROUP_FOR_ALL_RESOURCES + "' and aliasQuery like '%s') " +
             //for all user asset groups
             "OR (agd.groupType = 'user') " +
             //for current data source
@@ -54,7 +54,7 @@ public class AssetGroupManager {
             //for all-resources
             "OR (agd.groupName = '" + ASSET_GROUP_FOR_ALL_RESOURCES + "') " +
             "OR (agd.groupType <> 'user' " +
-            "    AND agd.groupType <> 'System' AND agd.groupName <> 'all-cloud' and aliasQuery like '%s')";
+            "    AND agd.groupType <> 'System' AND agd.groupName <> '" + ASSET_GROUP_FOR_ALL_RESOURCES + "' and aliasQuery like '%s')";
     private static final String UPDATE_ES_ALIAS_TEMPLATE = "{\"actions\": [{\"add\": {%s \"index\": \"%s\"," +
             "\"alias\": \"%s\"}}]}";
     private static final String FILTER_TEMPLATE = "\"filter\": %s,";
