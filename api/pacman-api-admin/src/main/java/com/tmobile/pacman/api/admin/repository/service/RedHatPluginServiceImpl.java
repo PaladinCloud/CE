@@ -67,7 +67,8 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
             }
             String secretKey = String.format(REDHAT_TOKEN_TEMPLATE, request.getRedhatToken());
             parameters.setSecretKey(secretKey);
-            return createSecretAndSendSQSMessage(parameters);
+            parameters.setPluginDisplayName("Red Hat");
+            return createAndTriggerSQSForPlugin(parameters);
         } catch (Exception e) {
             deletePlugin(parameters);
             throw new PluginServiceException("Unknown Exception occurred while creating plugin", e);

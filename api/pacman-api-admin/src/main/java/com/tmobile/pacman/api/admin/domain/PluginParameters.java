@@ -25,4 +25,5 @@ public class PluginParameters {
     private String pluginName;
     private String secretKey;
     private String createdBy;
+    private String pluginDisplayName;
 }

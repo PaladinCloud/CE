@@ -22,6 +22,7 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_DEL
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_NOT_EXITS;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_UPDATION_SUCCESS;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.DATE_FORMAT;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.ES_ALIASES_PATH;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.util.*;
@@ -801,5 +802,65 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			}
 		}
 		return cloudProviderObjList ;
+	}
+
+	@Override
+	public void createOrUpdatePluginAssetGroup(String pluginType, String displayName) {
+		try {
+			AssetGroupDetails alreadyExistingAssetGroup = assetGroupRepository.findByGroupName(pluginType);
+			String currentDate = AdminUtils.getFormatedStringDate(DATE_FORMAT, new Date());
+			if (alreadyExistingAssetGroup != null) {
+				if (alreadyExistingAssetGroup.getIsVisible()) {
+					return;
+				}
+				alreadyExistingAssetGroup.setModifiedUser("admin@paladincloud.io");
+				alreadyExistingAssetGroup.setModifiedDate(currentDate);
+				alreadyExistingAssetGroup.setVisible(true);
+				assetGroupRepository.save(alreadyExistingAssetGroup);
+				return;
+			}
+			String pluginAliasQuery = getPluginAliasQuery(pluginType);
+			Response response = commonService.invokeAPI("POST", ES_ALIASES_PATH, pluginAliasQuery);
+			if (response == null || response.getStatusLine().getStatusCode() != 200) {
+				log.error("Alias creation failed for {} with response {}", pluginType, response);
+				return;
+			}
+			log.debug("Alias created for {}", displayName);
+			AssetGroupDetails assetGroupDetails = new AssetGroupDetails();
+			String assetGroupId = UUID.randomUUID().toString();
+			assetGroupDetails.setGroupId(assetGroupId);
+			assetGroupDetails.setGroupName(pluginType.toLowerCase());
+			assetGroupDetails.setGroupType("System");
+			assetGroupDetails.setCreatedBy("admin@paladincloud.io");
+			assetGroupDetails.setDescription("Asset group for " + displayName);
+			assetGroupDetails.setCreatedDate(currentDate);
+			assetGroupDetails.setCreatedUser("admin@paladincloud.io");
+			assetGroupDetails.setDataSource(pluginType.toLowerCase());
+			assetGroupDetails.setAliasQuery(pluginAliasQuery);
+			assetGroupDetails.setIsVisible(true);
+			assetGroupDetails.setDisplayName(displayName);
+			log.info("Asset group created for pluginType : {}", pluginType);
+			assetGroupRepository.save(assetGroupDetails);
+		} catch (Exception e) {
+			log.error("Asset group creation for {} failed", pluginType, e);
+		}
+	}
+
+	private String getPluginAliasQuery(String datasource) {
+		Map<String, Object> alias = Maps.newHashMap();
+		List<Object> action = Lists.newArrayList();
+		try {
+			Map<String, Object> addObj = Maps.newHashMap();
+			addObj.put("index", datasource.toLowerCase().trim() + "_*");
+			addObj.put("alias", datasource);
+			Map<String, Object> add = Maps.newHashMap();
+			add.put("add", addObj);
+			action.add(add);
+			alias.put("actions", action);
+			return mapper.writeValueAsString(alias);
+		} catch (Exception e) {
+			log.error("Exception in creating alias query", e);
+		}
+		return "";
 	}
 }

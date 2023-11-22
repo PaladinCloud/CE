@@ -70,7 +70,8 @@ public class GcpPluginServiceImpl extends AbstractPluginService implements Plugi
                 LOGGER.info(ACCOUNT_EXISTS);
                 return createResponse;
             }
-            return createSecretAndSendSQSMessage(parameters);
+            parameters.setPluginDisplayName("GCP");
+            return createAndTriggerSQSForPlugin(parameters);
         } catch (IllegalArgumentException e) {
             LOGGER.error("Unexpected Error while validating private_key : " + e.getMessage());
             return new PluginResponse(AdminConstants.FAILURE, VALIDATION_FAILED,

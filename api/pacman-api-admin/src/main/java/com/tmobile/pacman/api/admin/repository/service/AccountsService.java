@@ -6,8 +6,6 @@ import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 
@@ -29,4 +27,6 @@ public interface AccountsService {
     AccountValidationResponse deleteAccount(String accountId);
 
     List<AccountDetails> findOnlineAccounts(String status, String platform);
+
+    void disableAssetGroup(String pluginName);
 }
