@@ -13,6 +13,8 @@ public class PluginRequestBody {
 
     private String searchtext = null;
 
+    private String attributeName;
+
     private int page;
 
     private int size;
