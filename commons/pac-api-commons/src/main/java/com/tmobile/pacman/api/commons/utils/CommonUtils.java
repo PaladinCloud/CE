@@ -29,6 +29,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -51,14 +52,10 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.springframework.util.CollectionUtils;
 
 public class CommonUtils {
 
-
-
-	/**
-	 *
-	 */
 	private CommonUtils() {
 		// hide the implicit public constructor
 	}

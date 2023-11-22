@@ -19,18 +19,22 @@ import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
-import org.apache.commons.lang.StringUtils;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.CollectionUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 
 public abstract class AbstractAccountServiceImpl implements AccountsService{
@@ -48,7 +52,8 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
 
     @Autowired
     AzureAccountRepository azureAccountRepository;
-
+    @Autowired
+    PacmanRdsRepository rdsRepository;
     @Autowired
     ConfigPropertyService configPropertyService;
     @Autowired
@@ -88,55 +93,93 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
 
     @Override
     public AccountList getAllAccountsByFilter(PluginRequestBody reqBody) {
-        String search = StringUtils.isEmpty(reqBody.getSearchtext()) ? "" : reqBody.getSearchtext();
         Map<String, String> sortOrderFilter = reqBody.getSortFilter();
         String sortElement = AdminConstants.ACCOUNT_ID;
         String sortOrder = AdminConstants.ASC;
-        if(sortOrderFilter != null &&  sortOrderFilter.containsKey(AdminConstants.SORT_ELEMENT)){
-            sortElement=  sortOrderFilter.get(AdminConstants.SORT_ELEMENT);
-            sortOrder = sortOrderFilter.containsKey(AdminConstants.SORT_ORDER) ? sortOrderFilter.get(AdminConstants.SORT_ORDER) :  AdminConstants.ASC;
+        if (sortOrderFilter != null && sortOrderFilter.containsKey(AdminConstants.SORT_ELEMENT)) {
+            sortElement = sortOrderFilter.get(AdminConstants.SORT_ELEMENT).equalsIgnoreCase("assets") ||
+                    sortOrderFilter.get(AdminConstants.SORT_ELEMENT).equalsIgnoreCase("violations")
+                    ? "cast(" + sortOrderFilter.get(AdminConstants.SORT_ELEMENT) + " as decimal(10,2))" : sortOrderFilter.get(AdminConstants.SORT_ELEMENT);
+            sortOrder = sortOrderFilter.containsKey(AdminConstants.SORT_ORDER) ? sortOrderFilter.get(AdminConstants.SORT_ORDER) : AdminConstants.ASC;
         }
-        if(reqBody.getFilter() == null){
-            return convertToMap(accountsRepository.findAll(PageRequest.of(reqBody.getPage(), reqBody.getSize(),
-                            Sort.by(sortOrder.equalsIgnoreCase(AdminConstants.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, sortElement)),
-                    search.toLowerCase()));
-        }
-        List<String> accountName = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.ACCOUNT_NAME) != null))
-                ? (List<String>) reqBody.getFilter().get(AdminConstants.ACCOUNT_NAME) : getPluginFilterVal(AdminConstants.ACCOUNT_NAME);
-        List<String> accountId = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.ACCOUNT_ID) != null))
-                ? (List<String>) reqBody.getFilter().get(AdminConstants.ACCOUNT_ID) : getPluginFilterVal(AdminConstants.ACCOUNT_ID);
-        List<String> createdBy =  ((reqBody.getFilter() != null) &&  (reqBody.getFilter().get(AdminConstants.CREATED_BY) != null))
-                ? (List<String>) reqBody.getFilter().get(AdminConstants.CREATED_BY) : getPluginFilterVal(AdminConstants.CREATED_BY);
-        List<String> asset = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.ASSET) != null))
-                ? (List<String>) reqBody.getFilter().get(AdminConstants.ASSET) : getPluginFilterVal(AdminConstants.ASSET);
-        List<String> violations = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.VIOLATIONS) != null))
-                ? (List<String>) reqBody.getFilter().get(AdminConstants.VIOLATIONS) : getPluginFilterVal(AdminConstants.VIOLATIONS);
-        List<String> status = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.ACCOUNT_STATUS) != null))
-                ?  (List<String>) reqBody.getFilter().get(AdminConstants.ACCOUNT_STATUS) : getPluginFilterVal(AdminConstants.STATUS);
-        List<String> platform = ((reqBody.getFilter() != null) && (reqBody.getFilter().get(AdminConstants.PLATFORM) != null))
-                ?  (List<String>) reqBody.getFilter().get(AdminConstants.PLATFORM) : getPluginFilterVal(AdminConstants.PLATFORM);
+        String accountQuery = fetchQueryForAccountsFilterApplied(reqBody, sortOrder, sortElement);
+        List<Map<String, Object>> responseList = rdsRepository.getDataFromPacman(accountQuery);
+        List<AccountDetails> accountDetailsList = new ArrayList<>();
+        responseList.stream().forEach(obj -> {
+            AccountDetails accountDetails = new AccountDetails(
+                    (String) (obj.get("accountId") == null ? "N/A" : obj.get("accountId")),
+                    (String) (obj.get("accountName") == null ? "N/A" : obj.get("accountName")),
+                    (String) (obj.get("assets") == null ? "0" : obj.get("assets")),
+                    (String) (obj.get("violations") == null ? "0" : obj.get("violations")),
+                    (String) (obj.get("accountStatus") == null ? "N/A" : obj.get("accountStatus")),
+                    (String) (obj.get("platform") == null ? "N/A" : obj.get("platform")),
+                    (String) (obj.get("createdBy") == null ? "N/A" : obj.get("createdBy")),
+                    (Timestamp) (obj.get("createdTime")));
+            accountDetailsList.add(accountDetails);
+        });
+        return convertToMap(new PageImpl<>(accountDetailsList));
+    }
 
-        return convertToMap(accountsRepository.findAll(PageRequest.of(reqBody.getPage(), reqBody.getSize(), sortOrder.equalsIgnoreCase(AdminConstants.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, sortElement),
-                search, accountName, accountId, createdBy, asset, violations, status, platform));
+    private String fetchQueryForAccountsFilterApplied(PluginRequestBody reqBody, String sortOrder, String sortElement) {
+        String tempQuery = "SELECT CASE WHEN a.platform='azure' THEN azure.subscription ELSE a.accountId END AS accountId," +
+                "CASE WHEN a.platform='azure' THEN azure.subscriptionName ELSE a.accountName END AS accountName, " +
+                "CASE WHEN a.platform='azure' THEN azure.assets ELSE a.assets END AS assets, " +
+                "CASE WHEN a.platform='azure' THEN azure.violations ELSE a.violations END AS violations , " +
+                "CASE WHEN a.platform='azure' THEN azure.subscriptionStatus ELSE a.accountStatus END AS accountStatus," +
+                "a.platform as platform , a.createdBy as createdBy, a.createdTime as createdTime  FROM cf_Accounts a LEFT OUTER JOIN cf_AzureTenantSubscription azure" +
+                "ON azure.tenant=a.accountId) AS plugins";
+        String query;
+        if (reqBody.getAttributeName() == null || reqBody.getAttributeName().isEmpty()) {
+            query = "SELECT accountId, accountName, assets, violations, accountStatus, platform, createdBy, createdTime FROM(";
+        } else {
+            query = "SELECT DISTINCT " + reqBody.getAttributeName() + " FROM(";
+        }
+        StringBuilder accountQuery = new StringBuilder(query + tempQuery);
+
+        if (reqBody.getFilter() != null && !reqBody.getFilter().isEmpty()) {
+            StringBuilder clauseStr = new StringBuilder(" WHERE ");
+            for (Map.Entry<String, Object> entry : reqBody.getFilter().entrySet()) {
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    StringBuilder queryForAttribute = new StringBuilder("");
+                    if (entry.getKey().toString().equalsIgnoreCase("assets") || entry.getKey().toString().equalsIgnoreCase("violations")) {
+                        List<Map<String, Object>> rangeList = (List<Map<String, Object>>) entry.getValue();
+                        String queryWithDiffRangeOfEachAttribute = rangeList.stream().map(range -> "CAST(" + entry.getKey() + " AS decimal(10,2)) BETWEEN " + range.get("min") + " AND " + range.get("max"))
+                                .collect(Collectors.joining(" OR "));
+                        queryForAttribute = new StringBuilder("(").append(queryWithDiffRangeOfEachAttribute).append(")");
+                    } else {
+                        List<String> inpValues = (List<String>) entry.getValue();
+                        queryForAttribute = new StringBuilder("" + entry.getKey().toString() + " IN (" + createCombinedStrWithCommaDelimiter(inpValues) + ")");
+                    }
+                    accountQuery = accountQuery.append(clauseStr).append(queryForAttribute);
+                    clauseStr = new StringBuilder(" AND ");
+                }
+            }
+        }
+        accountQuery = accountQuery.append(" ORDER BY " + sortElement + " " + sortOrder);
+        if (reqBody.getSize() > 0) {
+            accountQuery = accountQuery.append(" LIMIT " + reqBody.getPage() + ", " + reqBody.getSize());
+        }
+        return accountQuery == null ? "" : accountQuery.toString();
     }
 
     private AccountList convertToMap(Page<AccountDetails> entities) {
         AccountList accountList=new AccountList();
         List accountDetailsList= entities.getContent();
-
         Long elements=entities.getTotalElements();
         List<Map<String,String>> convertAccountDetails=new ArrayList<>();
         for(int i=0;i<accountDetailsList.size();i++){
-            Object[] ob= (Object[]) accountDetailsList.get(i);
             Map<String,String > accountMap=new HashMap<>();
-            accountMap.put("accountId",ob[0].toString());
-            accountMap.put("accountName",ob[1].toString());
-            accountMap.put("assets",ob[2].toString());
-            accountMap.put("violations",ob[3].toString());
-            accountMap.put("accountStatus",ob[4].toString());
-            accountMap.put("source",ob[5].toString());
-            accountMap.put("createdBy",ob[6]!=null?ob[6].toString():"");
-            accountMap.put("createdTime",ob[6]!=null?formatCreatedTime(ob[7]):"");
+            if(accountDetailsList.get(i) instanceof AccountDetails){
+                AccountDetails accountDetails = (AccountDetails) accountDetailsList.get(i);
+                accountMap.put("accountId", accountDetails.getAccountId());
+                accountMap.put("accountName", accountDetails.getAccountName());
+                accountMap.put("assets", accountDetails.getAssets());
+                accountMap.put("violations", accountDetails.getViolations());
+                accountMap.put("accountStatus", accountDetails.getAccountStatus());
+                accountMap.put("source", accountDetails.getPlatform());
+                accountMap.put("createdBy", accountDetails.getCreatedBy());
+                accountMap.put("createdTime", accountDetails.getCreatedTime() != null ?formatCreatedTime(accountDetails.getCreatedTime()) : "");
+            }
             convertAccountDetails.add(accountMap);
         }
         accountList.setResponse(convertAccountDetails);
@@ -169,9 +212,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         accountDetails.setPlatform(platform);
         accountDetails.setAccountStatus("configured");
         accountDetails.setCreatedBy(createdBy);
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date date = new Date();
-        accountDetails.setCreatedTime(formatter.format(date));
+        accountDetails.setCreatedTime(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
         AccountValidationResponse response=new AccountValidationResponse();
         response.setType(platform);
         response.setAccountId(accountId);
@@ -237,17 +278,8 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         if (createdTimeObject == null) {
             return "";
         }
-        String createdTimeString = createdTimeObject.toString();
-        SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        inputFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Set the input time zone to UTC
-        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        outputFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Set the output time zone to UTC
-        try {
-            Date date = inputFormat.parse(createdTimeString);
-            return outputFormat.format(date);
-        } catch (ParseException e) {
-            return "Error in FormatCreatedTime";
-        }
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        return dtf.format(((Timestamp)createdTimeObject).toLocalDateTime());
     }
 
     protected List<AccountDetails> getListAccountsByPlatform(String platform) {
@@ -300,5 +332,15 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         } catch (Exception e) {
             logger.error("Unable to make changes to required asset groups for {}", pluginName);
         }
+    }
+
+    private static String createCombinedStrWithCommaDelimiter(List<String> list) {
+        if(CollectionUtils.isEmpty(list)){
+            return "";
+        }
+        return String.join(",", list
+                .stream()
+                .map(name -> ("\"" + name + "\""))
+                .collect(Collectors.toList()));
     }
 }

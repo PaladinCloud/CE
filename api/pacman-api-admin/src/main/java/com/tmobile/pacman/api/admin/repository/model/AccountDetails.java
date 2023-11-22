@@ -1,11 +1,11 @@
 package com.tmobile.pacman.api.admin.repository.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "cf_Accounts", uniqueConstraints = @UniqueConstraint(columnNames = "accountId"))
 public class AccountDetails {
-
     @Id
     @Column(name = "accountId", unique = true, nullable = false)
     private String accountId;
@@ -15,22 +15,22 @@ public class AccountDetails {
     private String accountStatus;
     private String platform;
     private String createdBy;
-    private String createdTime;
+    private Timestamp createdTime;
 
     public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getCreatedTime() {
+    public Timestamp getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(String createdTime) {
+    public void setCreatedTime(Timestamp createdTime) {
         this.createdTime = createdTime;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public String getAccountId() {
@@ -79,5 +79,19 @@ public class AccountDetails {
 
     public void setPlatform(String platform) {
         this.platform = platform;
+    }
+
+    public AccountDetails() {
+    }
+
+    public AccountDetails(String accountId, String accountName, String assets, String violations, String accountStatus, String platform, String createdBy, Timestamp createdTime) {
+        this.accountId = accountId;
+        this.accountName = accountName;
+        this.assets = assets;
+        this.violations = violations;
+        this.accountStatus = accountStatus;
+        this.platform = platform;
+        this.createdBy = createdBy;
+        this.createdTime = createdTime;
     }
 }
