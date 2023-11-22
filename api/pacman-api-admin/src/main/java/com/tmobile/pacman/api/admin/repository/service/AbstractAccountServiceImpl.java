@@ -17,9 +17,11 @@ import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
+import com.tmobile.pacman.api.admin.service.CommonService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.TimeZone;
 
+import static com.tmobile.pacman.api.admin.common.AdminConstants.ES_ALIASES_PATH;
+
 
 public abstract class AbstractAccountServiceImpl implements AccountsService{
 
@@ -59,6 +63,8 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     protected AssetGroupService assetGroupService;
     @Autowired
     private UserPreferencesService userPreferencesService;
+    @Autowired
+    private CommonService commonService;;
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
     public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
@@ -297,8 +303,33 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             logger.info("AssetGroup {} status {}", pluginName, updateAssetGroupStatus);
             Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(pluginName);
             logger.info("Total users have been updated with the default asset group. The new count is: {}", totalUsers);
+            removePluginFromAssetGroup("all-sources", pluginName);
         } catch (Exception e) {
             logger.error("Unable to make changes to required asset groups for {}", pluginName);
+        }
+    }
+
+    private void removePluginFromAssetGroup(String assetGroupName, String pluginName) {
+        try {
+            List<String> indicesToRemove = assetGroupService.fetchIndices(pluginName);
+            if (indicesToRemove.isEmpty()) {
+                logger.info("There are no indices to remove");
+                return;
+            }
+            StringBuilder requestBody = new StringBuilder("{\"actions\":[");
+            for (String index : indicesToRemove) {
+                requestBody.append("{\"remove\":{\"index\":\"").append(index)
+                        .append("\",\"alias\":\"").append(assetGroupName).append("\"}},");
+            }
+            requestBody = new StringBuilder(requestBody.substring(0, requestBody.length() - 1)); // Remove the extra comma
+            requestBody.append("]}");
+            Response response = commonService.invokeAPI("POST", ES_ALIASES_PATH, requestBody.toString());
+            if (response == null || response.getStatusLine().getStatusCode() != 200) {
+                logger.error("Unable to remove indices for asset group {} with response {}", assetGroupName, response);
+            }
+            logger.info("Indices removed from alias successfully.");
+        } catch (Exception e) {
+            logger.error("Unable to remove indices for Plugin : {} From AssetGroup", pluginName, e);
         }
     }
 }

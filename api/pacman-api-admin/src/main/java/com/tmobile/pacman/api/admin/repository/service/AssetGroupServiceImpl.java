@@ -39,6 +39,7 @@ import com.tmobile.pacman.api.admin.domain.*;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupCriteriaDetails;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -856,5 +857,35 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			log.error("Exception in creating alias query", e);
 		}
 		return "";
+	}
+
+	/**
+	 * Retrieves a list of indices associated with a datasource.
+	 * Sends HTTP requests to Elasticsearch to fetch indices information.
+	 *
+	 * @return A list of indices associated with the specified indices.
+	 */
+	@Override
+	public List<String> fetchIndices(String datasource) {
+		List<String> indexNames = new ArrayList<>();
+		try {
+			String urlToQuery = "/_cat/indices/" + datasource + "_*";
+			Response response = commonService.invokeAPI("GET", urlToQuery, null);
+			if (response == null || response.getStatusLine().getStatusCode() != 200) {
+				log.error("Unable to fetch aliases for {} with response {}", datasource, response);
+				return null;
+			}
+			String indexData = EntityUtils.toString(response.getEntity());
+			String[] indexLines = indexData.split("\\r?\\n");
+			for (String line : indexLines) {
+				String[] parts = line.split("\\s+");
+				if (parts.length >= 3) {
+					indexNames.add(parts[2]);
+				}
+			}
+		} catch (Exception e) {
+			log.error("Unable to fetch indices for datasource {}", datasource, e);
+		}
+		return indexNames;
 	}
 }

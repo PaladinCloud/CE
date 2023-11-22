@@ -113,4 +113,5 @@ public interface AssetGroupService {
 
 	public String updateAssetGroupStatus (final String assetGroupName, final boolean status, final String userId) throws PacManException;
 	void createOrUpdatePluginAssetGroup(String pluginType, String displayName);
+	List<String> fetchIndices(String pluginName);
 }
