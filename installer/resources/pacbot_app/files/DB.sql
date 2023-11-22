@@ -3086,11 +3086,13 @@ update pac_v2_ui_options set optionURL="/admin/accounts/filter/attribute?attribu
 
 /* updating targetName and displayName for azure kubernetes */
 DELETE IGNORE FROM cf_Target WHERE targetName='kubernetes';
+update cf_AssetGroupDetails set aliasQuery=replace(aliasQuery,'\"index\":\"azure_kubernetes\"','\"index\":\"azure_aks\"');
 UPDATE cf_AssetGroupTargetDetails SET targetType='aks' WHERE targetType='kubernetes';
 UPDATE cf_AssetGroupCriteriaDetails SET attributeValue='aks' WHERE attributeValue='kubernetes';
 
 /* updating targetName and displayName for gcp gkecluster */
 DELETE IGNORE FROM cf_Target WHERE targetName='gkecluster';
+update cf_AssetGroupDetails set aliasQuery=replace(aliasQuery,'\"index\":\"gcp_gkecluster\"','\"index\":\"gcp_gke\"');
 UPDATE cf_AssetGroupTargetDetails SET targetType='gke' WHERE targetType='gkecluster';
 UPDATE cf_AssetGroupCriteriaDetails SET attributeValue='gke' WHERE attributeValue='gkecluster';
 
