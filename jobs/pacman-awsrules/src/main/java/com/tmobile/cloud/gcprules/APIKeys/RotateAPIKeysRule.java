@@ -1,10 +1,6 @@
 package com.tmobile.cloud.gcprules.APIKeys;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -100,18 +96,9 @@ public class RotateAPIKeysRule extends BasePolicy {
             logger.info("hit array size {}", hitsJsonArray.size());
             JsonObject apiKeys = (JsonObject) ((JsonObject) hitsJsonArray.get(0)).get(PacmanRuleConstants.SOURCE);
             String createdDateStr = apiKeys.get("createdDate").getAsString();
-            String istZoneIdStr = "Asia/Kolkata";
-            ZoneId istZoneId = ZoneId.of(istZoneIdStr);
-            java.util.Date parsedCreatedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS")
-                    .parse(createdDateStr);
-            Instant createdDateInstant = parsedCreatedDate.toInstant();
-            LocalDateTime localDateTime = LocalDateTime.ofInstant(createdDateInstant, istZoneId);
-            ZonedDateTime zonedDateTime = localDateTime.atZone(istZoneId);
-            long millis = zonedDateTime.toInstant().toEpochMilli();
-            int ageInDays = (int) TimeUnit.DAYS.convert(new Date().getTime() - millis, TimeUnit.MILLISECONDS);
-            logger.debug("ageInDays:{}", ageInDays);
-
-            if (ageInDays <= 90) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
+            Date date = simpleDateFormat.parse(createdDateStr);
+            if (TimeUnit.DAYS.convert(new Date().getTime() - date.getTime(), TimeUnit.MILLISECONDS) <= 90) {
                 validationResult = true;
             }
 
