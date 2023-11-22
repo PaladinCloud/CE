@@ -112,6 +112,7 @@ public class CheckUnusedAMIRule extends BasePolicy {
 
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(PacmanRuleConstants.ES_IMAGE_ID_ATTRIBUTE, imageId);
+        mustFilter.put(PacmanRuleConstants.LATEST, true);
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         Map<String, Object> mustTermsFilter = new HashMap<>();
         String description = "Unused AMI found,imageId:" + imageId + ",accountId:" + accountId;
