@@ -390,10 +390,13 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     updateSortFieldName(){
         try{
             if(!this.headerColName || !this.direction) return;        
-            this.selectedOrder = this.direction;        
-            const apiColName =  find(this.filterTypeOptions, {
-                optionName: this.headerColName,
-            })["optionValue"];
+            this.selectedOrder = this.direction;
+            let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
+            if(!apiColName){
+                apiColName = find(this.filterTypeOptions, {
+                    optionName: this.headerColName,
+                })["optionValue"];
+            }
             this.fieldType = "string";
             this.fieldName = apiColName+'.keyword';
         }catch(e){
