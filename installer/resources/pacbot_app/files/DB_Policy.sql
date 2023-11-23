@@ -3463,3 +3463,16 @@ INSERT INTO cf_PolicyParams (policyID, paramKey, paramValue, defaultVal, isEdit,
 INSERT INTO cf_PolicyParams (policyID, paramKey, paramValue, defaultVal, isEdit, isMandatory, encrypt, displayName, description) VALUES ('AWSRdsPublicInstances_version-1_AwsRdsPublicAccess_rdsdb','esRoutetableRoutesURL','/aws_routetable/routetable_routes/_search','','false','false','false','','') ON DUPLICATE KEY UPDATE paramValue = '/aws_routetable/routetable_routes/_search';
 INSERT INTO cf_PolicyParams (policyID, paramKey, paramValue, defaultVal, isEdit, isMandatory, encrypt, displayName, description) VALUES ('AWSRdsPublicInstances_version-1_AwsRdsPublicAccess_rdsdb','esRoutetableURL','/aws_routetable/routetable/_search','','false','false','false','','') ON DUPLICATE KEY UPDATE paramValue = '/aws_routetable/routetable/_search';
 INSERT INTO cf_PolicyParams (policyID, paramKey, paramValue, defaultVal, isEdit, isMandatory, encrypt, displayName, description) VALUES ('AWSRdsPublicInstances_version-1_AwsRdsPublicAccess_rdsdb','esSgRulesUrl','/aws_sg/sg_rules/_search','','false','false','false','','') ON DUPLICATE KEY UPDATE paramValue = '/aws_sg/sg_rules/_search';
+
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Tenable Vulnerability Scan' WHERE policyId ='AWSVMScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Qualys Vulnerability Scan' WHERE policyId ='Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Aqua Vulnerability Scan' WHERE policyId ='ImagesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found Critical Vulnerabilities' WHERE policyId ='CriticalVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found High Vulnerabilities' WHERE policyId ='HighVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Tenable Found Medium Vulnerabilities' WHERE policyId ='MediumVMVulnerabilitiesScannedByTenable';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found Critical Vulnerabilities' WHERE policyId ='Ec2WithSeverityVulnerability_version-1_Ec2WithS5Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found High Vulnerabilities' WHERE policyId ='Ec2WithSeverityVulnerability_version-1_Ec2WithS4Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found Medium Vulnerabilities' WHERE policyId ='Ec2WithSeverityVulnerability_version-1_Ec2WithS3Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Critical Vulnerabilities' WHERE policyId ='CriticalImageVulnerabilitiesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High Vulnerabilities' WHERE policyId ='HighImageVulnerabilitiesScannedByAqua';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium Vulnerabilities' WHERE policyId ='MediumImageVulnerabilitiesScannedByAqua';
