@@ -83,7 +83,7 @@ public class IPFowardingRule extends BasePolicy {
             boolean isGKECluster = false;
             if (!vmInstanceObject.get(PacmanRuleConstants.CAN_IP_FORWARD).isJsonNull()) {
                 canIPForward = vmInstanceObject.get(PacmanRuleConstants.CAN_IP_FORWARD).getAsBoolean();
-                violationReason = "IP Forward Enabled for  GCE  Instance";
+                violationReason = "IP Forward Enabled for GCE Instance";
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
