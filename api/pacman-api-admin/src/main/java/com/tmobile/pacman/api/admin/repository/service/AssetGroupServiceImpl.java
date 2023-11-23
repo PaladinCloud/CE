@@ -820,12 +820,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				return;
 			}
 			String pluginAliasQuery = getPluginAliasQuery(pluginType);
-			Response response = commonService.invokeAPI("POST", ES_ALIASES_PATH, pluginAliasQuery);
-			if (response == null || response.getStatusLine().getStatusCode() != 200) {
-				log.error("Alias creation failed for {} with response {}", pluginType, response);
-				return;
-			}
-			log.debug("Alias created for {}", displayName);
 			AssetGroupDetails assetGroupDetails = new AssetGroupDetails();
 			String assetGroupId = UUID.randomUUID().toString();
 			assetGroupDetails.setGroupId(assetGroupId);
