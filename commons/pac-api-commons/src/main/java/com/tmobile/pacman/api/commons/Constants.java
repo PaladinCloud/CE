@@ -442,6 +442,7 @@ public interface Constants {
     String AZURE_WINDOWS = "Windows";
     String CLOUD_KERNEL_COMPLIANCE_POLICY = "cloud-kernel-compliance_version-1";
     String CLOUD_QUALYS_POLICY = "Ec2InstanceScannedByQualys_version-1";
+    String CLOUD_QUALYS_POLICY_RULES = "Ec2WithSeverityVulnerability_version-1";
     String VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE = "cloud-kernel-compliance_version-1_Virtualmachine-Kernel-Compliance-Rule_virtualmachine";
     String GCP = "gcp";
     String RESOLUTION_URL = "resolutionUrl";
