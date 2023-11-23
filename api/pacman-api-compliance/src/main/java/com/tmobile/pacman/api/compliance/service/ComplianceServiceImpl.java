@@ -607,8 +607,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                                 issuecountPerPolicyAG = Long.parseLong(totaluntaggedStr);
                             }
                         } else {
-                            if ((policyId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled)
-                                    || policyId.equalsIgnoreCase(SSM_AGENT_RULE)) {
+                            if (isQualysPolicy(policyId) || policyId.equalsIgnoreCase(SSM_AGENT_RULE)) {
                                 // qualys coverage require only running instances
                                 PolicyParams discoveredDayRangeParam = policyParamService.getPolicyParamsByPolicyIdAndKey(policyId,DISCOVERED_DAYS_RANGE);
                                 String discoverDayRange=discoveredDayRangeParam.getValue();
@@ -709,6 +708,10 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         }
 
         return response;
+    }
+
+    private boolean isQualysPolicy(String policyId) {
+        return qualysEnabled && (policyId.contains(CLOUD_QUALYS_POLICY) || policyId.contains(CLOUD_QUALYS_POLICY_RULES));
     }
 
     private List<LinkedHashMap<String, Object>> filterPolicyComplianceData(List<LinkedHashMap<String, Object>> openIssuesByPolicyListFinal, Request request){
