@@ -34,12 +34,10 @@ import com.tmobile.pacman.api.compliance.enums.PolicyComplianceFilter;
 import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -62,6 +60,7 @@ import javax.annotation.PostConstruct;
 import com.tmobile.pacman.api.compliance.domain.*;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -103,8 +102,6 @@ import com.tmobile.pacman.api.compliance.domain.KernelVersion;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 import com.tmobile.pacman.api.compliance.service.NotificationService;
-
-import static com.tmobile.pacman.api.compliance.util.Constants.*;
 
 /**
  * The Class ComplianceRepositoryImpl.
@@ -3123,29 +3120,30 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * This method applies all user provided filter criteria and return the policies matching the criteria.
      * @param filter
-     * @param targetTypeMap
+     * @param targetTypePairList
      * @param isIncludeDisabled
-     * @param domain
      * @return
      */
-    public List<Map<String, Object>> getPolicyListByFilterConditions(Map<String, Object> filter, Map<String, String> targetTypeMap, Boolean isIncludeDisabled, Map<String, String> filter1) {
+    public List<Map<String, Object>> getPolicyListByFilterConditions(Map<String, Object> filter, List<Pair<String,String>> targetTypePairList, Boolean isIncludeDisabled, Map<String, String> filter1) {
         List<String> filterConditions = new ArrayList<>();
-
         if (MapUtils.isNotEmpty(filter)) {
             List<String> provider = filter.containsKey(PolicyComplianceFilter.PROVIDER.filter) ?
                     (List<String>) filter.get(PolicyComplianceFilter.PROVIDER.filter) : new ArrayList<>();
             List<String> reqProviderList = provider.stream().map(str -> str.toLowerCase().replaceAll("\\s", "")).collect(Collectors.toList());
-            if (!provider.isEmpty()) {
-                targetTypeMap = targetTypeMap.entrySet().stream().filter(entry -> reqProviderList.contains(entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+            if (!provider.isEmpty() && !targetTypePairList.isEmpty()) {
+                targetTypePairList = targetTypePairList.stream().filter(pair -> reqProviderList.contains(pair.getValue())).collect(Collectors.toList());
             }
             List<String> assetType = filter.containsKey(PolicyComplianceFilter.ASSET_TYPE.filter) ?
                     (List<String>) filter.get(PolicyComplianceFilter.ASSET_TYPE.filter) : new ArrayList<>();
             if (!assetType.isEmpty()) {
-                targetTypeMap.keySet().retainAll(assetType);
+                targetTypePairList = targetTypePairList.stream().filter(pair -> assetType.contains(pair.getKey())).collect(Collectors.toList());
             }
-            if (!targetTypeMap.isEmpty()) {
-                String combinedTargetTypesStr = targetTypeMap.keySet().stream().map(str -> "'" + str + "'").collect(Collectors.joining(","));
-                filterConditions.add("targetType in (" + combinedTargetTypesStr + ")");
+            if (!targetTypePairList.isEmpty()) {
+                String combinedTargetTypesStr = targetTypePairList.stream().map(entry -> "((target.targetName='"+entry.getKey()+"') AND (target.dataSourceName='"+entry.getValue()+"'))").collect(Collectors.joining(" OR "," ( "," ) "));
+                filterConditions.add(combinedTargetTypesStr);
+            }
+            else {
+                filterConditions.add(" 1=2 ");
             }
             extractAndFillFilterValue(filter, PolicyComplianceFilter.SEVERITY.filter, filterConditions, "severity");
             extractAndFillFilterValue(filter, PolicyComplianceFilter.CATEGORY.filter, filterConditions, "pt.category");
@@ -3155,9 +3153,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             if (autoFixAvailable.size() == 1) {
                 filterConditions.add("autoFixAvailable = '" + autoFixAvailable.get(0) + "'");
             }
-        } else if (!targetTypeMap.isEmpty()) {
-            String combinedTargetTypesStr = targetTypeMap.keySet().stream().map(str -> "'" + str + "'").collect(Collectors.joining(","));
-            filterConditions.add("pt.targetType in (" + combinedTargetTypesStr + ")");
+        } else if (!targetTypePairList.isEmpty()) {
+            String combinedTargetTypesStr = targetTypePairList.stream().map(entry -> "((target.targetName='"+entry.getKey()+"') AND (target.dataSourceName='"+entry.getValue()+"'))").collect(Collectors.joining(" OR "," ( "," ) "));
+            filterConditions.add(combinedTargetTypesStr);
+        }
+        else {
+            filterConditions.add(" 1=2 ");
         }
         if (!isIncludeDisabled) {
             filterConditions.add("pt.status = 'ENABLED'");
@@ -3167,7 +3168,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         String combinedWhereClause = filterConditions.stream().collect(Collectors.joining(" AND "));
 
-        String policyQuery = "SELECT pt.policyId, pt.severity, pt.category, pt.targetType, pt.autoFixAvailable, pt.autoFixEnabled, pt.policyDisplayName FROM cf_PolicyTable pt INNER JOIN cf_Target target ON  pt.targetType=target.targetName\n" +
+        String policyQuery = "SELECT pt.policyId, pt.severity, pt.category, pt.targetType, pt.autoFixAvailable, pt.autoFixEnabled, pt.policyDisplayName, target.dataSourceName FROM cf_PolicyTable pt INNER JOIN cf_Target target ON  pt.targetType=target.targetName\n" +
                 " LEFT JOIN cf_PolicyParams pp ON pt.policyId = pp.policyID AND pp.paramKey = 'pluginType' INNER JOIN \n" +
                 " (select distinct(platform) from cf_Accounts where accountStatus='configured') acct \n" +
                 "ON  acct.platform=pp.paramValue OR (pp.paramValue IS NULL AND target.dataSourceName=acct.platform) where\n" +
@@ -3182,4 +3183,5 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             filterConditions.add(String.format(template, column, value.stream().map(str -> "'" + str + "'").collect(Collectors.joining(","))));
         }
     }
+
 }

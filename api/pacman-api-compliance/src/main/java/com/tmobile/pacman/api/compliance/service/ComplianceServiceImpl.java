@@ -35,6 +35,8 @@ import com.tmobile.pacman.api.compliance.util.CommonUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -435,7 +437,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             Map<String, Integer> violationCountByPolicyIdMap = (Map<String, Integer>) statsMap.get("violationCountByTargetType");
             final Integer ec2RunningAssets = (Integer) statsMap.get("ec2RunningAssets");
             final Integer vmRunningAssets = (Integer) statsMap.get("vmRunningAssets");
-            Map<String, String> targetTypeMap = getTargetTypesOfAssetGroup(assetGroup);
+            List<Pair<String, String>> targetTypeMap = getTargetTypesOfAssetGroup(assetGroup);
             List<Map<String, Object>> policies = repository.getPolicyListByFilterConditions(reqFilters, targetTypeMap, request.isIncludeDisabled(), filters);
 
             for (Map<String, Object> policy : policies) {
@@ -465,7 +467,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     compliancePercent = assetsScanned == 0 ? 100 : (assetsScanned - failed) * 100 / assetsScanned;
                 }
                 policyDetailsMap.put(COMPLIANCE_PERCENT, compliancePercent > 0 ? Math.round(compliancePercent) : 0);
-                policyDetailsMap.put(PROVIDER, getProvideBrandName(targetTypeMap.get(targetTypeOfPolicy)));
+                policyDetailsMap.put(PROVIDER, getProvideBrandName(policy.get("dataSourceName").toString()));
                 policyDetailsMap.put(PASSED, (Integer) policyDetailsMap.get(ASSETS_SCANNED) - (Integer) policyDetailsMap.get(FAILED));
                 policyDetailsList.add(policyDetailsMap);
             }
@@ -522,9 +524,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * @return
      */
 
-    private Map<String, String> getTargetTypesOfAssetGroup(String assetGroup) {
+    private List<Pair<String,String>> getTargetTypesOfAssetGroup(String assetGroup) {
         String urlToQuery = esUrl + "/_alias/" + assetGroup;
-        Map<String, String> targetTypeCloudTypeMap = new HashMap<>();
+        List<Pair<String,String>> targetTypeCloudTypeList = new ArrayList<>();
         String responseDetails = null;
         try {
             responseDetails = PacHttpUtils.getHttpGet(urlToQuery, new HashMap<>());
@@ -533,13 +535,13 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             responseMap.keySet().stream().forEach(indexName -> {
                 int underscoreIndex = indexName.indexOf("_");
                 if (underscoreIndex != -1 && underscoreIndex < indexName.length() - 1) {
-                    targetTypeCloudTypeMap.put(indexName.substring(underscoreIndex + 1), indexName.substring(0, underscoreIndex));
+                    targetTypeCloudTypeList.add(new MutablePair<>(indexName.substring(underscoreIndex + 1),indexName.substring(0, underscoreIndex)));
                 }
             });
         } catch (Exception e) {
             logger.error("Exception in getAssetTargetTypes in fetching target types for es :", e);
         }
-        return targetTypeCloudTypeMap;
+        return targetTypeCloudTypeList;
     }
 
         /*
