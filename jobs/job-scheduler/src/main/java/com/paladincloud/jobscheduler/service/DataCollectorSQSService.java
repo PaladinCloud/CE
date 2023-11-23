@@ -1,6 +1,7 @@
 package com.paladincloud.jobscheduler.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -109,6 +110,13 @@ public class DataCollectorSQSService {
                 .withCredentials(new AWSStaticCredentialsProvider(tempCredentials))
                 .withRegion(region) // Replace with your desired region
                 .build();
+    }
+    
+    public List<String> pulginsUsingVersion1AndConfigured(String[] puglinUsingV1){
+    	List<String> configuredPlugin = accountsRepository.getAccountNameByStatus(Constants.PLUGIN_STATUS);
+    	List<String> matchingList = new ArrayList<>(Arrays.asList(puglinUsingV1));
+        matchingList.retainAll(configuredPlugin);
+        return matchingList;
     }
 
 }

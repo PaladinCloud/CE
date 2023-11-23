@@ -39,7 +39,6 @@ public class JobScheduler {
     public static final String QUALYS_ENABLED = "qualys.enabled";
     public static final String AQUA_ENABLED = "aqua.enabled";
     public static final String TENABLE_ENABLED = "tenable.enabled";
-    public static final String REDHAT_ENABLED = "redhat.enabled";
     public static final String PLUGIN_TYPE_TENABLE = "tenable";
     public static final String PLUGIN_TYPE_QUALYS = "qualys";
     public static final String PLUGIN_TYPE_AQUA = "aqua";
@@ -78,7 +77,6 @@ public class JobScheduler {
 
     private boolean tenableEnabled;
     
-    private boolean redHatEnabled;
 
     @Value("${scheduler.total.batches}")
     private String noOfBatches;
@@ -91,6 +89,9 @@ public class JobScheduler {
 
     @Value("${scheduler.role}")
     private String roleName;
+    
+    @Value("${plugins.in.v1}")
+    private String pluginUsingV1;
     
     @Autowired
     private DataCollectorSQSService dataCollectorSQSServic;
@@ -107,24 +108,17 @@ public class JobScheduler {
         try {
             ConfigUtil.setConfigProperties();
 			  azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
-			  gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
 			  awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED)); 
-			  redHatEnabled=Boolean.parseBoolean(System.getProperty(REDHAT_ENABLED));
-
-				
 				if (awsEnabled) {
 					addCollectorEvent(putEventsRequestEntries, awsBusDetails);
 				}
 				if (azureEnabled) {
 					addCollectorEvent(putEventsRequestEntries, azureBusDetails);
 				}
-            if (gcpEnabled) {
-                dataCollectorSQSServic.sendSQSMessage(PLUGIN_TYPE_GCP);
-            }
-				if (redHatEnabled) {
-					dataCollectorSQSServic.sendSQSMessage(PLUGIN_TYPE_REDHAT);
-				}
-
+				// Sending SQS message to trigger Data-Collector
+				String[] plugins = pluginUsingV1.split(",");
+				List<String> configuredPlugins = dataCollectorSQSServic.pulginsUsingVersion1AndConfigured(plugins);
+				configuredPlugins.forEach(plugin -> dataCollectorSQSServic.sendSQSMessage(plugin));
 				if (!putEventsRequestEntries.isEmpty()) {
 					PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries)
 							.build();
@@ -162,13 +156,9 @@ public class JobScheduler {
         try {
             ConfigUtil.setConfigProperties();
             azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
-            gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
             awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
             if (awsEnabled) {
                 addShipperEvent(putEventsRequestEntries, awsBusDetails);
-            }
-            if (gcpEnabled) {
-                addShipperEvent(putEventsRequestEntries, gcpBusDetails);
             }
             if (azureEnabled) {
                 addShipperEvent(putEventsRequestEntries, azureBusDetails);
