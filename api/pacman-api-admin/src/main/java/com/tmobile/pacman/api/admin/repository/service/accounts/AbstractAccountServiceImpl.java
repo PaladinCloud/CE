@@ -127,7 +127,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService {
                 "CASE WHEN a.platform='azure' THEN azure.violations ELSE a.violations END AS violations , " +
                 "CASE WHEN a.platform='azure' THEN azure.subscriptionStatus ELSE a.accountStatus END AS accountStatus," +
                 "a.platform as platform , a.createdBy as createdBy, a.createdTime as createdTime  FROM cf_Accounts a LEFT OUTER JOIN cf_AzureTenantSubscription azure" +
-                "ON azure.tenant=a.accountId) AS plugins";
+                " ON azure.tenant=a.accountId) AS plugins";
         String query;
         if (reqBody.getAttributeName() == null || reqBody.getAttributeName().isEmpty()) {
             query = "SELECT accountId, accountName, assets, violations, accountStatus, platform, createdBy, createdTime FROM(";

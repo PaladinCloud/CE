@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tmobile.pacman.api.compliance.domain.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Repository;
 
 import com.google.gson.JsonArray;
@@ -658,7 +659,9 @@ public interface ComplianceRepository {
 
     public Map<String, Object> getSupportedFilters(String filterName, String filterAttribute);
 
-    ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest) throws DataException;
-    List<Map<String, Object>> getPolicyListByFilterConditions(Map<String, Object> filter, Map<String, String> targetTypeMap, Boolean isIncludeDisabled, Map<String, String> filter1);
+    ExemptionResponse createOrRevokeUserExemptionRequest(ExemptionRequest exemptionRequest)
+            throws DataException;
+
+    List<Map<String, Object>> getPolicyListByFilterConditions(Map<String, Object> filter, List<Pair<String,String>> targetTypePairList, Boolean isIncludeDisabled, Map<String, String> filter1);
 
 }

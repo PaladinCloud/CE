@@ -3140,7 +3140,6 @@ DROP PROCEDURE IF EXISTS change_createdTime_columntype_to_timestamp //
 CREATE PROCEDURE change_createdTime_columntype_to_timestamp()
 BEGIN
 DECLARE err_code INT DEFAULT 0;
-DECLARE date_int_value INT DEFAULT -1;
 DECLARE full_date_var VARCHAR(255);
 DECLARE accountid_var VARCHAR(255);
 DECLARE date_var VARCHAR(255);
@@ -3154,7 +3153,7 @@ DECLARE dateCursor CURSOR FOR (SELECT accountId, createdTime FROM cf_Accounts);
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET err_code = 1;
 SELECT
  DATA_TYPE  INTO datatype FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'pacmandata' AND TABLE_NAME = 'cf_Accounts' AND column_name='createdTime';
-IF (datatype = 'varchar') then
+IF (datatype = 'varchar') THEN
 OPEN dateCursor;
 myloop : loop
 FETCH dateCursor INTO accountid_var, existing_date_var;
@@ -3163,18 +3162,20 @@ leave myloop;
 END if;
 SET full_date_var = substring_index(existing_date_var, ' ',1);
 SET time_var = substring_index(existing_date_var, ' ',-1);
+/* if value has alphabets, update createdTime to current timestamp */
+IF(existing_date_var REGEXP '[a-z]' OR existing_date_var REGEXP '[A-Z]') THEN
+UPDATE cf_Accounts SET createdTime=(SELECT CURRENT_TIMESTAMP) WHERE accountId=accountid_var;
+ITERATE myloop;
+/* if value is already in YYYY-MM-dd HH:mm:ss format, ignore and continue the loop. */
+ELSEIF (existing_date_var REGEXP '[0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]][0-9]{2}:[0-9]{2}:[0-9]{2}') then
+ITERATE myloop;
+ELSE
 SET date_var = substring_index(full_date_var, '/',1);
 SET year_var = substring_index(full_date_var, '/',-1);
 SET month_var = substring_index(substring_index(full_date_var,'/',2),'/',-1);
-SET date_int_value = CAST(date_var AS unsigned);
-IF(date_int_value=0) THEN
-UPDATE cf_Accounts SET createdTime=(SELECT CURRENT_TIMESTAMP) WHERE accountId=accountid_var;
-SET date_int_value = -1;
-ELSE
 SET required_format_date = CONCAT(year_var,'-',month_var,'-',date_var,' ',time_var);
 
 /* update values from dd/MM/YYYY HH:mm:ss to YYYY-MM-dd HH:mm:ss so that when column type is modified using alter command, old values are not lost.*/
-
 UPDATE cf_Accounts SET createdTime=required_format_date WHERE accountId=accountid_var;
 END if;
 END loop myloop;
