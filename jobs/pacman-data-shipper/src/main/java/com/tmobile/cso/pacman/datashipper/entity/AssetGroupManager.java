@@ -51,7 +51,7 @@ public class AssetGroupManager {
             "OR (agd.groupType = 'user') " +
             //for current data source
             "OR (agd.groupName = '%s' AND agd.groupType = 'System') " +
-            //for all-resources
+            //for all-sources
             "OR (agd.groupName = '" + ASSET_GROUP_FOR_ALL_RESOURCES + "') " +
             "OR (agd.groupType <> 'user' " +
             "    AND agd.groupType <> 'System' AND agd.groupName <> '" + ASSET_GROUP_FOR_ALL_RESOURCES + "' and aliasQuery like '%s')";
@@ -271,14 +271,14 @@ public class AssetGroupManager {
         data.put("groupId", UUID.randomUUID().toString());
         data.put("groupName", ASSET_GROUP_FOR_ALL_RESOURCES);
         data.put("dataSource", "");
-        data.put("displayName", "All Resources");
+        data.put("displayName", "All Sources");
         data.put("groupType", "System");
         data.put("createdBy", "admin@paladincloud.io");
         data.put("createdUser", "admin@paladincloud.io");
         data.put("createdDate", todayInString);
         data.put("modifiedUser", "admin@paladincloud.io");
         data.put("modifiedDate", todayInString);
-        data.put("description", "All assets from all Resources");
+        data.put("description", "All assets from all Sources");
         data.put("aliasQuery", aliasQuery);
         data.put("isVisible", "1");
         RDSDBManager.insertRecord("cf_AssetGroupDetails", data);
