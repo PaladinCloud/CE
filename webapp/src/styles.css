@@ -2186,14 +2186,6 @@ g.arc .bubble-text {
   flex-direction: column;
 }
 
-.stepper-right-wrapper{
-  display: flex;
-  flex-direction: column;
-  width: calc(100% - 200px);
-  padding-left:24px;
-  overflow: scroll;
-  }
-
 .button-wrapper{
   padding-top: 24px;
   display: flex;

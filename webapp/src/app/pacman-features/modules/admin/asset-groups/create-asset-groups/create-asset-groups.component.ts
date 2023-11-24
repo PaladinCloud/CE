@@ -36,6 +36,7 @@
  import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
  import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
  import { MatDialog } from '@angular/material/dialog';
+ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
  
  interface ICondition{
      keyList: string[];
@@ -120,7 +121,7 @@
    invocationId = '';
    paginatorSize = 25;
    isLastPage;
-   assetGroupNames;
+   assetGroupNames = [];
    isFirstPage;
    totalPages;
    pageNumber = 0;
@@ -133,6 +134,12 @@
    searchTerm = '';
    submitBtn = "Confirm and Create";
    configurationsBeforeEdit = {};
+   private assetGroupForm: FormGroup;
+   public assetGroupFormErrors ={
+     assetGroupDisplayName: '',
+     assetGroupDesc: '',
+     selectedAccountType: '',
+   }
  
    hideContent = false;
    pageContent = [
@@ -274,6 +281,7 @@
      private assetTypeMapService: AssetTypeMapService,
      private assetTilesService: AssetTilesService,
      public dialog: MatDialog,
+     private form: FormBuilder
    ) {
      this.routerParam();
      this.updateComponent();
@@ -297,6 +305,40 @@
        this.createdBy = this.dataCacheService.getUserDetailsValue().getEmail();
        this.configurationsBeforeEdit = {};
      },0)
+   }
+ 
+   public buildForm() {
+     this.assetGroupForm = this.form.group({
+       assetGroupDisplayName: ['', [Validators.required,this.isGroupNameAvailable.bind(this)]],
+       assetGroupDesc: ['', [Validators.required,Validators.minLength(6)]],
+       selectedAccountType : ['',[Validators.required,this.isValidType.bind(this)]]
+     });
+   }
+ 
+   isNextButtonDisabled() {
+     let isDisabled: boolean = true;
+     if (this.currentStepperIndex == 0) {
+        isDisabled = this.assetGroupForm.invalid;
+     } else {
+       this.criterias.forEach(criteria => {
+         if (criteria[0].selectedValue) {
+           isDisabled = false;
+         }
+       })
+     }
+     return isDisabled;
+   }
+ 
+   isSubmitButtonDisabled() {
+     return this.buttonClicked
+       || this.selectedAccountType.toLowerCase() == "system"
+       || this.selectedAccountType.toLowerCase() == "user";
+   }
+ 
+   isEditable() {
+     return this.groupId &&
+       (this.selectedAccountType.toLowerCase() == "system"
+       || this.selectedAccountType.toLowerCase() == "user");
    }
  
    getDetails(criteriaDetails){
@@ -501,6 +543,7 @@
        this.selectedCriteriaKeyList.push([selectedKey]);
      }
      this.criterias[criteriaIdx][conditionIdx].selectedKey = selectedKey;
+     this.criterias[criteriaIdx][conditionIdx].selectedValue = "";
      selectedValues = selectedValues.map(value => this.getDisplayName(selectedKey,value));
      this.criterias[criteriaIdx][conditionIdx].valueList = selectedValues;
      this.criterias = [...this.criterias];
@@ -572,21 +615,24 @@
      this.allAttributeDetails[index].includeAll = !this.allAttributeDetails[index].includeAll;
    }
  
-   isGroupNameAvailable(alexaKeyword) {
-     if(alexaKeyword.trim().length<5){
-       this.isGroupNameValid = -1;
-       return;
+   isGroupNameAvailable(control: AbstractControl) {
+     if (this.groupId) return null;
+     const alexaKeyword = control.value.toLowerCase().replace(/\s+/g, '-');
+     const isKeywordExits = this.assetGroupNames.findIndex(item => alexaKeyword === item.toLowerCase());
+     if (isKeywordExits === -1) {
+       return null;
+     } 
+     return { groupNameAlreadyExists: true };
+   }
+ 
+   isValidType(control: AbstractControl) {
+     if (this.groupId) return null;
+     const type = control.value.toLowerCase();
+     const typeList = ["system", "user"];
+     if (typeList.includes(type)) {
+       return { invalidType : true };
      }
-     if (alexaKeyword.length === 0) {
-       this.isGroupNameValid = -1;
-     } else {
-       const isKeywordExits = this.assetGroupNames.findIndex(item => alexaKeyword.toLowerCase() === item.toLowerCase());
-       if (isKeywordExits === -1) {
-         this.isGroupNameValid = 1;
-       } else {
-         this.isGroupNameValid = 0;
-       }
-     }
+     return null;
    }
  
  
@@ -598,11 +644,11 @@
      this.isAssetGroupSuccess = false;
      const url = environment.assetGroupNames.url;
      const method = environment.assetGroupNames.method;
-     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
+     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(response => {
        this.hideContent = false;
        this.assetGroupLoader = false;
        this.showLoader = false;
-       this.assetGroupNames = reponse[0];
+       this.assetGroupNames = response[0];
      },
        error => {
          this.assetGroupNames = [];
@@ -917,6 +963,7 @@
           const data = response[0].data;
          if(response[0]['message']==="success"){
            if(this.submitBtn =="Confirm and Create"){
+            //  this.activityLogService.saveActivityLog('Asset Group',this.assetGroupName,'create','NA',JSON.stringify(payload));
            }
          else{
            let criteriasBeforeUpdate = {};
@@ -1318,6 +1365,8 @@
          this.currentDomain = this.FullQueryParams.domain;
          this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
          delete this.queryParamsWithoutFilter['filter'];
+         this.getAllAssetGroupNames();
+         this.buildForm();
          if (this.groupId) {
            this.pageTitle = 'Edit Asset Group';
            this.breadcrumbPresent = 'Edit Asset Group';
@@ -1334,7 +1383,6 @@
            this.pageContent[this.stepIndex].hide = false;
            this.stepTitle = 'Update Group Details - ' + this.groupName;
          } else {
-           this.getAllAssetGroupNames();
            this.pageTitle = 'Create Asset Group';
            this.getAttributesData();
            this.breadcrumbPresent = 'Create Asset Group';

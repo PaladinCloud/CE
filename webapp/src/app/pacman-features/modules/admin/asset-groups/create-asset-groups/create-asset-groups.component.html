@@ -9,7 +9,7 @@
             <button class="app-button white-button" (click)="openModal()">Delete</button>
         </div>
     </div>
-    <div class="page">
+    <div class="page" [class.edit-page]="groupId">
         <div class="stepper">
             <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
                 (selectedStepperIndex)="selectedStepperIndex($event)">
@@ -27,9 +27,10 @@
                         <ng-container *ngTemplateOutlet="getCurrentTemplate()"></ng-container>
                         <div class="button-wrapper">
                             <button class="button submit-button" [class.hide]="currentStepperIndex+1<stepperData.length"
-                                (click)="submit()" [disabled]="buttonClicked" [class.disabled-button]="buttonClicked">
+                                (click)="submit()" [disabled]="isSubmitButtonDisabled()" [class.disabled-button]="isSubmitButtonDisabled()">
                                 {{submitBtn}}</button>
                             <button class="button next-btn" [class.hide]="currentStepperIndex+1==stepperData.length"
+                                [disabled]="isNextButtonDisabled()" [class.disabled-button]="isNextButtonDisabled()"          
                                 (click)="pageCounter('next')">
                                 Next</button>
                             <button class=" button back-btn" [class.hide]="currentStepperIndex==0"
@@ -43,12 +44,41 @@
 </div>
 
 <ng-template #assetGroupRef>
-    <div class="step-content">
-        <app-input-field [(value)]="assetGroupDisplayName" label="Name"></app-input-field>
-        <app-input-field [height]="'54px'" [type]="'textarea'" [(value)]="assetGroupDesc" label="Description"></app-input-field>
-        <app-input-field [isDisabled]="true" [(value)]="createdBy" label="Created By"></app-input-field>
-        <app-input-field [(value)]="selectedAccountType" label="Type"></app-input-field>
-    </div>
+    <form class="form-wrapper" [formGroup]="assetGroupForm">
+        <div class="step-content">
+            <app-input-field [(value)]="assetGroupDisplayName"
+                             label="Name"
+                             [isDisabled]="isEditable()"
+                             [parentForm]="assetGroupForm"
+                             formControlName="assetGroupDisplayName"
+                             [formErrors]="assetGroupFormErrors"
+                             [isRequired]="true">
+            </app-input-field>
+            <app-input-field [height]="'54px'"
+                             [type]="'textarea'"
+                             [(value)]="assetGroupDesc"
+                             label="Description"
+                             [isDisabled]="isEditable()"
+                             [parentForm]="assetGroupForm"
+                             formControlName="assetGroupDesc"
+                             [formErrors]="assetGroupFormErrors"
+                             [isRequired]="true">
+            </app-input-field>
+            <app-input-field [isDisabled]="true"
+                             [(value)]="createdBy"
+                             label="Created By">
+            </app-input-field>
+            <app-input-field [(value)]="selectedAccountType"
+                             label="Type"
+                             [isDisabled]="isEditable()"
+                             [parentForm]="assetGroupForm"
+                             formControlName="selectedAccountType"
+                             [formErrors]="assetGroupFormErrors"
+                             [isRequired]="true"
+                             placeholder="Eg: Admin, Application">
+            </app-input-field>
+        </div>
+    </form>
 </ng-template>
 
 <ng-template #configurationRef>
