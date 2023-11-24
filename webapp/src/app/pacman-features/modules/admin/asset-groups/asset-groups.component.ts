@@ -391,13 +391,21 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
     try{
       this.selectedOrder = this.direction;
       this.fieldType = "string";
-      let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
-      if(!apiColName){
-        apiColName =  find(this.filterTypeOptions, {
-          optionName: this.headerColName,
-        })["optionValue"];
+      if(this.headerColName?.toLowerCase()=='created date'){
+        this.fieldName = 'createdDate'
       }
-      this.fieldName = apiColName;
+      else if(this.headerColName?.toLowerCase()=='updated date'){
+        this.fieldName = 'modifiedDate';
+      }
+      else{
+        let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
+        if(!apiColName){
+          apiColName =  find(this.filterTypeOptions, {
+            optionName: this.headerColName,
+          })["optionValue"];
+        }
+        this.fieldName = apiColName;
+      }
     }catch(e){
       this.logger.log('sortError', e);
       this.headerColName = '';
