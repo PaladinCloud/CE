@@ -29,7 +29,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
-@PowerMockIgnore({"javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*"})
+@PowerMockIgnore({"javax.net.ssl.*", "javax.management.*", "jdk.internal.reflect.*"})
 public class IPFowardingRuleTest {
     @InjectMocks
     IPFowardingRule ipFowardingRule;
@@ -43,25 +43,27 @@ public class IPFowardingRuleTest {
 
     @Test
     public void executeSuccessTest() throws Exception {
-
-
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForIPForwarding());
-
         when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(ipFowardingRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
-
     }
 
     @Test
+    public void executeSuccessTestGKENode() throws Exception {
+        when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForIPForwardingGKENode());
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
+        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
+                true);
+        assertThat(ipFowardingRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
+    }
+    @Test
     public void executeFailureTest() throws Exception {
-
-
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureJsonArrayForIPForwarding());
-
         when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
@@ -70,10 +72,8 @@ public class IPFowardingRuleTest {
 
     @Test
     public void executeFailureTestWithInvalidInputException() throws Exception {
-
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureJsonArrayForIPForwarding());
-
         when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
