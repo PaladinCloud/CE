@@ -3440,6 +3440,7 @@ UPDATE cf_PolicyTable SET severity ='high' WHERE policyId = 'AWS_account_securit
 /* Updating target types for policies related to azure_kubernetes and gcp_gkecluster since targetName has changed */
 update cf_PolicyTable set targetType='aks', policyParams=replace(policyParams,'\"targetType\":\"kubernetes\"','\"targetType\":\"aks\"') where targetType='kubernetes' and assetGroup='azure';
 update cf_PolicyTable set targetType='gke', policyParams=replace(policyParams,'\"targetType\":\"gkecluster\"','\"targetType\":\"gke\"') where targetType='gkecluster' and assetGroup='gcp';
+update cf_PolicyParams set paramValue=replace(paramValue,'gcp_gkecluster','gcp_gke') where paramKey='esSgRulesUrl';
 
 DELETE IGNORE FROM  cf_PolicyTable  where policyId='AWSRdsUnencryptedPublicInstances_version-1_AwsRdsUnencryptedPublicAccess_rdsdb';
 DELETE IGNORE FROM  cf_PolicyParams where policyId='AWSRdsUnencryptedPublicInstances_version-1_AwsRdsUnencryptedPublicAccess_rdsdb';
