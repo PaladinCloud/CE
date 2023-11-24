@@ -251,17 +251,20 @@
          currentFilterType.optionValue,
          "domain",
          "include_exempt",
-         urlObj.params["attribute"],
          currentFilterType["optionValue"]?.replace(".keyword", "")
        ];
+
+       if(urlObj.params["attribute"]){
+        excludedKeys.push(urlObj.params["attribute"]);
+       }
        
        const index = filterOrder?.indexOf(currentFilterType.optionValue?.replace(".keyword", ""));
        const excludedKeysInUrl = Object.keys(filterText).filter(key => urlObj.url.includes(key));
    
        filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
          const normalizedKey = key.replace(".keyword", "");
-         if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) || index>=0) {
-           result[key] = filtersToBePassed[key];
+         if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey))) {
+           result[key] = filtersToBePassed[key]; // TODO: test filters in all the components that are using this method
          }
          return result;
        }, {});
@@ -275,8 +278,10 @@
    
        let payload: IFilterPayload = {
          type,
-         attributeName: ignoreAttributeName?undefined:currentFilterType["optionValue"]?.replace(".keyword", ""),
-         filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
+         searchText,
+         attributeName: ignoreAttributeName ? undefined : currentFilterType["optionValue"]?.replace(".keyword", ""),
+         //filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
+         filter: filtersToBePassed
        };
  
        if(ag && domain){

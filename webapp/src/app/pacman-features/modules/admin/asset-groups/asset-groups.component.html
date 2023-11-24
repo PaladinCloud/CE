@@ -40,6 +40,7 @@
             (selectedFilter)="changeFilterTags($event)"
             (selectedFilterType)="changeFilterType($event)"
             (deleteFilters)="deleteFilters($event)"
+            [columnsAndFiltersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing"
             [enableMultiValuedFilter]="true">
         </app-table>
     </div>

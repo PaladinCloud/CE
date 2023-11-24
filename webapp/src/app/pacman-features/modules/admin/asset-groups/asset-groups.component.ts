@@ -58,7 +58,11 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
   whiteListColumns: any = [];
   tableScrollTop: any;
   columnWidths: IColumnWidthsMap = {'Name': 1.2, "Type": 1, "Number of assets": 1, "Created By": 2, "Created Date": 1, "Updated Date": 1};
-  columnNamesMap: IColumnNamesMap = {};
+  columnNamesMap: IColumnNamesMap = {
+    'createdDate': 'Created Date',
+    'updatedDate': 'Updated Date'
+  };
+  columnsAndFiltersToExcludeFromCasing = ["Name", "Type"];
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
@@ -385,16 +389,18 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateSortFieldName(){
     try{
-        if(!this.headerColName || !this.direction) return;        
-        this.selectedOrder = this.direction;        
-        const apiColName =  find(this.filterTypeOptions, {
-            optionName: this.headerColName,
+      this.selectedOrder = this.direction;
+      this.fieldType = "string";
+      let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
+      if(!apiColName){
+        apiColName =  find(this.filterTypeOptions, {
+          optionName: this.headerColName,
         })["optionValue"];
-        this.fieldType = "string";
-        this.fieldName = apiColName;
+      }
+      this.fieldName = apiColName;
     }catch(e){
-        this.logger.log('sortError', e);
-        this.headerColName = '';
+      this.logger.log('sortError', e);
+      this.headerColName = '';
     }
   }
 
@@ -572,14 +578,15 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       this.filtersDataSubscription = this.filterManagementService
       .getFilters(19)
-        .subscribe((filterOptions) => {
+        .subscribe(async(filterOptions) => {
           this.filterTypeOptions = filterOptions;
           this.filterTypeLabels = map(filterOptions, "optionName");
           
           this.filterTypeLabels.sort();
           [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, []);
           this.routerParam();
-          this.getFilterArray()
+          await this.getFilterArray();
+          await Promise.resolve().then(() => this.getUpdatedUrl());
           this.updateComponent();
         });
     } catch (error) {
