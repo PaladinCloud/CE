@@ -128,6 +128,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   selectedRowIndex;
   fieldName: any;
   sortOrder: any;
+  columnsAndFiltersToExcludeFromCasing = ['Account Name'];
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -140,6 +141,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     private filterManagementService: FilterManagementService,
     private tableStateService: TableStateService,
     private tourService: TourService,
+    private issueFilterService: IssueFilterService,
     private notificationObservableService: NotificationObservableService) { }
   ngAfterViewInit(): void {
     this.tourService.setComponentReady();
@@ -233,11 +235,16 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
       this.isStatePreserved = false;
     }
 
-    const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
-      if(!isTempFilter){
-        this.filters = state.filters || [];
-        Promise.resolve().then(() => this.getUpdatedUrl());
+    const navDirection = this.workflowService.getNavigationDirection();
+
+    if(navDirection<=0){
+      this.filters = state.filters || [];
+      if (state.data && state.data.length > 0) {
+        this.isStatePreserved = true;
+        this.tableData = state.data;
       }
+      Promise.resolve().then(() => this.getUpdatedUrl());
+    }
   }
 
   storeState(data?){
@@ -630,18 +637,23 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   getFilters() {
     this.filterErrorMessage = '';
     try {
-      this.filterSubscription = this.filterManagementService
-      .getFilters(18)
-        .subscribe(async(filterOptions) => {
-          this.filterTypeOptions = filterOptions;
-          this.filterTypeLabels = map(filterOptions, "optionName");
+      this.filterSubscription = this.issueFilterService
+        .getFilters(
+          { filterId: 12 },
+          environment.issueFilter.url,
+          environment.issueFilter.method
+        )
+        .subscribe(async(response) => {
+          this.filterTypeLabels = map(response[0].response, "optionName");
+          this.filterTypeOptions = response[0].response;
           this.filterTypeLabels.sort();
           [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, []);
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
           this.routerParam();
-          this.getFilterArray()
+          await this.getFilterArray();
+          await Promise.resolve().then(() => this.getUpdatedUrl());
           this.updateComponent();
         });
     } catch (error) {
