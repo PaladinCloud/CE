@@ -24,6 +24,8 @@ export class FormService {
       pattern: 'This character is not allowed',
       digit: 'This field must contain only digits',
       exactDigits: 'This field must contain exact 12 digits',
+      groupNameAlreadyExists: 'Group Name already exists',
+      invalidType: 'Type cannot be System or User',
       invalidJson: 'Invalid Json format',
       invalidProjectIdLength: 'This field must be between 6 and 30 characters long',
       invalidClientSecretLength: 'This field must be 40 characters long',
