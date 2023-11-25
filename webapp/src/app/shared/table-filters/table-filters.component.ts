@@ -210,6 +210,10 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         });
     }
 
+    closeOptionsMenu(){
+        this.isCategoryOptionsMenuOpen = false;
+    }
+
     clearFilter(filterCategory: string) {
         if(this.appliedFiltersDict[filterCategory]){
             const resettedFilter = Object.keys(this.appliedFiltersDict[filterCategory]).reduce(

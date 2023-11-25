@@ -51,7 +51,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   adminAccess = false; // check for admin access
   showDownloadBtn = true;
   showFilterBtn = true;
-  selectedRowIndex;
+  selectedRowId: string;
   private assetGroupSubscription: Subscription;
   private domainSubscription: Subscription;
   private routeSubscription: Subscription;
@@ -151,7 +151,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
         await this.getFilters();
-        this.getUpdatedColumnWidthsAndNamesMap();
       });
 
     this.domainSubscription = this.domainObservableService
@@ -199,7 +198,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.displayedColumns = ['Policy', 'Asset ID', 'Severity', 'Category'];
     this.whiteListColumns = state.whiteListColumns || this.displayedColumns;
     this.tableScrollTop = state.tableScrollTop;
-    this.selectedRowIndex = state.selectedRowIndex;
+    this.selectedRowId = state.selectedRowId;
     
 
     // below code is to apply filters which are in saved state and update the URL (just to keep URL in sync and also getData method is dependent) 
@@ -324,7 +323,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         searchTxt: this.searchTxt,
         tableScrollTop: this.tableScrollTop,
         filters: this.filters,
-        selectedRowIndex: this.selectedRowIndex,
+        selectedRowId: this.selectedRowId,
         // filterText: this.filterText
       }
     this.tableStateService.setState(this.saveStateKey, state);
@@ -540,10 +539,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
    * the filter array ,so that filter keynames are changed
    */
 
-  getFilters() {
-    return new Promise((resolve) => {
-      this.filterErrorMessage = '';
-    let isApiError = true;
+  async getFilters() {
     try {
       this.issueFilterSubscription = this.issueFilterService
         .getFilters(
@@ -553,7 +549,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         )
         .subscribe(async(response) => {
           this.filterTypeLabels = map(response[0].response, "optionName");
-          resolve(true);
           this.filterTypeOptions = response[0].response;
           this.filterTypeOptions.forEach(item => {            
             if(item.optionValue.includes("tags")){
@@ -565,21 +560,22 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
-          isApiError = false;
+          this.getUpdatedColumnWidthsAndNamesMap();
           this.routerParam();
           // this.deleteFilters();
           await this.getFilterArray();
           await Promise.resolve().then(() => this.getUpdatedUrl());
           this.updateComponent();
+        },
+        error => {
+          this.tableErrorMessage = 'apiResponseError';
+          this.logger.log("error", error);
         });
     } catch (error) {
-      this.filterErrorMessage = 'apiResponseError';
+      this.tableErrorMessage = 'jsError';
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
-      resolve(false);
     }
-    if(isApiError) this.filterErrorMessage = 'apiResponseError';
-    });
   }
 
   async applyFilterTagsData(filterTagsData, value) {
@@ -911,7 +907,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   goToDetails(event) {
     const row = event.rowSelected;
     this.tableScrollTop = event.tableScrollTop;
-    this.selectedRowIndex = event.selectedRowIndex;
+    this.selectedRowId = event.selectedRowId;
 
     try {
       this.workflowService.addRouterSnapshotToLevel(

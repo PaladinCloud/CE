@@ -129,9 +129,11 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
 import { IssueFilterService } from '../pacman-features/services/issue-filter.service';
 import { DateRangeFormatterPipe } from './table-filters/pipes/date-range-formatter.pipe';
 import { AssetTrendGraphComponent } from '../pacman-features/secondary-components/asset-trend-graph/asset-trend-graph.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
     imports: [
+        ScrollingModule,
         MatCheckboxModule,
         AgGridModule,
         CommonModule,

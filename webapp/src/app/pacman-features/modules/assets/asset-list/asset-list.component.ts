@@ -74,7 +74,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   headerColName;
   direction;
   tableScrollTop=0;
-  selectedRowIndex;
+  selectedRowId: string;
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnWidths = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Source': 0.5};
   columnNamesMap = {
@@ -221,7 +221,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.bucketNumber = state.bucketNumber ?? 0;
     this.totalRows = state.totalRows ?? 0;
     this.searchTxt = state?.searchTxt ?? '';
-    this.selectedRowIndex = state?.selectedRowIndex;
+    this.selectedRowId = state?.selectedRowId;
 
     this.tableDataLoaded = true;
     this.displayedColumns = ['Asset ID', 'Asset Name', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Source'];
@@ -307,7 +307,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       tableScrollTop: this.tableScrollTop,
       filters: this.filters,
       filterText: this.filterText,
-      selectedRowIndex: this.selectedRowIndex
+      selectedRowId: this.selectedRowId
     }
     this.tableStateService.setState(this.saveStateKey, state);
   }
@@ -776,7 +776,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     const row = event.rowSelected;
     this.tableScrollTop = event.tableScrollTop;
-    this.selectedRowIndex = event.selectedRowIndex;
+    this.selectedRowId = event.selectedRowId;
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
@@ -950,6 +950,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
             // this.deleteFilters();
             this.getFilterArray();
             this.updateComponent();
+          },
+          error => {
+            this.tableErrorMessage = 'apiResponseError';
+            this.logger.log("apiResponseError", error);
           });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);

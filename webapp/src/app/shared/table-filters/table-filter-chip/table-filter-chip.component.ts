@@ -49,7 +49,7 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     readonly optionsMenuOffsetY = 7;
     readonly maxOptionChars = 30;
 
-    isOptionsMenuOpen = false;
+    @Input() isOptionsMenuOpen = false;
 
     optionFilterQuery = '';
     filteredOptions = [];
@@ -100,7 +100,6 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     }
 
     closeMenu(){
-        this.isOptionsMenuOpen = false;
         this.optionFilterQuery = '';
         this.chipDropdownClose.emit(null);
     }
