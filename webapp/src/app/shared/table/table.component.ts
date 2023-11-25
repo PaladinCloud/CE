@@ -1,9 +1,12 @@
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {
     AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
+    HostListener,
     Input,
+    NgZone,
     OnChanges,
     OnDestroy,
     OnInit,
@@ -12,14 +15,13 @@ import {
     ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { Sort, SortDirection } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
-import { skip, takeUntil } from 'rxjs/operators';
-import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
-import { AppliedFilterTags, OptionChange } from '../table-filters/table-filters.component';
+import { debounceTime, filter, map, pairwise, takeUntil, throttleTime } from 'rxjs/operators';
+import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
+import { OptionChange } from '../table-filters/table-filters.component';
+import { TableDataSource } from './table-data-source';
 
 export interface FilterItem {
     filterValue?: string[] | string | undefined;
@@ -36,14 +38,17 @@ export interface FilterItem {
     styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+    @Input() idColumn;
+    @Input() selectedRowId;
     @Input() columnsAndFiltersToExcludeFromCasing = [];
     @Input() centeredColumns: { [key: string]: boolean } = {};
     @Input() columnsSortFunctionMap;
     @Input() filterFunctionMap;
     @Input() dateCategoryList;
+    screenWidth: number;
     @Input() set columnWidths(value: { [key: string]: number }) {
         this._columnWidths = value;
-        this.denominator = Object.keys(value).reduce((acc, next) => acc + value[next], 0);
+        this.updateDenominator();
     }
     get columnWidths() {
         return this._columnWidths;
@@ -126,10 +131,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Output() filterSearchTextChange = new EventEmitter();
 
     @ViewChild('select') select: MatSelect;
-    @ViewChild('customTable') customTable: ElementRef<HTMLDivElement>;
+    @ViewChild('customTable', { static: true }) customTable: ElementRef<HTMLDivElement>;
+    @ViewChild('viewportContainer', { static: true }) private viewportContainer!: ElementRef;
 
-    mainDataSource: MatTableDataSource<unknown>;
-    dataSource: MatTableDataSource<unknown>;
+    mainDataSource: TableDataSource;
+    dataSource: TableDataSource;
 
     displayedColumns: string[];
     searchInColumns = new FormControl();
@@ -142,6 +148,13 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     isDataLoading = false;
     selectedFiltersList: string[] = [];
     destroy$ = new Subject<void>();
+    @ViewChild(CdkVirtualScrollViewport, { static: true })
+    private viewport: CdkVirtualScrollViewport;
+
+    rowHeight = 36;
+    offset: number;
+    private whitelistColumnsChange = new Subject<any>();
+    private readonly initialScrollPosition = 2;
 
     private _columnWidths: { [key: string]: number } = {};
     private sortByColumn = {
@@ -165,46 +178,87 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
           },
     }
 
-    constructor(private assetGroupChangeService: AssetGroupObservableService) {}
+    constructor(
+        private ngZone: NgZone,
+        private windowExpansionService: WindowExpansionService,
+        ) {
+        this.windowExpansionService.getExpansionStatus().pipe(takeUntil(this.destroy$)).subscribe(()=>{
+            this.resetTableWidth();
+        })
+        this.dataSource = new TableDataSource(this.ngZone);
+        this.mainDataSource = new TableDataSource(this.ngZone);
+    }
+
+    scrollTableToPos(scrollPos){
+        this.viewport.scrollToOffset(scrollPos);
+    }
+
+    resetTableWidth(){
+        setTimeout(() => {
+            this.screenWidth = parseInt(window.getComputedStyle(this.customTable.nativeElement, null).getPropertyValue('width'), 10) - 10;
+        }, 200);
+    }
+
+    @HostListener("window:resize", ["$event"]) onSizeChanges() {
+        this.resetTableWidth();
+    }
 
     ngOnInit(): void {
+        this.whitelistColumnsChange
+        .pipe(takeUntil(this.destroy$), debounceTime(300))
+        .subscribe((selectedColumns) => {
+                this.whiteListColumns = Object.keys(this.columnWidths).filter((c) =>
+                selectedColumns.includes(c),
+            );
+            this.whiteListColumnsChanged();
+        });
+        this.dataSource.attach(this.viewport);
+        this.resetTableWidth();
+
+      this.viewport.renderedRangeStream.pipe(takeUntil(this.destroy$)).subscribe(range => {
+        this.offset = range.start * -this.rowHeight;
+      });
+
+
         if (this.onScrollDataLoader) {
             this.onScrollDataLoader.pipe(takeUntil(this.destroy$)).subscribe((data) => {
                 this.isDataLoading = false;
                 if (data && data.length > 0) {
                     this.data.push(...data);
-                    this.mainDataSource = new MatTableDataSource(this.data);
-                    this.dataSource = new MatTableDataSource(this.data);
+                    this.mainDataSource.matTableDataSource.data = this.data.slice();
+                    this.dataSource.matTableDataSource.data = this.data.slice();
                 }
             });
         }
 
     }
 
-    ngOnChanges(changes: SimpleChanges): void {        
+    ngOnChanges(changes: SimpleChanges): void {    
         if (this.customTable) {
-            if (changes.tableScrollTop && changes.tableScrollTop.currentValue != undefined) {
-                this.customTable.nativeElement.scrollTop = this.tableScrollTop;
-            }
             if (!this.tableDataLoaded) {
                 this.tableScrollTop = 0;
                 this.customTable.nativeElement.scrollTop = 0;
-                this.mainDataSource = new MatTableDataSource([]);
-                this.dataSource = new MatTableDataSource([]);
+                this.mainDataSource.matTableDataSource.data = [];
+                this.dataSource.matTableDataSource.data = [];
             }
         }
         if (changes.columnWidths) {
             if (this.columnWidths) {
                 this.displayedColumns = Object.keys(this.columnWidths);
             }
-
             this.displayedColumns.sort();
+            this.resetTableWidth();
         }
-        if (changes.data || changes.filteredArray) {
-            if (changes.data) {
-                this.mainDataSource = new MatTableDataSource(this.data);
-                this.dataSource = new MatTableDataSource(this.data);
+        if (changes.data) {
+            // this.scrollTableToPos(this.initialScrollPosition);
+            this.mainDataSource.matTableDataSource.data = this.data;
+            this.dataSource.matTableDataSource.data = this.data;
+            if(!this.tableScrollTop){
+                this.dataSource.intialCallFlag = true;
             }
+        }
+        if(changes.tableScrollTop && this.tableScrollTop){
+            this.dataSource.intialCallFlag = false;
         }
         if(changes.totalRows){
             this.totalRecordsAfterFilter = this.totalRows;
@@ -212,15 +266,40 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         if ((this.doLocalSearch || this.doLocalSort) && this.tableDataLoaded) {
             this.filterAndSort();
         }
+
+        if(changes.whiteListColumns){
+            this.updateDenominator();          
+        }
     }
 
     ngAfterViewInit(): void {
-        this.customTable.nativeElement.scrollTop = this.tableScrollTop;
+        this.resetTableWidth();
+        if(this.tableScrollTop){
+            this.scrollTableToPos(this.tableScrollTop);        
+        }
+
+        this.viewport.elementScrolled().pipe(
+            map(() => this.viewport.measureScrollOffset("bottom")),
+            pairwise(),
+            filter(([y1, y2]) => (y2<y1) && (y2<1000)),
+            throttleTime(200),
+            takeUntil(this.destroy$)
+          ).subscribe(() => {
+            this.selectedRowIndex = -1;
+            if((this.data.length < this.totalRows || this.hasMoreData) && !this.isDataLoading){
+                this.nextPageCalled.emit(this.offset);
+                this.isDataLoading = true;
+            }
+          })
     }
 
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    updateDenominator(){
+        this.denominator = this.whiteListColumns.reduce((acc,next) => acc+=this.columnWidths[next], 0); 
     }
 
     filterAndSort() {
@@ -248,16 +327,19 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         if (row[col].isMenuBtn || row[col].isCheckbox) {
             return;
         }
+        const rowsToAddToOffset = 5;
+        const heightToAddToOffset = (i>rowsToAddToOffset?i-rowsToAddToOffset:i) * this.rowHeight;
         const event = {
-            tableScrollTop: this.customTable.nativeElement.scrollTop,
+            tableScrollTop: -this.offset + heightToAddToOffset,
             rowSelected: row,
             data: this.data,
             col,
             filters: this.filteredArray,
             searchTxt: this.searchQuery,
             selectedRowIndex: i,
+            selectedRowId: row[this.idColumn]?.valueText
         };
-        this.rowSelectEventEmitter.emit(event);
+            this.rowSelectEventEmitter.emit(event);
     }
 
     handleAction(element, action: string, i: number) {
@@ -270,10 +352,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     handleColumnSelection(selectedColumns: string[]) {
-        this.whiteListColumns = Object.keys(this.columnWidths).filter((c) =>
-            selectedColumns.includes(c),
-        );
-        this.whiteListColumnsChanged();
+        this.whitelistColumnsChange.next(selectedColumns);
     }
 
 
@@ -442,7 +521,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     customFilter() {
         this.tableErrorMessage = '';
-        this.dataSource.data = this.dataSource.data.filter((item) => {
+        this.dataSource.matTableDataSource.data = this.dataSource.matTableDataSource.data.filter((item) => {
             for (let i = 0; i < this.filteredArray.length; i++) {
                 const filterObj = this.filteredArray[i];
 
@@ -483,8 +562,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             return true;
         });
 
-        this.totalRecordsAfterFilter = this.dataSource.data.length;
-        if (this.dataSource.data.length == 0) {
+        this.totalRecordsAfterFilter = this.dataSource.matTableDataSource.data.length;
+        if (this.dataSource.matTableDataSource.data.length == 0) {
             this.tableErrorMessage = 'noDataAvailable';
         }
     }
@@ -492,7 +571,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     customSearch() {
         const searchTxt = this.searchQuery;
         // whenever search or filter is called, we perform search first and then filter and thus we take maindatasource here for search
-        this.dataSource.data = this.mainDataSource.data.filter((item) => {
+        this.dataSource.matTableDataSource.data = this.mainDataSource.matTableDataSource.data.filter((item) => {
             const columnsToSearchIN = Object.keys(item);
             for (const i in columnsToSearchIN) {
                 const col = columnsToSearchIN[i];
@@ -502,10 +581,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             }
             return false;
         });
-        if (this.dataSource.data.length == 0) {
+        if (this.dataSource.matTableDataSource.data.length == 0) {
             this.tableErrorMessage = 'noDataAvailable';
         }
-        this.totalRecordsAfterFilter = this.dataSource.data.length;
+        this.totalRecordsAfterFilter = this.dataSource.matTableDataSource.data.length;
 
         if (this.doLocalFilter) {
             this.customFilter();
@@ -537,7 +616,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     announceSortChange(sort: Sort) {
-        if (this.doNotSort) {
+        if (this.doNotSort || sort.active=='Actions') {
             return;
         }
         this.headerColName = sort.active;
@@ -554,7 +633,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
         const isAsc = this.direction === 'asc';
 
-        this.dataSource.data = this.dataSource.data.sort((a, b) => {
+        this.dataSource.matTableDataSource.data = this.dataSource.matTableDataSource.data.sort((a, b) => {
             if (this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]) {
                 return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
             }else if(this.sortByColumn[this.headerColName.toLowerCase()]){
@@ -595,17 +674,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         });
     }
 
-    onScroll(event: Event) {
-        // visible height + pixel scrolled >= total height
-        const target = event.target as HTMLDivElement;
-        if (target.offsetHeight + target.scrollTop >= target.scrollHeight - 10) {
-            if ((this.data.length < this.totalRows || this.hasMoreData) && !this.isDataLoading && this.data.length > 0) {
-                this.tableScrollTop = target.scrollTop;
-                this.nextPageCalled.emit(this.tableScrollTop);
-                this.isDataLoading = true;
-            }
-        }
-    }
 
     handleCheckboxChange(row, col, e){
         row[col].valueText=e.checked?'checked':'unchecked';
@@ -621,5 +689,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             searchTxt: this.searchQuery,
             filters: this.filteredArray,
         });
+    }
+
+    trackColumnByIndex(index: number){
+        return index;
     }
 }

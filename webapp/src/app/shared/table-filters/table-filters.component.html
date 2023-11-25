@@ -11,7 +11,9 @@
             (click)=" i !== appliedFilters.length - 1 && !areAllFiltersEnabled
                     ? void
                     : openFilterCategory(appliedFilter.keyDisplayValue)
-            " (filterSearchTextChange)="handleSearchTextChangeForCategory($event)">
+            " (filterSearchTextChange)="handleSearchTextChangeForCategory($event)"
+            [isOptionsMenuOpen]="i==appliedFilters.length-1 && isCategoryOptionsMenuOpen"
+            (closeOptionsMenu)="closeOptionsMenu()">
         </app-table-filter-chip>
     </div>
 
@@ -48,35 +50,6 @@
                     {{ category }}
                 </li>
             </ul>
-        </ng-container>
-
-        <ng-container *ngIf="isCategoryOptionsMenuOpen && !isDateFilter">
-            <app-table-filter-search [(text)]="categoryOptionFilterQuery" (textChange)="handleSearchTextChange($event)"></app-table-filter-search>
-            <ul class="filters-category-menu">
-                <li
-                    *ngFor="let option of filterSelectedCategoryOptionsByQuery()"
-                    class="fcm-item"
-                    [title]="option"
-                    [ngClass]="{'selected': appliedFiltersDict[selectedCategory!][option]}"
-                >
-                    <mat-checkbox
-                        [checked]="appliedFiltersDict[selectedCategory!][option]"
-                        (change)="applyFilter(option, $event)"
-                    >
-                        <span *ngIf="!filtersToExcludeFromCasing.includes(selectedCategory)">{{ option | slice : 0 : maxOptionChars | celldatacase }}</span>
-                        <span *ngIf="filtersToExcludeFromCasing.includes(selectedCategory)">{{ option | slice : 0 : maxOptionChars }}</span>
-                    </mat-checkbox>
-                </li>
-            </ul>
-        </ng-container>
-        <ng-container *ngIf="isCategoryOptionsMenuOpen && isDateFilter">
-            <div class="date-selection-modal">
-                    <app-date-selection
-                        [minDate]="calendarMinDate"
-                        [maxDate]="calendarMaxDate"
-                        (datesSelected)="dateIntervalSelected($event.from, $event.to)"
-                    ></app-date-selection>
-            </div>
         </ng-container>
     </div>
 </ng-template>

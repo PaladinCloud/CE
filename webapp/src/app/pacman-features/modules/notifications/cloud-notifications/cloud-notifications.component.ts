@@ -306,6 +306,10 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     this.routerParam();
                     this.getFilterArray();
                     this.updateComponent();
+                },
+                error => {
+                  this.tableErrorMessage = 'apiResponseError';
+                  this.logger.log("apiResponseError", error);
                 });
         } catch (error) {
             this.errorMessage = this.errorHandler.handleJavascriptError(error);

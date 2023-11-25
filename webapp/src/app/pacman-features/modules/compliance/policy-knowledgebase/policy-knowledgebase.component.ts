@@ -142,7 +142,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
   state: any = {};
   whiteListColumns;
-  selectedRowIndex;
+  selectedRowId: string;
   displayedColumns;
   tableScrollTop = 0;
   tableData = [];
@@ -198,7 +198,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.tableScrollTop = state?.tableScrollTop;
       this.filters = state?.filters || [];
       this.totalRows = this.tableData.length;
-      this.selectedRowIndex = state?.selectedRowIndex;
+      this.selectedRowId = state?.selectedRowId;
       if(state?.policyCategoryDic)
       this.policyCategoryDic = state.policyCategoryDic;
 
@@ -295,7 +295,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       searchTxt: this.searchTxt,
       tableScrollTop: this.tableScrollTop,
       filters: this.filters,
-      selectedRowIndex: this.selectedRowIndex,
+      selectedRowId: this.selectedRowId,
       policyCategoryDic: this.policyCategoryDic
     }
     this.tableStateService.setState(this.saveStateKey, state);
@@ -463,29 +463,33 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   getFilters() {
     return new Promise((resolve) => {
-      try {
-        this.issueFilterSubscription = this.issueFilterService
-          .getFilters(
-            { filterId: 16, domain: this.selectedDomain },
-            environment.issueFilter.url,
-            environment.issueFilter.method
-          )
-          .subscribe((response) => {
-            this.filterTypeLabels = map(response[0].response, "optionName");
-            resolve(true);
-            this.filterTypeOptions = response[0].response;
+    try {
+      this.issueFilterSubscription = this.issueFilterService
+        .getFilters(
+          { filterId: 16, domain: this.selectedDomain },
+          environment.issueFilter.url,
+          environment.issueFilter.method
+        )
+        .subscribe((response) => {
+          this.filterTypeLabels = map(response[0].response, "optionName");
+          resolve(true);
+          this.filterTypeOptions = response[0].response;
 
-            this.filterTypeLabels.sort();
-            this.routerParam();
-            // this.deleteFilters();
-            this.getFilterArray();
-            this.getData();
-          });
-      } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log("error", error);
-        resolve(false);
-      }
+          this.filterTypeLabels.sort();
+          this.routerParam();
+          // this.deleteFilters();
+          this.getFilterArray();
+          this.getData();
+        },
+        error => {
+          this.errorMessage = 'apiResponseError';
+          this.logger.log("apiResponseError", error);
+        });
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+      resolve(false);
+    }
     });
   }
 
@@ -851,7 +855,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     // store in this function
     const tileData = event.rowSelected;
     const data = event.data;
-    this.selectedRowIndex = event.selectedRowIndex;
+    this.selectedRowId = event.selectedRowId;
     this.tableScrollTop = event.tableScrollTop;
     this.storeState(data);
     let autofixEnabled = false;

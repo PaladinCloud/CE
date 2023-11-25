@@ -46,7 +46,7 @@
                 <div class="flex flex-align-center table-right-items">
                  
                     <div class="table-count-info">
-                        {{ (totalRecordsAfterFilter === 0 ? dataSource?.data?.length : totalRecordsAfterFilter) ?? 0 | number }}
+                        {{ (totalRecordsAfterFilter === 0 ? dataSource?.matTableDataSource.data?.length : totalRecordsAfterFilter) ?? 0 | number }}
                         Results
                     </div>
                     <app-table-options
@@ -62,13 +62,61 @@
             </div>
         </div>
     </div>
-    <div #customTable class="table-content-container relative" (scroll)="onScroll($event)">
+    <div #customTable class="table-content-container relative">
         <div [class.loader]="!tableDataLoaded && tableErrorMessage === ''"></div>
         <app-error-message
             *ngIf="tableErrorMessage"
             [selectedValue]="tableErrorMessage"
         ></app-error-message>
-        <div class="table-wrapper">
+        <div class="table-wrapper" #viewportContainer>
+            <!-- table header -->
+            <div class="header-wrapper">
+                <div class="mat-header-row flex" [style.width.px]="screenWidth">
+                    <div 
+                        class="mat-header-cell mat-sort-header custom-mat-header pointer"
+                        (click)="announceSortChange({active:column, direction:headerColName==column&&direction=='asc'?'desc':'asc'})"
+                        role="columnheader"
+                        aria-sort="descending" 
+                        [class.flex-center]="centeredColumns[column]"
+                        [style.flex-basis.%]="(100 * columnWidths[column]/denominator)"
+                        *ngFor="let column of whiteListColumns" 
+                    >
+                        <div
+                        class="mat-focus-indicator mat-sort-header-container">
+                            {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
+                        </div>
+                        <div 
+                            [class.hide]="doNotSort || column == 'Actions' || column == 'DetailsBtn'"
+                            [class.up-arrow]="headerColName != column" 
+                            class="mat-sort-header-arrow ng-trigger-arrowPosition indicator-up" 
+                            [style.opacity]="headerColName === column ? '1' : '0.5'"
+                            >
+                            <div class="mat-sort-header-stem"></div>
+                            <div class="mat-sort-header-indicator ng-trigger-indicator"
+                            [ngClass]="{
+                                'indicator-up': headerColName !== column || direction !== 'desc',
+                                'indicator-down': headerColName === column && direction === 'desc'
+                            }">
+                                <div class="mat-sort-header-pointer-left ng-trigger-leftPointer"
+                                    [ngClass]="{
+                                    'pointer-up': headerColName !== column || direction !== 'desc',
+                                    'pointer-down': headerColName === column && direction === 'desc'
+                                    }"></div>
+                                <div class="mat-sort-header-pointer-right ng-trigger-rightPointer"
+                                    [ngClass]="{
+                                    'pointer-down': headerColName !== column || direction !== 'desc',
+                                    'pointer-up': headerColName === column && direction === 'desc'
+                                    }"></div>
+                                <div class="mat-sort-header-pointer-middle"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- removing height of mat table header, which was 40px, from virtual scroll container -->
+            <cdk-virtual-scroll-viewport #viewport [itemSize]="rowHeight" [minBufferPx]="1050" [maxBufferPx]="1500" matSort style="height: calc(100% - 40px);">
             <mat-table
                 *ngIf="!tableErrorMessage && data?.length > 0"
                 [dataSource]="dataSource"
@@ -89,7 +137,8 @@
                 >
                     <ng-template #cellDefinition let-column="column" let-columnWidth="columnWidth">
                         <mat-header-cell
-                            [style.flex-basis.%]="columnWidth"
+                        [style.flex-basis.%]="columnWidth"
+                            [style.top.px]="offset"
                             [class.flex-center]="centeredColumns[column]"
                             *matHeaderCellDef
                             [mat-sort-header]="
@@ -248,16 +297,20 @@
                     </ng-template>
                 </ng-container>
 
-                <mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></mat-header-row>
+                <!-- removing it to avoid flickering of header on virtual scroll -->
+                <!-- offset is used here to make header stick to top -->
+                <!-- <mat-header-row class="hide" [style.width.px]="screenWidth" *matHeaderRowDef="whiteListColumns; sticky: true" [style.top.px]="offset"></mat-header-row> -->
                 <mat-row
+                [style.width.px]="screenWidth"
                     [class.row-hover]="rowClickable"
-                    [class.row-selected]="i === selectedRowIndex"
+                    [class.row-selected]="idColumn && row[idColumn].valueText?row[idColumn].valueText === selectedRowId:i === selectedRowIndex"
                     [class.md]="rowSize === 'MD'"
                     [class.sm]="rowSize === 'SM'"
                     [class.lg]="rowSize === 'LG'"
                     *matRowDef="let row; columns: whiteListColumns; let i = index"
                 ></mat-row>
             </mat-table>
+            </cdk-virtual-scroll-viewport>
         </div>
     </div>
 </div>

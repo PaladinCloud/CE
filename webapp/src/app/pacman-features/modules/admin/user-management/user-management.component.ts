@@ -63,7 +63,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   selectedRoles: string[];
 
   paginatorSize: number = 25;
-  hasMoreDataToLoad: boolean = false;
+  hasMoreDataToLoad: boolean = true;
   isLastPage: boolean;
   isFirstPage: boolean;
   totalPages: number;
@@ -768,6 +768,9 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   getUserList(isNextPageCalled?) {
+    if(!this.hasMoreDataToLoad){
+      return;
+    }
     var url = environment.listUsers.url;
     var method = environment.listUsers.method;
 

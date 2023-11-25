@@ -93,7 +93,9 @@ export class TableStateService {
             componentState["data"] = [];
             componentState["bucketNumber"] = 0;
             componentState["selectedRowIndex"] = undefined;
+            componentState["selectedRowId"] = undefined;
             componentState["totalRows"] = 0;
+            componentState["tableScrollTop"] = 0;
             
             this.setState(componentKey, componentState);
         }catch(e){

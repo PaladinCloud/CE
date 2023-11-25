@@ -9,8 +9,7 @@
 .table-content-container {
     background-color: var(--background-white);
     width: 100%;
-    height: calc(100% - 70px);
-    overflow-y: scroll;
+    height: calc(100% - 30px);
 }
 
 .noImg {
@@ -127,7 +126,7 @@
 :host::ng-deep .mat-option:first-child .mat-pseudo-checkbox {
     display: none;
 }
-
+  
 .mat-table {
     width: 100%;
 }
@@ -169,7 +168,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 100px;
     border-bottom: 1px solid var(--border-100);
 }
 
@@ -279,3 +277,102 @@
     height: 16px;
     width: 24px;
 }
+
+.custom-mat-header{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    word-wrap: break-word;
+    min-height: inherit;
+}
+
+.mat-sort-header-pointer-left, .mat-sort-header-pointer-right {
+    background: currentColor;
+    width: 6px;
+    height: 2px;
+    position: absolute;
+    top: 0;
+}
+
+.mat-sort-header-pointer-left {
+    transform-origin: right;
+    left: 0;
+}
+
+.mat-sort-header-pointer-right {
+    transform-origin: left;
+    right: 0;
+}
+
+.mat-sort-header-arrow, [dir=rtl] .mat-sort-header-position-before .mat-sort-header-arrow {
+    margin: 0 0 0 6px;
+}
+
+.mat-sort-header-arrow{
+    height: 12px;
+    width: 12px;
+    min-width: 12px;
+    position: relative;
+    display: flex;
+    color: #757575;
+}
+
+.mat-sort-header-stem{
+    background: currentColor;
+    height: 10px;
+    width: 2px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+}
+
+.mat-sort-header-indicator {
+    width: 100%;
+    height: 2px;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.mat-sort-header-pointer-middle {
+    margin: auto;
+    height: 2px;
+    width: 2px;
+    background: currentColor;
+    transform: rotate(45deg);
+}
+
+.up-arrow {
+    display: none;
+}
+  
+  .mat-header-cell:hover .up-arrow {
+    display: block;
+  }
+
+  .pointer-up {
+    transform: rotate(-45deg);
+  }
+  
+  .pointer-down {
+    transform: rotate(45deg);
+  }
+  
+  .indicator-up {
+    transform: translateY(0px);
+  }
+  
+  .indicator-down {
+    transform: translateY(10px);
+  }
+  
+  .header-wrapper{
+    background-color: #f8f8f8;
+  }
+
+  .mat-sort-header-container{
+    font-family: 'mark-pro';
+  }
