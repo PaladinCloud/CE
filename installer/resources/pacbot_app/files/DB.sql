@@ -3124,5 +3124,5 @@ VALUES('application','Application','Compute','contrast','{\"key\":\"id\",\"id\":
  concat(@eshost,':',@esport,'/contrast_application'),'2023-11-06','2023-11-06','Infra & Platforms','Application')
  ON DUPLICATE KEY UPDATE targetName='application', dataSourceName='contrast', displayName='Application';
 
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Policy ID','policyId.keyword','/compliance/v1/filters/policyList',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Policy ID','policyId','/compliance/v1/filters/policyList',"String");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Compliant','compliant','/asset/v1/getCompliantFilterValue',"String");
