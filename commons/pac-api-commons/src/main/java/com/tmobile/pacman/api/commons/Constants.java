@@ -573,4 +573,5 @@ public interface Constants {
     } };
 
     String TENABLE_API_URL = "https://cloud.tenable.com";
+    String ALL_SOURCES_ASSET_GROUP = "all-sources";
 }

@@ -24,6 +24,7 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_UPD
 import static com.tmobile.pacman.api.admin.common.AdminConstants.DATE_FORMAT;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ES_ALIASES_PATH;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
+import static com.tmobile.pacman.api.commons.Constants.ALL_SOURCES_ASSET_GROUP;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -335,31 +336,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			throw new PacManException(ASSET_GROUP_NOT_EXITS);
 		}
 	}
-
-	@Override
-	public String updateAssetGroupStatus (final String assetGroupName, final boolean status, final String userId) throws PacManException {
-
-		AssetGroupDetails assetGroupObj = assetGroupRepository.findByGroupName(assetGroupName);
-		if( assetGroupObj != null ){
-			if( status != assetGroupObj.getVisible()) {
-				assetGroupObj.setVisible(status);
-				assetGroupObj.setModifiedDate(new Date().toString());
-				assetGroupObj.setModifiedUser(userId);
-				assetGroupRepository.saveAndFlush(assetGroupObj);
-			}
-
-			if(status) {
-				return AdminConstants.ASSET_GROUP_ENABLED;
-			}
-			return AdminConstants.ASSET_GROUP_DISABLED;
-
-		} else {
-			log.error("Asset  group does not exists");
-			throw new PacManException(AdminConstants.ASSET_GROUP_NOT_EXITS);
-		}
-
-	}
-
 
 	@Override
 	public String deleteAssetGroup(final DeleteAssetGroupRequest assetGroupDetails, final String userId) throws PacManException {
@@ -836,6 +812,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			assetGroupDetails.setDisplayName(displayName);
 			log.info("Asset group created for pluginType : {}", pluginType);
 			assetGroupRepository.save(assetGroupDetails);
+			// Trying to re-add indices of plugin type to asset group
+			updatePluginDataInAssetGroup(pluginType, false);
 		} catch (Exception e) {
 			log.error("Asset group creation for {} failed", pluginType, e);
 		}
@@ -859,33 +837,44 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		return "";
 	}
 
-	/**
-	 * Retrieves a list of indices associated with a datasource.
-	 * Sends HTTP requests to Elasticsearch to fetch indices information.
-	 *
-	 * @return A list of indices associated with the specified indices.
-	 */
 	@Override
-	public List<String> fetchIndices(String datasource) {
-		List<String> indexNames = new ArrayList<>();
+	public boolean deleteAssetGroupByGroupName(String groupName) {
 		try {
-			String urlToQuery = "/_cat/indices/" + datasource + "_*";
-			Response response = commonService.invokeAPI("GET", urlToQuery, null);
-			if (response == null || response.getStatusLine().getStatusCode() != 200) {
-				log.error("Unable to fetch aliases for {} with response {}", datasource, response);
-				return null;
+			AssetGroupDetails assetGroupInDB = assetGroupRepository.findByGroupName(groupName);
+			if (assetGroupInDB == null) {
+				log.error("Asset group not found with group name as {}", groupName);
+				return false;
 			}
-			String indexData = EntityUtils.toString(response.getEntity());
-			String[] indexLines = indexData.split("\\r?\\n");
-			for (String line : indexLines) {
-				String[] parts = line.split("\\s+");
-				if (parts.length >= 3) {
-					indexNames.add(parts[2]);
-				}
-			}
+			assetGroupRepository.delete(assetGroupInDB);
+			log.info("asset group with group name {} deleted successfully", groupName);
+			return true;
 		} catch (Exception e) {
-			log.error("Unable to fetch indices for datasource {}", datasource, e);
+			log.error("Unable to delete asset group with group name as {}", groupName, e);
+			return false;
 		}
-		return indexNames;
+	}
+
+	@Override
+	public void updatePluginDataInAssetGroup(String pluginName, boolean isRemoved) {
+		try {
+			StringBuilder requestBody = new StringBuilder("{\"actions\":[");
+			if (isRemoved) {
+				requestBody.append("{\"remove\":{\"index\":\"").append(pluginName)
+						.append("_*\",\"alias\":\"").append(ALL_SOURCES_ASSET_GROUP).append("\"}},");
+			} else {
+				requestBody.append("{\"add\":{\"index\":\"").append(pluginName)
+						.append("_*\",\"alias\":\"").append(ALL_SOURCES_ASSET_GROUP).append("\"}},");
+			}
+			requestBody.deleteCharAt(requestBody.length() - 1);
+			requestBody.append("]}");
+			Response response = commonService.invokeAPI("POST", ES_ALIASES_PATH, requestBody.toString());
+			if (response == null || response.getStatusLine().getStatusCode() != 200) {
+				log.error("Unable to remove or update indices for asset group {} with response {}",
+						ALL_SOURCES_ASSET_GROUP, response);
+			}
+			log.info("Indices updated for plugin successfully.");
+		} catch (Exception e) {
+			log.error("Unable to remove or update indices for Plugin : {} From AssetGroup", pluginName, e);
+		}
 	}
 }
