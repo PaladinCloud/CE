@@ -89,7 +89,7 @@ public class IPFowardingRule extends BasePolicy {
             }
             if (!vmInstanceObject.get(PacmanRuleConstants.TAGS).getAsJsonObject().isJsonNull()) {
                 JsonObject tags = vmInstanceObject.get(PacmanRuleConstants.TAGS).getAsJsonObject();
-                if (tags.has(PacmanRuleConstants.GKE_CLUSTER_NAME) && tags.get(PacmanRuleConstants.GKE_CLUSTER_NAME).getAsString().isEmpty()) {
+                if (tags.has(PacmanRuleConstants.GKE_CLUSTER_NAME) && !tags.get(PacmanRuleConstants.GKE_CLUSTER_NAME).isJsonNull() && tags.get(PacmanRuleConstants.GKE_CLUSTER_NAME).getAsString().isEmpty()) {
                     violationReason = "IP Forward Disabled for GKE Cluster Instance";
                     isGKECluster = true;
                 }
