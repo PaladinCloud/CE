@@ -3124,7 +3124,7 @@ VALUES('application','Application','Compute','contrast','{\"key\":\"id\",\"id\":
  concat(@eshost,':',@esport,'/contrast_application'),'2023-11-06','2023-11-06','Infra & Platforms','Application')
  ON DUPLICATE KEY UPDATE targetName='application', dataSourceName='contrast', displayName='Application';
  
- INSERT  INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+INSERT  INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
 VALUES('library','Library','Application','contrast','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
  concat(@eshost,':',@esport,'/contrast_library'),'2023-11-06','2023-11-06','Infra & Platforms','Library')
  ON DUPLICATE KEY UPDATE targetName='library', dataSourceName='contrast', displayName='Library';
