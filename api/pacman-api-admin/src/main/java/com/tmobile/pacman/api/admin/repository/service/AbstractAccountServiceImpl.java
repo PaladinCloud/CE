@@ -58,7 +58,6 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     protected AssetGroupService assetGroupService;
     @Autowired
     private UserPreferencesService userPreferencesService;
-    ;
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
     public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
@@ -297,9 +296,9 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             logger.info("AssetGroup deletion status is {} for {}", deleteAssetGroupStatus, pluginName);
             Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(pluginName);
             logger.info("Total users have been updated with the default asset group. The new count is: {}", totalUsers);
-            assetGroupService.updatePluginDataInAssetGroup(pluginName, true);
+            assetGroupService.removePluginTypeFromAllSources(pluginName);
         } catch (Exception e) {
-            logger.error("Unable to make changes to required asset groups for {}", pluginName, e);
+            logger.error("Unable to disable asset groups for {}", pluginName, e);
         }
     }
 }

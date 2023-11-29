@@ -112,5 +112,8 @@ public interface AssetGroupService {
 	public List<Map<String,Object>> getCloudTypeObject() throws Exception;
 	void createOrUpdatePluginAssetGroup(String pluginType, String displayName);
 	boolean deleteAssetGroupByGroupName(String groupName);
-	void updatePluginDataInAssetGroup(String pluginName, boolean isRemoved);
+
+	void addPluginTypeToAllSources(String pluginName);
+
+	void removePluginTypeFromAllSources(String pluginName);
 }

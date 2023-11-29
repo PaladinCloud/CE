@@ -15,6 +15,63 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.repository.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.tmobile.pacman.api.admin.common.AdminConstants;
+import com.tmobile.pacman.api.admin.domain.AssetGroupView;
+import com.tmobile.pacman.api.admin.domain.AttributeDetails;
+import com.tmobile.pacman.api.admin.domain.CreateAssetGroup;
+import com.tmobile.pacman.api.admin.domain.CreateUpdateAssetGroupDetails;
+import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupRequest;
+import com.tmobile.pacman.api.admin.domain.TargetTypesDetails;
+import com.tmobile.pacman.api.admin.domain.UpdateAssetGroupDetails;
+import com.tmobile.pacman.api.admin.exceptions.PacManException;
+import com.tmobile.pacman.api.admin.repository.AssetGroupCriteriaDetailsRepository;
+import com.tmobile.pacman.api.admin.repository.AssetGroupRepository;
+import com.tmobile.pacman.api.admin.repository.AssetGroupTargetDetailsRepository;
+import com.tmobile.pacman.api.admin.repository.TargetTypesRepository;
+import com.tmobile.pacman.api.admin.repository.model.AssetGroupCriteriaDetails;
+import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
+import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
+import com.tmobile.pacman.api.admin.service.CommonService;
+import com.tmobile.pacman.api.admin.util.AdminUtils;
+import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.commons.exception.DataException;
+import com.tmobile.pacman.api.commons.exception.ServiceException;
+import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
+import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.client.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_ALIAS_DELETION_FAILED;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_CREATION_SUCCESS;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_DELETE_FAILED;
@@ -24,50 +81,7 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_UPD
 import static com.tmobile.pacman.api.admin.common.AdminConstants.DATE_FORMAT;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ES_ALIASES_PATH;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
-import static com.tmobile.pacman.api.commons.Constants.ALL_SOURCES_ASSET_GROUP;
-
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import com.google.gson.*;
-import com.tmobile.pacman.api.commons.exception.DataException;
-import com.tmobile.pacman.api.commons.exception.ServiceException;
-import org.apache.commons.lang.StringUtils;
-
-import com.tmobile.pacman.api.admin.common.AdminConstants;
-import com.tmobile.pacman.api.admin.domain.*;
-import com.tmobile.pacman.api.admin.repository.model.AssetGroupCriteriaDetails;
-import com.tmobile.pacman.api.commons.Constants;
-import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
-import org.apache.http.util.EntityUtils;
-import org.elasticsearch.client.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.tmobile.pacman.api.admin.exceptions.PacManException;
-import com.tmobile.pacman.api.admin.repository.AssetGroupRepository;
-import com.tmobile.pacman.api.admin.repository.AssetGroupTargetDetailsRepository;
-import com.tmobile.pacman.api.admin.repository.AssetGroupCriteriaDetailsRepository;
-import com.tmobile.pacman.api.admin.repository.TargetTypesRepository;
-import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
-import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
-import com.tmobile.pacman.api.admin.service.CommonService;
-import com.tmobile.pacman.api.admin.util.AdminUtils;
-import org.springframework.util.CollectionUtils;
+import static com.tmobile.pacman.api.commons.Constants.GROUP_NAME_FOR_ALL_SOURCES_ASSET_GROUP;
 
 /**
  * AssetGroup Service Implementations
@@ -80,6 +94,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	private static final String ALIASES = "/_aliases";
 	private static  final  String BUCKETS="buckets";
 	private  static  final  String KEY="key";
+	private static final String ALIASES_ACTION_TEMPLATE = "{\"actions\":[%s]}";
+	private static final String ACTION_TEMPLATE = "{\"%s\":{\"index\":\"%s\",\"alias\":\"%s\"}}";
 
 	@Autowired
 	private AssetGroupRepository assetGroupRepository;
@@ -813,7 +829,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			log.info("Asset group created for pluginType : {}", pluginType);
 			assetGroupRepository.save(assetGroupDetails);
 			// Trying to re-add indices of plugin type to asset group
-			updatePluginDataInAssetGroup(pluginType, false);
+			addPluginTypeToAllSources(pluginType);
 		} catch (Exception e) {
 			log.error("Asset group creation for {} failed", pluginType, e);
 		}
@@ -842,39 +858,49 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		try {
 			AssetGroupDetails assetGroupInDB = assetGroupRepository.findByGroupName(groupName);
 			if (assetGroupInDB == null) {
-				log.error("Asset group not found with group name as {}", groupName);
+				log.error("Asset group {} not found", groupName);
 				return false;
 			}
 			assetGroupRepository.delete(assetGroupInDB);
-			log.info("asset group with group name {} deleted successfully", groupName);
+			log.info("Asset group {} deleted", groupName);
 			return true;
 		} catch (Exception e) {
-			log.error("Unable to delete asset group with group name as {}", groupName, e);
+			log.error("Unable to delete asset group {}", groupName, e);
 			return false;
 		}
 	}
 
 	@Override
-	public void updatePluginDataInAssetGroup(String pluginName, boolean isRemoved) {
+	public void addPluginTypeToAllSources(String pluginName) {
 		try {
-			StringBuilder requestBody = new StringBuilder("{\"actions\":[");
-			if (isRemoved) {
-				requestBody.append("{\"remove\":{\"index\":\"").append(pluginName)
-						.append("_*\",\"alias\":\"").append(ALL_SOURCES_ASSET_GROUP).append("\"}},");
-			} else {
-				requestBody.append("{\"add\":{\"index\":\"").append(pluginName)
-						.append("_*\",\"alias\":\"").append(ALL_SOURCES_ASSET_GROUP).append("\"}},");
-			}
-			requestBody.deleteCharAt(requestBody.length() - 1);
-			requestBody.append("]}");
-			Response response = commonService.invokeAPI("POST", ES_ALIASES_PATH, requestBody.toString());
+			String actionTemplate = String.format(ACTION_TEMPLATE, "add", pluginName + "_*",
+					GROUP_NAME_FOR_ALL_SOURCES_ASSET_GROUP);
+			String aliasQuery = String.format(ALIASES_ACTION_TEMPLATE, actionTemplate);
+			Response response = commonService.invokeAPI("POST", ES_ALIASES_PATH, aliasQuery);
 			if (response == null || response.getStatusLine().getStatusCode() != 200) {
-				log.error("Unable to remove or update indices for asset group {} with response {}",
-						ALL_SOURCES_ASSET_GROUP, response);
+				log.error("Unable to add indices for asset group {} with response {}",
+						GROUP_NAME_FOR_ALL_SOURCES_ASSET_GROUP, response);
 			}
-			log.info("Indices updated for plugin successfully.");
+			log.info("Indices added for {}", pluginName);
 		} catch (Exception e) {
-			log.error("Unable to remove or update indices for Plugin : {} From AssetGroup", pluginName, e);
+			log.error("Unable to add indices for {}", pluginName, e);
+		}
+	}
+
+	@Override
+	public void removePluginTypeFromAllSources(String pluginName) {
+		try {
+			String actionTemplate = String.format(ACTION_TEMPLATE, "remove", pluginName + "_*",
+					GROUP_NAME_FOR_ALL_SOURCES_ASSET_GROUP);
+			String aliasQuery = String.format(ALIASES_ACTION_TEMPLATE, actionTemplate);
+			Response response = commonService.invokeAPI("POST", ES_ALIASES_PATH, aliasQuery);
+			if (response == null || response.getStatusLine().getStatusCode() != 200) {
+				log.error("Unable to remove indices for asset group {} with response {}",
+						GROUP_NAME_FOR_ALL_SOURCES_ASSET_GROUP, response);
+			}
+			log.info("Indices removed for {}", pluginName);
+		} catch (Exception e) {
+			log.error("Unable to remove indices for {}", pluginName, e);
 		}
 	}
 }
