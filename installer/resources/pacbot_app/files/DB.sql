@@ -3118,11 +3118,16 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
  INSERT INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
  VALUES ('plugins.in.v1','gcp,redhat,contrast','job-scheduler','prd','latest',NULL,NULL,NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp,redhat,contrast';
 
-/* Contrast asset application, organization */
+/* Contrast asset application, library */
   INSERT  INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
 VALUES('application','Application','Compute','contrast','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
  concat(@eshost,':',@esport,'/contrast_application'),'2023-11-06','2023-11-06','Infra & Platforms','Application')
  ON DUPLICATE KEY UPDATE targetName='application', dataSourceName='contrast', displayName='Application';
+ 
+INSERT  INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+VALUES('library','Library','Application','contrast','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
+ concat(@eshost,':',@esport,'/contrast_library'),'2023-11-06','2023-11-06','Infra & Platforms','Library')
+ ON DUPLICATE KEY UPDATE targetName='library', dataSourceName='contrast', displayName='Library';
 
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Policy ID','policyId.keyword','/compliance/v1/filters/policyList',"String");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Compliant','compliant','/asset/v1/getCompliantFilterValue',"String");
