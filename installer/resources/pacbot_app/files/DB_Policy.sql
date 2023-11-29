@@ -3476,3 +3476,5 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Qualys Found Medium Vulnerabiliti
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Critical Vulnerabilities' WHERE policyId ='CriticalImageVulnerabilitiesScannedByAqua';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High Vulnerabilities' WHERE policyId ='HighImageVulnerabilitiesScannedByAqua';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium Vulnerabilities' WHERE policyId ='MediumImageVulnerabilitiesScannedByAqua';
+DELETE IGNORE FROM  cf_PolicyTable  where policyId='SQS_Public_Access_Rule_version-1_SQS_Public_access_rule_sqs';
+DELETE IGNORE FROM  cf_PolicyParams where policyId='SQS_Public_Access_Rule_version-1_SQS_Public_access_rule_sqs';

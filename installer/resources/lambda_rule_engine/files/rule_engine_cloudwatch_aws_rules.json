@@ -143,7 +143,6 @@
 	"aws_sg_should_not_have_public_access_with_port22",
 	"aws_sg_should_not_have_public_access_to_memcached_port_11211",
 	"aws_sg_should_not_have_public_access_to_redis_port_6379",
-	"aws_sqs_should_not_have_public_access",
 	"aws_iamuser_service-acc-shouldnothave_unauth_privileges",
 	"aws_account_service_limit_rule",
 	"aws_app_elb_should_be_tagged_with_mandatory_tags",
