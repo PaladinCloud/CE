@@ -156,27 +156,25 @@
  
      const assetGroupList = this.dataStore.getListOfAssetGroups();
  
-     if (!assetGroupList || assetGroupList === 'undefined') {
- 
-         const assetUrl = environment.assetTiles.url;
-         const assetMethod = environment.assetTiles.method;
- 
-         this.assetTilesSubscription = this.assetGroupsService.getAssetTiles(assetUrl, assetMethod).subscribe(
-             response => {
-                 this.assetTiles = response[0];
-                 this.dataStore.setListOfAssetGroups(JSON.stringify(this.assetTiles));
-                 this.processData();
-             },
-             error => {
-                 this.loaded = true;
-                 this.showError = true;
-                 this.logger.log('error', error);
-             });
-     } else {
-         this.assetTiles = JSON.parse(assetGroupList);
-         this.assetTiles.sort((a, b) => a.displayname.localeCompare(b.displayname, 'en', { sensitivity: 'base' }));
-         this.processData();
-     }
+     if(assetGroupList){
+        this.assetTiles = JSON.parse(assetGroupList);
+        this.assetTiles.sort((a, b) => a.displayname.localeCompare(b.displayname, 'en', { sensitivity: 'base' }));
+        this.processData();
+      }
+      const assetUrl = environment.assetTiles.url;
+      const assetMethod = environment.assetTiles.method;
+
+      this.assetTilesSubscription = this.assetGroupsService.getAssetTiles(assetUrl, assetMethod).subscribe(
+          response => {
+              this.assetTiles = response[0];
+              this.dataStore.setListOfAssetGroups(JSON.stringify(this.assetTiles));
+              this.processData();
+          },
+          error => {
+              this.loaded = true;
+              this.showError = true;
+              this.logger.log('error', error);
+          });
    }
  
    getDisplayName(assetName){
