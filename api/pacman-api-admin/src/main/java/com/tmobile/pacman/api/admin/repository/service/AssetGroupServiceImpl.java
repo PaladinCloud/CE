@@ -25,13 +25,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
-import com.tmobile.pacman.api.admin.domain.AssetGroupView;
-import com.tmobile.pacman.api.admin.domain.AttributeDetails;
-import com.tmobile.pacman.api.admin.domain.CreateAssetGroup;
-import com.tmobile.pacman.api.admin.domain.CreateUpdateAssetGroupDetails;
-import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupRequest;
-import com.tmobile.pacman.api.admin.domain.TargetTypesDetails;
-import com.tmobile.pacman.api.admin.domain.UpdateAssetGroupDetails;
+import com.tmobile.pacman.api.admin.domain.*;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.AssetGroupCriteriaDetailsRepository;
 import com.tmobile.pacman.api.admin.repository.AssetGroupRepository;
@@ -46,6 +40,9 @@ import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.DataException;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
+import com.tmobile.pacman.api.commons.utils.CommonUtils;
+import lombok.var;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
@@ -59,17 +56,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_ALIAS_DELETION_FAILED;
@@ -88,7 +79,6 @@ import static com.tmobile.pacman.api.commons.Constants.GROUP_NAME_FOR_ALL_SOURCE
  */
 @Service
 public class AssetGroupServiceImpl implements AssetGroupService {
-
 	private static final Logger log = LoggerFactory.getLogger(AssetGroupServiceImpl.class);
 
 	private static final String ALIASES = "/_aliases";
@@ -125,6 +115,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 
 	@Autowired
 	private EsCommonService esCommonService;
+	@Autowired
+	PacmanRdsRepository rdsRepository;
 
 	@Value("${tagging.mandatoryTags}")
 	private String mandatoryTags;
@@ -138,33 +130,97 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	}
 
 	@Override
-	public Page<AssetGroupView> getAllAssetGroupDetails(Map<String, String> filterMap, final String searchTerm, final int page, final int size) {
-		if(filterMap != null){
-			return buildAssetGroupView(assetGroupRepository.findAll(searchTerm.toLowerCase(), PageRequest.of(page, size)), filterMap);
+	public Page<AssetGroupView> getAllAssetGroupDetails(PluginRequestBody requestBody, final String searchTerm, int page, int size) {
+		StringBuilder query = new StringBuilder("SELECT * FROM cf_AssetGroupDetails ag WHERE LOWER(ag.groupType) <> 'user' ");
+		StringBuilder whereQuery = new StringBuilder("");
+		if (requestBody != null && !requestBody.getFilter().isEmpty()) {
+			for (var entry : requestBody.getFilter().entrySet()) {
+				if (!entry.getKey().toString().equalsIgnoreCase("assetCount")) {
+					List<String> inpValues = (List<String>) entry.getValue();
+					whereQuery = whereQuery.append(" and ag." + entry.getKey().toString() + " in (" + CommonUtils.joinListElement(inpValues) + ")");
+				}
+			}
 		}
-		return buildAssetGroupView(assetGroupRepository.findAll(searchTerm.toLowerCase(), PageRequest.of(page, size)));
+		String sortElement = requestBody.getSortFilter().get("fieldName") != null && !requestBody.getSortFilter().get("fieldName").equalsIgnoreCase("assetCount")
+				? requestBody.getSortFilter().get("fieldName") : "groupId";
+		String sortOrder = requestBody.getSortFilter() != null && requestBody.getSortFilter().get("order") != null ? requestBody.getSortFilter().get("order") : "ASC";
+		query = query.append(whereQuery);
+		if (size > 0) {
+			query = query.append(" order by LOWER(" + sortElement + ") " + sortOrder + " limit " + size + " offset " + page * size);
+		}
+		List<Map<String, Object>> response = rdsRepository.getDataFromPacman(query.toString());
+		List<AssetGroupDetails> assetGroupDetailsList = new ArrayList<>();
+		response.stream().forEach(map -> {
+			AssetGroupDetails assetGroupDetails = mapper.convertValue(map, AssetGroupDetails.class);
+			assetGroupDetailsList.add(assetGroupDetails);
+		});
+		return buildAssetGroupView(assetGroupDetailsList, (List<Map<String, Object>>) requestBody.getFilter().get("assetCount"), requestBody.getSortFilter());
 	}
 
-	private Page<AssetGroupView> buildAssetGroupView(final Page<AssetGroupDetails> allAssetGroups) {
+	public Map<String, Object> getAllAssetGroupDetailsFilterValues(PluginRequestBody requestBody) {
+		Page<AssetGroupView> dataResponse = getAllAssetGroupDetails(requestBody, "", 0, 0);
+		Map<String, Object> responseMap = new HashMap<>();
+		if(!requestBody.getAttributeName().equalsIgnoreCase("assetCount")){
+			Set<String> filterValues = dataResponse.getContent().stream().map(obj -> mapper.convertValue(obj, Map.class))
+					.filter(obj -> obj != null && obj.containsKey(requestBody.getAttributeName()))
+					.map(obj -> obj.get(requestBody.getAttributeName()).toString()).collect(Collectors.toSet());
+			List<Map<String, Object>> filterResMap = filterValues.stream().map(obj -> {
+				HashMap<String, Object> map = new HashMap<>();
+				map.put("name", obj);
+				map.put("id", obj);
+				return map;
+			}).collect(Collectors.toList());
+			responseMap.put("response", filterResMap);
+		}
+		else{
+			Optional<Long> max = dataResponse.getContent().stream().map(obj -> obj.getAssetCount()).reduce(Long::max);
+			Optional<Long> min = dataResponse.getContent().stream().map(obj -> obj.getAssetCount()).reduce(Long::min);
+			HashMap<String, Object> rangeMap = new HashMap<>();
+			rangeMap.put("max", max.get());
+			rangeMap.put("min", min.get());
+			HashMap<String, Object> optionRange = new HashMap<>();
+			optionRange.put("optionRange", rangeMap);
+			responseMap.put("response", optionRange);
+		}
+
+		return responseMap;
+	}
+
+	private Page<AssetGroupView> buildAssetGroupView(List<AssetGroupDetails> allAssetGroups, List<Map<String, Object>> filterMap, Map<String, String> sortFilter) {
 		List<AssetGroupView> allAssetGroupList = Lists.newArrayList();
-		allAssetGroups.getContent().forEach(assetGroup -> {
-			if(!StringUtils.isEmpty(assetGroup.getGroupType()) && !assetGroup.getGroupType().equalsIgnoreCase("stakeholder")){
-				AssetGroupView assetGroupView = new AssetGroupView();
-				List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup.getGroupName(), "all", null, null, null);
-				Long sum = countMap==null ? 0L : countMap.stream().map(x -> x.get(AdminConstants.COUNT)).collect(Collectors.toList())
-						.stream().map(x -> Long.valueOf(x.toString())).collect(Collectors.summingLong(Long::longValue));
-				assetGroupView.setAssetCount(sum);
-				assetGroupView.setGroupId(assetGroup.getGroupId());
-				assetGroupView.setCriteriaDetails(assetGroup.getCriteriaDetails());
-				assetGroupView.setType(assetGroup.getGroupType());
-				assetGroupView.setGroupName(assetGroup.getGroupName());
-				assetGroupView.setDisplayName(assetGroup.getDisplayName());
-				assetGroupView.setCreatedBy(assetGroup.getCreatedBy());
-				assetGroupView.setType(assetGroup.getGroupType());
-				allAssetGroupList.add(assetGroupView);
+		List<AssetGroupDetails> assetGrpsList = allAssetGroups.stream().filter(assetGroup -> (!StringUtils.isEmpty(assetGroup.getGroupType()) &&
+				!assetGroup.getGroupType().equalsIgnoreCase("stakeholder"))).collect(Collectors.toList());
+		assetGrpsList.forEach(assetGroup -> {
+			AssetGroupView assetGroupView = new AssetGroupView();
+			List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup.getGroupName(), "all", null, null, null);
+			Long sum = countMap.stream().map(x -> x.get(AdminConstants.COUNT)).collect(Collectors.toList())
+					.stream().map(x -> Long.valueOf(x.toString())).collect(Collectors.summingLong(Long::longValue));
+			if(filterMap != null && !filterMap.stream().anyMatch(obj -> ((Integer) obj.get("min")).longValue() <= sum && sum <= ((Integer) obj.get("max")).longValue())){
+				return;
 			}
+			assetGroupView.setAssetCount(sum);
+			assetGroupView.setGroupId(assetGroup.getGroupId());
+			assetGroupView.setCreatedBy(assetGroup.getCreatedBy());
+			assetGroupView.setDisplayName(assetGroup.getDisplayName());
+			assetGroupView.setCriteriaDetails(assetGroup.getCriteriaDetails());
+			assetGroupView.setType(assetGroup.getGroupType());
+			assetGroupView.setGroupName(assetGroup.getGroupName());
+			assetGroupView.setType(assetGroup.getGroupType());
+			assetGroupView.setGroupType(assetGroup.getGroupType());
+			assetGroupView.setDescription(assetGroup.getDescription());
+			assetGroupView.setUpdatedDate(assetGroup.getModifiedDate());
+			assetGroupView.setCreatedDate(assetGroup.getCreatedDate());
+			allAssetGroupList.add(assetGroupView);
 		});
-		return new PageImpl<>(allAssetGroupList, PageRequest.of(allAssetGroups.getNumber(), allAssetGroups.getSize()),allAssetGroups.getTotalElements());
+		if(!sortFilter.isEmpty() && sortFilter.get("fieldName").equalsIgnoreCase("assetCount")){
+			Collections.sort(allAssetGroupList, (a, b) -> {
+				if(sortFilter.get("order").equalsIgnoreCase("asc")){
+					return Long.compare(a.getAssetCount(), b.getAssetCount());
+				}
+				return Long.compare(b.getAssetCount(), a.getAssetCount());
+			});
+		}
+		return new PageImpl<>(allAssetGroupList);
 	}
 
 	private Page<AssetGroupView> buildAssetGroupView(final Page<AssetGroupDetails> allAssetGroups, Map<String, String> filterMap) {
@@ -371,7 +427,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			if(!org.apache.commons.lang.StringUtils.isEmpty(updateAssetGroupDetails.getCreatedBy()))
 				existingAssetGroupDetails.setCreatedBy(updateAssetGroupDetails.getCreatedBy());
 			existingAssetGroupDetails.setModifiedUser(userId);
-			existingAssetGroupDetails.setModifiedDate(AdminUtils.getFormatedStringDate(DATE_FORMAT, new Date()));
+			existingAssetGroupDetails.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 			existingAssetGroupDetails.setAliasQuery(mapper.writeValueAsString(assetGroupAlias));
 			existingAssetGroupDetails.setIsVisible(updateAssetGroupDetails.isVisible());
 			if(updateAssetGroupDetails.getConfiguration() != null){
@@ -408,7 +464,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			assetGroupDetails.setGroupType(createAssetGroupDetails.getType());
 			assetGroupDetails.setCreatedBy(createAssetGroupDetails.getCreatedBy());
 			assetGroupDetails.setDescription(createAssetGroupDetails.getDescription());
-			assetGroupDetails.setCreatedDate(AdminUtils.getFormatedStringDate(DATE_FORMAT, new Date()));
+			assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
+			assetGroupDetails.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 			assetGroupDetails.setCreatedUser(userId);
 			assetGroupDetails.setDataSource(dataSource);
 			assetGroupDetails.setAliasQuery(mapper.writeValueAsString(createAssetGroupDetails.getAlias()));
@@ -435,7 +492,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			assetGroupDetails.setGroupType(createAssetGroupDetails.getType());
 			assetGroupDetails.setCreatedBy(createAssetGroupDetails.getCreatedBy());
 			assetGroupDetails.setDescription(createAssetGroupDetails.getDescription());
-			assetGroupDetails.setCreatedDate(AdminUtils.getFormatedStringDate(DATE_FORMAT, new Date()));
+			assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
+			assetGroupDetails.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 			assetGroupDetails.setCreatedUser(userId);
 			assetGroupDetails.setDataSource(dataSource);
 			assetGroupDetails.setAliasQuery(mapper.writeValueAsString(assetGroupAlias));
@@ -807,7 +865,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 					return;
 				}
 				alreadyExistingAssetGroup.setModifiedUser("admin@paladincloud.io");
-				alreadyExistingAssetGroup.setModifiedDate(currentDate);
+				alreadyExistingAssetGroup.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 				alreadyExistingAssetGroup.setVisible(true);
 				assetGroupRepository.save(alreadyExistingAssetGroup);
 				return;
@@ -820,7 +878,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			assetGroupDetails.setGroupType("System");
 			assetGroupDetails.setCreatedBy("admin@paladincloud.io");
 			assetGroupDetails.setDescription("Asset group for " + displayName);
-			assetGroupDetails.setCreatedDate(currentDate);
+			assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 			assetGroupDetails.setCreatedUser("admin@paladincloud.io");
 			assetGroupDetails.setDataSource(pluginType.toLowerCase());
 			assetGroupDetails.setAliasQuery(pluginAliasQuery);
