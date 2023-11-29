@@ -151,7 +151,7 @@ public class ErrorManageUtil {
         errorMap.forEach((account, errors) -> {
             log.error("Printing errors for Account: {}", account);
             errors.forEach(errorVH -> {
-                log.error("Error: {} for type: {} for region", errorVH.getException(), errorVH.getType(), errorVH.getRegion());
+                log.error("Error: {} for type: {} for region: {}", errorVH.getException(), errorVH.getType(), errorVH.getRegion());
             });
         });
 
@@ -161,20 +161,10 @@ public class ErrorManageUtil {
     }
 
     private static void omitPermissionErrors(List<ErrorVH> errorVHList, Map<String, List<String>> assetPermissionMapping, ErrorVH errorVH, List<String> permissionIssues) {
-        if (errorVH.getType().equals("phd") && (errorVH.getException().contains("AccessDeniedException")
-                || errorVH.getException().contains("SubscriptionRequiredException"))) {
-            permissionIssues = new ArrayList<>();
-            permissionIssues.add(errorVH.getException());
-            assetPermissionMapping.put(errorVH.getType(), permissionIssues);
-            errorVHList.remove(errorVH);
-        }
-        if (((errorVH.getType().equals("kms") || errorVH.getType().equals("s3")) && errorVH.getException().contains("AccessDeniedException"))
-                || (errorVH.getType().equals("checks") && (errorVH.getException().contains("AWSSupportException")
-                || (errorVH.getException().contains("Amazon Web Services Premium Support Subscription is required to use this service"))))
-                || (errorVH.getType().equals("security hub") && errorVH.getException().contains("not subscribed to AWS Security Hub"))
-                || (errorVH.getType().equals("all") && (errorVH.getException().contains("AWSSecurityTokenService") && errorVH.getException().contains("is not authorized to perform: sts:AssumeRole")))) {
+        List<String> exceptionList = Arrays.asList("AccessDeniedException", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException", "Rate exceeded");
+        if (exceptionPresentInList(errorVH.getException(), exceptionList)) {
             shortenMessageForKMS(errorVH);
-            if (permissionIssues != null) {
+            if (permissionIssues != null && !errorVH.getType().equals("phd") && !errorVH.getType().equals("security hub")) {
                 permissionIssues.add(errorVH.getException());
             } else {
                 permissionIssues = new ArrayList<>();
@@ -183,6 +173,13 @@ public class ErrorManageUtil {
             assetPermissionMapping.put(errorVH.getType(), permissionIssues);
             errorVHList.remove(errorVH);
         }
+    }
+
+    private static boolean exceptionPresentInList(String errorException, List<String> exceptionList) {
+        for (String exception : exceptionList) {
+            if (errorException.contains(exception)) return true;
+        }
+        return false;
     }
 
     private static void omitDisabledRegionErrors(List<ErrorVH> errorVHList, ErrorVH errorVH) {
