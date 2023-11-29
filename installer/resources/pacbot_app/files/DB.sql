@@ -3126,7 +3126,7 @@ VALUES('application','Application','Compute','contrast','{\"key\":\"id\",\"id\":
  
  INSERT  INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
 VALUES('library','Library','Application','contrast','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
- concat(@eshost,':',@esport,'/contrast_library'),'2023-11-29','2023-11-29','Infra & Platforms','Library')
+ concat(@eshost,':',@esport,'/contrast_library'),'2023-11-06','2023-11-06','Infra & Platforms','Library')
  ON DUPLICATE KEY UPDATE targetName='library', dataSourceName='contrast', displayName='Library';
 
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Policy ID','policyId.keyword','/compliance/v1/filters/policyList',"String");
