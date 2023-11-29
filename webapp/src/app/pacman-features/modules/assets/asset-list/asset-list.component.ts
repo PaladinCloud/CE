@@ -850,7 +850,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
             filterTypeLabels.sort();
 
             this.filterTypeLabels = filterTypeLabels;
-            [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, ['Exempted', 'Tagged', 'Policy Id', 'Compliant']);
+            [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, ['Exempted', 'Tagged', 'Policy ID', 'Compliant']);
             this.routerParam();
             this.getFilterArray();
             this.updateComponent();
