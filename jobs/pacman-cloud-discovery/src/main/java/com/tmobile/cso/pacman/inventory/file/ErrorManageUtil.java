@@ -133,7 +133,7 @@ public class ErrorManageUtil {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
                 omitPermissionErrors(errorVHList, assetPermissionMapping, errorVH, permissionIssues);
                 // omit the region disabled error
-                omitDisabledRegionErrors(errorVHList, errorVH);
+                omitDisabledRegionRateExceedErrors(errorVHList, errorVH);
             }
 
             if (!assetPermissionMapping.isEmpty()) {
@@ -182,10 +182,11 @@ public class ErrorManageUtil {
         return false;
     }
 
-    private static void omitDisabledRegionErrors(List<ErrorVH> errorVHList, ErrorVH errorVH) {
+    private static void omitDisabledRegionRateExceedErrors(List<ErrorVH> errorVHList, ErrorVH errorVH) {
         if (errorVH.getException().contains("AWS was not able to validate the provided access credentials")
                 || errorVH.getException().contains("The security token included in the request is invalid")
-                || errorVH.getException().contains("Unable to execute HTTP request: elasticbeanstalk")) {
+                || errorVH.getException().contains("Unable to execute HTTP request: elasticbeanstalk")
+                || errorVH.getException().contains("Rate exceeded")) {
             errorVHList.remove(errorVH);
         }
     }
