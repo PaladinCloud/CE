@@ -161,7 +161,7 @@ public class ErrorManageUtil {
     }
 
     private static void omitPermissionErrors(List<ErrorVH> errorVHList, Map<String, List<String>> assetPermissionMapping, ErrorVH errorVH, List<String> permissionIssues) {
-        List<String> exceptionList = Arrays.asList("AccessDeniedException", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException", "Rate exceeded");
+        List<String> exceptionList = Arrays.asList("AccessDeniedException", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException");
         if (exceptionPresentInList(errorVH.getException(), exceptionList)) {
             shortenMessageForKMS(errorVH);
             if (permissionIssues != null && !errorVH.getType().equals("phd") && !errorVH.getType().equals("security hub")) {
