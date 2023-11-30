@@ -3478,3 +3478,24 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found High Vulnerabilities' 
 UPDATE cf_PolicyTable SET policyDisplayName = 'Aqua Found Medium Vulnerabilities' WHERE policyId ='MediumImageVulnerabilitiesScannedByAqua';
 DELETE IGNORE FROM  cf_PolicyTable  where policyId='SQS_Public_Access_Rule_version-1_SQS_Public_access_rule_sqs';
 DELETE IGNORE FROM  cf_PolicyParams where policyId='SQS_Public_Access_Rule_version-1_SQS_Public_access_rule_sqs';
+DELETE IGNORE FROM cf_PolicyTable where policyId='Ec2WithPubAccPort1434_version-1_Ec2WithPubAccPort1434_ec2';
+DELETE IGNORE FROM  cf_PolicyParams where policyId='Ec2WithPubAccPort1434_version-1_Ec2WithPubAccPort1434_ec2';
+DELETE IGNORE FROM cf_PolicyTable where policyId='Ec2WithPublicAccessPostgreSqlPort5432_version-1_Ec2WithPubAcc5432_ec2';
+DELETE IGNORE FROM  cf_PolicyParams where policyId='Ec2WithPublicAccessPostgreSqlPort5432_version-1_Ec2WithPubAcc5432_ec2';
+DELETE IGNORE FROM cf_PolicyTable where policyId='Ec2WithPublicAccessMySqlPort3306_version-1_Ec2WithPubAccMySqlPort3306_ec2';
+DELETE IGNORE FROM  cf_PolicyParams where policyId='Ec2WithPublicAccessMySqlPort3306_version-1_Ec2WithPubAccMySqlPort3306_ec2';
+DELETE IGNORE FROM cf_PolicyTable where policyId='Ec2WithPublicAccessRdpPort3389_version-1_Ec2WithPublicAccessRdpPort3389_ec2';
+DELETE IGNORE FROM  cf_PolicyParams where policyId='Ec2WithPublicAccessRdpPort3389_version-1_Ec2WithPublicAccessRdpPort3389_ec2';
+DELETE IGNORE FROM cf_PolicyTable where policyId='EC2WithPublicAccessSSHPort22_version-2_EC2WithPublicAccessForConfiguredPort22_ec2';
+DELETE IGNORE FROM  cf_PolicyParams where policyId='EC2WithPublicAccessSSHPort22_version-2_EC2WithPublicAccessForConfiguredPort22_ec2';
+
+UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to MySQL Server Port 3306' WHERE policyId ='VPC_firewall_MYSQL_port_should_not_be_publicly_accessible';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to RDP Port 3389' WHERE policyId ='deny_public_access_to_rdp_Port_3389';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to PostgreSQL Server Port 5432' WHERE policyId ='VPC_firewall_POSTGRES_port_should_not_be_publicly_accessible';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to SSH Port 22' WHERE policyId ='SGWithAnywhereAccess_version-1_SgWithSshPort22OpenToInternetAccess_sg';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Restrict Inbound Traffic on SSH Port 22' WHERE policyId ='NaclPublicAccessPort_version-1_NACLWithPublicAccessForPort22_networkacl';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Configure Network Security Group Flow Log Retention Period to more than N Days' WHERE policyId ='Network_Security_Group_Flow_Log_retention_more_than_90_days';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Set Retention Duration to \'Greater than N days\' for SQL Server' WHERE policyId ='Set_Retention_Days_Greater_Than_Ninety';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Rotate Key Management Service Encryption Keys Every N Days' WHERE policyId ='kms_keys_rotation_period_within_90_days';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Set the Rotation Period of IAM Access Key to N Days' WHERE policyId ='IamAccessKeyRotatedInEvery90Days_version-1_IamAccessKeyRotatedInEvery90Days_iamuser';
+UPDATE cf_PolicyTable SET policyDisplayName = 'EC2 Instance Stopped more than N days' WHERE policyId ='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
