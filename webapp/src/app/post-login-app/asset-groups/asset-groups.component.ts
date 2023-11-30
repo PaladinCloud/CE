@@ -90,17 +90,23 @@
      private utils: UtilsService,
      private workflowService: WorkflowService,
      ) {
-     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
-     assetGroupName => {
-         if(!this.assetTile) this.assetTileClicked(assetGroupName);
-         this.assetTile = assetGroupName;
-         this.currentAssetTile = this.assetTile;
-         this.selectedGroup = assetGroupName;
-     });
-     const recentlyViewedList = this.dataStore.getRecentlyViewedAssetGroups();
-     const recentTiles = JSON.parse(recentlyViewedList);
-     const selectedAssetGroup = recentTiles[0].displayName;
-     this.chipList = ["Active Asset Group: "+ this.getDisplayName(selectedAssetGroup)];
+      this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
+      assetGroupName => {
+          if(!this.assetTile) this.assetTileClicked(assetGroupName);
+          this.assetTile = assetGroupName;
+          this.currentAssetTile = this.assetTile;
+          this.selectedGroup = assetGroupName;
+      });
+      const recentlyViewedList = this.dataStore.getRecentlyViewedAssetGroups();
+      
+      if (recentlyViewedList) {
+        const recentTiles = JSON.parse(recentlyViewedList);
+
+        if (recentTiles.length > 0) {
+          const selectedAssetGroup = recentTiles[0].displayName;
+          this.chipList = ["Active Asset Group: " + this.getDisplayName(selectedAssetGroup)];
+        }
+      }
  }
  
    ngAfterViewInit() {
