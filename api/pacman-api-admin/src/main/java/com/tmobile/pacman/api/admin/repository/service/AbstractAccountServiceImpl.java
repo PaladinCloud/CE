@@ -44,7 +44,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 public abstract class AbstractAccountServiceImpl implements AccountsService{
 
     @Autowired
@@ -325,12 +324,13 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
                         "Therefore, no updates to asset groups are required.", onlineAccounts.size());
                 return;
             }
-            String updateAssetGroupStatus = assetGroupService.updateAssetGroupStatus(pluginName, false, "admin");
-            logger.info("AssetGroup {} status {}", pluginName, updateAssetGroupStatus);
+            boolean deleteAssetGroupStatus = assetGroupService.deleteAssetGroupByGroupName(pluginName);
+            logger.info("AssetGroup deletion status is {} for {}", deleteAssetGroupStatus, pluginName);
             Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(pluginName);
             logger.info("Total users have been updated with the default asset group. The new count is: {}", totalUsers);
+            assetGroupService.removePluginTypeFromAllSources(pluginName);
         } catch (Exception e) {
-            logger.error("Unable to make changes to required asset groups for {}", pluginName);
+            logger.error("Unable to disable asset groups for {}", pluginName, e);
         }
     }
 
