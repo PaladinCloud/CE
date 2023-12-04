@@ -2369,7 +2369,9 @@ public class InventoryUtil {
 									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
 								}
 								try{
-									kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
+									if(result.getKeyMetadata()!=null && !"EXTERNAL".equalsIgnoreCase(result.getKeyMetadata().getOrigin())){
+										kmsKey.setRotationStatus(awskms.getKeyRotationStatus(new GetKeyRotationStatusRequest().withKeyId(key.getKeyId())).getKeyRotationEnabled());
+									}
 								}catch(Exception e){
 									log.debug(e.getMessage());
 									ErrorManageUtil.uploadError(accountId,region.getName(),"kms",e.getMessage());
@@ -2390,7 +2392,6 @@ public class InventoryUtil {
 						}
 						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : KMSKey "+region.getName() + " >> "+kmsKeysList.size());
 						kmsKeys.put(accountId+delimiter+accountName+delimiter+region.getName(),kmsKeysList);
-
 					}
 				}
 			}catch(Exception e){

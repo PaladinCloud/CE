@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class ASGInventoryUtil {
 		List<String> launchConfigurationNames = new ArrayList<>();
 		
 		String expPrefix = "{\"errcode\": \"NO_RES_REG\" ,\"accountId\": \""+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ASG\" , \"region\":\"" ;
-		for(Region region : RegionUtils.getRegions()){ 
+		for(Region region : RegionUtils.getRegions()){
 			try{
 				if(!skipRegions.contains(region.getName())){ //!skipRegions
 					List<LaunchConfiguration> launchConfigurationListTemp = new ArrayList<>();
@@ -93,10 +94,10 @@ public class ASGInventoryUtil {
 					for(int i =0 ; i<launchConfigurationNames.size();i++){
 						launchConfigurationNamesTemp.add(launchConfigurationNames.get(i));
 						if((i+1)%50==0 || i == launchConfigurationNames.size()-1){
+							launchConfigurationNamesTemp = launchConfigurationNamesTemp.stream().filter(obj -> obj!=null).collect(Collectors.toList());
 							launchConfigurationListTemp.addAll(asgClient.describeLaunchConfigurations(new DescribeLaunchConfigurationsRequest().withLaunchConfigurationNames(launchConfigurationNamesTemp)).getLaunchConfigurations());
 							launchConfigurationNamesTemp = new ArrayList<>();
 						}
-						
 					}
 					
 					if(!launchConfigurationListTemp.isEmpty() ){
