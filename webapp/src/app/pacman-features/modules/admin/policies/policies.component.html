@@ -17,7 +17,7 @@
         <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
     </div>
     <div class="table-wrapper">
-        <app-table (rowSelectEventEmitter)="handleRowClick($event)"
+        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="handleRowClick($event)"
             (actionSelected)="goToDetails($event)" [data]="tableData" [columnWidths]="columnWidths"
             (headerColNameSelected)="handleHeaderColNameSelection($event)" [headerColName]="headerColName"
             [direction]="direction" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
@@ -28,8 +28,8 @@
             [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters"
             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)" (selectedFilter)="changeFilterTags($event)"
             (selectedFilterType)="changeFilterType($event)" (deleteFilters)="deleteFilters($event)"
-            [selectedRowIndex]="selectedRowIndex" [enableMultiValuedFilter]="true" [filterTypeOptions]="filterTypeOptions"
-            (nextPageCalled)="nextPage($event)">
+            [selectedRowId]="selectedRowId" idColumn="Policy ID" [enableMultiValuedFilter]="true"
+            [filterTypeOptions]="filterTypeOptions" (nextPageCalled)="nextPage($event)">
         </app-table>
     </div>
 </div>
