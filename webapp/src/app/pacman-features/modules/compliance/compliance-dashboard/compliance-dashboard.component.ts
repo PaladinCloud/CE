@@ -137,7 +137,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     policyCategory: 'Category',
   };
   columnWidths = { Policy: 3, Violations: 1, Source: 1, "Asset Type": 1, Severity: 1, Category: 1, Compliance: 1 };
-  selectedRowIndex: number;
+  selectedRowId: number;
   centeredColumns = {
     Policy: false,
     Violations: true,
@@ -239,6 +239,9 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   state: any = {};
   whiteListColumns;
   displayedColumns;
+
+  totalAssetsCountData = [];
+  totalAssetsCountDataError = '';
   isStatePreserved = false;
   showDownloadBtn = true;
   tableScrollTop = 0;
@@ -299,7 +302,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.tableScrollTop = state?.tableScrollTop;
     this.totalRows = state.totalRows ?? 0;
     this.filters = state?.filters ?? [];
-    this.selectedRowIndex = state?.selectedRowIndex;
+    this.selectedRowId = state?.selectedRowId;
 
     if (this.complianceTableData && this.complianceTableData.length > 0) {
       this.isStatePreserved = true;
@@ -435,7 +438,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       searchTxt: this.searchTxt,
       tableScrollTop: this.tableScrollTop,
       filters: this.filters,
-      selectedRowIndex: this.selectedRowIndex
+      selectedRowId: this.selectedRowId
     }
     this.tableStateService.setState(this.saveStateKey, state);
   }
@@ -1137,7 +1140,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     const selectedRow = event.rowSelected;
     const data = event.data;
     this.tableScrollTop = event.tableScrollTop;
-    this.selectedRowIndex = event.selectedRowIndex;
+    this.selectedRowId = event.selectedRowId;
     this.storeState(data);
     try {
       this.workflowService.addRouterSnapshotToLevel(

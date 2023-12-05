@@ -161,7 +161,7 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared
    pageNumber: number = 0;
  
    searchTxt: String = "";
-   selectedRowIndex;
+   selectedRowId;
    tableData: any = [];
    tableDataLoaded: boolean = false;
    filters: any = [];
@@ -377,7 +377,7 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared
      this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
      this.tableScrollTop = state?.tableScrollTop;
      this.filters = state?.filters || [];
-     this.selectedRowIndex = state?.selectedRowIndex;
+     this.selectedRowId = state?.selectedRowId;
    
      if(this.tableData && this.tableData.length>0){
        this.isStatePreserved = true;
@@ -594,7 +594,7 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared
        searchTxt: this.searchTxt,
        tableScrollTop: this.tableScrollTop,
        filters: this.filters,
-       selectedRowIndex: this.selectedRowIndex
+       selectedRowId: this.selectedRowId
      }
      this.tableStateService.setState(this.saveStateKey, state);
    }
@@ -747,7 +747,7 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared
      const data = event.data;
      const policyId = row["Policy ID"].valueText;
      this.tableScrollTop = event.tableScrollTop;
-     this.selectedRowIndex = event.selectedRowIndex;
+     this.selectedRowId = event.selectedRowId;
      this.storeState(data);
      try {
        this.workflowService.addRouterSnapshotToLevel(

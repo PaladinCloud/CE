@@ -111,7 +111,8 @@
                     (selectedFilter)="changeFilterTags($event)"
                     (selectedFilterType)="changeFilterType($event)"
                     (deleteFilters)="deleteFilters($event)"
-                    [selectedRowIndex]="selectedRowIndex"
+                    [selectedRowId]="selectedRowId"
+                    idColumn="Policy ID"
                 >
                 </app-table>
             </mat-grid-tile>
