@@ -37,6 +37,7 @@ import com.tmobile.pacman.api.admin.factory.AccountFactory;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.repository.model.ConfigProperty;
+import com.tmobile.pacman.api.admin.repository.service.accounts.AccountsService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
@@ -49,7 +50,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

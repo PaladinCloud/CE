@@ -1,4 +1,4 @@
-package com.tmobile.pacman.api.admin.repository.service;
+package com.tmobile.pacman.api.admin.repository.service.accounts;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
+public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService {
 
     private static final Logger LOGGER= LoggerFactory.getLogger(AwsAccountServiceImpl.class);
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
