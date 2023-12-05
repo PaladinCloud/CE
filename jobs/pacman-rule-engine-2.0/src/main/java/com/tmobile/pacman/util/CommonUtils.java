@@ -28,6 +28,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -474,6 +475,7 @@ public class CommonUtils {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, String> flatNestedMap(String notation, Map<String, Object> nestedMap) {
+        ObjectMapper mapper = new ObjectMapper();
         Map<String, String> flatNestedMap = new HashMap<String, String>();
         String prefixKey = notation != null ? notation + "." : "";
         for (Map.Entry<String, Object> entry : nestedMap.entrySet()) {
@@ -492,6 +494,14 @@ public class CommonUtils {
             }
             if (entry.getValue() instanceof Map) {
                 flatNestedMap.putAll(flatNestedMap(prefixKey + entry.getKey(), (Map<String, Object>) entry.getValue()));
+            }
+            try {
+                if (entry.getValue() instanceof ArrayList) {
+                    flatNestedMap.put(prefixKey + entry.getKey(),
+                            mapper.writeValueAsString(entry.getValue()));
+                }
+            } catch (Exception e) {
+                LOGGER.error("unable to convert Array of {} to string", entry.getKey(), e);
             }
         }
         return flatNestedMap;
