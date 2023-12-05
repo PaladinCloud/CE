@@ -16,11 +16,7 @@
 package com.tmobile.pacbot.azure.inventory;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -134,12 +130,13 @@ public class ErrorManageUtil {
 
     public static void triggerNotificationforPermissionDenied() {
         List<PermissionVH> permissionIssue = new ArrayList<>();
+        List<String> exceptionList = Arrays.asList("DeniedWithNoValidRBAC", "ForbiddenByFirewall", "AuthorizationFailed", "AuthenticationException");
         for (Map.Entry<String, List<ErrorVH>> entry : errorMap.entrySet()) {
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
             List<ErrorVH> errorVHList = entry.getValue();
             for (ErrorVH errorVH : entry.getValue()) {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
-                if ((errorVH.getType().equals("vault") && errorVH.getException().contains("DeniedWithNoValidRBAC") || errorVH.getException().contains("ForbiddenByFirewall")) || (errorVH.getType().equals("webapp") && errorVH.getException().contains("AuthorizationFailed")) || (errorVH.getType().equals("all") && errorVH.getException().contains("AuthenticationException"))) {
+                if (exceptionPresentInList(errorVH.getException(), exceptionList)) {
                     log.info("Omit exception :{}", errorVH.getException());
                     if (permissionIssues != null) {
                         permissionIssues.add(errorVH.getException());
@@ -162,5 +159,12 @@ public class ErrorManageUtil {
             }
         }
         NotificationPermissionUtils.triggerNotificationForPermissionDenied(permissionIssue, "Azure");
+    }
+
+    private static boolean exceptionPresentInList(String errorException, List<String> exceptionList) {
+        for (String exception : exceptionList) {
+            if (errorException.contains(exception)) return true;
+        }
+        return false;
     }
 }
