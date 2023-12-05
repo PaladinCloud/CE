@@ -3186,3 +3186,11 @@ END //
 DELIMITER ;
 
 CALL change_createdTime_columntype_to_timestamp();
+
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (20,'compliance-category-policies');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (20,'Policy','name','/compliance/v1/filters/policyCompliance');\
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (20,'Violations','failed','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (20,'Compliance','compliance_percent','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (20,'Severity','severity','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (20,'Source','provider','/compliance/v1/filters/policyCompliance');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (20,'Asset Type','resourcetType','/compliance/v1/filters/policyCompliance');
