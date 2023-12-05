@@ -1234,6 +1234,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   }: CdkDragDrop<DashboardArrangementItems>) {
     moveItemInArray(container.data, previousIndex, currentIndex);
     this.dashboardArrangementService.saveArrangement(this.dashboardContainers);
+    this.complianceTableData = [...this.complianceTableData];
   }
 
   toggleContainer(index: number) {
