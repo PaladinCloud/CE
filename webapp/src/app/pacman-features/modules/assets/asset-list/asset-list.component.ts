@@ -419,112 +419,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
       let assetListUrl;
       let assetListMethod;
 
-      if (this.urlID) {
-        if (this.urlID.toLowerCase() === "exempted") {
-          this.dataTableDesc = "Note: This page shows all the exempt assets";
-          // the url and method for exempted << -- defines url and method
-          assetListUrl = environment.assetListExempted.url;
-          assetListMethod = environment.assetListExempted.method;
-          this.serviceId = 15;
-          this.tableDownloadName = "Exempt Assets";
-        } else if (this.urlID.toLowerCase() === "taggable") {
-          this.dataTableDesc = "Note: This page shows all the taggable assets";
-          // the url and method for tagging << -- defines url and method
-          assetListUrl = environment.assetListTaggable.url;
-          assetListMethod = environment.assetListTaggable.method;
-          this.serviceId = 10;
-          this.tableDownloadName = "Taggable Assets";
-        } else if (this.urlID.toLowerCase() === "patchable") {
-          this.dataTableDesc = "Note: This page shows all the patchable assets";
-          // patchable  asset list api
-          // the url and method for patching << -- defines url and method
-          assetListUrl = environment.assetListPatchable.url;
-          assetListMethod = environment.assetListPatchable.method;
-          this.serviceId = 8;
-          this.tableDownloadName = "Patchable Assets";
-          this.filterText["resourceType"] = "ec2";
-        } else if (this.urlID.toLowerCase() === "scanned") {
-          this.dataTableDesc = "Note: This page shows all the scanned assets";
-          // patchable  asset list api
-          // the url and method for patching << -- defines url and method
-          assetListUrl = environment.assetList.url;
-          assetListMethod = environment.assetList.method;
-          this.serviceId = 9;
-          this.tableDownloadName = "Scanned Assets";
-        } else if (this.urlID.toLowerCase() === "vulnerable") {
-          this.dataTableDesc =
-            "Note: This page shows all the vulnerable assets";
-          // vulnerable  asset list api
-          // the url and method for patching << -- defines url and method
-          assetListUrl = environment.assetListVulnerable.url;
-          assetListMethod = environment.assetListVulnerable.method;
-          this.serviceId = 11;
-          this.tableDownloadName = "Vulnerable Assets";
-        } else if (this.urlID.toLowerCase() === "pull-request-trend") {
-          if (this.filterText.prstate) {
-            this.dataTableDesc =
-              "Note: This page shows the " +
-              this.filterText.prstate.toString().toLowerCase() +
-              " pull request trend";
-          } else {
-            this.dataTableDesc = "Note: This page shows the pull request trend";
-          }
-          // vulnerable  asset list api
-          // the url and method for patching << -- defines url and method
-          assetListUrl = environment.PullReqLineTrend.url;
-          assetListMethod = environment.PullReqLineTrend.method;
-          this.serviceId = 12;
-          this.tableDownloadName = "Pull Request Trend";
-        } else if (this.urlID.toLowerCase() === "pull-request-age") {
-          if (this.filterText.daysRange) {
-            this.dataTableDesc =
-              "Note: This page shows the pull request age (" +
-              this.filterText.daysRange.toString().toLowerCase() +
-              " days)";
-          } else {
-            this.dataTableDesc = "Note: This page shows the pull request age";
-          }
-          assetListUrl = environment.PullReqAge.url;
-          assetListMethod = environment.PullReqAge.method;
-          this.serviceId = 13;
-          this.tableDownloadName = "Pull Request Age";
-        } else if (this.urlID.toLowerCase() === "branching-strategy") {
-          if (this.filterText.strategyType) {
-            this.dataTableDesc =
-              "Note: This page shows the" +
-              " '" +
-              this.filterText.strategyType.toString().toLowerCase() +
-              "' " +
-              this.filterText.branchingStrategyType.toString().toLowerCase() +
-              " " +
-              "distribution by branching strategies";
-          } else {
-            this.dataTableDesc =
-              "Note: This page shows the" +
-              " " +
-              this.filterText.branchingStrategyType.toString().toLowerCase() +
-              " " +
-              "distribution by branching strategies";
-          }
-          assetListUrl = environment.devDistribution.url;
-          assetListMethod = environment.devDistribution.method;
-          this.serviceId = 14;
-          this.tableDownloadName =
-            this.filterText.branchingStrategyType.toString() +
-            " " +
-            "Distribution";
-        } else {
-          assetListUrl = environment.assetList.url;
-          assetListMethod = environment.assetList.method;
-          this.serviceId = 7;
-          this.tableDownloadName = "All Assets";
-          this.filterText["domain"] = this.selectedDomain;
-        }
-      } else {
-        assetListUrl = environment.assetList.url;
-        assetListMethod = environment.assetList.method;
-        this.filterText["domain"] = this.selectedDomain;
-      }
+      assetListUrl = environment.assetList.url;
+      assetListMethod = environment.assetList.method;
+      this.serviceId = 7;
+      this.tableDownloadName = "All Assets";
+      this.filterText["domain"] = this.selectedDomain;
 
       const sortFilter = {
         fieldName: this.fieldName,
@@ -752,18 +651,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       }
 
       // temp code to send download domain filters only for dev page assets landing
-
-      if (
-        this.urlID &&
-        (this.urlID.toLowerCase() === "taggable" ||
-          this.urlID.toLowerCase() === "patchable" ||
-          this.urlID.toLowerCase() === "scanned" ||
-          this.urlID.toLowerCase() === "vulnerable")
-      ) {
-        // this.filterText['domain'] = this.selectedDomain;
-      } else {
-        this.filterText["domain"] = this.selectedDomain;
-      }
+      this.filterText["domain"] = this.selectedDomain;
 
       let filtersToBePassed = {...this.filterText};
 
@@ -835,7 +723,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
             environment.issueFilter.url,
             environment.issueFilter.method
           )
-          .subscribe((response) => {            
+          .subscribe(async(response) => {            
             response[0].response.forEach(item => {
               if(item.optionValue.includes("tags.")){
                 this.columnsToExcludeFromCasing.push(item.optionName);
@@ -852,7 +740,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
             this.filterTypeLabels = filterTypeLabels;
             [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, ['Exempted', 'Tagged', 'Policy ID', 'Compliant']);
             this.routerParam();
-            this.getFilterArray();
+            await this.getFilterArray();
+            await Promise.resolve().then(() => this.getUpdatedUrl());
             this.updateComponent();
           });
       } catch (error) {
