@@ -1,4 +1,4 @@
-package com.tmobile.pacman.api.admin.repository.service;
+package com.tmobile.pacman.api.admin.repository.service.accounts;
 
 import com.tmobile.pacman.api.admin.domain.AccountList;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;

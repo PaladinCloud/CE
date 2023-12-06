@@ -1,6 +1,6 @@
 package com.tmobile.pacman.api.admin.factory;
 
-import com.tmobile.pacman.api.admin.repository.service.AccountsService;
+import com.tmobile.pacman.api.admin.repository.service.accounts.AccountsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
