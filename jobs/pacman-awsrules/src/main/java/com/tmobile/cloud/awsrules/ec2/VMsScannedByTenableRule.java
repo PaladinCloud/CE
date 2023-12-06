@@ -17,11 +17,9 @@
 package com.tmobile.cloud.awsrules.ec2;
 
 import com.amazonaws.util.StringUtils;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
-import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @PacmanPolicy(key = "check-for-vms-scanned-by-tenable", desc = "checks for VMs scanned by tenable ,if not found then its an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
@@ -45,9 +42,6 @@ public class VMsScannedByTenableRule extends BasePolicy {
 
     private static final String POLICY_NAME_FOR_LOGGER = "VMsScannedByTenableRule";
     private static final String POLICY_EXCEPTION_MESSAGE = "Unable to evaluate policy " + POLICY_NAME_FOR_LOGGER + " because of exception.";
-    public static final String TERMINATED_AT_FIELD_NAME = "terminated_at";
-    public static final String HAS_AGENT_FIELD_NAME = "has_agent";
-    public static final String LAST_LICENSED_SCAN_DATE_FIELD_NAME = "last_licensed_scan_date";
     public static final String ISSUE_DETAILS_ANNOTATION_KEY = "issueDetails";
     public static final String EXECUTION_ID_PARAM = "executionId";
     public static final String RULE_ID_PARAM = "ruleId";
@@ -82,10 +76,10 @@ public class VMsScannedByTenableRule extends BasePolicy {
         }
 
         if (resourceAttributes != null) {
-            String instanceID = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
+            String instanceId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
             String entityType = resourceAttributes.get(PacmanRuleConstants.ENTITY_TYPE).toUpperCase();
             try {
-                return getPolicyResult(ruleParam, category, tenableEsApi, instanceID, entityType);
+                return getPolicyResult(ruleParam, category, tenableEsApi, instanceId, entityType);
             } catch (Exception e) {
                 logger.error(POLICY_EXCEPTION_MESSAGE, e);
                 throw new RuleExecutionFailedExeption(POLICY_EXCEPTION_MESSAGE + e);
@@ -97,8 +91,8 @@ public class VMsScannedByTenableRule extends BasePolicy {
         }
     }
 
-    private PolicyResult getPolicyResult(Map<String, String> ruleParam, String category, String tenableEsAPI, String instanceID, String entityType) throws ParseException {
-        List<JsonObject> tenableAssets = PacmanUtils.checkInstanceIdFromElasticSearchForTenable(instanceID, tenableEsAPI, "aws_ec2_instance_id", null);
+    private PolicyResult getPolicyResult(Map<String, String> ruleParam, String category, String tenableEsApi, String instanceId, String entityType) throws ParseException {
+        List<JsonObject> tenableAssets = PacmanUtils.checkInstanceIdFromElasticSearchForTenable(instanceId, tenableEsApi, "aws_ec2_instance_id", null);
 
         if (tenableAssets.isEmpty()) {
             // FAIL: Tenable doesn't do authenticated scans on this asset
@@ -110,7 +104,7 @@ public class VMsScannedByTenableRule extends BasePolicy {
 
         logger.debug("{} completed with no issue produced", POLICY_NAME_FOR_LOGGER);
 
-        return null;
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     private static Annotation getNotScannedAnnotation(Map<String, String> ruleParam, String category, String entityType) {
