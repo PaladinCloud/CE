@@ -261,7 +261,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   readonly dashcobardCollapsedContainersTitles: { [key: number]: string } = {
     [DashboardContainerIndex.VIOLATION_SEVERITY]: 'Violations by Severity',
     [DashboardContainerIndex.CATEGORY_COMPLIANCE]:
-      'Top 10 Risks & Violations by Severity',
+      'Category Compliance & Violations by Severity',
     [DashboardContainerIndex.ASSET_GRAPH]: 'Asset Graph',
     [DashboardContainerIndex.POLICY_OVERVIEW]: 'Policy Compliance Overview',
   };
