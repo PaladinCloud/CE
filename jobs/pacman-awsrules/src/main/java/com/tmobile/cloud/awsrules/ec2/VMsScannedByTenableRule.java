@@ -67,65 +67,45 @@ public class VMsScannedByTenableRule extends BasePolicy {
      */
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.debug("{}: execution started .............", POLICY_NAME_FOR_LOGGER);
+        logger.debug("{}: execution started", POLICY_NAME_FOR_LOGGER);
 
         MDC.put(EXECUTION_ID_PARAM, ruleParam.get(EXECUTION_ID_PARAM)); // this is the logback Mapped Diagnostic Contex
         MDC.put(RULE_ID_PARAM, ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-        String target = ruleParam.get(PacmanRuleConstants.TARGET);
         String discoveredDaysRange = ruleParam.get(PacmanRuleConstants.DISCOVERED_DAYS_RANGE);
         String tenableEsApi = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + ESIndexConstants.TENABLE_VM_ASSETS_INDEX_NAME + "/_search";
 
-        if (!PacmanUtils.doesAllHaveValue(category, tenableEsApi, discoveredDaysRange, target)) {
+        if (!PacmanUtils.doesAllHaveValue(category, tenableEsApi, discoveredDaysRange)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
 
         if (resourceAttributes != null) {
-            String discoveryDate = resourceAttributes.get(PacmanRuleConstants.DISCOVEREY_DATE);
-            if (!StringUtils.isNullOrEmpty(discoveryDate)) {
-                discoveryDate = discoveryDate.substring(0, PacmanRuleConstants.FIRST_DISCOVERED_DATE_FORMAT_LENGTH);
+            String instanceID = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
+            String entityType = resourceAttributes.get(PacmanRuleConstants.ENTITY_TYPE).toUpperCase();
+            try {
+                return getPolicyResult(ruleParam, category, tenableEsApi, instanceID, entityType);
+            } catch (Exception e) {
+                logger.error(POLICY_EXCEPTION_MESSAGE, e);
+                throw new RuleExecutionFailedExeption(POLICY_EXCEPTION_MESSAGE + e);
             }
+        } else {
+            logger.debug("{}: completed with NULL result: resource attributes are empty.", POLICY_NAME_FOR_LOGGER);
 
-            if (PacmanUtils.calculateLaunchedDuration(discoveryDate) >= 0) {
-                String instanceID = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
-                String entityType = resourceAttributes.get(PacmanRuleConstants.ENTITY_TYPE).toUpperCase();
-                try {
-                    return getPolicyResult(ruleParam, category, target, tenableEsApi, instanceID, entityType);
-                } catch (Exception e) {
-                    logger.error(POLICY_EXCEPTION_MESSAGE, e);
-                    throw new RuleExecutionFailedExeption(POLICY_EXCEPTION_MESSAGE + e);
-                }
-            }
+            return null;
         }
-
-        logger.debug("{}: completed with NULL result because resource attributes are empty.", POLICY_NAME_FOR_LOGGER);
-
-        return null;
     }
 
-    private PolicyResult getPolicyResult(Map<String, String> ruleParam, String category, String target, String tenableEsAPI, String instanceID, String entityType) throws ParseException {
+    private PolicyResult getPolicyResult(Map<String, String> ruleParam, String category, String tenableEsAPI, String instanceID, String entityType) throws ParseException {
         List<JsonObject> tenableAssets = PacmanUtils.checkInstanceIdFromElasticSearchForTenable(instanceID, tenableEsAPI, "aws_ec2_instance_id", null);
 
-        // Get the first asset from the list in case we have more than one asset with the same instance ID stored (possible, getting such results from Tenable)
-        if (tenableAssets.isEmpty()
-                || !tenableAssets.get(0).get(HAS_AGENT_FIELD_NAME).getAsBoolean()
-                || tenableAssets.get(0).get(TERMINATED_AT_FIELD_NAME) != null) {
-            // FAIL: Tenable doesn't know about this asset, asset doesn't have Tenable agent installed or asset is terminated
+        if (tenableAssets.isEmpty()) {
+            // FAIL: Tenable doesn't do authenticated scans on this asset
             Annotation annotation = getNotScannedAnnotation(ruleParam, category, entityType);
             logger.debug("{} completed with annotation: {}", POLICY_NAME_FOR_LOGGER, annotation);
 
             return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-        } else {
-            JsonElement lastLicensedScanDate = tenableAssets.get(0).get(LAST_LICENSED_SCAN_DATE_FIELD_NAME);
-            if (!checkLastLicensedScanDate(lastLicensedScanDate, target)) {
-                // FAIL: Tenable scanned this asset more than target days ago
-                Annotation annotation = getOutdatedScanAnnotation(ruleParam, category, target, entityType);
-                logger.debug("{} completed with annotation:  {}", POLICY_NAME_FOR_LOGGER, annotation);
-
-                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-            }
         }
 
         logger.debug("{} completed with no issue produced", POLICY_NAME_FOR_LOGGER);
@@ -133,39 +113,9 @@ public class VMsScannedByTenableRule extends BasePolicy {
         return null;
     }
 
-    /**
-     * Check if time passed since last licensed scan date is less than target
-     *
-     * @param lastLicensedScanDateJson   last licensed scan date
-     * @param targetTimeDifferenceInDays target time difference in days
-     * @return if time passed since last licensed scan date is less than target
-     * @throws ParseException
-     */
-    private boolean checkLastLicensedScanDate(JsonElement lastLicensedScanDateJson, String targetTimeDifferenceInDays) throws ParseException {
-        if (lastLicensedScanDateJson == null || lastLicensedScanDateJson.isJsonNull() || lastLicensedScanDateJson.getAsString().isEmpty()) {
-            return false;
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat(PacmanSdkConstants.DATE_FORMAT);
-        Date lastLicensedScanDate = dateFormat.parse(lastLicensedScanDateJson.getAsString());
-        long timeDiffInDays = (System.currentTimeMillis() - lastLicensedScanDate.getTime()) / Constants.MILLIS_ONE_DAY;
-
-        return timeDiffInDays < Long.parseLong(targetTimeDifferenceInDays);
-    }
-
-    private static Annotation getOutdatedScanAnnotation(Map<String, String> ruleParam, String category, String target, String entityType) {
-        Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-        annotation.put(PacmanSdkConstants.DESCRIPTION, "" + entityType + " tenable not scanned since "
-                + target + " days");
-        annotation.put(PacmanRuleConstants.CATEGORY, category);
-        annotation.put(ISSUE_DETAILS_ANNOTATION_KEY, getIssueDetails(entityType));
-
-        return annotation;
-    }
-
     private static Annotation getNotScannedAnnotation(Map<String, String> ruleParam, String category, String entityType) {
         Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-        annotation.put(PacmanSdkConstants.DESCRIPTION, "" + entityType + " image not scanned  by tenable found");
+        annotation.put(PacmanSdkConstants.DESCRIPTION, "" + entityType + " image not scanned by tenable found");
         annotation.put(PacmanRuleConstants.CATEGORY, category);
         annotation.put(ISSUE_DETAILS_ANNOTATION_KEY, getIssueDetails(entityType));
 
