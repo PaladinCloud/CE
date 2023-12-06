@@ -370,7 +370,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   assignCloudType(event:string){
-    const cloudType = event?.toLowerCase();
+    const cloudType = event?.toLowerCase()?.replace(/\s/g, '');
     this.tiles["Asset"].img = cloudType;
     this.cdRef.detectChanges();
   }
