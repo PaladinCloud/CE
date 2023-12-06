@@ -150,7 +150,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   doLocalSearch = true; // should be removed once tiles data is available from backend
   totalRows = 0;
   assetTypeMap: any;
-  agDomainSubscription: Subscription;
 
   constructor(private agDomainObservableService: AgDomainObservableService,
     private router: Router,
