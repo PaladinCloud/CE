@@ -26,6 +26,7 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.constants.ESIndexConstants;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
@@ -74,9 +75,9 @@ public class VMsScannedByTenableRule extends BasePolicy {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String target = ruleParam.get(PacmanRuleConstants.TARGET);
         String discoveredDaysRange = ruleParam.get(PacmanRuleConstants.DISCOVERED_DAYS_RANGE);
-        String tenableEsAPI = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + PacmanRuleConstants.ES_TENABLE_ASSETS_URL;
+        String tenableEsApi = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + ESIndexConstants.TENABLE_VM_ASSETS_INDEX_NAME + "/_search";
 
-        if (!PacmanUtils.doesAllHaveValue(category, tenableEsAPI, discoveredDaysRange, target)) {
+        if (!PacmanUtils.doesAllHaveValue(category, tenableEsApi, discoveredDaysRange, target)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
@@ -91,7 +92,7 @@ public class VMsScannedByTenableRule extends BasePolicy {
                 String instanceID = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
                 String entityType = resourceAttributes.get(PacmanRuleConstants.ENTITY_TYPE).toUpperCase();
                 try {
-                    return getPolicyResult(ruleParam, category, target, tenableEsAPI, instanceID, entityType);
+                    return getPolicyResult(ruleParam, category, target, tenableEsApi, instanceID, entityType);
                 } catch (Exception e) {
                     logger.error(POLICY_EXCEPTION_MESSAGE, e);
                     throw new RuleExecutionFailedExeption(POLICY_EXCEPTION_MESSAGE + e);

@@ -32,8 +32,8 @@ public abstract class TenableDataImporter {
     protected String apiKeys;
 
     Map<String, String> apiMap;
-    AwsSecretManagerUtil secretManagerUtil = new AwsSecretManagerUtil();
-    CredentialProvider credentialProvider = new CredentialProvider();
+//    AwsSecretManagerUtil secretManagerUtil = new AwsSecretManagerUtil();
+//    CredentialProvider credentialProvider = new CredentialProvider();
 
     protected TenableDataImporter() {
         apiMap = new HashMap<>();
@@ -59,16 +59,16 @@ public abstract class TenableDataImporter {
     public abstract Map<String, Object> execute(int days);
 
     private void getTenableInfo() {
-        String secretManagerPrefix = System.getProperty("secret.manager.path"); // paladincloud/secret
-        String baseAccount = System.getProperty("base.account");
-        String baseRegion = System.getProperty("base.region");
-        String roleName = System.getProperty("s3.role");
+//        String secretManagerPrefix = System.getProperty("secret.manager.path"); // paladincloud/secret
+//        String baseAccount = System.getProperty("base.account");
+//        String baseRegion = System.getProperty("base.region");
+//        String roleName = System.getProperty("s3.role");
+//
+//        BasicSessionCredentials credential = credentialProvider.getBaseAccountCredentials(baseAccount, baseRegion, roleName);
+//        String secretName = secretManagerPrefix + "/" + roleName + "/tenable";
+//        String secretData = secretManagerUtil.fetchSecret(secretName, credential, baseRegion);
 
-        BasicSessionCredentials credential = credentialProvider.getBaseAccountCredentials(baseAccount, baseRegion, roleName);
-        String secretName = secretManagerPrefix + "/" + roleName + "/tenable";
-        String secretData = secretManagerUtil.fetchSecret(secretName, credential, baseRegion);
-
-        Map<String, String> dataMap = Util.getJsonData(secretData);
+        Map<String, String> dataMap = Util.getJsonData("{\"accessKey\":\"c6c2b80b5186c7219842a87aa3118299a04795c7d4258848938a9a677d561703\",\"secretKey\":\"23c498c8a26756221bd18a7f4ca227a69a8c5e20e6706c9528bd1c6d276c78c4\",\"apiURL\":\"https://cloud.tenable.com\",\"userAgent\":\"Integration/1.0 (Paladin Cloud; Paladin Cloud; Build/1.0)\"}");
         accessKey = dataMap.get("accessKey");
         secretKey = dataMap.get("secretKey");
         tenableApiUrl = dataMap.get("apiURL");

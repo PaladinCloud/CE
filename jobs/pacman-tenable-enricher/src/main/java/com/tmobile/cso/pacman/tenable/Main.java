@@ -66,13 +66,13 @@ public class Main {
         int days = Integer.parseInt(params.get("days"));
         if (jobHint.equals("tenable_vm_vulnerability")) {
             errorInfo = TenableVMVulnerabilityDataImporter.getInstance().execute(days);
-            if (!errorInfo.isEmpty() && errorInfo.get("error") != null) {
-                log.warn("Job executed with some errors -> {}", errorInfo);
+            if (!errorInfo.isEmpty() && errorInfo.get("errors") != null && ((List<Map<String, Object>>) errorInfo.get("errors")).size() > 0) {
+                log.error("Job executed with some errors -> {}", errorInfo);
             } else {
                 log.info("Job executed successfully");
             }
         } else {
-            log.warn("Job hint is not supplied");
+            log.error("Job hint is not supplied");
         }
     }
 
