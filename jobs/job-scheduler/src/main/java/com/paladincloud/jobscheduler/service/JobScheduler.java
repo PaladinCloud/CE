@@ -39,9 +39,11 @@ public class JobScheduler {
     public static final String QUALYS_ENABLED = "qualys.enabled";
     public static final String AQUA_ENABLED = "aqua.enabled";
     public static final String TENABLE_ENABLED = "tenable.enabled";
+    public static final String CONTRAST_ENABLED = "contrast.enabled";
     public static final String PLUGIN_TYPE_TENABLE = "tenable";
     public static final String PLUGIN_TYPE_QUALYS = "qualys";
     public static final String PLUGIN_TYPE_AQUA = "aqua";
+    public static final String PLUGIN_TYPE_CONTRAST = "contrast";
     public static final String REQUEST_ENTRY = "Request entry: {} ";
     protected static final List<String> ALL_CLOUDS_LIST = Arrays.asList("aws","azure","gcp");
     public static final String FAILED_WITH_ERROR_CODE = "Injection failed with Error Code: {} ";
@@ -211,6 +213,7 @@ public class JobScheduler {
             qualysEnabled=Boolean.parseBoolean(System.getProperty(QUALYS_ENABLED));
             aquaEnabled=Boolean.parseBoolean(System.getProperty(AQUA_ENABLED));
             tenableEnabled=Boolean.parseBoolean(System.getProperty(TENABLE_ENABLED));
+            boolean contrastEnabled = Boolean.parseBoolean(System.getProperty(CONTRAST_ENABLED));
 
             for (int i = 0; i < totBatches; i++) {
                 List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
@@ -240,6 +243,10 @@ public class JobScheduler {
                 // add event for tenable policies
                 if (tenableEnabled) {
                     putPluginRuleRequestEntries(i, vulnerabilityBusDetails, putEventsRequestEntries, PLUGIN_TYPE_TENABLE);
+                }
+                // add event for contrast policies
+                if (contrastEnabled) {
+                    putPluginRuleRequestEntriesForContrast(i, vulnerabilityBusDetails, putEventsRequestEntries);
                 }
                 if (!putEventsRequestEntries.isEmpty()) {
                     PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
@@ -284,6 +291,18 @@ public class JobScheduler {
             // Add the PutEventsRequestEntry to a putEventsRequestEntries
             reqEntryList.add(reqEntry);
         }
+    }
+
+    private void putPluginRuleRequestEntriesForContrast(int batchNo, String busDetails, List<PutEventsRequestEntry> reqEntryList) {
+        String detailString = null;
+        Event event = populateEventForRule(JobScheduler.PLUGIN_TYPE_CONTRAST, batchNo);
+        detailString = getMarshalledEvent(detailString, event);
+        PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(
+                EVENT_DETAIL_TYPE).detail(detailString).eventBusName(busDetails.split(":")[0]).build();
+        // print the request entry
+        logger.info(REQUEST_ENTRY, reqEntry);
+        // Add the PutEventsRequestEntry to a putEventsRequestEntries
+        reqEntryList.add(reqEntry);
     }
 
     @Scheduled(initialDelayString = "${vulnerability.collector.initial.delay}", fixedDelayString = "${vulnerability.interval}")
