@@ -12,8 +12,8 @@
 	"aqua_aws_image_high_vulnerabilities_scanned_rule",
 	"aqua_aws_image_critical_vulnerabilities_scanned_rule",
 	"aqua_aws_image_scanned_rule",
-	"contrast_critical_library_vulnerability_exists",
-	"contrast_high_library_vulnerability_exists",
-	"contrast_medium_library_vulnerability_exists",
-	"contrast_low_library_vulnerability_exists"
+	"contrast_library_critical_vulnerabilities_found",
+	"contrast_library_high_vulnerabilities_found",
+	"contrast_library_medium_vulnerabilities_found",
+	"contrast_library_low_vulnerabilities_found"
 ]
