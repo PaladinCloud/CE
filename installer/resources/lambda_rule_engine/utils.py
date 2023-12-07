@@ -165,6 +165,8 @@ def get_rule_engine_cloudwatch_rules_plugin_var():
             cloud_name = "aqua-azure"
         elif plugin_name == "aqua" and cloud_type == "gcp":
             cloud_name = "aqua-gcp"
+        elif plugin_name == "contrast":
+            cloud_name = "contrast"
 
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
