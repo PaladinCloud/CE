@@ -1,7 +1,6 @@
 package com.paladincloud;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.PublishRequest;
@@ -9,6 +8,8 @@ import com.amazonaws.services.sns.model.PublishResult;
 import com.google.common.base.Strings;
 import com.google.gson.*;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.io.File;
@@ -19,21 +20,21 @@ import static com.paladincloud.Constants.*;
 
 public class FetchNotificationSettings {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FetchNotificationSettings.class);
     private static final String CONFIG_DETAILS = "configDetails";
 
     public String handleRequest(Map<String, Object> event, Context context) {
         Gson gsonObj = new Gson();
-        LambdaLogger logger = context.getLogger();
 
         String response = new String("hello paladin cloud");
-        logger.log("inside handleRequest " + event);
+        LOGGER.info("inside handleRequest " + event);
         String jsonStr = gsonObj.toJson(event);
-        System.out.println("jsonStr -- " + jsonStr);
+        LOGGER.info("jsonStr -- " + jsonStr);
         JsonParser jsonParser = new JsonParser();
         JsonObject policyParamsJson = (JsonObject) jsonParser.parse(jsonStr);
 
         JsonElement bodyJson = policyParamsJson.getAsJsonArray("Records").get(0);
-        System.out.println("bodyJson--" + bodyJson.toString());
+        LOGGER.info("bodyJson--" + bodyJson.toString());
         String requestObjectStr = bodyJson.getAsJsonObject().get("Sns").getAsJsonObject().get("Message").getAsString();
         Map requestMap = gsonObj.fromJson(requestObjectStr, Map.class);
         String notificationType = ((String) requestMap.get("eventCategory")).toLowerCase();
@@ -43,7 +44,7 @@ public class FetchNotificationSettings {
         Map<String, Object> messageContentMap = (Map<String, Object>) requestMap.get("payload");
         String action = ((String) messageContentMap.get("action"));
         String exemptionType = (String) messageContentMap.get("type");
-        System.out.println("notificationtype - " + notificationType + "map--" + requestMap);
+        LOGGER.info("notificationtype - " + notificationType + "map--" + requestMap);
 
         try {
             Map<String, String> configDetailsMap = HttpUtil.getConfigDetailsForChannels();
@@ -93,11 +94,11 @@ public class FetchNotificationSettings {
         }
          */
                 String accessToken = HttpUtil.getToken(configDetailsMap.get(apiauthinfo));
-                logger.log(" token -" + accessToken);
+                LOGGER.info(" token -" + accessToken);
                 String notificationSettingsUrl = System.getenv("NOTIFICATION_SETTINGS_URL");
                 notificationSettingsJson = HttpUtil.get(notificationSettingsUrl, accessToken);
             }
-            logger.log("notification settings response -" + notificationSettingsJson);
+            LOGGER.info("notification settings response -" + notificationSettingsJson);
 
             JsonObject notifySettingsJsonObject = (JsonObject) jsonParser.parse(notificationSettingsJson);
 
@@ -112,7 +113,7 @@ public class FetchNotificationSettings {
                     Integer sendNotification = notifyTypeJsonObj.getAsJsonObject(channel).get("isOn").getAsInt();
                     JsonArray toEmailIdJsonArray = notifyTypeJsonObj.getAsJsonObject(channel).getAsJsonArray("toAddress");
                     List<String> toEmailIdList = toEmailIdJsonArray.asList().stream().filter(obj -> !Strings.isNullOrEmpty(obj.getAsString())).map(obj -> obj.getAsString()).collect(Collectors.toList());
-                    logger.log("sendNotification - " + sendNotification + " toEmailIdList - " + toEmailIdList);
+                    LOGGER.info("sendNotification - " + sendNotification + " toEmailIdList - " + toEmailIdList);
 
                     //if sendNotification is 1, email will be published. Else, no.
                     if (Integer.valueOf(1).equals(sendNotification) && !toEmailIdList.isEmpty()) {
@@ -127,7 +128,7 @@ public class FetchNotificationSettings {
                         }
 
                         ClassLoader classLoader = getClass().getClassLoader();
-                        logger.log("key - " + channel + " action- " + action + " notificationtype- " + notificationType + " exemptionType- " + exemptionType);
+                        LOGGER.info("key - " + channel + " action- " + action + " notificationtype- " + notificationType + " exemptionType- " + exemptionType);
                         File file = new File(classLoader.getResource(CommonUtils.getTemplateName(channel, action, notificationType, exemptionType)).getFile());
                         String messageContent = null;
                         if (!notificationType.equals("permission")) {
@@ -136,15 +137,15 @@ public class FetchNotificationSettings {
                             messageContent = buildNotificationPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
                         }
                         notificationDetailsStr = gsonObj.toJson(getMsgDetailsMap(messageContent, toEmailIdList, subject));
-                        logger.log("notification message for channel '" + channel + "' is - " + messageContent);
+                        LOGGER.info("notification message for channel '" + channel + "' is - " + messageContent);
 
 
                         if (configDetailsMap.containsKey("email")) {
                             PublishRequest request = new PublishRequest(configDetailsMap.get("email"), notificationDetailsStr);
                             PublishResult result = client.publish(request);
-                            logger.log("Notification message sent for " + channel + " with id " + result.getMessageId());
+                            LOGGER.info("Notification message sent for " + channel + " with id " + result.getMessageId());
                         } else {
-                            logger.log("SNS for email notification is not configured.");
+                            LOGGER.info("SNS for email notification is not configured.");
                         }
                     }
                 }

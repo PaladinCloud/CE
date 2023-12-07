@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent.SNSRecord;
@@ -73,8 +72,7 @@ public class LogNotificationToOpenSearch implements RequestHandler<SNSEvent, Voi
 
 	@Override
 	public Void handleRequest(SNSEvent input, Context context) {
-		LambdaLogger logger = context.getLogger();
-		logger.log("Inside Notification Logger handlerRequest Method " + input);
+		LOGGER.info("Inside Notification Logger handlerRequest Method " + input);
 		List<SNSRecord> records = input.getRecords();
 		records.forEach(r -> {
 			String message = r.getSNS().getMessage();
@@ -90,12 +88,12 @@ public class LogNotificationToOpenSearch implements RequestHandler<SNSEvent, Voi
 				eventMap.put(LATEST, true);
 				eventMap.put("docType",NOTIFICATION_TYPE);
 				message = objectMapper.writeValueAsString(eventMap);
-				logger.log("message : " + message);
+				LOGGER.info("message : " + message);
 				boolean status = postJsonDocumentToIndexAndType(NOTIFICATION_INDEX, NOTIFICATION_TYPE, strUUID,
 						message);
-				logger.log("status : " + status);
+				LOGGER.info("status : " + status);
 			} catch (JsonProcessingException e) {
-				logger.log("json parse exception :"+e);
+				LOGGER.error("json parse exception :"+e);
 			}
 
 			
