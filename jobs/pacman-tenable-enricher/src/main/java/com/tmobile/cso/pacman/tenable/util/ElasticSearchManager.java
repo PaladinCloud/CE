@@ -63,11 +63,10 @@ public class ElasticSearchManager {
      * @param index the index name
      */
     public static void createIndex(String index) {
-        String indexName = "/" + index;
-        if (!indexExists(indexName)) {
+        if (!indexExists(index)) {
             String payLoad = "{\"settings\": { \"number_of_shards\" : 1,\"number_of_replicas\" : 1,\"index.mapping.ignore_malformed\": true }}";
             try {
-                invokeAPI("PUT", indexName, payLoad);
+                invokeAPI("PUT", index, payLoad);
             } catch (IOException e) {
                 LOGGER.error("Error createIndex ", e);
             }
@@ -184,6 +183,9 @@ public class ElasticSearchManager {
      */
     public static Response invokeAPI(String method, String endpoint, String payLoad) throws IOException {
         HttpEntity entity = null;
+        if (!endpoint.startsWith("/")) {
+            endpoint = "/" + endpoint;
+        }
         if (payLoad != null) entity = new NStringEntity(payLoad, ContentType.APPLICATION_JSON);
         return getRestClient().performRequest(method, endpoint, Collections.<String, String>emptyMap(), entity);
     }

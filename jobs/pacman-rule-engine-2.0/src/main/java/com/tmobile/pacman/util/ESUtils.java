@@ -91,9 +91,9 @@ public class ESUtils {
         if (null != filter) {
             effectiveFilter.putAll(filter);
         }
-        logger.debug("querying ES for target type:" + targetType);
+        logger.debug("querying ES for target type: " + targetType);
         Long totalDocs = getTotalDocumentCountForIndexAndType(url, index, targetType, effectiveFilter, null, null);
-        logger.debug("total resource count" + totalDocs);
+        logger.debug("total resource count: " + totalDocs);
         List<Map<String, String>> details = getDataFromES(url, index.toLowerCase(), targetType.toLowerCase(),
                 effectiveFilter, null, null, fields, 0, totalDocs, "_docid");
         return details;
