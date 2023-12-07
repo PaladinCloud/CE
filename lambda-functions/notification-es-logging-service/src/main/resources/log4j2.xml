@@ -7,7 +7,7 @@
     </Appenders>
     <Loggers>
 		<!-- avoid duplicated logs with additivity=false -->
-        <Logger name="com.paladincloud" level="info" additivity="false">
+        <Logger name="com.paladincloud" level="${env:LOG_LEVEL:-ERROR}" additivity="false">
             <AppenderRef ref="LogToConsole"/>
         </Logger>
         <Root level="error">
