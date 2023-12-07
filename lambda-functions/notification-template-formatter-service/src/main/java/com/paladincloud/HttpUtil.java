@@ -1,7 +1,6 @@
 package com.paladincloud;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +12,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.http.HttpEntity;
@@ -36,6 +34,8 @@ import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
 
 import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.paladincloud.Constants.*;
 
@@ -44,6 +44,7 @@ import static com.paladincloud.Constants.*;
  */
 public class HttpUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
     private static final String API_READ_SCOPE = "API_OPERATION/READ";
 
     private HttpUtil() {
@@ -68,14 +69,14 @@ public class HttpUtil {
             if (entity != null) {
                 // return it as a String
                 result = EntityUtils.toString(entity);
-                System.out.println(result);
+                LOGGER.info(result);
             }
             if( httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
                     throw new Exception("User unauthorized !!");
                 }
 
         } catch (Exception exception) {
-            System.out.println("Error inside fetch notification settings " + exception.getMessage());
+            LOGGER.error("Error inside fetch notification settings " + exception.getMessage());
         }
         return result;
 }
@@ -112,7 +113,7 @@ public class HttpUtil {
                 return EntityUtils.toString(httpresponse.getEntity());
             }
         } catch (Exception e) {
-            System.out.println("Error getting the data " +e.getMessage());
+            LOGGER.error("Error getting the data " +e.getMessage());
             throw e;
         }
         return null;
@@ -135,7 +136,7 @@ public class HttpUtil {
                         }
                     }).build()).build();
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-            System.out.println("Error getting getHttpClient "+e.getMessage());
+            LOGGER.error("Error getting getHttpClient "+e.getMessage());
         }
         return httpClient;
     }
@@ -144,7 +145,7 @@ public class HttpUtil {
             return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {
             });
         } catch (IOException e) {
-            System.out.println("Error in parseJson "+e.getMessage());
+            LOGGER.error("Error in parseJson "+e.getMessage());
         }
         return new HashMap<>();
     }
@@ -176,7 +177,7 @@ public class HttpUtil {
                 .setDefaultCredentialsProvider(provider)
                 .build();
              CloseableHttpResponse httpResponse = httpClient.execute(request)) {
-            System.out.println("statuscode is "+httpResponse.getStatusLine().getStatusCode());
+            LOGGER.info("statuscode is "+httpResponse.getStatusLine().getStatusCode());
             if(httpResponse.getStatusLine().getStatusCode()!=200){
                 throw new Exception("Could not fetch topic arn for notification channels!");
             }
@@ -191,7 +192,7 @@ public class HttpUtil {
 
                     topicArnDetailsMap.put("email", sourceJson.get(mailTopicArn).getAsString());
                     topicArnDetailsMap.put(apiauthinfo, sourceJson.get(apiauthinfo).getAsString());
-                    System.out.println(result);
+                    LOGGER.info(result);
                 }
             }
         }
