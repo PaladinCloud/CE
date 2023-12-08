@@ -648,12 +648,10 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             isMenuBtn: false,
             properties: "",
             isLink: false
-            // chipVariant: "", // this value exists if isChip is true,
-            // menuItems: [], // add this if isMenuBtn
           }
           if (col.toLowerCase() === 'policy') {
-            const autoFixAvailable = getData[row].autoFixAvailable;
-            const autoFixEnabled = getData[row].autoFixEnabled;
+            const autoFixAvailable = typeof getData[row].autoFixAvailable == "string" ? getData[row].autoFixAvailable == "true" : getData[row].autoFixAvailable;
+            const autoFixEnabled = typeof getData[row].autoFixEnabled == "string" ? getData[row].autoFixEnabled == "true" : getData[row].autoFixEnabled;
             let imgSrc = 'noImg';
             let imageTitleText = "";
             if (autoFixAvailable) {
