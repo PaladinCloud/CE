@@ -161,7 +161,7 @@ METADATA_XML_FILE = ""  #metadatafile
 JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event" #please do not change these, as this may stop scheduling of jobs
 JOB_SOURCE = "paladincloud.jobs-scheduler"
 
-CURRENT_RELEASE = "v3.0.3"
+CURRENT_RELEASE = "v3.0.4"
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
