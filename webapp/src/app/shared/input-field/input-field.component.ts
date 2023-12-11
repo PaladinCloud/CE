@@ -40,8 +40,8 @@ export class InputFieldComponent implements OnInit, AfterViewInit {
   @Input()
   set value(val) {
     this._value = val;
-    this.onChange(val);
-    this.onTouched(val);
+    this.onChange(this._value);
+    this.onTouched(this._value);
   }
 
   get value() {

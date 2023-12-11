@@ -39,6 +39,8 @@ export class FormService {
       minlength: 'This field must contain atleast 6 characters',
       max: 'This field should not exceed maximum value',
       notMultipleOf24: 'This field should contain only multiples of 24',
+      noStartingNumberOrSpecialCharacter: 'This field cannot start with a number or any special character',
+      alphabetsOnly: 'This field must contain only alphabets',
       invalid_characters: (matches: any[]) => {
 
         let matchedCharacters = matches;
