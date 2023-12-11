@@ -39,6 +39,7 @@
  import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
 import { catchError, map, takeUntil } from 'rxjs/operators';
+import { CustomValidators } from 'src/app/shared/custom-validators';
  
  interface ICondition{
      keyList: string[];
@@ -314,9 +315,9 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
  
    public buildForm() {
      this.assetGroupForm = this.form.group({
-       assetGroupDisplayName: ['', [Validators.required,this.isGroupNameAvailable.bind(this)]],
-       assetGroupDesc: ['', [Validators.required,Validators.minLength(6)]],
-       selectedAccountType : ['',[Validators.required,this.isValidType.bind(this)]]
+       assetGroupDisplayName: ['', [Validators.required, this.isGroupNameAvailable.bind(this), CustomValidators.noStartingNumberOrSpecialCharacter]],
+       assetGroupDesc: ['', [Validators.required, CustomValidators.minLengthTrimValidator(6), Validators.maxLength(100)]],
+       selectedAccountType: ['', [Validators.required, this.isValidType.bind(this), CustomValidators.onlyAlphabets]]
      });
    }
 
