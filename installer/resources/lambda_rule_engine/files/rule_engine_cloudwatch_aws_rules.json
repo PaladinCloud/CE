@@ -183,5 +183,5 @@
 	"deny_public_access_to_rdp_Port_3389",
 	"enable_aws_config_service",
 	"aws_enable_encryption_for_rds_instance",
-	"integrate_cloudtrail_trails_with_cloudwatch_logs"
+	"aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs"
 ]
