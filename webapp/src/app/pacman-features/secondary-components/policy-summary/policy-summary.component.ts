@@ -263,24 +263,24 @@
              const apiTarget = {'TypeAsset' : 'scanned'};
  
                  if ( event[localObjKeys[1]].toLowerCase() === 'assets scanned' ) {
-                     const eachParams = {'policyId': this.ruleID};
-                       let newParams = this.utils.makeFilterObj(eachParams);
-                       newParams = Object.assign(newParams, apiTarget);
-                       newParams['mandatory'] = 'policyId';
-                         this.router.navigate(['../../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams, tempFilters:true}, queryParamsHandling: 'merge'});
-                 } else if ( event[localObjKeys[1]].toLowerCase() === 'passed' ) {
-                     const eachParams = {'policyId': this.ruleID , 'compliant' : true};
-                       let newParams = this.utils.makeFilterObj(eachParams);
-                       newParams = Object.assign(newParams, apiTarget);
-                       newParams['mandatory'] = 'policyId';
-                         this.router.navigate(['../../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams, tempFilters:true}, queryParamsHandling: 'merge'});
-                 } else if ( event[localObjKeys[1]].toLowerCase() === 'failed' ) {
-                         const eachParams = {'policyId': this.ruleID , 'compliant' : false};
-                         let newParams = this.utils.makeFilterObj(eachParams);
-                         newParams = Object.assign(newParams, apiTarget);
-                         newParams['mandatory'] = 'policyId';
-                         this.router.navigate(['../../../', 'assets', 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams, tempFilters:true}, queryParamsHandling: 'merge'});
-                 }
+                    const eachParams = {'policyId.keyword': this.ruleID};
+                      let newParams = this.utils.makeFilterObj(eachParams);
+                      newParams = Object.assign(newParams, apiTarget);
+                      newParams['mandatory'] = 'policyId.keyword';
+                        this.router.navigate(['../../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams}, queryParamsHandling: 'merge'});
+                } else if ( event[localObjKeys[1]].toLowerCase() === 'passed' ) {
+                    const eachParams = {'policyId.keyword': this.ruleID , 'compliant' : true};
+                      let newParams = this.utils.makeFilterObj(eachParams);
+                      newParams = Object.assign(newParams, apiTarget);
+                      newParams['mandatory'] = 'policyId.keyword';
+                        this.router.navigate(['../../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams}, queryParamsHandling: 'merge'});
+                } else if ( event[localObjKeys[1]].toLowerCase() === 'failed' ) {
+                        const eachParams = {'policyId.keyword': this.ruleID , 'compliant' : false};
+                        let newParams = this.utils.makeFilterObj(eachParams);
+                        newParams = Object.assign(newParams, apiTarget);
+                        newParams['mandatory'] = 'policyId.keyword';
+                        this.router.navigate(['../../../', 'assets', 'asset-list'], {relativeTo: this.activatedRoute, queryParams: {...newParams}, queryParamsHandling: 'merge'});
+                }
          } catch (error) {
              this.errorMessage = this.errorHandling.handleJavascriptError(error);
              this.logger.log('error', error);

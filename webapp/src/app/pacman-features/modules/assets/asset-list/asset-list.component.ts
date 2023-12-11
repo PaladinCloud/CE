@@ -20,6 +20,8 @@ import { TableStateService } from "src/app/core/services/table-state.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
 import { ComponentKeys } from "src/app/shared/constants/component-keys";
+import { FilterManagementService } from "src/app/shared/services/filter-management.service";
+import { IColumnNamesMap, IColumnWidthsMap } from "src/app/shared/table/interfaces/table-props.interface";
 
 @Component({
   selector: "app-asset-list",
@@ -76,8 +78,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   tableScrollTop=0;
   selectedRowIndex;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Source': 0.5};
-  columnNamesMap = {
+  columnWidths: IColumnWidthsMap = {'Asset ID': 2, 'Asset Name': 1, 'Asset Type': 0.7, 'Account ID':1, 'Account Name': 1, 'Region': 0.5, 'Source': 0.5};
+  columnNamesMap: IColumnNamesMap = {
     targettypedisplayname: 'Asset Type',
     _entitytype: 'assetTypeValue',
     _cloudType: 'Source'
@@ -152,6 +154,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private issueListingService: IssueListingService,
     private issueFilterService: IssueFilterService,
+    private filterManagementService: FilterManagementService,
     private router: Router,
     private utils: UtilsService,
     private logger: LoggerService,
@@ -166,42 +169,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
   ) {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
-    .subscribe((assetGroupName) => {
-      this.getPreservedState();
+    .subscribe(async(assetGroupName) => {
+      await this.getPreservedState();
       this.backButtonRequired =
       this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
       this.selectedAssetGroup = assetGroupName;
-      // this.updateComponent();
       const currentQueryParams =
         this.routerUtilityService.getQueryParametersFromSnapshot(
           this.router.routerState.snapshot.root
         );
       this.urlID = currentQueryParams.TypeAsset;
-      if(this.urlID?.toLowerCase().includes("scanned")){
-        this.isMultiValuedFilterEnabled = false;
-        this.showFilterBtn = false;
-      }
-      this.getFilters().then(() => {
-        this.filterTypeLabels.forEach(label => {
-          if(label=="Exempted" || label=="Tagged"){
-            return;
-          }
-          if(!Object.keys(this.columnWidths).includes(label)){
-            this.columnWidths[label] = 0.7;
-          }
-          if(!Object.values(this.columnNamesMap).includes(label)){
-            const apiColName =  find(this.filterTypeOptions, {
-              optionName: label,
-            })["optionValue"];
-            if(apiColName && this.columnNamesMap[apiColName.replace(".keyword","")]==undefined) {
-              this.columnNamesMap[apiColName.replace(".keyword", "")] = label;
-            }
-          }  
-        })
-        this.columnNamesMap = {...this.columnNamesMap};
-        this.columnWidths = {...this.columnWidths}
-
-      });
+      this.getFilters();
     });
 
     this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
@@ -214,7 +192,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     });
   }
 
-  getPreservedState(){
+  async getPreservedState(){
     const state = this.tableStateService.getState(this.saveStateKey) || {};
     this.headerColName = state.headerColName ?? 'Asset ID';
     this.direction = state.direction ?? 'asc';
@@ -235,9 +213,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.filters = state.filters || [];
       if (state.data && state.data.length > 0) {
         this.isStatePreserved = true;
-        this.tableData = state.data;
+        this.tableData = state.data || [];
       }
-      Promise.resolve().then(() => this.getUpdatedUrl());
+      await Promise.resolve().then(() => this.getUpdatedUrl());
     }    
     
   }
@@ -352,106 +330,59 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   deleteFilters(event?) {
-    try {
-      if (!event) {
-        this.filters = [];
-        
-      } else if(event.removeOnlyFilterValue){
+    let shouldUpdateComponent = false;
+    [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);      
+    if(shouldUpdateComponent){
         this.getUpdatedUrl();
         this.updateComponent();
-        
-      } else if(event.index && !this.filters[event.index].filterValue){
-        this.filters.splice(event.index, 1);
-        
-      } else {
-        if (event.clearAll) {
-          this.filters = [];
-        } else {
-          this.filters.splice(event.index, 1);
-        }
-        
-        this.getUpdatedUrl();
-        this.updateComponent();
-      }
-    } catch (error) { }
-    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+    }
   }
 
   /*
    * this function passes query params to filter component to show filter
    */
-  getFilterArray() {
+  async getFilterArray() {
     try {
-      const filterObjKeys = Object.keys(this.filterText);
-      const dataArray = [];
-      for (let i = 0; i < filterObjKeys.length; i++) {
-        let obj = {};
-        const keyDisplayValue = find(this.filterTypeOptions, {
-          optionValue: filterObjKeys[i],
-        })["optionName"];
-        obj = {
-          keyDisplayValue,
-          filterkey: filterObjKeys[i],
-        };
-        dataArray.push(obj);
-      }
+      const filterText = this.filterText;
+      const filterTypeOptions = this.filterTypeOptions;
+      let filters = this.filters;
+      
+      const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
 
-      const state = this.tableStateService.getState(this.saveStateKey) ?? {};
-      const filters = state?.filters;
-
-      if(filters){
-        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
-        filters.forEach(filter => {
-          if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
-            dataArray.push({
-              filterkey: filter.filterkey,
-              keyDisplayValue: filter.key
-            });
-          }
-        });
-      }
-
-      const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-
-        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
-        if(!keyDisplayValue){
-          keyDisplayValue = find(this.filterTypeOptions, {
-            optionValue: formattedFilters[i].filterKey,
-          })["optionName"];
-        }
-
-        this.changeFilterType(keyDisplayValue).then(() => {
-          const filterKey = dataArray[i].filterkey;
-          
-          const filterValueObj = this.filterText[filterKey]?.split(',').map(val => {
-            const valObj:any = find(this.filterTagOptions[keyDisplayValue], {
-              id: val,
-            });
-            return valObj?.name;
-          });
-                    
-          if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
-            if(filterValueObj){
-              const eachObj = {
-                keyDisplayValue: keyDisplayValue,
-                filterValue: filterValueObj??undefined,
-                key: keyDisplayValue, // <-- displayKey-- Resource Type
-                value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
-                filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
-                compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-              };
-              this.filters.push(eachObj);
-            }
-            this.filters = [...this.filters];
-            
-          }
-        })
+        filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i] , filters});
+        this.filters = filters;
       }
+
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  async processAndAddFilterItem({formattedFilterItem, filters}){
+
+    const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
+    const filterKey = formattedFilterItem.filterkey;
+    const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue || filter.keyDisplayValue === filterKey);
+    let filterObj;
+      
+    if(existingFilterObjIndex<0){
+      if(!keyDisplayValue){
+        const validFilterValues = this.filterText[filterKey]?.split(',').map(value => {
+          return {id: value, name:value};
+        })
+        filterObj = this.filterManagementService.createFilterObj(filterKey, filterKey, validFilterValues);
+      } else{
+        // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+        await this.changeFilterType(keyDisplayValue);
+        const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+        filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+      }      
+      filters.push(filterObj);
+    }
+    filters = [...filters];
+    return filters;
   }
 
   /**
@@ -516,9 +447,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
           this.dataTableDesc = "Note: This page shows all the scanned assets";
           // patchable  asset list api
           // the url and method for patching << -- defines url and method
-          assetListUrl = environment.assetListScanned.url;
-          assetListMethod = environment.assetListScanned.method;
-          this.isMultiValuedFilterEnabled = false;
+          assetListUrl = environment.assetList.url;
+          assetListMethod = environment.assetList.method;
           this.serviceId = 9;
           this.tableDownloadName = "Scanned Assets";
         } else if (this.urlID.toLowerCase() === "vulnerable") {
@@ -648,46 +578,21 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   processData(data) {
     try {
-      var innerArr = {};
-      var totalVariablesObj = {};
-      var cellObj = {};
-      let processedData = [];
-      var getData = data;
-      
-      let cellData;
-      for (var row = 0; row < getData.length; row++) {
-        const keynames = Object.keys(getData[row]);
-        innerArr = {};
-        keynames.forEach(col => {
-          cellData = getData[row][col];
+      return this.utils.processTableData(data, {}, (row, col, cellObj) => {
+        if(col.toLowerCase()=="asset id"){
+          const displayValue = row["assetIdDisplayName"];
           cellObj = {
-            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
-            titleText: cellData, // text to show on hover
-            valueText: cellData,
-            hasPostImage: false,
-            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
-            postImgSrc: "",
-            isChip: "",
-            isMenuBtn: false,
-            properties: "",
-            isLink: false
-          }
-          if(col.toLowerCase()=="asset id"){
-            const displayValue = getData[row]["assetIdDisplayName"];
-            cellObj = {
-              ...cellObj,
-              text: displayValue?displayValue:cellData,
-              titleText:  cellData, // text to show on hover
-              valueText:  cellData,
-              isLink: true
-            };            
-          } 
-          innerArr[col] = cellObj;
-          totalVariablesObj[col] = "";
-        });
-        processedData.push(innerArr);
-      }
-      return processedData;
+            ...cellObj,
+            text: displayValue?displayValue:row[col],
+            titleText: displayValue?displayValue:row[col], // text to show on hover
+            valueText:  row[col],
+            isLink: true
+          };            
+        }
+        
+        return cellObj;
+      });
+      
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -914,7 +819,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
    */
 
   getFilters() {
-    return new Promise((resolve) => {
       try {
         let filterId = 8;
         if (
@@ -940,128 +844,65 @@ export class AssetListComponent implements OnInit, OnDestroy {
             });
             
             this.filterTypeOptions = response[0].response;
-            resolve(true);
             this.trimStringsInArrayOfObjs(this.filterTypeOptions);
-            this.filterTypeLabels = map(this.filterTypeOptions, "optionName");
+            let filterTypeLabels = this.filterTypeOptions.map(labelObj => labelObj.optionName)
 
-            this.filterTypeLabels.sort();
+            filterTypeLabels.sort();
 
+            this.filterTypeLabels = filterTypeLabels;
+            [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, ['Exempted', 'Tagged', 'Policy Id', 'Compliant']);
             this.routerParam();
-            // this.deleteFilters();
             this.getFilterArray();
             this.updateComponent();
           });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
-        resolve(false);
       }
-    })
   }
 
-  changeFilterType(value, searchText=''){
-    return new Promise((resolve) => {
+  async changeFilterType(value, searchText='') {
     try {
-      this.currentFilterType = find(this.filterTypeOptions, {
-        optionName: value,
-      });
-      const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
-
-      const excludedKeys = [
-        this.currentFilterType.optionValue,
-        "domain",
-        "include_exempt",
-        urlObj.params["attribute"],
-        this.currentFilterType["optionValue"]?.replace(".keyword", "")
-      ];
-      
-      const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
-
-      if(urlObj.url.includes("attribute") || value=="Exempted" || value=="Tagged"){
-      let filtersToBePassed = this.getFilterPayloadForDataAPI();
-      filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
-        const normalizedKey = key.replace(".keyword", "");
-        if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey))) {
-          result[normalizedKey] = filtersToBePassed[key];
-        }
-        return result;
-      }, {});
-      
-      const payload = {
-        type: "asset",
-        attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
+      this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+      const filterText = this.filterText;
+      const currentFilterType = this.currentFilterType;
+      const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
+      const agAndDomain = {
         ag: this.selectedAssetGroup,
-        domain: this.selectedDomain,
-        filter: filtersToBePassed,
-        searchText
+        domain: this.selectedDomain
       }
-        this.issueFilterSubscription = this.issueFilterService
-        .getFilters(
-          {},
-          environment.base +
-          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-            .url,
-          "POST",
-          payload
-        )
-        .subscribe((response) => {
-          const filterTagsData = response[0].data.response;          
-          if(value.toLowerCase()=="asset type"){
-            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-              filterTagsData.forEach(filterOption => {
-                filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
-              });
-            });
-          }
-          this.filterTagOptions[value] = filterTagsData;
-          this.filterTagLabels = {
-              ...this.filterTagLabels,
-              ...{
-                  [value]: map(filterTagsData, 'name').sort((a, b) =>
-                      a.localeCompare(b),
-                  ),
-              },
-          };
-          resolve(this.filterTagOptions[value]);
-          
-        });
-      }else{
-        const queryParams = {
-          ...urlObj.params,
-          ag: this.selectedAssetGroup,
-          domain: this.selectedDomain,
-        }
-        this.issueFilterSubscription = this.issueFilterService
-      .getFilters(
-        queryParams,
-        environment.base +
-        urlObj.url,
-        "GET"
-      )
-      .subscribe((response) => {
-        if(value.toLowerCase()=="asset type"){
-          this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-            response[0].response.map(filterOption => filterOption["name"] = assetTypeMap.get(filterOption["name"]));
-          });
-        }
-        this.filterTagOptions[value] = response[0].response;
-        this.filterTagLabels = {
-            ...this.filterTagLabels,
-            ...{
-                [value]: map(response[0].response, 'name').sort((a, b) =>
-                    a.localeCompare(b),
-                ),
-            },
-        };
-        resolve(this.filterTagOptions[value]);
-        
-      });
-      }
-      } catch (error) {
+
+      const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:'asset', currentQueryParams, agAndDomain, searchText, updateFilterTags, labelsToExcludeSort});
+      this.filterTagOptions[value] = filterTagOptions;
+      this.filterTagLabels[value] = filterTagLabels;
+
+      this.filterTagLabels = {...this.filterTagLabels};          
+
+  
+    } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-    });
+  }
+
+  getUpdateFilterTagsCallback(){
+    const labelsToExcludeSort = [];
+    const updateFilterTags = (filterTagsData, value) => {      
+      if (value.toLowerCase() === "asset type") {
+        this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+          filterTagsData.forEach(filterOption => {
+              filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
+          });
+        });
+      }
+      return filterTagsData;
+    }
+    return [updateFilterTags, labelsToExcludeSort];
   }
   changeFilterTags(event) {
     let filterValues = event.filterValue;
@@ -1069,40 +910,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
       return;
     }
     this.currentFilterType =  find(this.filterTypeOptions, {
-        optionName: event.filterKeyDisplayValue,
-      });
-    try {
-      if (this.currentFilterType) {
-        const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
-          return v?v["id"]:value;
-        });
-        this.utils.addOrReplaceElement(
-          this.filters,
-          {
-            keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: filterValues,
-            key: this.currentFilterType.optionName,
-            value: this.isMultiValuedFilterEnabled?filterTags:filterValues,
-            filterkey: this.currentFilterType.optionValue.trim(),
-            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
-          },
-          (el) => {
-            return (
-              el.compareKey ===
-              this.currentFilterType.optionValue.toLowerCase().trim()
-            );
-          }
-        );
-      }
-      
-      this.getUpdatedUrl();
-      this.utils.clickClearDropdown();
-      this.updateComponent();
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
+      optionName: event.filterKeyDisplayValue,
+    });
+    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    this.getUpdatedUrl();
+    this.updateComponent();
   }
 
   getUpdatedUrl() {

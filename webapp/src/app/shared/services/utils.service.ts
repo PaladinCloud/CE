@@ -22,7 +22,7 @@ import { RefactorFieldsService } from './refactor-fields.service';
 import { DATA_MAPPING } from '../constants/data-mapping';
 import { DatePipe } from '@angular/common';
 import { find } from 'lodash';
-import { IColumnNamesMap, IColumnWidthsMap } from '../table/interfaces/table-props.interface';
+import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from '../table/interfaces/table-props.interface';
 
 @Injectable()
 export class UtilsService {
@@ -208,12 +208,13 @@ export class UtilsService {
     return [{...columnNamesMap}, {...columnWidths}];
   }
 
-  getFilterKeyDisplayValue(formattedFilterItem, filterTypeOptions){
+  getFilterKeyDisplayValue(formattedFilterItem, filterTypeOptions: IFilterOption[]){
     let keyDisplayValue = formattedFilterItem.keyDisplayValue;
     if(!keyDisplayValue){
-      keyDisplayValue = find(filterTypeOptions, {
+      const filterOption = find(filterTypeOptions, {
         optionValue: formattedFilterItem.filterkey,
-      })["optionName"];
+      });
+      keyDisplayValue = filterOption?.optionName;
     }
     return keyDisplayValue;
   }
