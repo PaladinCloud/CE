@@ -3180,7 +3180,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<String> value = filter.containsKey(filterName) ? (List<String>) filter.get(filterName) : new ArrayList<>();
         String template = " %s in ( %s ) ";
         if (!value.isEmpty()) {
-            filterConditions.add(String.format(template, column, value.stream().map(str -> "'" + str + "'").collect(Collectors.joining(","))));
+            filterConditions.add(String.format(template, column, value.stream().map(str -> "'" + str.replaceAll("'","\\\\'") + "'").collect(Collectors.joining(","))));
         }
     }
 
