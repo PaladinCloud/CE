@@ -54,7 +54,7 @@ sudo systemctl start docker
 sudo yum remove mariadb-connector-c-config -y
 
 ## Install MySQL
-sudo rpm -Uvh https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+sudo yum install https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm -y
 sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 sudo yum install mysql-community-server -y
 
