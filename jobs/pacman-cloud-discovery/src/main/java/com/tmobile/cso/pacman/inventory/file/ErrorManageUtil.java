@@ -132,8 +132,8 @@ public class ErrorManageUtil {
             for (ErrorVH errorVH : entry.getValue()) {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
                 omitPermissionErrors(errorVHList, assetPermissionMapping, errorVH, permissionIssues);
-                // omit the region disabled error
-                omitDisabledRegionRateExceedErrors(errorVHList, errorVH);
+                // omit errors
+                omitErrors(errorVHList, errorVH);
             }
 
             if (!assetPermissionMapping.isEmpty()) {
@@ -161,7 +161,7 @@ public class ErrorManageUtil {
     }
 
     private static void omitPermissionErrors(List<ErrorVH> errorVHList, Map<String, List<String>> assetPermissionMapping, ErrorVH errorVH, List<String> permissionIssues) {
-        List<String> exceptionList = Arrays.asList("AccessDenied", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException","ValidationError","AuthorizationError");
+        List<String> exceptionList = Arrays.asList("AccessDenied", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException","ValidationError","AuthorizationError","UnauthorizedOperation");
         if (exceptionPresentInList(errorVH.getException(), exceptionList)) {
             shortenMessageForKMS(errorVH);
             if (permissionIssues != null && !errorVH.getType().equals("phd") && !errorVH.getType().equals("security hub")) {
@@ -182,12 +182,14 @@ public class ErrorManageUtil {
         return false;
     }
 
-    private static void omitDisabledRegionRateExceedErrors(List<ErrorVH> errorVHList, ErrorVH errorVH) {
+    private static void omitErrors(List<ErrorVH> errorVHList, ErrorVH errorVH) {
         if (errorVH.getException().contains("AWS was not able to validate the provided access credentials")
                 || errorVH.getException().contains("The security token included in the request is invalid")
                 || errorVH.getException().contains("Unable to execute HTTP request: elasticbeanstalk")
                 || errorVH.getException().contains("Rate exceeded")
-                || errorVH.getException().contains("ListenerNotFound")) {
+                || errorVH.getException().contains("ListenerNotFound")
+                || errorVH.getException().contains("InvalidSnapshot.NotFound")
+                || errorVH.getException().contains("TrailNotFoundException")) {
             errorVHList.remove(errorVH);
         }
     }
