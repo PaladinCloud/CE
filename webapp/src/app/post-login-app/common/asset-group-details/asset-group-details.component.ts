@@ -13,6 +13,8 @@
  */
 
  import { Component, Input, EventEmitter, Output, OnChanges } from '@angular/core';
+import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
  import { AssetTilesService } from '../../../core/services/asset-tiles.service';
  
  @Component({
@@ -32,7 +34,7 @@
      public errorMessage: any;
      @Output() navigatePage: EventEmitter<any> = new EventEmitter();
      provider = [];
-     constructor () {
+     constructor (private assetTilesService: AssetTilesService) {
      }
  
      ngOnChanges() {
@@ -43,27 +45,23 @@
        return string.charAt(0).toUpperCase() + string.slice(1);
      }
  
-    createProviderArray() {
-      this.provider = [];
-      const order = ["AWS", "Azure", "GCP"];
-      const providerMap = {
-        "aws": "AWS",
-        "azure": "Azure",
-        "gcp": "GCP",
-        "redhat": "Red Hat"
-      }
-      let curr_provider = "";
-      if (this.detailsVal && this.detailsVal.providers) {
-        this.detailsVal.providers.forEach(element => {
-          curr_provider = providerMap[element.provider.toLowerCase()];
-          if(curr_provider)
-          this.provider.push(curr_provider);
-          else
-          this.provider.push(element.provider);
-        });
+     getAssetGroupDisplayName(ag: string): Promise<string> {
+      return this.assetTilesService.getAssetGroupDisplayName(ag)
+        .pipe(map((agDisplayName: string) => agDisplayName ?? ag),
+          catchError((error) => {
+            console.error('Error occurred: ', error);
+            return of(ag);
+          })
+        )
+        .toPromise();
       }
 
-      this.provider.sort();
+    async createProviderArray() {
+      this.provider = [];      
+      if (this.detailsVal && this.detailsVal.providers) {
+        const providers = await Promise.all(this.detailsVal.providers.map((element) => this.getAssetGroupDisplayName(element.provider)));
+        this.provider = providers.sort((a,b) => a.localeCompare(b));
+      }
     }
 
     instructParentToNavigate (data, agDetails) {

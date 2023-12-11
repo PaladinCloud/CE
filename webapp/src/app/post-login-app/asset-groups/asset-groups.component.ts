@@ -164,7 +164,7 @@
  
      if(assetGroupList){
         this.assetTiles = JSON.parse(assetGroupList);
-        this.assetTiles.sort((a, b) => a.displayname.localeCompare(b.displayname, 'en', { sensitivity: 'base' }));
+        this.assetTiles = this.sortAssetTiles(this.assetTiles);
         this.processData();
       }
       const assetUrl = environment.assetTiles.url;
@@ -172,7 +172,7 @@
 
       this.assetTilesSubscription = this.assetGroupsService.getAssetTiles(assetUrl, assetMethod).subscribe(
           response => {
-              this.assetTiles = response[0];
+              this.assetTiles = this.sortAssetTiles(response[0]);
               this.dataStore.setListOfAssetGroups(JSON.stringify(this.assetTiles));
               this.processData();
           },
@@ -181,6 +181,10 @@
               this.showError = true;
               this.logger.log('error', error);
           });
+   }
+
+   sortAssetTiles(assetTiles){
+    return assetTiles.sort((a, b) => a.displayname.localeCompare(b.displayname, 'en', { sensitivity: 'base' }));
    }
  
    getDisplayName(assetName){
