@@ -3517,3 +3517,8 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Set the Rotation Period of IAM Ac
 UPDATE cf_PolicyTable SET policyDisplayName = 'EC2 Instance Stopped more than N days' WHERE policyId ='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
 
 UPDATE cf_PolicyTable SET category='security' WHERE policyId in ('AccountEnsureCloudwatchAlarmExistsForSecurityGroupChanges_version-1_EnableCloudwatchAlarm_account','Ensure_clusters_created_with_pvtnodes','Enable_Cloud_Logging_Monitoring','Enable_Integrity_Monitoring_For_Node_Pool','Enable_Secure_Boot_For_Node_Pool','Enable_VPC_Flow_Logs_and_IntraNode_Visibility');
+
+DELETE IGNORE FROM cf_PolicyExemption where policyId='Data_Encryption_SQL_version-1_SDE_sqldatabase';
+DELETE IGNORE FROM cf_PolicyPackRuleInfo where policyId='Data_Encryption_SQL_version-1_SDE_sqldatabase';
+DELETE IGNORE FROM cf_PolicyParams where policyID='Data_Encryption_SQL_version-1_SDE_sqldatabase';
+DELETE IGNORE FROM cf_PolicyTable where policyId='Data_Encryption_SQL_version-1_SDE_sqldatabase';
