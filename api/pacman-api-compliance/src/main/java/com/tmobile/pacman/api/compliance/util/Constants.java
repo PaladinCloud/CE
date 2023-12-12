@@ -16,4 +16,6 @@ public final class Constants {
     public static final String CANCEL_EXEMPTION_REQUEST_EVENT_NAME  = "Exemption request revoked for resource - %s";
     public static final String APPROVE_EXEMPTION_REQUEST_EVENT_NAME  = "Exemption request approved for resource - %s";
     public static final String EMAIL = "email";
+
+    public static final String GLOBAL = "global";
 }

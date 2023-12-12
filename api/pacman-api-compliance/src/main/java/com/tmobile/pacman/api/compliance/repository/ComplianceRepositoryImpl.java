@@ -103,6 +103,8 @@ import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 import com.tmobile.pacman.api.compliance.service.NotificationService;
 
+import static com.tmobile.pacman.api.compliance.util.Constants.GLOBAL;
+
 /**
  * The Class ComplianceRepositoryImpl.
  */
@@ -1600,7 +1602,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             if (domain.equals(INFRA_AND_PLATFORMS)) {
                 issue.put(ACCOUNT_DISPALY_NAME, sourceMap.get(ACCOUNT_NAME));
                 issue.put(ACCOUNT_DISPLAYI_D, sourceMap.get(ACCOUNT_ID));
-                issue.put(REGION_DISPALY_NAME, sourceMap.get(REGION));
+                issue.put(REGION_DISPALY_NAME, sourceMap.get(REGION) == null ? GLOBAL : sourceMap.get(REGION));
             }
             issue.put(CREATED_DISPLAY_DATE, sourceMap.get(CREATED_DATE));
             issue.put(MODIFIED_DISPLAY_DATE, sourceMap.get(MODIFIED_DATE));
