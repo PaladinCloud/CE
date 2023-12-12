@@ -3515,3 +3515,5 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Set Retention Duration to \'Great
 UPDATE cf_PolicyTable SET policyDisplayName = 'Rotate Key Management Service Encryption Keys Every N Days' WHERE policyId ='kms_keys_rotation_period_within_90_days';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Set the Rotation Period of IAM Access Key to N Days' WHERE policyId ='IamAccessKeyRotatedInEvery90Days_version-1_IamAccessKeyRotatedInEvery90Days_iamuser';
 UPDATE cf_PolicyTable SET policyDisplayName = 'EC2 Instance Stopped more than N days' WHERE policyId ='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
+
+UPDATE cf_PolicyTable SET category='security' WHERE policyId in ('AccountEnsureCloudwatchAlarmExistsForSecurityGroupChanges_version-1_EnableCloudwatchAlarm_account','Ensure_clusters_created_with_pvtnodes','Enable_Cloud_Logging_Monitoring','Enable_Integrity_Monitoring_For_Node_Pool','Enable_Secure_Boot_For_Node_Pool','Enable_VPC_Flow_Logs_and_IntraNode_Visibility');
