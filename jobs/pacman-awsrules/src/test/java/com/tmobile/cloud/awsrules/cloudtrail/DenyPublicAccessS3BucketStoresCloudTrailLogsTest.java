@@ -68,8 +68,8 @@ public class DenyPublicAccessS3BucketStoresCloudTrailLogsTest {
         commonMap.put("ruleCategory", "security");
         commonMap.put("type", "Task");
         commonMap.put("accountid", "12345");
-        commonMap.put("ruleId", "deny_public_access_to_s3_bucket_used_to_store_cloudtrail_logs");
-        commonMap.put("policyId","deny_public_access_to_s3_bucket_used_to_store_cloudtrail_logs");
+        commonMap.put("ruleId", "aws_s3_bucket_used_to_store_cloudtrail_logs_publicly_accessible");
+        commonMap.put("policyId","aws_s3_bucket_used_to_store_cloudtrail_logs_publicly_accessible");
         commonMap.put("policyVersion", "version-1");
         String bucketPolicyString = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"AWSCloudTrailAclCheck20150319\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Action\":\"s3:GetBucketAcl\",\"Resource\":\"arn:aws:s3:::aws-cloudtrail-logs-50283-122123\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudtrail:us-east-1:500222:trail/management-events\"}}},{\"Sid\":\"AWSCloudTrailWrite20150319\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Action\":\"s3:PutObject\",\"Resource\":\"arn:aws:s3:::aws-cloudtrail-logs-51211-12111/AWSLogs/5012111/*\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudtrail:us-east-1:50012111:trail/management-events\",\"s3:x-amz-acl\":\"bucket-owner-full-control\"}}}]}";
         commonMap.put("bucketpolicy",bucketPolicyString);
