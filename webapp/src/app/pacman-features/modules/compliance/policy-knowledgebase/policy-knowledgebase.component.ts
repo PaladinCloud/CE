@@ -2,15 +2,12 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import find from 'lodash/find';
 import map from 'lodash/map';
-import { Subscription, combineLatest } from 'rxjs';
-import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { Subscription } from 'rxjs';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
-import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
-import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
@@ -21,6 +18,7 @@ import { RouterUtilityService } from 'src/app/shared/services/router-utility.ser
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
 import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
+import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
 
 enum PolicyCategory {
   ALL_POLICIES = 'all policies',
@@ -159,28 +157,31 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService,
     private downloadService: DownloadService,
     private assetTypeMapService: AssetTypeMapService,
     private tourService: TourService,
     private utils: UtilsService,
-    private issueFilterService: IssueFilterService
-  ) {
+    private issueFilterService: IssueFilterService,
+    private filterManagementService: FilterManagementService
+    ) {
 
-    this.getPreservedState();
-    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
-      this.selectedAssetGroup = ag;
-      this.selectedDomain = domain;
-      this.updateComponent();
-    })
-  }
+      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap => {
+        this.assetTypeMap = assetTypeMap;
+      });
+      this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => { 
+        this.selectedAssetGroup = ag;
+        this.selectedDomain = domain;
+        this.getPreservedState();
+        this.getFilters();
+      })
+    }
 
-  ngOnInit(): void {
-    this.breadcrumbPresent = "Policies"
-
-    this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
-  }
+    ngOnInit(): void {
+      this.breadcrumbPresent = "Policies"
+      this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
+      window.onbeforeunload = () => this.storeState();
+    }
 
   getPreservedState(){
       const state = this.tableStateService.getState(this.saveStateKey) || {};
@@ -205,8 +206,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
       }else{
-        this.isStatePreserved = false;
-      }
+      this.isStatePreserved = false;
+        }
 
     if (state.filters) {
       this.filters = state.filters;
@@ -227,12 +228,10 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   handleHeaderColNameSelection(event) {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.storeState();
   }
 
   handleWhitelistColumnsChange(event) {
     this.whiteListColumns = event;
-    this.storeState();
   }
 
   handleSearchInColumnsChange(event) {
@@ -285,10 +284,10 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     this.isStatePreserved = false;
   }
 
-  storeState(data?) {
+  storeState(){
     const state = {
       totalRows: this.totalRows,
-      data: data,
+      data: this.tableData,
       headerColName: this.headerColName,
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
@@ -358,102 +357,53 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       queryParamsHandling: 'merge',
     });
   }
-  deleteFilters(event?) {
-    try {
-      if (!event) {
-        this.filters = [];
-        this.storeState();
-      } else if (event.removeOnlyFilterValue) {
-        this.getUpdatedUrl();
-        this.getData();
-        this.storeState();
-      } else if (event.index && !this.filters[event.index].filterValue) {
-        this.filters.splice(event.index, 1);
-        this.storeState();
-      }
-      else {
-        if (event.clearAll) {
-          this.filters = [];
-        } else {
-          this.filters.splice(event.index, 1);
-        }
-        this.storeState();
-        this.getUpdatedUrl();
-        this.getData();
-      }
-    } catch (error) { }
-    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+
+  deleteFilters (event?) {
+    let shouldUpdateComponent = false;
+    [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);
+    if (shouldUpdateComponent) {
+      this.getUpdatedUrl();
+      this.updateComponent();
+    }
   }
+  
   /*
    * this functin passes query params to filter component to show filter
    */
-  getFilterArray() {
+  async getFilterArray () {
     try {
-      const filterObjKeys = Object.keys(this.filterText);
-      const dataArray = [];
-      for (let i = 0; i < filterObjKeys.length; i++) {
-        let obj = {};
-        const keyDisplayValue = find(this.filterTypeOptions, {
-          optionValue: filterObjKeys[i],
-        })["optionName"];
-        obj = {
-          keyDisplayValue,
-          filterkey: filterObjKeys[i],
-        };
-        dataArray.push(obj);
-      }
+      const filterText = this.filterText;
+      const filterTypeOptions = this.filterTypeOptions;
+      let filters = this.filters;
 
-      const state = this.tableStateService.getState(this.pageTitle) ?? {};
-      const filters = state?.filters;
+      const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
 
-      if (filters) {
-        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
-        filters.forEach(filter => {
-          if (!dataArrayFilterKeys.includes(filter.keyDisplayValue)) {
-            dataArray.push({
-              filterkey: filter.filterkey,
-              keyDisplayValue: filter.key
-            });
-          }
-        });
-      }
-
-      const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-
-        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
-        if (!keyDisplayValue) {
-          keyDisplayValue = find(this.filterTypeOptions, {
-            optionValue: formattedFilters[i].filterKey,
-          })["optionName"];
-        }
-
-        this.changeFilterType(keyDisplayValue).then(() => {
-          let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
-            id: this.filterText[formattedFilters[i].filterkey],
-          });
-
-          let filterKey = dataArray[i].filterkey;
-
-          if (!this.filters.find(filter => filter.keyDisplayValue == keyDisplayValue)) {
-            const eachObj = {
-              keyDisplayValue: keyDisplayValue,
-              filterValue: filterValueObj ? filterValueObj["name"] : undefined,
-              key: keyDisplayValue, // <-- displayKey-- Resource Type
-              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
-              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
-              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-            };
-            this.filters.push(eachObj);
-            this.filters = [...this.filters];
-            this.storeState();
-          }
-        })
+        filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i], filters });
+        this.filters = filters;
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  async processAndAddFilterItem ({ formattedFilterItem, filters }) {
+
+    const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
+    const filterKey = formattedFilterItem.filterkey;
+
+    const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
+    if (existingFilterObjIndex < 0) {
+      // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+      await this.changeFilterType(keyDisplayValue);
+      const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+      const filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+
+      filters.push(filterObj);
+    }
+    filters = [...filters];
+    return filters;
   }
 
   /**
@@ -470,20 +420,16 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
           environment.issueFilter.url,
           environment.issueFilter.method
         )
-        .subscribe((response) => {
+        .subscribe(async(response) => {
           this.filterTypeLabels = map(response[0].response, "optionName");
           resolve(true);
           this.filterTypeOptions = response[0].response;
 
           this.filterTypeLabels.sort();
           this.routerParam();
-          // this.deleteFilters();
-          this.getFilterArray();
-          this.getData();
-        },
-        error => {
-          this.errorMessage = 'apiResponseError';
-          this.logger.log("apiResponseError", error);
+          await this.getFilterArray();
+          await Promise.resolve().then(() => this.getUpdatedUrl());
+          this.updateComponent();
         });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -589,8 +535,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         );
       }
       this.filters = [...this.filters];
-
-      this.storeState();
+      
       this.getUpdatedUrl();
       this.getData();
     } catch (error) {
@@ -607,8 +552,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     } else {
       this.searchTxt = searchVal;
     }
-    this.storeState();
-    // this.getUpdatedUrl();
   }
 
   ngAfterViewInit() {
@@ -622,96 +565,45 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.tourService.setComponentReady();
     } else {
       this.tableDataLoaded = false;
-      this.getFilters();
+      this.getData();
     }
   }
 
-  processData(data) {
-    let processedData = [];
-    const getData = data;
+  processData (data) {
     try {
-      let innerArr = {};
-      const totalVariablesObj = {};
-      let cellObj = {};
-      const keynames = Object.keys(getData[0]);
-
-      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap => {
-        this.assetTypeMap = assetTypeMap;
+      return this.utils.processTableData(data, this.tableImageDataMap, (row, col, cellObj) => {
+        const cellData = row[col];
+        if (col.toLowerCase() === 'policy') {
+          const autoFixAvailable = typeof row.autoFixAvailable == "string" ? row.autoFixAvailable == "true" : row.autoFixAvailable;
+          const autoFixEnabled = typeof row.autoFixEnabled == "string" ? row.autoFixEnabled == "true" : row.autoFixEnabled;
+          let imgSrc = 'noImg';
+          let imageTitleText = "";
+          if (autoFixAvailable) {
+            imgSrc = autoFixEnabled ? 'autofix' : 'no-autofix';
+            imageTitleText = autoFixEnabled ? 'Autofix Enabled' : 'Autofix Available'
+          }
+          cellObj = {
+            ...cellObj,
+            isLink: true,
+            imgSrc: imgSrc,
+            imageTitleText: imageTitleText
+          };
+        } else if (col.toLowerCase() === 'asset type') {
+          const currentAssetType = this.assetTypeMap.get(cellData);
+          cellObj = {
+            ...cellObj,
+            text: currentAssetType ? currentAssetType : cellData,
+            titleText: currentAssetType ? currentAssetType : cellData, // text to show on hover
+            valueText: currentAssetType ? currentAssetType : cellData
+          };
+        }
+        return cellObj;
       });
 
-      let cellData;
-      for (let row = 0; row < getData.length; row++) {
-        innerArr = {};
-        keynames.forEach(col => {
-          cellData = getData[row][col];
-          cellObj = {
-            text: this.tableImageDataMap[typeof cellData == "string" ? cellData.toLowerCase() : cellData]?.imageOnly ? "" : cellData, // text to be shown in table cell
-            titleText: cellData, // text to show on hover
-            valueText: cellData,
-            hasPostImage: false,
-            imgSrc: this.tableImageDataMap[typeof cellData == "string" ? cellData.toLowerCase() : cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
-            postImgSrc: "",
-            isChip: "",
-            isMenuBtn: false,
-            properties: "",
-            isLink: false
-          }
-          if (col.toLowerCase() === 'policy') {
-            const autoFixAvailable = typeof getData[row].autoFixAvailable == "string" ? getData[row].autoFixAvailable == "true" : getData[row].autoFixAvailable;
-            const autoFixEnabled = typeof getData[row].autoFixEnabled == "string" ? getData[row].autoFixEnabled == "true" : getData[row].autoFixEnabled;
-            let imgSrc = 'noImg';
-            let imageTitleText = "";
-            if (autoFixAvailable) {
-              imgSrc = autoFixEnabled ? 'autofix' : 'no-autofix';
-              imageTitleText = autoFixEnabled ? 'Autofix Enabled' : 'Autofix Available'
-            }
-            cellObj = {
-              ...cellObj,
-              isLink: true,
-              imgSrc: imgSrc,
-              imageTitleText: imageTitleText
-            };
-          } else if (col.toLowerCase() === 'asset type') {
-            const currentAssetType = this.assetTypeMap.get(cellData);
-            cellObj = {
-              ...cellObj,
-              text: currentAssetType ? currentAssetType : cellData,
-              titleText: currentAssetType ? currentAssetType : cellData, // text to show on hover
-              valueText: currentAssetType ? currentAssetType : cellData
-            };
-          }
-          // else if(col.toLowerCase() == "status"){
-          //   let chipBackgroundColor,chipTextColor;
-          //   if(getData[row]["Status"].toLowerCase() === "enabled"){
-          //     chipBackgroundColor = "#E6F5EC";
-          //     chipTextColor = "#00923f";
-          //   }else{
-          //     chipBackgroundColor = "#F2F3F5";
-          //     chipTextColor = "#73777D";
-          //   }
-          //   cellObj = {
-          //     ...cellObj,
-          //     chipList: [getData[row][col]],
-          //     text: getData[row][col],
-          //     isChip: true,
-          //     chipBackgroundColor: chipBackgroundColor,
-          //     chipTextColor: chipTextColor
-          //   };
-          // }
-          innerArr[col] = cellObj;
-          totalVariablesObj[col] = "";
-        });
-        processedData.push(innerArr);
-      }
-      if (processedData.length > getData.length) {
-        const halfLength = processedData.length / 2;
-        processedData = processedData.splice(halfLength);
-      }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-    return processedData;
   }
 
   getTilesData() {
@@ -751,38 +643,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         })
   }
 
-  massageData(data) {
-    const refactoredService = this.refactorFieldsService;
-    const columnNamesMap = this.columnNamesMap;
-    const newData = [];
-    data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);
-      let newObj = {};
-      KeysTobeChanged.forEach((element) => {
-        let elementnew;
-        if (columnNamesMap[element]) {
-          elementnew = columnNamesMap[element];
-          newObj = Object.assign(newObj, { [elementnew]: row[element] });
-        }
-        else {
-          elementnew =
-            refactoredService.getDisplayNameForAKey(
-              element.toLocaleLowerCase()
-            ) || element;
-          newObj = Object.assign(newObj, { [elementnew]: row[element] });
-        }
-        // change data value
-        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew] == "string" ? newObj[elementnew].toLowerCase() : newObj[elementnew]] ? DATA_MAPPING[newObj[elementnew].toLowerCase()] : newObj[elementnew];
-      });
-      newObj["autofix info"] = newObj["autoFixAvailable"] ? (newObj["autoFixEnabled"] ? "autofix enabled" : "autofix available") : "not available";
-      newObj["Autofix status"] = newObj["autoFixAvailable"] ? (newObj["autoFixEnabled"] ? "enabled" : "available") : "not available";
-      newData.push(newObj);
-    });
-    return newData;
-  }
-
-  getFilterPayloadForDataAPI() {
-    const filterToBePassed = { ...this.filterText };
+  getFilterPayloadForDataAPI(){
+    const filterToBePassed = {...this.filterText};
 
     Object.keys(filterToBePassed).forEach(filterKey => {
       if (filterKey == "domain") return;
@@ -819,7 +681,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         (response) => {
           this.totalRows = response.total;
           try {
-            const updatedResponse = this.massageData(response.data.response);
+            const updatedResponse = this.utils.massageTableData(response.data.response, this.columnNamesMap);
             const processedData = this.processData(updatedResponse);
             this.tableData = processedData;
             this.getTilesData();
@@ -857,9 +719,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     const data = event.data;
     this.selectedRowId = event.selectedRowId;
     this.tableScrollTop = event.tableScrollTop;
-    this.storeState(data);
     let autofixEnabled = false;
-    if (tileData.autoFixEnabled) {
+    if ( tileData.autoFixEnabled) {
       autofixEnabled = true;
     }
     const policyId = tileData["Policy ID"].valueText;
@@ -901,7 +762,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnDestroy() {
     try {
-      if (this.agDomainSubscription) {
+      this.storeState();
+      if(this.agDomainSubscription){
         this.agDomainSubscription.unsubscribe();
       }
       if (this.complianceTableSubscription) {
