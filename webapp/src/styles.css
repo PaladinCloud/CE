@@ -2289,3 +2289,8 @@ g.arc .bubble-text {
 .pointer-events-none{
   pointer-events: none;
 }
+
+app-table{
+  height: 100%;
+  width: 100%;
+}

@@ -313,7 +313,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   clearState(){
-    // this.tableStateService.clearState(this.pageTitle);
     this.isStatePreserved = false;
   }
 

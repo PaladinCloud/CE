@@ -11,7 +11,7 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
- <div class="violations-table" [class.admin-rights]="adminAccess">
+<div class="violations-table flex flex-col padding-28">
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
         <app-breadcrumb
             *ngIf="breadcrumbLinks.length > 0"
@@ -27,7 +27,6 @@
     </div>
     <div class="wrapper">
         <app-table
-            style="height: 100%; width: 100%"
             [centeredColumns]="centeredColumns"
             [columnWidths]="columnWidths"
             [data]="tableData"

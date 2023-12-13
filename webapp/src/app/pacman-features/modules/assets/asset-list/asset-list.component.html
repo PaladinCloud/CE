@@ -1,8 +1,7 @@
 <div
-    class="floating-widgets-section flex flex-col issue-listing-wrapper"
-    [class.filter-absent]="!filters.length"
+    class="asset-list-wrapper flex flex-col padding-28"
 >
-    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
+    <div *ngIf="backButtonRequired" class="breadcrumb-container">
         <app-breadcrumb
             *ngIf="breadcrumbLinks.length > 0"
             [breadcrumbLinks]="breadcrumbLinks"
@@ -10,56 +9,48 @@
             [breadcrumbPresent]="pageTitle"
         ></app-breadcrumb>
     </div>
-    <div class="flex">
-        <h6 class="title-text">{{ pageTitle }}</h6>
+    <div class="assets-header flex">
+        <div class="flex flex-align-center">
+            <span class="title">{{ pageTitle }}</span>
+        </div>
     </div>
-    <div class="data-table-container">
-        <section>
-            <ul>
-                <li class="widget-wrapper relative">
-                    <div class="relative">
-                        <app-table
-                            style="height: 100%; width: 100%"
-                            [columnsSortFunctionMap]="columnsSortFunctionMap"
-                            [columnWidths]="columnWidths"
-                            [data]="tableData"
-                            [direction]="direction"
-                            [filteredArray]="filters"
-                            [filterTagLabels]="filterTagLabels"
-                            [filterTypeLabels]="filterTypeLabels"
-                            [filterTypeOptions]="filterTypeOptions"
-                            [headerColName]="headerColName"
-                            [onScrollDataLoader]="onScrollDataLoader"
-                            [rowSize]="'SM'"
-                            [searchQuery]="searchTxt"
-                            [showAddRemoveCol]="true"
-                            [showDownloadBtn]="showDownloadBtn"
-                            [showFilterBtn]="showFilterBtn"
-                            [showSearchBar]="true"
-                            [tableDataLoaded]="tableDataLoaded"
-                            [tableErrorMessage]="tableErrorMessage"
-                            [tableScrollTop]="tableScrollTop"
-                            [totalRows]="totalRows"
-                            [whiteListColumns]="whiteListColumns"
-                            [selectedRowIndex]="selectedRowIndex"
-                            [enableMultiValuedFilter]="isMultiValuedFilterEnabled"
-                            [columnsAndFiltersToExcludeFromCasing]="columnsToExcludeFromCasing"
-                            [doLocalSort]="false"
-                            (deleteFilters)="deleteFilters($event)"
-                            (downloadClicked)="handlePopClick($event)"
-                            (headerColNameSelected)="handleHeaderColNameSelection($event)"
-                            (nextPageCalled)="nextPg($event)"
-                            (rowSelectEventEmitter)="goToDetails($event)"
-                            (searchCalledEventEmitter)="callNewSearch($event)"
-                            (selectedFilter)="changeFilterTags($event)"
-                            (selectedFilterType)="changeFilterType($event)"
-                            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-                            (filterSearchTextChange)="handleFilterSearchTextChange($event)"
-                        ></app-table>
-                        <div class="data-table-desc">{{ dataTableDesc }}</div>
-                    </div>
-                </li>
-            </ul>
-        </section>
+    <div class="table-wrapper">
+        <app-table
+            [columnsSortFunctionMap]="columnsSortFunctionMap"
+            [columnWidths]="columnWidths"
+            [data]="tableData"
+            [direction]="direction"
+            [filteredArray]="filters"
+            [filterTagLabels]="filterTagLabels"
+            [filterTypeLabels]="filterTypeLabels"
+            [filterTypeOptions]="filterTypeOptions"
+            [headerColName]="headerColName"
+            [onScrollDataLoader]="onScrollDataLoader"
+            [rowSize]="'SM'"
+            [searchQuery]="searchTxt"
+            [showAddRemoveCol]="true"
+            [showDownloadBtn]="showDownloadBtn"
+            [showFilterBtn]="showFilterBtn"
+            [showSearchBar]="true"
+            [tableDataLoaded]="tableDataLoaded"
+            [tableErrorMessage]="tableErrorMessage"
+            [tableScrollTop]="tableScrollTop"
+            [totalRows]="totalRows"
+            [whiteListColumns]="whiteListColumns"
+            [selectedRowIndex]="selectedRowIndex"
+            [enableMultiValuedFilter]="isMultiValuedFilterEnabled"
+            [columnsAndFiltersToExcludeFromCasing]="columnsToExcludeFromCasing"
+            [doLocalSort]="false"
+            (deleteFilters)="deleteFilters($event)"
+            (downloadClicked)="handlePopClick($event)"
+            (headerColNameSelected)="handleHeaderColNameSelection($event)"
+            (nextPageCalled)="nextPg($event)"
+            (rowSelectEventEmitter)="goToDetails($event)"
+            (searchCalledEventEmitter)="callNewSearch($event)"
+            (selectedFilter)="changeFilterTags($event)"
+            (selectedFilterType)="changeFilterType($event)"
+            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+            (filterSearchTextChange)="handleFilterSearchTextChange($event)"
+        ></app-table>
     </div>
 </div>
