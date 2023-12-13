@@ -10,7 +10,7 @@
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
+                        <app-table  [data]="tableData" [columnWidths]="columnWidths"
                             [headerColName]="headerColName" [direction]="direction" (headerColNameSelected)="handleHeaderColNameSelection($event)"
                             (actionSelected)="onSelectAction($event)" [doLocalSearch]="true"
                             [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"

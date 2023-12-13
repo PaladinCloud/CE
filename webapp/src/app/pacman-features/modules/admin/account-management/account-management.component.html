@@ -9,7 +9,7 @@
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths" (rowSelectEventEmitter)="handleRowClick($event)"
+                        <app-table  [data]="tableData" [columnWidths]="columnWidths" (rowSelectEventEmitter)="handleRowClick($event)"
                             [headerColName]="headerColName" [direction]="direction" (actionSelected)="goToDetails($event)"
                             [doLocalSearch]="false" [doLocalSort]="true" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
                             [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true" [showAddRemoveCol]="true"

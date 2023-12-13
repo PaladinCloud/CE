@@ -12,38 +12,25 @@
  * limitations under the License.
  -->
 
- <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
-    <div class="floating-widgets-header flex flex-between admin-widgets-header">
+ <div class="policies-wrapper flex flex-col padding-28 gap-24">
+    <div class="">
         <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
     </div>
-    <div class="floating-widgets-container data-table-container">
-        <section>
-            <ul>
-                <li class="widget-wrapper relative">
-                    <div class="relative">
-                        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="handleRowClick($event)" (actionSelected)="goToDetails($event)"
-                            [data]="tableData" [columnWidths]="columnWidths" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
-                            [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
-                            (searchCalledEventEmitter)="callNewSearch($event)"
-                            [searchQuery]="searchTxt" [tableErrorMessage]='errorMessage'
-                            [showAddRemoveCol]="true" [showFilterBtn]="true" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
-                            [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap"
-                            [rowClickable]="true" [doLocalFilter]="false" [doLocalSearch]="false" [doLocalSort]="false" [centeredColumns]="centeredColumns"
-                            [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters"
-                            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-                            (selectedFilter)="changeFilterTags($event)"
-                            (selectedFilterType)="changeFilterType($event)"
-                            (deleteFilters)="deleteFilters($event)"
-                            [selectedRowIndex]="selectedRowIndex"
-                            [enableMultiValuedFilter]="true"
-                            [filterTypeOptions]="filterTypeOptions"
-                            (nextPageCalled)="nextPage($event)">
-                        </app-table>
-                        <div class="data-table-desc">{{dataTableDesc}}</div>
-                    </div>
-                </li>
-            </ul>
-        </section>
+    <div class="table-wrapper">
+        <app-table (rowSelectEventEmitter)="handleRowClick($event)"
+            (actionSelected)="goToDetails($event)" [data]="tableData" [columnWidths]="columnWidths"
+            (headerColNameSelected)="handleHeaderColNameSelection($event)" [headerColName]="headerColName"
+            [direction]="direction" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
+            [searchQuery]="searchTxt" [tableErrorMessage]='errorMessage' [showAddRemoveCol]="true" [showFilterBtn]="true"
+            [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows" [tableScrollTop]="tableScrollTop"
+            [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap" [rowClickable]="true"
+            [doLocalFilter]="false" [doLocalSearch]="false" [doLocalSort]="false" [centeredColumns]="centeredColumns"
+            [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters"
+            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)" (selectedFilter)="changeFilterTags($event)"
+            (selectedFilterType)="changeFilterType($event)" (deleteFilters)="deleteFilters($event)"
+            [selectedRowIndex]="selectedRowIndex" [enableMultiValuedFilter]="true" [filterTypeOptions]="filterTypeOptions"
+            (nextPageCalled)="nextPage($event)">
+        </app-table>
     </div>
 </div>
 
