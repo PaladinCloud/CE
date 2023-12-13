@@ -3510,10 +3510,22 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to RDP Port 33
 UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to PostgreSQL Server Port 5432' WHERE policyId ='VPC_firewall_POSTGRES_port_should_not_be_publicly_accessible';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to SSH Port 22' WHERE policyId ='SGWithAnywhereAccess_version-1_SgWithSshPort22OpenToInternetAccess_sg';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Restrict Inbound Traffic on SSH Port 22' WHERE policyId ='NaclPublicAccessPort_version-1_NACLWithPublicAccessForPort22_networkacl';
-UPDATE cf_PolicyTable SET policyDisplayName = 'Configure Network Security Group Flow Log Retention Period to more than N Days' WHERE policyId ='Network_Security_Group_Flow_Log_retention_more_than_90_days';
+
 UPDATE cf_PolicyTable SET policyDisplayName = 'Set Retention Duration to \'Greater than N days\' for SQL Server' WHERE policyId ='Set_Retention_Days_Greater_Than_Ninety';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Rotate Key Management Service Encryption Keys Every N Days' WHERE policyId ='kms_keys_rotation_period_within_90_days';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Set the Rotation Period of IAM Access Key to N Days' WHERE policyId ='IamAccessKeyRotatedInEvery90Days_version-1_IamAccessKeyRotatedInEvery90Days_iamuser';
 UPDATE cf_PolicyTable SET policyDisplayName = 'EC2 Instance Stopped more than N days' WHERE policyId ='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
 
 UPDATE cf_PolicyTable SET category='security' WHERE policyId in ('AccountEnsureCloudwatchAlarmExistsForSecurityGroupChanges_version-1_EnableCloudwatchAlarm_account','Ensure_clusters_created_with_pvtnodes','Enable_Cloud_Logging_Monitoring','Enable_Integrity_Monitoring_For_Node_Pool','Enable_Secure_Boot_For_Node_Pool','Enable_VPC_Flow_Logs_and_IntraNode_Visibility');
+
+UPDATE cf_PolicyTable SET category='security', severity='high' WHERE policyId='Enable_Auto_Repair_for_GKE_nodes';
+UPDATE cf_PolicyTable SET category='security', severity='high' WHERE policyId='Enable_Auto_Upgrade_for_GKE_nodes';
+UPDATE cf_PolicyTable SET severity='critical' WHERE policyId='AccountEnsureCloudwatchAlarmExistsForSecurityGroupChanges_version-1_EnableCloudwatchAlarm_account';
+UPDATE cf_PolicyTable SET severity='high' WHERE policyId='Ensure_clusters_created_with_pvtnodes';
+UPDATE cf_PolicyTable SET severity='high' WHERE policyId='Enable_Cloud_Logging_Monitoring';
+UPDATE cf_PolicyTable SET severity='high' WHERE policyId='Enable_Integrity_Monitoring_For_Node_Pool';
+UPDATE cf_PolicyTable SET severity='critical' WHERE policyId='Enable_Secure_Boot_For_Node_Pool';
+UPDATE cf_PolicyTable SET severity='high' WHERE policyId='Enable_VPC_Flow_Logs_and_IntraNode_Visibility';
+
+UPDATE cf_PolicyTable SET policyDisplayName = 'Set NSG flow log retention period >= N days' WHERE policyId ='Network_Security_Group_Flow_Log_retention_more_than_90_days';
+UPDATE cf_PolicyTable SET policyDisplayName='Restrict Inbound Traffic to RDP Port 3389' WHERE policyId='NaclPublicAccessPort_version-1_NACLWithPublicAccessForPort3389_networkacl';
