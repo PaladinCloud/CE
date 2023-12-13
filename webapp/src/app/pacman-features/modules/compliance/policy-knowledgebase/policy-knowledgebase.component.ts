@@ -164,24 +164,30 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     private utils: UtilsService,
     private issueFilterService: IssueFilterService,
     private filterManagementService: FilterManagementService
-    ) {
+  ) {}
 
-      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap => {
-        this.assetTypeMap = assetTypeMap;
-      });
-      this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => { 
-        this.selectedAssetGroup = ag;
-        this.selectedDomain = domain;
-        this.getPreservedState();
-        this.getFilters();
-      })
-    }
+  ngOnInit (): void {
+    this.getAssetTypeMap();
+    this.onAgDomainChange();
+    this.breadcrumbPresent = "Policies";
+    this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
+    window.onbeforeunload = () => this.storeState();
+  }
+  
+  getAssetTypeMap () {
+    this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap => {
+      this.assetTypeMap = assetTypeMap;
+    });
+  }
 
-    ngOnInit(): void {
-      this.breadcrumbPresent = "Policies"
-      this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
-      window.onbeforeunload = () => this.storeState();
-    }
+  onAgDomainChange () {
+    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
+      this.selectedAssetGroup = ag;
+      this.selectedDomain = domain;
+      this.getPreservedState();
+      this.getFilters();
+    })
+  }
 
   getPreservedState(){
       const state = this.tableStateService.getState(this.saveStateKey) || {};
@@ -359,8 +365,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
 
   deleteFilters (event?) {
-    let shouldUpdateComponent = false;
-    [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);
+    const [filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);
+    this.filters = filters;
     if (shouldUpdateComponent) {
       this.getUpdatedUrl();
       this.updateComponent();
