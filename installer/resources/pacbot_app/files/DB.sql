@@ -3187,3 +3187,5 @@ END //
 DELIMITER ;
 
 CALL change_createdTime_columntype_to_timestamp();
+
+update cf_Target set targetConfig='{"key":"id,databaseVersion","id":"id"}'  where dataSourceName="gcp" and targetName in ('cloudsql_mysqlserver','cloudsql_postgres','cloudsql_sqlserver');
