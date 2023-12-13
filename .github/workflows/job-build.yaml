@@ -1,10 +1,8 @@
 name: Job-Build
-on:
-  push:
-    branches:
-      - 'chore/building_jar_s3'
-    paths:
-      - jobs
+on: push
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read  
 jobs:
   JobBuild:
     name: Job-Build
@@ -22,7 +20,19 @@ jobs:
       - name: Install maven
         run: |
           sudo apt install maven -y
-      - name: Building jar
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building jobs jar
         run: |
           cd jobs
-          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V 
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          aws-region: us-east-1
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 sync ./dist/jobs s3://${{ secrets.AWS_BUCKET }}/jobs
