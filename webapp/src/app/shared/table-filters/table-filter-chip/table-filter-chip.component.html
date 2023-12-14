@@ -8,8 +8,17 @@
 
         <span class="tfc-value" [title]="appliedFilters.length === 1 ? appliedFilters[0].name : ''">
             <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
-                <span *ngIf="!filtersToExcludeFromCasing.includes(category)">{{ appliedFilters[0].name | slice : 0 : maxOptionChars | celldatacase }}</span>
-                <span *ngIf="filtersToExcludeFromCasing.includes(category)">{{ appliedFilters[0].name | slice : 0 : maxOptionChars }}</span>
+                <span *ngIf="isDateFilter else textBlock">
+                    {{ appliedFilters[0].name | slice : 0 : maxOptionChars | dateRangeFormatter }}
+                </span>
+                <ng-template #textBlock>
+                    <span *ngIf="!filtersToExcludeFromCasing.includes(category)">
+                        {{ appliedFilters[0].name | slice : 0 : maxOptionChars | celldatacase }}
+                    </span>
+                    <span *ngIf="filtersToExcludeFromCasing.includes(category)">
+                        {{ appliedFilters[0].name | slice : 0 : maxOptionChars }}
+                    </span>
+                </ng-template>
             </ng-container>
 
             <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
