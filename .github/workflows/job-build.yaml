@@ -28,11 +28,11 @@ jobs:
         run: |
           cd jobs
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
-      - name: Configure AWS credentials from Test account
+      - name: Configure AWS credentials from dev account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
           aws-region: us-east-1
-      - name: Copy files to the test website with the AWS CLI
+      - name: Copy files to the dev website with the AWS CLI
         run: |
-          aws s3 sync ./dist/jobs s3://${{ secrets.AWS_BUCKET }}/jobs
+          aws s3 sync ./dist/jobs s3://${{ secrets.AWS_BUCKET }}/jobs/dev
