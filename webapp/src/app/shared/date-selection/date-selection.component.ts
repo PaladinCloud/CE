@@ -18,14 +18,14 @@ import {
 })
 export class DateSelectionComponent implements OnInit, OnChanges {
     readonly today = new Date();
-    
+
     @Input("minDate") minDate : Date;
     @Input() maxDate: Date = this.today;
 
     @Input() selectedRange?: DateRange<Date>;
 
     @Output() datesSelected = new EventEmitter<{ from: Date; to: Date }>();
-    
+
     ngOnInit() {}
     
     ngOnChanges(changes: SimpleChanges): void {
