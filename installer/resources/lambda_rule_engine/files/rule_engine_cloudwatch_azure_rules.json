@@ -45,7 +45,6 @@
 	"azure_DiskEncryption_virtualmachine",
 	"Check_for_Unrestricted_PostgreSQL_Database_Access",
 	"Configure_email_in_ms_defender",
-	"azure_SDE_sqldatabase",
 	"Define_Authorised_IP_for_kubernetes",
 	"azure_Deny_KeyVault_Admin_Privileges",
 	"Deny_Default_Network_Access_Rule_for_Storage_Accounts",
