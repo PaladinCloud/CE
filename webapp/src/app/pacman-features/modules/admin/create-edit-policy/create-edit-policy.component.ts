@@ -37,6 +37,8 @@
  import { CONFIGURATIONS } from 'src/config/configurations';
  import { CustomValidators } from 'src/app/shared/custom-validators';
  import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { ComponentKeys } from 'src/app/shared/constants/component-keys';
+import { TableStateService } from 'src/app/core/services/table-state.service';
  
  @Component({
    selector: 'app-admin-create-edit-policy',
@@ -271,7 +273,8 @@
      public dialog: MatDialog,
      private assetTypeMapService: AssetTypeMapService,
      private tourService: TourService,
-     public form: FormBuilder
+     public form: FormBuilder,
+     private tableStateService: TableStateService
    ) {
        this.routerParam();
    }
@@ -465,7 +468,7 @@
          this.enableUpdate = false;
          const notificationMessage = "Policy " + this.policyDisplayName + " updated successfully!!";
          this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
-         // this.navigateBack();
+         this.clearPoliciesSavedData();
        },
        error => {
          this.ispolicyCreationFailed = true;
@@ -740,6 +743,7 @@
      dialogRef.afterClosed().subscribe(result => {
        if (result == "yes") {
          this.createOrUpdatepolicy(PolicyModel);
+         this.clearPoliciesSavedData();
        }
      });
    }
@@ -762,6 +766,11 @@
          this.enableDisableRuleOrJob("disabled");
        }
      });
+   }
+
+   clearPoliciesSavedData () {
+     // TODO: Need better state management using NgXS
+     this.tableStateService.clearPreservedData(ComponentKeys.AdminPolicyList);
    }
  
    updateComponent(action?) {
@@ -829,6 +838,7 @@
          }
          this.adminService.executeHttpAction(url, method, payload, params).subscribe(response => {
              this.updateComponent(action.toLowerCase());
+             this.clearPoliciesSavedData();
              this.tourService.setComponentReady();
              resolve("sucess");
        },
