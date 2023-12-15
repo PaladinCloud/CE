@@ -798,14 +798,19 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             this.tableData = processedData;
           }
           if(tableData.length==0){
-            this.hasMoreDataToLoad = false;
-            if(!isNextPageCalled) this.tableErrorMessage = "noDataAvailable";
+            if (!isNextPageCalled) {
+              this.tableErrorMessage = "noDataAvailable";
+            }
           }else{
             if(isNextPageCalled){
-                this.totalRows = this.totalRows + tableData.length;
+              this.totalRows = this.totalRows + tableData.length;
             }else{
               this.totalRows = this.totalRows + tableData.length;
             }
+          }
+          if (tableData.length < this.paginatorSize) {
+            this.hasMoreDataToLoad = false;
+          } else {
             this.hasMoreDataToLoad = true;
           }
           this.dataLoaded = true;
