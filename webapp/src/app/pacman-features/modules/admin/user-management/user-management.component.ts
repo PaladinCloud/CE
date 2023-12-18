@@ -15,9 +15,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
-import { CustomValidators } from 'src/app/shared/custom-validators';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { ComponentKeys } from 'src/app/shared/constants/component-keys';
+import { IColumnNamesMap, IColumnWidthsMap, IFilterObj, IFilterOption, IFilterTagLabelsMap, IFilterTagOptionsMap, IFilterTypeLabel } from 'src/app/shared/table/interfaces/table-props.interface';
 
 
 @Component({
@@ -35,25 +35,26 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   @ViewChild("createEditUserRef") createEditUserRef: TemplateRef<any>;
   @ViewChild("actionRef") actionRef: TemplateRef<any>;
 
-  userRoles = [];
-  nonRemovableChips = [];
-  columnNamesMap = { "email": "Email", "roles": "Roles", "status": "Status"};
-  columnWidths = { "Email": 0.5, "Roles": 1, "Status": 0.25,"Actions": 0.25 }
-  whiteListColumns;
-  isStatePreserved = false;
-  tableScrollTop = 0;
-  searchTxt = "";
-  tableDataLoaded = false;
-  totalRows = 0;
-  dialogHeader = "Add User";
-  filterTypeLabels = [];
-  filterTagLabels = {};
-  filterTypeOptions: any = [];
-  filterTagOptions: any = {};
+  userRoles: string[] = [];
+  nonRemovableChips: string[] = [];
+  columnNamesMap: IColumnNamesMap = { "email": "Email", "roles": "Roles", "status": "Status"};
+  columnWidths: IColumnWidthsMap = { "Email": 0.5, "Roles": 1, "Status": 0.25,"Actions": 0.25 }
+  whiteListColumns: string[];
+  isStatePreserved: boolean = false;
+  tableScrollTop: number = 0;
+  searchTxt: string = "";
+  tableDataLoaded: boolean = false;
+  totalRows: number = 0;
+  dialogHeader: string = "Add User";
+  filterTypeLabels: IFilterTypeLabel[] = [];
+  filterTagLabels: IFilterTagLabelsMap = {};
+  filterTypeOptions: IFilterOption[] = [];
+  filterTagOptions: IFilterTagOptionsMap = {};
   currentFilterType;
 
-  headerColName;
-  direction;
+  headerColName: string;
+  direction: string;
+  errorMessage: string;
   tableErrorMessage: string = '';
   tableData = [];
   emailID: string;
@@ -68,36 +69,20 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   totalPages: number;
   pageNumber: number = 1;
 
-  outerArr: any = [];
-  dataLoaded: boolean = false;
-  allColumns: any = [];
-  currentBucket: any = [];
   bucketNumber: number = 0;
-  firstPaginator: number = 1;
-  lastPaginator: number;
-  currentPointer: number = 0;
-  seekdata: boolean = false;
   showLoader: boolean = true;
-  filters: any = [];
-  selectedRowIndex;
-  searchCriteria: any;
-  filterText: any = {};
-  errorValue: number = 0;
-  showGenericMessage: boolean = false;
+  filters: IFilterObj[] = [];
+  selectedRowIndex: number;
+  filterText: {filter: string} | {[key:string]:string} = {};
   urlID: String = "";
-  public labels: any;
   FullQueryParams: any;
   queryParamsWithoutFilter: any;
-  urlToRedirect: any = "";
-  private pageLevel = 0;
-  public backButtonRequired;
-  mandatory: any;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  action: any;
-  updatedRoles = ["ROLE_USER"];
+  action: string;
+  updatedRoles: string[] = ["ROLE_USER"];
 
   private userForm: FormGroup;
-  public userFormErrors : any = {
+  public userFormErrors = {
     emailID: '',
     firstName: '',
     lastName: ''
@@ -483,7 +468,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.filterTypeLabels.push("Status");
       this.filterTypeOptions.push({
         optionName: 'Status',
-        optionValue: 'Status'
+        optionValue: 'Status',
+        optionURL: undefined
       })
       this.routerParam();
       this.getFilterArray().then(() => {
@@ -786,8 +772,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       (response) => {
         this.showLoader = false;
         if (response.length > 0) {
-          this.errorValue = 1;
-          this.searchCriteria = undefined;
           const tableData = response[0];
           this.tableDataLoaded = true;
           const updatedResponse = this.massageData(tableData);
@@ -813,20 +797,23 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
           } else {
             this.hasMoreDataToLoad = true;
           }
-          this.dataLoaded = true;
         }
       },
       (error) => {
-        this.tableDataLoaded = true;
-        this.tableErrorMessage = "apiResponseError";
-        this.logger.log("apiResponseError: ", error);
+        this.setError(this.errorHandling.handleAPIError(error), isNextPageCalled);
       }
     );
-    }catch(e){
-      this.tableDataLoaded = true;
-      this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
-      this.logger.log("error: ", e);
+    } catch (error) {
+      this.setError(this.errorHandling.handleJavascriptError(error), isNextPageCalled);
     }
+  }
+
+  setError (errorType, isNextPageCalled) {
+    // set error only when next page is not called so that UI doesn't break when error occurs on calling next page
+    if (!isNextPageCalled) {
+      this.tableErrorMessage = errorType;
+    }
+    this.tableDataLoaded = true;
   }
  
   massageData(data){
