@@ -1,4 +1,5 @@
-FROM nginx:1.21.6
+# Use the official Nginx image with a specific version
+FROM nginx:1.25.3-alpine
 
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
@@ -6,23 +7,31 @@ ARG HTML_FILE
 ENV HTML_FILE=$HTML_FILE
 
 # Install required packages
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apk update && \
+    apk upgrade  && \
+    apk add --no-cache \
         curl \
         python3 \
-        python3-distutils \
         unzip \
-        gnupg \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -O https://bootstrap.pypa.io/pip/3.6/get-pip.py \
-    && python3 get-pip.py \
-    && pip install awscli
+        gnupg
 
-# Create the target directory
+# Install pip using the recommended way for Alpine Linux
+RUN python3 -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip3 install --upgrade pip setuptools
+
+# Install AWS CLI using pip
+RUN pip3 install awscli
+
+# Create the target directory for HTML files
 RUN mkdir -p /etc/nginx/html/
 
+# Copy Nginx configuration file and entrypoint script
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh ./entrypoint.sh
+
+# Set execute permissions for the entrypoint script
 RUN chmod +x ./entrypoint.sh
 
+# Expose port 80 for Nginx
 EXPOSE 80
