@@ -196,34 +196,32 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.totalRows = state.totalRows || 0;
     this.searchTxt = state.searchTxt || '';
     this.tableDataLoaded = true;
-    this.tableData = state.data || [];
     this.displayedColumns = ['Policy', 'Asset ID', 'Severity', 'Category'];
     this.whiteListColumns = state.whiteListColumns || this.displayedColumns;
     this.tableScrollTop = state.tableScrollTop;
     this.selectedRowIndex = state.selectedRowIndex;
     
-    if (this.tableData && this.tableData.length > 0) {
-      this.isStatePreserved = true;
-    } else {
-      this.isStatePreserved = false;
-    }
 
-    if(!this.isStatePreserved) this.preApplyStatusFilter(state);
     // below code is to apply filters which are in saved state and update the URL (just to keep URL in sync and also getData method is dependent) 
-    // and it does this only if URL doesn't contain filter attribute.
-    // if url contains filter attribute, below code is not executed and thus they are overridden with the filters
-    // by the filters present in URL. This overriding is being done in routerParam() method which basically updates filterText
+    // overriding of filters is being done in routerParam() method which basically updates filterText
     // based on filterQueryParams and later when getFilterArray is called, they are added to filters array.
 
-    // however, one thing to note here is that getData method does not depend on filters array directly
+    // Note: getData method does not depend on filters array directly
     // but rather it depends on filterText object which is build on URL queryParams.
-    const currentQueryParams =
-        this.routerUtilityService.getQueryParametersFromSnapshot(
-          this.router.routerState.snapshot.root
-        );
-    if (state.filters && !currentQueryParams.filter) {
-      this.filters = state.filters;
-      this.storeState();
+
+    this.isStatePreserved = false;
+    const navDirection = this.workflowService.getNavigationDirection();
+
+    if(navDirection<=0){
+      this.filters = state.filters || [];
+      if(navDirection==0){
+        this.preApplyStatusFilter(state);
+      }else{
+        if (state.data && state.data.length > 0) {
+          this.isStatePreserved = true;
+          this.tableData = state.data;
+        }
+      }
       await Promise.resolve().then(() => this.getUpdatedUrl());
     }
   }
@@ -239,15 +237,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     // check for admin access
     this.adminAccess = this.permissions.checkAdminPermission();
+
+    window.onbeforeunload = () => this.storeState();
   }
 
   preApplyStatusFilter(state){
-    const isStateFiltersArray = Array.isArray(state.filters);
-    const statusFilterExists = isStateFiltersArray ? state.filters.some(item => item.keyDisplayValue === "Status") : false;
+    const isStateFiltersArray = Array.isArray(this.filters);
+    const statusFilterExists = isStateFiltersArray ? this.filters.some(item => item.keyDisplayValue === "Status") : false;
 
     if (!statusFilterExists) {
-      state.filters = isStateFiltersArray ? state.filters : [];
-      state.filters.push({
+      this.filters = isStateFiltersArray ? this.filters : [];
+      this.filters.push({
         "keyDisplayValue": "Status",
         "filterValue": ["open"],
         "key": "Status",
@@ -306,19 +306,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     this.bucketNumber = 0;
 
-    this.storeState();
     this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
-    this.storeState();
   }
 
-  storeState(data?){
+  storeState(){
     const state = {
         totalRows: this.totalRows,
-        data: data,
+        data: this.tableData,
         headerColName: this.headerColName,
         direction: this.direction,
         whiteListColumns: this.whiteListColumns,
@@ -448,7 +446,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.updateComponent();
       }
   
-      this.storeState();
+      
     } catch (error) { }
   }
   
@@ -534,7 +532,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.filters.push(eachObj);
     }
     this.filters = [...this.filters];
-    this.storeState();
+    
   }
 
   /**
@@ -599,7 +597,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.filterTagLabels[value] = this.filterTagLabels[value].sort((a, b) => a.localeCompare(b));
   
     this.filterErrorMessage = this.filterTagLabels[value].length === 0 ? 'noDataAvailable' : '';
-    this.storeState();
+    
     return this.filterTagOptions[value];
   }
   
@@ -705,7 +703,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       // this.getUpdatedUrl();
       this.removeFiltersOnRightOfIndex(index);
       this.getUpdatedUrl();
-      this.storeState();
+      
       this.updateComponent();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -914,7 +912,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     const row = event.rowSelected;
     this.tableScrollTop = event.tableScrollTop;
     this.selectedRowIndex = event.selectedRowIndex;
-    this.storeState(event.data);
 
     try {
       this.workflowService.addRouterSnapshotToLevel(
@@ -992,7 +989,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     try {
       this.tableScrollTop = e;
         this.bucketNumber++;
-        this.storeState();
+        
         this.getData(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -1003,7 +1000,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   callNewSearch(searchVal){
     this.searchTxt = searchVal;
     // this.searchValue = searchVal;
-    this.storeState();
+    
     this.isStatePreserved = false;
     this.updateComponent();
     // this.getUpdatedUrl();
@@ -1016,6 +1013,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
+      this.storeState();
       if (this.assetGroupSubscription) {
         this.assetGroupSubscription.unsubscribe();
       }

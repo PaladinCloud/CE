@@ -588,35 +588,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  navigateTo(destination, id1?, id2?) {
-    this.workflowService.addRouterSnapshotToLevel(
-      this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
-    );
-    try {
-      if (destination === "asset details") {
-        const resourceId = encodeURIComponent(id1);
-        const resourceType = encodeURIComponent(id2);
-        this.workflowService.navigateTo({
-          urlArray: ["../../../../", "assets", "asset-list", resourceType, resourceId],
-          queryParams: {},
-          relativeTo: this.activatedRoute,
-          currPagetitle: this.breadcrumbPresent,
-          nextPageTitle: "Asset Details"
-        });
-        // window.open("/pl/assets/asset-list/"+resourceType+"/"+resourceId);
-      } else if (destination === "policy knowledgebase details") {
-        const policyId = encodeURIComponent(id1);
-        this.router.navigate(["../../../policy-knowledgebase-details", policyId, "false"], {
-          relativeTo: this.activatedRoute,
-          queryParamsHandling: "merge",
-        });
-        // window.open("/pl/compliance/policy-knowledgebase-details/"+policyId+"/false", "_blank");
-      }
-    } catch (e) {
-      this.logger.log("error", e);
-    }
-  }
-
   // TODO: Remove unused variables
   // getRecommend() {
   //   try {

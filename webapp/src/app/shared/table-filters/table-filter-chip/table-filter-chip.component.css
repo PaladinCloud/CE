@@ -54,6 +54,6 @@
 }
 
 .disabled {
-    pointer-events: none;
-    cursor: not-allowed;
+    background-color: var(--color-neutral-p6);
+    border: 1px solid var(--color-neutral-p3);
 }

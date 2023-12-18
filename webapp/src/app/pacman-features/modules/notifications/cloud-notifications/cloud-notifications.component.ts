@@ -183,7 +183,9 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnInit() {}
+    ngOnInit() {
+        window.onbeforeunload = () => this.storeState();
+    }
 
     /*
      * This function gets the urlparameter and queryObj
