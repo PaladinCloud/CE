@@ -103,15 +103,15 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     private tourService: TourService,
     private dataCacheService: DataCacheService,
     public form: FormBuilder
-  ) {
-    this.getPreservedState();
-    this.getFilters();
-  }
+  ) { }
+  
   ngAfterViewInit(): void {
     this.tourService.setComponentReady();
   }
 
-  ngOnInit(): void {
+  ngOnInit (): void {
+    this.getPreservedState();
+    this.getFilters();
     this.buildForm();
     this.getRoles();
   }
