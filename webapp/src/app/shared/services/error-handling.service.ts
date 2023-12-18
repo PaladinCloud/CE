@@ -72,7 +72,7 @@ export class ErrorHandlingService {
                 errorMessage = 'apiResponseError';
           }
 
-        return observableThrowError(errorMessage);
+        return errorMessage;
     }
 
     handleJavascriptError(error: any, message=undefined) {

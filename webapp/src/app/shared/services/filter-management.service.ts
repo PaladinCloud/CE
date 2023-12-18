@@ -23,7 +23,7 @@
  import {RefactorFieldsService} from './refactor-fields.service';
  import { map } from 'rxjs/operators';
  import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
- import { IFilterOption } from '../table/interfaces/table-props.interface';
+ import { IFilterObj, IFilterOption } from '../table/interfaces/table-props.interface';
  import { find } from 'lodash';
  
  interface IFilterPayload {
@@ -316,7 +316,7 @@
        return [filterTagOptions, filterTagLabels];
    }
  
-   createFilterObj(keyDisplayValue, filterKey, validFilterValues){
+   createFilterObj (keyDisplayValue: string, filterKey: string, validFilterValues: {name: string, id: string}[]): IFilterObj {
      return {
        keyDisplayValue: keyDisplayValue,
        filterValue: validFilterValues.map(valObj => valObj.name),
