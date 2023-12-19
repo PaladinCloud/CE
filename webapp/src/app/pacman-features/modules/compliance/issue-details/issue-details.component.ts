@@ -36,7 +36,7 @@ import { TableStateService } from 'src/app/core/services/table-state.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
-const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+import { EMAIL_PATTERN } from 'src/app/shared/constants/regex-constants';
 
 @Component({
   selector: 'app-issue-details',
@@ -169,7 +169,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   showJiraData = false;
   showJiraButton = false;
   viewJira = false;
-  private previousUrl: any = '';
   selectedDomain: any = '';
   selectedAssetGroup: string;
   public GLOBAL_CONFIG;
@@ -187,6 +186,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       return (ADate < BDate ? -1 : 1) * (isAsc ? 1 : -1);
     }
   };
+
+  private readonly emailPattern = EMAIL_PATTERN;
 
   /*Subscription variables*/
 
@@ -1488,7 +1489,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
   // function to check whether input is matching email pattern
   validateEmailInput(inputValue) {
-    if (!emailPattern.test(inputValue)) {
+    if (!this.emailPattern.test(inputValue)) {
       return false;
     }
     return true;

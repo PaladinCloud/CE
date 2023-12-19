@@ -1,14 +1,11 @@
-import { FormControl, Validators } from '@angular/forms';
-
-// setup simple regex for white listed characters
-const validCharacters = /[^\s\w,.:&\/()+%'`@-]/;
-
+import { AbstractControl, FormControl, ValidatorFn, Validators } from '@angular/forms';
+import { CLIENT_SECRET_PATTERN, LOWERCASE_ALPHANUMERIC_HYPHEN, NOT_SPECIAL_CHARACTERS, ONLY_ALPHABETS, ONLY_ALPHANUMERIC, STARTS_WITH_ALPHABET, STARTS_WITH_ALPHABET_ALLOWS_ANY, URL_PATTERN } from './constants/regex-constants';
 
 // create your class that extends the angular validator class
 export class CustomValidators extends Validators {
   static validateCharacters(control: FormControl) {
     if (control.value && control.value.length > 0) {
-      const matches = control.value.match(validCharacters);
+      const matches = control.value.match(NOT_SPECIAL_CHARACTERS);
       return matches 
       && matches.length ? { 'not_allowed_characters': matches } : null;
     } else {
@@ -36,7 +33,7 @@ export class CustomValidators extends Validators {
     static validateProjectId(control) {
     const projectId = control.value;
  
-    if (!/^[a-zA-Z]/.test(projectId)) {
+      if (!STARTS_WITH_ALPHABET.test(projectId)) {
       return { startsWithLetter: true };
     }
 
@@ -52,7 +49,7 @@ export class CustomValidators extends Validators {
 
   static alphanumericValidator(control){
     const value = control.value;
-    const pattern = /^[a-zA-Z0-9]+$/;
+    const pattern = ONLY_ALPHANUMERIC;
 
     if (pattern.test(value)) {
       return null; // Validation passed
@@ -63,7 +60,7 @@ export class CustomValidators extends Validators {
 
   static alphanumericHyphenValidator(control){
     const value = control.value;
-    const regex = /^[a-z0-9-]+$/;
+    const regex = LOWERCASE_ALPHANUMERIC_HYPHEN;
     const isValid = regex.test(value);
 
     if (!isValid) {
@@ -74,7 +71,7 @@ export class CustomValidators extends Validators {
 
   static clientSecretVlidator(control){
     const value = control.value;
-    const pattern = /^[a-zA-Z0-9\-_.~]{0,40}$/;
+    const pattern = CLIENT_SECRET_PATTERN;
 
     if (!pattern.test(value)) {
       return { invalidField: true }; // Validation failed
@@ -88,7 +85,7 @@ export class CustomValidators extends Validators {
 
   static urlValidator(control){
     const value = control.value;
-    const pattern = /^(ftp|http|https):\/\/[^ "]+$/;
+    const pattern = URL_PATTERN;
 
     if (pattern.test(value)) {
       return null; // Validation passed
@@ -103,6 +100,40 @@ export class CustomValidators extends Validators {
       return null;
     }
     return { notMultipleOf24 : true};
+  }
+
+  static onlyAlphabets(control: AbstractControl) : { [key: string]: any } | null {
+    const value:string = control.value;
+    
+    if (!value) {
+      return null;
+    }
+    const alphabetsRegex = ONLY_ALPHABETS;    
+    return alphabetsRegex.test(value) ? null : { alphabetsOnly: true };
+  }
+
+  static noStartingNumberOrSpecialCharacter(control: AbstractControl): { [key: string]: any } | null {
+    const value: string = control.value;
+    if (!value) {
+      return null;
+    }
+
+    const startsWithNumberRegex = STARTS_WITH_ALPHABET_ALLOWS_ANY;    
+    return startsWithNumberRegex.test(value) ? null : { noStartingNumberOrSpecialCharacter: true };
+  }
+
+  static minLengthTrimValidator(minLength: number): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const value: string = control.value;
+  
+      if (!value) {
+        return null; // If the value is empty, consider it as valid
+      }
+  
+      const trimmedValue = value.trim();
+  
+      return trimmedValue.length >= minLength ? null : { 'minlength': true };
+    };
   }
 
 }

@@ -2,6 +2,7 @@ import { Component, Input, EventEmitter, Output, OnChanges, SimpleChanges, After
 import { FormControl } from '@angular/forms';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatSelect } from '@angular/material/select';
+import { STARTS_WITH_DIGIT } from '../constants/regex-constants';
 
 @Component({
   selector: 'app-dropdown',
@@ -167,7 +168,7 @@ export class DropdownComponent implements OnChanges {
 
   isFirstCharNumber(option:string){
       if(!option) return "";
-      return /^\d/.test(option);
+      return STARTS_WITH_DIGIT.test(option);
   }
 
   capitalizeFirstLetter(option: string | unknown[]) {
