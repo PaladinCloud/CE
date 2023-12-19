@@ -23,16 +23,15 @@ import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NotificationPermissionUtils {
     private static final String NOTIFICATION_URL = "notification.lambda.function.url";
     static String SUBJECT = "Insufficient permissions";
     static String opsEventName = "Permission denied for %s";
+    static int numberOfPermissionIssuesPerEmail = 40;
     private static PaladinAccessToken accessToken;
+    static String notificationsLink = System.getProperty("pacman.host") + "/pl/notifications/notifications-list";
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationPermissionUtils.class);
 
     public static void triggerNotificationForPermissionDenied(List<PermissionVH> permissionVHList, String cloudType) {
@@ -40,7 +39,7 @@ public class NotificationPermissionUtils {
             Gson gson = new Gson();
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
             if (!permissionVHList.isEmpty()) {
-                notificationDetailsList.add(getNotificationBaseRequest(permissionVHList, cloudType));
+                notificationDetailsList = getPermissionNotificationRequest(cloudType, permissionVHList);
             }
             if (!notificationDetailsList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationDetailsList);
@@ -53,7 +52,8 @@ public class NotificationPermissionUtils {
             LOGGER.error("Error triggering lambda function url, notification request not sent. Error - {}", e.getMessage());
         }
     }
-    private static NotificationBaseRequest getNotificationBaseRequest(List<PermissionVH> permissionVHList, String cloudType) {
+
+    private static NotificationBaseRequest getNotificationBaseRequest(JSONObject payload, String cloudType) {
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
         notificationBaseRequest.setEventCategory(Constants.NotificationTypes.PERMISSION);
         notificationBaseRequest.setSubject(SUBJECT);
@@ -61,21 +61,38 @@ public class NotificationPermissionUtils {
         notificationBaseRequest.setEventName(String.format(String.format(opsEventName, cloudType)));
         notificationBaseRequest.setEventDescription(String.format(String.format(opsEventName, cloudType)));
         notificationBaseRequest.setEventSourceName(cloudType);
-        JSONObject permissionNotificationRequest = getPermissionNotificationRequest(cloudType, permissionVHList);
-        notificationBaseRequest.setPayload(permissionNotificationRequest);
+        notificationBaseRequest.setPayload(payload);
         return notificationBaseRequest;
     }
-    private static JSONObject getPermissionNotificationRequest(String cloudType, List<PermissionVH> permissionVHList) {
+
+    private static List<NotificationBaseRequest> getPermissionNotificationRequest(String cloudType, List<PermissionVH> permissionVHList) {
+        int numberOfPermissionIssues = 0;
+        List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
         JSONObject payload = new JSONObject();
-        payload.put("cloudType", cloudType);
-        payload.put("message", "Unable to collect data due to missing permission");
         for (PermissionVH permissionVH : permissionVHList) {
             for (Map.Entry<String, List<String>> assetPermission : permissionVH.getAssetPermissionIssues().entrySet()) {
+                numberOfPermissionIssues++;
                 payload.put("permissionIssueFor" + assetPermission.getKey().toUpperCase() + "InAccount" + permissionVH.getAccountNumber(), assetPermission.toString());
+                if (numberOfPermissionIssues % numberOfPermissionIssuesPerEmail == 0) {
+                    payload.put("cloudType", cloudType);
+                    payload.put("message", "Unable to collect data due to missing permission");
+                    payload.put("sequenceNumber", String.valueOf(numberOfPermissionIssues / numberOfPermissionIssuesPerEmail));
+                    payload.put("notificationsLink", notificationsLink);
+                    notificationDetailsList.add(getNotificationBaseRequest(payload, cloudType));
+                    payload = new JSONObject();
+                }
             }
         }
-        return payload;
+        if (!payload.isEmpty()) {
+            payload.put("cloudType", cloudType);
+            payload.put("message", "Unable to collect data due to missing permission");
+            payload.put("sequenceNumber", String.valueOf((numberOfPermissionIssues / numberOfPermissionIssuesPerEmail) + 1));
+            payload.put("notificationsLink", notificationsLink);
+            notificationDetailsList.add(getNotificationBaseRequest(payload, cloudType));
+        }
+        return notificationDetailsList;
     }
+
     public static void invokeNotificationUrl(String notificationDetailsStr) throws Exception {
         String credentials = System.getProperty(Constants.API_AUTH_INFO);
         String authApiUrl = System.getenv(Constants.AUTH_API_URL);
