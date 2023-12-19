@@ -70,6 +70,7 @@ public class JobExecutor {
 
         Map<String, String> jobParams = new HashMap<String, String>();
         String programArgs = "";
+        Map<String, Object> returnMap;
 
         if (args.length > 0) {
             programArgs = args[0];
@@ -107,10 +108,14 @@ public class JobExecutor {
             long startTime = System.nanoTime();
             // loop through resources and call rule execute method
             try {
-                if (hasArgumentsOtherThenHints(jobParams))
-                    executeMethod.invoke(jobObject, Collections.unmodifiableMap(jobParams)); // let rule not allow modify input
+                if (hasArgumentsOtherThenHints(jobParams)){
+                    returnMap = (Map<String, Object>) executeMethod.invoke(jobObject, Collections.unmodifiableMap(jobParams));
+                }
                 else {
-                    executeMethod.invoke(jobObject);
+                    returnMap = (Map<String, Object>) executeMethod.invoke(jobObject);
+                }
+                if("failed".equalsIgnoreCase((String) returnMap.get("status"))){
+                    ProgramExitUtils.exitWithError();
                 }
             } catch (Exception e) {
                 logger.debug("job execution failed", e);

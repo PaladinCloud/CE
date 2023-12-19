@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.tmobile.pacbot.azure.inventory.ErrorManageUtil;
 import com.tmobile.pacbot.azure.inventory.collector.*;
 import com.tmobile.pacbot.azure.inventory.vo.VaultVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
@@ -174,6 +175,8 @@ public class AssetFileGenerator {
 		try {
 			FileManager.initialise(filePath);
 		} catch (IOException e1) {
+			log.error("Error occurred in job azure-data-collector-job. Failed to create file in S3 in the given path");
+			ErrorManageUtil.jobStatus = "failed";
 			e1.printStackTrace();
 		}
 
@@ -798,7 +801,7 @@ public class AssetFileGenerator {
 
 		//Below logger message is used by datadog to create notification in slack
 		if(Util.eCount.get()>0){
-			log.error("Error occurred in atleast one collector for jobId : Azure-Data-Collector-Job");
+			log.error("Error occurred in job azure-data-collector-job at least for one collector.");
 		}
 		if(connectedSubscriptions.isEmpty()){
 			rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline'",Collections.emptyList());

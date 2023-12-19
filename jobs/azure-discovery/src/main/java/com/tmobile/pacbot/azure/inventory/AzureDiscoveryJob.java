@@ -46,10 +46,6 @@ public class AzureDiscoveryJob {
 			params.put(keyValue[0], keyValue[1]);
 		});
 		execute(params);
-		if (Util.eCount.get()>0)
-			System.exit(-1);
-		else
-			System.exit(0);
 	}
 	
 	/**
@@ -65,9 +61,11 @@ public class AzureDiscoveryJob {
 				params.forEach((k,v) -> System.setProperty(k, v));
 			}
 		} catch (Exception e) {
-			log.error("Error fetching config", e);
+			log.error("Error occurred in job azure-data-collector-job while fetching config", e);
 			ErrorManageUtil.uploadError("all", "all", "all", "Error fetching config "+ e.getMessage());
-			//return ErrorManageUtil.formErrorCode();
+			Map<String, Object> returnStatusMap = new HashMap<>();
+			returnStatusMap.put("status","failed");
+			return returnStatusMap;
 		}
 		return AzureDiscoveryApplication.collect( new String[]{});
 	}

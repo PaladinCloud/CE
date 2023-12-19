@@ -67,6 +67,7 @@ public class InventoryCollectionJob {
 		} catch (Exception e) {
 			log.error("Error fetching config", e);
 			ErrorManageUtil.uploadError("all", "all", "all", "Error fetching config "+ e.getMessage());
+			ErrorManageUtil.jobStatus = "failed";
 			return ErrorManageUtil.formErrorCode();
 		}
 		return InventoryFetchApplication.main( new String[]{});

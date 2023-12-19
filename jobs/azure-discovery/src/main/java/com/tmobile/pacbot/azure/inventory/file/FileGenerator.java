@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import com.tmobile.pacbot.azure.inventory.collector.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,6 +112,7 @@ public class FileGenerator {
 				}
 	        } catch (Exception e) {
 	        	log.error("Error in generateJson ",e);
+				Util.eCount.getAndIncrement();
 				return false;
 	        }
 		}
@@ -119,6 +121,7 @@ public class FileGenerator {
 			writeToFile(fileName, sb.toString(), true);
 		} catch (IOException e) {
 			log.error("Error in generateJson ",e);
+			Util.eCount.getAndIncrement();
 			return false;
 		}
 		return true;

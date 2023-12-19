@@ -54,6 +54,7 @@ public class AzureFetchOrchestrator {
 	
 	@Value("${s3.region}")
 	private String s3Region ;
+	private static int numberOfAccounts = 0;
 	
 	/** The log. */
 	private static Logger log = LoggerFactory.getLogger(AzureFetchOrchestrator.class);
@@ -63,6 +64,10 @@ public class AzureFetchOrchestrator {
 		try{
 			List<SubscriptionVH> subscriptions = fetchSubscriptions();
 			if(subscriptions.isEmpty()){
+				if(numberOfAccounts > 0){
+					log.error("Error occurred in job azure-data-collector-job. Not able to connect to any of azure accounts.");
+					ErrorManageUtil.jobStatus = "failed";
+				}
 				ErrorManageUtil.uploadError("all", "all", "all", "Error fetching subscription Info ");
 				return ErrorManageUtil.formErrorCode();
 			}
@@ -93,6 +98,7 @@ public class AzureFetchOrchestrator {
 		String accountQuery = "SELECT accountId,accountName,accountStatus FROM cf_Accounts where platform = 'azure'";
 		List<Map<String,String>> accounts=rdsdbManager.executeQuery(accountQuery);
 		List<String> tenantList = new ArrayList<>();
+		numberOfAccounts = accounts.size();
 		for (Map<String,String>account:accounts) {
 			tenantList.add(account.get("accountId"));
 		}

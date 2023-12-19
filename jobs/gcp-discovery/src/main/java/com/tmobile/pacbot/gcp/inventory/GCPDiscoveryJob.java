@@ -33,10 +33,6 @@ so npm install should be run manually
 			params.put(keyValue[0], keyValue[1]);
 		});
 		execute(params);
-		if (Util.errorCount.get()>0)
-			System.exit(-1);
-		else
-			System.exit(0);
 	}
 	
 	/**

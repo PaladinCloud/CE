@@ -18,6 +18,7 @@ package com.tmobile.pacbot.azure.inventory.file;
 import java.io.File;
 import java.util.stream.Collectors;
 
+import com.tmobile.pacbot.azure.inventory.collector.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,11 +87,18 @@ public class S3Uploader {
 	 * @param to the to
 	 */
 	public void backUpFiles(String s3Bucket,String s3Region,String from,String to){
-		BasicSessionCredentials credentials = credProvider.getCredentials(account,region,s3Role);
-		AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-		log.info("Backing up  files from  : {} to : {} in bucket : {}",from,to,s3Bucket);
-		copytoBackUp(s3client,s3Bucket,from,to);
-		deleteFiles(s3client,s3Bucket,from);
+		try{
+			BasicSessionCredentials credentials = credProvider.getCredentials(account,region,s3Role);
+			AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+			log.info("Backing up  files from  : {} to : {} in bucket : {}",from,to,s3Bucket);
+			copytoBackUp(s3client,s3Bucket,from,to);
+			deleteFiles(s3client,s3Bucket,from);
+		}
+		catch(Exception e){
+			log.error("back up files for azure collector failed.");
+			Util.eCount.getAndIncrement();
+			throw e;
+		}
 	}
 	
 	/**

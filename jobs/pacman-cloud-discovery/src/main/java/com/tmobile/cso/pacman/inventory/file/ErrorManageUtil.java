@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.api.client.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ public class ErrorManageUtil {
 
 	/** The error map. */
 	private static Map<String,List<ErrorVH>> errorMap = new HashMap<>();
+	public static String jobStatus;
 	
 	/**
 	 * Instantiates a new error manage util.
@@ -142,6 +144,9 @@ public class ErrorManageUtil {
         } else {
             errorCode.put("status","Partial Success");
         }
+		if (!Strings.isNullOrEmpty(jobStatus)) {
+			errorCode.put("status", jobStatus);
+		}
         log.info("Return Info {}",errorCode);
         return errorCode;
     }

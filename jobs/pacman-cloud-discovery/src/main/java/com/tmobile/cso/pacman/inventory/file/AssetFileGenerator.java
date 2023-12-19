@@ -85,6 +85,7 @@ public class AssetFileGenerator {
 			FileManager.initialise(filePath);
 			ErrorManageUtil.initialise();
 		} catch (IOException e1) {
+			ErrorManageUtil.jobStatus = "failed";
 			log.error("Error initialising File ",e1);
 		}
 		Iterator<Map<String, String>> it = accounts.iterator();
@@ -1219,7 +1220,7 @@ public class AssetFileGenerator {
 		ErrorManageUtil.writeErrorFile();
 		if(!ErrorManageUtil.getErrorMap().isEmpty()){
 			//Below logger message is used by datadog to create notification in slack
-			log.error("Error occurred in atleast one collector for jobId : AWS-Data-Collector-Job");
+			log.error("Error occurred in job aws-data-collector-job in at least one collector.");
 		}
 		try {
 			FileManager.finalise();
