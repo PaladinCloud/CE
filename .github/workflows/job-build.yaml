@@ -35,4 +35,4 @@ jobs:
           aws-region: us-east-1
       - name: Copy files to the dev website with the AWS CLI
         run: |
-          aws s3 cp --recursive  ./dist/jobs s3://${{ secrets.AWS_BUCKET }}/api/dev
+          aws s3 sync ./dist/jobs s3://${{ secrets.AWS_BUCKET }}/jobs/dev
