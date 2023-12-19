@@ -37,6 +37,7 @@
  import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
  import { MatDialog } from '@angular/material/dialog';
  import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
  
  interface ICondition{
      keyList: string[];
@@ -1010,7 +1011,7 @@
    isStepDisabled(stepIndex) {
      if (stepIndex === 0) {
        if (this.assetForm.groupName.trim().length>=3 && this.assetForm.displayName.trim().length>=3 &&
-         this.assetForm.type.trim().length>=5 && this.assetForm.description.trim().length>=15 && this.assetForm.createdBy.trim().length>=5 && this.isGroupNameValid === 1 && !(/^\d+$/.test(this.assetForm.createdBy.trim()))) {
+         this.assetForm.type.trim().length>=5 && this.assetForm.description.trim().length>=15 && this.assetForm.createdBy.trim().length>=5 && this.isGroupNameValid === 1 && !(ONLY_DIGITS.test(this.assetForm.createdBy.trim()))) {
          return false;
        }
      } else if (stepIndex === 1) {
