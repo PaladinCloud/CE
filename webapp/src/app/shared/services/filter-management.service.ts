@@ -240,7 +240,7 @@
        }
    }
  
-   async changeFilterType({currentFilterType, searchText, includeDotKeyword=false, filterText, currentQueryParams, filtersToBePassed, type, agAndDomain, updateFilterTags, labelsToExcludeSort, ignoreAttributeName=false}){
+   async changeFilterType ({ currentFilterType, searchText, filterText, currentQueryParams, filtersToBePassed, type, agAndDomain, updateFilterTags, labelsToExcludeSort, ignoreAttributeName = false }) {
     if(!currentFilterType){
       return [{}, []];
     }; 
@@ -261,7 +261,7 @@
        filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
          const normalizedKey = key.replace(".keyword", "");
          if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) || index>=0) {
-           result[normalizedKey+(includeDotKeyword?'.keyword':'')] = filtersToBePassed[key];
+           result[key] = filtersToBePassed[key];
          }
          return result;
        }, {});
