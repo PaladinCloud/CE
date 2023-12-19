@@ -17,7 +17,10 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     @Input() filtersToExcludeFromCasing = [];
     @Input() category: string;
     @Input() options: string[] = [];
-    isDateFilter: boolean;
+    @Input() dateCategoryList: string[] = [];
+    isDateFilter: boolean = false;
+    calendarMinDate: Date;
+    calendarMaxDate: Date;
     @Input() set appliedFiltersDict(values: { [key: string]: boolean }) {
         this._appliedFilters = Object.entries(values || {})
             .filter(([, value]) => value)
@@ -50,15 +53,21 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     private _appliedFilters: { name: string; value: boolean }[] = [];
     private _appliedFiltersDict: { [key: string]: boolean } = {};
 
-    private excludeSortForCategories = ["compliance", "violations", "severity", "category"];
-
     constructor(private logger: LoggerService) {}
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges (changes: SimpleChanges): void {
+        if (changes.dateCategoryList) {
+            if (this.dateCategoryList?.toString().toLowerCase().includes(this.category?.toLowerCase())) {
+                this.isDateFilter = true;
+            }
+        }
         if(changes.options){
+            if(this.isDateFilter && this.options?.length){
+                this.calendarMinDate = new Date(this.options[0]);
+                this.calendarMaxDate = new Date(this.options[1]);
+            }
             this.filterOptionsByQuery();
         }
-        
     }
 
     ngOnInit(): void {}
@@ -74,7 +83,6 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     }
 
     toggleOptionsMenu() {
-        this.isDateFilter =this.category.toLowerCase() == "created date" ?  true : false;
         this.isOptionsMenuOpen = !this.isOptionsMenuOpen;
         if(this.isOptionsMenuOpen){
             this.filterOptionsByQuery();

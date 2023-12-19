@@ -182,6 +182,27 @@ export class UtilsService {
     }
   }
 
+  // get map of column display name and api name and updates the column widths map
+  getColumnNamesMap(filterTypeLabels, filterTypeOptions, columnWidths, excludedColumnNames){
+    excludedColumnNames = new Set(excludedColumnNames);
+    const columnNamesMap = {};
+    filterTypeLabels.forEach(label => {
+        if (!excludedColumnNames.has(label)) {
+            if (!Object.keys(columnWidths).includes(label)) {
+                columnWidths[label] = 0.7;
+            }
+
+            const apiColName = filterTypeOptions
+                .find(option => option.optionName === label)?.optionValue;
+
+            if (apiColName) {
+                columnNamesMap[apiColName.replace(".keyword", "")] = label;
+            }
+        }
+    });
+    return columnNamesMap;
+  }
+
   addOrReplaceElement(array, toAddElement, comparator) {
     const i = findIndex(array, (element, index, _array) => {
       return comparator(element, index, _array);

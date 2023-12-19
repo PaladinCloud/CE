@@ -587,6 +587,7 @@
          })["optionValue"];
          this.fieldName = apiColName;
        }catch(e){
+         this.headerColName = '';
          this.logger.log("error", e);
        }
      }

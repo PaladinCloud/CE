@@ -127,6 +127,7 @@ import { ToastNotificationComponent } from './toast-notification/toast-notificat
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import { IssueFilterService } from '../pacman-features/services/issue-filter.service';
+import { DateRangeFormatterPipe } from './table-filters/pipes/date-range-formatter.pipe';
 
 @NgModule({
     imports: [
@@ -233,7 +234,8 @@ import { IssueFilterService } from '../pacman-features/services/issue-filter.ser
         TitleBurgerHeadComponent,
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
-        CellDataCasePipe
+        CellDataCasePipe,
+        DateRangeFormatterPipe
     ],
     exports: [
         CellDataCasePipe,
