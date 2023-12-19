@@ -511,6 +511,13 @@ public interface AssetRepository {
     public String getDataTypeInfoByTargetType(String targettype);
 
     /**
+     * Fetches all the asset group and its corresponding domain.
+     *
+     * @return  list of asset group and its corresponding domain
+     */
+    public List<Map<String, Object>> getAssetGroupAndDomains();
+
+    /**
      * Fetches the AD group details
      *
      * @return list of AD group details.

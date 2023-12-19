@@ -2774,6 +2774,12 @@ public class AssetRepositoryImpl implements AssetRepository {
         return rdsRepository.getDataFromPacman(query);
     }
 
+    @Override
+    public List<Map<String, Object>> getAssetGroupAndDomains() {
+        String query = "select distinct b.groupName as name, c.domain from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b, cf_Target c where a.groupId = b.groupId  and a.targetType = c.targetName";
+        return rdsRepository.getDataFromPacman(query);
+    }
+
     public Map<String, String> getEvents() {
         return events;
     }
