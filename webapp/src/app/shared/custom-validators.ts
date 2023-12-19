@@ -49,9 +49,8 @@ export class CustomValidators extends Validators {
 
   static alphanumericValidator(control){
     const value = control.value;
-    const pattern = ONLY_ALPHANUMERIC;
 
-    if (pattern.test(value)) {
+    if (ONLY_ALPHANUMERIC.test(value)) {
       return null; // Validation passed
     } else {
       return { alphanumeric: true }; // Validation failed
@@ -60,8 +59,7 @@ export class CustomValidators extends Validators {
 
   static alphanumericHyphenValidator(control){
     const value = control.value;
-    const regex = LOWERCASE_ALPHANUMERIC_HYPHEN;
-    const isValid = regex.test(value);
+    const isValid = LOWERCASE_ALPHANUMERIC_HYPHEN.test(value);
 
     if (!isValid) {
       return { alphanumericHyphen: true };
@@ -71,9 +69,8 @@ export class CustomValidators extends Validators {
 
   static clientSecretVlidator(control){
     const value = control.value;
-    const pattern = CLIENT_SECRET_PATTERN;
 
-    if (!pattern.test(value)) {
+    if (!CLIENT_SECRET_PATTERN.test(value)) {
       return { invalidField: true }; // Validation failed
     }
 
@@ -85,9 +82,8 @@ export class CustomValidators extends Validators {
 
   static urlValidator(control){
     const value = control.value;
-    const pattern = URL_PATTERN;
 
-    if (pattern.test(value)) {
+    if (URL_PATTERN.test(value)) {
       return null; // Validation passed
     } else {
       return { invalidURL: true }; // Validation failed
@@ -108,8 +104,7 @@ export class CustomValidators extends Validators {
     if (!value) {
       return null;
     }
-    const alphabetsRegex = ONLY_ALPHABETS;    
-    return alphabetsRegex.test(value) ? null : { alphabetsOnly: true };
+    return ONLY_ALPHABETS.test(value) ? null : { alphabetsOnly: true };
   }
 
   static noStartingNumberOrSpecialCharacter(control: AbstractControl): { [key: string]: any } | null {
@@ -118,8 +113,7 @@ export class CustomValidators extends Validators {
       return null;
     }
 
-    const startsWithNumberRegex = STARTS_WITH_ALPHABET_ALLOWS_ANY;    
-    return startsWithNumberRegex.test(value) ? null : { noStartingNumberOrSpecialCharacter: true };
+    return STARTS_WITH_ALPHABET_ALLOWS_ANY.test(value) ? null : { noStartingNumberOrSpecialCharacter: true };
   }
 
   static minLengthTrimValidator(minLength: number): ValidatorFn {

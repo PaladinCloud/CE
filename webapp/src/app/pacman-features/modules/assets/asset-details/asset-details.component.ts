@@ -62,7 +62,6 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   tileList = [];
 
-  emailPattern = EMAIL_PATTERN;
   resourceId: string;
   resourceType: string;
   public decodedResourceId: string;
@@ -987,7 +986,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
  
    // function to check whether input is matching email pattern
    validateEmailInput(inputValue) {
-     if (!this.emailPattern.test(inputValue)) {
+     if (!EMAIL_PATTERN.test(inputValue)) {
        return false;
      }
      return true;
