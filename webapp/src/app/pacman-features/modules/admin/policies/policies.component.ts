@@ -29,11 +29,10 @@
  import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
  import { ComponentKeys } from "src/app/shared/constants/component-keys";
  import { find, map } from "lodash";
- import { IFilterOption } from "src/app/shared/table/interfaces/table-filters.interface";
  import { FilterManagementService } from "src/app/shared/services/filter-management.service";
  import { CategoryOrderMap, SeverityOrderMap } from "src/app/shared/constants/order-mapping";
  import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
-import { IColumnNamesMap, IColumnWidthsMap } from "src/app/shared/table/interfaces/table-props.interface";
+import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared/table/interfaces/table-props.interface";
  
  @Component({
    selector: "app-admin-policies",
