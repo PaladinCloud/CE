@@ -214,36 +214,36 @@ public class AssetListControllerTest {
 
         ResponseEntity<Object> responseObj1 = controller.listScannedAssets(request,"domain");
         assertTrue(responseObj1.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
-        
+
         request.setFrom(-1);
         request.setAg("ag");
         ResponseEntity<Object> responseObj2 = controller.listScannedAssets(request,"domain");
         assertTrue(responseObj2.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
-        
+
         request.setFrom(0);
         ResponseEntity<Object> responseObj3 = controller.listScannedAssets(request,"domain");
         assertTrue(responseObj3.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
-        
-        
+
+
         Map<String,String> filter = new HashMap<>();
         filter.put("filterKey", "filterValue");
         filter.put("policyId", "filterValue");
         request.setFilter(filter);
         ResponseEntity<Object> responseObj4 = controller.listScannedAssets(request,"domain");
         assertTrue(responseObj4.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
-        
+
         filter.remove("policyId");
         filter.put("resourceType", "filterValue");
         request.setFilter(filter);
-        when(service.getListAssetsScanned(anyString(), anyObject())).thenReturn(aList);
+        when(service.getListAssetsScanned(anyString(), anyObject(), anyObject())).thenReturn(aList);
         ReflectionTestUtils.setField(controller, "assetService", service);
         ResponseEntity<Object> responseObj5 = controller.listScannedAssets(request,"domain");
         assertTrue(responseObj5.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
-        
+
         filter.clear();
         filter.put("policyId", "filterValue");
         request.setFilter(filter);
-        when(service.getListAssetsScanned(anyString(), anyObject())).thenReturn(aList);
+        when(service.getListAssetsScanned(anyString(), anyObject(), anyObject())).thenReturn(aList);
         ReflectionTestUtils.setField(controller, "assetService", service);
         ResponseEntity<Object> responseObj6 = controller.listScannedAssets(request,"domain");
         assertTrue(responseObj6.getStatusCode() == HttpStatus.OK);

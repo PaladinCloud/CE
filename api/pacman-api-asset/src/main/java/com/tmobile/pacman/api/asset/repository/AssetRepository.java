@@ -115,6 +115,8 @@ public interface AssetRepository {
      */
     public Map<String, Object> getAssetGroupInfo(String assetGroup);
 
+    public int getAccountCountByAssetGroup(String aseetGroupName);
+
     /**
      * Fetches the total asset count for each application for the given target
      * type and asset group.
@@ -381,7 +383,7 @@ public interface AssetRepository {
      * 
      * @return list of assets with open issue status.
      */
-    public List<Map<String, Object>> getListAssetsScanned(String assetGroup, Map<String, String> filter);
+    public List<Map<String, Object>> getListAssetsScanned(String assetGroup, Map<String, String> filter, Map<String, Object> sortFilter);
 
     /**
      * Fetches the resource created info for the given resourceId
@@ -497,15 +499,6 @@ public interface AssetRepository {
      */
     public String getResourceCreatedDate(String resourceId, String resourceType);
 
-    /**
-     * Fetches the domains for the given asset group.
-     *
-     * @param aseetGroupName name of the asset group
-     * 
-     * @return created date as string 
-     */
-    List<Map<String, Object>> getDomainsByAssetGroup(String aseetGroupName);
-
     List<Map<String, Object>> getDomainsByTargetTypes(String targetTypesParam);
 
     /**
@@ -516,13 +509,6 @@ public interface AssetRepository {
      * @return  list of updatable fields
      */
     public String getDataTypeInfoByTargetType(String targettype);
-
-    /**
-     * Fetches all the asset group and its corresponding domain.
-     *
-     * @return  list of asset group and its corresponding domain
-     */
-    public List<Map<String, Object>> getAssetGroupAndDomains();
 
     /**
      * Fetches the AD group details
@@ -560,7 +546,6 @@ public interface AssetRepository {
      *
      * @param aseetGroupName name of the asset group
      * @param type target type
-     * @param domain the domain of asset group
      * @param application the application of asset group
      * 
      * @return list of type and its asset count.
@@ -570,7 +555,6 @@ public interface AssetRepository {
 
 	/**
      * Fetches provider list for an asset group
-     *
      * @return list of providers.
      * @throws DataException
      */
@@ -583,14 +567,14 @@ public interface AssetRepository {
     public Set<String> getMandatoryTagsNames(String serviceName);
 
     List<String> getValuesListForTag(String aseetGroupName, String tagName,String type) throws DataException;
-    public Set<String> getSupportedFilters(String serviceName);
 
     public long getAutoFixPlanCountForAg(String ag);
-
-    public int getAccountCountByAssetGroup(String aseetGroupName);
-
+    public Set<String> getSupportedFilters(String serviceName);
     List<Map<String, Object>> getChildResourceDetailByDocId(String ag, String resourceType, String documentId)
             throws DataException;
 
-    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
+    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute) throws Exception;
+
+    public List<Map<String,String>> getAssetCompliantFilterValue(FilterRequest filter, String attribute) throws Exception;
+
 }

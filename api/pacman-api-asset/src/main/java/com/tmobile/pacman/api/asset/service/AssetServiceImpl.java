@@ -626,8 +626,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public List<Map<String, Object>> getListAssetsScanned(String assetGroup, Map<String, String> filter) {
-        return repository.getListAssetsScanned(assetGroup, filter);
+    public List<Map<String, Object>> getListAssetsScanned(String assetGroup, Map<String, String> filter, Map<String, Object> sortFilter) {
+        return repository.getListAssetsScanned(assetGroup, filter, sortFilter);
     }
 
     @Override
@@ -1235,8 +1235,12 @@ public class AssetServiceImpl implements AssetService {
         return repository.getSupportedFilters(filterName);
     }
 
-    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute){
+    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute) throws Exception {
         return repository.getAssetExemptedFilterValue(filter, attribute);
+    }
+
+    public List<Map<String,String>> getAssetCompliantFilterValue(FilterRequest filter, String attribute) throws Exception{
+        return repository.getAssetCompliantFilterValue(filter, attribute);
     }
 
 
@@ -1287,7 +1291,7 @@ public class AssetServiceImpl implements AssetService {
             else if (AssetConstants.REDHAT_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
                 sourceDisplayName = AssetConstants.REDHAT_CLOUD_SOURCE_DISPLAY_NAME;
             else if (AssetConstants.GCP_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
-                sourceDisplayName = AssetConstants.GCP_CLOUD_SOURCE_DISPLAY_NAME;
+                sourceDisplayName = AssetConstants.GCP_CLOUD_SOURCE.toUpperCase();
             else if (AssetConstants.AZURE_CLOUD_SOURCE.equalsIgnoreCase(couldSourceValue))
                 sourceDisplayName = AssetConstants.AZURE_CLOUD_SOURCE_DISPLAY_NAME;
             else {

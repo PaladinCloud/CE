@@ -292,6 +292,8 @@ public interface ComplianceService {
      */
     ResponseEntity<Object> formatException(ServiceException e);
 
+    public ResponseEntity<Object> formatException(Exception e);
+
     /**
      * method to get current kernel versions.
      *

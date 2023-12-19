@@ -23,7 +23,7 @@ public final class AssetConstants {
     private AssetConstants() {
         
     }
-
+    public static final String POLICYID_KEYWORD = "policyId.keyword";
     public static final String TOTAL = "total";
     public static final String HITS = "hits";
     public static final String VALUE = "value";
@@ -142,8 +142,8 @@ public final class AssetConstants {
     public static final String REDHAT_CLOUD_SOURCE_DISPLAY_NAME = "Red Hat";
 
     public static final String GCP_CLOUD_SOURCE = "Gcp";
-
-    public static final String GCP_CLOUD_SOURCE_DISPLAY_NAME = "GCP";
+    public static final String POLICYID = "policyId";
+    public static final String RESOURCE_ID = "_resourceid";
 
 }
 

@@ -18,6 +18,7 @@ package com.tmobile.pacman.api.compliance.service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import com.tmobile.pacman.api.compliance.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -436,10 +437,10 @@ public class FilterServiceImpl implements FilterService, Constants {
      * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
      * )
      */
-    public List<Map<String, Object>> getNotificationTypes() throws ServiceException {
+    public List<Map<String, Object>> getNotificationTypes(Map<String, List<String>> filters) throws ServiceException {
         Map<String, Long> notificationMap;
         try {
-            notificationMap = repository.getNotificationTypesFromES();
+            notificationMap = repository.getNotificationTypesFromES(filters);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -454,10 +455,10 @@ public class FilterServiceImpl implements FilterService, Constants {
      * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
      * )
      */
-    public List<Map<String, Object>> getNotificationSource() throws ServiceException {
+    public List<Map<String, Object>> getNotificationSource(Map<String, List<String>> filters) throws ServiceException {
         Map<String, Long> sourceMap;
         try {
-            sourceMap = repository.getNotificationSourceFromES();
+            sourceMap = repository.getNotificationSourceFromES(filters);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -486,9 +487,36 @@ public class FilterServiceImpl implements FilterService, Constants {
         return map;
     }
 
+    public List<Map<String, Object>> getAttributeValuesForPolicy(String assetGroup, String domain, Map<String, Object> filter,
+                                                                 String entityType, String attributeName, String searchText) throws Exception {
+        List<Map<String, Object>> result = new ArrayList<>();
+        attributeName = "_entitytype";
+        List<Map<String, Object>> resultMap = getAttributeValuesForAssetGroup(assetGroup, domain, filter, entityType, attributeName, searchText);
+        List<String> targetTypes = resultMap.stream().filter(obj -> obj.containsKey("id")).map(obj -> obj.get("id").toString()).collect(Collectors.toList());
+        String targetList = "";
+        for (String str : targetTypes) {
+            String ttypesTemp = new StringBuilder().append('\'').append(str).append('\'').toString();
+            if (Strings.isNullOrEmpty(targetList)) {
+                targetList = ttypesTemp;
+            } else {
+                targetList = new StringBuilder(targetList).append(",").append(ttypesTemp).toString();
+            }
+        }
+        List<Map<String, Object>> policies = complianceRepository.getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
+                targetList, "", false);
+        policies.stream().filter(obj -> obj.containsKey("policyId")).filter(obj -> obj.containsKey("policyDisplayName")).forEach(obj -> {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("id", obj.get("policyId"));
+            map.put("name", obj.get("policyDisplayName"));
+            result.add(map);
+        });
+        return result;
+    }
+
     public List<Map<String, Object>> getAttributeValuesForAssetGroup(
             String assetGroup, String domain, Map<String,Object> filter, String entityType,String attributeName,String searchText) throws ServiceException {
-        Map<String, Long> valueMap;
+        Map<String, ?> valueMap;
+        Map<String, Object> range = new HashMap<>();
         List<Map<String, Object>> valueList = new ArrayList<>();
         try {
             String targetTypes=complianceRepository.getTargetTypeForAG(assetGroup,domain);
@@ -503,39 +531,51 @@ public class FilterServiceImpl implements FilterService, Constants {
             Map<String, Object> values = new HashMap<>();
             if (StringUtils.isNotBlank(dataValue.getKey())) {
                 String key=dataValue.getKey();
-                if(key!=null && key.equalsIgnoreCase("exempted")){
-                    values.put(NAME, "exempt");
-                }
-                //conversion of cloudType to Upper case for Aws/Gcp
-                else  if(null!=attributeName && attributeName.equalsIgnoreCase("_cloudType")){
-                    if(key.equalsIgnoreCase("aws")|| key.equalsIgnoreCase("gcp"))
-                        values.put(NAME,key.toUpperCase());
+                if(key!=null && key.equalsIgnoreCase("optionRange")){
+                    Map<String, Object> optionRange = (Map<String, Object>) dataValue.getValue();
+                    values.put("min",optionRange.get("min"));
+                    values.put("mix",optionRange.get("max"));
+                    range.put("optionRange", optionRange);
+                } else{
+                    if(key!=null && key.equalsIgnoreCase("exempted")){
+                        values.put(NAME, "exempt");
+                    }
+                    //conversion of cloudType to Upper case for Aws/Gcp
+                    // we need to replace below code with dynamic cloud type mapping.
+                    else  if(null!=attributeName && attributeName.equalsIgnoreCase("_cloudType")){
+                        if(key.equalsIgnoreCase("aws")|| key.equalsIgnoreCase("gcp")) {
+                            values.put(NAME,key.toUpperCase());
+                        } else if (key.equalsIgnoreCase("redhat")) {
+                            values.put(NAME, "Red Hat");
+                        } else
+                            values.put(NAME,key);
+                    }
                     else
-                        values.put(NAME,key);
-                }
-                else
-                values.put(NAME, key);
-                values.put(ID, key);
-                synchronized (valueList) {
-                    valueList.add(values);
+                        values.put(NAME, key);
+                    values.put(ID, key);
+                    synchronized (valueList) {
+                        valueList.add(values);
+                    }
                 }
             }
         });
+        if(!range.isEmpty()){
+            valueList.add(range);
+        }
         if (valueList.isEmpty()) {
             throw new ServiceException(NO_DATA_FOUND);
         }
         return valueList;
     }
 
-    public List<Map<String, Object>> getNotificationEventName() throws ServiceException {
+    public List<Map<String, Object>> getNotificationEventName(Map<String, List<String>> filter) throws ServiceException {
         Map<String, Long> sourceMap;
         try {
-            sourceMap = repository.getNotificationEventNamesFromES();
+            sourceMap = repository.getNotificationEventNamesFromES(filter);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
         return convertESResponseToMap(sourceMap);
-
     }
 
     public ResponseData getPolicycompliance(FilterRequest request) throws ServiceException{

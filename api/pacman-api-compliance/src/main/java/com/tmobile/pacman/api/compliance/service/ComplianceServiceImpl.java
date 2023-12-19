@@ -1576,6 +1576,16 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         }
     }
 
+    public ResponseEntity<Object> formatException(Exception e) {
+        if (e.getMessage().contains(NO_DATA_FOUND)) {
+            List<Map<String, Object>> emptylist = new ArrayList<>();
+            ResponseData res = new ResponseData(emptylist);
+            return ResponseUtils.buildSucessResponse(res);
+        } else {
+            return ResponseUtils.buildFailureResponse(e);
+        }
+    }
+
     private Map<String, Object> getPolicyDescriptionDetails(List<Map<String, Object>> description, Map<String, Object> policyDetails) {
         List<String> resolution = new ArrayList<>();
         for (Map<String, Object> policy : description) {

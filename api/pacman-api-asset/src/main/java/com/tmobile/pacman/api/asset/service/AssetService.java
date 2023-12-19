@@ -184,11 +184,21 @@ public interface AssetService {
      * @param searchText searchText is used to match any text you are looking for
      * @param from for pagination
      * @param size for pagination
-     * 
+     *
      * @return list of assets and its some details.
      */
     public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
                                                    String searchText, Map<String, Object> sortFilter) throws Exception;
+
+    /**
+     * Fetches all the asset for the given asset group.
+     *
+     * @param assetGroup  name of the asset group
+     * @param filter application,environment,resourceType as optional filters
+     * 
+     * @return list of assets and its some details.
+     */
+    public List<Map<String, Object>> getListAssetsScanned(String assetGroup, Map<String, String> filter, Map<String, Object> sortFilter);
 
     /**
      * Fetches the total asset count for the given asset group.
@@ -332,17 +342,6 @@ public interface AssetService {
      * @throws DataException when there is an error while fetching data
      */
     public String getEc2StateDetail(String ag, String resourceId) throws DataException;
-
-    /**
-     * Fetches the assets with open issue status for the rule id passed in the filter.
-     *
-     * @param assetGroup  name of the asset group
-     * @param filter  ruleid as mandatory and compliant(true/false),application,environment,resourcetype as
-     *         optional filters
-     * 
-     * @return list of assets with open issue status.
-     */
-    public List<Map<String, Object>> getListAssetsScanned(String assetGroup, Map<String, String> filter);
 
     /**
      * Fetches the open,closed and upcoming notification count for the given instance.
@@ -539,6 +538,8 @@ public interface AssetService {
 
     public Set<String> getSupportedFilters(String filterName);
 
-    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
+    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute) throws Exception;
+
+    public List<Map<String,String>> getAssetCompliantFilterValue(FilterRequest filter, String attribute) throws Exception;
 
 }

@@ -103,11 +103,15 @@ public class AssetListController {
         try {
             List<Map<String, Object>> masterDetailList = assetService.getListAssets(assetGroup, reqFilter, from, size,
                     searchText, request.getSortFilter());
-            response = new ResponseWithCount(masterDetailList, ThreadLocalUtil.count.get());
+            if (masterDetailList.isEmpty()) {
+                response = new ResponseWithCount(masterDetailList, masterDetailList.size());
+            } else {
+                response = new ResponseWithCount(masterDetailList, ThreadLocalUtil.count.get());
+            }
             ThreadLocalUtil.count.remove();
 
         } catch (Exception e) {
-            LOGGER.error("Error in listAssets ",e);
+            LOGGER.error("Error in listAssets ", e);
             return ResponseUtils.buildFailureResponse(e);
         }
         return ResponseUtils.buildSucessResponse(response);
@@ -117,9 +121,6 @@ public class AssetListController {
        * Fetches the exempted assets for the given assetgroup.If exempted filter is false it returns the unexempted assets
        * and if tagged is true returns the exempted assets.
        *
-       * @param assetGroup  name of the asset group
-       * @param filter exempted(true/false)
-       * 
        * @return list of assets exempted/unexempted.
        */
       @ApiOperation(httpMethod = "POST", value = "Get the list of exempted assets in an asset group. ")
@@ -395,7 +396,7 @@ public class AssetListController {
 
         List<Map<String, Object>> masterList;
         try {
-            masterList = assetService.getListAssetsScanned(assetGroup, filter);
+            masterList = assetService.getListAssetsScanned(assetGroup, filter, request.getSortFilter());
         } catch (Exception e) {
             LOGGER.error("Error in listScannedAssets ",e);
             return ResponseUtils.buildFailureResponse(e);
@@ -566,8 +567,27 @@ public class AssetListController {
         if (request == null || Strings.isNullOrEmpty(request.getAg())) {
             return ResponseUtils.buildFailureResponse(new Exception("Asset group is Mandatory"));
         }
-        Map<String,Object> response=new HashMap<>();
-        response.put("response",assetService.getAssetExemptedFilterValue(request, attribute));
+        Map<String, Object> response = new HashMap<>();
+        try {
+            response.put("response", assetService.getAssetExemptedFilterValue(request, attribute));
+        } catch (Exception e) {
+            LOGGER.error("Exception in formResponseWithCount ", e);
+            return ResponseUtils.buildFailureResponse(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
+    @RequestMapping(path = "/v1/getCompliantFilterValue", method = RequestMethod.POST)
+    public ResponseEntity<Object> getCompliantFilterValue(@RequestBody FilterRequest request) {
+        if (request == null || Strings.isNullOrEmpty(request.getAg())) {
+            return ResponseUtils.buildFailureResponse(new Exception("Asset group is Mandatory"));
+        }
+        Map<String, Object> response = new HashMap<>();
+        try {
+            response.put("response", assetService.getAssetCompliantFilterValue(request, "compliant"));
+        } catch (Exception e) {
+            LOGGER.error("Exception in getCompliantFilterValue ", e);
+            return ResponseUtils.buildFailureResponse(e);
+        }
         return ResponseUtils.buildSucessResponse(response);
     }
 }

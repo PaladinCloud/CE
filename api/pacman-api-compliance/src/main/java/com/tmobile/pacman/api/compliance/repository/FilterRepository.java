@@ -18,6 +18,7 @@ package com.tmobile.pacman.api.compliance.repository;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.api.commons.exception.ServiceException;
 import org.springframework.stereotype.Repository;
 
 import com.tmobile.pacman.api.commons.exception.DataException;
@@ -100,7 +101,7 @@ public interface FilterRepository {
      * @throws DataException the data exception
      */
     public Map<String, Long> getCategoriesFromES(String assetGroup)
-            throws DataException;
+    throws DataException;
 
     /**
      * Gets the rules from ES.
@@ -153,7 +154,7 @@ public interface FilterRepository {
      * @return Map<String, Long>
      * @throws DataException the data exception
      */
-    public Map<String, Long> getNotificationTypesFromES() throws DataException;
+    public Map<String, Long> getNotificationTypesFromES(Map<String, List<String>> filter) throws DataException;
 
     /**
      * Gets the list of Notification source.
@@ -161,10 +162,12 @@ public interface FilterRepository {
      * @return Map<String, Long>
      * @throws DataException the data exception
      */
-    public Map<String, Long> getNotificationSourceFromES() throws DataException;
-    public Map<String, Long> getNotificationEventNamesFromES() throws DataException;
+    public Map<String, Long> getNotificationSourceFromES(Map<String, List<String>> filter) throws DataException;
+    public Map<String, Long> getNotificationEventNamesFromES(Map<String, List<String>> filter) throws DataException;
+    public Map<String, Long> getNotificationDateFromES(Map<java.lang.String, List<java.lang.String>> filter) throws DataException;
 
+    public Map<String, ?> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName,String targetTypes,String searchText) throws DataException;
 
-    public Map<String, Long> getAttributeValuesFromES(String assetGroup, Map<String,Object> filter, String entityType,String attributeName, String targetTypes,String searchText) throws DataException;
+    public List<Map<String, Object>> getValueForFilterForAdminPolicy(Map<String,Object> filter, String attributeName,String searchText) throws ServiceException;
 
 }

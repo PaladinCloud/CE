@@ -744,11 +744,11 @@ public class AssetRepositoryTest {
         mockStatic(PacHttpUtils.class);
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenReturn(response);
 
-        List<Map<String, Object>> a = repository.getListAssetsScanned("aws-all", filter);
+        List<Map<String, Object>> a = repository.getListAssetsScanned("aws-all", filter, null);
         assertTrue(a != null);
         filter.remove("compliant");
         filter.remove("resourceType");
-        a = repository.getListAssetsScanned("aws-all", filter);
+        a = repository.getListAssetsScanned("aws-all", filter, null);
         assertTrue(a != null);
 
     }
@@ -1091,22 +1091,7 @@ public class AssetRepositoryTest {
 
         when(pacmanRdsRepository.getDataFromPacman(anyString())).thenReturn(tTypeList);
         ReflectionTestUtils.setField(repository, "rdsRepository", pacmanRdsRepository);
-        List<Map<String, Object>> result = repository.getDomainsByAssetGroup("ag");
-        assertTrue(result.size() == 1);
-    }
-
-    @Test
-    public void testgetAssetGroupAndDomains() throws Exception {
-        List<Map<String, Object>> tTypeList = new ArrayList<>();
-        Map<String, Object> ttypeMap1 = new HashMap<>();
-        ttypeMap1.put("targetType", "ec2");
-        ttypeMap1.put("type", "ec2");
-        ttypeMap1.put("policyId", "r1");
-        tTypeList.add(ttypeMap1);
-
-        when(pacmanRdsRepository.getDataFromPacman(anyString())).thenReturn(tTypeList);
-        ReflectionTestUtils.setField(repository, "rdsRepository", pacmanRdsRepository);
-        List<Map<String, Object>> result = repository.getAssetGroupAndDomains();
+        List<Map<String, Object>> result = repository.getDomainsByTargetTypes("ag");
         assertTrue(result.size() == 1);
     }
 

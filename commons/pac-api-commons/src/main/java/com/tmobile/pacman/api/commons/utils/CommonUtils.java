@@ -59,6 +59,20 @@ public class CommonUtils {
 	private CommonUtils() {
 		// hide the implicit public constructor
 	}
+	public static String removeKeywordFromAttribute(String attributeName){
+		if(attributeName.endsWith(".keyword")){
+			return attributeName.replace(".keyword", "");
+		}
+		return attributeName;
+	}
+
+
+	public static boolean isEqualToAttribue(String attributeName, String keyName){
+		if(attributeName.equals(keyName) || attributeName.equals(keyName+".keyword") || attributeName.equals(removeKeywordFromAttribute(keyName))){
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 *
