@@ -187,8 +187,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     }
   };
 
-  private readonly emailPattern = EMAIL_PATTERN;
-
   /*Subscription variables*/
 
   private getRuleDescSubscription: Subscription;
@@ -1489,7 +1487,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
   // function to check whether input is matching email pattern
   validateEmailInput(inputValue) {
-    if (!this.emailPattern.test(inputValue)) {
+    if (!EMAIL_PATTERN.test(inputValue)) {
       return false;
     }
     return true;
