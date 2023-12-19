@@ -8,6 +8,7 @@ import com.tmobile.pacman.api.admin.domain.DataSourceObj;
 import com.tmobile.pacman.api.admin.repository.DatasourceRepository;
 import com.tmobile.pacman.api.admin.repository.TargetTypesRepository;
 import com.tmobile.pacman.api.admin.service.CommonService;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
@@ -30,6 +32,9 @@ public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
 
     @Autowired
     private DatasourceRepository datasourceRepository;
+
+    @Autowired
+    PacmanRdsRepository rdsRepository;
 
     private List<Object> createFilterForDataSource(List<DataSourceObj> dataSourceObjList, String aliasName){
         List<Object> action = Lists.newArrayList();
@@ -145,10 +150,14 @@ public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
 
     private List<DataSourceObj> getConfig(Set<String> dataSourceLs, List<HashMap<String, Object>> configurationList){
         List<DataSourceObj> dataSourceObjList = new ArrayList<>();
+        Map<String, Set<String>> dsAccounts = getAccIdForConfiguredSources();
         for(String dataSrc : dataSourceLs){
             DataSourceObj obj = new DataSourceObj();
             obj.setDsName(dataSrc);
             for(Map<String, Object> configuration : configurationList){
+                if (!isAccountConfigValid(configuration, dsAccounts.get(dataSrc))) {
+                    continue;
+                }
                 String curDsTemp = getCloudTypeFromConfig(configuration);
                 String targetType = getTaregtTypeFromConfig(configuration);
                 String dsFromTargetType = "";
@@ -167,6 +176,20 @@ public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
             dataSourceObjList.add(obj);
         }
         return dataSourceObjList;
+    }
+
+    private Map<String, Set<String>> getAccIdForConfiguredSources() {
+
+        String query = "select accountId, platform from cf_Accounts  where platform in (select distinct dataSourceName " +
+                " from cf_Target) and accountStatus= 'configured'";
+
+        List<Map<String, Object>> dsAccounts = rdsRepository.getDataFromPacman(query);
+        return dsAccounts.stream().collect(Collectors.groupingBy(m -> String.valueOf(m.get("platform")), Collectors.mapping(m -> String.valueOf(m.get("accountId")), Collectors.toSet())));
+    }
+
+    /** allows creating alias for the source only if the accountId criteria belongs to that source */
+    private boolean isAccountConfigValid(Map<String, Object> configuration, Set<String> accountIds) {
+        return !configuration.containsKey("accountid") || accountIds.contains(configuration.get("accountid"));
     }
 
     private boolean getIsSet(String curDs, String dataSrc){
