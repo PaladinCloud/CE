@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.amazonaws.services.accessanalyzer.model.AnalyzerSummary;
-import com.amazonaws.services.accessanalyzer.model.FindingSummary;
+import com.amazonaws.services.accessanalyzer.model.FindingSummaryV2;
 import com.amazonaws.services.rds.model.Tag;
 
 /**
@@ -22,7 +22,7 @@ public class AccessAnalyzerVH {
 	private List<Tag> tags;
 
 	/** finding summary of the analyzer */
-	private List<FindingSummary> finding;
+	private List<FindingSummaryV2> finding;
 
 	/**
 	 * Instantiates a new AccessAnalyzer instance VH.
@@ -31,7 +31,7 @@ public class AccessAnalyzerVH {
 	 * @param findings the findings
 	 * @param tags     the tags
 	 */
-	public AccessAnalyzerVH(AnalyzerSummary analyzer, List<FindingSummary> finding) {
+	public AccessAnalyzerVH(AnalyzerSummary analyzer, List<FindingSummaryV2> finding) {
 		this.analyzer = analyzer;
 		this.finding = finding;
 		this.tags = new ArrayList<>();
@@ -55,11 +55,11 @@ public class AccessAnalyzerVH {
 		this.analyzer = analyzer;
 	}
 
-	public List<FindingSummary> getFinding() {
+	public List<FindingSummaryV2> getFinding() {
 		return finding;
 	}
 
-	public void setFinding(List<FindingSummary> finding) {
+	public void setFinding(List<FindingSummaryV2> finding) {
 		this.finding = finding;
 	}
 
