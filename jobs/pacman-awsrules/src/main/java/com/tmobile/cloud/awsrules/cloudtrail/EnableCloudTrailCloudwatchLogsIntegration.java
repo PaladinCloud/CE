@@ -12,6 +12,7 @@
  * limitations under the License.
  ******************************************************************************/
 package com.tmobile.cloud.awsrules.cloudtrail;
+
 import com.nimbusds.oauth2.sdk.util.MapUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
