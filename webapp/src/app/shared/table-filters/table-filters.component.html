@@ -1,16 +1,19 @@
 <div class="table-filters-container flex flex-align-center flex-wrap gap-16">
-    <app-table-filter-chip
-    [isDisabled]="i!=appliedFilters.length-1 && !areAllFiltersEnabled"
-        *ngFor="let appliedFilter of appliedFilters; let i=index;trackBy: trackByAppliedFilter"
-        [category]="appliedFilter.keyDisplayValue"
-        [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
-        [options]="categoryOptions[appliedFilter.keyDisplayValue]"
-        [filtersToExcludeFromCasing]="filtersToExcludeFromCasing"
-        (clear)="clearFilter($event)"
-        (update)="updateFilter($event)"
-        (click)="openFilterCategory(appliedFilter.keyDisplayValue)"
-        (filterSearchTextChange)="handleSearchTextChangeForCategory($event)"
-    ></app-table-filter-chip>
+    <div class="chip-wrapper"
+        *ngFor="let appliedFilter of appliedFilters; let i = index; trackBy: trackByAppliedFilter">
+        <app-table-filter-chip [isDisabled]="i !== appliedFilters.length - 1 && !areAllFiltersEnabled"
+            [category]="appliedFilter.keyDisplayValue"
+            [class.cursor-not-allowed]="i !== appliedFilters.length - 1 && !areAllFiltersEnabled"
+            [appliedFiltersDict]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
+            [options]="categoryOptions[appliedFilter.keyDisplayValue]"
+            [filtersToExcludeFromCasing]="filtersToExcludeFromCasing" [dateCategoryList]="dateCategoryList"
+            (clear)="clearFilter($event)" (update)="updateFilter($event)" 
+            (click)=" i !== appliedFilters.length - 1 && !areAllFiltersEnabled
+                    ? void
+                    : openFilterCategory(appliedFilter.keyDisplayValue)
+            " (filterSearchTextChange)="handleSearchTextChangeForCategory($event)">
+        </app-table-filter-chip>
+    </div>
 
     <button
         type="button"
@@ -66,11 +69,13 @@
             </ul>
         </ng-container>
         <ng-container *ngIf="isCategoryOptionsMenuOpen && isDateFilter">
-                <div class="date-selection-modal">
+            <div class="date-selection-modal">
                     <app-date-selection
+                        [minDate]="calendarMinDate"
+                        [maxDate]="calendarMaxDate"
                         (datesSelected)="dateIntervalSelected($event.from, $event.to)"
                     ></app-date-selection>
-                </div>
+            </div>
         </ng-container>
     </div>
 </ng-template>

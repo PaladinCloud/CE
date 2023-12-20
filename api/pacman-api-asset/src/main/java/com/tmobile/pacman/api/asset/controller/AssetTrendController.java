@@ -90,7 +90,7 @@ public class AssetTrendController {
         }
     }
 
-    @ApiOperation(value = "Trends of daily total assets count over the period of last 1 month", response = Iterable.class)
+    @ApiOperation(value = "Trends of daily total assets count over the period between from and to date", response = Iterable.class)
     @GetMapping(path = "/v1/trend/assetcount")
     public ResponseEntity<Object> getAssetCount(@RequestParam(name = "ag", required = true) String assetGroup,
                                                       @RequestParam(name = "type", required = false) String type,

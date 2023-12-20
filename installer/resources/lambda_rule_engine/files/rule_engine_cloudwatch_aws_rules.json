@@ -78,7 +78,6 @@
 	"aws_classicelb_access_logs",
 	"aws_ec2_should_not_be_stopped_state_for_too_long",
 	"aws_ec2_should_not_be_publicly_accessible_on_port1434",
-	"aws_ec2_should_not_be_publicly_accessible_on_port3306",
 	"aws_ec2_should_not_be_publicly_accessible_on_port138",
 	"aws_ec2_should_not_be_publicly_accessible_on_port80",
 	"aws_ec2_should_not_be_publicly_accessible_on_port8080",

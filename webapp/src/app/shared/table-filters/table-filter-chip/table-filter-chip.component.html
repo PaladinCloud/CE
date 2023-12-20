@@ -1,15 +1,25 @@
 <div
     class="flex flex-align-center table-filter-chip"
+    [class.disabled]="isDisabled"
     cdkOverlayOrigin
     #optionsMenuTrigger="cdkOverlayOrigin"
 >
-    <div class="tfc-text-container" [class.disabled]="isDisabled" (click)="toggleOptionsMenu()">
+    <div class="tfc-text-container" [class.pointer-events-none]="isDisabled" (click)="toggleOptionsMenu()">
         <span class="tfc-name"> {{ category }}:&nbsp;</span>
 
         <span class="tfc-value" [title]="appliedFilters.length === 1 ? appliedFilters[0].name : ''">
             <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
-                <span *ngIf="!filtersToExcludeFromCasing.includes(category)">{{ appliedFilters[0].name | slice : 0 : maxOptionChars | celldatacase }}</span>
-                <span *ngIf="filtersToExcludeFromCasing.includes(category)">{{ appliedFilters[0].name | slice : 0 : maxOptionChars }}</span>
+                <span *ngIf="isDateFilter else textBlock">
+                    {{ appliedFilters[0].name | slice : 0 : maxOptionChars | dateRangeFormatter }}
+                </span>
+                <ng-template #textBlock>
+                    <span *ngIf="!filtersToExcludeFromCasing.includes(category)">
+                        {{ appliedFilters[0].name | slice : 0 : maxOptionChars | celldatacase }}
+                    </span>
+                    <span *ngIf="filtersToExcludeFromCasing.includes(category)">
+                        {{ appliedFilters[0].name | slice : 0 : maxOptionChars }}
+                    </span>
+                </ng-template>
             </ng-container>
 
             <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
@@ -44,6 +54,8 @@
     <ng-container *ngIf="isOptionsMenuOpen && isDateFilter">
         <div class="date-selection-modal">
             <app-date-selection
+                [minDate]="calendarMinDate"
+                [maxDate]="calendarMaxDate"
                 (datesSelected)="dateIntervalSelected($event.from, $event.to)"
             ></app-date-selection>
         </div>

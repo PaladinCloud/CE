@@ -32,8 +32,8 @@ import { HostVulnerabilitiesSummaryService } from '../../../services/host-vulner
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CONFIGURATIONS } from '../../../../../config/configurations';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
+import { EMAIL_PATTERN } from 'src/app/shared/constants/regex-constants';
 
 
 @Component({
@@ -62,7 +62,6 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   tileList = [];
 
-  emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   resourceId: string;
   resourceType: string;
   public decodedResourceId: string;
@@ -987,7 +986,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
  
    // function to check whether input is matching email pattern
    validateEmailInput(inputValue) {
-     if (!this.emailPattern.test(inputValue)) {
+     if (!EMAIL_PATTERN.test(inputValue)) {
        return false;
      }
      return true;

@@ -28,6 +28,8 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     @Input() areAllFiltersEnabled = false;
     @Input() filtersToExcludeFromCasing = [];
     isDateFilter: boolean = false;
+    calendarMinDate: Date;
+    calendarMaxDate: Date;
     @Input() set appliedFilters(filters: FilterItem[] | undefined) {
         this._appliedFilters = filters || [];
         const optionDict = this._appliedFilters.reduce((prev, next) => {
@@ -46,7 +48,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
 
         this.syncFiltersDictWithFiltersArray();
         // TODO: REMOVE IF STATEMENT WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
-        if (Object.keys(this.appliedFiltersDict).length && !this.enableMultiValuedFilter) {
+        if (Object.keys(this.appliedFiltersDict).length && (!this.enableMultiValuedFilter || this.isDateFilter)) {
             this.appliedFiltersDict = Object.keys(this.appliedFiltersDict).reduce((acc, next) => {
                 acc[next] = optionDict[next] ? optionDict[next] : this.appliedFiltersDict[next];
                 return acc;
@@ -60,6 +62,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         return this._appliedFilters;
     }
 
+    @Input() dateCategoryList = [];
     @Input() set categories(values) {
         this.syncFiltersDictWithFiltersArray();
         this._categories = values;
@@ -79,7 +82,18 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         return this._categories;
     }
 
-    @Input() categoryOptions: { [key: string]: string[] } = {};
+    @Input() set categoryOptions(values){
+        this._categoryOptions = values;
+        
+        if(this.isDateFilter && this._categoryOptions[this.selectedCategory].length){
+            this.calendarMinDate = new Date(this._categoryOptions[this.selectedCategory][0]);
+            this.calendarMaxDate = new Date(this._categoryOptions[this.selectedCategory][1]);
+        }
+    };
+
+    get categoryOptions(){
+        return this._categoryOptions;
+    }
 
     @Output() categoryChange = new EventEmitter<string>();
     @Output() categoryClear = new EventEmitter<string>();
@@ -99,6 +113,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     categoryFilterQuery = '';
     categoryOptionFilterQuery = '';
 
+    private _categoryOptions: { [key: string]: string[] } = {};
     private _appliedFilters: FilterItem[] = [];
     private _categories: string[] = [];
     private filterTextChange = new Subject<any>();
@@ -131,7 +146,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     openFilterCategory(filterCategory: string) {
         this.isCategoryOptionsMenuOpen = true;
         this.selectedCategory = filterCategory;
-        if(this.selectedCategory == "Created Date"){
+        if(this.dateCategoryList?.includes(this.selectedCategory)){
             this.isDateFilter = true;
         }else{
             this.isDateFilter = false;
@@ -175,7 +190,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         // TODO: REMOVE WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
         const uncheckedOptionsDict = Object.entries(this.appliedFiltersDict[filterCategory]).reduce(
             (prev, [name]) => {
-                if (name !== event.filterName && !this.enableMultiValuedFilter) {
+                if (name !== event.filterName && (!this.enableMultiValuedFilter || this.isDateFilter)) {
                     prev[name] = false;
                 }
                 return prev;

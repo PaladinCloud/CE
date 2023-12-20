@@ -14,7 +14,6 @@
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {environment} from '../../../../../environments/environment';
-import {AssetGroupObservableService} from '../../../../core/services/asset-group-observable.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
 import {UtilsService} from '../../../../shared/services/utils.service';
@@ -27,10 +26,11 @@ import {ErrorHandlingService} from 'src/app/shared/services/error-handling.servi
 import {TableStateService} from 'src/app/core/services/table-state.service';
 import find from 'lodash/find';
 import map from 'lodash/map';
-import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { DatePipe } from '@angular/common';
+import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 
 @Component({
     selector: 'app-cloud-notifications',
@@ -43,11 +43,10 @@ import { DatePipe } from '@angular/common';
 })
 
 export class CloudNotificationsComponent implements OnInit, OnDestroy {
-    assetGroupSubscription: Subscription;
+    agDomainSubscription: Subscription;
     dataSubscription: Subscription;
     summarySubscription: Subscription;
     filterSubscription: Subscription;
-    domainSubscription: Subscription;
 
     pageTitle = "Notifications";
     saveStateKey: String = ComponentKeys.NotificationList;
@@ -99,23 +98,17 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
     columnNamesMap = {
         eventName: 'Event',
-        eventCategoryName: 'Type',
-        eventSourceName: 'Source',
-        _loaddate: 'Created'
     };
 
     columnWidths = {
         'Event': 2,
-        'Type': 0.7,
-        'Source': 0.7,
-        'Created': 0.7
     };
 
     centeredColumns = {
         Event: false,
         Type: true,
         Source: true,
-        "Created": true,
+        "Created Date": true,
     };
 
     FullQueryParams: any;
@@ -124,10 +117,10 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     sortOrder: any;
     fieldType: string;
     fieldName: any;
+    dateCategoryList: string[] = ['Created Date'];
 
     constructor(
-        private assetGroupObservableService: AssetGroupObservableService,
-        private domainObservableService: DomainTypeObservableService,
+        private agDomainObservableService: AgDomainObservableService,
         private filterService: IssueFilterService,
         private router: Router,
         private errorHandler: ErrorHandlingService,
@@ -138,28 +131,24 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         private downloadService: DownloadService,
         private routerUtilityService: RouterUtilityService,
         private activatedRoute: ActivatedRoute,
-        private tableStateService: TableStateService
+        private tableStateService: TableStateService,
+        private filterManagementService: FilterManagementService
     ) {
         this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
         this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
             this.pageLevel
         );
 
-        this.assetGroupSubscription = this.assetGroupObservableService
-            .getAssetGroup()
-            .subscribe(assetGroupName => {
+        this.agDomainSubscription = this.agDomainObservableService
+            .getAgDomain()
+            .subscribe(([ag, domain]) => {
                   this.getPreservedState();
                   if(this.selectedAssetGroup){
                     this.tableScrollTop = 0;
                   }
-                this.getFilters();
-                this.selectedAssetGroup = assetGroupName;
-            });
-
-        this.domainSubscription = this.domainObservableService
-            .getDomainType()
-            .subscribe((domain) => {
-                this.selectedDomain = domain;
+                  this.selectedAssetGroup = ag;
+                  this.selectedDomain = domain;
+                  this.getFilters();
             });
     }
 
@@ -176,7 +165,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             this.tableDataLoaded = true;
 
             this.tableData = state?.data || [];
-            this.displayedColumns = Object.keys(this.columnWidths);
+            this.displayedColumns = ['Event', 'Type', 'Source', 'Created Date'];
             this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
             this.tableScrollTop = state?.tableScrollTop;
 
@@ -253,103 +242,64 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     deleteFilters(event?) {
-        try {
-            if (!event) {
-                this.filters = [];
-                this.storeState();
-            } else if(event.removeOnlyFilterValue){
-                this.getUpdatedUrl();
-                this.updateComponent();
-                this.storeState();
-              } else if(event.index && !this.filters[event.index].filterValue) {
-                this.filters.splice(event.index, 1);
-                this.storeState();
-            } else {
-                if (event.clearAll) {
-                    this.filters = [];
-                } else {
-                    this.filters.splice(event.index, 1);
-                }
-                this.storeState();
-                this.getUpdatedUrl();
-                this.updateComponent();
-            }
-        } catch (error) {
+        let shouldUpdateComponent = false;
+        [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);      
+        if(shouldUpdateComponent){
+            this.getUpdatedUrl();
+            this.updateComponent();
         }
-        /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+        this.storeState();
     }
 
     /*
-     * this function passes query params to filter component to show filter
-     */
-    getFilterArray() {
+       * this functin passes query params to filter component to show filter
+       */
+    async getFilterArray() {
         try {
-            const filterObjKeys = Object.keys(this.filterText);
-            const dataArray = [];
-            for (let i = 0; i < filterObjKeys.length; i++) {
-                let obj = {};
-                const keyDisplayValue = find(this.filterTypeOptions, {
-                    optionValue: filterObjKeys[i],
-                })['optionName'];
-                obj = {
-                    keyDisplayValue,
-                    filterkey: filterObjKeys[i],
-                };
-                dataArray.push(obj);
-            }
-
-            const state = this.tableStateService.getState(this.saveStateKey) ?? {};
-            const filters = state?.filters;
-
-            if (filters) {
-                const dataArrayFilterKeys = dataArray.map((obj) => obj.keyDisplayValue);
-                filters.forEach((filter) => {
-                    if (!dataArrayFilterKeys.includes(filter.keyDisplayValue)) {
-                        dataArray.push({
-                            filterkey: filter.filterkey,
-                            keyDisplayValue: filter.key,
-                        });
-                    }
-                });
-            }
-
-            const formattedFilters = dataArray;
-            for (let i = 0; i < formattedFilters.length; i++) {
-                let keyDisplayValue = formattedFilters[i].keyDisplayValue;
-                if (!keyDisplayValue) {
-                    keyDisplayValue = find(this.filterTypeOptions, {
-                        optionValue: formattedFilters[i].filterKey,
-                    })['optionName'];
-                }
-
-                this.changeFilterType(keyDisplayValue).then(() => {
-                    const filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
-                        id: this.filterText[formattedFilters[i].filterkey],
-                    });
-
-                    const filterKey = dataArray[i].filterkey;
-
-                    if (!this.filters.find((filter) => filter.keyDisplayValue == keyDisplayValue)) {
-                        const eachObj = {
-                            keyDisplayValue: keyDisplayValue,
-                            filterValue: filterValueObj ? filterValueObj['name'] : undefined,
-                            key: keyDisplayValue, // <-- displayKey-- Resource Type
-                            value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
-                            filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
-                            compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-                        };
-                        this.filters.push(eachObj);
-                        this.filters = [...this.filters];
-                        this.storeState();
-                    }
-                }).catch(error=>{
-                    this.logger.log('error', error);
-                })
-            }
+          const filterText = this.filterText;
+          const filterTypeOptions = this.filterTypeOptions;
+          let filters = this.filters;
+          
+          const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
+    
+          for (let i = 0; i < formattedFilters.length; i++) {
+            filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i] , filters});
+            this.filters = filters;
+          }
+          this.storeState();
         } catch (error) {
-            this.logger.log('error', error);
+          this.errorMessage = this.errorHandler.handleJavascriptError(error);
+          this.logger.log("error", error);
         }
-    }
+      }
+    
+      async processAndAddFilterItem({formattedFilterItem, filters}){
+    
+        const keyDisplayValue = this.getFilterKeyDisplayValue(formattedFilterItem);
+        const filterKey = formattedFilterItem.filterkey;
+          
+        const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
+        if(existingFilterObjIndex<0){
+          // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+          await this.changeFilterType(keyDisplayValue);
+          const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+          const filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+    
+          filters.push(filterObj);
+        }
+        filters = [...filters];
+        return filters;
+      }
+    
+      getFilterKeyDisplayValue(formattedFilterItem){
+        let keyDisplayValue = formattedFilterItem.keyDisplayValue;
+        if(!keyDisplayValue){
+          keyDisplayValue = find(this.filterTypeOptions, {
+            optionValue: formattedFilterItem.filterkey,
+          })["optionName"];
+        }
+        return keyDisplayValue;
+      }
 
     /**
      * This function get calls the keyword service before initializing
@@ -366,15 +316,12 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 .subscribe((response) => {
                     this.filterTypeLabels = map(response[0].response, 'optionName');
                     this.filterTypeOptions = response[0].response;
-                    this.filterTypeLabels.push("Created Date");
-                    this.filterTypeOptions.push({
-                        "optionName": "Created Date",
-                        "optionValue": "_loaddate"
-                    })
                     this.filterTypeLabels.sort();
 
+                    const columnNamesMap = this.utils.getColumnNamesMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, []);
+                    this.columnNamesMap = {...columnNamesMap, ...this.columnNamesMap}
+                    this.columnWidths = {...this.columnWidths};
                     this.routerParam();
-                    // this.deleteFilters();
                     this.getFilterArray();
                     this.updateComponent();
                 });
@@ -384,48 +331,31 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
     }
 
-    changeFilterType(value) {
-        return new Promise((resolve,reject) => {
-            try {
-                 if(value.toLowerCase() == "created date"){
-                     reject("created date does not have filter tag options")
-                     return;
-                 }
-                this.currentFilterType = find(this.filterTypeOptions, {
-                    optionName: value,
-                });
-                const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
-                const queryParams = {
-                        ...urlObj.params,
-                        ag: this.selectedAssetGroup,
-                        domain: this.selectedDomain,
-                    }
+    async changeFilterType(value, searchText='') {
+        try {
+          const currentQueryParams =
+            this.routerUtilityService.getQueryParametersFromSnapshot(
+              this.router.routerState.snapshot.root
+            );
+          this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
+          const filtersToBePassed = this.getFilterPayloadForDataAPI();
+          const filterText = this.filterText;
+          const currentFilterType = this.currentFilterType;
+          const labelsToExcludeSort = ['created date'];
+    
+          const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags: undefined, labelsToExcludeSort});
+          this.filterTagOptions[value] = filterTagOptions;
+          this.filterTagLabels[value] = filterTagLabels;
 
-                if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
-                    this.filterSubscription = this.filterService
-                        .getFilters(queryParams, environment.base + urlObj.url, 'GET')
-                        .subscribe((response) => {
-                            this.filterTagOptions[value] = response[0].response;
-
-                            this.filterTagLabels = {
-                                ...this.filterTagLabels,
-                                ...{
-                                    [value]: map(response[0].response, 'name').sort((a, b) =>
-                                        a.localeCompare(b),
-                                    ),
-                                },
-                            };
-
-                            resolve(this.filterTagOptions[value]);
-                            this.storeState();
-                        });
-                }
-            } catch (error) {
-                this.errorMessage = this.errorHandler.handleJavascriptError(error);
-                this.logger.log("error", error);
-            }
-        });
+          this.filterTagLabels = {...this.filterTagLabels};          
+          this.storeState();
+      
+        } catch (error) {
+          this.errorMessage = this.errorHandler.handleJavascriptError(error);
+          this.logger.log("error", error);
+        }
     }
+
 
     getFormattedDate(dateString: string, isEndDate: boolean = false): string {
         const localDate = new Date(dateString);
@@ -444,51 +374,20 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         return formattedDate+"+0000";
     }
 
-    changeFilterTags(event) {
-        const value = event.filterValue;
-        this.currentFilterType = find(this.filterTypeOptions, {
-            optionName: event.filterKeyDisplayValue,
+    async changeFilterTags(event) {
+        let filterValues = event.filterValue;
+        if(!filterValues){
+          return;
+        }
+        this.currentFilterType =  find(this.filterTypeOptions, {
+          optionName: event.filterKeyDisplayValue,
         });
-        if(event.filterKeyDisplayValue.toLowerCase() == "created date") {
-            const [fromDate, toDate] = event.filterValue.split(" - ");
-            const filterIndex = this.filters.findIndex(filter => filter.keyDisplayValue.toLowerCase()==="created date");
-            this.filters[filterIndex].value = `${this.getFormattedDate(fromDate)} - ${this.getFormattedDate(toDate, true)}`;
-            
-            this.storeState();
-            this.getUpdatedUrl();
-            this.updateComponent();
-            return;
+        if(event.filterKeyDisplayValue.toLowerCase() !== "created date"){
+            this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
         }
-        try {
-            if (this.currentFilterType) {
-                const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], {
-                    name: value,
-                });
-                this.utils.addOrReplaceElement(
-                    this.filters,
-                    {
-                        keyDisplayValue: event.filterKeyDisplayValue,
-                        filterValue: value,
-                        key: this.currentFilterType.optionName,
-                        value: filterTag["id"],
-                        filterkey: this.currentFilterType.optionValue.trim(),
-                        compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
-                    },
-                    (el) => {
-                        return (
-                            el.compareKey ===
-                            this.currentFilterType.optionValue.toLowerCase().trim()
-                        );
-                    }
-                );
-            }
-            this.storeState();
-            this.getUpdatedUrl();
-            this.updateComponent();
-        } catch (error) {
-            this.errorMessage = this.errorHandler.handleJavascriptError(error);
-            this.logger.log("error", error);
-        }
+        this.storeState();
+        this.getUpdatedUrl();
+        this.updateComponent();
     }
 
     updateComponent() {
@@ -505,18 +404,18 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     updateSortFieldName(){
-        if(!this.headerColName || !this.direction) return;
-        this.selectedOrder = this.direction;        
-        let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
-        if(!apiColName){
-            apiColName =  find(this.filterTypeOptions, {
-            optionName: this.headerColName,
+        try{
+            if(!this.headerColName || !this.direction) return;        
+            this.selectedOrder = this.direction;        
+            const apiColName =  find(this.filterTypeOptions, {
+                optionName: this.headerColName,
             })["optionValue"];
-        }else{
-            apiColName = apiColName+".keyword";
+            this.fieldType = "string";
+            this.fieldName = apiColName+'.keyword';
+        }catch(e){
+            this.logger.log('Sort error', e);
+            this.headerColName = '';
         }
-        this.fieldType = "string";
-        this.fieldName = apiColName;
     }
 
     handleHeaderColNameSelection(event) {
@@ -574,9 +473,11 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             order: this.selectedOrder,
         }
 
+        const filtersToBePassed = this.getFilterPayloadForDataAPI();
+
         const payload = {
             'ag': this.selectedAssetGroup,
-            'filter': this.filterText,
+            'filter': filtersToBePassed,
             'from': (this.bucketNumber) * this.paginatorSize,
             'searchtext': this.searchTxt,
             'size': this.paginatorSize,
@@ -630,61 +531,28 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
     processData(data) {
         try {
-            let innerArr = {};
-            let totalVariablesObj = {};
-            let cellObj = {};
-            let processedData = [];
-            let getData = data;
-            const keynames = Object.keys(getData[0]);
-
-            let cellData;
-            for (let row = 0; row < getData.length; row++) {
-                innerArr = {};
-                keynames.forEach(col => {
-                    cellData = getData[row][col];
-                    cellObj = {
-                        text: cellData, // text to be shown in table cell
-                        titleText: cellData, // text to show on hover
-                        valueText: cellData,
-                        hasPostImage: false,
-                        imgSrc: "",  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
-                        postImgSrc: "",
-                        isChip: "",
-                        isMenuBtn: false,
-                        properties: "",
-                        isLink: false
-                    }
-
-                    if (col.toLowerCase() == "event") {
-                        cellObj = {
-                            ...cellObj,
-                            isLink: true
-                        };
-                    }else if(col.toLowerCase() == "created"){
-                        
-                        cellObj = {
-                            isDate: true,
-                            ...cellObj
-                        }
-                    }
-
-                    innerArr[col] = cellObj;
-                    totalVariablesObj[col] = "";
-                });
-
-                processedData.push(innerArr);
+          return this.utils.processTableData(data, {}, (row, col, cellObj) => {
+            if (col.toLowerCase() == "event") {
+                cellObj = {
+                    ...cellObj,
+                    isLink: true
+                };
+            }else if(col.toLowerCase() == "created date"){
+                
+                cellObj = {
+                    ...cellObj,
+                    isDate: true
+                }
             }
-            if (processedData.length > getData.length) {
-                const halfLength = processedData.length / 2;
-                processedData = processedData.splice(halfLength);
-            }
-
-            return processedData;
+            
+            return cellObj;
+          });
+          
         } catch (error) {
-            this.tableErrorMessage = this.errorHandler.handleJavascriptError(error);
-            this.logger.log("error", error);
+          this.errorMessage = this.errorHandler.handleJavascriptError(error);
+          this.logger.log("error", error);
         }
-    }
+      }
 
     goToDetails(event) {
         const rowSelected = event.rowSelected;
@@ -720,6 +588,21 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
     }
 
+    getFilterPayloadForDataAPI(){
+        const filterToBePassed = {...this.filterText};
+        Object.keys(filterToBePassed).forEach(filterKey => {
+            if(filterKey=='_loaddate'){
+
+                const [fromDate, toDate] = filterToBePassed[filterKey].split(" - ");
+                const dateRangeString = `${this.getFormattedDate(fromDate)} - ${this.getFormattedDate(toDate, true)}`;
+                filterToBePassed[filterKey] = dateRangeString;
+            }
+            filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+        })
+
+        return filterToBePassed;
+    }
+
     handlePopClick(rowText) {
         const fileType = 'csv';
         try {
@@ -736,9 +619,11 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 order: this.selectedOrder,
             }
 
+            const filtersToBePassed = this.getFilterPayloadForDataAPI();
+
             const downloadRequest = {
                 'ag': this.selectedAssetGroup,
-                'filter': this.filterText,
+                'filter': filtersToBePassed,
                 'from': 0,
                 'searchtext': this.searchTxt,
                 'size': this.totalRows,
@@ -769,8 +654,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        if (this.assetGroupSubscription) {
-            this.assetGroupSubscription.unsubscribe();
+        if (this.agDomainSubscription) {
+            this.agDomainSubscription.unsubscribe();
         }
         if (this.dataSubscription) {
             this.dataSubscription.unsubscribe();
@@ -781,10 +666,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
         if (this.filterSubscription) {
             this.filterSubscription.unsubscribe();
-        }
-
-        if (this.domainSubscription) {
-            this.domainSubscription.unsubscribe();
         }
     }
 }

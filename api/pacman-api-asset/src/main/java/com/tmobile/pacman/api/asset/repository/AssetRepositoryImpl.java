@@ -2984,13 +2984,12 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         List<Map<String, Object>> assetCountList = new ArrayList<>();
         try {
-
+            String docType = !Strings.isNullOrEmpty(type) ? "count_type" : "count_asset";
             StringBuilder request = new StringBuilder(
-                    // "{\"size\": 10000, \"_source\": [\"count\",\"ag\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
-                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [ {\"term\":{\"docType.keyword\":\"count_asset\"}}, { \"match\": {\"ag.keyword\": ");
+                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [ {\"term\":{\"docType.keyword\":\"" + docType + "\"}}, { \"term\": {\"ag.keyword\": ");
             request.append("\"" + assetGroup + "\"}}");
             if(type!=null){
-                //request.append(",{ \"match\": {\"type.keyword\": " + "\"" + type + "\"}}");
+                request.append(",{ \"term\": {\"type.keyword\": " + "\"" + type + "\"}}");
             }
             String gte = null;
             String lte = null;
@@ -3041,6 +3040,10 @@ public class AssetRepositoryImpl implements AssetRepository {
                     Map<String, Object> doc = new Gson().fromJson(sourceJson, new TypeToken<Map<String, Object>>() {
                     }.getType());
                     doc.remove("assetCount");
+                    if ("count_type".equalsIgnoreCase((String) doc.get("docType"))) {
+                        doc.put("totalassets", doc.get("max") != null ? Math.round(Double.parseDouble(doc.get("max").toString())) : 0);
+                    }
+                    doc.keySet().retainAll(Arrays.asList("date", "ag", "totalassets","type"));
                     docs.add(doc);
                 }
             }
