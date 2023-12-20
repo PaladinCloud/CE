@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.accessanalyzer.model.*;
 import com.amazonaws.services.ec2.model.*;
 import com.amazonaws.services.ecr.AmazonECR;
 import com.amazonaws.services.ecr.AmazonECRClientBuilder;
@@ -56,12 +57,6 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.services.accessanalyzer.AWSAccessAnalyzer;
 import com.amazonaws.services.accessanalyzer.AWSAccessAnalyzerClientBuilder;
-import com.amazonaws.services.accessanalyzer.model.AnalyzerSummary;
-import com.amazonaws.services.accessanalyzer.model.FindingSummary;
-import com.amazonaws.services.accessanalyzer.model.ListAnalyzersRequest;
-import com.amazonaws.services.accessanalyzer.model.ListAnalyzersResult;
-import com.amazonaws.services.accessanalyzer.model.ListFindingsRequest;
-import com.amazonaws.services.accessanalyzer.model.ListFindingsResult;
 import com.amazonaws.services.apigateway.AmazonApiGateway;
 import com.amazonaws.services.apigateway.AmazonApiGatewayClientBuilder;
 import com.amazonaws.services.apigateway.model.GetRestApisRequest;
@@ -1101,7 +1096,7 @@ public class InventoryUtil {
 					List<AccessAnalyzerVH> AccessAnalyzerVHList = new ArrayList<>();
 					if (!analyzers.isEmpty()) {
 						analyzers.forEach(analyzer -> {
-							List<FindingSummary> findings = fetchAnalyzerFindings(analyzer, accAnalyClient);
+							List<FindingSummaryV2> findings = fetchAnalyzerFindings(analyzer, accAnalyClient);
 							AccessAnalyzerVHList.add(new AccessAnalyzerVH(analyzer, findings));
 						});
 						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : AccessAnalyzer " + region.getName()
@@ -1127,13 +1122,16 @@ public class InventoryUtil {
 	 * @param analyzer       the AnalyzerSummary
 	 * @return the list of FindingSummary
 	 */
-	private static List<FindingSummary> fetchAnalyzerFindings(AnalyzerSummary analyzer,
-			AWSAccessAnalyzer accAnalyClient) {
-		List<FindingSummary> findings = new ArrayList<>();
+	private static List<FindingSummaryV2> fetchAnalyzerFindings(AnalyzerSummary analyzer,
+																AWSAccessAnalyzer accAnalyClient) {
+		List<FindingSummaryV2> findings = new ArrayList<>();
 		String token = null;
 		do {
-			ListFindingsResult listFindings = accAnalyClient
-					.listFindings(new ListFindingsRequest().withAnalyzerArn(analyzer.getArn()).withNextToken(token));
+			ListFindingsV2Request lfr = new ListFindingsV2Request();
+			lfr.setAnalyzerArn(analyzer.getArn());
+			lfr.setNextToken(token);
+			ListFindingsV2Result listFindings = accAnalyClient
+					.listFindingsV2(lfr);
 			findings.addAll(listFindings.getFindings());
 			token = listFindings.getNextToken();
 		} while (token != null);
