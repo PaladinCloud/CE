@@ -3530,7 +3530,28 @@ UPDATE cf_PolicyTable SET severity='high' WHERE policyId='Enable_VPC_Flow_Logs_a
 UPDATE cf_PolicyTable SET policyDisplayName = 'Set NSG flow log retention period >= N days' WHERE policyId ='Network_Security_Group_Flow_Log_retention_more_than_90_days';
 UPDATE cf_PolicyTable SET policyDisplayName='Restrict Inbound Traffic to RDP Port 3389' WHERE policyId='NaclPublicAccessPort_version-1_NACLWithPublicAccessForPort3389_networkacl';
 
-INSERT IGNORE INTO cf_PolicyParams (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('IamAccessKeyRotatedInEvery90Days_version-1_IamAccessKeyRotatedInEvery90Days_iamuser','rotationDuration','90','90','true','true','false','Key rotation duration','Specify duration in days for access key rotation');
-INSERT IGNORE INTO cf_PolicyParams (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('kms_keys_rotation_period_within_90_days','rotationDuration','90','90','true','true','false','Key rotation duration','Specify duration in days for kms key rotation');
-INSERT IGNORE INTO cf_PolicyParams (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Network_Security_Group_Flow_Log_retention_more_than_90_days','retentionDuration','90','90','true','true','false','Log retention duration','Specify log retention duration in days for network security group');
-INSERT IGNORE INTO cf_PolicyParams (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Set_Retention_Days_Greater_Than_Ninety','retentionDuration','90','90','true','true','false','Retention duration','Specify retention duration in days for SQL server');
+update cf_PolicyTable set policyId='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser_inNDays' where policyId='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser';
+update cf_PolicyTable set policyId='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2_inNDays' where policyId='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
+update cf_PolicyTable set policyId='IamAccessKeyRotated_version-1_IamAccessKeyRotated_iamuser_inNDays' where policyId='IamAccessKeyRotatedInEvery90Days_version-1_IamAccessKeyRotatedInEvery90Days_iamuser';
+update cf_PolicyTable set policyId='Network_Security_Group_Flow_Log_retention_inNDays' where policyId='Network_Security_Group_Flow_Log_retention_more_than_90_days';
+update cf_PolicyTable set policyId='Set_Retention_Duration_inNDays' where policyId='Set_Retention_Days_Greater_Than_Ninety';
+update cf_PolicyTable set policyId='kms_keys_rotation_inNDays' where policyId='kms_keys_rotation_period_within_90_days';
+
+update cf_PolicyParams set policyId='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser_inNDays' where policyId='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser';
+update cf_PolicyParams set policyId='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2_inNDays' where policyId='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
+update cf_PolicyParams set policyId='IamAccessKeyRotated_version-1_IamAccessKeyRotated_iamuser_inNDays' where policyId='IamAccessKeyRotatedInEvery90Days_version-1_IamAccessKeyRotatedInEvery90Days_iamuser';
+update cf_PolicyParams set policyId='Network_Security_Group_Flow_Log_retention_inNDays' where policyId='Network_Security_Group_Flow_Log_retention_more_than_90_days';
+update cf_PolicyParams set policyId='Set_Retention_Duration_inNDays' where policyId='Set_Retention_Days_Greater_Than_Ninety';
+update cf_PolicyParams set policyId='kms_keys_rotation_inNDays' where policyId='kms_keys_rotation_period_within_90_days';
+
+update cf_PolicyExemption set policyID='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser_inNDays' where policyId='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser';
+update cf_PolicyExemption set policyID='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2_inNDays' where policyId='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
+update cf_PolicyExemption set policyID='IamAccessKeyRotated_version-1_IamAccessKeyRotated_iamuser_inNDays' where policyId='IamAccessKeyRotatedInEvery90Days_version-1_IamAccessKeyRotatedInEvery90Days_iamuser';
+update cf_PolicyExemption set policyID='Network_Security_Group_Flow_Log_retention_inNDays' where policyId='Network_Security_Group_Flow_Log_retention_more_than_90_days';
+update cf_PolicyExemption set policyID='Set_Retention_Duration_inNDays' where policyId='Set_Retention_Days_Greater_Than_Ninety';
+update cf_PolicyExemption set policyID='kms_keys_rotation_inNDays' where policyId='kms_keys_rotation_period_within_90_days';
+
+INSERT IGNORE INTO cf_PolicyParams (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('IamAccessKeyRotated_version-1_IamAccessKeyRotated_iamuser_inNDays','rotationDuration','90','90','true','true','false','Key rotation duration','Specify duration in days for access key rotation');
+INSERT IGNORE INTO cf_PolicyParams (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('kms_keys_rotation_inNDays','rotationDuration','90','90','true','true','false','Key rotation duration','Specify duration in days for kms key rotation');
+INSERT IGNORE INTO cf_PolicyParams (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Network_Security_Group_Flow_Log_retention_inNDays','retentionDuration','90','90','true','true','false','Log retention duration','Specify log retention duration in days for network security group');
+INSERT IGNORE INTO cf_PolicyParams (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('Set_Retention_Duration_inNDays','retentionDuration','90','90','true','true','false','Retention duration','Specify retention duration in days for SQL server');
