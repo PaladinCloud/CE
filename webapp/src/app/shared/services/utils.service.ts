@@ -275,7 +275,7 @@ export class UtilsService {
         const eachFilterParam = element.split('=');
         const key = eachFilterParam[0];
         const value = eachFilterParam[1];
-        object[key] = value;
+        object[key] = decodeURIComponent(value);
       });
     } else {
       object = {};
@@ -300,7 +300,7 @@ export class UtilsService {
         const localObjKeys = Object.keys(data);
         each(localObjKeys, (element, index) => {
           if (typeof data[element] !== 'undefined') {
-            const localValue = data[element].toString();
+            const localValue = encodeURIComponent(data[element].toString());
             const localKeys = element.toString();
             const localObj = localKeys + '=' + localValue;
             localArray.push(localObj);
