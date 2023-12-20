@@ -104,6 +104,8 @@ public class CommonUtils {
                 return "policyActionEmailTemplate.html";
             case "permission":
                 return "permissionAlertEmailTemplate.html";
+            case "plugin":
+                return "pluginEmailTemplate.html";
         }
         return null;
     }
