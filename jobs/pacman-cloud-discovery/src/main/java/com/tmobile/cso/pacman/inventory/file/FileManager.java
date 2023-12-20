@@ -1959,9 +1959,9 @@ public class FileManager {
 		String keys;
 		fieldNames = "trail.Name`trail.S3BucketName`trail.IncludeGlobalServiceEvents"
 				+ "`trail.IsMultiRegionTrail`trail.HomeRegion`trail.TrailARN`"
-				+ "trail.LogFileValidationEnabled`trail.HasCustomEventSelectors`logginEnabled`trail.KmsKeyId";
+				+ "trail.LogFileValidationEnabled`trail.HasCustomEventSelectors`logginEnabled`trail.KmsKeyId`trail.cloudWatchLogsLogGroupArn`latestCloudWatchLogsDeliveryTime";
 		keys = "discoverydate`accountid`accountname`region`name`s3bucketname`includeglobalserviceevents"
-				+ "`ismultiregiontrail`homeregion`trailarn`logfilevalidationenabled`hascustomeventselectors`islogging`kmskeyid";
+				+ "`ismultiregiontrail`homeregion`trailarn`logfilevalidationenabled`hascustomeventselectors`islogging`kmskeyid`cloudWatchLogsLogGroupArn`latestCloudWatchLogsDeliveryTime";
 		FileGenerator.generateJson(cloudTrail, fieldNames, "aws-cloudtrail.data", keys);
 		
 		fieldNames = "trail.TrailARN`evenSelectorList.readWriteType`evenSelectorList.includeManagementEvents`evenSelectorList.dataResourcesType"
