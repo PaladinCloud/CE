@@ -5,10 +5,11 @@ import com.google.common.collect.Maps;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.CreateAssetGroup;
 import com.tmobile.pacman.api.admin.domain.DataSourceObj;
+import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.DatasourceRepository;
 import com.tmobile.pacman.api.admin.repository.TargetTypesRepository;
+import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.service.CommonService;
-import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
     private DatasourceRepository datasourceRepository;
 
     @Autowired
-    PacmanRdsRepository rdsRepository;
+    AccountsRepository accountsRepository;
 
     private List<Object> createFilterForDataSource(List<DataSourceObj> dataSourceObjList, String aliasName){
         List<Object> action = Lists.newArrayList();
@@ -180,11 +181,8 @@ public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
 
     private Map<String, Set<String>> getAccIdForConfiguredSources() {
 
-        String query = "select accountId, platform from cf_Accounts  where platform in (select distinct dataSourceName " +
-                " from cf_Target) and accountStatus= 'configured'";
-
-        List<Map<String, Object>> dsAccounts = rdsRepository.getDataFromPacman(query);
-        return dsAccounts.stream().collect(Collectors.groupingBy(m -> String.valueOf(m.get("platform")), Collectors.mapping(m -> String.valueOf(m.get("accountId")), Collectors.toSet())));
+        List<AccountDetails> configuredAccounts = accountsRepository.findAllConfiguredAccounts();
+        return configuredAccounts.stream().collect(Collectors.groupingBy(accountDetails -> accountDetails.getPlatform(), Collectors.mapping(accountDetails -> String.valueOf(accountDetails.getAccountId()), Collectors.toSet())));
     }
 
     /** allows creating alias for the source only if the accountId criteria belongs to that source */

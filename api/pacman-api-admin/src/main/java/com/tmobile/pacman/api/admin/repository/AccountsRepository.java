@@ -87,4 +87,7 @@ public interface AccountsRepository extends JpaRepository<AccountDetails, String
     List<AccountDetails> findByAccountStatusAndPlatform(String accountStatus, String platform);
     List<AccountDetails> findByAccountStatus(String accountStatus);
 
+    @Query("select a from AccountDetails a where a.platform in (select distinct t.dataSourceName from TargetTypes t) and a.accountStatus='configured'")
+    List<AccountDetails> findAllConfiguredAccounts();
+
 }
