@@ -23,6 +23,9 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.tmobile.pacman.api.admin.domain.*;
@@ -195,9 +198,9 @@ public class AssetGroupServiceImplTest {
 		assetGroupDetails.setGroupType("groupType123");
 		assetGroupDetails.setCreatedBy("createdBy123");
 		assetGroupDetails.setCreatedUser("createdUser123");
-		assetGroupDetails.setCreatedDate("createdDate123");
+		assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setModifiedUser("modifiedUser123");
-		assetGroupDetails.setModifiedDate("modifiedDate123");
+		assetGroupDetails.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setDescription("description123");
 		assetGroupDetails.setAliasQuery("aliasQuery123");
 		assetGroupDetails.setIsVisible(true);

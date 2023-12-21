@@ -21,6 +21,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -112,9 +115,9 @@ public class AssetGroupTargetDetailsServiceImplTest {
 		assetGroupDetails.setGroupType("groupType123");
 		assetGroupDetails.setCreatedBy("createdBy123");
 		assetGroupDetails.setCreatedUser("createdUser123");
-		assetGroupDetails.setCreatedDate("createdDate123");
+		assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setModifiedUser("modifiedUser123");
-		assetGroupDetails.setModifiedDate("modifiedDate123");
+		assetGroupDetails.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setDescription("description123");
 		assetGroupDetails.setAliasQuery("aliasQuery123");
 		assetGroupDetails.setIsVisible(true);
@@ -147,9 +150,9 @@ public class AssetGroupTargetDetailsServiceImplTest {
 		assetGroupDetails.setGroupType("groupType123");
 		assetGroupDetails.setCreatedBy("createdBy123");
 		assetGroupDetails.setCreatedUser("createdUser123");
-		assetGroupDetails.setCreatedDate("createdDate123");
+		assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setModifiedUser("modifiedUser123");
-		assetGroupDetails.setModifiedDate("modifiedDate123");
+		assetGroupDetails.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setDescription("description123");
 		assetGroupDetails.setAliasQuery("aliasQuery123");
 		assetGroupDetails.setIsVisible(true);
