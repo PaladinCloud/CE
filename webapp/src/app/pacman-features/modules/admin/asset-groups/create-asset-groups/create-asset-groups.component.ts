@@ -269,6 +269,7 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
    selectedAssetGroup: string = "";
    currentDomain: string = "";
    criteriaDetails: any;
+   sourceMap: { [key: string]: string };
  
    constructor(
      private router: Router,
@@ -285,12 +286,13 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
      private assetTilesService: AssetTilesService,
      public dialog: MatDialog,
      private form: FormBuilder
-   ) {
+   ) { }
+ 
+   async ngOnInit () {
+     await this.buildProviderMap();
      this.routerParam();
      this.updateComponent();
-   }
- 
-   ngOnInit() {
+     
      setTimeout(()=>{
        this.urlToRedirect = this.router.routerState.snapshot.url;
        const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
@@ -316,6 +318,14 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
        assetGroupDesc: ['', [Validators.required,Validators.minLength(6)]],
        selectedAccountType : ['',[Validators.required,this.isValidType.bind(this)]]
      });
+   }
+
+   async buildProviderMap () {
+     const assetGroupsList = await this.getAssetGroupsList();
+     this.sourceMap = assetGroupsList.reduce((map, item) => {
+       map[item.name] = item.displayname;
+       return map;
+     }, {});
    }
  
    isNextButtonDisabled() {
@@ -410,7 +420,7 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
        this.criteriaKeys = Object.keys(this.cloudsData[0]); 
    }
  
-   async addEmptyCondition(criteriaIdx,selectedKey="",selectedValue=""){
+   addEmptyCondition(criteriaIdx,selectedKey="",selectedValue=""){
      let selectedKeyList = [];
   
      if(this.criterias.length>criteriaIdx){
@@ -425,8 +435,8 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
            return !selectedKeyList.includes(key);
      })
      let valueList = [].concat(...this.cloudsData.map(cloud => cloud[selectedKey]));
-     valueList = await Promise.all(valueList.map((value) => this.getDisplayName(selectedKey, value)));
-     selectedValue = await this.getDisplayName(selectedKey, selectedValue);
+     valueList = valueList.map((value) => this.getDisplayName(selectedKey, value));
+     selectedValue = this.getDisplayName(selectedKey, selectedValue);
  
      const condition: ICondition = {
        keyList: newKeyList,
@@ -521,11 +531,11 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
        .toPromise();
    }
 
-   async getDisplayName (selectedKey: string, selectedValue: string): Promise<string> {
+   getDisplayName (selectedKey: string, selectedValue: string): string {
      selectedKey = selectedKey.toLowerCase();
 
      if (selectedKey === 'source') {
-       return this.getAssetGroupDisplayName(selectedValue);
+       return this.sourceMap[selectedValue] ?? selectedValue;
      } else if (selectedKey === 'asset type') {
        if(this.assetTypeMap.get(selectedValue))
          return this.assetTypeMap.get(selectedValue);
@@ -536,8 +546,8 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
    getName(selectedKey:string,selectedValue:string){
      selectedKey = selectedKey.toLowerCase();
      if(selectedKey == "source"){
-       const keys = Object.keys(DATA_MAPPING);
-       return keys.find(key => DATA_MAPPING[key]===selectedValue);
+       const keys = Object.keys(this.sourceMap);
+       return keys.find(key => this.sourceMap[key] === selectedValue);
      } else if(selectedKey == "asset type"){
        for (const [key, value] of this.assetTypeMap) {
          if(selectedValue == value){
@@ -548,7 +558,7 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
      return selectedValue;
    }
  
-   async onKeySelect(criteriaIdx,conditionIdx,selectedKey:string){
+   onKeySelect(criteriaIdx,conditionIdx,selectedKey:string){
      this.selectedCriteriaValues = [];
      let selectedValues = [];
      selectedValues = [].concat(...this.cloudsData.map(cloud => cloud[selectedKey]));
@@ -561,7 +571,7 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
      }
      this.criterias[criteriaIdx][conditionIdx].selectedKey = selectedKey;
      this.criterias[criteriaIdx][conditionIdx].selectedValue = "";
-     selectedValues = await Promise.all(selectedValues.map((value) => this.getDisplayName(selectedKey, value)));
+     selectedValues = selectedValues.map((value) => this.getDisplayName(selectedKey, value));
      this.criterias[criteriaIdx][conditionIdx].valueList = selectedValues;
      this.criterias = [...this.criterias];
    }
@@ -651,7 +661,23 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
      }
      return null;
    }
- 
+
+   async getAssetGroupsList (): Promise<any[]> {
+     try {
+       const assetGroupsList = this.dataCacheService.getListOfAssetGroups();
+
+       if (!assetGroupsList) {
+         const response: any = await this.assetTilesService.getAssetGroupList().pipe(takeUntil(this.destroy$)).toPromise();
+
+         return response;
+       } else {
+         return JSON.parse(assetGroupsList);
+       }
+     } catch (error) {
+       this.logger.log("jsError", error);
+       return [];
+     }
+   }
  
    getAllAssetGroupNames() {
      this.hideContent = true;
