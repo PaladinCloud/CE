@@ -1226,20 +1226,25 @@ public class AssetFileGenerator {
 
 			}
 
-			log.info("Completed Discovery for accountId "+ accountId);
+			log.info("Completed Discovery for accountId " + accountId);
 		}
 
 		ErrorManageUtil.writeErrorFile();
-		ErrorManageUtil.omitOpsAlert();
-		if(!ErrorManageUtil.getErrorMap().isEmpty()){
-			//Below logger message is used by datadog to create notification in slack
-			log.error("Error occurred in atleast one collector for jobId : AWS-Data-Collector-Job");
+		try {
+			ErrorManageUtil.omitOpsAlert();
+			if (!ErrorManageUtil.getErrorMap().isEmpty()) {
+				//Below logger message is used by datadog to create notification in slack
+				log.error("Error occurred in atleast one collector for jobId : AWS-Data-Collector-Job");
+			}
+		} catch (Exception e) {
+			log.error("Error occurred during omitOpsAlert!! ");
 		}
+
 		try {
 			FileManager.finalise();
 			ErrorManageUtil.finalise();
 		} catch (IOException e) {
-			log.error("Error Writing File",e);
+			log.error("Error Writing File", e);
 		}
 	}
 
