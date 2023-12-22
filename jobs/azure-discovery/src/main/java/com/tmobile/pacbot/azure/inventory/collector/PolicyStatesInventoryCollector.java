@@ -3,6 +3,7 @@ package com.tmobile.pacbot.azure.inventory.collector;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,24 +35,28 @@ public class PolicyStatesInventoryCollector {
 
 		List<PolicyStatesVH> policyStatesList = new ArrayList<>();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
-
 		String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()));
 		try {
-
 			String response = CommonUtils.doHttpPost(url, "Bearer", accessToken);
 			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
 			JsonArray policyStatesObjects = responseObj.getAsJsonArray("value");
 			for (JsonElement policyStatesElement : policyStatesObjects) {
 				PolicyStatesVH policyStatesVH = new PolicyStatesVH();
 				JsonObject policyStatesObject = policyStatesElement.getAsJsonObject();
-				PolicyDefinitionVH PolicyDefinitionVH = policyDefinitionList.stream()
+				PolicyDefinitionVH policyDefinitionVH;
+				Optional<PolicyDefinitionVH> policyDefinitionVHOptional = policyDefinitionList.stream()
 						.filter(policyDefinitionObj -> policyDefinitionObj.getName()
 								.equals(policyStatesObject.get("policyDefinitionName").getAsString()))
-						.findFirst().get();
-				policyStatesVH.setPolicyDescription(PolicyDefinitionVH.getDescription());
-				policyStatesVH.setPolicyName(PolicyDefinitionVH.getDisplayName());
-				policyStatesVH.setPolicyType(PolicyDefinitionVH.getPolicyType());
-				policyStatesVH.setPolicyRule(PolicyDefinitionVH.getPolicyRule());
+						.findFirst();
+				if (policyDefinitionVHOptional.isPresent()) {
+					policyDefinitionVH = policyDefinitionVHOptional.get();
+				} else {
+					continue;
+				}
+				policyStatesVH.setPolicyDescription(policyDefinitionVH.getDescription());
+				policyStatesVH.setPolicyName(policyDefinitionVH.getDisplayName());
+				policyStatesVH.setPolicyType(policyDefinitionVH.getPolicyType());
+				policyStatesVH.setPolicyRule(policyDefinitionVH.getPolicyRule());
 				policyStatesVH.setTimestamp(policyStatesObject.get("timestamp").getAsString());
 				policyStatesVH.setId(policyStatesObject.get("policyDefinitionName").getAsString()+"_"+policyStatesObject.get("resourceId").getAsString().toLowerCase());
 				policyStatesVH.setResourceId(Util.removeFirstSlash(policyStatesObject.get("resourceId").getAsString()));
