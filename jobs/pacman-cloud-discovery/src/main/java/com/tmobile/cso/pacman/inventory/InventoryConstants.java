@@ -81,4 +81,6 @@ public final class InventoryConstants {
 
     /** The rds pwd. */
     public static final String RDS_PWD = "spring.datasource.password";
+
+    public static final String REGION_GLOBAL = "global";
 }

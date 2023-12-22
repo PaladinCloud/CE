@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static com.tmobile.pacbot.azure.inventory.InventoryConstants.REGION_GLOBAL;
+
 @Component
 public class SubscriptionInventoryCollector {
 
@@ -47,6 +49,7 @@ public class SubscriptionInventoryCollector {
         subscriptionVH.setStorageAccountLogList(fetchStorageAccountActivityLog(subscriptionVH));
         subscriptionVH.setRoleDefinitionList(fetchAzureRoleDefinition(subscriptionVH));
         subscriptionVH.setName(subscription.getSubscriptionName());
+        subscriptionVH.setRegion(REGION_GLOBAL);
 
         subscriptionList.add(subscriptionVH);
 
