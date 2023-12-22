@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { throwError as observableThrowError, Observable, Observer, Subscription } from 'rxjs';
+import { throwError as observableThrowError, Observable, Observer, Subscription, from, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { AdalService } from './adal.service';
@@ -26,11 +26,12 @@ import { DataCacheService } from './data-cache.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { environment } from '../../../environments/environment';
 import { CommonResponseService } from '../../shared/services/common-response.service';
-import { map } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AwsCognitoService } from './aws-cognito.service';
 import { AuthSessionStorageService } from './auth-session-storage.service';
 import { PermissionGuardService } from './permission-guard.service';
 import { AssetTilesService } from './asset-tiles.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
 
 @Injectable()
 export class AuthService {
@@ -53,6 +54,7 @@ export class AuthService {
         private logger: LoggerService,
         private permissionGuardService: PermissionGuardService,
         private authSessionStorage: AuthSessionStorageService,
+        private errorHandler: ErrorHandlingService
     ) {
         this.adAuthentication = CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso';
         this.cognitoAuthentication = CONFIGURATIONS.optional.auth.AUTH_TYPE === 'cognito';
@@ -116,60 +118,53 @@ export class AuthService {
         // }));
     }
 
-    refreshToken() {
-        // Write API code to refresh token
+    refreshToken () {
         try {
             const tokenObj = this.dataStore.getUserDetailsValue().getAuthToken();
             if (!tokenObj || !tokenObj.refresh_token) {
                 return null;
             }
 
-            return new Observable((observer: Observer<string>) => {
-                const refreshToken = tokenObj.refresh_token;
-                const url = environment.refresh.url;
-                const method = environment.refresh.method;
+            const refreshToken = tokenObj.refresh_token;
+            const url = environment.refresh.url;
+            const method = environment.refresh.method;
 
-                const payload = {
-                    refreshToken: refreshToken,
-                };
+            const payload = { refreshToken };
 
-                let userLoginDetails = JSON.parse(this.dataStore.getCurrentUserLoginDetails());
-                this.commonResponseService.getData(url, method, payload, {}).subscribe(
-                    (response) => {
-                        if (response && response.success && response.access_token) {
-                            // Successful response
-                            /* Response will have user info and access tokens. */
-                            userLoginDetails = {
-                                access_token: response.access_token,
-                                refresh_token: refreshToken,
-                                id_token: response.id_token,
-                                success: true,
-                                token_type: response.token_type,
-                                expires_in: response.expires_in,
-                            };
-                            this.dataStore.setCurrentUserLoginDetails(
-                                JSON.stringify(userLoginDetails),
-                            );
-                            this.setUserFetchedInformationCognito().subscribe((response) => {
-                                console.log('Fetched user info successfully', response);
-                            });
-                            observer.next(userLoginDetails.access_token);
-                            observer.complete();
-                        } else {
-                            const errorMessage =
-                                response.message || 'Error renewing the access token';
-                            this.logger.log('error ', errorMessage);
-                            observer.error(null);
-                        }
-                    },
-                    (error) => {
-                        this.logger.log('info', '**Error renewing the access token**');
-                        observer.error(null);
-                    },
-                );
-            });
+            return from(
+                this.commonResponseService.getData(url, method, payload, {})
+            ).pipe(
+                switchMap((response: any) => {
+                    if (response && response.success && response.access_token) {
+                        const userLoginDetails = {
+                            access_token: response.access_token,
+                            refresh_token: refreshToken,
+                            id_token: response.id_token,
+                            success: true,
+                            token_type: response.token_type,
+                            expires_in: response.expires_in
+                        };
+                        this.dataStore.setCurrentUserLoginDetails(JSON.stringify(userLoginDetails));
+                        return this.setUserFetchedInformationCognito().pipe(
+                            tap((userResponse: any) => {
+                                this.logger.log('info', "Fetched user info successfully");
+                            }),
+                            switchMap(() => from([userLoginDetails.access_token]))
+                        );
+                    } else {
+                        const errorMessage = response.message || 'Error renewing the access token';
+                        this.errorHandler.handleJavascriptError(errorMessage);
+                        return throwError(null);
+                    }
+                }),
+                catchError((error: any) => {
+                    this.errorHandler.handleJavascriptError(error, 'Error renewing the access token');
+                    return throwError(null);
+                })
+            );
         } catch (error) {
-            this.logger.log('error', 'JS Error - ' + error);
+            this.errorHandler.handleJavascriptError(error, 'Error while processing access token');
+            return null;
         }
     }
 
