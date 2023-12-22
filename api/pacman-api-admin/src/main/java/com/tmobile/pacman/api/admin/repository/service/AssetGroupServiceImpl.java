@@ -176,8 +176,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			Optional<Long> max = dataResponse.getContent().stream().map(obj -> obj.getAssetCount()).reduce(Long::max);
 			Optional<Long> min = dataResponse.getContent().stream().map(obj -> obj.getAssetCount()).reduce(Long::min);
 			HashMap<String, Object> rangeMap = new HashMap<>();
-			rangeMap.put("max", max.get());
-			rangeMap.put("min", min.get());
+			rangeMap.put("max", max.isPresent() ? max.get() : 0);
+			rangeMap.put("min", min.isPresent() ? min.get() : 0);
 			HashMap<String, Object> optionRange = new HashMap<>();
 			optionRange.put("optionRange", rangeMap);
 			responseMap.put("response", optionRange);
