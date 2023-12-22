@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SecurityPricingsVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
+
+import static com.tmobile.pacbot.azure.inventory.InventoryConstants.REGION_GLOBAL;
 
 @Component
 public class SecurityPricingsInventoryCollector {
@@ -48,7 +51,7 @@ public class SecurityPricingsInventoryCollector {
 				securityPricingsVH.setType(securityPricingsObject.get("type").getAsString());
 				securityPricingsVH.setSubscription(subscription.getSubscriptionId());
 				securityPricingsVH.setSubscriptionName(subscription.getSubscriptionName());
-				securityPricingsVH.setRegion(Util.getRegionValue(subscription,subscription.getRegion()));
+				securityPricingsVH.setRegion(Util.getRegionValue(subscription, StringUtils.defaultIfBlank(subscription.getRegion(), REGION_GLOBAL)));
 				securityPricingsVH.setResourceGroupName(Util.getResourceGroupNameFromId(securityPricingsObject.get("id").getAsString()));
 
 				if (properties != null) {

@@ -1120,7 +1120,7 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "check.Id`check.Category`status`check.name`check.Description";
-		keys = "discoverydate`accountid`accountname`checkid`checkcategory`status`checkname`checkdescription";
+		keys = "discoverydate`accountid`accountname`region`checkid`checkcategory`status`checkname`checkdescription";
 		FileGenerator.generateJson(checksMap, fieldNames, "aws-checks.data",keys);
 
 		Iterator<Entry<String, List<CheckVH>>> it = checksMap.entrySet().iterator();
@@ -1138,7 +1138,7 @@ public class FileManager {
 		}
 
 		fieldNames = "checkid`id`status`data";
-		keys = "discoverydate`accountid`accountname`checkid`id`status`resourceinfo";
+		keys = "discoverydate`accountid`accountname`region`checkid`id`status`resourceinfo";
 		FileGenerator.generateJson(resourceMap, fieldNames, "aws-checks-resources.data",keys);
 
 	}
@@ -1259,10 +1259,10 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "user.username`user.userid`user.arn`user.CreateDate`user.path`passwordCreationDate`user.PasswordLastUsed`passwordResetRequired`mfa`groups";
-		keys = "discoverydate`accountid`accountname`username`userid`arn`createdate`path`passwordcreationdate`passwordlastused`passwordresetrequired`mfaenabled`groups";
+		keys = "discoverydate`accountid`accountname`region`username`userid`arn`createdate`path`passwordcreationdate`passwordlastused`passwordresetrequired`mfaenabled`groups";
 		FileGenerator.generateJson(userMap, fieldNames, "aws-iamuser.data",keys);
 		fieldNames = "user.username`accessKeys.AccessKeyId`accessKeys.CreateDate`accessKeys.status`accessKeys.lastUsedDate";
-		keys = "discoverydate`accountid`accountname`username`accesskey`createdate`status`lastuseddate";
+		keys = "discoverydate`accountid`accountname`region`username`accesskey`createdate`status`lastuseddate";
 		FileGenerator.generateJson(userMap, fieldNames, "aws-iamuser-keys.data",keys);
 
 	}
@@ -1298,7 +1298,7 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "roleName`roleId`arn`description`path`createDate`assumeRolePolicyDocument";
-		keys = "discoverydate`accountid`accountname`rolename`roleid`rolearn`description`path`createdate`assumedpolicydoc";
+		keys = "discoverydate`accountid`accountname`region`rolename`roleid`rolearn`description`path`createdate`assumedpolicydoc";
 		FileGenerator.generateJson(iamRoleMap, fieldNames, "aws-iamrole.data",keys);
 	}
 
@@ -1364,11 +1364,11 @@ public class FileManager {
 		fieldNames = "distSummary.id`distSummary.aRN`distSummary.status`distSummary.lastModifiedTime`distSummary.domainName`distSummary.enabled"
 				+"`distSummary.comment`distSummary.priceClass`distSummary.webACLId`distSummary.httpVersion`distSummary.isIPV6Enabled`distSummary.viewerCertificate.iAMCertificateId"
 				+"`distSummary.viewerCertificate.aCMCertificateArn`distSummary.viewerCertificate.cloudFrontDefaultCertificate`distSummary.viewerCertificate.sSLSupportMethod`distSummary.viewerCertificate.minimumProtocolVersion`distSummary.aliases.items`bucketName`accessLogEnabled`defaultRootObject";
-		keys = "discoverydate`accountid`accountname`id`arn`status`lastmodifiedtime`domainName`enabled`comment`priceclass`webaclid`httpversion`ipv6enabled`viewercertificateid"
+		keys = "discoverydate`accountid`accountname`region`id`arn`status`lastmodifiedtime`domainName`enabled`comment`priceclass`webaclid`httpversion`ipv6enabled`viewercertificateid"
 				+"`viewercertificatearn`viewercertificatedefaultcertificate`viewercertificatesslsupportmethod`viewercertificateminprotocolversion`aliases`bucketname`accesslogenabled`defaultRootObject";
 		FileGenerator.generateJson(cfMap, fieldNames, "aws-cloudfront.data",keys);
 		fieldNames = "distSummary.id`tags.key`tags.value";
-		keys = "discoverydate`accountid`accountname`id`key`value";
+		keys = "discoverydate`accountid`accountname`region`id`key`value";
 		FileGenerator.generateJson(cfMap, fieldNames, "aws-cloudfront-tags.data",keys);
 	}
 
@@ -1416,11 +1416,11 @@ public class FileManager {
 		fieldNames = "eventDetails.event.arn`eventDetails.event.service`eventDetails.event.eventTypeCode`eventDetails.event.eventTypeCategory`eventDetails.event.region`"
 				+"eventDetails.event.availabilityZone`eventDetails.event.startTime`eventDetails.event.endTime`eventDetails.event.lastUpdatedTime`eventDetails.event.statusCode"
 				+"`eventDetails.eventDescription.latestDescription`eventDetails.eventMetadata";
-		keys = "discoverydate`accountid`accountname`eventarn`eventservice`eventtypecode`eventtypecategory`eventregion`availabilityzone`starttime`endtime`"
+		keys = "discoverydate`accountid`accountname`region`eventarn`eventservice`eventtypecode`eventtypecategory`eventregion`availabilityzone`starttime`endtime`"
 				+"lastupdatedtime`statuscode`latestdescription`eventmetadata";
 		FileGenerator.generateJson(phdMap, fieldNames, "aws-phd.data",keys);
 		fieldNames = "affectedEntities.eventArn`affectedEntities.entityArn`affectedEntities.awsAccountId`affectedEntities.entityValue`affectedEntities.lastUpdatedTime`affectedEntities.statusCode`affectedEntities.tags";
-		keys = "discoverydate`accountid`accountname`eventarn`entityarn`awsaccountid`entityvalue`lastupdatedtime`statuscode`tags";
+		keys = "discoverydate`accountid`accountname`region`eventarn`entityarn`awsaccountid`entityvalue`lastupdatedtime`statuscode`tags";
 		FileGenerator.generateJson(phdMap, fieldNames, "aws-phd-entities.data",keys);
 	}
 
@@ -1918,7 +1918,7 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "serverCertificateName`arn`expiryDate";
-		keys = "discoverydate`accountid`accountname`servercertificatename`arn`expirydate";
+		keys = "discoverydate`accountid`accountname`region`servercertificatename`arn`expirydate";
 		FileGenerator.generateJson(iamCertificate, fieldNames, "aws-iamcertificate.data", keys);
 	}
 
@@ -1932,7 +1932,7 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "cloudtrailName`securityTopicARN`securityTopicEndpoint";
-		keys = "discoverydate`accountid`accountname`cloudtrailname`securitytopicarn`securitytopicendpoint";
+		keys = "discoverydate`accountid`accountname`region`cloudtrailname`securitytopicarn`securitytopicendpoint";
 		FileGenerator.generateJson(account, fieldNames, "aws-account.data", keys);
 	}
 	/**
@@ -1945,7 +1945,7 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "group.groupName`group.groupID`group.arn`group.createDate`policies";
-		keys = "discoverydate`accountid`accountname`groupname`groupid`grouparn`createdate`policies";
+		keys = "discoverydate`accountid`accountname`region`groupname`groupid`grouparn`createdate`policies";
 		FileGenerator.generateJson(iamGroupMap, fieldNames, "aws-iamgroup.data", keys);
 	}
 	/**
@@ -2016,7 +2016,7 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "policyName`policyId`arn`defaultVersionId`createDate";
-		keys = "discoverydate`accountid`accountname`policyname`policyid`policyarn`defaultversionid`createdate";
+		keys = "discoverydate`accountid`accountname`region`policyname`policyid`policyarn`defaultversionid`createdate";
 		FileGenerator.generateJson(map, fieldNames, "aws-iampolicies.data", keys);
 	}
 

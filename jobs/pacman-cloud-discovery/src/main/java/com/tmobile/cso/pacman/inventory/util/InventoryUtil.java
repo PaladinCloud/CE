@@ -288,6 +288,8 @@ import com.tmobile.cso.pacman.inventory.file.FileGenerator;
 import com.amazonaws.services.docdb.AmazonDocDB;
 import com.amazonaws.services.docdb.AmazonDocDBClientBuilder;
 
+import static com.tmobile.cso.pacman.inventory.InventoryConstants.REGION_GLOBAL;
+
 /**
  * The Class InventoryUtil.
  */
@@ -1940,7 +1942,7 @@ public class InventoryUtil {
 			}
 		}
 		if (!checkList.isEmpty()) {
-			checkMap.put(accountId + delimiter + accountName, checkList);
+			checkMap.put(accountId + delimiter + accountName + delimiter + REGION_GLOBAL, checkList);
 		}
 		return checkMap;
 	}
@@ -2214,7 +2216,7 @@ public class InventoryUtil {
 
 		List<UserVH> userList = new ArrayList<>();
 		Map<String,List<UserVH>> iamUsers = new HashMap<>();
-		iamUsers.put(accountId+delimiter+accountName, userList);
+		iamUsers.put(accountId + delimiter + accountName + delimiter + REGION_GLOBAL, userList);
 		users.parallelStream().forEach(user -> {
 			UserVH userTemp = new UserVH(user);
 			String userName = user.getUserName();
@@ -2283,7 +2285,7 @@ public class InventoryUtil {
 
 		log.debug(InventoryConstants.ACCOUNT + accountId +" Type : IAM Roles >> "+roles.size());
 		Map<String,List<Role>> iamRoles = new HashMap<>();
-		iamRoles.put(accountId+delimiter+accountName, roles);
+		iamRoles.put(accountId + delimiter + accountName + delimiter + REGION_GLOBAL, roles);
 		return iamRoles;
 	}
 
@@ -2437,7 +2439,7 @@ public class InventoryUtil {
 			setConfigDetails(temporaryCredentials,cloudFrontList);
 
 			log.debug(InventoryConstants.ACCOUNT + accountId +" Type : CloudFront "+ " >> "+cloudFrontList.size());
-			cloudFront.put(accountId+delimiter+accountName,cloudFrontList);
+			cloudFront.put(accountId + delimiter + accountName + delimiter + REGION_GLOBAL, cloudFrontList);
 		}catch(Exception e){
 			log.error(expPrefix+ InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
 			ErrorManageUtil.uploadError(accountId,"","cloudfront",e.getMessage());
@@ -2599,7 +2601,7 @@ public class InventoryUtil {
 			}
 			if( !phdList.isEmpty() ) {
 				log.debug(InventoryConstants.ACCOUNT + accountId +" Type : PHD "+ " >> "+phdList.size());
-				phd.put(accountId+delimiter+accountName,phdList);
+				phd.put(accountId + delimiter + accountName + delimiter + REGION_GLOBAL, phdList);
 			}
 		}
 		catch(Exception e){
@@ -2750,7 +2752,7 @@ public class InventoryUtil {
 						iamCertVH.setExpiryDate(expiryDate);
 						iamCerttList.add(iamCertVH);
 					}
-					iamCertificateVH.put(account+delimiter+accountName, iamCerttList);
+						iamCertificateVH.put(account + delimiter + accountName + delimiter + REGION_GLOBAL, iamCerttList);
 					}else {
 						log.info("List is empty");
 					}
@@ -2840,7 +2842,7 @@ public class InventoryUtil {
 					synchronized (accountList) {
 						accountList.add(accountObj);
 					}
-					accountInfoList.put(account+delimiter+accountName, accountList);
+					accountInfoList.put(account + delimiter + accountName + delimiter + REGION_GLOBAL, accountList);
 					break;
 				}
 			} catch (Exception e) {
@@ -2873,7 +2875,7 @@ public class InventoryUtil {
 
 		List<GroupVH> groupList = new ArrayList<>();
 		Map<String,List<GroupVH>> iamGroups = new HashMap<>();
-		iamGroups.put(account+delimiter+accountName,  groupList);
+		iamGroups.put(account + delimiter + accountName + delimiter + REGION_GLOBAL, groupList);
 		groups.parallelStream().forEach(group -> {
 			GroupVH groupTemp = new GroupVH(group);
 			String groupName = group.getGroupName();
@@ -3169,7 +3171,7 @@ public class InventoryUtil {
 
 		log.debug(InventoryConstants.ACCOUNT + accountId +" Type : IAM Custom managed policies >> "+policies.size());
 		Map<String,List<Policy>> iamPolicies = new HashMap<>();
-		iamPolicies.put(accountId+delimiter+accountName, policies);
+		iamPolicies.put(accountId + delimiter + accountName + delimiter + REGION_GLOBAL, policies);
 		return iamPolicies;
 	}
 

@@ -15,6 +15,8 @@ import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
+import static com.tmobile.pacbot.azure.inventory.InventoryConstants.REGION_GLOBAL;
+
 @Component
 public class PolicyDefinitionInventoryCollector {
 	
@@ -37,6 +39,7 @@ public class PolicyDefinitionInventoryCollector {
 			policyDefinitionVH.setPolicyRule(policyDefinition.policyRule().toString());
 			policyDefinitionVH.setSubscription(subscription.getSubscriptionId());
 			policyDefinitionVH.setSubscriptionName(subscription.getSubscriptionName());
+			policyDefinitionVH.setRegion(REGION_GLOBAL);
 			policyDefinitionList.add(policyDefinitionVH);
 		}
 		log.info("Target Type : {}  Total: {} ","Policy Defintion",policyDefinitionList.size());
