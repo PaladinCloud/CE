@@ -280,9 +280,9 @@ public class AssetGroupControllerTest {
 		assertEquals(assetGroupDetails.getGroupType(), "groupType123");
 		assertEquals(assetGroupDetails.getCreatedBy(), "createdBy123");
 		assertEquals(assetGroupDetails.getCreatedUser(), "createdUser123");
-		assertEquals(assetGroupDetails.getCreatedDate(), "createdDate123");
+		assertEquals(assetGroupDetails.getCreatedDate(), Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assertEquals(assetGroupDetails.getModifiedUser(), "modifiedUser123");
-		assertEquals(assetGroupDetails.getModifiedDate(), "modifiedDate123");
+		assertEquals(assetGroupDetails.getModifiedDate(), Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assertEquals(assetGroupDetails.getDescription(), "description123");
 		assertEquals(assetGroupDetails.getAliasQuery(), "aliasQuery123");
 		assertEquals(assetGroupDetails.getIsVisible(), true);
