@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -48,9 +49,9 @@ public class AssetGroupDetails {
 	private String groupType;
 	private String createdBy;
 	private String createdUser;
-	private String createdDate;
+	private Timestamp createdDate;
 	private String modifiedUser;
-	private String modifiedDate;
+	private Timestamp modifiedDate;
 	private String description;
 	private String aliasQuery;
 	private Boolean isVisible;
@@ -100,17 +101,8 @@ public class AssetGroupDetails {
 	public String getCreatedUser() {
 		return createdUser;
 	}
-
-	public String getCreatedDate() {
-		return createdDate;
-	}
-
 	public String getModifiedUser() {
 		return modifiedUser;
-	}
-
-	public String getModifiedDate() {
-		return modifiedDate;
 	}
 
 	public String getDescription() {
@@ -153,16 +145,8 @@ public class AssetGroupDetails {
 		this.createdUser = createdUser;
 	}
 
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
-	}
-
 	public void setModifiedUser(String modifiedUser) {
 		this.modifiedUser = modifiedUser;
-	}
-
-	public void setModifiedDate(String modifiedDate) {
-		this.modifiedDate = modifiedDate;
 	}
 
 	public void setDescription(String description) {
@@ -183,6 +167,22 @@ public class AssetGroupDetails {
 
 	public void setTargetTypes(Set<AssetGroupTargetDetails> targetTypes) {
 		this.targetTypes = targetTypes;
+	}
+
+	public Timestamp getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Timestamp createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public Timestamp getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Timestamp modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 
 	public Boolean getVisible() {

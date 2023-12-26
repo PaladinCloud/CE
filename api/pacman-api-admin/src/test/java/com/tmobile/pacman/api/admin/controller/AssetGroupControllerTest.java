@@ -28,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.security.Principal;
+import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -106,7 +109,7 @@ public class AssetGroupControllerTest {
 		List<AssetGroupView> assetGroupDetail = new ArrayList<AssetGroupView>();
 		assetGroupDetail.add(getAssetGroupViewDetails());
 		Page<AssetGroupView> allAssetGroupDetails = new PageImpl<AssetGroupView>(assetGroupDetail,new PageRequest(0, 1), assetGroupDetail.size());
-		when(assetGroupService.getAllAssetGroupDetails(anyMap(), anyString(), anyInt(), anyInt())).thenReturn(allAssetGroupDetails);
+		when(assetGroupService.getAllAssetGroupDetails(anyObject(), anyString(), anyInt(), anyInt())).thenReturn(allAssetGroupDetails);
 		mockMvc.perform(get("/asset-group/list")
 				.param("searchTerm", StringUtils.EMPTY)
 				.param("page", "0")
@@ -120,7 +123,7 @@ public class AssetGroupControllerTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void getAllAssetGroupDetailsExceptionTest() throws Exception {
-		when(assetGroupService.getAllAssetGroupDetails(anyMap(), anyString(), anyInt(), anyInt())).thenThrow(Exception.class);
+		when(assetGroupService.getAllAssetGroupDetails(anyObject(), anyString(), anyInt(), anyInt())).thenThrow(Exception.class);
 		mockMvc.perform(get("/asset-group/list")
 				.param("searchTerm", StringUtils.EMPTY)
 				.param("page", "0")
@@ -232,9 +235,9 @@ public class AssetGroupControllerTest {
 		assetGroupDetails.setGroupType("groupType123");
 		assetGroupDetails.setCreatedBy("createdBy123");
 		assetGroupDetails.setCreatedUser("createdUser123");
-		assetGroupDetails.setCreatedDate("createdDate123");
+		assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setModifiedUser("modifiedUser123");
-		assetGroupDetails.setModifiedDate("modifiedDate123");
+		assetGroupDetails.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setDescription("description123");
 		assetGroupDetails.setAliasQuery("aliasQuery123");
 		assetGroupDetails.setIsVisible(true);
@@ -265,9 +268,9 @@ public class AssetGroupControllerTest {
 		assetGroupDetails.setGroupType("groupType123");
 		assetGroupDetails.setCreatedBy("createdBy123");
 		assetGroupDetails.setCreatedUser("createdUser123");
-		assetGroupDetails.setCreatedDate("createdDate123");
+		assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setModifiedUser("modifiedUser123");
-		assetGroupDetails.setModifiedDate("modifiedDate123");
+		assetGroupDetails.setModifiedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assetGroupDetails.setDescription("description123");
 		assetGroupDetails.setAliasQuery("aliasQuery123");
 		assetGroupDetails.setIsVisible(true);
@@ -277,9 +280,9 @@ public class AssetGroupControllerTest {
 		assertEquals(assetGroupDetails.getGroupType(), "groupType123");
 		assertEquals(assetGroupDetails.getCreatedBy(), "createdBy123");
 		assertEquals(assetGroupDetails.getCreatedUser(), "createdUser123");
-		assertEquals(assetGroupDetails.getCreatedDate(), "createdDate123");
+		assertEquals(assetGroupDetails.getCreatedDate(), Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assertEquals(assetGroupDetails.getModifiedUser(), "modifiedUser123");
-		assertEquals(assetGroupDetails.getModifiedDate(), "modifiedDate123");
+		assertEquals(assetGroupDetails.getModifiedDate(), Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
 		assertEquals(assetGroupDetails.getDescription(), "description123");
 		assertEquals(assetGroupDetails.getAliasQuery(), "aliasQuery123");
 		assertEquals(assetGroupDetails.getIsVisible(), true);

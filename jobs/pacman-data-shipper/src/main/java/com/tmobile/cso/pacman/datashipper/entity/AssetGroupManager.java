@@ -265,8 +265,6 @@ public class AssetGroupManager {
     }
 
     private void createDefaultAssetGroup(String aliasQuery) {
-        Date today = new Date();
-        String todayInString = new SimpleDateFormat(DATE_FORMAT).format(today);
         Map<String, String> data = new HashMap<>();
         data.put("groupId", UUID.randomUUID().toString());
         data.put("groupName", ASSET_GROUP_FOR_ALL_RESOURCES);
@@ -275,9 +273,7 @@ public class AssetGroupManager {
         data.put("groupType", "System");
         data.put("createdBy", "admin@paladincloud.io");
         data.put("createdUser", "admin@paladincloud.io");
-        data.put("createdDate", todayInString);
         data.put("modifiedUser", "admin@paladincloud.io");
-        data.put("modifiedDate", todayInString);
         data.put("description", "All assets from all Sources");
         data.put("aliasQuery", aliasQuery);
         data.put("isVisible", "1");

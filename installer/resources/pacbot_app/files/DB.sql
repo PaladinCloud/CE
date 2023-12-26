@@ -3187,3 +3187,82 @@ END //
 DELIMITER ;
 
 CALL change_createdTime_columntype_to_timestamp();
+
+update cf_Target set targetConfig='{"key":"id,databaseVersion","id":"id"}'  where dataSourceName="gcp" and targetName in ('cloudsql_mysqlserver','cloudsql_postgres','cloudsql_sqlserver');
+
+
+
+/* Below procedure will change data type of createdDate and modifiedDate column of cf_AssetGroupDetails table from varchar to timestamp.
+ Inorder not to loose the existing data of that column, update the values of createdDate and modifiedDate to timestamp format and then alter the table. */
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS update_asset_group_dates_to_use_timestamp //
+CREATE PROCEDURE update_asset_group_dates_to_use_timestamp()
+BEGIN
+DECLARE err_code INT DEFAULT 0;
+DECLARE date_int_value INT DEFAULT -1;
+DECLARE full_date_var VARCHAR(255);
+DECLARE groupid_var VARCHAR(255);
+DECLARE date_var VARCHAR(255);
+DECLARE month_var VARCHAR(255);
+DECLARE year_var VARCHAR(255);
+DECLARE time_var VARCHAR(255);
+DECLARE existing_created_date_var VARCHAR(255);
+DECLARE existing_modified_date_var VARCHAR(255);
+DECLARE required_format_date VARCHAR(255);
+DECLARE datatype VARCHAR(255);
+DECLARE datatypeMD VARCHAR(255);
+DECLARE dateCursor CURSOR FOR (SELECT groupId,createdDate,modifiedDate FROM cf_AssetGroupDetails);
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET err_code=1;
+SELECT
+ DATA_TYPE  INTO datatype FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='pacmandata' AND TABLE_NAME='cf_AssetGroupDetails' AND column_name='createdDate';
+SELECT
+ DATA_TYPE  INTO datatypeMD FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='pacmandata' AND TABLE_NAME='cf_AssetGroupDetails' AND column_name='modifiedDate';
+IF (datatype='varchar' AND datatypeMD='varchar') then
+OPEN dateCursor;
+myloop : loop
+FETCH dateCursor INTO groupid_var,existing_created_date_var,existing_modified_date_var;
+IF(err_code=1) THEN
+leave myloop;
+END if;
+
+IF(existing_created_date_var IS NULL OR existing_created_date_var='') THEN
+UPDATE cf_AssetGroupDetails SET createdDate=(SELECT CURRENT_TIMESTAMP) WHERE groupId=groupid_var;
+ELSE
+SET full_date_var=substring_index(existing_created_date_var,' ',1);
+SET time_var=substring_index(existing_created_date_var,' ',-1);
+SET month_var=substring_index(full_date_var,'/',1);
+SET year_var=substring_index(full_date_var,'/',-1);
+SET date_var=substring_index(substring_index(full_date_var,'/',2),'/',-1);
+SET required_format_date=CONCAT(year_var,'-',month_var,'-',date_var,' ',time_var,':00');
+
+/* update values from dd/MM/YYYY HH:mm:ss to YYYY-MM-dd HH:mm:ss so that when column type is modified using alter command,old values are not lost.*/
+
+UPDATE cf_AssetGroupDetails SET createdDate=required_format_date WHERE groupId=groupid_var;
+END IF;
+
+IF(existing_modified_date_var IS NULL OR existing_modified_date_var='') THEN
+UPDATE cf_AssetGroupDetails SET modifiedDate=(SELECT CURRENT_TIMESTAMP) WHERE groupId=groupid_var;
+ELSE
+SET full_date_var=substring_index(existing_modified_date_var,' ',1);
+SET time_var=substring_index(existing_modified_date_var,' ',-1);
+SET month_var=substring_index(full_date_var,'/',1);
+SET year_var=substring_index(full_date_var,'/',-1);
+SET date_var=substring_index(substring_index(full_date_var,'/',2),'/',-1);
+SET required_format_date=CONCAT(year_var,'-',month_var,'-',date_var,' ',time_var,':00');
+
+/* update values from dd/MM/YYYY HH:mm:ss to YYYY-MM-dd HH:mm:ss so that when column type is modified using alter command,old values are not lost.*/
+
+UPDATE cf_AssetGroupDetails SET modifiedDate=required_format_date WHERE groupId=groupid_var;
+END IF;
+
+END loop myloop;
+
+ALTER TABLE cf_AssetGroupDetails modify COLUMN createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE cf_AssetGroupDetails modify COLUMN modifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+CLOSE dateCursor;
+END IF;
+END //
+DELIMITER ;
+
+CALL update_asset_group_dates_to_use_timestamp();

@@ -452,5 +452,13 @@ public class CommonUtils {
 		return false;
 	}
 
-
+	public static String joinListElement(List<String> list) {
+		if(CollectionUtils.isEmpty(list)){
+			return "";
+		}
+		return String.join(",", list
+				.stream()
+				.map(name -> ("\"" + name + "\""))
+				.collect(Collectors.toList()));
+	}
 }

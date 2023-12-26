@@ -38,16 +38,9 @@ public interface AssetGroupService {
      */
 	public Collection<String> getAllAssetGroupNames();
 
-	/**
-     * Service to get all asset group details
-     *
-     * @author Nidhish
-     * @param searchTerm - searchTerm to be searched.
-     * @param page - zero-based page index.
-     * @param size - the size of the page to be returned.
-     * @return All asset group details
-     */
-	public Page<AssetGroupView> getAllAssetGroupDetails(Map<String, String> filterMap, final String searchTerm, final int page, final int size);
+	public Page<AssetGroupView> getAllAssetGroupDetails(PluginRequestBody requestBody, final String searchTerm, final int page, final int size);
+
+	public Map<String, Object> getAllAssetGroupDetailsFilterValues(PluginRequestBody requestBody);
 
 	/**
      * Service to get asset group details by name

@@ -16,6 +16,7 @@
 package com.tmobile.pacman.api.admin.domain;
 
 import java.util.Set;
+import java.sql.Timestamp;
 
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupCriteriaDetails;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
@@ -41,6 +42,25 @@ public class AssetGroupView {
 	public String getGroupType() {
 		return groupType;
 	}
+
+	public Timestamp getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Timestamp createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public Timestamp getUpdatedDate() {
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(Timestamp updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+	private Timestamp createdDate;
+	private Timestamp updatedDate;
 
 	public void setGroupType(String groupType) {
 		this.groupType = groupType;

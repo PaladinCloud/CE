@@ -19,9 +19,10 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_DEL
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.tmobile.pacman.api.admin.domain.CreateAssetGroup;
+import com.tmobile.pacman.api.admin.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import com.tmobile.pacman.api.admin.domain.CreateUpdateAssetGroupDetails;
-import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupRequest;
-import com.tmobile.pacman.api.admin.domain.Response;
 import com.tmobile.pacman.api.admin.repository.service.AssetGroupService;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
 
@@ -142,7 +140,7 @@ public class AssetGroupController {
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get all asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(path = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getAllAssetGroupDetails(
+	public ResponseEntity<Object> getAllAssetGroupDetailsList(
 			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
 			@ApiParam(value = "provide valid search term", required = false) @RequestParam(defaultValue = "", name = "searchTerm", required = false) String searchTerm) {
@@ -156,13 +154,32 @@ public class AssetGroupController {
 
 	@ApiOperation(httpMethod = "POST", value = "API to filte asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(path = "/list",produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getAllAssetGroupDetailsFilter(
-			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
-			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
-			@ApiParam(value = "provide valid search term", required = false) @RequestParam(defaultValue = "", name = "searchTerm", required = false) String searchTerm,
-			@RequestBody Map<String, String> filterMap) {
+	public ResponseEntity<Object> getAllAssetGroupDetails(@RequestBody PluginRequestBody requestBody) {
 		try {
-			return ResponseUtils.buildSucessResponse(assetGroupService.getAllAssetGroupDetails(filterMap, searchTerm.trim(), page, size));
+			if(requestBody.getFilter() == null){
+				requestBody.setFilter(new HashMap<>());
+			}
+			if(requestBody.getSortFilter() == null){
+				requestBody.setSortFilter(new HashMap<>());
+			}
+			return ResponseUtils.buildSucessResponse(assetGroupService.getAllAssetGroupDetails(requestBody, "", requestBody.getPage(), requestBody.getSize()));
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+
+	@ApiOperation(httpMethod = "POST", value = "API to filte asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/list",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getAllAssetGroupDetailsFilter(@RequestBody PluginRequestBody requestBody) {
+		try {
+			if(requestBody.getFilter() == null){
+				requestBody.setFilter(new HashMap<>());
+			}
+			if(requestBody.getSortFilter() == null){
+				requestBody.setSortFilter(new HashMap<>());
+			}
+			return ResponseUtils.buildSucessResponse(assetGroupService.getAllAssetGroupDetailsFilterValues(requestBody));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
