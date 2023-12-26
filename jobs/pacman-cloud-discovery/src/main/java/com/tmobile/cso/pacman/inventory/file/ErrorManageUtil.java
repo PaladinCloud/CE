@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.file;
 
+import com.google.api.client.util.Strings;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.pacman.commons.dto.ErrorVH;
 import com.tmobile.pacman.commons.dto.PermissionVH;
@@ -131,9 +132,9 @@ public class ErrorManageUtil {
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
             for (ErrorVH errorVH : entry.getValue()) {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
-                omitPermissionErrors(errorVHList, assetPermissionMapping, errorVH, permissionIssues);
                 // omit errors
                 omitErrors(errorVHList, errorVH);
+                omitPermissionErrors(errorVHList, assetPermissionMapping, errorVH, permissionIssues);
             }
 
             if (!assetPermissionMapping.isEmpty()) {
@@ -177,6 +178,9 @@ public class ErrorManageUtil {
 
     private static boolean exceptionPresentInList(String errorException, List<String> exceptionList) {
         for (String exception : exceptionList) {
+            if (Strings.isNullOrEmpty(errorException)) {
+                return false;
+            }
             if (errorException.contains(exception)) return true;
         }
         return false;

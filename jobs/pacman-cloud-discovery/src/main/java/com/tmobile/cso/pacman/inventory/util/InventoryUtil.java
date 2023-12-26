@@ -2914,7 +2914,7 @@ public class InventoryUtil {
 							.withRegion(region.getName()).build();
 					DescribeTrailsResult rslt = cloudTrailClient.describeTrails();
 					List<Trail> trailTemp = rslt.getTrailList();
-					List<CloudTrailVH> trailVHList = new ArrayList<CloudTrailVH>();
+					List<CloudTrailVH> trailVHList = new ArrayList<>();
 					trailTemp.forEach(trail -> {
 						if (trail.getHomeRegion().equals(region.getName())) {
 							GetTrailStatusResult trailStatus = cloudTrailClient
@@ -2923,18 +2923,18 @@ public class InventoryUtil {
 									.getEventSelectors(new GetEventSelectorsRequest().withTrailName(trail.getName()));
 							List<EventSelector> eventSelectorsList = selectorResult.getEventSelectors();
 							List<CloudTrailEventSelectorVH> eventSelectorVHList = new ArrayList<>();
-							if (eventSelectorsList != null && eventSelectorsList.size() > 0) {
+							if (eventSelectorsList != null && !eventSelectorsList.isEmpty()) {
 								eventSelectorsList.forEach(eventSelector -> {
 									CloudTrailEventSelectorVH eventSelectorVH = new CloudTrailEventSelectorVH();
 									eventSelectorVH.setReadWriteType(eventSelector.getReadWriteType());
 									eventSelectorVH
 											.setIncludeManagementEvents(eventSelector.getIncludeManagementEvents());
 									List<DataResource> dataResourcesList = eventSelector.getDataResources();
-									if (dataResourcesList != null && dataResourcesList.size() > 0) {
+									if (dataResourcesList != null && !dataResourcesList.isEmpty()) {
 										dataResourcesList.forEach(dataResource -> {
 											eventSelectorVH.setDataResourcesType(dataResource.getType());
 											if (dataResource.getValues() != null
-													&& dataResource.getValues().size() > 0) {
+													&& !dataResource.getValues().isEmpty()) {
 												eventSelectorVH.setDataResourcesValue(
 														String.join(",", dataResource.getValues()));
 											}
@@ -2944,7 +2944,7 @@ public class InventoryUtil {
 
 								});
 							}
-							trailVHList.add(new CloudTrailVH(trail, trailStatus.getIsLogging(), eventSelectorVHList,trailStatus.getLatestCloudWatchLogsDeliveryTime().toString()));
+							trailVHList.add(new CloudTrailVH(trail, trailStatus.getIsLogging(), eventSelectorVHList, trailStatus.getLatestCloudWatchLogsDeliveryTime() == null ? null : trailStatus.getLatestCloudWatchLogsDeliveryTime().toString()));
 						}
 					});
 					if (!trailVHList.isEmpty()) {
