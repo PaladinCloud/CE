@@ -6,10 +6,13 @@ import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.CreateAssetGroup;
 import com.tmobile.pacman.api.admin.domain.DataSourceObj;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
+import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.DatasourceRepository;
 import com.tmobile.pacman.api.admin.repository.TargetTypesRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
+import com.tmobile.pacman.api.admin.repository.model.AzureAccountDetails;
 import com.tmobile.pacman.api.admin.service.CommonService;
+import com.tmobile.pacman.api.commons.Constants;
 import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
@@ -36,6 +40,9 @@ public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
 
     @Autowired
     AccountsRepository accountsRepository;
+
+    @Autowired
+    AzureAccountRepository azureAccountRepository;
 
     private List<Object> createFilterForDataSource(List<DataSourceObj> dataSourceObjList, String aliasName){
         List<Object> action = Lists.newArrayList();
@@ -95,6 +102,9 @@ public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
                 Set<String> dataSourceLs = getDataSourceLs(configurationList, datasourceListFromDb);
                 dataSourceObjList = getConfig(dataSourceLs, configurationList);
             }
+            dataSourceObjList = dataSourceObjList.stream()
+                    .filter(ds -> isNotBlank(ds.getIndexName()))
+                    .collect(Collectors.toList());
             List<Object> ls = createFilterForDataSource(dataSourceObjList, aliasName);
             if(!CollectionUtils.isEmpty(ls)){
                 action.addAll(ls);
@@ -182,12 +192,19 @@ public class CreateAssetGroupServiceImpl implements CreateAssetGroupService {
     private Map<String, Set<String>> getAccIdForConfiguredSources() {
 
         List<AccountDetails> configuredAccounts = accountsRepository.findAllConfiguredAccounts();
-        return configuredAccounts.stream().collect(Collectors.groupingBy(accountDetails -> accountDetails.getPlatform(), Collectors.mapping(accountDetails -> String.valueOf(accountDetails.getAccountId()), Collectors.toSet())));
+        Map<String, Set<String>> platformAccounts = configuredAccounts.stream().collect(Collectors.groupingBy(accountDetails -> accountDetails.getPlatform(), Collectors.mapping(accountDetails -> String.valueOf(accountDetails.getAccountId()), Collectors.toSet())));
+
+        List<AzureAccountDetails> azureSubscriptions = azureAccountRepository.findConfiguredSubscriptions();
+        if (azureSubscriptions != null && !azureSubscriptions.isEmpty()) {
+
+            platformAccounts.put(Constants.AZURE, azureSubscriptions.stream().map(account -> account.getSubscription()).collect(Collectors.toSet()));
+        }
+        return platformAccounts;
     }
 
     /** allows creating alias for the source only if the accountId criteria belongs to that source */
     private boolean isAccountConfigValid(Map<String, Object> configuration, Set<String> accountIds) {
-        return !configuration.containsKey("accountid") || accountIds.contains(configuration.get("accountid"));
+        return !configuration.containsKey("accountid") || (accountIds != null && accountIds.contains(configuration.get("accountid")));
     }
 
     private boolean getIsSet(String curDs, String dataSrc){

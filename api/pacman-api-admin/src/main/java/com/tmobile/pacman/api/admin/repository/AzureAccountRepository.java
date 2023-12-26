@@ -18,4 +18,7 @@ public interface AzureAccountRepository extends JpaRepository<AzureAccountDetail
 
     @Query("SELECT distinct subscription from AzureAccountDetails where subscription is NOT NULL ")
     List<String> findSubscriptions();
+
+    @Query("SELECT ac from AzureAccountDetails ac where subscription is NOT NULL and subscriptionStatus='configured'")
+    List<AzureAccountDetails> findConfiguredSubscriptions();
 }
