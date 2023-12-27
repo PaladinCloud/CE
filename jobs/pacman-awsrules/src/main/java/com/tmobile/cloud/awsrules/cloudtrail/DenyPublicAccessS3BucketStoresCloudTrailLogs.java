@@ -1,17 +1,20 @@
 /*******************************************************************************
- *Copyright <2023> Paladin Cloud, Inc or its affiliates. All Rights Reserved.
+ * Copyright 2023 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  ******************************************************************************/
 package com.tmobile.cloud.awsrules.cloudtrail;
+
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
@@ -39,7 +42,7 @@ public class DenyPublicAccessS3BucketStoresCloudTrailLogs extends BasePolicy {
 
     @Override
     public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-
+        logger.debug("========DenyPublicAccessS3BucketStoresCloudTrailLogs started=========");
         MDC.put(PacmanRuleConstants.EXECUTION_ID, ruleParam.get(PacmanRuleConstants.EXECUTION_ID));
         MDC.put(PacmanRuleConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
@@ -51,37 +54,35 @@ public class DenyPublicAccessS3BucketStoresCloudTrailLogs extends BasePolicy {
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
 
-        String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
-        String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
-        if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "/aws/s3/_search";
-        }
-
         String s3BucketName = resourceAttributes.get("s3bucketname");
-        String accountId = resourceAttributes.get(PacmanRuleConstants.ACCOUNTID);
-        boolean isPublicAccessEnabled = false;
         if (!StringUtils.isNullOrEmpty(s3BucketName)) {
+            String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
+            if (!StringUtils.isNullOrEmpty(esUrl)) {
+                esUrl = esUrl + "/aws/s3/_search";
+            }
+            String accountId = resourceAttributes.get(PacmanRuleConstants.ACCOUNTID);
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.NAME), s3BucketName);
-            mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.ACCOUNTID),accountId);
+            mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.ACCOUNTID), accountId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
-        try {
-            isPublicAccessEnabled = checkForS3BucketCloudtrailLogsPublicAccess(esUrl, mustFilter);
-        } catch (Exception e) {
-            logger.error("unable to determine", e);
-            throw new RuleExecutionFailedExeption("unable to determine" + e);
-        }
+            boolean isPublicAccessEnabled;
+            try {
+                isPublicAccessEnabled = isS3BucketStoringCloudtrailLogsPubliclyAccessible(esUrl, mustFilter);
+            } catch (Exception e) {
+                logger.error("unable to determine", e);
+                throw new RuleExecutionFailedExeption("unable to determine" + e);
+            }
 
             if (isPublicAccessEnabled) {
                 List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                 LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION,"Ensure S3 bucket that stores cloudtrail Logs is not publicly accessible");
+                annotation.put(PacmanSdkConstants.DESCRIPTION, "Ensure S3 bucket that stores cloudtrail Logs is not publicly accessible");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
-                annotation.put(PacmanRuleConstants.NAME,resourceAttributes.get(PacmanRuleConstants.NAME));
+                annotation.put(PacmanRuleConstants.NAME, resourceAttributes.get(PacmanRuleConstants.NAME));
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
@@ -91,55 +92,50 @@ public class DenyPublicAccessS3BucketStoresCloudTrailLogs extends BasePolicy {
                         annotation);
             }
         }
-        logger.debug("S3 bucket that stores cloudtrail Logs is not publicly accessible");
         logger.debug("========DenyPublicAccessS3BucketStoresCloudTrailLogs ended=========");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean checkForS3BucketCloudtrailLogsPublicAccess(String esUrl, Map<String, Object> mustFilter) throws Exception {
-        logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
+    private boolean isS3BucketStoringCloudtrailLogsPubliclyAccessible(String esUrl, Map<String, Object> mustFilter) throws Exception {
+        logger.debug("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = false;
-        JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
                 HashMultimap.create(), null, 0, new HashMap<>(), null, null);
 
         if (resultJson.has(PacmanRuleConstants.HITS)) {
-            String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
-            JsonObject hitsJson = JsonParser.parseString(hitsString).getAsJsonObject();
-            JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
+            JsonArray hitsJsonArray= resultJson.get(PacmanRuleConstants.HITS).getAsJsonObject().getAsJsonArray(PacmanRuleConstants.HITS);
             if (!hitsJsonArray.isEmpty()) {
-                    JsonObject source = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                            .get(PacmanRuleConstants.SOURCE);
-                    if (source.has(PacmanRuleConstants.ES_BKT_POLICY_ATTRIBUTE)) {
-                        String bucketPolicyString = source.get(PacmanRuleConstants.ES_BKT_POLICY_ATTRIBUTE).getAsString();
+                JsonObject source = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                        .get(PacmanRuleConstants.SOURCE);
+                if (source.has(PacmanRuleConstants.ES_BKT_POLICY_ATTRIBUTE)) {
+                    String bucketPolicyString = source.get(PacmanRuleConstants.ES_BKT_POLICY_ATTRIBUTE).getAsString();
+                    JsonObject bucketPolicyObject = null;
+                    try {
+                        bucketPolicyObject = new Gson().fromJson(bucketPolicyString, JsonObject.class);
+                    } catch (JsonSyntaxException e) {
+                        logger.error("Error parsing bucket policy JSON: {}", e.getMessage());
+                    }
 
-                        JsonObject bucketPolicyObject = null;
-                        try {
-                            bucketPolicyObject = new Gson().fromJson(bucketPolicyString, JsonObject.class);
-                        } catch (JsonSyntaxException e) {
-                            logger.error("Error parsing bucket policy JSON: {}", e.getMessage());
-                        }
+                    if (bucketPolicyObject != null && bucketPolicyObject.has(PacmanRuleConstants.STATEMENT)) {
+                        JsonArray bucketStatementList = bucketPolicyObject.getAsJsonArray(PacmanRuleConstants.STATEMENT);
 
-                        if (bucketPolicyObject != null && bucketPolicyObject.has(PacmanRuleConstants.STATEMENT)) {
-                            JsonArray bucketStatementList = bucketPolicyObject.getAsJsonArray(PacmanRuleConstants.STATEMENT);
+                        for (JsonElement bucketStatement : bucketStatementList) {
+                            JsonObject statementObject = bucketStatement.getAsJsonObject();
 
-                            for (JsonElement bucketStatement : bucketStatementList) {
-                                JsonObject statementObject = bucketStatement.getAsJsonObject();
+                            String effect = statementObject.get(PacmanRuleConstants.EFFECT).getAsString();
+                            JsonObject principal = statementObject.getAsJsonObject(PacmanRuleConstants.PRINCIPAL);
+                            String service = principal.get(PacmanRuleConstants.SERVICE).getAsString();
 
-                                String effect = statementObject.get(PacmanRuleConstants.EFFECT).getAsString();
-                                JsonObject principal = statementObject.getAsJsonObject(PacmanRuleConstants.PRINCIPAL);
-                                String service = principal.get(PacmanRuleConstants.SERVICE).getAsString();
-
-                                if (effect.equalsIgnoreCase("Allow") && service.equalsIgnoreCase("*")) {
-                                    validationResult = true;
-                                    break;
-                                }
+                            if (effect.equalsIgnoreCase("Allow") && service.equalsIgnoreCase("*")) {
+                                validationResult = true;
+                                break;
                             }
                         }
                     }
                 }
             }
+        }
         return validationResult;
     }
 
