@@ -1,0 +1,124 @@
+name: Jobs-Jars
+
+on:
+  push:
+    branches:
+      - master
+      - 'release-v*.*.*'
+    paths:
+      - 'jobs/**'
+      - 'commons/**'
+  pull_request:
+    branches:
+      - master
+      - 'release-v*.*.*'
+    paths:
+      - 'jobs/**'
+      - 'commons/**'
+
+permissions:
+  id-token: write
+  contents: read  
+  pull-requests: read
+
+jobs:
+  filter:
+    name: filters
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      risk-score: ${{ steps.filter.outputs.risk-score }}
+      update-sla-violations: ${{ steps.filter.outputs.update-sla-violations }}
+      commons: ${{ steps.filter.outputs.commons }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            jobs:
+              - 'jobs/**'
+            commons:
+              - 'commons/**'
+
+  JobsBuild:
+    name: Jobs-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.jobs == 'true'  || needs.filter.outputs.commons == 'true' 
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: running update
+        run: sudo apt update
+      - name: Install maven
+        run: |
+          sudo apt install maven -y
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd 
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-artifact
+          path: ./dist/api
+
+  DeployApiBuildDev:
+    name: Deploy Jobs to Dev
+    runs-on: ubuntu-latest
+    if: (needs.filter.outputs.jobs == 'true' || needs.filter.outputs.commons == 'true') && (startsWith(github.ref, 'refs/heads/master') && github.event_name == 'push')
+    needs:
+      - JobsBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/dev/jobs
+
+  DeployApiBuildQA:
+    name: Deploy Jobs to QA
+    runs-on: ubuntu-latest
+    if: (needs.filter.outputs.jobs == 'true' || needs.filter.outputs.commons == 'true') && (startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push')
+    needs:
+      - JobsBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/dev/jobs
