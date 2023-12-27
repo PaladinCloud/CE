@@ -1,0 +1,1130 @@
+name: Jobs-Jars
+
+on:
+  push:
+    branches:
+      -  dev
+      - 'release-v*.*.*'
+    paths:
+      - 'jobs/pom.xml'
+      - 'jobs/azure-discovery/**'       
+      - 'jobs/pacman-awsrules/**'           
+      - 'jobs/pacman-qualys-enricher/**' 
+      - 'jobs/recommendation-enricher/**' 
+      - 'jobs/gcp-discovery/**' 
+      - 'jobs/pacman-cloud-discovery/**'       
+      - 'jobs/pacman-rule-engine-2.0/**' 
+      - 'jobs/job-scheduler/**'          
+      - 'jobs/pacman-cloud-notifications/**'   
+      - 'jobs/pacman-tenable-enricher/**' 
+      - 'jobs/pacman-aqua-enricher/**' 
+      - 'jobs/pacman-data-shipper/**' 
+      - 'commons/**'
+  pull_request:
+    branches:
+      -  dev
+      - 'release-v*.*.*'
+    paths:
+      - 'jobs/pom.xml'
+      - 'jobs/azure-discovery/**'       
+      - 'jobs/pacman-awsrules/**'           
+      - 'jobs/pacman-qualys-enricher/**' 
+      - 'jobs/recommendation-enricher/**' 
+      - 'jobs/gcp-discovery/**' 
+      - 'jobs/pacman-cloud-discovery/**'       
+      - 'jobs/pacman-rule-engine-2.0/**' 
+      - 'jobs/job-scheduler/**'          
+      - 'jobs/pacman-cloud-notifications/**'   
+      - 'jobs/pacman-tenable-enricher/**' 
+      - 'jobs/pacman-aqua-enricher/**' 
+      - 'jobs/pacman-data-shipper/**' 
+      - 'commons/**'
+
+permissions:
+  id-token: write
+  contents: read  
+  pull-requests: read
+
+jobs:
+  filter:
+    name: filters
+    runs-on: ubuntu-latest
+    outputs:
+      pom: ${{ steps.filter.outputs.pom }}
+      commons: ${{ steps.filter.outputs.commons }}
+      azure-discovery: ${{ steps.filter.outputs.azure-discovery }}
+      pacman-awsrules: ${{ steps.filter.outputs.pacman-awsrules }}
+      recommendation-enricher: ${{ steps.filter.outputs.recommendation-enricher }}
+      gcp-discovery: ${{ steps.filter.outputs.gcp-discovery }}
+      pacman-cloud-discovery: ${{ steps.filter.outputs.pacman-cloud-discovery }}
+      pacman-rule-engine: ${{ steps.filter.outputs.pacman-rule-engine }}
+      job-scheduler: ${{ steps.filter.outputs.job-scheduler }}
+      pacman-cloud-notifications: ${{ steps.filter.outputs.pacman-cloud-notifications }}
+      pacman-tenable-enricher: ${{ steps.filter.outputs.pacman-tenable-enricher }}
+      pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher }}
+      pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper }}
+      pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            pom:
+              - 'jobs/pom.xml'
+            commons:
+              - 'commons/**'
+            azure-discovery:
+              - 'jobs/azure-discovery/**'
+            pacman-awsrules:
+              - 'jobs/pacman-awsrules/**'
+            pacman-qualys-enricher:
+              - 'jobs/pacman-qualys-enricher/**' 
+            recommendation-enricher:
+              - 'jobs/recommendation-enricher/**' 
+            gcp-discovery:
+              - 'jobs/gcp-discovery/**'
+            pacman-cloud-discovery:
+              - 'jobs/pacman-cloud-discovery/**' 
+            pacman-rule-engine:
+              - 'jobs/pacman-rule-engine-2.0/**' 
+            job-scheduler:
+              - 'jobs/job-scheduler/**'
+            pacman-cloud-notifications:     
+              - 'jobs/pacman-cloud-notifications/**' 
+            pacman-tenable-enricher:
+              - 'jobs/pacman-tenable-enricher/**' 
+            pacman-aqua-enricher:
+              - 'jobs/pacman-aqua-enricher/**' 
+            pacman-data-shipper:
+              - 'jobs/pacman-data-shipper/**'
+
+  extract_version:
+    name : extract_version
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Extract Version
+        id: extract_version
+        run: |
+          branch_name="${{ github.ref }}"
+          if [[ $branch_name =~ ^refs/heads/release-(.+)$ ]]; then
+            echo "::set-output name=version::${BASH_REMATCH[1]}"
+          else
+            echo "Invalid branch name format"
+            exit 1
+          fi
+      - name: Display Version
+        run: |
+          version="${{ steps.extract_version.outputs.version }}"
+          echo "Extracted Version: $version"
+
+  AzureBuild:
+    name: Azure-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.azure-discovery == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/azure-discovery/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-azure-artifact
+          path: ./dist/jobs
+
+  Push-azure-Dev:
+    name: Push azure-discovery to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - AzureBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-azure-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-azure-QA:
+    name: Push azure-discovery to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - AzureBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Qa account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-azure-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+
+  AwsrulesBuild:
+    name: Awsrules-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-awsrules == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-awsrules/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-awsrules-artifact
+          path: ./dist/jobs
+
+  Push-awsrules-Dev:
+    name: Push awsrules to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - AwsrulesBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-awsrules-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-awsrules-QA:
+    name: Push awsrules to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - AwsrulesBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-awsrules-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+
+  QualysBuild:
+    name: qualys-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-qualys-enricher == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-qualys-enricher/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-qualys-artifact
+          path: ./dist/jobs
+
+  Push-Qualys-Dev:
+    name: Push qualys to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - QualysBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-qualys-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-Qualys-QA:
+    name: Push qualys to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - QualysBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-qualys-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+
+  RecommendationBuild:
+    name: Recommendation-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.recommendation-enricher == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/recommendation-enricher/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-recommendation-artifact
+          path: ./dist/jobs
+
+  Push-recommendation-Dev:
+    name: Push recommendation-enricher to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - RecommendationBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-recommendation-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-recommendation-QA:
+    name: Push recommendation-enricher to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - RecommendationBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-recommendation-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+
+  GCPBuild:
+    name: GCP-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.gcp-discovery == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/gcp-discovery/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-gcp-artifact
+          path: ./dist/jobs
+
+  Push-gcp-Dev:
+    name: Push gcp-discovery to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - GCPBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-gcp-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-gcp-QA:
+    name: Push gcp-discovery to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - GCPBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-gcp-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+
+  Cloud-Discovery-Build:
+    name: Cloud-Discovery-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-cloud-discovery == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-cloud-discovery/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-cloud-artifact
+          path: ./dist/jobs
+
+  Push-Cloud-Discovery-Dev:
+    name: Push Cloud-discovery to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - Cloud-Discovery-Build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-cloud-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-Cloud-Discovery-QA:
+    name: Push Cloud-discovery to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - Cloud-Discovery-Build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-cloud-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+
+
+  RuleEngineBuild:
+    name: Rule-engine-2.0-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-rule-engine == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building awsrules jar
+        run: |
+          cd jobs/pacman-awsrules/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-rule-engine-2.0/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-RE2.0-artifact
+          path: ./dist/jobs
+
+  Push-RuleEngineBuild-Dev:
+    name: Push Rule-engine-2.0 to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - RuleEngineBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-RE2.0-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-RuleEngineBuild-QA:
+    name: Push Rule-engine-2.0 to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - RuleEngineBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-RE2.0-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+
+
+  SchedulerBuild:
+    name: Scheduler-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.job-scheduler == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/job-scheduler/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-scheduler-artifact
+          path: ./dist/jobs
+
+  Push-SchedulerBuild-Dev:
+    name: Push SchedulerBuild to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - SchedulerBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-scheduler-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/api
+
+  Push-SchedulerBuild-QA:
+    name: Push SchedulerBuild to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - SchedulerBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-scheduler-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/api
+
+  NotificationBuild:
+    name: Notification-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-cloud-notifications == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-cloud-notifications/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-notification-artifact
+          path: ./dist/jobs
+
+  Push-Notification-Dev:
+    name: Push Notification to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - NotificationBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-notification-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-Notification-QA:
+    name: Push Notification to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - NotificationBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-notification-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+
+  TenableBuild:
+    name: Tenable-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-tenable-enricher == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-tenable-enricher/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-Tenable-artifact
+          path: ./dist/jobs
+
+  Push-Tenable-Dev:
+    name: Push Tenable to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - TenableBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-Tenable-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-Tenable-QA:
+    name: Push Tenable to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - TenableBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-Tenable-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+
+
+  AquaBuild:
+    name: Aqua-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-aqua-enricher == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-aqua-enricher/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-aqua-artifact
+          path: ./dist/jobs
+
+  Push-Aqua-Dev:
+    name: Push Aqua to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - AquaBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-aqua-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-Aqua-QA:
+    name: Push Aqua to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - AquaBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-aqua-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+
+
+  ShipperBuild:
+    name: Shipper-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-data-shipper == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-data-shipper/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-shipper-artifact
+          path: ./dist/jobs
+
+  Push-Shipper-Dev:
+    name: Push Shipper to s3 dev
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/dev') && github.event_name == 'push'
+    needs:
+      - ShipperBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-aqua-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/latest/dev/jobs
+
+  Push-Shipper-QA:
+    name: Push Shipper to s3 QA
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release-v*.*.*') && github.event_name == 'push'
+    environment: 'SaaSQA'
+    needs:
+      - ShipperBuild
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-aqua-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
