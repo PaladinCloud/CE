@@ -17,15 +17,26 @@
 
 package com.tmobile.pacman.executor;
 
-import com.amazonaws.regions.Region;
-import com.amazonaws.services.sns.model.PublishRequest;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Resources;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
 import com.tmobile.pacman.commons.autofix.manager.IAutofixManger;
@@ -35,25 +46,19 @@ import com.tmobile.pacman.commons.utils.Constants;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
-import com.tmobile.pacman.reactors.PacEventHandler;
 import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
-import com.tmobile.pacman.util.*;
+import com.tmobile.pacman.util.AuditUtils;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ESUtils;
+import com.tmobile.pacman.util.NotificationUtils;
+import com.tmobile.pacman.util.PolicyExecutionUtils;
+import com.tmobile.pacman.util.ProgramExitUtils;
 
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sns.SnsClient;
-import software.amazon.awssdk.services.sns.model.PublishResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
 import software.amazon.awssdk.services.sns.model.PublishResponse;
 
 
@@ -76,6 +81,7 @@ public class PolicyExecutor {
     private String source;
     private List<Map<String, String>> policyWiseParamsList = new ArrayList<>();
     private static final int POLICY_THREAD_POOL_SIZE = 50;
+    private static final String POLICY_DONE_SNS_TOPIC_ARN = "POLICY_DONE_SNS_TOPIC_ARN";
     
     public PolicyExecutor (String jsonString) {
     	try {
@@ -98,7 +104,7 @@ public class PolicyExecutor {
 		setSystemProperties();
 		logger.debug("received input-->" + args[0]);
 		logger.info("input source detected as policy, will process policy now.");
-		// "{ \"source\": \"aws\", \"targetType\": "ami", \"enricher\": \"\",
+		// "{ \"source\": \"aws\", \"targetType\": "ec2", \"enricher\": \"\",
 		// \"policyUUID\":[\"aws_ami_unused\"] }";
 		PolicyExecutor policyExecutor = new PolicyExecutor(args[0]);
 		policyExecutor.setResourcesList();
@@ -107,6 +113,7 @@ public class PolicyExecutor {
 		for (Map<String, String> policyParam : policyExecutor.policyWiseParamsList) {
 			String executionId = UUID.randomUUID().toString(); // this is the unique
 			String status = fetchLatestPolicyStatus(policyParam);
+			//String status = "ENABLED";
 			executor.execute(() -> {
 				try {
 					if (policyExecutor.resources.isEmpty()
@@ -126,7 +133,7 @@ public class PolicyExecutor {
 		executor.shutdown();
 		while (!executor.isTerminated()) {
 		}
-
+		policyDoneSNS(args[0]);
 		ProgramExitUtils.exitSucessfully();
 	}
 
@@ -184,7 +191,31 @@ public class PolicyExecutor {
 		return PacmanSdkConstants.POLICY_STATUS_DISABLED;
 	}
 	
-	
+	private static void policyDoneSNS(String message) {
+		 String region = System.getProperty(Constants.BASE_REGION);
+	        String topicArn = System.getenv(POLICY_DONE_SNS_TOPIC_ARN);
+
+	        // Create an SNS client
+	        SnsClient snsClient = SnsClient.builder()
+	        		.region(Region.of(region))
+	                .credentialsProvider(DefaultCredentialsProvider.create())
+	                .build();
+
+	        // Publish the message to the specified topic
+	        PublishResponse response = snsClient.publish(
+	                PublishRequest.builder()
+	                        .topicArn(topicArn)
+	                        .message(message)
+	                        .messageDeduplicationId(UUID.randomUUID().toString())
+	                        .messageGroupId(UUID.randomUUID().toString())
+	                        .build());
+
+	        // Print the message ID returned by the publish operation
+	        logger.debug("Message published. Message ID: {}",response.messageId());
+
+	        // Close the SNS client
+	        snsClient.close();
+	}
 
     /**
      * Run.
@@ -368,10 +399,10 @@ public class PolicyExecutor {
         }catch(Exception e) {
             logger.error("unable to publish metrics", e);
         }
-        if (!errorWhileProcessing)
-            ProgramExitUtils.exitSucessfully();
-        else
-            ProgramExitUtils.exitWithError();
+		/*
+		 * if (!errorWhileProcessing) ProgramExitUtils.exitSucessfully(); else
+		 * ProgramExitUtils.exitWithError();
+		 */
     }
 
     /**
