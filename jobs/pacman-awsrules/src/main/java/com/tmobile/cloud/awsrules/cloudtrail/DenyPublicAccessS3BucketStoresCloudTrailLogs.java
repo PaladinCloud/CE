@@ -42,7 +42,7 @@ public class DenyPublicAccessS3BucketStoresCloudTrailLogs extends BasePolicy {
 
     @Override
     public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.debug("========DenyPublicAccessS3BucketStoresCloudTrailLogs started=========");
+        logger.debug("Deny Public Access S3 Bucket Stores Cloud Trail Logs started");
         MDC.put(PacmanRuleConstants.EXECUTION_ID, ruleParam.get(PacmanRuleConstants.EXECUTION_ID));
         MDC.put(PacmanRuleConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
@@ -92,7 +92,7 @@ public class DenyPublicAccessS3BucketStoresCloudTrailLogs extends BasePolicy {
                         annotation);
             }
         }
-        logger.debug("========DenyPublicAccessS3BucketStoresCloudTrailLogs ended=========");
+        logger.debug("Deny Public Access S3 Bucket Stores Cloud Trail Logs");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
