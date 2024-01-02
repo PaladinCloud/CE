@@ -3514,7 +3514,6 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to SSH Port 22
 UPDATE cf_PolicyTable SET policyDisplayName = 'Restrict Inbound Traffic on SSH Port 22' WHERE policyId ='NaclPublicAccessPort_version-1_NACLWithPublicAccessForPort22_networkacl';
 
 UPDATE cf_PolicyTable SET policyDisplayName = 'Set Retention Duration to \'Greater than N days\' for SQL Server' WHERE policyId ='Set_Retention_Duration_inNDays';
-UPDATE cf_PolicyTable SET policyDisplayName = 'Rotate Key Management Service Encryption Keys Every N Days' WHERE policyId ='kms_keys_rotation_inNDays';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Set the Rotation Period of IAM Access Key to N Days' WHERE policyId ='IamAccessKeyRotated_version-1_IamAccessKeyRotated_iamuser_inNDays';
 UPDATE cf_PolicyTable SET policyDisplayName = 'EC2 Instance Stopped more than N days' WHERE policyId ='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2_inNDays';
 
@@ -3530,7 +3529,6 @@ UPDATE cf_PolicyTable SET severity='critical' WHERE policyId='Enable_Secure_Boot
 UPDATE cf_PolicyTable SET severity='high' WHERE policyId='Enable_VPC_Flow_Logs_and_IntraNode_Visibility';
 
 UPDATE cf_PolicyTable SET policyDisplayName = 'Set NSG flow log retention period >= N days' WHERE policyId ='Network_Security_Group_Flow_Log_retention_inNDays';
-UPDATE cf_PolicyTable SET policyDisplayName='Restrict Inbound Traffic to RDP Port 3389' WHERE policyId='NaclPublicAccessPort_version-1_NACLWithPublicAccessForPort3389_networkacl';
 
 INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc, resolution, resolutionUrl, targetType, assetGroup, alexaKeyword, policyParams, policyFrequency, policyExecutable, policyRestUrl, policyType, policyArn, severity, category, autoFixAvailable, autoFixEnabled, allowList, waitingTime, maxEmailNotification, templateName, templateColumns, fixType, warningMailSubject, fixMailSubject, warningMessage, fixMessage, violationMessage, elapsedTime, userId, createdDate, modifiedDate, status) VALUES ('aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs','aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs','Enable CloudTrail trails to integrate with CloudWatch Logs','Enable CloudTrail trails to integrate with CloudWatch Logs','Ensure that the CloudWatch Logs service is configured to monitor Amazon CloudTrail trail logs and notifies you when specific activity occurs. This enables you to respond quickly to critical events captured with Amazon CloudTrail and detected by CloudWatch Logs.',' It is recommended that the cloudtrail trals are integrated woth cloudwatch logs.','','cloudtrail','aws','aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs','{"params":[{"key":"policyKey","value":"enable-cloudtrail-cloudwatch-logs-integration","encrypt":false},{"encrypt":false,"value":"critical","key":"severity"},{"encrypt":false,"value":"security","key":"policyCategory"}],"environmentVariables":[],"policyId":"aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs","autofix":false,"alexaKeyword":"aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs","policyRestUrl":"","targetType":"cloudtrail","pac_ds":"aws","assetGroup":"aws","policyUUID":"aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs","policyType":"ManagePolicy"}','0 0 1/1 * ? *','','','ManagePolicy','arn:aws:events:us-east-1:***REMOVED***:rule/aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs','critical','security','false','false',NULL,24,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,24,'','2023-11-21','2023-11-21','ENABLED');
 INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs','policyKey','enable-cloudtrail-cloudwatch-logs-integration','','false','false','false','','');
@@ -3562,3 +3560,8 @@ DELETE IGNORE FROM cf_PolicyTable where policyId='Set_Retention_Days_Greater_Tha
 DELETE IGNORE FROM cf_PolicyTable where policyId='kms_keys_rotation_period_within_90_days';
 
 UPDATE cf_PolicyTable SET policyDisplayName = 'Integrate CloudTrail to CloudWatch' WHERE policyId ='aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs';
+
+UPDATE cf_PolicyTable SET policyDisplayName='Restrict Inbound Traffic on RDP Port 3389' WHERE policyId='NaclPublicAccessPort_version-1_NACLWithPublicAccessForPort3389_networkacl';
+UPDATE cf_PolicyTable SET policyDisplayName='Rotate KMS Key every N days' WHERE policyId ='kms_keys_rotation_inNDays';
+UPDATE cf_PolicyTable SET policyDisplayName='Deny Public Access to Cloud SQL Database' WHERE policyId ='Deny_public_ip_for_sql';
+UPDATE cf_PolicyTable SET policyDisplayName='Deny Public Access to Remotely Exploitable Critical Vulnerability' WHERE policyId ='Ec2PublicAccessPortWithS5Vulnerability_version-1_Ec2PublicAccessPortWithS5Vulnerability_ec2';
