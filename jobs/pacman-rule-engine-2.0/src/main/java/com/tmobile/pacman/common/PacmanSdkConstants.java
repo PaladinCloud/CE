@@ -682,4 +682,5 @@ public interface PacmanSdkConstants {
     String ACCOUNT_ID = "accountid";
     String TAGGING_MANDATORY_TAGS = "tagging.mandatoryTags";
     String POLICY_NAME = "policyName";
+    String AUTO_FIX_ENABLED = "autoFixEnabled";
 }
