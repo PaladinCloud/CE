@@ -260,7 +260,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         if(changes.totalRows){
             this.totalRecordsAfterFilter = this.totalRows;
         }
+        // below lines will cause UI driven (filter or sort) tables to render all the records when new column is added/removed.
         if ((this.doLocalSearch || this.doLocalSort) && this.tableDataLoaded) {
+            // below lines should fix the above described issue
+            this.dataSource.intialCallFlag = true;
+            this.scrollTableToPos(this.initialScrollPosition);
             this.filterAndSort();
         }
 
