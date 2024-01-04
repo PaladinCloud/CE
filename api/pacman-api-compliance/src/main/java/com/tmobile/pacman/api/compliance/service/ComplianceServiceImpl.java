@@ -72,7 +72,6 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     private static final String END_DATE_REQUIRED_MSG = "Exception End Date is mandatory";
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String UTC = "UTC";
-
     /**
      * The Constant PROTOCOL
      */
@@ -80,6 +79,46 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     /**
      * The logger
      */
+    private static final String requestForDistBySeverity = "{\n" +
+            "  \"size\": 0,\n" +
+            "  \"query\": {\n" +
+            "    \"bool\": {\n" +
+            "      \"must\": [\n" +
+            "        {\n" +
+            "          \"term\": {\n" +
+            "            \"issueStatus\": \"open\"\n" +
+            "          }\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"term\": {\n" +
+            "            \"type\": \"issue\"\n" +
+            "          }\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"aggs\": {\n" +
+            "    \"by_severity\": {\n" +
+            "      \"terms\": {\n" +
+            "        \"field\": \"severity.keyword\",\n" +
+            "        \"size\": 10\n" +
+            "      },\n" +
+            "      \"aggs\": {\n" +
+            "        \"assetCount\": {\n" +
+            "          \"cardinality\": {\n" +
+            "            \"field\": \"_resourceid.keyword\"\n" +
+            "          }\n" +
+            "        },\n" +
+            "        \"policyCount\": {\n" +
+            "          \"cardinality\": {\n" +
+            "            \"field\": \"policyId.keyword\"\n" +
+            "          }\n" +
+            "        }\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /** The statistics client */
@@ -248,24 +287,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     public Map<String, Object> getDistributionBySeverity(String assetGroup, String domain) throws ServiceException {
         try {
             Map<String, Object> distribution = new HashMap<>();
-            // get Policies mapped to targetType
-            String targetTypes = repository.getTargetTypeForAG(assetGroup, domain);
-            logger.info("Compliance API >> Fetched target types from repository: {}", targetTypes);
-            List<Object> policies = repository.getPolicyIds(targetTypes);
-            logger.info("Compliance API >> Fetched policies from repository: {}", policies);
-
-            // get Policies mapped to targetType
-            Map<String, Object> assetDistributionBySeverity = repository.getAssetCountBySeverity(assetGroup, policies);
-            logger.info("Compliance API >> Fetched assetDistributionBySeverity from repository: {}", assetDistributionBySeverity);
-
-            Map<String, Object> policyDistributionBySeverity = repository.getPolicyCountBySeverity(assetGroup, policies);
-            logger.info("Compliance API >> Fetched policyDistributionBySeverity from repository: {}", policyDistributionBySeverity);
-
-            Map<String, Object> distributionBySeverity = this.mergeMaps(Arrays.asList(new Map[]{policyDistributionBySeverity, assetDistributionBySeverity}));
-            distribution.put("distributionBySeverity", distributionBySeverity);
+            Map<String, Object> distributionBySeverityMap = repository.getDistributionBySeverity(requestForDistBySeverity, assetGroup);
+            logger.info("Compliance API >> Fetched distributionBySeverity from repository: {}", distributionBySeverityMap);
+            distribution.put("distributionBySeverity", distributionBySeverityMap);
             return distribution;
         } catch (DataException e) {
-            logger.error("Compliance API >> DataException in getting distribution:{}",e);
+            logger.error("Compliance API >> DataException in getting distribution",e);
             throw new ServiceException(e);
         }
     }

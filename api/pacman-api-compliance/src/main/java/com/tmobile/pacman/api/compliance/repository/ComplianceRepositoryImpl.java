@@ -311,11 +311,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     }
 
-    private HashMap<String, Object> getDistributionBySeverity(String query, String assetGroup, String keyName) throws DataException {
-        HashMap<String,Object>result=new HashMap<>();
+
+    public HashMap<String, Object> getDistributionBySeverity(String query, String assetGroup) throws DataException {
+        HashMap<String, Object> requiredMap = new HashMap<>();
         Gson gson = new GsonBuilder().create();
-        String responseDetails = null;
-        StringBuilder requestBody = null;
+        String responseDetails;
+        StringBuilder requestBody;
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/_search");
         requestBody = new StringBuilder(query);
         try {
@@ -323,21 +324,37 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         } catch (Exception e) {
             throw new DataException(e);
         }
-        Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
-        Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
-        Map<String, Object> severity=(Map<String, Object>) aggregations.get("by_severity");
-
-        JsonObject resultJson =  JsonParser.parseString(responseDetails).getAsJsonObject();
-        JsonObject aggsJson = (JsonObject) JsonParser.parseString(resultJson.get(AGGREGATIONS).toString());
-        JsonArray buckets = aggsJson.getAsJsonObject("by_severity").getAsJsonArray(BUCKETS).getAsJsonArray();
-
-        for (JsonElement bucket:buckets) {
-            HashMap<String,String>policyDetails=new HashMap<>();
-            policyDetails.put(keyName,bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
-            policyDetails.put("totalViolations",bucket.getAsJsonObject().get("doc_count").getAsString());
-            result.put(bucket.getAsJsonObject().get("key").getAsString(),policyDetails);
+        Map<String, Object> responseMap = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
+        Optional<List<Map<String, Object>>> distributionListOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String, Object>) obj.get(AGGREGATIONS)).map(obj -> (Map<String, Object>) obj.get("by_severity"))
+                .map(obj -> (List<Map<String, Object>>) obj.get(BUCKETS));
+        if (distributionListOptional.isPresent()) {
+            List<Map<String, Object>> distributionList = distributionListOptional.get();
+            distributionList.stream().forEach(obj -> {
+                Map<String, Object> severityDetailsMap = new HashMap<>();
+                requiredMap.put(obj.get(KEY).toString(), severityDetailsMap);
+                double count = Double.parseDouble(obj.get(DOC_COUNT).toString());
+                severityDetailsMap.put(TOTAL_VIOLATIONS, (int) count);
+                Optional<Double> assetCountOptional = Optional.ofNullable((Map<String, Object>) obj.get(ASSET_COUNT)).map(object -> object.get(VALUE)).map(object -> Double.parseDouble(object.toString()));
+                if (assetCountOptional.isPresent()) {
+                    severityDetailsMap.put(ASSET_COUNT, Math.round(assetCountOptional.get()));
+                }
+                Optional<Double> policyCountOptional = Optional.ofNullable((Map<String, Object>) obj.get(POLICY_COUNT)).map(object -> object.get(VALUE)).map(object -> Double.parseDouble(object.toString()));
+                if (assetCountOptional.isPresent()) {
+                    severityDetailsMap.put(POLICY_COUNT, Math.round(policyCountOptional.get()));
+                }
+            });
         }
-        return result;
+        //Include data for any missing severity.
+        Arrays.asList(CRITICAL, HIGH, MEDIUM, LOW).stream().forEach(str -> {
+            if (!requiredMap.containsKey(str)) {
+                Map<String, Object> severityDetailsMap = new HashMap<>();
+                severityDetailsMap.put(TOTAL_VIOLATIONS, 0);
+                severityDetailsMap.put(POLICY_COUNT, 0);
+                severityDetailsMap.put(ASSET_COUNT, 0);
+                requiredMap.put(str, severityDetailsMap);
+            }
+        });
+        return requiredMap;
     }
 
     private String getOuery(String keyName, List<Object> Policies, String queryAttribute) {
@@ -345,23 +362,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 .collect(Collectors.joining(","));
         String query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}}, {\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\",\"size\":10000},\"aggs\":{\"" + keyName + "\":{\"cardinality\":{\"field\":\"" + queryAttribute + "\"}}}}}}";
         return query;
-    }
-
-    public HashMap<String, Object> getPolicyCountBySeverity(String assetGroup, List<Object> Policies) throws DataException {
-        String keyName = "policyCount";
-        String query = this.getOuery(keyName, Policies, "policyId.keyword");
-        return getDistributionBySeverity(query, assetGroup, keyName);
-    }
-
-    public HashMap<String, Object> getAssetCountBySeverity(String assetGroup, List<Object> Policies) throws DataException {
-        String keyName = "assetCount";
-        String query = this.getOuery(keyName, Policies, "_resourceid.keyword");
-        return getDistributionBySeverity(query, assetGroup, keyName);
-    }
-
-    public HashMap<String, Object> getAverageAge(String assetGroup, List<Object> Policies) throws DataException {
-        String query = this.getOuery(AVERAGE_AGE, Policies, null);
-        return getDistributionBySeverity(query, assetGroup, AVERAGE_AGE);
     }
 
     /*
