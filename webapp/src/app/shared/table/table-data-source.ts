@@ -14,7 +14,7 @@ import {
 export class TableDataSource extends DataSource<any> implements OnDestroy{
   private _subscription!: Subscription;
   private _viewPort!: CdkVirtualScrollViewport;
-  private readonly initialDataSliceStart = 80;
+  private readonly initialDataSliceStart = 100;
   destroy$ = new Subject<void>();
   
   intialCallFlag = true;
@@ -52,7 +52,7 @@ export class TableDataSource extends DataSource<any> implements OnDestroy{
         ? tableData
         : this.filterByRangeStream(tableData);
 
-    filtered.pipe(takeUntil(this.destroy$)).subscribe(data => {
+    filtered.pipe(takeUntil(this.destroy$)).subscribe(data => {      
       this.renderedStream.next(data);
     });
 
