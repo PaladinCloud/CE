@@ -66,6 +66,7 @@ public class Main implements Constants {
             return ErrorManageUtil.formErrorCode(jobName, errorList);
         }
         String ds = params.get("datasource");
+        String tenantId = params.get("tenant_id");
         ESManager.configureIndexAndTypes(ds, errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
         ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
@@ -100,6 +101,7 @@ public class Main implements Constants {
             errorList.add(errorMap);
             LOGGER.error("Error while updating stats", e);
         }
+        SQSManager.getInstance().sendSQSMessage(ds, tenantId);
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
         return status;
