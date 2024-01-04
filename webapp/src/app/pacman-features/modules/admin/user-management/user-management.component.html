@@ -20,6 +20,7 @@
                             [rowClickable]="false" [tableErrorMessage]="tableErrorMessage"
                             [onScrollDataLoader]="onScrollDataLoader"
                             (nextPageCalled)="nextPage($event)"
+                            [hasMoreData]="hasMoreDataToLoad"
                             (selectedFilterType)='changeFilterType($event)'
                             (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
                             [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
