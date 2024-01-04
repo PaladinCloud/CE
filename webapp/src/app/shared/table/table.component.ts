@@ -98,6 +98,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         optionURL: string;
         optionValue: string;
     }[];
+    @Input() hasMoreData: boolean = false;
     private _filteredArray: FilterItem[];
     @Output() actionSelected = new EventEmitter();
     @Output() deleteFilters = new EventEmitter<{
@@ -286,8 +287,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             throttleTime(200),
             takeUntil(this.destroy$)
           ).subscribe(() => {
-            this.selectedRowIndex = -1;            
-            if((this.data.length < this.totalRows) && !this.isDataLoading && this.tableDataLoaded){
+            this.selectedRowIndex = -1;                        
+            if((this.data.length < this.totalRows || this.hasMoreData) && !this.isDataLoading && this.tableDataLoaded){
                 this.isDataLoading = true;
                 this.nextPageCalled.emit(this.offset);
             }
