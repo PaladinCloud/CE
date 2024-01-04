@@ -94,6 +94,7 @@ public class GcpPluginServiceImpl extends AbstractPluginService implements Plugi
 
     @Override
     public final PluginResponse deletePlugin(PluginParameters parameters) {
+        parameters.setPluginDisplayName("GCP");
         return super.deletePlugin(parameters);
     }
 

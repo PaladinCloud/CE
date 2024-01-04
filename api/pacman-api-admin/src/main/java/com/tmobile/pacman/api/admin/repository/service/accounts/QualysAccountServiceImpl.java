@@ -8,6 +8,7 @@ import com.amazonaws.services.secretsmanager.model.*;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -135,6 +136,10 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
             //Delete the entry from DB
             deleteAccountFromDB(accountId);
         }
+        PluginParameters parameters = PluginParameters.builder().pluginName(Constants.QUALYS)
+                .pluginDisplayName(StringUtils.capitalize(Constants.QUALYS)).id(accountId)
+                .createdBy(accountData.getCreatedBy()).build();
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.CREATE);
         return validateResponse;
     }
 
@@ -166,7 +171,8 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
     }
 
     @Override
-    public AccountValidationResponse deleteAccount(String accountId) {
+    public AccountValidationResponse deleteAccount(PluginParameters parameters) {
+        String accountId = parameters.getId();
         LOGGER.info("Inside deleteAccount method of QualysAccountServiceImpl. AccountId: {}",accountId);
         AccountValidationResponse response=new AccountValidationResponse();
 
@@ -187,6 +193,8 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
 
         //delete entry from db
         response=deleteAccountFromDB(accountId);
+        parameters.setPluginDisplayName(StringUtils.capitalize(Constants.QUALYS));
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.DELETE);
         updateConfigProperty(QUALYS_ENABLED,FALSE,JOB_SCHEDULER);
         response.setType(Constants.QUALYS);
         response.setAccountId(accountId);

@@ -77,6 +77,7 @@ public class RedHatPluginServiceImpl extends AbstractPluginService implements Pl
 
     @Override
     public final PluginResponse deletePlugin(PluginParameters parameters) {
+        parameters.setPluginDisplayName("Red Hat");
         return super.deletePlugin(parameters);
     }
 

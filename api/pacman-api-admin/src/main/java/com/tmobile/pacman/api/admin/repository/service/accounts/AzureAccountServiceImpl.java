@@ -19,6 +19,7 @@ import com.microsoft.azure.management.Azure.Authenticated;
 import com.microsoft.azure.management.resources.Subscription;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.commons.Constants;
@@ -160,6 +161,10 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
             for(Subscription subscription : subscriptions){
                 pacmanRdsRepository.update(query,subscription.tenantId(), subscription.subscriptionId(),subscription.displayName());
             }
+            PluginParameters parameters = PluginParameters.builder().pluginName(Constants.AZURE)
+                    .pluginDisplayName(StringUtils.capitalize(Constants.AZURE)).id(tenantId)
+                    .createdBy(accountData.getCreatedBy()).build();
+            invokeNotificationAndActivityLogging(parameters, Constants.Actions.CREATE);
         }catch (ResourceExistsException e){
             LOGGER.error(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
             validateResponse.setValidationStatus(FAILURE);
@@ -203,7 +208,8 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
     }
 
     @Override
-    public AccountValidationResponse deleteAccount(String subscription) {
+    public AccountValidationResponse deleteAccount(PluginParameters parameters) {
+        String subscription = parameters.getId();
         LOGGER.info("Inside deleteAccount method of AzureAccountServiceImpl. Subscription id: {}",subscription);
         AccountValidationResponse response=new AccountValidationResponse();
         try{
@@ -239,12 +245,7 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
                 //delete entry from db
                 response = deleteAccountFromDB(tenantId.get(0));
             }
-            List<AccountDetails> onlineAccounts=findOnlineAccounts(STATUS_CONFIGURED,Constants.AZURE);
-            if(onlineAccounts==null || onlineAccounts.isEmpty()){
-                LOGGER.debug("Last account for Azure is deleted, disabling aws enable flag and asset group");
-                disableAssetGroup(Constants.AZURE);
-                updateConfigProperty(AZURE_ENABLED,FALSE,JOB_SCHEDULER);
-            }
+            disableAssetGroup(Constants.AZURE);
             response.setType(Constants.AZURE);
         } catch (SdkClientException e) {
             LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());
@@ -252,6 +253,8 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
             response.setErrorDetails(e.getMessage());
             response.setMessage("Account deletion failed");
         }
+        parameters.setPluginDisplayName(StringUtils.capitalize(Constants.AZURE));
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.DELETE);
         return response;
     }
 

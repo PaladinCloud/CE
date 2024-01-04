@@ -26,9 +26,7 @@ import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
 import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
 import com.amazonaws.services.secretsmanager.model.ResourceExistsException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
-import com.tmobile.pacman.api.admin.domain.ActivityLogRequest;
 import com.tmobile.pacman.api.admin.domain.ConfigPropertyItem;
 import com.tmobile.pacman.api.admin.domain.ConfigPropertyRequest;
 import com.tmobile.pacman.api.admin.domain.PluginParameters;
@@ -39,6 +37,7 @@ import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.repository.model.ConfigProperty;
 import com.tmobile.pacman.api.admin.repository.service.accounts.AccountsService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +55,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -246,11 +244,14 @@ public abstract class AbstractPluginService {
             List<AccountDetails> onlineAccounts = findOnlineAccounts(STATUS_CONFIGURED, parameters.getPluginName());
             /* Send SQS message to DataCollector SQS to trigger collector, mapper, shipper */
             dataCollectorSQSService.sendSQSMessage(parameters.getPluginName(), TENANT_ID, onlineAccounts);
+            //TODO: Remove plugin services (AbstractPluginService) and use Account service.
+            // disableAssetGroup is a common function hence using contrast
+            AccountsService accountsService = AccountFactory.getService("contrast");
+            accountsService.invokeNotificationAndActivityLogging(parameters, Constants.Actions.CREATE);
             response = new PluginResponse(AdminConstants.SUCCESS, String.format(ACCOUNT_ADDED_SUCCESSFULLY,
                     parameters.getId()), null);
             assetGroupService.createOrUpdatePluginAssetGroup(parameters.getPluginName(),
                     parameters.getPluginDisplayName());
-            invokeActivityLogging(parameters, "create");
         } catch (ResourceExistsException ree) {
             LOGGER.error(String.format(ERROR_MESSAGE_TEMPLATE, CREATING) + ree.getMessage());
             deleteSecret(parameters.getId(), parameters.getPluginName());
@@ -277,40 +278,6 @@ public abstract class AbstractPluginService {
         LOGGER.info("Delete secret response: {} ", deleteResponse);
     }
 
-    protected void checkAndDisableOnlineAccounts(String plugin) {
-        List<AccountDetails> onlineAccounts = findOnlineAccounts(STATUS_CONFIGURED, plugin);
-        if (!Objects.isNull(onlineAccounts) && !onlineAccounts.isEmpty()) {
-            LOGGER.info("There are {} online account(s). " +
-                    "Therefore, no updates to accounts are required.", onlineAccounts.size());
-            return;
-        }
-        LOGGER.info(String.format("%s accounts have been deleted, so disabling the enable flag for %s.", plugin, plugin));
-        PluginResponse configUpdateResponse = updateConfigProperty(String.format(PLUGIN_ENABLED, plugin),
-                Boolean.FALSE.toString());
-        if (configUpdateResponse.getStatus().equals(AdminConstants.FAILURE)) {
-            LOGGER.error(FAILED_TO_UPDATE_CONFIG_MSG, configUpdateResponse.getErrorDetails());
-        }
-    }
-
-    protected void invokeActivityLogging(PluginParameters parameters, String action) {
-        try {
-            ObjectNode objectNode = objectMapper.convertValue(parameters, ObjectNode.class);
-            //removing secret key for audit log
-            objectNode.remove("secretKey");
-            ActivityLogRequest request = new ActivityLogRequest();
-            request.setAction(action);
-            request.setOldState("NA");
-            request.setUser(parameters.getCreatedBy());
-            request.setObject("Plugin");
-            request.setObjectId(parameters.getId());
-            request.setNewState(objectMapper.writeValueAsString(objectNode));
-            elasticSearchRepository.saveActivityLogToES("activitylog", request.getActivityLogDetails());
-        } catch (Exception exception) {
-            LOGGER.error("Could not save account created with id - {} to activity log!!", parameters.getId(),
-                    exception);
-        }
-    }
-
     protected PluginResponse deletePlugin(PluginParameters parameters) {
         LOGGER.info(String.format("Deleting %s account", parameters.getPluginName()));
         PluginResponse response;
@@ -324,8 +291,7 @@ public abstract class AbstractPluginService {
             // disableAssetGroup is a common function hence using contrast
             AccountsService accountsService = AccountFactory.getService("contrast");
             accountsService.disableAssetGroup(parameters.getPluginName());
-            checkAndDisableOnlineAccounts(parameters.getPluginName());
-            invokeActivityLogging(parameters, "delete");
+            accountsService.invokeNotificationAndActivityLogging(parameters, Constants.Actions.DELETE);
         } catch (Exception e) {
             LOGGER.error(String.format(ERROR_MESSAGE_TEMPLATE, DELETING) + e.getMessage());
             response = new PluginResponse(AdminConstants.FAILURE, String.format(ERROR_MESSAGE_TEMPLATE, DELETING),
