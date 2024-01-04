@@ -21,14 +21,6 @@
         url: '{{cloudBaseUrl}}/platform/ad/users',
         method: 'GET'
     },
-    createJira: {
-        url: '{{cloudBaseUrl}}/pacman/create-jira-ticket',
-        method: 'POST'
-    },
-    findJira: {
-        url: '{{cloudBaseUrl}}/pacman/find-jira-ticket',
-        method: 'POST'
-    },
     login: {
         url: '{{baseUrl}}/auth/user/login',
         method: 'POST'
