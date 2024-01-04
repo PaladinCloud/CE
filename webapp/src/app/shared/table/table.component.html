@@ -116,7 +116,7 @@
                 </div>
             </div>
             <!-- removing height of mat table header, which was 40px, from virtual scroll container -->
-            <cdk-virtual-scroll-viewport #viewport [itemSize]="rowHeight" [minBufferPx]="1050" [maxBufferPx]="1500" matSort style="height: calc(100% - 40px);">
+            <cdk-virtual-scroll-viewport #viewport [itemSize]="rowHeight" [minBufferPx]="1050" [maxBufferPx]="1800" matSort style="height: calc(100% - 40px);">
             <mat-table
                 *ngIf="!tableErrorMessage && data?.length > 0"
                 [dataSource]="dataSource"
