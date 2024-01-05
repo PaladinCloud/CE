@@ -156,19 +156,12 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   showOppositeRecommend = false;
   showLoadcompleteRecommend = false;
   showRecommend = true;
-  showJira = true;
   adminAccess = false;
   showRevoke = true;
-  showOppositeJira = false;
   showOppositeRevoke = false;
-  showLoadcompleteJira = false;
   showLoadcompleteRevoke = false;
-  checkJira = false;
   checkRevoke = false;
   userAdmin = false;
-  showJiraData = false;
-  showJiraButton = false;
-  viewJira = false;
   selectedDomain: any = '';
   selectedAssetGroup: string;
   public GLOBAL_CONFIG;
@@ -200,17 +193,12 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   private getExceptionSubscription: Subscription;
   private getRecommendSubscription: Subscription;
   private getActionDataSubscription: Subscription;
-  private getJiraSubscription: Subscription;
   private getRevokeSubscription: Subscription;
-  private findJiraSubscription: Subscription;
   private subscriptionDomain: Subscription;
   private autofixDetails$: Subscription;
 
   emailIcon: any = {
     icon: '../assets/icons/email.svg'
-  };
-  jiraIcon: any = {
-    icon: '../assets/icons/jira.svg'
   };
   downIcon: any = {
     icon: '../assets/png/down.png'
@@ -376,25 +364,17 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     this.showTopSection = false;
     this.issueBlocks = false;
     this.showRecommendantions = false;
-    this.showJira = true;
     this.showRevoke = true;
-    this.showOppositeJira = false;
-    this.showLoadcompleteJira = false;
     this.showLoadcompleteRevoke = false;
-    this.checkJira = false;
     this.checkRevoke = false;
     this.showOppositeRevoke = false;
     this.errorValue = 0;
-    this.showJiraData = false;
-    this.showJiraButton = false;
-    this.viewJira = false;
     this.getData();
   }
 
   getData() {
     this.getRuleDesc();
     this.getUsers();
-    this.findJiraExist();
     this.getAutofixDetails();
   }
 
@@ -857,14 +837,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  showOtherDivJira() {
-    try {
-      this.showJira = !this.showJira;
-      this.showOppositeJira = !this.showOppositeJira;
-    } catch (e) {
-      this.logger.log('error', e);
-    }
-  }
   clearViolationsPreservedData(){
     this.tableStateService.clearPreservedData("Violations");
   }
@@ -911,86 +883,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       } catch (e) {
         this.logger.log('error', e);
       }
-    }
-  }
-
-  createJira() {
-    try {
-      let Data = this.dataStore.getUserDetailsValue();
-      Data = Data.getEmail();
-      const Url = environment.createJira.url;
-      const Method = environment.createJira.method;
-      const payload = {
-        email: Data,
-        title: 'JIRA ticket created with issueId ' + this.assetID,
-        description: [
-          {
-            heading: 'Issue Details',
-            details: {},
-            highlight: 'true'
-          },
-          {
-            heading: 'Entity Details',
-            details: {}
-          },
-          {
-            heading: 'Rule Parameters',
-            details: {}
-          }
-        ],
-        issue_id: this.assetID
-      };
-
-      this.keysValue = Object.keys(this.issueBlocks);
-      let count = 0;
-      for (let i = 0; i < this.keysValue.length; i++) {
-        if (i >= 0 && i < 6) {
-          count = 0;
-        } else if (i >= 6 && i < 12) {
-          count = 1;
-        } else {
-          count = 2;
-        }
-        if (this.keysValue[i] !== 'nonDisplayableAttributes') {
-          if (this.keysValue[i] === 'description') {
-            payload.description[0].details[
-              this.keysValue[i]
-            ] = this.issueBlocks[this.keysValue[i]];
-          } else if (this.keysValue[i] === 'RuleCategory') {
-            payload.description[2].details[
-              this.keysValue[i]
-            ] = this.issueBlocks[this.keysValue[i]];
-          } else {
-            payload.description[count].details[
-              this.keysValue[i]
-            ] = this.issueBlocks[this.keysValue[i]];
-          }
-        }
-      }
-
-      this.getJiraSubscription = this.commonResponseService
-        .getData(Url, Method, payload, {})
-        .subscribe(
-          response => {
-            this.issueKey = response.data.issueKey;
-            if (response.data.exists === true) {
-              this.viewJira = true;
-            }
-            setTimeout(() => {
-              return this.hideJira();
-            }, 4500);
-          },
-          error => {
-            this.viewJira = false;
-            const self = this;
-            setTimeout(() => {
-              self.checkJira = true;
-              self.showLoadcompleteJira = true;
-            }, 4500);
-          }
-        );
-    } catch (e) {
-      this.logger.log('error', e);
     }
   }
 
@@ -1387,50 +1279,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  showJiraTicket(): any {
-    try {
-      this.viewJira = true;
-      setTimeout(() => {
-        return this.hideJira();
-      }, 10);
-    } catch (e) {
-      this.logger.log('error', e);
-    }
-  }
-
-  findJiraExist(): any {
-    try {
-      const url = environment.findJira.url;
-      const method = environment.findJira.method;
-      let issueValue;
-      this.routeSubscription = this.activatedRoute.params.subscribe(params => {
-        issueValue = params['issueId'];
-      });
-
-      const payload = {
-        issue_id: issueValue
-      };
-
-      this.findJiraSubscription = this.commonResponseService
-        .getData(url, method, payload, {})
-        .subscribe(
-          response => {
-            this.showJiraButton = true;
-            if (response.data.exists === false) {
-              this.showJiraData = true;
-            } else {
-              this.showJiraData = false;
-            }
-          },
-          error => {
-            this.showJiraButton = false;
-          }
-        );
-    } catch (e) {
-      this.logger.log('error', e);
-    }
-  }
-
   getUsers(): any {
     try {
       const userUrl = environment.users.url;
@@ -1470,16 +1318,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       } else {
         this.filteredList = [];
       }
-    } catch (e) {
-      this.logger.log('error', e);
-    }
-  }
-
-  hideJira() {
-    try {
-      this.checkJira = false;
-      this.showLoadcompleteJira = true;
-      this.showJiraData = false;
     } catch (e) {
       this.logger.log('error', e);
     }
@@ -1567,14 +1405,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       if (this.getActionDataSubscription) {
         this.getActionDataSubscription.unsubscribe();
       }
-      if (this.getJiraSubscription) {
-        this.getJiraSubscription.unsubscribe();
-      }
       if (this.getRevokeSubscription) {
         this.getRevokeSubscription.unsubscribe();
-      }
-      if (this.findJiraSubscription) {
-        this.findJiraSubscription.unsubscribe();
       }
       if (this.autofixDetails$) {
         this.autofixDetails$.unsubscribe();

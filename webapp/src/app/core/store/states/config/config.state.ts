@@ -38,7 +38,6 @@ export interface ConfigStateModel {
             };
         };
         pacmanIssue: {
-            CREATE_JIRA_TICKET_FOR_PACMAN_ISSUE: boolean;
             emailPacManIssue: {
                 ISSUE_MAIL_TEMPLATE_URL: string;
                 ISSUE_EMAIL_FROM_ID: string;

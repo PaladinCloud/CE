@@ -444,10 +444,6 @@ app-issue-blocks {
   width: 100%;
 }
 
-:host ::ng-deep .btn-wrapper-additional-actions.jira app-button-icon button {
-  padding: 1.5em;
-}
-
 :host
   ::ng-deep
   .btn-wrapper-additional-actions
