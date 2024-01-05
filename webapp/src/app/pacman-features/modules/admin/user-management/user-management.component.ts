@@ -178,7 +178,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         }
       }catch(error){
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log("error", error);
       }
     })
   }
@@ -311,7 +310,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
            }
          }
          catch(error){
-           this.logger.log("jsError", error);
+           this.errorHandling.handleJavascriptError(error);
          }
      })
   }
@@ -340,7 +339,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
     }
   }
 
@@ -492,45 +490,43 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.getFilterArray().then(() => {
         this.updateComponent();
       }).catch(e => {
-        this.logger.log("jsError: ", e);
+        this.errorHandling.handleJavascriptError(e);
         this.updateComponent();
       });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
     }
   }
 
-  changeFilterType(value) {
+  changeFilterType (value) {
     return new Promise((resolve, reject) => {
-    try {
-      this.currentFilterType = _.find(this.filterTypeOptions, {
-        optionName: value,
-      });
-      this.storeState();
-      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
-        if(value.toLowerCase()=="status"){
-        this.filterTagLabels[value] = ["Active", "Inactive"];
-        this.filterTagOptions[value] = [
-          {
-            id: "active",
-            name: "Active"
-          },
-          {
-            id: "inactive",
-            name: "Inactive"
+      try {
+        this.currentFilterType = _.find(this.filterTypeOptions, {
+          optionName: value,
+        });
+        this.storeState();
+        if (!this.filterTagOptions[value] || !this.filterTagLabels[value]) {
+          if (value.toLowerCase() == "status") {
+            this.filterTagLabels[value] = ["Active", "Inactive"];
+            this.filterTagOptions[value] = [
+              {
+                id: "active",
+                name: "Active"
+              },
+              {
+                id: "inactive",
+                name: "Inactive"
+              }
+            ]
+            resolve(this.filterTagLabels[value]);
+            return;
           }
-        ]
-        resolve(this.filterTagLabels[value]);
-        return;
+        }
+      } catch (error) {
+        reject(false);
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
       }
-      }
-    } catch (error) {
-      reject(false);
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-    }); 
+    });
   }
 
   changeFilterTags(event) {    
@@ -565,7 +561,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.updateComponent();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
     }
   }
 
@@ -647,7 +642,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       return processedData;
     } catch (error) {
       this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
     }
   }
 
@@ -684,7 +678,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
           }
         }
         catch(error){
-          this.logger.log("jsError", error);
+          this.errorHandling.handleJavascriptError(error);
         }
     })
   }
@@ -715,7 +709,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         }
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
       }
     });
   }
@@ -740,7 +733,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
           }
           catch (error) {
           this.errorMessage = this.errorHandling.handleJavascriptError(error);
-          this.logger.log('error', error);
         }
       }
       )
@@ -868,7 +860,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         this.getUserList(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
     }
   }
 }
