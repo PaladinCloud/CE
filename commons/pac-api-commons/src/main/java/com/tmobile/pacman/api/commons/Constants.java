@@ -464,6 +464,7 @@ public interface Constants {
     String RELATIONS = "_relations";
 
     String AUTOFIX_PLANNED = "isAutofixPlanned";
+    String TENABLE = "tenable";
 
     enum NotificationTypes {
         @SerializedName("exemption")
@@ -473,7 +474,9 @@ public interface Constants {
         @SerializedName("autofix")
         AUTOFIX("autofix"),
         @SerializedName("policy")
-        POLICY("policy");
+        POLICY("policy"),
+        @SerializedName("plugin")
+        PLUGIN("plugin");
 
         String value;
 

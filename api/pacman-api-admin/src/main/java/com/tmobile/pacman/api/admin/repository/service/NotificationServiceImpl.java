@@ -1,8 +1,11 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionDetailsRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
+import com.tmobile.pacman.api.admin.dto.PluginNotificationDto;
 import com.tmobile.pacman.api.admin.dto.PolicyExemptionNotificationDto;
 import com.tmobile.pacman.api.admin.dto.StickyExNotificationRequest;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupException;
@@ -22,12 +25,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.tmobile.pacman.api.admin.common.AdminConstants.*;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.CREATE_EXCEPTION_EVENT_NAME;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.CREATE_STICKY_EXCEPTION_SUBJECT;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DELETE_EXCEPTION_EVENT_NAME;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DELETE_STICKY_EXCEPTION_SUBJECT;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DISABLED_CAPS;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.ENABLED_CAPS;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.POLICY_ACTION_EVENT_NAME;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.POLICY_ACTION_SUBJECT;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.UPDATE_EXCEPTION_EVENT_NAME;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.UPDATE_STICKY_EXCEPTION_SUBJECT;
 import static com.tmobile.pacman.api.admin.util.AdminUtils.addDays;
-import static com.tmobile.pacman.api.commons.Constants.*;
+import static com.tmobile.pacman.api.commons.Constants.Actions;
+import static com.tmobile.pacman.api.commons.Constants.NotificationTypes;
+import static com.tmobile.pacman.api.commons.Constants.OPEN;
 
 @Component
 public class NotificationServiceImpl implements NotificationService {
@@ -35,6 +53,8 @@ public class NotificationServiceImpl implements NotificationService {
     private static final String DATE_FORMAT = "MMM dd, YYYY";
     private static final String POLICY_ACTION_ERROR_MSG = "Error triggering lambda function url, notification " +
             "request not sent for policy action. Error - {}";
+    private static final String CREATE_PLUGIN_TEMPLATE = "%s Plugin with ID %s was created by %s";;
+    private static final String DELETE_PLUGIN_TEMPLATE = "%s Plugin with ID %s was deleted by %s";;
 
     @Value("${notification.lambda.function.url}")
     private String notificationUrl;
@@ -45,6 +65,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     PacmanRdsRepository pacmanRdsRepository;
+    @Autowired
+    private ObjectMapper mapper;
 
     private static final Logger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
@@ -148,6 +170,39 @@ public class NotificationServiceImpl implements NotificationService {
             invokeNotificationUrl(notificationDetailsStr);
         } catch (Exception ex) {
             log.error(POLICY_ACTION_ERROR_MSG, ex.getMessage());
+        }
+    }
+
+    @Async
+    @Override
+    public void triggerPluginNotification(PluginParameters parameters, Actions action) {
+        List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
+        PluginNotificationDto request = new PluginNotificationDto();
+        try {
+            String pluginName = parameters.getPluginDisplayName();
+            String pluginId = parameters.getId();
+            String doneBy = parameters.getCreatedBy();
+            String subject = action.equals(Actions.CREATE) ? "New plugin created" : "Plugin deleted";
+            String summary = action.equals(Actions.CREATE) ? String.format(CREATE_PLUGIN_TEMPLATE,
+                    StringUtils.capitalize(pluginName), pluginId, doneBy) :
+                    String.format(DELETE_PLUGIN_TEMPLATE, StringUtils.capitalize(pluginName), pluginId, doneBy);
+            NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
+            notificationBaseRequest.setEventCategory(NotificationTypes.PLUGIN);
+            notificationBaseRequest.setEventCategoryName(NotificationTypes.PLUGIN.getValue());
+            notificationBaseRequest.setEventName(summary);
+            notificationBaseRequest.setEventDescription(summary);
+            notificationBaseRequest.setSubject(subject);
+            request.setSummary(summary);
+            request.setPluginName(pluginName);
+            request.setAction(StringUtils.capitalize(action.toString().toLowerCase()));
+            request.setDoneBy(doneBy);
+            notificationBaseRequest.setPayload(request);
+            notificationBaseRequestList.add(notificationBaseRequest);
+            String notificationDetailsStr = mapper.writeValueAsString(notificationBaseRequestList);
+            invokeNotificationUrl(notificationDetailsStr);
+            log.info("Successfully triggered notification for Plugin {}", parameters);
+        } catch (Exception ex) {
+            log.error("Error in triggering notification for Plugin : {}", ex.getMessage(), ex);
         }
     }
 

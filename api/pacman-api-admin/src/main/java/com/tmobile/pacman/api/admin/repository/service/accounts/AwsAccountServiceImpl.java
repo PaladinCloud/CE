@@ -8,6 +8,7 @@ import com.amazonaws.services.identitymanagement.model.*;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
 import com.tmobile.pacman.api.commons.Constants;
@@ -134,11 +135,16 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
             //Delete the entry from DB
             deleteAccountFromDB(accountData.getAccountId());
         }
+        PluginParameters parameters = PluginParameters.builder().pluginName(Constants.AWS)
+                .pluginDisplayName(Constants.AWS.toUpperCase()).id(accountData.getAccountId())
+                .createdBy(accountData.getCreatedBy()).build();
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.CREATE);
         return response;
     }
 
     @Override
-    public AccountValidationResponse deleteAccount(String accountId) {
+    public AccountValidationResponse deleteAccount(PluginParameters parameters) {
+        String accountId = parameters.getId();
         AccountValidationResponse response = deleteAccountFromDB(accountId);
         response.setType(Constants.AWS);
         if(response.getValidationStatus().equalsIgnoreCase(FAILURE)){
@@ -160,6 +166,8 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
             response.setValidationStatus(FAILURE);
             response.setMessage("Failed to add account.");
         }
+        parameters.setPluginDisplayName(Constants.AWS.toUpperCase());
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.DELETE);
         return response;
     }
 

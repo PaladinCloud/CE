@@ -90,15 +90,19 @@ public class AccountsController {
     @ApiOperation(httpMethod = "DELETE", value = "API to delete account", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @DeleteMapping(produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> deleteAccount(@ApiParam(value = "provide account number", required = true) @RequestParam("accountId") String accountId,
-                                                @ApiParam(value = "provide provider type", required = true) @RequestParam("provider") String type){
-		try {
+                                                @ApiParam(value = "provide provider type", required = true) @RequestParam("provider") String type,
+                                                @AuthenticationPrincipal Principal user) {
+        try {
             AccountsService accountsService = AccountFactory.getService(type);
-            AccountValidationResponse response = accountsService.deleteAccount(accountId);
+            String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
+            PluginParameters parameters = PluginParameters.builder().pluginName(type).createdBy(createdBy)
+                    .id(accountId).build();
+            AccountValidationResponse response = accountsService.deleteAccount(parameters);
             return ResponseUtils.buildSucessResponse(response);
-		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
-		}
+        } catch (Exception exception) {
+            log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+            return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+        }
     }
 
     @ApiOperation(httpMethod = "POST", value = "API to create account", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -106,25 +110,16 @@ public class AccountsController {
     public ResponseEntity<Object> createAccount(@AuthenticationPrincipal Principal user,
                                                 @RequestBody final CreateAccountRequest accountDetails) {
         AccountsService accountsService = null;
+        String createdBy = null;
         try {
-            String createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
+            createdBy = amazonCognitoConnector.getCognitoUserDetails(user.getName()).getEmail();
             accountDetails.setCreatedBy(createdBy);
             String pluginType = accountDetails.getPlatform();
             accountsService = AccountFactory.getService(pluginType);
             AccountValidationResponse accountValidationResponse = accountsService.addAccount(accountDetails);
-            if (accountValidationResponse.getValidationStatus().equalsIgnoreCase("success")) {
-                ObjectMapper oMapper = new ObjectMapper();
-                Gson gson = new Gson();
-                Map<String, Object> responseMap = oMapper.convertValue(accountValidationResponse, Map.class);
-                responseMap.keySet().retainAll(Arrays.asList("accountId", "accountName", "type"));
-                String acctDetails = gson.toJson(responseMap);
-            }
             return ResponseUtils.buildSucessResponse(accountValidationResponse);
         } catch (Exception exception) {
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-            if (accountsService != null) {
-                accountsService.deleteAccount(accountDetails.getAccountId());
-            }
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
         }
     }

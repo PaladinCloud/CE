@@ -11,6 +11,7 @@ import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
 import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import java.io.IOException;
@@ -122,6 +123,10 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
         String accountId = UUID.randomUUID().toString();
         createAccountInDb(accountId,"Aqua-Connector", Constants.AQUA,validateResponse.getCreatedBy());
         updateConfigProperty(AQUA_ENABLED,TRUE,JOB_SCHEDULER);
+        PluginParameters parameters = PluginParameters.builder().pluginName(Constants.AQUA)
+                .pluginDisplayName(StringUtils.capitalize(Constants.AQUA)).id(accountId)
+                .createdBy(accountData.getCreatedBy()).build();
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.CREATE);
         validateResponse.setValidationStatus(SUCCESS);
         validateResponse.setAccountId(accountId);
         validateResponse.setAccountName("Aqua-Connector");
@@ -168,7 +173,8 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
     }
 
     @Override
-    public AccountValidationResponse deleteAccount(String accountId) {
+    public AccountValidationResponse deleteAccount(PluginParameters parameters) {
+        String accountId = parameters.getId();
         LOGGER.info("Inside deleteAccount method of AquaAccountServiceImpl. AccountId: {}",accountId);
         AccountValidationResponse response=new AccountValidationResponse();
 
@@ -188,6 +194,8 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
 
         //delete entry from db
         deleteAccountFromDB(accountId);
+        parameters.setPluginDisplayName(StringUtils.capitalize(Constants.AQUA));
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.DELETE);
         updateConfigProperty(AQUA_ENABLED,FALSE,JOB_SCHEDULER);
         response.setType(Constants.AQUA);
         response.setAccountId(accountId);

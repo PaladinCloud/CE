@@ -206,11 +206,6 @@ public class PolicyController {
 	public ResponseEntity<Object> enableDisablePolicy(@AuthenticationPrincipal OAuth2Authentication user,
 			@ApiParam(value = "provide valid policy details", required = true) @RequestBody(required = true)EnableDisablePolicy enableDisablePolicy) {
 		try {
-			Optional<String> accessTokenOptional = Optional.ofNullable(user).map(obj -> (OAuth2AuthenticationDetails) obj.getDetails())
-					.map(obj -> obj.getTokenValue());
-			if(accessTokenOptional.isPresent()){
-				ThreadLocalUtil.accessToken.set(accessTokenOptional.get());
-			}
 			if (enableDisablePolicy == null) {
 				return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED),
 						AdminConstants.MISSING_PARAMETERS);

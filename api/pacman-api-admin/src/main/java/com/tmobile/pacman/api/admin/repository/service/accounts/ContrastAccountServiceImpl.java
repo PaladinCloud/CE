@@ -30,6 +30,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
+import com.tmobile.pacman.api.commons.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -162,6 +164,10 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
         updateConfigProperty(CONTRAST_ENABLED, TRUE, JOB_SCHEDULER);
         sendSQSMessage(CONTRAST, accountData.getContrastOrganizationId(), tenantId);
         assetGroupService.createOrUpdatePluginAssetGroup(CONTRAST, "Contrast");
+        PluginParameters parameters = PluginParameters.builder().pluginName(CONTRAST)
+                .pluginDisplayName(StringUtils.capitalize(CONTRAST)).id(accountData.getContrastOrganizationId())
+                .createdBy(accountData.getCreatedBy()).build();
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.CREATE);
         validationResponse = new AccountValidationResponse();
         validationResponse.setValidationStatus(SUCCESS);
         validationResponse.setAccountId(accountData.getContrastOrganizationId());
@@ -197,7 +203,8 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
     }
 
     @Override
-    public AccountValidationResponse deleteAccount(String organizationId) {
+    public AccountValidationResponse deleteAccount(PluginParameters parameters) {
+        String organizationId = parameters.getId();
         LOGGER.info("Deleting contrast with organizationId: {}", organizationId);
         String tenantId = System.getenv(AdminConstants.TENANT_ID);
         DeleteSecretResult deleteResponse = deleteSecret(organizationId, CONTRAST, tenantId);
@@ -205,7 +212,8 @@ public class ContrastAccountServiceImpl extends AbstractAccountServiceImpl imple
         AccountValidationResponse response = deleteAccountFromDB(organizationId);
         if (response.getValidationStatus().equalsIgnoreCase(SUCCESS)) {
             disableAssetGroup(CONTRAST);
-            updateConfigProperty(CONTRAST_ENABLED, FALSE, JOB_SCHEDULER);
+            parameters.setPluginDisplayName(StringUtils.capitalize(CONTRAST));
+            invokeNotificationAndActivityLogging(parameters, Constants.Actions.DELETE);
         }
         response.setType(CONTRAST);
         response.setAccountId(organizationId);

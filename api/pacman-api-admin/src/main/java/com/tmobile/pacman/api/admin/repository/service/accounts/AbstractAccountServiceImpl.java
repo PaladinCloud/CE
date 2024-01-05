@@ -8,18 +8,24 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
 import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
 import com.amazonaws.services.secretsmanager.model.ResourceExistsException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.AccountList;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
+import com.tmobile.pacman.api.admin.domain.ActivityLogRequest;
 import com.tmobile.pacman.api.admin.domain.ConfigPropertyItem;
 import com.tmobile.pacman.api.admin.domain.ConfigPropertyRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.AzureAccountRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.repository.service.*;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
+import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +70,12 @@ public abstract class AbstractAccountServiceImpl implements AccountsService {
     protected AssetGroupService assetGroupService;
     @Autowired
     private UserPreferencesService userPreferencesService;
+    @Autowired
+    protected ObjectMapper objectMapper;
+    @Autowired
+    private ElasticSearchRepository elasticSearchRepository;
+    @Autowired
+    private NotificationService notificationService;
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
     public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
@@ -327,11 +339,35 @@ public abstract class AbstractAccountServiceImpl implements AccountsService {
             }
             boolean deleteAssetGroupStatus = assetGroupService.deleteAssetGroupByGroupName(pluginName);
             logger.info("AssetGroup deletion status is {} for {}", deleteAssetGroupStatus, pluginName);
+            updateConfigProperty(pluginName + ".enabled", FALSE, JOB_SCHEDULER);
             Integer totalUsers = userPreferencesService.updateDefaultAssetGroup(pluginName);
             logger.info("Total users have been updated with the default asset group. The new count is: {}", totalUsers);
             assetGroupService.removePluginTypeFromAllSources(pluginName);
         } catch (Exception e) {
             logger.error("Unable to disable asset groups for {}", pluginName, e);
+        }
+    }
+
+    public void invokeNotificationAndActivityLogging(PluginParameters parameters, Constants.Actions action) {
+        try {
+            notificationService.triggerPluginNotification(parameters, action);
+        } catch (Exception exception) {
+            logger.error("Could not trigger notification for id {}", parameters.getId(), exception);
+        }
+        try {
+            ObjectNode objectNode = objectMapper.convertValue(parameters, ObjectNode.class);
+            //removing secret key for audit log
+            objectNode.remove("secretKey");
+            ActivityLogRequest request = new ActivityLogRequest();
+            request.setAction(String.valueOf(action));
+            request.setOldState("NA");
+            request.setUser(parameters.getCreatedBy());
+            request.setObject("Plugin");
+            request.setObjectId(parameters.getId());
+            request.setNewState(objectMapper.writeValueAsString(objectNode));
+            elasticSearchRepository.saveActivityLogToES("activitylog", request.getActivityLogDetails());
+        } catch (Exception exception) {
+            logger.error("Could not save account created with id {} to activity log!!", parameters.getId(), exception);
         }
     }
 
