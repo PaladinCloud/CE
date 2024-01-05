@@ -264,8 +264,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         // below lines will cause UI driven (filter or sort) tables to render all the records when new column is added/removed.
         if ((this.doLocalSearch || this.doLocalSort) && this.tableDataLoaded) {
             // below lines should fix the above described issue
-            this.dataSource.intialCallFlag = true;
-            this.scrollTableToPos(this.initialScrollPosition);
+            if (!this.tableScrollTop) {
+                this.dataSource.intialCallFlag = true;
+            }
             this.filterAndSort();
         }
 
@@ -276,7 +277,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     ngAfterViewInit(): void {
         this.resetTableWidth();
-        if(this.tableScrollTop){
+        if (this.tableScrollTop) {            
             this.scrollTableToPos(this.tableScrollTop);        
         }
 
@@ -623,6 +624,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         if (this.doNotSort || sort.active=='Actions') {
             return;
         }
+        this.scrollTableToPos(this.initialScrollPosition); // scroll to top when sort is applied
         this.headerColName = sort.active;
         this.direction = sort.direction;
         this.headerColNameSelected.emit({
