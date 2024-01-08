@@ -481,7 +481,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       for (const [key, value] of Object.entries(SeverityOrderMap)) {        
         const count = distributionBySeverity[key].totalViolations;
         dataValue.push(count);
-        totalCount += count;
+        totalCount += +count;
       }
       this.fetchedViolations = true;
       this.policyDataError = '';
