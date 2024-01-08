@@ -71,7 +71,7 @@
         <div class="table-wrapper" #viewportContainer>
             <!-- table header -->
             <div class="table-header-wrapper">
-                <div class="mat-header-row flex" [style.width.px]="screenWidth">
+                <div class="mat-header-row flex">
                     <div 
                         class="mat-header-cell mat-sort-header custom-mat-header pointer"
                         (click)="announceSortChange({active:column, direction:headerColName==column&&direction=='asc'?'desc':'asc'})"
@@ -301,7 +301,6 @@
                 <!-- offset is used here to make header stick to top -->
                 <!-- <mat-header-row class="hide" [style.width.px]="screenWidth" *matHeaderRowDef="whiteListColumns; sticky: true" [style.top.px]="offset"></mat-header-row> -->
                 <mat-row
-                [style.width.px]="screenWidth"
                     [class.row-hover]="rowClickable"
                     [class.row-selected]="idColumn && row[idColumn].valueText?row[idColumn].valueText === selectedRowId:i === selectedRowIndex"
                     [class.md]="rowSize === 'MD'"

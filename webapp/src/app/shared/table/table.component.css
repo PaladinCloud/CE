@@ -168,6 +168,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    /* min-width: 100px; */
     border-bottom: 1px solid var(--border-100);
 }
 
@@ -199,11 +200,11 @@
 }
 
 .mat-header-row {
-    height: 40px;
-    min-height: 40px;
+    height: 38px;
+    min-height: 38px;
+    width: calc(100% - 7px); /* 7px is being used for scroll bar */
     font: var(--text-body-2);
     color: var(--text-low-emphasis);
-    border: 1px solid var(--border-100);
 }
 
 .filter-chips-wrapper {
@@ -369,10 +370,11 @@
     transform: translateY(10px);
   }
   
-  .table-header-wrapper{
-    background-color: #f8f8f8;
+  .table-header-wrapper {
+      background-color: #f8f8f8;
+      border: 1px solid var(--border-100);
   }
 
-  .mat-sort-header-container{
-    font-family: 'mark-pro';
+  .mat-sort-header-container {
+      font-family: 'mark-pro';
   }
