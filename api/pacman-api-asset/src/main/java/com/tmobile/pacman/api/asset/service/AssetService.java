@@ -531,7 +531,7 @@ public interface AssetService {
      */
 	public List<String> getProvidersForAssetGroup(String assetGroup) throws DataException;
 
-    public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to);
+    public List<Map<String, Object>> getAssetCountTrend(String assetGroup, List<String> type, String from, String to);
 
     public Set<String> getMandatoryTags(String filterName);
 
