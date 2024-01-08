@@ -187,7 +187,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.mainDataSource = new TableDataSource(this.ngZone);
     }
 
-    scrollTableToPos(scrollPos){
+    scrollTableToPos (scrollPos) {
         this.viewport.scrollToOffset(scrollPos);
     }
 
@@ -247,12 +247,16 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             this.displayedColumns.sort();
             this.resetTableWidth();
         }
+        // data property changes only when pageNumber also becomes 0. i.e., when sorting or data loading initially or filtering or landing L1->L0
+        // when landing from L1, we will recieve tableScrollTop property with some value which is being used in afterViewInit cycle.
         if (changes.data) {
-            this.scrollTableToPos(this.initialScrollPosition);
             this.mainDataSource.matTableDataSource.data = this.data;
             this.dataSource.matTableDataSource.data = this.data;
-            if(!this.tableScrollTop){
+            // if tableScrollTop value is 0, it means that it is initial loading of data (bucketNumber or pageNumber = 0)
+            if (!this.tableScrollTop) {
+                // initialCallFlag is used to slice data for virtual scroll for screens where data loaded from API is greater than 100.
                 this.dataSource.intialCallFlag = true;
+                this.scrollTableToPos(this.initialScrollPosition);
             }
         }
         if(changes.tableScrollTop && this.tableScrollTop){
@@ -277,7 +281,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     ngAfterViewInit(): void {
         this.resetTableWidth();
-        if (this.tableScrollTop) {            
+        if (this.tableScrollTop) {
             this.scrollTableToPos(this.tableScrollTop);        
         }
 
