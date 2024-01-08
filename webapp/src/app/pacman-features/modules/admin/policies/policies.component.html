@@ -17,7 +17,7 @@
         <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
     </div>
     <div class="table-wrapper">
-        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="handleRowClick($event)"
+        <app-table (rowSelectEventEmitter)="handleRowClick($event)"
             (actionSelected)="goToDetails($event)" [data]="tableData" [columnWidths]="columnWidths"
             (headerColNameSelected)="handleHeaderColNameSelection($event)" [headerColName]="headerColName"
             [direction]="direction" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"

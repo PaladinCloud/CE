@@ -160,8 +160,8 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared
    totalPages: number;
    pageNumber: number = 0;
  
-   searchTxt: String = "";
-   selectedRowId;
+   searchTxt: string = "";
+   selectedRowId: string;
    tableData: any = [];
    tableDataLoaded: boolean = false;
    filters: any = [];
@@ -170,7 +170,7 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared
    errorValue: number = 0;
    showGenericMessage: boolean = false;
    dataTableDesc: String = "";
-   urlID: String = "";
+   urlID: string = "";
    public labels: any;
    FullQueryParams: any;
    queryParamsWithoutFilter: any;
