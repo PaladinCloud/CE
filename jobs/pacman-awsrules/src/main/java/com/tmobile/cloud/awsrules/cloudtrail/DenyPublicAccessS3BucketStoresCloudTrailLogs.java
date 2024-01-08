@@ -124,10 +124,9 @@ public class DenyPublicAccessS3BucketStoresCloudTrailLogs extends BasePolicy {
                             JsonObject statementObject = bucketStatement.getAsJsonObject();
 
                             String effect = statementObject.get(PacmanRuleConstants.EFFECT).getAsString();
-                            JsonObject principal = statementObject.getAsJsonObject(PacmanRuleConstants.PRINCIPAL);
-                            String service = principal.get(PacmanRuleConstants.SERVICE).getAsString();
+                            String principal = statementObject.get(PacmanRuleConstants.PRINCIPAL).toString();
 
-                            if (effect.equalsIgnoreCase("Allow") && service.equalsIgnoreCase("*")) {
+                            if (effect.equalsIgnoreCase("Allow") && principal.equalsIgnoreCase("\"*\"")) {
                                 validationResult = true;
                                 break;
                             }
