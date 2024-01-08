@@ -26,7 +26,6 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { MultilineChartService } from 'src/app/pacman-features/services/multilinechart.service';
 import { OverallComplianceService } from 'src/app/pacman-features/services/overall-compliance.service';
-import { PacmanIssuesService } from 'src/app/pacman-features/services/pacman-issues.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
@@ -44,6 +43,7 @@ import {
   DashboardContainerIndex,
 } from '../services/dashboard-arrangement.service';
 import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
+import { SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
 
 @Component({
   selector: 'app-compliance-dashboard',
@@ -108,8 +108,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     styling: { cursor: string };
   };
   policyDataError = '';
-  pacmanIssues: any;
-  pacmanCategories: any[];
   showdata: boolean;
   error: boolean;
   loaded: boolean;
@@ -269,7 +267,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     private multilineChartService: MultilineChartService,
     private numbersPipe: DecimalPipe,
     private overallComplianceService: OverallComplianceService,
-    private pacmanIssuesService: PacmanIssuesService,
     private refactorFieldsService: RefactorFieldsService,
     private router: Router,
     private routerUtilityService: RouterUtilityService,
@@ -456,6 +453,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         .getData(distributionBySeverityUrl, distributionBySeverityMethod, {}, queryParams)
         .subscribe((response) => {
           const data = response.distribution.distributionBySeverity;
+          this.processDonutChartData(data);
           for (let i = 0; i < this.violationCards.length; i++) {
             const violationName = this.violationCards[i].name;
             if (data[violationName]) {
@@ -476,83 +474,35 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     } catch (error) { }
   }
 
-  getPacmanIssues() {
-    if (this.dataSubscriber) {
-      this.dataSubscriber.unsubscribe();
-    }
-    const queryParams = {
-      ag: this.selectedAssetGroup,
-      domain: this.selectedDomain,
-    };
-    const pacmanIssuesUrl = environment.pacmanIssues.url;
-    const pacmanIssuesMethod = environment.pacmanIssues.method;
+  processDonutChartData (distributionBySeverity) {
     try {
-      this.dataSubscriber = this.pacmanIssuesService
-        .getData(queryParams, pacmanIssuesUrl, pacmanIssuesMethod)
-        .subscribe(
-          (response) => {
-            try {
-              if (response.err) {
-                throw response;
-              }
-              this.pacmanIssues = response;
-              this.pacmanCategories = [];
-              for (let i = 0; i < this.pacmanIssues.category.length; i++) {
-                const obj = {
-                  displayName:
-                    this.refactorFieldsService.getDisplayNameForAKey(
-                      Object.keys(
-                        this.pacmanIssues.category[i],
-                      )[0].toLowerCase(),
-                    ) || Object.keys(this.pacmanIssues.category[i])[0],
-                  key: Object.keys(this.pacmanIssues.category[i])[0],
-                  value: this.pacmanIssues.category[i][
-                    Object.keys(this.pacmanIssues.category[i])[0]
-                  ],
-                };
-                this.pacmanCategories.push(obj);
-              }
-              const dataValue = [];
-              let totalCount = 0;
-              for (let i = 0; i < this.pacmanIssues.severity.length; i++) {
-                const count =
-                  this.pacmanIssues.severity[i][
-                  Object.keys(this.pacmanIssues.severity[i])[0]
-                  ];
-                totalCount += count;
-                dataValue.push(count);
-              }
-              this.fetchedViolations = true;
-              this.policyDataError = '';
-              if (dataValue.length > 0) {
-                this.policyData = {
-                  color: ['#D14938', '#F58F6F', '#F5B66F', '#506EA7'],
-                  data: dataValue,
-                  legend: ['Critical', 'High', 'Medium', 'Low'],
-                  legendTextcolor: '#000',
-                  totalCount: totalCount,
-                  link: true,
-                  styling: {
-                    cursor: 'pointer',
-                  },
-                };
-              } else {
-                this.policyDataError = 'noDataAvailable';
-              }
-              this.loaded = true;
-              this.showdata = true;
-              this.error = false;
-            } catch (e) {
-              this.policyDataError = 'apiResponseError';
-              this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
-              this.getErrorValues();
-            }
+      const dataValue = [];
+      let totalCount = 0;
+      for (const [key, value] of Object.entries(SeverityOrderMap)) {        
+        const count = distributionBySeverity[key].totalViolations;
+        dataValue.push(count);
+        totalCount += count;
+      }
+      this.fetchedViolations = true;
+      this.policyDataError = '';
+      if (dataValue.length > 0) {
+        this.policyData = {
+          color: ["#D14938", "#F58F6F", "#F5B66F", "#506EA7"],
+          data: dataValue,
+          legend: ["Critical", "High", "Medium", "Low"],
+          legendTextcolor: "#000",
+          totalCount: totalCount,
+          link: true,
+          styling: {
+            cursor: "pointer",
           },
-          (error) => {
-            this.tableErrorMessage = error;
-            this.getErrorValues();
-          },
-        );
+        };
+      } else {
+        this.policyDataError = 'noDataAvailable'
+      }
+      this.loaded = true;
+      this.showdata = true;
+      this.error = false;
     } catch (error) {
       this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
       this.getErrorValues();
@@ -907,7 +857,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       });
     }
     this.getDistributionBySeverity();
-    this.getPacmanIssues();
     this.getComplianceData();
   }
 
