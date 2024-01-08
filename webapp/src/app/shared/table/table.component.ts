@@ -45,7 +45,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Input() columnsSortFunctionMap;
     @Input() filterFunctionMap;
     @Input() dateCategoryList;
-    screenWidth: number;
     @Input() set columnWidths(value: { [key: string]: number }) {
         this._columnWidths = value;
         this.updateDenominator();
@@ -178,27 +177,13 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     constructor(
         private ngZone: NgZone,
-        private windowExpansionService: WindowExpansionService,
         ) {
-        this.windowExpansionService.getExpansionStatus().pipe(takeUntil(this.destroy$)).subscribe(()=>{
-            this.resetTableWidth();
-        })
         this.dataSource = new TableDataSource(this.ngZone);
         this.mainDataSource = new TableDataSource(this.ngZone);
     }
 
     scrollTableToPos (scrollPos) {
         this.viewport.scrollToOffset(scrollPos);
-    }
-
-    resetTableWidth(){
-        setTimeout(() => {
-            this.screenWidth = parseInt(window.getComputedStyle(this.customTable.nativeElement, null).getPropertyValue('width'), 10) - 10;
-        }, 200);
-    }
-
-    @HostListener("window:resize", ["$event"]) onSizeChanges() {
-        this.resetTableWidth();
     }
 
     ngOnInit(): void {
@@ -211,7 +196,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             this.whiteListColumnsChanged();
         });
         this.dataSource.attach(this.viewport);
-        this.resetTableWidth();
 
       this.viewport.renderedRangeStream.pipe(takeUntil(this.destroy$)).subscribe(range => {
         this.offset = range.start * -this.rowHeight;
@@ -245,7 +229,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                 this.displayedColumns = Object.keys(this.columnWidths);
             }
             this.displayedColumns.sort();
-            this.resetTableWidth();
         }
         // data property changes only when pageNumber also becomes 0. i.e., when sorting or data loading initially or filtering or landing L1->L0
         // when landing from L1, we will recieve tableScrollTop property with some value which is being used in afterViewInit cycle.
@@ -280,7 +263,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     ngAfterViewInit(): void {
-        this.resetTableWidth();
         if (this.tableScrollTop) {
             this.scrollTableToPos(this.tableScrollTop);        
         }

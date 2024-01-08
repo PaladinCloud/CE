@@ -2294,3 +2294,7 @@ app-table{
   height: 100%;
   width: 100%;
 }
+
+.cdk-virtual-scroll-content-wrapper{
+  width: 100%;
+}
