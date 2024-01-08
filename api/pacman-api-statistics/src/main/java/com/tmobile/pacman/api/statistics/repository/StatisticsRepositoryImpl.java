@@ -273,8 +273,14 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             Gson googleJson = new Gson();
            return googleJson.fromJson(outerBuckets, ArrayList.class); 
         } catch (Exception e) {
-        	LOGGER.error("Error while processing the fre auto fix",e.getMessage());
-        	return new ArrayList<>();
+            /* Index fre-auto-fix-tran-log may not be created until the first autofix is created. In that case, we shall set log level to
+            info and not error because error log will cause data alert to be created. */
+            if (e.getMessage().toLowerCase().endsWith("because not found")) {
+                LOGGER.info("Error while processing the fre auto fix", e.getMessage());
+            } else {
+                LOGGER.error("Error while processing the fre auto fix", e.getMessage());
+            }
+            return new ArrayList<>();
         }
     }
 

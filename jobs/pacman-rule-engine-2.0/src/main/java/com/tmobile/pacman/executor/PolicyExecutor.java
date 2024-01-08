@@ -347,8 +347,8 @@ public class PolicyExecutor {
                 policyEngineStats.putAll(processPolicyEvaluations(resources, evaluations, policyParam,
                         exemptedResourcesForPolicy, individuallyExemptedIssues));
                 try {
-                    if (policyParam.containsKey(PacmanSdkConstants.POLICY_PARAM_AUTO_FIX_KEY_NAME) && Boolean
-                            .parseBoolean(policyParam.get(PacmanSdkConstants.POLICY_PARAM_AUTO_FIX_KEY_NAME))) {
+                    if (policyParam.containsKey(PacmanSdkConstants.AUTO_FIX_ENABLED) && Boolean
+                            .parseBoolean(policyParam.get(PacmanSdkConstants.AUTO_FIX_ENABLED))) {
                         policyEngineStats.putAll(autoFixManager.performAutoFixs(policyParam, exemptedResourcesForPolicy,
                                 individuallyExemptedIssues));
                     }
