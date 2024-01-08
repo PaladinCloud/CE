@@ -69,7 +69,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Policy': 2, 'Violation ID': 1, 'Asset ID': 1, 'Asset Type': 0.5, 'Account Name': 0.7, 'Region': 0.7, 'Severity': 0.5, 'Category':0.5, 'Status': 0.5};
+  columnWidths = { 'Policy': 2, 'Violation ID': 1, 'Asset ID': 1, 'Asset Type': 0.5, 'Source': 0.4, 'Account Name': 0.7, 'Region': 0.7, 'Severity': 0.5, 'Category':0.5, 'Status': 0.5};
   centeredColumns = {
     Policy: false,
     'Violation ID': false,
@@ -77,7 +77,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     Severity: true,
     Category: true,
   };
-  columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID", "Asset Type":"resourcetype", "AccountName": "Account Name"};
+  columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID", "Asset Type":"resourcetype", "AccountName": "Account Name", "source": "Source"};
   fieldName: string = "severity.keyword";
   fieldType: string = "number";
   selectedOrder: string = "desc";
