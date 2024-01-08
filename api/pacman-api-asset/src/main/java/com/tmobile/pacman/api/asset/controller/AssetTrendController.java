@@ -22,14 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.elasticsearch.common.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.tmobile.pacman.api.asset.service.AssetService;
 import com.tmobile.pacman.api.commons.Constants;
@@ -44,10 +42,12 @@ import io.swagger.annotations.ApiOperation;
 @PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 @CrossOrigin
 public class AssetTrendController {
-
     @Autowired
     AssetService assetService;
 
+    private static String FROM_DATE = "fromDate";
+    private static String TO_DATE = "toDate";
+    private static String INVALID = "invalid";
     /**
      * Fetches the asset trends(daily min/max) over the period of last 1 month
      * for the given asset group. From and to can be passed to fetch the asset
@@ -91,14 +91,26 @@ public class AssetTrendController {
     }
 
     @ApiOperation(value = "Trends of daily total assets count over the period between from and to date", response = Iterable.class)
-    @GetMapping(path = "/v1/trend/assetcount")
-    public ResponseEntity<Object> getAssetCount(@RequestParam(name = "ag", required = true) String assetGroup,
-                                                      @RequestParam(name = "type", required = false) String type,
-                                                      @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
-                                                      @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate) {
+    @PostMapping(path = "/v1/trend/assetcount")
+    public ResponseEntity<Object> getAssetCount(@RequestBody Map<String, Object> requestPayload) {
         try {
-            Date from = fromDate;
-            Date to = toDate;
+            String strDateRegEx = "\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|[3][01])";
+            String from = requestPayload.get(FROM_DATE) != null ? (requestPayload.get(FROM_DATE).toString().matches(strDateRegEx) ? (requestPayload.get(FROM_DATE).toString()) : INVALID) : null;
+            String to = requestPayload.get(TO_DATE) != null ? (requestPayload.get(TO_DATE).toString().matches(strDateRegEx) ? (requestPayload.get(TO_DATE).toString()) : INVALID) : null;
+            if (INVALID.equalsIgnoreCase(from) || INVALID.equalsIgnoreCase(to)) {
+                return ResponseUtils.buildFailureResponse(new Exception("fromDate or toDate is invalid or format is invalid. Expected format - yyyy-MM-dd"));
+            }
+            String assetGroup = requestPayload.get("ag") != null ? requestPayload.get("ag").toString() : null;
+            if (Strings.isNullOrEmpty(assetGroup)) {
+                return ResponseUtils.buildFailureResponse(new Exception("Attribute 'assetGroup' not provided."));
+            }
+            List<String> type = null;
+            if (requestPayload.get("type") != null) {
+                if (!(requestPayload.get("type") instanceof List)) {
+                    return ResponseUtils.buildFailureResponse(new Exception("Attribute 'type' should be a List."));
+                }
+                type = (List<String>) requestPayload.get("type");
+            }
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("ag", assetGroup);
             List<Map<String, Object>> trendList = assetService.getAssetCountTrend(assetGroup, type, from, to);

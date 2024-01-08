@@ -1199,7 +1199,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to) {
+    public List<Map<String, Object>> getAssetCountTrend(String assetGroup, List<String> type, String from, String to) {
         return repository.getAssetCountTrend(assetGroup, type, from, to);
     }
 
