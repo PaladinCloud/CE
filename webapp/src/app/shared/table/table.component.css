@@ -202,7 +202,7 @@
 .mat-header-row {
     height: 38px;
     min-height: 38px;
-    width: calc(100% - 7px); /* 7px is being used for scroll bar */
+    width: calc(100% - 5px); /* 7px is considered scroll bar width but when there is no scroll it should be 0px */
     font: var(--text-body-2);
     color: var(--text-low-emphasis);
 }

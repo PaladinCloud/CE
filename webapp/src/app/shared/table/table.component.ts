@@ -129,7 +129,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     @ViewChild('select') select: MatSelect;
     @ViewChild('customTable', { static: true }) customTable: ElementRef<HTMLDivElement>;
-    @ViewChild('viewportContainer', { static: true }) private viewportContainer!: ElementRef;
 
     mainDataSource: TableDataSource;
     dataSource: TableDataSource;
