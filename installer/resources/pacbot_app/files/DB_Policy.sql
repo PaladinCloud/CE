@@ -3565,3 +3565,4 @@ UPDATE cf_PolicyTable SET policyDisplayName='Restrict Inbound Traffic on RDP Por
 UPDATE cf_PolicyTable SET policyDisplayName='Rotate KMS Key every N days' WHERE policyId ='kms_keys_rotation_inNDays';
 UPDATE cf_PolicyTable SET policyDisplayName='Deny Public Access to Cloud SQL Database' WHERE policyId ='Deny_public_ip_for_sql';
 UPDATE cf_PolicyTable SET policyDisplayName='Deny Public Access to Remotely Exploitable Critical Vulnerability' WHERE policyId ='Ec2PublicAccessPortWithS5Vulnerability_version-1_Ec2PublicAccessPortWithS5Vulnerability_ec2';
+UPDATE cf_PolicyTable SET policyDesc='Granting overly permissive or insecure permissions to your CloudTrail trail buckets may allow malicious users to gain access to your logging data, significantly heightening the risk of unauthorized access, potentially increasing it exponentially' WHERE policyId ='aws_s3_bucket_used_to_store_cloudtrail_logs_publicly_accessible';
