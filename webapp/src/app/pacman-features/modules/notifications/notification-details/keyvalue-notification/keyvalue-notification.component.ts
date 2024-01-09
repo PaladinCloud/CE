@@ -59,7 +59,11 @@ export class KeyvalueNotificationComponent implements OnInit {
         return typeof item.value === 'object' || Array.isArray(item.value);
     }
 
-    isStringDate(str: string){
+    isStringDate (str: string) {
+        if (!isNaN(Number(str))) {
+            return false;
+        }
+
         // Attempt to create a Date object from the input string
         const date = new Date(str);
 
