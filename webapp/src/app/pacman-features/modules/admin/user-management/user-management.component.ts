@@ -54,7 +54,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
 
   headerColName;
   direction;
-  errorMessage: string;
   tableErrorMessage: string = '';
   tableData = [];
   emailID: string;
@@ -177,7 +176,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
           this.processRoles(userRoles);
         }
       }catch(error){
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.errorHandling.handleJavascriptError(error);
       }
     })
   }
@@ -338,7 +337,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         this.filterText = this.utils.processFilterObj(this.FullQueryParams);
       }
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.errorHandling.handleJavascriptError(error);
     }
   }
 
@@ -494,7 +493,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         this.updateComponent();
       });
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.errorHandling.handleJavascriptError(error);
     }
   }
 
@@ -524,7 +523,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         }
       } catch (error) {
         reject(false);
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.errorHandling.handleJavascriptError(error);
       }
     });
   }
@@ -560,7 +559,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.getUpdatedUrl();
       this.updateComponent();
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.errorHandling.handleJavascriptError(error);
     }
   }
 
@@ -708,7 +707,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
           this.userActivation(username,roles);
         }
       } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.errorHandling.handleJavascriptError(error);
       }
     });
   }
@@ -732,7 +731,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             }
           }
           catch (error) {
-          this.errorMessage = this.errorHandling.handleJavascriptError(error);
+          this.errorHandling.handleJavascriptError(error);
         }
       }
       )
@@ -859,7 +858,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         this.showLoader = true;
         this.getUserList(true);
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.errorHandling.handleJavascriptError(error);
     }
   }
 }
