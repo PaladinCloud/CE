@@ -245,26 +245,31 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   updateSortFieldName() {
-    this.selectedOrder = this.direction;
-    const sortColName = this.headerColName.toLowerCase();
-    this.sortOrder = null;
-    if(this.selectedAssetGroup?.toLowerCase()=="azure" && sortColName==="asset id"){
-      this.fieldName = "assetIdDisplayName.keyword";
-      this.fieldType = "string";
-    } else if (sortColName === "asset type") {
-      this.fieldName = "_entitytype.keyword";
-      this.fieldType = "string";
-    } else{
-      let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
-      if(!apiColName){
-        apiColName =  find(this.filterTypeOptions, {
-          optionName: this.headerColName,
-        })["optionValue"];
-      }else{
-        apiColName = apiColName+".keyword";
+    try {
+      this.selectedOrder = this.direction;
+      const sortColName = this.headerColName.toLowerCase();
+      this.sortOrder = null;
+      if (this.selectedAssetGroup?.toLowerCase() == "azure" && sortColName === "asset id") {
+        this.fieldName = "assetIdDisplayName.keyword";
+        this.fieldType = "string";
+      } else if (sortColName === "asset type") {
+        this.fieldName = "_entitytype.keyword";
+        this.fieldType = "string";
+      } else {
+        let apiColName: any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col] == this.headerColName);
+        if (!apiColName) {
+          apiColName = find(this.filterTypeOptions, {
+            optionName: this.headerColName,
+          })["optionValue"];
+        } else {
+          apiColName = apiColName + ".keyword";
+        }
+        this.fieldType = "string";
+        this.fieldName = apiColName;
       }
-      this.fieldType = "string";
-      this.fieldName = apiColName;
+    } catch (e) {
+      this.errorHandling.handleJavascriptError(e);
+      this.headerColName = '';
     }
   }
 
