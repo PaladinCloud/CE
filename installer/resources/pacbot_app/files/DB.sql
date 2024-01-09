@@ -3266,3 +3266,5 @@ END //
 DELIMITER ;
 
 CALL update_asset_group_dates_to_use_timestamp();
+
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'Source','pac_ds.keyword','/compliance/v1/filters/attribute');
