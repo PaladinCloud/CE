@@ -264,7 +264,7 @@
        filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
          const normalizedKey = key.replace(".keyword", "");
          if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey))) {
-           result[key] = filtersToBePassed[key]; // TODO: test filters in all the components that are using this method
+           result[key] = filtersToBePassed[key];
          }
          return result;
        }, {});
@@ -277,8 +277,6 @@
        }, {});
    
        let payload: IFilterPayload = {
-         type,
-         searchText,
          attributeName: ignoreAttributeName ? undefined : currentFilterType["optionValue"]?.replace(".keyword", ""),
          //filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
          filter: filtersToBePassed
