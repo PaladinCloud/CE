@@ -1,47 +1,11 @@
-name: Jobs-Jars
+name: Jobs-prod-Jars
 
 on:
-  push:
-    branches:
-      -  dev
-      -  release-v*.*.*
-    paths:
-      - 'jobs/pom.xml'
-      - 'jobs/azure-discovery/**'       
-      - 'jobs/pacman-awsrules/**'
-      - 'jobs/pacman-qualys-enricher/**' 
-      - 'jobs/recommendation-enricher/**' 
-      - 'jobs/gcp-discovery/**' 
-      - 'jobs/pacman-cloud-discovery/**'       
-      - 'jobs/pacman-rule-engine-2.0/**' 
-      - 'jobs/job-scheduler/**'          
-      - 'jobs/pacman-cloud-notifications/**'   
-      - 'jobs/pacman-tenable-enricher/**' 
-      - 'jobs/pacman-aqua-enricher/**' 
-      - 'jobs/pacman-data-shipper/**' 
-      - 'commons/**'
-  pull_request:
-    branches:
-      -  dev
-      -  release-v*.*.*
-    paths:
-      - 'jobs/pom.xml'
-      - 'jobs/azure-discovery/**'       
-      - 'jobs/pacman-awsrules/**'           
-      - 'jobs/pacman-qualys-enricher/**' 
-      - 'jobs/recommendation-enricher/**' 
-      - 'jobs/gcp-discovery/**' 
-      - 'jobs/pacman-cloud-discovery/**'       
-      - 'jobs/pacman-rule-engine-2.0/**' 
-      - 'jobs/job-scheduler/**'          
-      - 'jobs/pacman-cloud-notifications/**'   
-      - 'jobs/pacman-tenable-enricher/**' 
-      - 'jobs/pacman-aqua-enricher/**' 
-      - 'jobs/pacman-data-shipper/**' 
-      - 'commons/**'
-  create:
-    branches:
-      - release-v*.*.*
+  workflow_dispatch:
+    inputs:
+      target-branch:
+        description: 'Branch to run the workflow on'
+        required: true
 
 permissions:
   id-token: write
@@ -51,6 +15,7 @@ permissions:
 jobs:
   filter:
     name: filters
+    if : contains('["rnithinpaladin","santhosh-challa","plyubich"]', github.actor)
     runs-on: ubuntu-latest
     outputs:
       pom: ${{ steps.filter.outputs.pom }}
@@ -105,7 +70,6 @@ jobs:
   extract_version:
     name : extract_version
     runs-on: ubuntu-latest
-    if: github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v')     
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -129,7 +93,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.azure-discovery == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -158,35 +121,10 @@ jobs:
           name: jobs-azure-artifact
           path: ./dist/jobs
 
-  Push-azure-Dev:
-    name: Push azure-discovery to s3 dev
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - AzureBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-azure-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-azure-QA:
-    name: Push azure-discovery to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+  Push-azure-PROD:
+    name: Push azure-discovery to s3 PROD
+    runs-on: ubuntu-latest 
+    environment: 'SaaSprod'
     needs:
       - AzureBuild
       - extract_version
@@ -194,10 +132,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for Qa account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -206,14 +144,13 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/PROD/jobs
 
   AwsrulesBuild:
     name: Awsrules-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-awsrules == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -242,35 +179,10 @@ jobs:
           name: jobs-awsrules-artifact
           path: ./dist/jobs
 
-  Push-awsrules-Dev:
-    name: Push awsrules to s3 dev
+  Push-awsrules-PROD:
+    name: Push awsrules to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - AwsrulesBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-awsrules-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-awsrules-QA:
-    name: Push awsrules to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - AwsrulesBuild
       - extract_version
@@ -278,10 +190,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -290,14 +202,13 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/PROD/jobs
 
   QualysBuild:
     name: qualys-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-qualys-enricher == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -326,35 +237,10 @@ jobs:
           name: jobs-qualys-artifact
           path: ./dist/jobs
 
-  Push-Qualys-Dev:
-    name: Push qualys to s3 dev
+  Push-Qualys-PROD:
+    name: Push qualys to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - QualysBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-qualys-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-Qualys-QA:
-    name: Push qualys to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - QualysBuild
       - extract_version
@@ -362,10 +248,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -374,14 +260,13 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/PROD/jobs
 
   RecommendationBuild:
     name: Recommendation-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.recommendation-enricher == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -410,35 +295,10 @@ jobs:
           name: jobs-recommendation-artifact
           path: ./dist/jobs
 
-  Push-recommendation-Dev:
-    name: Push recommendation-enricher to s3 dev
+  Push-recommendation-PROD:
+    name: Push recommendation-enricher to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - RecommendationBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-recommendation-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-recommendation-QA:
-    name: Push recommendation-enricher to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - RecommendationBuild
       - extract_version
@@ -446,10 +306,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -458,19 +318,17 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/PROD/jobs
 
   GCPBuild:
     name: GCP-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.gcp-discovery == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: running update
         run: sudo apt update
       - name: Setup Maven Action
@@ -495,35 +353,10 @@ jobs:
           name: jobs-gcp-artifact
           path: ./dist/jobs
 
-  Push-gcp-Dev:
-    name: Push gcp-discovery to s3 dev
+  Push-gcp-PROD:
+    name: Push gcp-discovery to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - GCPBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-gcp-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-gcp-QA:
-    name: Push gcp-discovery to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - GCPBuild
       - extract_version
@@ -531,10 +364,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -543,14 +376,13 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
 
   Cloud-Discovery-Build:
     name: Cloud-Discovery-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-cloud-discovery == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -580,35 +412,10 @@ jobs:
           name: jobs-cloud-artifact
           path: ./dist/jobs
 
-  Push-Cloud-Discovery-Dev:
-    name: Push Cloud-discovery to s3 dev
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - Cloud-Discovery-Build
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-cloud-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-Cloud-Discovery-QA:
-    name: Push Cloud-discovery to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+  Push-Cloud-Discovery-PROD:
+    name: Push Cloud-discovery to s3 PROD
+    runs-on: ubuntu-latest 
+    environment: 'SaaSprod'
     needs:
       - Cloud-Discovery-Build
       - extract_version
@@ -616,10 +423,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -628,7 +435,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
 
 
   RuleEngineBuild:
@@ -636,12 +443,10 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-rule-engine == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: running update
         run: sudo apt update
       - name: Setup Maven Action
@@ -670,35 +475,10 @@ jobs:
           name: jobs-RE2.0-artifact
           path: ./dist/jobs
 
-  Push-RuleEngineBuild-Dev:
-    name: Push Rule-engine-2.0 to s3 dev
+  Push-RuleEngineBuild-PROD:
+    name: Push Rule-engine-2.0 to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - RuleEngineBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-RE2.0-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-RuleEngineBuild-QA:
-    name: Push Rule-engine-2.0 to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - RuleEngineBuild
       - extract_version
@@ -706,10 +486,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -718,7 +498,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
 
 
   SchedulerBuild:
@@ -726,7 +506,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.job-scheduler == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -755,35 +534,10 @@ jobs:
           name: jobs-scheduler-artifact
           path: ./dist/jobs
 
-  Push-SchedulerBuild-Dev:
-    name: Push SchedulerBuild to s3 dev
+  Push-SchedulerBuild-PROD:
+    name: Push SchedulerBuild to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - SchedulerBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-scheduler-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/api
-
-  Push-SchedulerBuild-QA:
-    name: Push SchedulerBuild to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - SchedulerBuild
       - extract_version
@@ -791,10 +545,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -803,14 +557,13 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/api
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/api
 
   NotificationBuild:
     name: Notification-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true' || needs.filters.output.pacman-cloud-notifications == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -840,35 +593,10 @@ jobs:
           name: jobs-notification-artifact
           path: ./dist/jobs
 
-  Push-Notification-Dev:
-    name: Push Notification to s3 dev
+  Push-Notification-PROD:
+    name: Push Notification to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - NotificationBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-notification-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-Notification-QA:
-    name: Push Notification to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - NotificationBuild
       - extract_version
@@ -876,10 +604,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -888,14 +616,13 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
 
   TenableBuild:
     name: Tenable-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-tenable-enricher == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -924,35 +651,10 @@ jobs:
           name: jobs-Tenable-artifact
           path: ./dist/jobs
 
-  Push-Tenable-Dev:
-    name: Push Tenable to s3 dev
+  Push-Tenable-PROD:
+    name: Push Tenable to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - TenableBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-Tenable-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-Tenable-QA:
-    name: Push Tenable to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - TenableBuild
       - extract_version
@@ -960,10 +662,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -972,7 +674,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
 
 
   AquaBuild:
@@ -980,7 +682,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-aqua-enricher == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1009,35 +710,10 @@ jobs:
           name: jobs-aqua-artifact
           path: ./dist/jobs
 
-  Push-Aqua-Dev:
-    name: Push Aqua to s3 dev
+  Push-Aqua-PROD:
+    name: Push Aqua to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - AquaBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-aqua-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-Aqua-QA:
-    name: Push Aqua to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - AquaBuild
       - extract_version
@@ -1045,10 +721,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
@@ -1057,14 +733,14 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+
 
   ShipperBuild:
     name: Shipper-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.pacman-data-shipper == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1093,35 +769,10 @@ jobs:
           name: jobs-shipper-artifact
           path: ./dist/jobs
 
-  Push-Shipper-Dev:
-    name: Push Shipper to s3 dev
+  Push-Shipper-PROD:
+    name: Push Shipper to s3 PROD
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - ShipperBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-shipper-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-Shipper-QA:
-    name: Push Shipper to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
+    environment: 'SaaSprod'
     needs:
       - ShipperBuild
       - extract_version
@@ -1129,16 +780,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
         with:
-          name: jobs-shipper-artifact
+          name: jobs-aqua-artifact
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs

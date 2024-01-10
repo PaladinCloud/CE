@@ -54,5 +54,4 @@
         <module>job-scheduler</module>
 		<module>pacman-tenable-enricher</module>
 	</modules>
-
 </project>
