@@ -22,9 +22,6 @@ import java.util.Map;
 @Component
 public class AzureCredentialProvider {
 
-    /**
-     * The Constant logger.
-     */
     static final Logger logger = LoggerFactory.getLogger(AzureCredentialProvider.class);
 
     @Autowired
@@ -40,7 +37,6 @@ public class AzureCredentialProvider {
     String region = System.getProperty("base.region");
     String roleName = System.getProperty("s3.role");
     String credentialPrefix = System.getProperty("secret.manager.path");
-
 
     public AzureCredentialProvider() {
         azureClients = new HashMap<>();
@@ -66,21 +62,19 @@ public class AzureCredentialProvider {
 
     public Azure authenticate(String tenant, String subscription) {
         return Azure.authenticate(getCredentials(tenant)).withSubscription(subscription);
-
     }
 
     public Authenticated authenticate(String tenant) {
         return Azure.authenticate(getCredentials(tenant));
     }
 
-
     private ApplicationTokenCredentials getCredentials(String tenant) {
         BasicSessionCredentials credentials = credentialProvider.getCredentials(baseAccount, region, roleName);
         Map<String, String> creds = decodeCredetials(tenant, credentials, region).get(tenant);
         String clientId = creds.get("clientId");
         String secret = creds.get("secretId");
-        return new ApplicationTokenCredentials(clientId,
-                tenant, secret, AzureEnvironment.AZURE);
+
+        return new ApplicationTokenCredentials(clientId, tenant, secret, AzureEnvironment.AZURE);
     }
 
     public String getAuthToken(String tenant) throws Exception {
@@ -89,7 +83,6 @@ public class AzureCredentialProvider {
         Map<String, String> creds = decodeCredetials(tenant, credentials, region).get(tenant);
         String clientId = creds.get("clientId");
         String secret = creds.get("secretId");
-
 
         Map<String, String> params = new HashMap<>();
         params.put("client_id", clientId);
@@ -104,7 +97,7 @@ public class AzureCredentialProvider {
             }.getType());
             return respMap.get("access_token");
         } catch (Exception e) {
-            logger.error("Error getting mangement API token from Azure", e);
+            logger.error("Error getting management API token from Azure", e);
             throw e;
         }
     }

@@ -34,7 +34,7 @@ public class AWSCredentialProvider {
     /**
      * The dev mode.
      */
-    private static final boolean DEV_MODE = System.getProperty("PIC_DEV_MODE") != null;
+    private final boolean DEV_MODE = System.getProperty("PIC_DEV_MODE") != null;
 
 
     /**
@@ -57,7 +57,6 @@ public class AWSCredentialProvider {
                     assumeResult.getCredentials().getSessionToken());
 
         } else {
-            System.out.println("inside");
             AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.defaultClient();
             AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro");
             AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
