@@ -30,12 +30,8 @@ import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
 /**
  * The Class InventoryCollectionJob.
  */
-@PacmanJob(methodToexecute = "execute", jobName = "AWS Data Collector", desc = "Job to fetch aws info and load to Redshift", priority = 5)
+@PacmanJob(methodToexecute = "execute", jobName = "AWS Data Collector", desc = "Job to fetch Azure info and load to s3", priority = 5)
 public class AzureDiscoveryJob {
-
-    /**
-     * The log.
-     */
     private static final Logger log = LoggerFactory.getLogger(AzureDiscoveryJob.class);
 
     /**
@@ -49,6 +45,7 @@ public class AzureDiscoveryJob {
             String[] keyValue = obj.split(":");
             params.put(keyValue[0], keyValue[1]);
         });
+
 		execute(params);
     }
 
