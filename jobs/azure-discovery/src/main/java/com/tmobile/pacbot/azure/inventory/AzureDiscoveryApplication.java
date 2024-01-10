@@ -12,9 +12,13 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan({"com.tmobile.pacbot.azure.inventory","com.tmobile.pacman.commons.database","com.tmobile.pacman.commons.secrets"})
 public class AzureDiscoveryApplication {
 
-	public static Map<String, Object> collect(String[] args) {
+	private AzureDiscoveryApplication() {
+	}
+
+	public static Map<String, Object> collect() {
 		ApplicationContext context = new AnnotationConfigApplicationContext(AzureDiscoveryApplication.class);
 		AzureFetchOrchestrator orchestrator = context.getBean(AzureFetchOrchestrator.class);
+
 		return orchestrator.orchestrate();
 	}
 }

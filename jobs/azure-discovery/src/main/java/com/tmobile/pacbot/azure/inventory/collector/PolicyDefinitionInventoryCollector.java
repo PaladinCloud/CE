@@ -15,7 +15,7 @@ import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
-import static com.tmobile.pacbot.azure.inventory.InventoryConstants.REGION_GLOBAL;
+import static com.tmobile.pacbot.azure.inventory.util.InventoryConstants.REGION_GLOBAL;
 
 @Component
 public class PolicyDefinitionInventoryCollector {
