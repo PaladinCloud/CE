@@ -1,24 +1,19 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import com.google.gson.*;
+import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
+import com.tmobile.pacbot.azure.inventory.vo.WorkflowVH;
+import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
-import com.tmobile.pacbot.azure.inventory.vo.WorkflowVH;
-import com.tmobile.pacman.commons.utils.CommonUtils;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class WorkflowInventoryCollector {

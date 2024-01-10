@@ -1,29 +1,24 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.microsoft.azure.PagedList;
+import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.monitor.ActivityLogAlert;
+import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.ActivityLogVH;
+import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
+import com.tmobile.pacman.commons.utils.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.microsoft.azure.PagedList;
-import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.vo.ActivityLogAlertRuleVH;
-import com.tmobile.pacbot.azure.inventory.vo.ActivityLogVH;
-import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
-import com.tmobile.pacman.commons.utils.CommonUtils;
-import com.microsoft.azure.management.Azure;
-import com.microsoft.azure.management.monitor.ActivityLogAlert;
-
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.slf4j.Logger;
 
 @Component
 public final class ActivityLogsCollector {
