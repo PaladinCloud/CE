@@ -1,23 +1,14 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
-import java.net.URLEncoder;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.microsoft.azure.SubResource;
-import com.microsoft.azure.management.compute.*;
-import com.tmobile.pacbot.azure.inventory.vo.VirtualMachineScaleSetVH;
-import com.tmobile.pacman.commons.utils.CommonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.compute.DataDisk;
+import com.microsoft.azure.management.compute.OSDisk;
+import com.microsoft.azure.management.compute.VirtualMachine;
+import com.microsoft.azure.management.compute.VirtualMachineExtension;
 import com.microsoft.azure.management.network.NetworkInterface;
 import com.microsoft.azure.management.network.NicIPConfiguration;
 import com.microsoft.azure.management.network.Subnet;
@@ -25,6 +16,15 @@ import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacbot.azure.inventory.vo.VMDiskVH;
 import com.tmobile.pacbot.azure.inventory.vo.VirtualMachineVH;
+import com.tmobile.pacman.commons.utils.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class VMInventoryCollector {

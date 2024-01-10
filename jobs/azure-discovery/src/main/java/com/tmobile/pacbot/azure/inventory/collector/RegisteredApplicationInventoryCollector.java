@@ -1,11 +1,5 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,6 +9,11 @@ import com.tmobile.pacbot.azure.inventory.vo.RegAppSecretVH;
 import com.tmobile.pacbot.azure.inventory.vo.RegisteredApplicationVH;
 import com.tmobile.pacman.commons.azure.clients.AzureCredentialManager;
 import com.tmobile.pacman.commons.utils.CommonUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class RegisteredApplicationInventoryCollector {

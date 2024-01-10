@@ -1,17 +1,5 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.sql.SqlDatabase;
@@ -21,6 +9,13 @@ import com.microsoft.azure.management.sql.SqlVirtualNetworkRule;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SQLDatabaseVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Component
 public class SQLDatabaseInventoryCollector {
