@@ -173,13 +173,13 @@ public class AssetFileGenerator {
             List<String> longRunningTargetTypeList = new CopyOnWriteArrayList<>();
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_VIRTUAL_MACHINE))) {
+                if (!(isTypeInScope(VIRTUAL_MACHINE))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_VIRTUAL_MACHINE);
+                    longRunningTargetTypeList.add(VIRTUAL_MACHINE);
                     FileManager.generateVMFiles(vmInventoryCollector.fetchVMDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_VIRTUAL_MACHINE);
+                    longRunningTargetTypeList.remove(VIRTUAL_MACHINE);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -187,13 +187,13 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_VIRTUAL_MACHINE_SCALESET))) {
+                if (!(isTypeInScope(VIRTUAL_MACHINE_SCALESET))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_VIRTUAL_MACHINE_SCALESET);
+                    longRunningTargetTypeList.add(VIRTUAL_MACHINE_SCALESET);
                     FileManager.generateVMSSFiles(virtualMachineScaleSetCollector.fetchVMScaleSetDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_VIRTUAL_MACHINE_SCALESET);
+                    longRunningTargetTypeList.remove(VIRTUAL_MACHINE_SCALESET);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -201,14 +201,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_STORAGE_ACCOUNT))) {
+                if (!(isTypeInScope(STORAGE_ACCOUNT))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_STORAGE_ACCOUNT);
+                    longRunningTargetTypeList.add(STORAGE_ACCOUNT);
                     FileManager.generateStorageAccountFiles(
                             storageAccountInventoryCollector.fetchStorageAccountDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_STORAGE_ACCOUNT);
+                    longRunningTargetTypeList.remove(STORAGE_ACCOUNT);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -216,14 +216,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SQL_DATABASE))) {
+                if (!(isTypeInScope(SQL_DATABASE))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SQL_DATABASE);
+                    longRunningTargetTypeList.add(SQL_DATABASE);
                     FileManager.generateSQLdatabaseFiles(
                             sqlDatabaseInventoryCollector.fetchSQLDatabaseDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SQL_DATABASE);
+                    longRunningTargetTypeList.remove(SQL_DATABASE);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -231,14 +231,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_NSG))) {
+                if (!(isTypeInScope(NSG))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_NSG);
+                    longRunningTargetTypeList.add(NSG);
                     FileManager.generateNetworkSecurityFiles(
                             networkSecurityInventoryCollector.fetchNetworkSecurityGroupDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_NSG);
+                    longRunningTargetTypeList.remove(NSG);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -246,14 +246,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_DISK))) {
+                if (!(isTypeInScope(DISK))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_DISK);
+                    longRunningTargetTypeList.add(DISK);
                     FileManager
                             .generateDataDiskFiles(diskInventoryCollector.fetchDataDiskDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_DISK);
+                    longRunningTargetTypeList.remove(DISK);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -261,14 +261,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_NETWORK_INTERFACE))) {
+                if (!(isTypeInScope(NETWORK_INTERFACE))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_NETWORK_INTERFACE);
+                    longRunningTargetTypeList.add(NETWORK_INTERFACE);
                     FileManager.generateNetworkInterfaceFiles(
                             networkInterfaceInventoryCollector.fetchNetworkInterfaceDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_NETWORK_INTERFACE);
+                    longRunningTargetTypeList.remove(NETWORK_INTERFACE);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -276,13 +276,13 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_VNET))) {
+                if (!(isTypeInScope(VNET))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_VNET);
+                    longRunningTargetTypeList.add(VNET);
                     FileManager.generateNetworkFiles(networkInventoryCollector.fetchNetworkDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_VNET);
+                    longRunningTargetTypeList.remove(VNET);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -290,14 +290,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_LOADBALANCER))) {
+                if (!(isTypeInScope(LOADBALANCER))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_LOADBALANCER);
+                    longRunningTargetTypeList.add(LOADBALANCER);
                     FileManager.generateLoadBalancerFiles(
                             loadBalancerInventoryCollector.fetchLoadBalancerDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_LOADBALANCER);
+                    longRunningTargetTypeList.remove(LOADBALANCER);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -305,14 +305,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SECURITY_CENTER))) {
+                if (!(isTypeInScope(SECURITY_CENTER))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SECURITY_CENTER);
+                    longRunningTargetTypeList.add(SECURITY_CENTER);
                     FileManager.generateSecurityCenterFiles(
                             scRecommendationsCollector.fetchSecurityCenterRecommendations(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SECURITY_CENTER);
+                    longRunningTargetTypeList.remove(SECURITY_CENTER);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -320,14 +320,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SQLSERVER))) {
+                if (!(isTypeInScope(SQLSERVER))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SQLSERVER);
+                    longRunningTargetTypeList.add(SQLSERVER);
                     FileManager.generateSQLServerFiles(
                             sqlServerInventoryCollector.fetchSQLServerDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SQLSERVER);
+                    longRunningTargetTypeList.remove(SQLSERVER);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -335,14 +335,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_BLOB_CONTAINER))) {
+                if (!(isTypeInScope(BLOB_CONTAINER))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_BLOB_CONTAINER);
+                    longRunningTargetTypeList.add(BLOB_CONTAINER);
                     FileManager.generateBlobContainerFiles(
                             blobContainerInventoryCollector.fetchBlobContainerDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_BLOB_CONTAINER);
+                    longRunningTargetTypeList.remove(BLOB_CONTAINER);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -350,14 +350,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_RESOURCE_GROUP))) {
+                if (!(isTypeInScope(RESOURCE_GROUP))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_RESOURCE_GROUP);
+                    longRunningTargetTypeList.add(RESOURCE_GROUP);
                     FileManager.generateResourceGroupFiles(
                             resourceGroupInventoryCollector.fetchResourceGroupDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_RESOURCE_GROUP);
+                    longRunningTargetTypeList.remove(RESOURCE_GROUP);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -365,14 +365,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_COSMOSDB))) {
+                if (!(isTypeInScope(COSMOSDB))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_COSMOSDB);
+                    longRunningTargetTypeList.add(COSMOSDB);
                     FileManager.generateCosmosDBFiles(
                             cosmosDBInventoryCollector.fetchCosmosDBDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_COSMOSDB);
+                    longRunningTargetTypeList.remove(COSMOSDB);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -380,13 +380,13 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_MYSQLSERVER))) {
+                if (!(isTypeInScope(MYSQLSERVER))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_MYSQLSERVER);
+                    longRunningTargetTypeList.add(MYSQLSERVER);
                     FileManager.generateMySqlServerFiles(mySQLInventoryCollector.fetchMySQLServerDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_MYSQLSERVER);
+                    longRunningTargetTypeList.remove(MYSQLSERVER);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -394,14 +394,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_DATABRICKS))) {
+                if (!(isTypeInScope(DATABRICKS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_DATABRICKS);
+                    longRunningTargetTypeList.add(DATABRICKS);
                     FileManager
                             .generateDatabricksFiles(databricksInventoryCollector.fetchDatabricksDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_DATABRICKS);
+                    longRunningTargetTypeList.remove(DATABRICKS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -409,13 +409,13 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_MARIADB))) {
+                if (!(isTypeInScope(MARIADB))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_MARIADB);
+                    longRunningTargetTypeList.add(MARIADB);
                     FileManager.generateMariaDBFiles(mariaDBInventoryCollector.fetchMariaDBDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_MARIADB);
+                    longRunningTargetTypeList.remove(MARIADB);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -423,14 +423,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_POSTGRESQL))) {
+                if (!(isTypeInScope(POSTGRESQL))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_POSTGRESQL);
+                    longRunningTargetTypeList.add(POSTGRESQL);
                     FileManager.generatePostgreSQLServerFiles(
                             postgreSQLInventoryCollector.fetchPostgreSQLServerDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_POSTGRESQL);
+                    longRunningTargetTypeList.remove(POSTGRESQL);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -438,14 +438,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SNAPSHOT))) {
+                if (!(isTypeInScope(SNAPSHOT))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SNAPSHOT);
+                    longRunningTargetTypeList.add(SNAPSHOT);
                     FileManager.generateSnapshotFiles(
                             snapshotInventoryCollector.fetchSnapshotDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SNAPSHOT);
+                    longRunningTargetTypeList.remove(SNAPSHOT);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -453,14 +453,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_PUBLICIP_ADDRESS))) {
+                if (!(isTypeInScope(PUBLICIP_ADDRESS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_PUBLICIP_ADDRESS);
+                    longRunningTargetTypeList.add(PUBLICIP_ADDRESS);
                     FileManager.generatePublicIpAddressFiles(
                             publicIpAddressInventoryCollector.fetchPublicIpAddressDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_PUBLICIP_ADDRESS);
+                    longRunningTargetTypeList.remove(PUBLICIP_ADDRESS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -468,14 +468,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_ROUTE_TABLE))) {
+                if (!(isTypeInScope(ROUTE_TABLE))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_ROUTE_TABLE);
+                    longRunningTargetTypeList.add(ROUTE_TABLE);
                     FileManager.generateRouteTableFiles(
                             routeTableInventoryCollector.fetchRouteTableDetails(subscription, tagMap));
-                    longRunningTargetTypeList.remove(TARGETTYPE_ROUTE_TABLE);
+                    longRunningTargetTypeList.remove(ROUTE_TABLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -483,14 +483,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SECURITY_ALERTS))) {
+                if (!(isTypeInScope(SECURITY_ALERTS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SECURITY_ALERTS);
+                    longRunningTargetTypeList.add(SECURITY_ALERTS);
                     FileManager.generateSecurityAlertsFiles(
                             securityAlertsInventoryCollector.fetchSecurityAlertsDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SECURITY_ALERTS);
+                    longRunningTargetTypeList.remove(SECURITY_ALERTS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -498,14 +498,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_POLICY_EVALUATION_RESULTS))) {
+                if (!(isTypeInScope(POLICY_EVALUATION_RESULTS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_POLICY_EVALUATION_RESULTS);
+                    longRunningTargetTypeList.add(POLICY_EVALUATION_RESULTS);
                     FileManager.generatePolicyStatesFiles(policyStatesInventoryCollector
                             .fetchPolicyStatesDetails(subscription, policyDefinitionList));
-                    longRunningTargetTypeList.remove(TARGETTYPE_POLICY_EVALUATION_RESULTS);
+                    longRunningTargetTypeList.remove(POLICY_EVALUATION_RESULTS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -513,14 +513,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_POLICY_DEFINITIONS))) {
+                if (!(isTypeInScope(POLICY_DEFINITIONS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_POLICY_DEFINITIONS);
+                    longRunningTargetTypeList.add(POLICY_DEFINITIONS);
                     FileManager.generatePolicyDefinitionFiles(
                             policyDefinitionInventoryCollector.fetchPolicyDefinitionDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_POLICY_DEFINITIONS);
+                    longRunningTargetTypeList.remove(POLICY_DEFINITIONS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -528,14 +528,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SITES))) {
+                if (!(isTypeInScope(SITES))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SITES);
+                    longRunningTargetTypeList.add(SITES);
                     FileManager.generateSiteFiles(
                             sitesInventoryCollector.fetchSitesDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SITES);
+                    longRunningTargetTypeList.remove(SITES);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -543,13 +543,13 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_VAULTS))) {
+                if (!(isTypeInScope(VAULTS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_VAULTS);
+                    longRunningTargetTypeList.add(VAULTS);
                     FileManager.generateVaultFiles(vaultInventoryCollector.fetchVaultDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_VAULTS);
+                    longRunningTargetTypeList.remove(VAULTS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -557,14 +557,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_WORKFLOWS))) {
+                if (!(isTypeInScope(WORKFLOWS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_WORKFLOWS);
+                    longRunningTargetTypeList.add(WORKFLOWS);
                     FileManager.generateWorkflowFiles(
                             workflowInventoryCollector.fetchWorkflowDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_WORKFLOWS);
+                    longRunningTargetTypeList.remove(WORKFLOWS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -572,14 +572,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_BATCH_ACCOUNTS))) {
+                if (!(isTypeInScope(BATCH_ACCOUNTS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_BATCH_ACCOUNTS);
+                    longRunningTargetTypeList.add(BATCH_ACCOUNTS);
                     FileManager.generateBatchAccountFiles(
                             batchAccountInventoryCollector.fetchBatchAccountDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_BATCH_ACCOUNTS);
+                    longRunningTargetTypeList.remove(BATCH_ACCOUNTS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -587,14 +587,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_NAMESPACES))) {
+                if (!(isTypeInScope(NAMESPACES))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_NAMESPACES);
+                    longRunningTargetTypeList.add(NAMESPACES);
                     FileManager.generateNamespaceFiles(
                             namespaceInventoryCollector.fetchNamespaceDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_NAMESPACES);
+                    longRunningTargetTypeList.remove(NAMESPACES);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -602,14 +602,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SEARCH_SERVICES))) {
+                if (!(isTypeInScope(SEARCH_SERVICES))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SEARCH_SERVICES);
+                    longRunningTargetTypeList.add(SEARCH_SERVICES);
                     FileManager.generateSearchServiceFiles(
                             searchServiceInventoryCollector.fetchSearchServiceDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SEARCH_SERVICES);
+                    longRunningTargetTypeList.remove(SEARCH_SERVICES);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -617,14 +617,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SUBNETS))) {
+                if (!(isTypeInScope(SUBNETS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SUBNETS);
+                    longRunningTargetTypeList.add(SUBNETS);
                     FileManager.generateSubnetFiles(
                             subnetInventoryCollector.fetchSubnetDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SUBNETS);
+                    longRunningTargetTypeList.remove(SUBNETS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -632,14 +632,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_REDIS_CACHE))) {
+                if (!(isTypeInScope(REDIS_CACHE))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_REDIS_CACHE);
+                    longRunningTargetTypeList.add(REDIS_CACHE);
                     FileManager.generateRedisCacheFiles(
                             redisCacheInventoryCollector.fetchRedisCacheDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_REDIS_CACHE);
+                    longRunningTargetTypeList.remove(REDIS_CACHE);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -647,14 +647,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_ACTIVITY_LOG))) {
+                if (!(isTypeInScope(ACTIVITY_LOG))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_ACTIVITY_LOG);
+                    longRunningTargetTypeList.add(ACTIVITY_LOG);
                     FileManager.generateActivityLogFiles(
                             activityLogsCollector.fetchActivityLogAlertDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_ACTIVITY_LOG);
+                    longRunningTargetTypeList.remove(ACTIVITY_LOG);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -662,14 +662,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SECURITY_PRICINGS))) {
+                if (!(isTypeInScope(SECURITY_PRICINGS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SECURITY_PRICINGS);
+                    longRunningTargetTypeList.add(SECURITY_PRICINGS);
                     FileManager.generateSecurityPricingsFiles(
                             securityPricingsInventoryCollector.fetchSecurityPricingsDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SECURITY_PRICINGS);
+                    longRunningTargetTypeList.remove(SECURITY_PRICINGS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -677,14 +677,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_WEBAPP))) {
+                if (!(isTypeInScope(WEBAPP))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_WEBAPP);
+                    longRunningTargetTypeList.add(WEBAPP);
                     FileManager
                             .generateWebAppFiles(webAppInventoryCollector.fetchWebAppDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_WEBAPP);
+                    longRunningTargetTypeList.remove(WEBAPP);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -692,14 +692,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_SUBSCRIPTION))) {
+                if (!(isTypeInScope(SUBSCRIPTION))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_SUBSCRIPTION);
+                    longRunningTargetTypeList.add(SUBSCRIPTION);
                     FileManager
                             .generateSubscriptionFiles(subscriptionInventoryCollector.fetchSubscriptions(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_SUBSCRIPTION);
+                    longRunningTargetTypeList.remove(SUBSCRIPTION);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -707,14 +707,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_FUNCTION_APP))) {
+                if (!(isTypeInScope(FUNCTION_APP))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_FUNCTION_APP);
+                    longRunningTargetTypeList.add(FUNCTION_APP);
                     FileManager
                             .generateFunctionAppFiles(functionAppInventoryCollector.fetchFunctionAppDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_FUNCTION_APP);
+                    longRunningTargetTypeList.remove(FUNCTION_APP);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -722,14 +722,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_MYSQL_FLEXIBLE))) {
+                if (!(isTypeInScope(MYSQL_FLEXIBLE))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_MYSQL_FLEXIBLE);
+                    longRunningTargetTypeList.add(MYSQL_FLEXIBLE);
                     FileManager
                             .generateMySQLFlexibleFiles(mySQLFlexibleInventoryCollector.fetchMySQLFlexibleServerDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_MYSQL_FLEXIBLE);
+                    longRunningTargetTypeList.remove(MYSQL_FLEXIBLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -737,14 +737,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_DIAGNOSTIC_SETTING))) {
+                if (!(isTypeInScope(DIAGNOSTIC_SETTING))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_DIAGNOSTIC_SETTING);
+                    longRunningTargetTypeList.add(DIAGNOSTIC_SETTING);
                     FileManager
                             .generateDiagnosticSettingFiles(diagnosticSettingsCollector.fetchDiagnosticSettings(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_DIAGNOSTIC_SETTING);
+                    longRunningTargetTypeList.remove(DIAGNOSTIC_SETTING);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -752,15 +752,15 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_BLOB_SERVICE))) {
+                if (!(isTypeInScope(BLOB_SERVICE))) {
                     log.info("no target type found for functionApp!!");
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_BLOB_SERVICE);
+                    longRunningTargetTypeList.add(BLOB_SERVICE);
                     FileManager
                             .generateBlobServiceFiles(blobServiceInventoryCollector.fetchBlobServiceDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_BLOB_SERVICE);
+                    longRunningTargetTypeList.remove(BLOB_SERVICE);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -768,13 +768,13 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_DEFENDER))) {
+                if (!(isTypeInScope(DEFENDER))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_DEFENDER);
+                    longRunningTargetTypeList.add(DEFENDER);
                     FileManager.generateSecurityContactsInfoFile(securityContactsCollector.fetchSecurityContactsInfo(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_DEFENDER);
+                    longRunningTargetTypeList.remove(DEFENDER);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -782,13 +782,13 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(TARGETTYPE_KUBERNETES))) {
+                if (!(isTypeInScope(KUBERNETES))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(TARGETTYPE_KUBERNETES);
+                    longRunningTargetTypeList.add(KUBERNETES);
                     FileManager.generateKubernetesClusterDetailsInfoFile(kubernetesServicesCollector.fetchKubernetesClusterDetails(subscription));
-                    longRunningTargetTypeList.remove(TARGETTYPE_KUBERNETES);
+                    longRunningTargetTypeList.remove(KUBERNETES);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();

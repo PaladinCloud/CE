@@ -20,5 +20,10 @@ import static com.tmobile.pacbot.azure.inventory.util.InventoryConstants.JOB_NAM
 import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 public class Constants {
+
+        private Constants() {
+
+        }
+
         public static final String ERROR_PREFIX = DATA_ALERT_ERROR_STRING + " " + JOB_NAME + " - ";
 }
