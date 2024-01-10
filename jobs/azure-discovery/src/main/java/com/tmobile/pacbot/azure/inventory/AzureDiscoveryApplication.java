@@ -7,13 +7,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 @ComponentScan({"com.tmobile.pacbot.azure.inventory","com.tmobile.pacman.commons.database","com.tmobile.pacman.commons.secrets"})
 public class AzureDiscoveryApplication {
-
-	private AzureDiscoveryApplication() {
-	}
 
 	public static Map<String, Object> collect() {
 		ApplicationContext context = new AnnotationConfigApplicationContext(AzureDiscoveryApplication.class);
