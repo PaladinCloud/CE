@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static com.tmobile.pacbot.azure.inventory.InventoryConstants.REGION_GLOBAL;
+import static com.tmobile.pacbot.azure.inventory.util.InventoryConstants.REGION_GLOBAL;
 
 @Component
 public class SubscriptionInventoryCollector {

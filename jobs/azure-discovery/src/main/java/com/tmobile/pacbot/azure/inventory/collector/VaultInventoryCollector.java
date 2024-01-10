@@ -9,7 +9,7 @@ import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.keyvault.Key;
 import com.microsoft.azure.management.keyvault.Secret;
 import com.microsoft.azure.management.keyvault.Vault;
-import com.tmobile.pacbot.azure.inventory.ErrorManageUtil;
+import com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

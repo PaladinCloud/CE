@@ -21,7 +21,7 @@ import com.tmobile.pacbot.azure.inventory.vo.SecurityPricingsVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
-import static com.tmobile.pacbot.azure.inventory.InventoryConstants.REGION_GLOBAL;
+import static com.tmobile.pacbot.azure.inventory.util.InventoryConstants.REGION_GLOBAL;
 
 @Component
 public class SecurityPricingsInventoryCollector {
