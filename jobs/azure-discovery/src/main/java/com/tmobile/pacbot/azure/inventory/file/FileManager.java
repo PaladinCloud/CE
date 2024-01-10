@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacbot.azure.inventory.file;
 
+import com.tmobile.pacbot.azure.inventory.util.TargetTypesConstants;
 import com.tmobile.pacbot.azure.inventory.vo.*;
 
 import java.io.File;
@@ -26,6 +27,8 @@ import java.util.List;
  */
 public class FileManager {
 
+    private static final String AZURE_REGISTEREDAPPLICATION_DATA = "azure-registeredapplication.data";
+    
     /**
      * Instantiates a new file manager.
      */
@@ -43,297 +46,198 @@ public class FileManager {
         FileGenerator.folderName = folderName;
         new File(folderName).mkdirs();
 
-        FileGenerator.writeToFile("azure-virtualmachine.data", "[", false);
-        FileGenerator.writeToFile("azure-virtualmachinescaleset.data", "[", false);
-        FileGenerator.writeToFile("azure-storageaccount.data", "[", false);
-        FileGenerator.writeToFile("azure-sqldatabase.data", "[", false);
-        FileGenerator.writeToFile("azure-nsg.data", "[", false);
-        FileGenerator.writeToFile("azure-disk.data", "[", false);
-        FileGenerator.writeToFile("azure-networkinterface.data", "[", false);
-        FileGenerator.writeToFile("azure-vnet.data", "[", false);
-        FileGenerator.writeToFile("azure-loadbalancer.data", "[", false);
-        FileGenerator.writeToFile("azure-securitycenter.data", "[", false);
-        FileGenerator.writeToFile("azure-sqlserver.data", "[", false);
-        FileGenerator.writeToFile("azure-blobcontainer.data", "[", false);
-        FileGenerator.writeToFile("azure-resourcegroup.data", "[", false);
-        FileGenerator.writeToFile("azure-cosmosdb.data", "[", false);
-        FileGenerator.writeToFile("azure-mysqlserver.data", "[", false);
-        FileGenerator.writeToFile("azure-databricks.data", "[", false);
-        FileGenerator.writeToFile("azure-mariadb.data", "[", false);
-        FileGenerator.writeToFile("azure-postgresql.data", "[", false);
-        FileGenerator.writeToFile("azure-registeredApplication.data", "[", false);
-        FileGenerator.writeToFile("azure-snapshot.data", "[", false);
-        FileGenerator.writeToFile("azure-publicipaddress.data", "[", false);
-        FileGenerator.writeToFile("azure-routetable.data", "[", false);
-        FileGenerator.writeToFile("azure-securityalerts.data", "[", false);
-        FileGenerator.writeToFile("azure-policyevaluationresults.data", "[", false);
-        FileGenerator.writeToFile("azure-policydefinitions.data", "[", false);
-        FileGenerator.writeToFile("azure-sites.data", "[", false);
-        FileGenerator.writeToFile("azure-vaults.data", "[", false);
-        FileGenerator.writeToFile("azure-workflows.data", "[", false);
-        FileGenerator.writeToFile("azure-batchaccounts.data", "[", false);
-        FileGenerator.writeToFile("azure-namespaces.data", "[", false);
-        FileGenerator.writeToFile("azure-searchservices.data", "[", false);
-        FileGenerator.writeToFile("azure-subnets.data", "[", false);
-        FileGenerator.writeToFile("azure-activitylogalert.data", "[", false);
-        FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
-        FileGenerator.writeToFile("azure-webapp.data", "[", false);
-        FileGenerator.writeToFile("azure-subscription.data", "[", false);
-        FileGenerator.writeToFile("azure-functionapp.data", "[", false);
-        FileGenerator.writeToFile("azure-blobservice.data", "[", false);
-
-        FileGenerator.writeToFile("azure-mysqlflexible.data", "[", false);
-        FileGenerator.writeToFile("azure-diagnosticsetting.data", "[", false);
-        FileGenerator.writeToFile("azure-defender.data", "[", false);
-        FileGenerator.writeToFile("azure-aks.data", "[", false);
+        TargetTypesConstants.TARGET_TYPES.forEach(type -> {
+            try {
+                FileGenerator.writeToFile(getFilenameFromTargetType(type), "[", false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static void finalise() throws IOException {
-
-        FileGenerator.writeToFile("azure-virtualmachine.data", "]", true);
-        FileGenerator.writeToFile("azure-virtualmachinescaleset.data", "]", true);
-        FileGenerator.writeToFile("azure-storageaccount.data", "]", true);
-        FileGenerator.writeToFile("azure-sqldatabase.data", "]", true);
-        FileGenerator.writeToFile("azure-nsg.data", "]", true);
-        FileGenerator.writeToFile("azure-disk.data", "]", true);
-        FileGenerator.writeToFile("azure-networkinterface.data", "]", true);
-        FileGenerator.writeToFile("azure-vnet.data", "]", true);
-        FileGenerator.writeToFile("azure-securitycenter.data", "]", true);
-        FileGenerator.writeToFile("azure-loadbalancer.data", "]", true);
-        FileGenerator.writeToFile("azure-sqlserver.data", "]", true);
-        FileGenerator.writeToFile("azure-blobcontainer.data", "]", true);
-        FileGenerator.writeToFile("azure-resourcegroup.data", "]", true);
-        FileGenerator.writeToFile("azure-cosmosdb.data", "]", true);
-        FileGenerator.writeToFile("azure-mysqlserver.data", "]", true);
-        FileGenerator.writeToFile("azure-databricks.data", "]", true);
-        FileGenerator.writeToFile("azure-mariadb.data", "]", true);
-        FileGenerator.writeToFile("azure-postgresql.data", "]", true);
-        FileGenerator.writeToFile("azure-registeredApplication.data", "]", true);
-        FileGenerator.writeToFile("azure-snapshot.data", "]", true);
-        FileGenerator.writeToFile("azure-publicipaddress.data", "]", true);
-        FileGenerator.writeToFile("azure-routetable.data", "]", true);
-        FileGenerator.writeToFile("azure-securityalerts.data", "]", true);
-        FileGenerator.writeToFile("azure-policyevaluationresults.data", "]", true);
-        FileGenerator.writeToFile("azure-policydefinitions.data", "]", true);
-        FileGenerator.writeToFile("azure-sites.data", "]", true);
-        FileGenerator.writeToFile("azure-vaults.data", "]", true);
-        FileGenerator.writeToFile("azure-workflows.data", "]", true);
-        FileGenerator.writeToFile("azure-batchaccounts.data", "]", true);
-        FileGenerator.writeToFile("azure-namespaces.data", "]", true);
-        FileGenerator.writeToFile("azure-searchservices.data", "]", true);
-        FileGenerator.writeToFile("azure-subnets.data", "]", true);
-        FileGenerator.writeToFile("azure-activitylogalert.data", "]", true);
-        FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
-        FileGenerator.writeToFile("azure-webapp.data", "]", true);
-        FileGenerator.writeToFile("azure-subscription.data", "]", true);
-        FileGenerator.writeToFile("azure-functionapp.data", "]", true);
-        FileGenerator.writeToFile("azure-blobservice.data", "]", true);
-
-        FileGenerator.writeToFile("azure-mysqlflexible.data", "]", true);
-        FileGenerator.writeToFile("azure-diagnosticsetting.data", "]", true);
-        FileGenerator.writeToFile("azure-defender.data", "]", true);
-        FileGenerator.writeToFile("azure-aks.data", "]", true);
+        TargetTypesConstants.TARGET_TYPES.forEach(type -> {
+            try {
+                FileGenerator.writeToFile(getFilenameFromTargetType(type), "]", true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
-
-        FileGenerator.generateJson(vmMap, "azure-virtualmachine.data");
-
+    public static void generateVMFiles(List<VirtualMachineVH> vmMap) {
+        FileGenerator.generateJson(vmMap, getFilenameFromTargetType(TargetTypesConstants.VIRTUAL_MACHINE));
     }
 
-    public static void generateVMSSFiles(List<VirtualMachineScaleSetVH> vmssMap) throws IOException {
-        FileGenerator.generateJson(vmssMap, "azure-virtualmachinescaleset.data");
+    public static void generateVMSSFiles(List<VirtualMachineScaleSetVH> vmssMap) {
+        FileGenerator.generateJson(vmssMap, getFilenameFromTargetType(TargetTypesConstants.VIRTUAL_MACHINE_SCALESET));
     }
 
-    public static void generateSubscriptionFiles(List<SubscriptionVH> subscriptionVHList) throws IOException {
-        FileGenerator.generateJson(subscriptionVHList, "azure-subscription.data");
+    public static void generateSubscriptionFiles(List<SubscriptionVH> subscriptionVHList) {
+        FileGenerator.generateJson(subscriptionVHList, getFilenameFromTargetType(TargetTypesConstants.SUBSCRIPTION));
     }
 
-    public static void generateStorageAccountFiles(List<StorageAccountVH> storageAccountMap) throws IOException {
-
-        FileGenerator.generateJson(storageAccountMap, "azure-storageaccount.data");
-
+    public static void generateStorageAccountFiles(List<StorageAccountVH> storageAccountMap) {
+        FileGenerator.generateJson(storageAccountMap, getFilenameFromTargetType(TargetTypesConstants.STORAGE_ACCOUNT));
     }
 
-    public static void generateSQLdatabaseFiles(List<SQLDatabaseVH> sqlDatabaseMap) throws IOException {
-
-        FileGenerator.generateJson(sqlDatabaseMap, "azure-sqldatabase.data");
-
+    public static void generateSQLdatabaseFiles(List<SQLDatabaseVH> sqlDatabaseMap) {
+        FileGenerator.generateJson(sqlDatabaseMap, getFilenameFromTargetType(TargetTypesConstants.SQL_DATABASE));
     }
 
-    public static void generateNetworkSecurityFiles(List<SecurityGroupVH> securityGroupMap) throws IOException {
-
-        FileGenerator.generateJson(securityGroupMap, "azure-nsg.data");
-
+    public static void generateNetworkSecurityFiles(List<SecurityGroupVH> securityGroupMap) {
+        FileGenerator.generateJson(securityGroupMap, getFilenameFromTargetType(TargetTypesConstants.NSG));
     }
 
-    public static void generateDataDiskFiles(List<DataDiskVH> dataDiskMap) throws IOException {
-
-        FileGenerator.generateJson(dataDiskMap, "azure-disk.data");
-
+    public static void generateDataDiskFiles(List<DataDiskVH> dataDiskMap) {
+        FileGenerator.generateJson(dataDiskMap, getFilenameFromTargetType(TargetTypesConstants.DISK));
     }
 
-    public static void generateNetworkInterfaceFiles(List<NetworkInterfaceVH> networkInterfaceMap) throws IOException {
-
-        FileGenerator.generateJson(networkInterfaceMap, "azure-networkinterface.data");
-
+    public static void generateNetworkInterfaceFiles(List<NetworkInterfaceVH> networkInterfaceMap) {
+        FileGenerator.generateJson(networkInterfaceMap, getFilenameFromTargetType(TargetTypesConstants.NETWORK_INTERFACE));
     }
 
-    public static void generateNetworkFiles(List<NetworkVH> networkMap) throws IOException {
-
-        FileGenerator.generateJson(networkMap, "azure-vnet.data");
-
+    public static void generateNetworkFiles(List<NetworkVH> networkMap) {
+        FileGenerator.generateJson(networkMap, getFilenameFromTargetType(TargetTypesConstants.VNET));
     }
 
-    public static void generateLoadBalancerFiles(List<LoadBalancerVH> loadBalancerMap) throws IOException {
-
-        FileGenerator.generateJson(loadBalancerMap, "azure-loadbalancer.data");
-
+    public static void generateLoadBalancerFiles(List<LoadBalancerVH> loadBalancerMap) {
+        FileGenerator.generateJson(loadBalancerMap, getFilenameFromTargetType(TargetTypesConstants.LOADBALANCER));
     }
 
-    public static void generateSecurityCenterFiles(List<RecommendationVH> recommendations) throws IOException {
-
-        FileGenerator.generateJson(recommendations, "azure-securitycenter.data");
-
+    public static void generateSecurityCenterFiles(List<RecommendationVH> recommendations) {
+        FileGenerator.generateJson(recommendations, getFilenameFromTargetType(TargetTypesConstants.SECURITY_CENTER));
     }
 
-    public static void generateSQLServerFiles(List<SQLServerVH> sqlServerList) throws IOException {
-        FileGenerator.generateJson(sqlServerList, "azure-sqlserver.data");
+    public static void generateSQLServerFiles(List<SQLServerVH> sqlServerList) {
+        FileGenerator.generateJson(sqlServerList, getFilenameFromTargetType(TargetTypesConstants.SQLSERVER));
     }
 
-    public static void generateBlobContainerFiles(List<BlobContainerVH> blobDetailsList) throws IOException {
-        FileGenerator.generateJson(blobDetailsList, "azure-blobcontainer.data");
+    public static void generateBlobContainerFiles(List<BlobContainerVH> blobDetailsList) {
+        FileGenerator.generateJson(blobDetailsList, getFilenameFromTargetType(TargetTypesConstants.BLOB_CONTAINER));
     }
 
-    public static void generateResourceGroupFiles(List<ResourceGroupVH> resourceGroupList) throws IOException {
-        FileGenerator.generateJson(resourceGroupList, "azure-resourcegroup.data");
+    public static void generateResourceGroupFiles(List<ResourceGroupVH> resourceGroupList) {
+        FileGenerator.generateJson(resourceGroupList, getFilenameFromTargetType(TargetTypesConstants.RESOURCE_GROUP));
     }
 
-    public static void generateCosmosDBFiles(List<CosmosDBVH> cosmosDBList) throws IOException {
-        FileGenerator.generateJson(cosmosDBList, "azure-cosmosdb.data");
+    public static void generateCosmosDBFiles(List<CosmosDBVH> cosmosDBList) {
+        FileGenerator.generateJson(cosmosDBList, getFilenameFromTargetType(TargetTypesConstants.COSMOSDB));
     }
 
-    public static void generateRegisteredApplicationFiles(List<RegisteredApplicationVH> registeredApplicationVHList)
-            throws IOException {
-        FileGenerator.generateJson(registeredApplicationVHList, "azure-registeredApplication.data");
+    public static void generateRegisteredApplicationFiles(List<RegisteredApplicationVH> registeredApplicationVHList) {
+        FileGenerator.generateJson(registeredApplicationVHList, AZURE_REGISTEREDAPPLICATION_DATA);
     }
 
-    public static void generateMySqlServerFiles(List<MySQLServerVH> mySqlServerList) throws IOException {
-        FileGenerator.generateJson(mySqlServerList, "azure-mysqlserver.data");
+    public static void generateMySqlServerFiles(List<MySQLServerVH> mySqlServerList) {
+        FileGenerator.generateJson(mySqlServerList, getFilenameFromTargetType(TargetTypesConstants.MYSQLSERVER));
     }
 
-    public static void generateDatabricksFiles(List<DatabricksVH> databricksList) throws IOException {
-        FileGenerator.generateJson(databricksList, "azure-databricks.data");
+    public static void generateDatabricksFiles(List<DatabricksVH> databricksList) {
+        FileGenerator.generateJson(databricksList, getFilenameFromTargetType(TargetTypesConstants.DATABRICKS));
     }
 
-    public static void generateMariaDBFiles(List<MariaDBVH> mariaDBList) throws IOException {
-        FileGenerator.generateJson(mariaDBList, "azure-mariadb.data");
+    public static void generateMariaDBFiles(List<MariaDBVH> mariaDBList) {
+        FileGenerator.generateJson(mariaDBList, getFilenameFromTargetType(TargetTypesConstants.MARIADB));
     }
 
-    public static void generatePostgreSQLServerFiles(List<PostgreSQLServerVH> postgreSQLServerList) throws IOException {
-        FileGenerator.generateJson(postgreSQLServerList, "azure-postgresql.data");
+    public static void generatePostgreSQLServerFiles(List<PostgreSQLServerVH> postgreSQLServerList) {
+        FileGenerator.generateJson(postgreSQLServerList, getFilenameFromTargetType(TargetTypesConstants.POSTGRESQL));
     }
 
-    public static void generateSnapshotFiles(List<SnapshotVH> snapshotList) throws IOException {
-        FileGenerator.generateJson(snapshotList, "azure-snapshot.data");
+    public static void generateSnapshotFiles(List<SnapshotVH> snapshotList) {
+        FileGenerator.generateJson(snapshotList, getFilenameFromTargetType(TargetTypesConstants.SNAPSHOT));
     }
 
-    public static void generatePublicIpAddressFiles(List<PublicIpAddressVH> publicIpAddressList) throws IOException {
-        FileGenerator.generateJson(publicIpAddressList, "azure-publicipaddress.data");
+    public static void generatePublicIpAddressFiles(List<PublicIpAddressVH> publicIpAddressList) {
+        FileGenerator.generateJson(publicIpAddressList, getFilenameFromTargetType(TargetTypesConstants.PUBLICIP_ADDRESS));
     }
 
-    public static void generateRouteTableFiles(List<RouteTableVH> routeTableDetailsList) throws IOException {
-        FileGenerator.generateJson(routeTableDetailsList, "azure-routetable.data");
+    public static void generateRouteTableFiles(List<RouteTableVH> routeTableDetailsList) {
+        FileGenerator.generateJson(routeTableDetailsList, getFilenameFromTargetType(TargetTypesConstants.ROUTE_TABLE));
     }
 
-    public static void generateSecurityAlertsFiles(List<SecurityAlertsVH> securityAlertsList) throws IOException {
-        FileGenerator.generateJson(securityAlertsList, "azure-securityalerts.data");
+    public static void generateSecurityAlertsFiles(List<SecurityAlertsVH> securityAlertsList) {
+        FileGenerator.generateJson(securityAlertsList, getFilenameFromTargetType(TargetTypesConstants.SECURITY_ALERTS));
     }
 
-    public static void generatePolicyStatesFiles(List<PolicyStatesVH> policyStatesList) throws IOException {
-        FileGenerator.generateJson(policyStatesList, "azure-policyevaluationresults.data");
+    public static void generatePolicyStatesFiles(List<PolicyStatesVH> policyStatesList) {
+        FileGenerator.generateJson(policyStatesList, getFilenameFromTargetType(TargetTypesConstants.POLICY_EVALUATION_RESULTS));
     }
 
-    public static void generatePolicyDefinitionFiles(List<PolicyDefinitionVH> policyDefinitionList) throws IOException {
-        FileGenerator.generateJson(policyDefinitionList, "azure-policydefinitions.data");
+    public static void generatePolicyDefinitionFiles(List<PolicyDefinitionVH> policyDefinitionList) {
+        FileGenerator.generateJson(policyDefinitionList, getFilenameFromTargetType(TargetTypesConstants.POLICY_DEFINITIONS));
     }
 
-    public static void generateSiteFiles(List<SitesVH> sitesList) throws IOException {
-        FileGenerator.generateJson(sitesList, "azure-sites.data");
+    public static void generateSiteFiles(List<SitesVH> sitesList) {
+        FileGenerator.generateJson(sitesList, getFilenameFromTargetType(TargetTypesConstants.SITES));
     }
 
-    public static void generateVaultFiles(List<VaultVH> vaultList) throws IOException {
-        FileGenerator.generateJson(vaultList, "azure-vaults.data");
-
+    public static void generateVaultFiles(List<VaultVH> vaultList) {
+        FileGenerator.generateJson(vaultList, getFilenameFromTargetType(TargetTypesConstants.VAULTS));
     }
 
-    public static void generateWorkflowFiles(List<WorkflowVH> workflowList) throws IOException {
-        FileGenerator.generateJson(workflowList, "azure-workflows.data");
-
+    public static void generateWorkflowFiles(List<WorkflowVH> workflowList) {
+        FileGenerator.generateJson(workflowList, getFilenameFromTargetType(TargetTypesConstants.WORKFLOWS));
     }
 
-    public static void generateBatchAccountFiles(List<BatchAccountVH> batchAccountList) throws IOException {
-        FileGenerator.generateJson(batchAccountList, "azure-batchaccounts.data");
-
+    public static void generateBatchAccountFiles(List<BatchAccountVH> batchAccountList) {
+        FileGenerator.generateJson(batchAccountList, getFilenameFromTargetType(TargetTypesConstants.BATCH_ACCOUNTS));
     }
 
-    public static void generateNamespaceFiles(List<NamespaceVH> namespaceList) throws IOException {
-        FileGenerator.generateJson(namespaceList, "azure-namespaces.data");
-
+    public static void generateNamespaceFiles(List<NamespaceVH> namespaceList) {
+        FileGenerator.generateJson(namespaceList, getFilenameFromTargetType(TargetTypesConstants.NAMESPACES));
     }
 
-    public static void generateSearchServiceFiles(List<SearchServiceVH> searchServiceList) throws IOException {
-        FileGenerator.generateJson(searchServiceList, "azure-searchservices.data");
-
+    public static void generateSearchServiceFiles(List<SearchServiceVH> searchServiceList) {
+        FileGenerator.generateJson(searchServiceList, getFilenameFromTargetType(TargetTypesConstants.SEARCH_SERVICES));
     }
 
-    public static void generateSubnetFiles(List<SubnetVH> subnetList) throws IOException {
-        FileGenerator.generateJson(subnetList, "azure-subnets.data");
-
+    public static void generateSubnetFiles(List<SubnetVH> subnetList) {
+        FileGenerator.generateJson(subnetList, getFilenameFromTargetType(TargetTypesConstants.SUBNETS));
     }
 
-    public static void generateRedisCacheFiles(List<RedisCacheVH> redisCacheList) throws IOException {
-        FileGenerator.generateJson(redisCacheList, "azure-rediscache.data");
-
+    public static void generateRedisCacheFiles(List<RedisCacheVH> redisCacheList) {
+        FileGenerator.generateJson(redisCacheList, getFilenameFromTargetType(TargetTypesConstants.REDIS_CACHE));
     }
 
-    public static void generateActivityLogFiles(List<ActivityLogVH> activityLogVHList) throws IOException {
-        FileGenerator.generateJson(activityLogVHList, "azure-activitylogalert.data");
-
+    public static void generateActivityLogFiles(List<ActivityLogVH> activityLogVHList) {
+        FileGenerator.generateJson(activityLogVHList, getFilenameFromTargetType(TargetTypesConstants.ACTIVITY_LOG));
     }
 
-    public static void generateSecurityPricingsFiles(List<SecurityPricingsVH> securityPricingsVH) throws IOException {
-        FileGenerator.generateJson(securityPricingsVH, "azure-securitypricings.data");
-
+    public static void generateSecurityPricingsFiles(List<SecurityPricingsVH> securityPricingsVH) {
+        FileGenerator.generateJson(securityPricingsVH, getFilenameFromTargetType(TargetTypesConstants.SECURITY_PRICINGS));
     }
 
-    public static void generateWebAppFiles(List<WebAppVH> webAppVHList) throws IOException {
-        FileGenerator.generateJson(webAppVHList, "azure-webapp.data");
-
+    public static void generateWebAppFiles(List<WebAppVH> webAppVHList) {
+        FileGenerator.generateJson(webAppVHList, getFilenameFromTargetType(TargetTypesConstants.WEBAPP));
     }
 
     public static void generateFunctionAppFiles(List<FunctionAppVH> functionAppVHList) {
-        FileGenerator.generateJson(functionAppVHList, "azure-functionapp.data");
+        FileGenerator.generateJson(functionAppVHList, getFilenameFromTargetType(TargetTypesConstants.FUNCTION_APP));
     }
 
     public static void generateMySQLFlexibleFiles(List<MySQLFlexibleVH> mySQLFlexibleVHListVHList) {
-        FileGenerator.generateJson(mySQLFlexibleVHListVHList, "azure-mysqlflexible.data");
+        FileGenerator.generateJson(mySQLFlexibleVHListVHList, getFilenameFromTargetType(TargetTypesConstants.MYSQL_FLEXIBLE));
     }
 
     public static void generateBlobServiceFiles(List<BlobServiceVH> blobServiceVHList) {
-        FileGenerator.generateJson(blobServiceVHList, "azure-blobservice.data");
+        FileGenerator.generateJson(blobServiceVHList, getFilenameFromTargetType(TargetTypesConstants.BLOB_SERVICE));
     }
-
-
+    
     public static void generateDiagnosticSettingFiles(List<DiagnosticSettingVH> fetchDiagnosticSettingsList) {
-        FileGenerator.generateJson(fetchDiagnosticSettingsList, "azure-diagnosticsetting.data");
+        FileGenerator.generateJson(fetchDiagnosticSettingsList, getFilenameFromTargetType(TargetTypesConstants.DIAGNOSTIC_SETTING));
     }
 
     public static void generateSecurityContactsInfoFile(List<SecurityContactsVH> securityContactsVHList) {
-        FileGenerator.generateJson(securityContactsVHList, "azure-defender.data");
+        FileGenerator.generateJson(securityContactsVHList, getFilenameFromTargetType(TargetTypesConstants.DEFENDER));
     }
 
     public static void generateKubernetesClusterDetailsInfoFile(List<KubernetesClustersVH> kubernetesClusterList) {
-        FileGenerator.generateJson(kubernetesClusterList, "azure-aks.data");
+        FileGenerator.generateJson(kubernetesClusterList, getFilenameFromTargetType(TargetTypesConstants.KUBERNETES));
+    }
+
+    private static String getFilenameFromTargetType(String targetType) {
+        return "azure-" + targetType + ".data";
     }
 }

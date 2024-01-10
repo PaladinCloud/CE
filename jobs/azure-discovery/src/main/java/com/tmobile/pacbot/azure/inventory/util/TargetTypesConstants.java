@@ -16,47 +16,98 @@
 
 package com.tmobile.pacbot.azure.inventory.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class TargetTypesConstants {
-    public static final String TARGETTYPE_VIRTUAL_MACHINE = "virtualmachine";
-    public static final String TARGETTYPE_VIRTUAL_MACHINE_SCALESET = "virtualmachinescaleset";
-    public static final String TARGETTYPE_STORAGE_ACCOUNT = "storageaccount";
-    public static final String TARGETTYPE_SQL_DATABASE = "sqldatabase";
-    public static final String TARGETTYPE_NSG = "nsg";
-    public static final String TARGETTYPE_DISK = "disk";
-    public static final String TARGETTYPE_NETWORK_INTERFACE = "networkinterface";
-    public static final String TARGETTYPE_VNET = "vnet";
-    public static final String TARGETTYPE_LOADBALANCER = "loadbalancer";
-    public static final String TARGETTYPE_SQLSERVER = "sqlserver";
-    public static final String TARGETTYPE_SECURITY_CENTER = "securitycenter";
-    public static final String TARGETTYPE_BLOB_CONTAINER = "blobcontainer";
-    public static final String TARGETTYPE_RESOURCE_GROUP = "resourcegroup";
-    public static final String TARGETTYPE_COSMOSDB = "cosmosdb";
-    public static final String TARGETTYPE_MYSQLSERVER = "mysqlserver";
-    public static final String TARGETTYPE_DATABRICKS = "databricks";
-    public static final String TARGETTYPE_MARIADB = "mariadb";
-    public static final String TARGETTYPE_POSTGRESQL = "postgresql";
-    public static final String TARGETTYPE_SNAPSHOT = "snapshot";
-    public static final String TARGETTYPE_PUBLICIP_ADDRESS = "publicipaddress";
-    public static final String TARGETTYPE_ROUTE_TABLE = "routetable";
-    public static final String TARGETTYPE_SECURITY_ALERTS = "securityalerts";
-    public static final String TARGETTYPE_POLICY_EVALUATION_RESULTS = "policyevaluationresults";
-    public static final String TARGETTYPE_SITES = "sites";
-    public static final String TARGETTYPE_VAULTS = "vaults";
-    public static final String TARGETTYPE_WORKFLOWS = "workflows";
-    public static final String TARGETTYPE_BATCH_ACCOUNTS = "batchaccounts";
-    public static final String TARGETTYPE_NAMESPACES = "namespaces";
-    public static final String TARGETTYPE_SEARCH_SERVICES = "searchservices";
-    public static final String TARGETTYPE_SUBNETS = "subnets";
-    public static final String TARGETTYPE_REDIS_CACHE = "rediscache";
-    public static final String TARGETTYPE_ACTIVITY_LOG = "activitylog";
-    public static final String TARGETTYPE_SECURITY_PRICINGS = "securitypricings";
-    public static final String TARGETTYPE_WEBAPP = "webapp";
-    public static final String TARGETTYPE_SUBSCRIPTION = "subscription";
-    public static final String TARGETTYPE_FUNCTION_APP = "functionapp";
-    public static final String TARGETTYPE_MYSQL_FLEXIBLE = "mysqlflexible";
-    public static final String TARGETTYPE_DIAGNOSTIC_SETTING = "diagnosticsetting";
-    public static final String TARGETTYPE_BLOB_SERVICE = "blobservice";
-    public static final String TARGETTYPE_KUBERNETES = "kubernetes";
-    public static final String TARGETTYPE_POLICY_DEFINITIONS = "policydefinitions";
-    public static final String TARGETTYPE_DEFENDER = "defender";
+
+    public static final String VIRTUAL_MACHINE = "virtualmachine";
+    public static final String VIRTUAL_MACHINE_SCALESET = "virtualmachinescaleset";
+    public static final String STORAGE_ACCOUNT = "storageaccount";
+    public static final String SQL_DATABASE = "sqldatabase";
+    public static final String NSG = "nsg";
+    public static final String DISK = "disk";
+    public static final String NETWORK_INTERFACE = "networkinterface";
+    public static final String VNET = "vnet";
+    public static final String LOADBALANCER = "loadbalancer";
+    public static final String SQLSERVER = "sqlserver";
+    public static final String SECURITY_CENTER = "securitycenter";
+    public static final String BLOB_CONTAINER = "blobcontainer";
+    public static final String RESOURCE_GROUP = "resourcegroup";
+    public static final String COSMOSDB = "cosmosdb";
+    public static final String MYSQLSERVER = "mysqlserver";
+    public static final String DATABRICKS = "databricks";
+    public static final String MARIADB = "mariadb";
+    public static final String POSTGRESQL = "postgresql";
+    public static final String SNAPSHOT = "snapshot";
+    public static final String PUBLICIP_ADDRESS = "publicipaddress";
+    public static final String ROUTE_TABLE = "routetable";
+    public static final String SECURITY_ALERTS = "securityalerts";
+    public static final String POLICY_EVALUATION_RESULTS = "policyevaluationresults";
+    public static final String SITES = "sites";
+    public static final String VAULTS = "vaults";
+    public static final String WORKFLOWS = "workflows";
+    public static final String BATCH_ACCOUNTS = "batchaccounts";
+    public static final String NAMESPACES = "namespaces";
+    public static final String SEARCH_SERVICES = "searchservices";
+    public static final String SUBNETS = "subnets";
+    public static final String REDIS_CACHE = "rediscache";
+    public static final String ACTIVITY_LOG = "activitylog";
+    public static final String SECURITY_PRICINGS = "securitypricings";
+    public static final String WEBAPP = "webapp";
+    public static final String SUBSCRIPTION = "subscription";
+    public static final String FUNCTION_APP = "functionapp";
+    public static final String MYSQL_FLEXIBLE = "mysqlflexible";
+    public static final String DIAGNOSTIC_SETTING = "diagnosticsetting";
+    public static final String BLOB_SERVICE = "blobservice";
+    public static final String KUBERNETES = "kubernetes";
+    public static final String POLICY_DEFINITIONS = "policydefinitions";
+    public static final String DEFENDER = "defender";
+    public static final List<String> TARGET_TYPES = Arrays.asList(
+            VIRTUAL_MACHINE,
+            VIRTUAL_MACHINE_SCALESET,
+            STORAGE_ACCOUNT,
+            SQL_DATABASE,
+            NSG,
+            DISK,
+            NETWORK_INTERFACE,
+            VNET,
+            LOADBALANCER,
+            SQLSERVER,
+            SECURITY_CENTER,
+            BLOB_CONTAINER,
+            RESOURCE_GROUP,
+            COSMOSDB,
+            MYSQLSERVER,
+            DATABRICKS,
+            MARIADB,
+            POSTGRESQL,
+            SNAPSHOT,
+            PUBLICIP_ADDRESS,
+            ROUTE_TABLE,
+            SECURITY_ALERTS,
+            POLICY_EVALUATION_RESULTS,
+            SITES,
+            VAULTS,
+            WORKFLOWS,
+            BATCH_ACCOUNTS,
+            NAMESPACES,
+            SEARCH_SERVICES,
+            SUBNETS,
+            REDIS_CACHE,
+            ACTIVITY_LOG,
+            SECURITY_PRICINGS,
+            WEBAPP,
+            SUBSCRIPTION,
+            FUNCTION_APP,
+            MYSQL_FLEXIBLE,
+            DIAGNOSTIC_SETTING,
+            BLOB_SERVICE,
+            KUBERNETES,
+            POLICY_DEFINITIONS,
+            DEFENDER);
+
+    private TargetTypesConstants() {
+
+    }
 }
