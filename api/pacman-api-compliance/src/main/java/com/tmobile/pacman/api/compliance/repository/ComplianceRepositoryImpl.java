@@ -2232,7 +2232,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         return urlToQuery;
     }
-    private  String createAuditTrail(String ds, String type, String status, String id,String createdBy, String _type, Map<String, Object> parentDetMap, String target, , Map<String, String> optionalAuditFields) {
+
+    private String createAuditTrail(String ds, String type, String status, String id, String createdBy, String _type, Map<String, Object> parentDetMap, String target, Map<String, String> optionalAuditFields) {
         String date = CommonUtils.getCurrentDateStringWithFormat("UTC","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Map<String, Object> auditTrail = new LinkedHashMap<>();
         auditTrail.put("datasource", ds);
