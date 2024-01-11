@@ -16,14 +16,8 @@
 
 package com.tmobile.pacman.service;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyString;
-
-import java.util.ArrayList;
-
+import com.google.common.collect.HashMultimap;
+import com.tmobile.pacman.util.ESUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,10 +25,12 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.google.common.collect.HashMultimap;
-import com.tmobile.pacman.util.ESUtils;
+import java.util.ArrayList;
+
+import static org.mockito.Matchers.*;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ExceptionManagerImplTest.
  *
@@ -45,14 +41,16 @@ import com.tmobile.pacman.util.ESUtils;
 public class ExceptionManagerImplTest {
 
 
-    /** The ex manager. */
+    /**
+     * The ex manager.
+     */
     private ExceptionManager exManager;
 
     /**
      * Setup.
      */
     @Before
-    public void setup(){
+    public void setup() {
         exManager = new ExceptionManagerImpl();
     }
 
@@ -62,16 +60,16 @@ public class ExceptionManagerImplTest {
      * @throws Exception the exception
      */
     @Test
-    public void testGetIndividualExceptions() throws Exception{
+    public void testGetIndividualExceptions() throws Exception {
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
         try {
 
-                PowerMockito.when(ESUtils.getDataFromES(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class), anyList(), anyLong(), anyLong(), anyString())).thenReturn(new ArrayList());
+            PowerMockito.when(ESUtils.getDataFromES(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class), anyList(), anyLong(), anyLong(), anyString())).thenReturn(new ArrayList());
         } catch (Exception e) {
         }
 
-                exManager.getIndividualExceptions("ec2");
+        exManager.getIndividualExceptions("ec2");
     }
 
     /**
@@ -80,7 +78,7 @@ public class ExceptionManagerImplTest {
      * @throws Exception the exception
      */
     @Test
-    public void testGetStickyExceptions() throws Exception{
+    public void testGetStickyExceptions() throws Exception {
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
         try {
@@ -88,7 +86,7 @@ public class ExceptionManagerImplTest {
         } catch (Exception e) {
         }
 
-                exManager.getStickyExceptions("r1", "ec2");
+        exManager.getStickyExceptions("r1", "ec2");
     }
 
 

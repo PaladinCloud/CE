@@ -17,6 +17,7 @@
 package com.tmobile.pacman.dto;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Enum ExceptionType.
  *
@@ -24,8 +25,12 @@ package com.tmobile.pacman.dto;
  */
 public enum ExceptionType {
 
-    /** The sticky. */
+    /**
+     * The sticky.
+     */
     STICKY,
- /** The individual. */
- INDIVIDUAL
+    /**
+     * The individual.
+     */
+    INDIVIDUAL
 }

@@ -16,13 +16,13 @@
 
 package com.tmobile.pacman.publisher.impl;
 
-import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.tmobile.pacman.common.AutoFixAction;
+import com.tmobile.pacman.config.ConfigManager;
+import com.tmobile.pacman.dto.AutoFixTransaction;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ESUtils;
+import com.tmobile.pacman.util.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,66 +31,70 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.google.common.collect.Lists;
-import com.tmobile.pacman.common.AutoFixAction;
-import com.tmobile.pacman.config.ConfigManager;
-import com.tmobile.pacman.dto.AutoFixTransaction;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
-import com.tmobile.pacman.util.ReflectionUtils;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ElasticSearchDataPublisherTest.
  *
  * @author kkumar
  */
-@PowerMockIgnore({"org.apache.http.conn.ssl.*", "javax.net.ssl.*" , "javax.crypto.*"})
+@PowerMockIgnore({"org.apache.http.conn.ssl.*", "javax.net.ssl.*", "javax.crypto.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ReflectionUtils.class,ESUtils.class,CommonUtils.class,ConfigManager.class})
+@PrepareForTest({ReflectionUtils.class, ESUtils.class, CommonUtils.class, ConfigManager.class})
 public class ElasticSearchDataPublisherTest {
-    
-	/**
+
+    /**
+     * The elastic search data publisher.
+     */
+    private ElasticSearchDataPublisher elasticSearchDataPublisher = null;
+
+    /**
      * Setup.
      */
     @Before
-    public void setup(){
+    public void setup() {
         mockStatic(ConfigManager.class);
         ConfigManager ConfigManager = PowerMockito.mock(ConfigManager.class);
-		PowerMockito.when(ConfigManager.getConfigurationsMap()).thenReturn(new Hashtable<String, Object>());
+        PowerMockito.when(ConfigManager.getConfigurationsMap()).thenReturn(new Hashtable<String, Object>());
     }
-    /** The elastic search data publisher. */
-    private ElasticSearchDataPublisher elasticSearchDataPublisher=null;
-    
+
     /**
      * Test publish with no annotations.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testPublishWithNoAnnotations() throws Exception{
-    //	RestHighLevelClient restHighLevelClient = PowerMockito.mock(RestHighLevelClient.class);
-       // RestClient restClient = PowerMockito.mock(RestClient.class);
-       // RestClientBuilder restClientBuilder = PowerMockito.mock(RestClientBuilder.class);
-       // PowerMockito.when(RestClient.builder(any())).thenReturn(restClientBuilder);
-      //  HttpHost httpHost = PowerMockito.mock(HttpHost.class);
-    //    PowerMockito.whenNew(HttpHost.class).withAnyArguments().thenReturn(httpHost);  
+    public void testPublishWithNoAnnotations() throws Exception {
+        //	RestHighLevelClient restHighLevelClient = PowerMockito.mock(RestHighLevelClient.class);
+        // RestClient restClient = PowerMockito.mock(RestClient.class);
+        // RestClientBuilder restClientBuilder = PowerMockito.mock(RestClientBuilder.class);
+        // PowerMockito.when(RestClient.builder(any())).thenReturn(restClientBuilder);
+        //  HttpHost httpHost = PowerMockito.mock(HttpHost.class);
+        //    PowerMockito.whenNew(HttpHost.class).withAnyArguments().thenReturn(httpHost);
         elasticSearchDataPublisher = new ElasticSearchDataPublisher(true);
-        
+
         List<AutoFixTransaction> autoFixTrans = Lists.newArrayList();
-    	AutoFixTransaction autoFixTransaction = new AutoFixTransaction();
-    	autoFixTransaction.setDesc("desc");
-    	autoFixTransaction.setAction(AutoFixAction.AUTOFIX_ACTION_BACKUP);
-    	autoFixTransaction.setExecutionId("executionId");
-    	autoFixTransaction.setResourceId("resourceId");
-    	autoFixTransaction.setPolicyId("ruleId");
-    	autoFixTransaction.setTransactionId("transactionId");
-    	autoFixTransaction.setTransationTime("transationTime");
-    	autoFixTrans.add(autoFixTransaction);
-    	
-    	AutoFixTransaction autoFixTransaction1 = new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_BACKUP, "resourceId", "ruleId", "executionId", "transactionId", "desc","type","targetType","annotationId");
-    	assertTrue(autoFixTransaction1.equals(autoFixTransaction1));
-    	assertNotNull(elasticSearchDataPublisher.publishAutoFixTransactions(autoFixTrans,new HashMap<>()));
-    } 
-    
+        AutoFixTransaction autoFixTransaction = new AutoFixTransaction();
+        autoFixTransaction.setDesc("desc");
+        autoFixTransaction.setAction(AutoFixAction.AUTOFIX_ACTION_BACKUP);
+        autoFixTransaction.setExecutionId("executionId");
+        autoFixTransaction.setResourceId("resourceId");
+        autoFixTransaction.setPolicyId("ruleId");
+        autoFixTransaction.setTransactionId("transactionId");
+        autoFixTransaction.setTransationTime("transationTime");
+        autoFixTrans.add(autoFixTransaction);
+
+        AutoFixTransaction autoFixTransaction1 = new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_BACKUP, "resourceId", "ruleId", "executionId", "transactionId", "desc", "type", "targetType", "annotationId");
+        assertTrue(autoFixTransaction1.equals(autoFixTransaction1));
+        assertNotNull(elasticSearchDataPublisher.publishAutoFixTransactions(autoFixTrans, new HashMap<>()));
+    }
+
 }

@@ -16,13 +16,12 @@
 
 package com.tmobile.pacman.publisher.impl;
 
-import static org.mockito.Matchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
+import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.config.ConfigManager;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ESUtils;
+import com.tmobile.pacman.util.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,36 +29,38 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.config.ConfigManager;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
-import com.tmobile.pacman.util.ProgramExitUtils;
-import com.tmobile.pacman.util.ReflectionUtils;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+import static org.mockito.Matchers.anyString;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class AnnotationPublisherTest.
  *
  * @author kkumar
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ReflectionUtils.class,ESUtils.class,CommonUtils.class,ConfigManager.class})
+@PrepareForTest({ReflectionUtils.class, ESUtils.class, CommonUtils.class, ConfigManager.class})
 public class AnnotationPublisherTest {
 
-    /** The annotation publisher. */
+    /**
+     * The annotation publisher.
+     */
     AnnotationPublisher annotationPublisher;
 
     /**
      * Setup.
      */
     @Before
-    public void setup(){
+    public void setup() {
         annotationPublisher = new AnnotationPublisher();
-            mockStatic(ConfigManager.class);
-            ConfigManager ConfigManager = PowerMockito.mock(ConfigManager.class);
-    		PowerMockito.when(ConfigManager.getConfigurationsMap()).thenReturn(new Hashtable<String, Object>());
+        mockStatic(ConfigManager.class);
+        ConfigManager ConfigManager = PowerMockito.mock(ConfigManager.class);
+        PowerMockito.when(ConfigManager.getConfigurationsMap()).thenReturn(new Hashtable<String, Object>());
     }
 
 
@@ -67,11 +68,11 @@ public class AnnotationPublisherTest {
      * Test publish with no annotations.
      */
     @Test
-    public void testPublishWithNoAnnotations(){
+    public void testPublishWithNoAnnotations() {
 
         try {
-                annotationPublisher.setBulkUploadBucket(new ArrayList<>());
-                annotationPublisher.publish();
+            annotationPublisher.setBulkUploadBucket(new ArrayList<>());
+            annotationPublisher.publish();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,19 +82,19 @@ public class AnnotationPublisherTest {
      * Test publish with annotations.
      */
     @Test
-    public void testPublishWithAnnotations(){
+    public void testPublishWithAnnotations() {
 
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
         PowerMockito.mockStatic(CommonUtils.class);
         try {
-                PowerMockito.when(CommonUtils.doHttpPost(anyString(),anyString())).thenReturn("");
+            PowerMockito.when(CommonUtils.doHttpPost(anyString(), anyString())).thenReturn("");
         } catch (Exception e1) {
         }
 
         annotationPublisher.setBulkUploadBucket(buildSomeAnnotations());
         try {
-                annotationPublisher.publish();
+            annotationPublisher.publish();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,8 +115,6 @@ public class AnnotationPublisherTest {
         annotations.add(annotation);
         return annotations;
     }
-
-
 
 
 }

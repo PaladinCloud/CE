@@ -16,10 +16,12 @@
 
 package com.tmobile.pacman.executor;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.common.exception.ServerlessPolicyFailedException;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -27,14 +29,12 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.common.exception.ServerlessPolicyFailedException;
-import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.commons.policy.PolicyResult;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ServerlessRuleHandler.
  *
@@ -42,23 +42,27 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
  */
 public class ServerlessPolicyHandler implements PolicyHandler {
 
-    /** The policy params. */
-    Map<String, String> policyParams;
-
-    /** The resource. */
-    Map<String, String> resource;
-
-    /** The Constant logger. */
-    private static final Logger logger = LoggerFactory.getLogger(ServerlessPolicyHandler.class);
-
-    /** The http client. */
-    HttpClient httpClient;
-    
-    private static final String RESPONSE_STATUS_FAILED = "failed";
     public static final String SUCCESS_MESSAGE = "Policy evaluation sucessfull";
     public static final String SEVERITY = "severity";
     public static final String CATEGORY = "policyCategory";
     public static final String FAILURE_MESSAGE = "Error in policy evaluation";
+    /**
+     * The Constant logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ServerlessPolicyHandler.class);
+    private static final String RESPONSE_STATUS_FAILED = "failed";
+    /**
+     * The policy params.
+     */
+    Map<String, String> policyParams;
+    /**
+     * The resource.
+     */
+    Map<String, String> resource;
+    /**
+     * The http client.
+     */
+    HttpClient httpClient;
 
     /**
      * Instantiates a new serverless policy handler.
@@ -68,6 +72,29 @@ public class ServerlessPolicyHandler implements PolicyHandler {
     public ServerlessPolicyHandler(HttpClient httpClient) {
         super();
         this.httpClient = httpClient;
+    }
+
+    /**
+     * Instantiates a new serverless rule handler.
+     */
+    public ServerlessPolicyHandler() {
+
+        // httpClient = new HttpClient(new
+        // MultiThreadedHttpConnectionManager());
+    }
+
+    /**
+     * Instantiates a new serverless rule handler.
+     *
+     * @param httpClient the http client
+     * @param ruleParams the rule params
+     * @param resource   the resource
+     */
+    public ServerlessPolicyHandler(HttpClient httpClient, Map<String, String> ruleParams, Map<String, String> resource) {
+        super();
+        this.httpClient = httpClient;
+        this.policyParams = ruleParams;
+        this.resource = resource;
     }
 
     /* (non-Javadoc)
@@ -93,40 +120,40 @@ public class ServerlessPolicyHandler implements PolicyHandler {
         try {
             String response = doHttpPost(policyUri, requestBody.toString(), headers);
             PolicyResult result = null;
-            if(response != null && !"".equals(response)) {
-            	Map<String, String> responseMap = gson.fromJson(response, Map.class);
-            	 if(responseMap.containsKey(PacmanSdkConstants.STATUS_KEY) && 
-            			 PacmanSdkConstants.STATUS_SUCCESS.equals(responseMap.get(PacmanSdkConstants.STATUS_KEY))){
-            		 result = new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, SUCCESS_MESSAGE);
-            		 result.setResource(resource);
-                     
-            	 } else  if(responseMap.containsKey(PacmanSdkConstants.STATUS_KEY) && 
-            			 RESPONSE_STATUS_FAILED.equals(responseMap.get(PacmanSdkConstants.STATUS_KEY))){
-            		 Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
-            		 annotation.put(PacmanSdkConstants.DESCRIPTION, responseMap.get(PacmanSdkConstants.DESCRIPTION));
- 					annotation.put(SEVERITY, policyParams.get(SEVERITY));
- 					annotation.put(CATEGORY, policyParams.get(CATEGORY));
- 					 result = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, FAILURE_MESSAGE,
- 		                    annotation);
- 					result.setResource(resource);
- 		            
-            	 } else {
-            		 Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
- 					annotation.put(SEVERITY, policyParams.get(SEVERITY));
- 					annotation.put(CATEGORY, policyParams.get(CATEGORY));
- 					 result = new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
- 		                    annotation);
- 					result.setResource(resource);
-            	 }
-            			 
+            if (response != null && !"".equals(response)) {
+                Map<String, String> responseMap = gson.fromJson(response, Map.class);
+                if (responseMap.containsKey(PacmanSdkConstants.STATUS_KEY) &&
+                        PacmanSdkConstants.STATUS_SUCCESS.equals(responseMap.get(PacmanSdkConstants.STATUS_KEY))) {
+                    result = new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, SUCCESS_MESSAGE);
+                    result.setResource(resource);
+
+                } else if (responseMap.containsKey(PacmanSdkConstants.STATUS_KEY) &&
+                        RESPONSE_STATUS_FAILED.equals(responseMap.get(PacmanSdkConstants.STATUS_KEY))) {
+                    Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
+                    annotation.put(PacmanSdkConstants.DESCRIPTION, responseMap.get(PacmanSdkConstants.DESCRIPTION));
+                    annotation.put(SEVERITY, policyParams.get(SEVERITY));
+                    annotation.put(CATEGORY, policyParams.get(CATEGORY));
+                    result = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, FAILURE_MESSAGE,
+                            annotation);
+                    result.setResource(resource);
+
+                } else {
+                    Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
+                    annotation.put(SEVERITY, policyParams.get(SEVERITY));
+                    annotation.put(CATEGORY, policyParams.get(CATEGORY));
+                    result = new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE,
+                            annotation);
+                    result.setResource(resource);
+                }
+
             }
-            
+
             // overwrite the resource as sent in
-                                         // case it was overwritten
+            // case it was overwritten
             return result;
-        } catch(ServerlessPolicyFailedException e) {
-        	logger.error("serverless policy excpetion- got invalid http response code {}", e);
-        	return null;
+        } catch (ServerlessPolicyFailedException e) {
+            logger.error("serverless policy excpetion- got invalid http response code {}", e);
+            return null;
         } catch (Exception e) {
             Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
             annotation.put("reason".intern(), "policy was unable to evaluvate");
@@ -140,9 +167,9 @@ public class ServerlessPolicyHandler implements PolicyHandler {
     /**
      * Do http post.
      *
-     * @param url the url
+     * @param url         the url
      * @param requestBody the request body
-     * @param headers the headers
+     * @param headers     the headers
      * @return the integer
      * @throws ServerlessPolicyFailedException the serverless rule failed exception
      */
@@ -161,15 +188,15 @@ public class ServerlessPolicyHandler implements PolicyHandler {
             int responsecode = httpClient.executeMethod(httppost);
             if (HttpStatus.SC_OK == responsecode) {
                 return httppost.getResponseBodyAsString();
-            }  else {
-            	throw new ServerlessPolicyFailedException(httppost.getResponseBodyAsString(),responsecode);
+            } else {
+                throw new ServerlessPolicyFailedException(httppost.getResponseBodyAsString(), responsecode);
             }
         } catch (org.apache.http.ParseException parseException) {
             logger.error("ParseException : " + parseException.getMessage());
         } catch (IOException ioException) {
             logger.error("IOException : " + ioException.getMessage());
         } finally {
-            if(null!=httppost){
+            if (null != httppost) {
                 httppost.releaseConnection();
             }
         }
@@ -213,29 +240,6 @@ public class ServerlessPolicyHandler implements PolicyHandler {
     @Override
     public PolicyResult call() throws Exception {
         return handlePolicy(policyParams, resource);
-    }
-
-    /**
-     * Instantiates a new serverless rule handler.
-     */
-    public ServerlessPolicyHandler() {
-
-        // httpClient = new HttpClient(new
-        // MultiThreadedHttpConnectionManager());
-    }
-
-    /**
-     * Instantiates a new serverless rule handler.
-     *
-     * @param httpClient the http client
-     * @param ruleParams the rule params
-     * @param resource the resource
-     */
-    public ServerlessPolicyHandler(HttpClient httpClient, Map<String, String> ruleParams, Map<String, String> resource) {
-        super();
-        this.httpClient = httpClient;
-        this.policyParams = ruleParams;
-        this.resource = resource;
     }
 
     /**

@@ -17,6 +17,7 @@
 package com.tmobile.pacman.common.exception;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class SuccessfulExecutionException.
  *
@@ -33,14 +34,14 @@ public class SuccessfulExecutionException extends PolicyEngineRunTimeException {
         super(e);
     }
 
-   /**
-    * Instantiates a new successful execution exception.
-    *
-    * @param statusCode the status code
-    * @param msg the msg
-    */
-    public SuccessfulExecutionException(Integer statusCode,String msg) {
-        super(statusCode,msg);
+    /**
+     * Instantiates a new successful execution exception.
+     *
+     * @param statusCode the status code
+     * @param msg        the msg
+     */
+    public SuccessfulExecutionException(Integer statusCode, String msg) {
+        super(statusCode, msg);
     }
 
 }

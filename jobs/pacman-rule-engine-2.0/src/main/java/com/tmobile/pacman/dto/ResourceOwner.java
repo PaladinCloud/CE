@@ -17,6 +17,7 @@
 package com.tmobile.pacman.dto;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ResourceOwner.
  *
@@ -24,16 +25,20 @@ package com.tmobile.pacman.dto;
  */
 public class ResourceOwner {
 
-    /** The name. */
+    /**
+     * The name.
+     */
     String name;
 
-    /** The email id. */
+    /**
+     * The email id.
+     */
     String emailId;
 
     /**
      * Instantiates a new resource owner.
      *
-     * @param name the name
+     * @param name    the name
      * @param emailId the email id
      */
     public ResourceOwner(String name, String emailId) {

@@ -14,7 +14,6 @@ import com.tmobile.pacman.dto.AutoFixTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +21,12 @@ import java.util.Map;
 @PacmanFix(key = "unrestricted-sql-access-auto-fix", desc = "Network security group rules providing public access on port will be removed")
 public class UnrestrictedSQLAccessAutofix extends BaseFix {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UnrestrictedSQLAccessAutofix.class);
     public static final String RESOURCEID = "_resourceid";
     public static final String ACCOUNTID = "accountid";
     public static final String REGION = "region";
     public static final String NAME = "name";
     public static final String NO_DATA = "No Data";
+    private static final Logger LOGGER = LoggerFactory.getLogger(UnrestrictedSQLAccessAutofix.class);
 
     @Override
     public FixResult executeFix(Map<String, String> issue, Map<String, Object> clientMap, Map<String, String> ruleParams) {
@@ -36,24 +35,24 @@ public class UnrestrictedSQLAccessAutofix extends BaseFix {
 
         PagedList<SqlServer> sqlServers = azure.sqlServers().list();
         String resourceId = issue.get(RESOURCEID);
-        SqlServer sqlServerInstance=null;
+        SqlServer sqlServerInstance = null;
         for (SqlServer sqlServer : sqlServers) {
             List<SqlDatabase> sqlDatabases = azure.sqlServers().databases().listBySqlServer(sqlServer);
             for (SqlDatabase sqlDatabase : sqlDatabases) {
                 String dbName = sqlDatabase.name();
-                if (StringUtils.compare(resourceId.substring(resourceId.lastIndexOf("/")+1), dbName) == 0) {
+                if (StringUtils.compare(resourceId.substring(resourceId.lastIndexOf("/") + 1), dbName) == 0) {
                     sqlServerInstance = sqlServer;
                     break;
                 }
             }
         }
-        if(sqlServerInstance!=null){
+        if (sqlServerInstance != null) {
             LOGGER.info("Found the matching server instance violating the unrestricted access policy");
             for (SqlFirewallRule sqlFirewallRule : sqlServerInstance.firewallRules().list()) {
-                if(StringUtils.compare(sqlFirewallRule.startIPAddress(),"0.0.0.0")==0){
-                    LOGGER.info("Found the firewall rule allowing unrestricted access to sql database. Rule name: {}",sqlFirewallRule.name());
+                if (StringUtils.compare(sqlFirewallRule.startIPAddress(), "0.0.0.0") == 0) {
+                    LOGGER.info("Found the firewall rule allowing unrestricted access to sql database. Rule name: {}", sqlFirewallRule.name());
                     sqlFirewallRule.delete();
-                    LOGGER.info("Firewall rule:{} allowing unrestricted access to sql database is now deleted",sqlFirewallRule.name());
+                    LOGGER.info("Firewall rule:{} allowing unrestricted access to sql database is now deleted", sqlFirewallRule.name());
                 }
             }
         }

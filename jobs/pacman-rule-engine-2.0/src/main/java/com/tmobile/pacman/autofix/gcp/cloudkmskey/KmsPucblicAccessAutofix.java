@@ -20,12 +20,12 @@ import java.util.Map;
 @PacmanFix(key = "kms-public-access-auto-fix", desc = "Public access on cloud KMS key will be removed")
 public class KmsPucblicAccessAutofix extends BaseFix {
 
-    private static final Logger logger = LoggerFactory.getLogger(KmsPucblicAccessAutofix.class);
     public static final String RESOURCEID = "_resourceid";
     public static final String ACCOUNTID = "accountid";
     public static final String REGION = "region";
     public static final String NAME = "name";
     public static final String NO_DATA = "No Data";
+    private static final Logger logger = LoggerFactory.getLogger(KmsPucblicAccessAutofix.class);
 
     @Override
     public FixResult executeFix(Map<String, String> issue, Map<String, Object> clientMap, Map<String, String> ruleParams) {
@@ -38,7 +38,7 @@ public class KmsPucblicAccessAutofix extends BaseFix {
 
             Policy iamPolicy = keyManagementServiceClient.getIamPolicy(resourceId);
             logger.info("Iam policies: {}", iamPolicy);
-            if (iamPolicy != null &&  iamPolicy.getBindingsList()!=null && iamPolicy.getBindingsList().isEmpty()) {
+            if (iamPolicy != null && iamPolicy.getBindingsList() != null && iamPolicy.getBindingsList().isEmpty()) {
                 for (Binding binding : iamPolicy.getBindingsList()) {
                     if (binding.getMembersList().contains(PacmanRuleConstants.ALL_USERS)
                             || binding.getMembersList().contains(PacmanRuleConstants.ALL_AUTH_USERS)) {
@@ -52,7 +52,7 @@ public class KmsPucblicAccessAutofix extends BaseFix {
         } catch (Exception e) {
             logger.error("Exception occurred while executing autofix for public kms key");
         }
-        return new FixResult(PacmanSdkConstants.STATUS_SUCCESS_CODE, "The public access to KMS key " + resourceId +  " is now revoked");
+        return new FixResult(PacmanSdkConstants.STATUS_SUCCESS_CODE, "The public access to KMS key " + resourceId + " is now revoked");
     }
 
     @Override

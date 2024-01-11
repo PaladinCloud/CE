@@ -16,11 +16,12 @@
 
 package com.tmobile.pacman.executor.jobs;
 
-import java.util.Map;
-
 import com.tmobile.pacman.commons.jobs.PacmanJob;
 
+import java.util.Map;
+
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class TestJob.
  *
@@ -35,7 +36,7 @@ public class TestJob {
      *
      * @param map the map
      */
-    public void shipData(Map<String,String> map){
+    public void shipData(Map<String, String> map) {
         return;
     }
 

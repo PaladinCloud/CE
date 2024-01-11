@@ -21,12 +21,12 @@ import java.util.Map;
 @PacmanFix(key = "public-access-nsg-auto-fix", desc = "Network security group rules providing public access on port will be removed")
 public class PublicAccessPortAutofix extends BaseFix {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PublicAccessPortAutofix.class);
     public static final String RESOURCEID = "_resourceid";
     public static final String ACCOUNTID = "accountid";
     public static final String REGION = "region";
     public static final String NAME = "name";
     public static final String NO_DATA = "No Data";
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicAccessPortAutofix.class);
 
     @Override
     public FixResult executeFix(Map<String, String> issue, Map<String, Object> clientMap, Map<String, String> ruleParams) {
@@ -70,7 +70,7 @@ public class PublicAccessPortAutofix extends BaseFix {
                     }
                     if (securityRuleName != null) {
                         securityGroup.update().withoutRule(securityRuleName).apply();
-                        LOGGER.info("Security rule :{} is deleted as it is violating the azure policy.",securityRuleName);
+                        LOGGER.info("Security rule :{} is deleted as it is violating the azure policy.", securityRuleName);
                     }
                 }
             }

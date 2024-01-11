@@ -16,53 +16,49 @@
 
 package com.tmobile.pacman.executor;
 
+import com.google.common.base.Joiner;
+import com.tmobile.cloud.constants.PacmanRuleConstants;
+import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+import com.tmobile.pacman.util.PolicyExecutionUtils;
+import com.tmobile.pacman.util.ReflectionUtils;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.tmobile.cloud.constants.PacmanRuleConstants;
-import com.tmobile.pacman.util.CommonUtils;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.commons.policy.PacmanPolicy;
-import com.tmobile.pacman.commons.policy.PolicyResult;
-import com.tmobile.pacman.util.ReflectionUtils;
-import com.tmobile.pacman.util.PolicyExecutionUtils;
-
-import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+import static com.tmobile.pacman.common.Constants.ERROR_PREFIX;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class SingleThreadRuleRunner.
  */
 public class SingleThreadPolicyRunner implements PolicyRunner {
 
-    /** The Constant logger. */
+    /**
+     * The Constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(SingleThreadPolicyRunner.class);
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.executor.RuleRunner#runRules(java.util.List, java.util.Map, java.lang.String)
-     */
-    @SuppressWarnings("nls")
     @Override
     public List<PolicyResult> runPolicies(List<Map<String, String>> resources, Map<String, String> policyParam,
-            String executionId) throws Exception {
+                                          String executionId) throws Exception {
         String policyKey = null;
         Class<?> policyClass = null;
         Object policyObject = null;
         Method executeMethod = null;
-        List<PolicyResult> evaluations = new ArrayList<PolicyResult>();
-        HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+        List<PolicyResult> evaluations = new ArrayList<>();
+        new HttpClient(new MultiThreadedHttpConnectionManager());
+        HttpClient httpClient;
         if (!PacmanSdkConstants.POLICY_TYPE_SERVERLESS.equals(policyParam.get(PacmanSdkConstants.POLICY_TYPE))) {
             try {
                 policyKey = policyParam.get(PacmanSdkConstants.POLICY_KEY);
@@ -71,21 +67,16 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                 executeMethod = ReflectionUtils.findAssociatedMethod(policyObject, "execute");
             } catch (Exception e) {
                 logger.error("Please check the rule class complies to implementation contract, rule key=" + policyKey, e);
-                logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + " execute method not found.");
+                logger.error(ERROR_PREFIX + "with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + " execute method not found.");
                 throw e;
             }
         }
         logger.info(
                 "----------------------------------------------------scan start------------------------------------------------------------------");
 
-        httpClient = new HttpClient(new MultiThreadedHttpConnectionManager()); // create
-                                                                               // this
-                                                                               // outside
-                                                                               // the
-                                                                               // loop
-                                                                               // below
+        httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
 
-        int eCount=0;
+        int eCount = 0;
         for (Map<String, String> resource : resources) {
             try {
                 Map<String, String> localPolicyParam = PolicyExecutionUtils.getLocalPolicyParam(policyParam, resource);
@@ -100,32 +91,29 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                     result = new ServerlessPolicyHandler(httpClient).handlePolicy(policyParam, resource);
                 } else {
                     try {
+                        // let policy not allow to modify input
                         result = (PolicyResult) executeMethod.invoke(policyObject,
-                                Collections.unmodifiableMap(localPolicyParam), Collections.unmodifiableMap(resource)); // let
-                                                                                                                     // rule
-                                                                                                                     // not
-                                                                                                                     // allow
-                                                                                                                     // modify
-                                                                                                                     // input
+                                localPolicyParam, Collections.unmodifiableMap(resource));
                     } catch (Exception e) {
                         // in case not able to evaluate the result :
                         // RuleExecutor class will detect this by taking the
                         // delta between resource in and result out
-                        if(eCount==0){
+                        if (eCount == 0) {
                             //Below logger message will be used by datadog to create notification in slack.
-                            logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
+                            logger.error(ERROR_PREFIX + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
                                     ". Error message - " + String.format("unable to evaluate for this resource %s", resource) + "," + e.getMessage());
                         }
+
                         eCount++;
-                        logger.error(String.format("unable to evaluate for this resource %s" , resource), e); // this will be handled as missing evaluation at RuleEcecutor
+                        logger.error(String.format("unable to evaluate for this resource %s", resource), e); // this will be handled as missing evaluation at RuleEcecutor
                     }
                     policyAnnotation = policyClass.getAnnotation(PacmanPolicy.class);
                 }
                 // if fail issue will get logged to database, hence update the
                 // category and severity
                 String tagsMandatory = policyParam.get(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
-                Map<String, String> mandatoryTag = getMandatoryTagsForAnnotation(tagsMandatory,resource);
-                if (result!= null && (PacmanSdkConstants.STATUS_FAILURE.equalsIgnoreCase(result.getStatus())
+                Map<String, String> mandatoryTag = getMandatoryTagsForAnnotation(tagsMandatory, resource);
+                if (result != null && (PacmanSdkConstants.STATUS_FAILURE.equalsIgnoreCase(result.getStatus())
                         || PacmanSdkConstants.STATUS_UNKNOWN.equalsIgnoreCase(result.getStatus()))) {
                     if (policyParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
                         result.getAnnotation().put(PacmanSdkConstants.INVOCATION_ID,
@@ -133,8 +121,8 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                     }
                     result.getAnnotation().put(PacmanSdkConstants.RESOURCE_ID,
                             resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
-                    populateAnnotationParams(result,resource,policyParam);
-                    if(resource.get("region") != null){
+                    populateAnnotationParams(result, resource, policyParam);
+                    if (resource.get("region") != null) {
                         result.getAnnotation().put(PacmanSdkConstants.REGION, resource.get("region"));
                     } else {
                         result.getAnnotation().put(PacmanSdkConstants.REGION, policyParam.get("defaultRegion"));
@@ -148,7 +136,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                     result.getAnnotation().put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID));
                     result.getAnnotation().put(PacmanSdkConstants.EXECUTION_ID, executionId);
                     result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
-                    result.getAnnotation().put(PacmanRuleConstants.ACCOUNTID,resource.get(PacmanRuleConstants.ACCOUNTID));
+                    result.getAnnotation().put(PacmanRuleConstants.ACCOUNTID, resource.get(PacmanRuleConstants.ACCOUNTID));
                     mandatoryTag.forEach(result.getAnnotation()::putIfAbsent);
                 } else {
                     Annotation annotation = Annotation.buildAnnotation(policyParam, Annotation.Type.ISSUE);
@@ -175,13 +163,14 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                         continue;
                     }
                 }
+
                 evaluations.add(result);
             } catch (Exception e) {
                 logger.debug("rule execution for resource " + resource.get("id") + " failed due to " + e.getMessage(),
                         e);
-                if(eCount==0){
+                if (eCount == 0) {
                     //Below logger message will be used by datadog to create data dog alert.
-                    logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
+                    logger.error(ERROR_PREFIX + "with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
                             ". Error message - rule execution for resource " + resource.get("id") + " failed. ", e);
                 }
                 eCount++;
@@ -191,5 +180,4 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                 "----------------------------------------------------scan complete------------------------------------------------------------------");
         return evaluations;
     }
-
 }

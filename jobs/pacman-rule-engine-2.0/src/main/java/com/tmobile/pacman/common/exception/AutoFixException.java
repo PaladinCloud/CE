@@ -17,22 +17,23 @@
 package com.tmobile.pacman.common.exception;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class AutoFixException.
  *
  * @author kkumar
  */
 public class AutoFixException extends Exception {
-    
-    
+
+
     /**
      * Instantiates a new auto fix exception.
      */
     public AutoFixException() {
         super();
     }
-    
-    
+
+
     /**
      * Instantiates a new auto fix exception.
      *
@@ -41,14 +42,13 @@ public class AutoFixException extends Exception {
     public AutoFixException(Throwable th) {
         super(th);
     }
-    
+
     /**
-     * 
      * @param msg
      */
     public AutoFixException(String msg) {
         super(msg);
     }
-    
+
 
 }

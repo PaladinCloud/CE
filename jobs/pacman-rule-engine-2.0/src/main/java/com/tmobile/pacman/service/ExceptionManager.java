@@ -16,12 +16,13 @@
 
 package com.tmobile.pacman.service;
 
+import com.tmobile.pacman.dto.IssueException;
+
 import java.util.List;
 import java.util.Map;
 
-import com.tmobile.pacman.dto.IssueException;
-
 // TODO: Auto-generated Javadoc
+
 /**
  * The Interface ExceptionManager.
  *
@@ -32,7 +33,7 @@ public interface ExceptionManager {
     /**
      * Gets the sticky exceptions.
      *
-     * @param ruleId the rule id
+     * @param ruleId       the rule id
      * @param resourceType the resource type
      * @return the sticky exceptions
      * @throws Exception the exception

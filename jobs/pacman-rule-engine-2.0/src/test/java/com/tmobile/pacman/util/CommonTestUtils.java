@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -14,15 +14,6 @@
  * the License.
  ******************************************************************************/
 package com.tmobile.pacman.util;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.amazonaws.auth.policy.Action;
 import com.amazonaws.auth.policy.Policy;
@@ -42,6 +33,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.pacman.commons.policy.Annotation;
 
+import java.util.*;
+
 public class CommonTestUtils {
 
     public static Map<String, String> getMapString(String passRuleResourceId) {
@@ -59,7 +52,7 @@ public class CommonTestUtils {
         commonMap.put("elbType", "application");
         commonMap.put("esSubnetURL", "esSubnetURL");
         commonMap.put("s3MacieTag", "tag");
-        
+
         commonMap.put("subnetEsURL", "subnetEsURL");
         commonMap.put("esSubnetURL", "esSubnetURL");
         commonMap.put("awsSearch", "awsSearch");
@@ -227,7 +220,7 @@ public class CommonTestUtils {
         commonMap.put("endpoints", "{vpc=abc}");
         return commonMap;
     }
-    
+
     public static Map<String, String> getWithOutEndPointMoreMapString(String passRuleResourceId) {
         Map<String, String> commonMap = new HashMap<>();
         commonMap.put("scheme", "internet-facing");
@@ -239,7 +232,7 @@ public class CommonTestUtils {
         commonMap.put("esRoutetableURL", "esRoutetableURL");
         commonMap.put("esSgRulesUrl", "esSgRulesUrl");
         commonMap.put("esSubnetURL", "esSubnetURL");
-        
+
         commonMap.put("subnetEsURL", "subnetEsURL");
         commonMap.put("esSubnetURL", "esSubnetURL");
         commonMap.put("awsSearch", "awsSearch");
@@ -368,31 +361,32 @@ public class CommonTestUtils {
         commonMap.put("securitygroups", "securitygroups");
         return commonMap;
     }
-    
-    
+
+
     public static List<SecurityGroup> getSecurityGroupIdList() {
         List<SecurityGroup> securityGroups = new ArrayList<>();
         securityGroups.add(getSecurityGroup("123"));
         return securityGroups;
     }
-    
-    public static SecurityGroup getSecurityGroup(String groupId){
-    	UserIdGroupPair groupPair = new UserIdGroupPair();
-    	groupPair.setGroupId("123");
-    	List<UserIdGroupPair> userIdGroupPairs = new ArrayList<UserIdGroupPair>();
-    	userIdGroupPairs.add(groupPair);
-    	
-    	
-    	IpPermission ipPermission = new IpPermission();
-    	ipPermission.setFromPort(80);
-    	ipPermission.setUserIdGroupPairs(userIdGroupPairs);
-    	List<IpPermission> ipPermissions = new ArrayList<IpPermission>();
-    	ipPermissions.add(ipPermission);
-    	SecurityGroup securityGroup = new SecurityGroup();
-    	securityGroup.setGroupId(groupId);
-    	securityGroup.setIpPermissions(ipPermissions);
+
+    public static SecurityGroup getSecurityGroup(String groupId) {
+        UserIdGroupPair groupPair = new UserIdGroupPair();
+        groupPair.setGroupId("123");
+        List<UserIdGroupPair> userIdGroupPairs = new ArrayList<UserIdGroupPair>();
+        userIdGroupPairs.add(groupPair);
+
+
+        IpPermission ipPermission = new IpPermission();
+        ipPermission.setFromPort(80);
+        ipPermission.setUserIdGroupPairs(userIdGroupPairs);
+        List<IpPermission> ipPermissions = new ArrayList<IpPermission>();
+        ipPermissions.add(ipPermission);
+        SecurityGroup securityGroup = new SecurityGroup();
+        securityGroup.setGroupId(groupId);
+        securityGroup.setIpPermissions(ipPermissions);
         return securityGroup;
     }
+
     public static Map<String, String> getFinalKernelReleaseAnotherMapString(
             String passRuleResourceId) {
         Map<String, String> commonMap = new HashMap<>();
@@ -477,7 +471,7 @@ public class CommonTestUtils {
         jsonObject.add("routetableid",
                 gson.fromJson("routetableid", JsonElement.class));
         jsonObject.add("gatewayid",
-                   gson.fromJson("igw_gatewayid", JsonElement.class));
+                gson.fromJson("igw_gatewayid", JsonElement.class));
         jsonObject.add("_resourceid",
                 gson.fromJson("_resourceid", JsonElement.class));
         jsonObject.add("title",
@@ -490,18 +484,18 @@ public class CommonTestUtils {
                 gson.fromJson("ipprotocol", JsonElement.class));
         jsonObject.add("total",
                 gson.fromJson("total", JsonElement.class));
-        jsonObject.add("resourceinfo",gson.fromJson("{\"Region\":\"us\",\"Load Balancer Name\":\"rbl\",\"Reason\":\"Low request count\",\"Estimated Monthly Savings\":\"$18.00\",\"Instance ID\":\"i-09\",\"Instance Name\":\"alerts\",\"Instance Type\":\"c.xlarge\",\"Day 1\":\"0.1%  0.07MB\",\"Day 2\":\"0.1%  0.07MB\",\"Day 3\":\"0.1%  0.08MB\",\"Day 4\":\"0.1%  0.07MB\",\"Day 5\":\"0.1%  0.07MB\",\"Day 6\":\"0.1%  0.07MB\",\"Day 7\":\"0.1%  0.07MB\",\"Day 8\":\"0.1%  0.07MB\",\"Day 9\":\"0.1%  0.07MB\",\"Day 10\":\"0.1%  0.09MB\",\"Day 11\":\"0.1%  0.07MB\",\"Day 12\":\"0.1%  0.07MB\",\"Day 13\":\"0.1%  0.06MB\",\"Day 14\":\"0.1%  0.04MB\",\"14-Day Average CPU Utilization\":\"0.1%\",\"14-Day Average Network IO\":\"0.07MB\",\"Number of Days Low Utilization\":\"14 days\",\"Status\":\"Yellow\",\"Cluster\":\"redShift\",\"DB Instance Name\":\"prd\",\"Multi-AZ\":\"No\",\"Storage Provisioned (GB)\":\"1\",\"Days Since Last Connection\":\"14+\",\"Estimated Monthly Savings (On Demand)\":\"$209\",\"Volume ID\":\"prd\",\"Volume Name\":\"dev\",\"Volume Type\":\"General\",\"Volume Size\":\"1000\",\"Monthly Storage Cost\":\"$100.00\",\"Snapshot Name\":\"snap\",\"Snapshot Age\":\"23\",\"Snapshot ID\":\"snap\",\"Description\":\"Public Access Test Volume\",\"Zone\":\"null\",\"Platform\":\"Linux/UNIX\",\"Instance Count\":\"3\",\"Current Monthly Cost\":\"$258.14\",\"Expiration Date\":\"2018-07-19T23:59:59.000Z\",\"Reserved Instance ID\":\"24300dd4\",\"DB Instance or Cluster ID\":\"DB Instance or Cluster ID\"}", JsonElement.class));
+        jsonObject.add("resourceinfo", gson.fromJson("{\"Region\":\"us\",\"Load Balancer Name\":\"rbl\",\"Reason\":\"Low request count\",\"Estimated Monthly Savings\":\"$18.00\",\"Instance ID\":\"i-09\",\"Instance Name\":\"alerts\",\"Instance Type\":\"c.xlarge\",\"Day 1\":\"0.1%  0.07MB\",\"Day 2\":\"0.1%  0.07MB\",\"Day 3\":\"0.1%  0.08MB\",\"Day 4\":\"0.1%  0.07MB\",\"Day 5\":\"0.1%  0.07MB\",\"Day 6\":\"0.1%  0.07MB\",\"Day 7\":\"0.1%  0.07MB\",\"Day 8\":\"0.1%  0.07MB\",\"Day 9\":\"0.1%  0.07MB\",\"Day 10\":\"0.1%  0.09MB\",\"Day 11\":\"0.1%  0.07MB\",\"Day 12\":\"0.1%  0.07MB\",\"Day 13\":\"0.1%  0.06MB\",\"Day 14\":\"0.1%  0.04MB\",\"14-Day Average CPU Utilization\":\"0.1%\",\"14-Day Average Network IO\":\"0.07MB\",\"Number of Days Low Utilization\":\"14 days\",\"Status\":\"Yellow\",\"Cluster\":\"redShift\",\"DB Instance Name\":\"prd\",\"Multi-AZ\":\"No\",\"Storage Provisioned (GB)\":\"1\",\"Days Since Last Connection\":\"14+\",\"Estimated Monthly Savings (On Demand)\":\"$209\",\"Volume ID\":\"prd\",\"Volume Name\":\"dev\",\"Volume Type\":\"General\",\"Volume Size\":\"1000\",\"Monthly Storage Cost\":\"$100.00\",\"Snapshot Name\":\"snap\",\"Snapshot Age\":\"23\",\"Snapshot ID\":\"snap\",\"Description\":\"Public Access Test Volume\",\"Zone\":\"null\",\"Platform\":\"Linux/UNIX\",\"Instance Count\":\"3\",\"Current Monthly Cost\":\"$258.14\",\"Expiration Date\":\"2018-07-19T23:59:59.000Z\",\"Reserved Instance ID\":\"24300dd4\",\"DB Instance or Cluster ID\":\"DB Instance or Cluster ID\"}", JsonElement.class));
         jsonObject.add("managedBy",
                 gson.fromJson("managedBy", JsonElement.class));
-        jsonObject.add("memberOf",getJsonArray());
+        jsonObject.add("memberOf", getJsonArray());
         jsonObject.add("lastVulnScan",
                 gson.fromJson("", JsonElement.class));
         jsonObject.add("Cluster",
                 gson.fromJson("Cluster", JsonElement.class));
         jsonObject.add("Status",
                 gson.fromJson("Yellow", JsonElement.class));
-        jsonObject.add("detail",getAllSourceJson());
-        
+        jsonObject.add("detail", getAllSourceJson());
+
         return jsonObject;
     }
 
@@ -514,7 +508,7 @@ public class CommonTestUtils {
         return array;
     }
 
-    
+
     public static JsonArray getAllHitsArrayJson() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("_source", getAllSourceJson());
@@ -523,10 +517,11 @@ public class CommonTestUtils {
         array.add(jsonObject);
         return array;
     }
+
     public static JsonObject getEmptyJsonObject() {
         return new JsonObject();
     }
-    
+
     public static JsonObject getAllJsonObject() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -561,7 +556,7 @@ public class CommonTestUtils {
         jsonObject.add("routetableid",
                 gson.fromJson("routetableid", JsonElement.class));
         jsonObject.add("gatewayid",
-                   gson.fromJson("igw_gatewayid", JsonElement.class));
+                gson.fromJson("igw_gatewayid", JsonElement.class));
         jsonObject.add("_resourceid",
                 gson.fromJson("_resourceid", JsonElement.class));
         jsonObject.add("title",
@@ -572,11 +567,11 @@ public class CommonTestUtils {
                 gson.fromJson("80", JsonElement.class));
         jsonObject.add("ipprotocol",
                 gson.fromJson("ipprotocol", JsonElement.class));
-        jsonObject.add("memberOf",new JsonArray());
+        jsonObject.add("memberOf", new JsonArray());
         jsonObject.add("userIdentity", getOneMoreJsonObject());
         return jsonObject;
     }
-    
+
     public static JsonObject getOneMoreJsonObject() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -586,7 +581,7 @@ public class CommonTestUtils {
                 gson.fromJson("userName", JsonElement.class));
         return jsonObject;
     }
-    
+
     public static JsonObject getWrongPortsEmptyJsonObject() {
         return new JsonObject();
     }
@@ -595,8 +590,8 @@ public class CommonTestUtils {
         List<String> commonList = new ArrayList<>();
         commonList.add("abc");
         commonList.add("AuthorizationType1");
-       commonList.add("ldap");
-       commonList.add("ssh");
+        commonList.add("ldap");
+        commonList.add("ssh");
         commonList.add("spaceandsat");
         commonList.add("qualys");
         commonList.add("webservice");
@@ -604,8 +599,9 @@ public class CommonTestUtils {
     }
 
     public static List<String> getEmptyListString() {
-       return new ArrayList<>();
+        return new ArrayList<>();
     }
+
     public static List<String> getOneMoreListString() {
         List<String> commonList = new ArrayList<>();
         commonList.add("xyz");
@@ -690,7 +686,7 @@ public class CommonTestUtils {
         commonMap.put("_entitytype", "volume");
         return commonMap;
     }
-    
+
     public static Map<String, String> getOneMoreMapString(
             String passRuleResourceId) {
         Map<String, String> commonMap = new HashMap<>();
@@ -701,7 +697,7 @@ public class CommonTestUtils {
         commonMap.put("_entitytype", "ec2");
         return commonMap;
     }
-    
+
     public static Map<String, String> getSnapshotMapString(
             String passRuleResourceId) {
         Map<String, String> commonMap = new HashMap<>();
@@ -728,7 +724,7 @@ public class CommonTestUtils {
         commonSet.add("kernelversionForComparision");
         return commonSet;
     }
-    
+
     public static Set<String> getEmptySetString() {
         Set<String> commonSet = new HashSet<>();
         return commonSet;
@@ -754,19 +750,19 @@ public class CommonTestUtils {
         commonSet.add(getGroupIdentifier(passRuleResourceId));
         return commonSet;
     }
-    
+
     public static Set<GroupIdentifier> getEmptySetGroupIdentifier(String passRuleResourceId) {
         Set<GroupIdentifier> commonSet = new HashSet<>();
         return commonSet;
     }
-    
-    public static GroupIdentifier getGroupIdentifier(String groupId){
+
+    public static GroupIdentifier getGroupIdentifier(String groupId) {
         GroupIdentifier groupIdentifier = new GroupIdentifier();
         groupIdentifier.setGroupId(groupId);
         return groupIdentifier;
     }
-    
-    
+
+
     public static Map<String, String> getLastPatchedMapString(String passRuleResourceId) {
         Map<String, String> commonMap = new HashMap<>();
         commonMap.put("executionId", "1234");
@@ -867,10 +863,10 @@ public class CommonTestUtils {
         commonMap.put("lucene_version", "success");
         commonMap.put("final_u_last_patched", "2017-08-01 00:00:00.000000");
         commonMap.put("final_kernel_release", "123");
-        
+
         return commonMap;
     }
-    
+
     public static JsonArray getOneJsonArray() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -885,7 +881,7 @@ public class CommonTestUtils {
         array.add(stmnt);
         return array;
     }
-    
+
     public static JsonArray getForDenyJsonArray() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -895,7 +891,7 @@ public class CommonTestUtils {
         array.add(jsonObject);
         return array;
     }
-    
+
     public static JsonArray getAllowJsonArray() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -907,7 +903,7 @@ public class CommonTestUtils {
         stmnt.add("Statement", array);
         return array;
     }
-    
+
     public static JsonArray getAnotherJsonArray() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -921,38 +917,38 @@ public class CommonTestUtils {
         array.add(stmnt);
         return array;
     }
-    
+
     public static Policy getPolicy() {
-    	Policy policy = new Policy();
-		List<Statement> statements = new ArrayList<Statement>();
-		Statement statement = new Statement(Effect.Allow);
-    	List<Action> actions = new ArrayList<>();
-		actions.add(IdentityManagementActions.AllIdentityManagementActions);
-		actions.add(EC2Actions.RunInstances);
-		statement.setActions(actions);
-		statements.add(statement);
-		policy.setStatements(statements);
+        Policy policy = new Policy();
+        List<Statement> statements = new ArrayList<Statement>();
+        Statement statement = new Statement(Effect.Allow);
+        List<Action> actions = new ArrayList<>();
+        actions.add(IdentityManagementActions.AllIdentityManagementActions);
+        actions.add(EC2Actions.RunInstances);
+        statement.setActions(actions);
+        statements.add(statement);
+        policy.setStatements(statements);
         policy.setId("123");
         policy.setStatements(statements);
-		return policy;
+        return policy;
     }
-    
-    public static ElasticsearchDomainStatus getElasticsearchDomainStatus(){
-        
+
+    public static ElasticsearchDomainStatus getElasticsearchDomainStatus() {
+
         ElasticsearchDomainStatus elasticsearchDomainStatus = new ElasticsearchDomainStatus();
         elasticsearchDomainStatus.setDomainId("123");
         elasticsearchDomainStatus.setAccessPolicies("{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":\"es:*\",\"Resource\":\"123\"}]}");
         elasticsearchDomainStatus.setEndpoint("123");
         return elasticsearchDomainStatus;
-        }
-        
-        public static ElasticsearchDomainStatus getWithoutEndPOintElasticsearchDomainStatus(){
-            VPCDerivedInfo vPCOptions = new VPCDerivedInfo();
-            vPCOptions.setSecurityGroupIds(Arrays.asList("123"));
-            ElasticsearchDomainStatus elasticsearchDomainStatus = new ElasticsearchDomainStatus();
-            elasticsearchDomainStatus.setDomainId("123");
-            elasticsearchDomainStatus.setAccessPolicies("{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":\"es:*\",\"Resource\":\"123\"}]}");
-            elasticsearchDomainStatus.setVPCOptions(vPCOptions);
-            return elasticsearchDomainStatus;
-            }
+    }
+
+    public static ElasticsearchDomainStatus getWithoutEndPOintElasticsearchDomainStatus() {
+        VPCDerivedInfo vPCOptions = new VPCDerivedInfo();
+        vPCOptions.setSecurityGroupIds(Arrays.asList("123"));
+        ElasticsearchDomainStatus elasticsearchDomainStatus = new ElasticsearchDomainStatus();
+        elasticsearchDomainStatus.setDomainId("123");
+        elasticsearchDomainStatus.setAccessPolicies("{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":\"es:*\",\"Resource\":\"123\"}]}");
+        elasticsearchDomainStatus.setVPCOptions(vPCOptions);
+        return elasticsearchDomainStatus;
+    }
 }

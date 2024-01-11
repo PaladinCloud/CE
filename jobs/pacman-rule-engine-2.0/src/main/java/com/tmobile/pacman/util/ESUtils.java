@@ -27,7 +27,6 @@ import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.config.Util;
 import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.publisher.impl.ElasticSearchDataReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -38,46 +37,61 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ESUtils.
  */
 public class ESUtils {
 
-    /** The Constant INPUT_TYPE. */
+    /**
+     * The Constant INPUT_TYPE.
+     */
     private static final String INPUT_TYPE = "input_type";
 
-    /** The Constant CREATE_MAPPING_REQUEST_BODY_TEMPLATE. */
+    /**
+     * The Constant CREATE_MAPPING_REQUEST_BODY_TEMPLATE.
+     */
     private static final String CREATE_MAPPING_REQUEST_BODY_TEMPLATE = "  {\"properties\": {\"text\": {\"type\": \"text\",\"analyzer\": \"whitespace\",\"search_analyzer\": \"whitespace\"}}}";
 
-    /** The Constant MAPPING. */
+    /**
+     * The Constant MAPPING.
+     */
     private static final String MAPPING = "_mapping";
 
-    /** The Constant COUNT. */
+    /**
+     * The Constant COUNT.
+     */
     private static final String COUNT = "_count";
-    
-    /** The Constant QUERY. */
+
+    /**
+     * The Constant QUERY.
+     */
     private static final String QUERY = "query";
 
     private static final String APPLICATION_JSON = "application/json";
 
-    /** The Constant CONTENT_TYPE. */
+    /**
+     * The Constant CONTENT_TYPE.
+     */
     private static final String CONTENT_TYPE = "Content-Type";
-    
-    /** The Constant logger. */
+
+    /**
+     * The Constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(ESUtils.class);
 
     /**
      * Gets the resources from es.
      *
-     * @param index the index
+     * @param index      the index
      * @param targetType the target type
-     * @param filter the filter
-     * @param fields the fields
+     * @param filter     the filter
+     * @param fields     the fields
      * @return the resources from es
      * @throws Exception the exception
      */
     public static List<Map<String, String>> getResourcesFromEs(String index, String targetType,
-            Map<String, String> filter, List<String> fields) throws Exception {
+                                                               Map<String, String> filter, List<String> fields) throws Exception {
         if (Strings.isNullOrEmpty(index) || Strings.isNullOrEmpty(targetType)) {
             throw new Exception("pac_es or targetType cannot be null");
         }
@@ -108,24 +122,24 @@ public class ESUtils {
     private static Map<String, String> getFilterForType(String targetType) {
         Map<String, String> filter = new HashMap<String, String>();
         filter.put("latest", "true"); // this will make sure about the inventory
-                                      // we get is latest
+        // we get is latest
         return filter;
     }
 
     /**
      * Gets the total document count for index and type.
      *
-     * @param url the url
-     * @param index            name
-     * @param type            name
-     * @param filter the filter
+     * @param url           the url
+     * @param index         name
+     * @param type          name
+     * @param filter        the filter
      * @param mustNotFilter the must not filter
-     * @param shouldFilter the should filter
+     * @param shouldFilter  the should filter
      * @return elastic search count
      */
     @SuppressWarnings("unchecked")
     public static long getTotalDocumentCountForIndexAndType(String url, String index, String type,
-            Map<String, Object> filter, Map<String, Object> mustNotFilter, HashMultimap<String, Object> shouldFilter) {
+                                                            Map<String, Object> filter, Map<String, Object> mustNotFilter, HashMultimap<String, Object> shouldFilter) {
 
         String urlToQuery = buildURL(url, index, type);
 
@@ -150,7 +164,7 @@ public class ESUtils {
         Gson gson = new GsonBuilder().create();
         try {
             String requestJson = gson.toJson(requestBody, Object.class);
-            responseDetails = CommonUtils.doHttpPost(urlToQuery, requestJson,new HashMap<>());
+            responseDetails = CommonUtils.doHttpPost(urlToQuery, requestJson, new HashMap<>());
             Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Object.class);
             return (long) (Double.parseDouble(response.get("count").toString()));
         } catch (Exception e) {
@@ -163,9 +177,9 @@ public class ESUtils {
     /**
      * Builds the URL.
      *
-     * @param url the url
+     * @param url   the url
      * @param index the index
-     * @param type the type
+     * @param type  the type
      * @return the string
      */
     private static String buildURL(String url, String index, String type) {
@@ -181,7 +195,7 @@ public class ESUtils {
     /**
      * Checks if is valid index.
      *
-     * @param url the url
+     * @param url   the url
      * @param index the index
      * @return true, if is valid index
      */
@@ -193,9 +207,9 @@ public class ESUtils {
     /**
      * Checks if is valid type.
      *
-     * @param url the url
+     * @param url   the url
      * @param index the index
-     * @param type the type
+     * @param type  the type
      * @return true, if is valid type
      */
     public static boolean isValidType(final String url, final String index, final String type) {
@@ -208,7 +222,7 @@ public class ESUtils {
         // Get the mapping for the index
         String mappingUrl = url + "/" + indexName + "/_mapping";
         //CommonUtils.doHttpGet(mappingUrl);
-        Map<String, Object> httpGet=new HashMap<>();
+        Map<String, Object> httpGet = new HashMap<>();
         httpGet.put(CONTENT_TYPE, APPLICATION_JSON);
         String mappingResponse = null;
         try {
@@ -217,7 +231,7 @@ public class ESUtils {
 
             // Get the relations for the index
             JSONObject indexObject = mappingObject.getJSONObject(indexName);
-            JSONObject relationsObject = indexObject.getJSONObject("mappings").getJSONObject("properties").getJSONObject(parent+"_relations").getJSONObject("relations");
+            JSONObject relationsObject = indexObject.getJSONObject("mappings").getJSONObject("properties").getJSONObject(parent + "_relations").getJSONObject("relations");
 
             // Check if a relation exists between the parent and child entities
             if (relationsObject.has(parent)) {
@@ -230,7 +244,7 @@ public class ESUtils {
                 }
             }
         } catch (Exception e) {
-            logger.error("Exception in getHttpGet: {}" ,e);
+            logger.error("Exception in getHttpGet: {}", e);
         }
 
 
@@ -251,7 +265,7 @@ public class ESUtils {
      *
      * @param esUrl the es url
      * @param index the index
-     * @param type the type
+     * @param type  the type
      * @return the string
      * @throws Exception the exception
      */
@@ -285,11 +299,10 @@ public class ESUtils {
         // Get existing children
         Map<String, Object> existingChildren = null;
         try {
-            existingChildren = getChildRelations(esUrl,index, parent);
+            existingChildren = getChildRelations(esUrl, index, parent);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -329,7 +342,7 @@ public class ESUtils {
             throw new RuntimeException(e);
         }
         try {
-            return CommonUtils.doHttpPut(esUrl+"/"+endPoint, payLoad);
+            return CommonUtils.doHttpPut(esUrl + "/" + endPoint, payLoad);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -337,8 +350,8 @@ public class ESUtils {
 
     // Helper function to retrieve existing child relations
     private static Map<String, Object> getChildRelations(String esUrl, String index, String parent) throws Exception {
-        String endPoint = esUrl + "/"+ index + "/_mapping";
-        String response = CommonUtils.eshttpGet(endPoint,new HashMap<>());
+        String endPoint = esUrl + "/" + index + "/_mapping";
+        String response = CommonUtils.eshttpGet(endPoint, new HashMap<>());
         JsonNode node = new ObjectMapper().readTree(response);
         JsonNode properties = node.at("/" + index + "/mappings/properties");
         JsonNode relations = properties.get(parent + "_relations").get("relations");
@@ -361,14 +374,14 @@ public class ESUtils {
     /**
      * Ensure index and type for annotation.
      *
-     * @param annotation the annotation
+     * @param annotation            the annotation
      * @param createIndexIfNotFound the create index if not found
      * @throws Exception the exception
      */
     public static void ensureIndexAndTypeForAnnotation(Annotation annotation, Boolean createIndexIfNotFound)
             throws Exception {
         String esUrl = getEsUrl();
-        if(Strings.isNullOrEmpty(esUrl)){
+        if (Strings.isNullOrEmpty(esUrl)) {
             throw new Exception("ES host cannot be null");
         }
         String indexName = buildIndexNameFromAnnotation(annotation);
@@ -429,15 +442,15 @@ public class ESUtils {
     /**
      * Gets the data from ES.
      *
-     * @param url the url
-     * @param dataSource the data source
-     * @param entityType the entity type
-     * @param mustFilter the must filter
+     * @param url           the url
+     * @param dataSource    the data source
+     * @param entityType    the entity type
+     * @param mustFilter    the must filter
      * @param mustNotFilter the must not filter
-     * @param shouldFilter the should filter
-     * @param fields the fields
-     * @param from            size
-     * @param size the size
+     * @param shouldFilter  the should filter
+     * @param fields        the fields
+     * @param from          size
+     * @param size          the size
      * @return String
      * @throws Exception the exception
      */
@@ -468,7 +481,7 @@ public class ESUtils {
         Map<String, Object> matchFilters = Maps.newHashMap();
         if (entityType != null) {
             if (mustFilter == null) {
-                mustFilter=new HashMap<>();
+                mustFilter = new HashMap<>();
                 Map<String, String> typeFilter = new HashMap<String, String>();
                 typeFilter.put(PacmanSdkConstants.DOC_TYPE, entityType);
                 mustFilter.put("match", typeFilter);
@@ -476,7 +489,7 @@ public class ESUtils {
                 mustFilter.put(PacmanSdkConstants.DOC_TYPE, entityType);
                 matchFilters.putAll(mustFilter);
             }
-        }else{
+        } else {
             matchFilters.putAll(mustFilter);
         }
 
@@ -610,9 +623,9 @@ public class ESUtils {
     /**
      * return the ES document for @_id.
      *
-     * @param index the index
+     * @param index      the index
      * @param targetType the target type
-     * @param _id the id
+     * @param _id        the id
      * @return the document for id
      * @throws Exception the exception
      */
@@ -636,7 +649,7 @@ public class ESUtils {
      * @param evalResults the eval results
      * @return the boolean
      */
-    public static Boolean publishMetrics(Map<String, Object> evalResults,String type) {
+    public static Boolean publishMetrics(Map<String, Object> evalResults, String type) {
         //logger.info(Joiner.on("#").withKeyValueSeparator("=").join(evalResults));
         String indexName = CommonUtils.getPropValue(PacmanSdkConstants.STATS_INDEX_NAME_KEY);// "fre-stats";
         return doESPublish(evalResults, indexName, type);
@@ -665,29 +678,29 @@ public class ESUtils {
      * Do ES publish.
      *
      * @param evalResults the eval results
-     * @param indexName the index name
-     * @param type the type
+     * @param indexName   the index name
+     * @param type        the type
      * @return the boolean
      */
     public static Boolean doESPublish(Map<String, Object> evalResults, String indexName, String type) {
-        
+
         Gson serializer = new GsonBuilder().create();
         String postBody = serializer.toJson(evalResults);
-        return postJsonDocumentToIndexAndType(evalResults.get(PacmanSdkConstants.EXECUTION_ID).toString(),indexName, type,postBody,Boolean.FALSE);
+        return postJsonDocumentToIndexAndType(evalResults.get(PacmanSdkConstants.EXECUTION_ID).toString(), indexName, type, postBody, Boolean.FALSE);
     }
-    
+
     /**
      * Do ES publish.
      *
      * @param evalResults the eval results
-     * @param indexName the index name
-     * @param type the type
+     * @param indexName   the index name
+     * @param type        the type
      * @return the boolean
      */
-    public static Boolean doESUpdate(String docId,Map<String, Object> evalResults, String indexName, String type) {
+    public static Boolean doESUpdate(String docId, Map<String, Object> evalResults, String indexName, String type) {
         Gson serializer = new GsonBuilder().create();
         String postBody = serializer.toJson(evalResults);
-        return postJsonDocumentToIndexAndType(docId,indexName, type,postBody,Boolean.TRUE);
+        return postJsonDocumentToIndexAndType(docId, indexName, type, postBody, Boolean.TRUE);
     }
 
     /**
@@ -698,9 +711,9 @@ public class ESUtils {
      * @return
      */
     private static Boolean postJsonDocumentToIndexAndType(String executionId, String indexName, String type,
-            String postBody,Boolean isUpdate) {
+                                                          String postBody, Boolean isUpdate) {
         String url = ESUtils.getEsUrl();
-        if(Strings.isNullOrEmpty(url)){
+        if (Strings.isNullOrEmpty(url)) {
             logger.error("unable to find ES url");
             return false;
         }
@@ -713,11 +726,11 @@ public class ESUtils {
 //            }
             String esUrl = new StringBuilder(url).append("/").append(indexName).append("/_doc/")
                     .append(executionId).toString();
-            if(isUpdate){
+            if (isUpdate) {
                 esUrl += "/_update";
             }
-            
-            CommonUtils.doHttpPost(esUrl,postBody,new HashMap<>());
+
+            CommonUtils.doHttpPost(esUrl, postBody, new HashMap<>());
         } catch (Exception e) {
             logger.error("unable to publish execution stats");
             return Boolean.FALSE;

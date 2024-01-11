@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 public interface IAutofixManger {
 
     AzureCredentialProvider azureCredentialProvider = new AzureCredentialProvider();
-    GCPCredentialsProvider gcpCredentialsProvider=new GCPCredentialsProvider();
+    GCPCredentialsProvider gcpCredentialsProvider = new GCPCredentialsProvider();
 
     static final Logger logger = LoggerFactory.getLogger(AutoFixManager.class);
     static final String BULK_UPDATE_TEMPLATE = "{ \"update\" : { \"_index\" : \"%s\", \"_id\" : \"%s\"} }%n";
@@ -55,6 +55,72 @@ public interface IAutofixManger {
 
     Map<String, String> targetTypeAlias = new HashMap<>();
 
+    /**
+     * test the code locally.
+     *
+     * @param args the arguments
+     * @throws Exception the exception
+     */
+    public static void main(String[] args) throws Exception {
+        CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL);
+        Map<String, String> params = new HashMap<>();
+        Arrays.asList(args).stream().forEach(obj -> {
+            String[] keyValue = obj.split("[:]");
+            params.put(keyValue[0], keyValue[1]);
+        });
+        try {
+            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS), "azure-discovery");
+            if (!(params == null || params.isEmpty())) {
+                params.forEach((k, v) -> System.setProperty(k, v));
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching config", e);
+            //ErrorManageUtil.uploadError("all", "all", "all", "Error fetching config "+ e.getMessage());
+            //return ErrorManageUtil.formErrorCode();
+        }
+        Properties props = System.getProperties();
+
+        Map<String, String> ruleParam = CommonUtils.createParamMap(args[0]);
+        ExceptionManager exceptionManager = new ExceptionManagerImpl();
+        Map<String, List<IssueException>> excemptedResourcesForRule = exceptionManager.getStickyExceptions(
+                ruleParam.get(PacmanSdkConstants.POLICY_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+        Map<String, IssueException> individuallyExcemptedIssues = exceptionManager
+                .getIndividualExceptions(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+        IAutofixManger autoFixManager = AutoFixManagerFactory.getAutofixManager("aws");
+        autoFixManager.performAutoFixs(ruleParam, excemptedResourcesForRule, individuallyExcemptedIssues);
+
+    }
+
+    public static void updateAutofixPlannedFlag(Map<String, String> ruleParam, List<String> annotationIdList) {
+        logger.debug("Updating autofix planned flag for violation of policy: {}", ruleParam.get(PacmanSdkConstants.POLICY_ID));
+        if (annotationIdList != null && !annotationIdList.isEmpty()) {
+            String elasticSearchUrl = ESUtils.getEsUrl();
+            String index = ElasticSearchDataPublisher.getIndexName(ruleParam);
+            String bulkPostUrl = elasticSearchUrl + AnnotationPublisher.BULK_WITH_REFRESH_TRUE;
+            StringBuffer bulkRequest = new StringBuffer();
+            for (String annotationId : annotationIdList) {
+                try {
+                    bulkRequest.append(String.format(BULK_UPDATE_TEMPLATE, index, annotationId));
+                    bulkRequest.append(UPDATE_FLAG_TEMPLATE);
+                    bulkRequest.append("\n");
+                    if (bulkRequest.toString().getBytes().length
+                            / (1024 * 1024) >= PacmanSdkConstants.ES_MAX_BULK_POST_SIZE) {
+                        String response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequest.toString(), new HashMap());
+                        logger.debug("Bulk update response: {}", response);
+                        bulkRequest.setLength(0);
+                    }
+                } catch (Exception e) {
+                    logger.error("error occurred while indexing auto fix document", e);
+                }
+            }
+            if (bulkRequest.length() > 0) {
+                String response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequest.toString(), new HashMap<>());
+                logger.debug("Bulk update response: {}", response);
+            }
+        } else {
+            logger.info("Annotation list to update is null or empty");
+        }
+    }
 
     default void initializeTargetType() {
         if (targetTypeAlias.isEmpty()) {
@@ -73,8 +139,8 @@ public interface IAutofixManger {
      * @throws Exception
      */
     default Map<String, Object> performAutoFixs(Map<String, String> policyParam,
-                                               Map<String, List<IssueException>> exemptedResourcesForRule,
-                                               Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
+                                                Map<String, List<IssueException>> exemptedResourcesForRule,
+                                                Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
 
         List<Map<String, String>> existingIssues = null;
         String policyId = policyParam.get(PacmanSdkConstants.POLICY_ID);
@@ -100,7 +166,7 @@ public interface IAutofixManger {
         Map<String, Object> autoFixStats = new HashMap<>();
         List<AutoFixTransaction> autoFixTrans = new ArrayList<>();
         List<AutoFixTransaction> silentautoFixTrans = new ArrayList<>();
-        List<Map<String,String>> silentFixAnnotations = new ArrayList<>();
+        List<Map<String, String>> silentFixAnnotations = new ArrayList<>();
 
         Map<String, Object> clientMap = null;
 
@@ -153,7 +219,7 @@ public interface IAutofixManger {
         int count = 0;
         AutoFixPlanManager autoFixPlanManager = new AutoFixPlanManager();
         AutoFixPlan autoFixPlan = null;
-        List<String> issueList=new ArrayList<>();
+        List<String> issueList = new ArrayList<>();
         for (Map<String, String> annotation : existingIssues) {
             List<AutoFixTransaction> addDetailsToLogTrans = new ArrayList<>();
             logger.debug("display issue count {}", count++);
@@ -181,7 +247,7 @@ public interface IAutofixManger {
             // create client
             if (isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID), policyParam.get(PacmanSdkConstants.POLICY_ID), policyParam)) {
 
-                clientMap=getClientMap(getTargetTypeAlias(targetType), annotation, CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_ROLE_NAME));
+                clientMap = getClientMap(getTargetTypeAlias(targetType), annotation, CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_ROLE_NAME));
 //                if (ruleParam.get("assetGroup").equalsIgnoreCase("aws")) {
 //                    clientMap = getAWSClient(getTargetTypeAlias(targetType), annotation, CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_ROLE_NAME));
 //                }
@@ -371,7 +437,7 @@ public interface IAutofixManger {
                                 }
 //                                MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId, "",
 //                                        AutoFixAction.AUTOFIX_ACTION_FIX, addDetailsToLogTrans, annotation);
-                                NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_FIX, annotation);
+                                NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_FIX, annotation);
                                 nextStepManager.postFixAction(resourceId, AutoFixAction.AUTOFIX_ACTION_FIX);
                                 try {
                                     if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))) {
@@ -404,19 +470,19 @@ public interface IAutofixManger {
                             continue;
                         }
                     } else if (AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY == autoFixAction) {
-                        NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY, annotation);
+                        NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY, annotation);
                         logger.info("Auto fix remainder email sent");
                     }
                 }
             } // if issue open
         }// for
         //bulk update autofixFlag for all violation
-        updateAutofixPlannedFlag(policyParam,issueList);
+        updateAutofixPlannedFlag(policyParam, issueList);
         autoFixPlanManager.releaseResourfes();
         //Silent fix send Digest email
         if (!silentautoFixTrans.isEmpty() && nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))) {
-                NotificationUtils.triggerSilentAutofixNotification(silentFixAnnotations,policyParam);
-         //   MailUtils.sendCommonFixNotification(silentautoFixTrans, policyParam, resourceOwner, targetType);
+            NotificationUtils.triggerSilentAutofixNotification(silentFixAnnotations, policyParam);
+            //   MailUtils.sendCommonFixNotification(silentautoFixTrans, policyParam, resourceOwner, targetType);
         }
         // publish the transactions here
         // if any transaction exists post it
@@ -439,7 +505,6 @@ public interface IAutofixManger {
     }
 
     Map<String, Object> getClientMap(String targetTypeAlias, Map<String, String> annotation, String autoFixRole) throws Exception;
-
 
     /**
      * return the right id needed for operation
@@ -467,7 +532,6 @@ public interface IAutofixManger {
     default String getTargetTypeAlias(String targetType) {
         return targetTypeAlias.get(targetType) == null ? targetType : targetTypeAlias.get(targetType);
     }
-
 
     /**
      * find the method isfixCandidate.
@@ -617,6 +681,25 @@ public interface IAutofixManger {
         return clientMap;
     }
 
+//    /**
+//     * Checks if is account allow listed for auto fix.
+//     *
+//     * @param account the account
+//     * @param ruleId the rule id
+//     * @return true, if is account allow listed for auto fix
+//     */
+//    private boolean isAccountAllowListedForAutoFix(String account, String ruleId) {
+//        try {
+//            String allowlistStr = CommonUtils
+//                    .getPropValue(PacmanSdkConstants.AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX + ruleId);
+//            List<String> allowlist = Arrays.asList(allowlistStr.split("\\s*,\\s*"));
+//            return allowlist.contains(account);
+//        } catch (Exception e) {
+//            logger.error(String.format("%s account assumed not allowlisted for autofix for ruleId %s" ,account, ruleId));
+//            return Boolean.FALSE;
+//        }
+//    }
+
     /**
      * Resource created before cutoff data.
      *
@@ -673,26 +756,6 @@ public interface IAutofixManger {
         }
     }
 
-//    /**
-//     * Checks if is account allow listed for auto fix.
-//     *
-//     * @param account the account
-//     * @param ruleId the rule id
-//     * @return true, if is account allow listed for auto fix
-//     */
-//    private boolean isAccountAllowListedForAutoFix(String account, String ruleId) {
-//        try {
-//            String allowlistStr = CommonUtils
-//                    .getPropValue(PacmanSdkConstants.AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX + ruleId);
-//            List<String> allowlist = Arrays.asList(allowlistStr.split("\\s*,\\s*"));
-//            return allowlist.contains(account);
-//        } catch (Exception e) {
-//            logger.error(String.format("%s account assumed not allowlisted for autofix for ruleId %s" ,account, ruleId));
-//            return Boolean.FALSE;
-//        }
-//    }
-
-
     /**
      * Checks if is account allow listed for auto fix.
      *
@@ -710,7 +773,6 @@ public interface IAutofixManger {
             return Boolean.TRUE; // be defensive , if not able to figure out , assume deny list
         }
     }
-
 
     /**
      * Gets the open and excepmted annotation for rule.
@@ -759,43 +821,6 @@ public interface IAutofixManger {
         return tagMap;
     }
 
-
-    /**
-     * test the code locally.
-     *
-     * @param args the arguments
-     * @throws Exception the exception
-     */
-    public static void main(String[] args) throws Exception {
-        CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL);
-        Map<String, String> params = new HashMap<>();
-        Arrays.asList(args).stream().forEach(obj -> {
-            String[] keyValue = obj.split("[:]");
-            params.put(keyValue[0], keyValue[1]);
-        });
-        try {
-            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS),"azure-discovery");
-            if (!(params == null || params.isEmpty())) {
-                params.forEach((k, v) -> System.setProperty(k, v));
-            }
-        } catch (Exception e) {
-            logger.error("Error fetching config", e);
-            //ErrorManageUtil.uploadError("all", "all", "all", "Error fetching config "+ e.getMessage());
-            //return ErrorManageUtil.formErrorCode();
-        }
-        Properties props = System.getProperties();
-
-        Map<String, String> ruleParam = CommonUtils.createParamMap(args[0]);
-        ExceptionManager exceptionManager = new ExceptionManagerImpl();
-        Map<String, List<IssueException>> excemptedResourcesForRule = exceptionManager.getStickyExceptions(
-                ruleParam.get(PacmanSdkConstants.POLICY_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-        Map<String, IssueException> individuallyExcemptedIssues = exceptionManager
-                .getIndividualExceptions(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-        IAutofixManger autoFixManager = AutoFixManagerFactory.getAutofixManager("aws");
-        autoFixManager.performAutoFixs(ruleParam, excemptedResourcesForRule, individuallyExcemptedIssues);
-
-    }
-
     default Map<String, Object> getAzureClientMap(String subscriptionId) throws Exception {
 
 
@@ -819,36 +844,5 @@ public interface IAutofixManger {
     }
 
     public abstract void initializeConfigs();
-
-    public static void updateAutofixPlannedFlag(Map<String, String> ruleParam,List<String> annotationIdList) {
-        logger.debug("Updating autofix planned flag for violation of policy: {}",ruleParam.get(PacmanSdkConstants.POLICY_ID));
-        if(annotationIdList!=null && !annotationIdList.isEmpty()) {
-            String elasticSearchUrl = ESUtils.getEsUrl();
-            String index = ElasticSearchDataPublisher.getIndexName(ruleParam);
-            String bulkPostUrl = elasticSearchUrl + AnnotationPublisher.BULK_WITH_REFRESH_TRUE;
-            StringBuffer bulkRequest = new StringBuffer();
-            for (String annotationId : annotationIdList) {
-                try {
-                    bulkRequest.append(String.format(BULK_UPDATE_TEMPLATE, index, annotationId));
-                    bulkRequest.append(UPDATE_FLAG_TEMPLATE);
-                    bulkRequest.append("\n");
-                    if (bulkRequest.toString().getBytes().length
-                            / (1024 * 1024) >= PacmanSdkConstants.ES_MAX_BULK_POST_SIZE) {
-                        String response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequest.toString(), new HashMap());
-                        logger.debug("Bulk update response: {}", response);
-                        bulkRequest.setLength(0);
-                    }
-                } catch (Exception e) {
-                    logger.error("error occurred while indexing auto fix document", e);
-                }
-            }
-            if (bulkRequest.length() > 0) {
-                String response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequest.toString(), new HashMap<>());
-                logger.debug("Bulk update response: {}", response);
-            }
-        }else {
-            logger.info("Annotation list to update is null or empty");
-        }
-    }
 
 }

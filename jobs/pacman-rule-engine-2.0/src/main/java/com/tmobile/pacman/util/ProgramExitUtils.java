@@ -17,6 +17,7 @@
 package com.tmobile.pacman.util;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ProgramExitUtils.
  *
@@ -32,12 +33,14 @@ public class ProgramExitUtils {
         exitWithCode(-1);
         ;
     }
+
     /**
      * Exit sucessfully.
      */
     public static void exitSucessfully() {
         exitWithCode(0);
     }
+
     /**
      * Exit with code.
      *

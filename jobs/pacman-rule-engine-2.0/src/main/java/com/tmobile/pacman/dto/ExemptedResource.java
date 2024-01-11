@@ -19,6 +19,7 @@ package com.tmobile.pacman.dto;
 import java.util.Map;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ExemptedResource.
  *
@@ -26,13 +27,19 @@ import java.util.Map;
  */
 public class ExemptedResource {
 
-    /** The resource id. */
+    /**
+     * The resource id.
+     */
     String resourceId;
 
-    /** The exemption expiry date. */
+    /**
+     * The exemption expiry date.
+     */
     String exemptionExpiryDate;
 
-    /** The exemption reason. */
+    /**
+     * The exemption reason.
+     */
     String exemptionReason;
 
     /**
@@ -52,9 +59,9 @@ public class ExemptedResource {
     /**
      * Instantiates a new exempted resource.
      *
-     * @param resourceId the resource id
+     * @param resourceId          the resource id
      * @param exemptionExpiryDate the exemption expiry date
-     * @param exemptionReason the exemption reason
+     * @param exemptionReason     the exemption reason
      */
     public ExemptedResource(String resourceId, String exemptionExpiryDate, String exemptionReason) {
         super();

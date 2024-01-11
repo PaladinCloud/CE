@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,35 +15,39 @@
  ******************************************************************************/
 package com.tmobile.pacman.util;
 
-import java.io.UnsupportedEncodingException;
-import java.util.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.tmobile.pacman.common.Constants.ERROR_PREFIX;
 import static com.tmobile.pacman.common.PacmanSdkConstants.TARGET_TYPE;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class AuditUtils.
  */
 public class AuditUtils {
-    
-    /** The Constant logger. */
+
+    /**
+     * The Constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(AuditUtils.class);
 
     /**
      * Post audit trail.
      *
      * @param annotations the annotations
-     * @param status the status
+     * @param status      the status
      */
     public static void postAuditTrail(List<Annotation> annotations, String status) {
         String esUrl = ESUtils.getEsUrl();
@@ -60,19 +64,15 @@ public class AuditUtils {
             String _type = "issue_" + type + "_audit";
 
             requestBody.append(String.format(actionTemplate, _index, _id))
-                    .append(createAuditTrail(datasource, type, status, _id) + "\n");
-            try {
-                if (requestBody.toString().getBytes("UTF-8").length >= 5 * 1024 * 1024) { // 5
-                                                                                          // MB
-                    try {
-                        CommonUtils.doHttpPost(requestUrl, requestBody.toString());
-                    } catch (Exception e) {
-                        logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " Error message - Audit creation failed. ", e);
-                    }
-                    requestBody = new StringBuilder();
+                    .append(createAuditTrail(datasource, type, status, _id))
+                    .append("\n");
+            if (requestBody.toString().getBytes(StandardCharsets.UTF_8).length >= 5 * 1024 * 1024) { // 5MB
+                try {
+                    CommonUtils.doHttpPost(requestUrl, requestBody.toString());
+                } catch (Exception e) {
+                    logger.error(ERROR_PREFIX + "Audit creation failed", e);
                 }
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage());
+                requestBody = new StringBuilder();
             }
         }
 
@@ -80,36 +80,36 @@ public class AuditUtils {
             try {
                 CommonUtils.doHttpPost(requestUrl, requestBody.toString());
             } catch (Exception e) {
-                logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + "Error message - Audit creation failed.", e);
+                logger.error(ERROR_PREFIX + "Audit creation failed", e);
             }
         }
-
     }
 
     /**
      * Creating the JSON for audit.
      *
-     * @param ds the ds
-     * @param type the type
+     * @param ds     the ds
+     * @param type   the type
      * @param status the status
-     * @param id the id
+     * @param id     the id
      * @return the string
      */
-
     private static String createAuditTrail(String ds, String type, String status, String id) {
         String _type = "issue_" + type + "_audit";
         String date = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
         Map<String, Object> auditTrail = new LinkedHashMap<>();
-        auditTrail.put(PacmanSdkConstants.DOC_TYPE,_type);
+        auditTrail.put(PacmanSdkConstants.DOC_TYPE, _type);
+
         // add relations to annotation
         Map<String, Object> relMap = new HashMap<>();
-        relMap.put("name",_type);
+        relMap.put("name", _type);
         relMap.put("parent", id);
-        auditTrail.put( type + "_relations", relMap);
+
+        auditTrail.put(type + "_relations", relMap);
         auditTrail.put(PacmanSdkConstants.DATA_SOURCE_ATTR, ds);
         auditTrail.put(TARGET_TYPE, type);
-        auditTrail.put("_docid",id);
+        auditTrail.put("_docid", id);
         auditTrail.put(PacmanSdkConstants.ANNOTATION_PK, id);
         auditTrail.put(PacmanSdkConstants.STATUS_KEY, status);
         auditTrail.put(PacmanSdkConstants.AUDIT_DATE, date);
@@ -120,7 +120,7 @@ public class AuditUtils {
         } catch (JsonProcessingException e) {
             logger.error(e.getMessage());
         }
+
         return _auditTrail;
     }
-
 }

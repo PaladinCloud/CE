@@ -16,21 +16,6 @@
 
 package com.tmobile.pacman.commons.autofix.manager;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.amazonaws.util.CollectionUtils;
 import com.google.common.base.Strings;
 import com.tmobile.pacman.common.AutoFixAction;
@@ -38,10 +23,17 @@ import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.util.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class NextStepManager.
  *
@@ -49,16 +41,19 @@ import java.time.format.DateTimeFormatter;
  */
 public class NextStepManager {
 
-    /** The tagging manager. */
-    ResourceTaggingManager taggingManager;
-
-    /** The Constant logger. */
+    /**
+     * The Constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(NextStepManager.class);
-    
-    
-    /** API response date time format **/
-    
-    private static final String DATE_TIME_FORMAT="yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    /**
+     * API response date time format
+     **/
+
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    /**
+     * The tagging manager.
+     */
+    ResourceTaggingManager taggingManager;
 
     /**
      * Instantiates a new next step manager.
@@ -69,26 +64,62 @@ public class NextStepManager {
     }
 
     /**
+     * default or rule specific # of notifications
+     *
+     * @param ruleId
+     * @return
+     */
+    public static int getMaxNotifications(String maxEmail) {
+
+        if (Strings.isNullOrEmpty(maxEmail)) {
+            return Integer.parseInt(
+                    CommonUtils.getPropValue(PacmanSdkConstants.AUTOFIX_MAX_EMAILS + "." + PacmanSdkConstants.PAC_DEFAULT));
+        } else {
+            return Integer.parseInt(maxEmail);
+        }
+    }
+
+    /**
+     * @param ruleId
+     * @return
+     */
+    public static int getAutoFixDelay(String waitingTime) {
+        Integer delay = 24;// to be safe this is initialized with 24 and not 0 , though this will be overridden by config property
+        try {
+            String delayForRule = waitingTime;
+            if (Strings.isNullOrEmpty(delayForRule)) {
+                //get default delay
+                delayForRule = CommonUtils.getPropValue(new StringBuilder(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY).append(".").append(PacmanSdkConstants.PAC_DEFAULT).toString());
+            }
+            delay = Integer.parseInt(delayForRule);
+        } catch (NumberFormatException nfe) {
+            logger.error("unable to find delay param will not execute fix");
+            throw nfe;
+        }
+        return delay;
+    }
+
+    /**
      * Gets the next step.
      *
-     * @param ruleId the rule id
-     * @param resourceId the resource id
-     * @param resourceId 
-     * @param clientMap the client map
+     * @param ruleId      the rule id
+     * @param resourceId  the resource id
+     * @param resourceId
+     * @param clientMap   the client map
      * @param serviceType the service type
      * @return the next step
      */
     @SuppressWarnings("unchecked")
-    public AutoFixAction getNextStep(Map<String, String> policyParam , String normalizedResourceId,  String resourceId, Map<String, Object> clientMap, 
-            AWSService serviceType) {
+    public AutoFixAction getNextStep(Map<String, String> policyParam, String normalizedResourceId, String resourceId, Map<String, Object> clientMap,
+                                     AWSService serviceType) {
 
-        
+
         String policyId = policyParam.get(PacmanSdkConstants.POLICY_ID);
-        
+
         try {
-            
-           //silent fix can only be aplied to tagging rules , where exception does not makes much sense 
-           if(isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))){
+
+            //silent fix can only be aplied to tagging rules , where exception does not makes much sense
+            if (isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))) {
                 return AutoFixAction.AUTOFIX_ACTION_FIX;
             }
             // if the resource was ever exempted we will send mail to CSR and
@@ -99,108 +130,73 @@ public class NextStepManager {
             String url = CommonUtils.getPropValue(PacmanSdkConstants.RESOURCE_GET_LASTACTION);
             url = url.concat("?resourceId=").concat(resourceId);
             String response;
-            try{
+            try {
                 response = CommonUtils.doHttpGet(url);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 // this is an api failure
-                logger.error("uable to call API",e);
+                logger.error("uable to call API", e);
                 new SlackMessageRelay().sendMessage(CommonUtils.getPropValue(PacmanSdkConstants.AUTH_API_OWNER_SLACK_HANDLE), e.getMessage());
-                return AutoFixAction.UNABLE_TO_DETERMINE; 
+                return AutoFixAction.UNABLE_TO_DETERMINE;
             }
             Map<String, Object> resourceDetailsMap = (Map<String, Object>) CommonUtils.deSerializeToObject(response);
             Double responseCode = Double.valueOf((resourceDetailsMap.get("responseCode").toString()));
             int autoFixDelay = getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
             int maxEmails = getMaxNotifications(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION));
-           
-            List<String> lastActions = (List<String>) resourceDetailsMap.get("lastActions");
-            
-            if(CollectionUtils.isNullOrEmpty(lastActions)){
-                    //no action taken yet, and silent fix is not enabled , first action should be email
-                    return AutoFixAction.AUTOFIX_ACTION_EMAIL;
-            }else{
-                    Collections.sort(lastActions);//sort based on date and find the first action time
-                    //LocalDateTime lastActionTime =  LocalDateTime.parse(lastActions.get(lastActions.size() - 1), DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
-                    LocalDateTime firstActionTime =  LocalDateTime.parse(lastActions.get(0), DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
-                    LocalDateTime currentTime = LocalDateTime.now();
-                    long elapsedHours = ChronoUnit.HOURS.between(firstActionTime, currentTime);
 
-                    if (lastActions.size() >= maxEmails) {
-                        
-                        if (elapsedHours >= autoFixDelay) {
-                            return AutoFixAction.AUTOFIX_ACTION_FIX;
-                        } else {
-                            return AutoFixAction.DO_NOTHING;
-                        }
-                    }else{
-                        long nextActionTime = getNextActionTime(maxEmails,autoFixDelay,lastActions.size());
-                        if(elapsedHours>=nextActionTime){
-                            return AutoFixAction.AUTOFIX_ACTION_EMAIL;
-                        }else{
-                                return AutoFixAction.DO_NOTHING;
-                        }
+            List<String> lastActions = (List<String>) resourceDetailsMap.get("lastActions");
+
+            if (CollectionUtils.isNullOrEmpty(lastActions)) {
+                //no action taken yet, and silent fix is not enabled , first action should be email
+                return AutoFixAction.AUTOFIX_ACTION_EMAIL;
+            } else {
+                Collections.sort(lastActions);//sort based on date and find the first action time
+                //LocalDateTime lastActionTime =  LocalDateTime.parse(lastActions.get(lastActions.size() - 1), DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
+                LocalDateTime firstActionTime = LocalDateTime.parse(lastActions.get(0), DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
+                LocalDateTime currentTime = LocalDateTime.now();
+                long elapsedHours = ChronoUnit.HOURS.between(firstActionTime, currentTime);
+
+                if (lastActions.size() >= maxEmails) {
+
+                    if (elapsedHours >= autoFixDelay) {
+                        return AutoFixAction.AUTOFIX_ACTION_FIX;
+                    } else {
+                        return AutoFixAction.DO_NOTHING;
+                    }
+                } else {
+                    long nextActionTime = getNextActionTime(maxEmails, autoFixDelay, lastActions.size());
+                    if (elapsedHours >= nextActionTime) {
+                        return AutoFixAction.AUTOFIX_ACTION_EMAIL;
+                    } else {
+                        return AutoFixAction.DO_NOTHING;
                     }
                 }
+            }
         } catch (Exception exception) {
             logger.error("Exception in getNextStep:" + exception.getMessage());
-            return AutoFixAction.UNABLE_TO_DETERMINE; 
+            return AutoFixAction.UNABLE_TO_DETERMINE;
         }
     }
-    
-    
-    /**
-     * default or rule specific # of notifications
-     * @param ruleId
-     * @return
-     */
-    public static int getMaxNotifications(String maxEmail) {
-
-        if(Strings.isNullOrEmpty(maxEmail)){
-            return Integer.parseInt(
-                    CommonUtils.getPropValue(PacmanSdkConstants.AUTOFIX_MAX_EMAILS + "." + PacmanSdkConstants.PAC_DEFAULT));
-        }else{
-            return Integer.parseInt(maxEmail);
-            }
-        }
 
     /**
      * calculates the next action time based on actions already taken
+     *
      * @param maxEmails
      * @param autoFixDelay
      * @param size
      * @return
      */
     private long getNextActionTime(int maxEmails, long autoFixDelay, int noOfActionsTakenAlready) {
-        if(noOfActionsTakenAlready>=maxEmails){
+        if (noOfActionsTakenAlready >= maxEmails) {
             return -1;
         }
-        int interval = Math.toIntExact(autoFixDelay/maxEmails);
-        ArrayList<Integer> intervals= new ArrayList<>();
+        int interval = Math.toIntExact(autoFixDelay / maxEmails);
+        ArrayList<Integer> intervals = new ArrayList<>();
         int index = 0;
-        while(index<(autoFixDelay/interval)){
-            intervals.add(index*interval);
+        while (index < (autoFixDelay / interval)) {
+            intervals.add(index * interval);
             index++;
         }
         return intervals.get(noOfActionsTakenAlready);
-    }
-
-    /**
-     * @param ruleId 
-     * @return
-     */
-    public static int getAutoFixDelay(String waitingTime) {
-        Integer delay = 24;// to be safe this is initialized with 24 and not 0 , though this will be overridden by config property
-        try{
-            String delayForRule = waitingTime;
-            if(Strings.isNullOrEmpty(delayForRule)){
-                //get default delay
-                delayForRule =  CommonUtils.getPropValue(new StringBuilder(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY).append(".").append(PacmanSdkConstants.PAC_DEFAULT).toString());
-            }
-                delay =  Integer.parseInt(delayForRule);
-        }catch (NumberFormatException nfe) {
-            logger.error("unable to find delay param will not execute fix");
-            throw nfe;
-        }
-        return delay;
     }
 
     /**
@@ -232,8 +228,8 @@ public class NextStepManager {
     /**
      * Was resource ever exempted.
      *
-     * @param resourceId the resource id
-     * @param clientMap the client map
+     * @param resourceId  the resource id
+     * @param clientMap   the client map
      * @param serviceType the service type
      * @return the string
      */
@@ -259,7 +255,7 @@ public class NextStepManager {
      * Post fix action.
      *
      * @param resourceId the resource id
-     * @param action the action
+     * @param action     the action
      * @throws Exception the exception
      */
     public void postFixAction(final String resourceId, final AutoFixAction action) throws Exception {
@@ -273,7 +269,7 @@ public class NextStepManager {
             throw exception;
         }
     }
-    
+
     /**
      * Sets the tagging manager.
      *
@@ -286,36 +282,35 @@ public class NextStepManager {
     /**
      * @return
      */
-    public long getAutoFixExpirationTimeInHours(Map<String, String> policyParam,String ruleId,String resourceId) {
+    public long getAutoFixExpirationTimeInHours(Map<String, String> policyParam, String ruleId, String resourceId) {
         String url = CommonUtils.getPropValue(PacmanSdkConstants.RESOURCE_GET_LASTACTION);
         url = url.concat("?resourceId=").concat(resourceId);
-        String response=null;
-        try{
+        String response = null;
+        try {
             response = CommonUtils.doHttpGet(url);
-        }catch (Exception e) {
+        } catch (Exception e) {
             // this is an api failure
-            logger.error("uable to call API",e);
-                   }
+            logger.error("uable to call API", e);
+        }
         Map<String, Object> resourceDetailsMap = (Map<String, Object>) CommonUtils.deSerializeToObject(response);
         Double responseCode = Double.valueOf((resourceDetailsMap.get("responseCode").toString()));
         long autoFixDelay = getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
         List<String> lastActions = (List<String>) resourceDetailsMap.get("lastActions");
         Collections.sort(lastActions);//sort based on date and find the first action time
-        long elapsedHours=0l;
-        if(lastActions.size()>0){
-            LocalDateTime firstActionTime =  LocalDateTime.parse(lastActions.get(0), DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
-    
-        LocalDateTime currentTime = LocalDateTime.now();
-        elapsedHours = ChronoUnit.HOURS.between(firstActionTime, currentTime);
-        }
-        if(lastActions.size()>0&autoFixDelay>=elapsedHours){
-            return autoFixDelay-elapsedHours;
-        }else if(lastActions.size()==0){
-            return autoFixDelay;
-        }else return 0;
-               
-    }
+        long elapsedHours = 0l;
+        if (lastActions.size() > 0) {
+            LocalDateTime firstActionTime = LocalDateTime.parse(lastActions.get(0), DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
 
+            LocalDateTime currentTime = LocalDateTime.now();
+            elapsedHours = ChronoUnit.HOURS.between(firstActionTime, currentTime);
+        }
+        if (lastActions.size() > 0 & autoFixDelay >= elapsedHours) {
+            return autoFixDelay - elapsedHours;
+        } else if (lastActions.size() == 0) {
+            return autoFixDelay;
+        } else return 0;
+
+    }
 
 
 //    public static void main(String[] args) {
@@ -324,7 +319,6 @@ public class NextStepManager {
 //            System.out.println("*******"+new NextStepManager().getNextActionTime(totalActions, 24, noOfActionsAlreadyTaken));
 //        }
 //    }
-    
-    
-    
+
+
 }

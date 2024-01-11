@@ -3,27 +3,27 @@
 
 <head>
     <title>PacMan Auto fix Report</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
     <style>
-		table {
-			border-collapse: collapse;
-			/*width: 100%;*/
-		}
+        table {
+            border-collapse: collapse;
+            /*width: 100%;*/
+        }
 
-		th,
-		td {
-			text-align: left;
-			padding: 8px;
-		}
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+        }
 
-		tr:nth-child(even) {
-			background-color: #f2f2f2
-		}
+        tr:nth-child(even) {
+            background-color: #f2f2f2
+        }
 
-		th {
-			background-color: var(--primary-400);
-			color: white;
-		}
+        th {
+            background-color: var(--primary-400);
+            color: white;
+        }
 
     </style>
 
@@ -38,42 +38,43 @@
         <div>
             <div>
                 <div class="x_3DWordSection1">
-                    <table width="700" style="">
+                    <table style="" width="700">
                         <tbody>
                         <tr style="">
-                            <td width="3D624" valign="3Dtop" style=""><img width="700" data-imagetype="External"
+                            <td style="" valign="3Dtop" width="3D624"><img alt="PaladinCloud Security Operations" data-imagetype="External"
                                                                            th:src="${EMAIL_BANNER}"
-                                                                           alt="PaladinCloud Security Operations"
-                                                                           title="PaladinCloud Security Operations">
+                                                                           title="PaladinCloud Security Operations"
+                                                                           width="700">
                             </td>
                         </tr>
                         <tr style="">
-                            <td width="3D624" valign="3Dtop" style="">
-                                <p class="x_MsoNormal" align="center"
+                            <td style="" valign="3Dtop" width="3D624">
+                                <p align="center" class="x_MsoNormal"
                                    style="margin-bottom: 0in; margin-bottom: .0001pt; text-align: left; line-height: normal">
                                     <i style=""><span style="font-size: 9.0pt">You are
-													receiving this email because one of your <span style="..." th:text="${CLOUD_TYPE}"></span> resource were
+													receiving this email because one of your <span style="..."
+                                                                                                   th:text="${CLOUD_TYPE}"></span> resource were
 													found vulnerable under PaladinCloud policy. </span></i>
                                 </p>
                                 <p class="x_MsoNormal"
                                    style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
-                                    <span style="font-size: 12.0pt" Hello th:text="${NAME}"></span>
+                                    <span Hello style="font-size: 12.0pt" th:text="${NAME}"></span>
                                 </p>
                                 <p class="x_MsoNormal"
                                    style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
                                     <span style="font-size: 12.0pt" th:text="${AUTOFIX_POST_FIX_MESSAGE}"/>
                                     ,<br>
-                                    <a th:href="${POLICY_URL}">PaladinCloud  Governance
+                                    <a th:href="${POLICY_URL}">PaladinCloud Governance
                                         Policy</a> </span>
                                 </p>
                                 <p class="x_MsoNormal"
                                    style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
-											<span style="font-size: 12.0pt" Total Auto fixes Applied
+											<span Applied Auto Total fixes style="font-size: 12.0pt"
                                                   th:text="${RESOURCE_TYPE}"></span>
                                 </p>
                                 <p class="x_MsoNormal"
                                    style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
-											<span style="font-size: 12.0pt" Total Auto fixes Applied
+											<span Applied Auto Total fixes style="font-size: 12.0pt"
                                                   th:text="${AUTO_FIX_APPLIED}"></span>
                                 </p>
 
@@ -83,9 +84,9 @@
                     </table>
                     <br>
 
-                    <table width="1000" border=1>
+                    <table border=1 width="1000">
                         <tr>
-                            <th th:each="column : ${columns}" th:text="${column}" style="color: black;">key
+                            <th style="color: black;" th:each="column : ${columns}" th:text="${column}">key
                             </th>
                         </tr>
                         <tr th:each="resource : ${resources}">
@@ -140,7 +141,7 @@
                     <p class="x_MsoNormal" style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
 							<span style="font-size: 12.0pt">For questions,
 								comments, or concerns, please contact <a href="mailto:CloudSecOps@PaladinCloud.com"
-                                                                         target="_blank" rel="noopener noreferrer"><span
+                                                                         rel="noopener noreferrer" target="_blank"><span
                                         style="color: var(--primary-400)">CloudSecOps@PaladinCloud.com</span></a>.
 							</span>
                     </p>

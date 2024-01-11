@@ -16,12 +16,13 @@
 
 package com.tmobile.pacman.commons.autofix;
 
+import com.tmobile.pacman.dto.AutoFixTransaction;
+
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import com.tmobile.pacman.dto.AutoFixTransaction;
-
 // TODO: Auto-generated Javadoc
+
 /**
  * The Interface AutoFix.
  */
@@ -30,48 +31,46 @@ public interface AutoFix extends Callable<FixResult> {
     /**
      * Execute fix.
      *
-     * @param issue the issue
-     * @param clientMap the client map
+     * @param issue      the issue
+     * @param clientMap  the client map
      * @param ruleParams the rule params
      * @return the fix result
      * @throws Exception the exception
      */
     public FixResult executeFix(Map<String, String> issue, Map<String, Object> clientMap,
-            Map<String, String> ruleParams) throws Exception;
+                                Map<String, String> ruleParams) throws Exception;
 
     /**
      * Backup existing config for resource.
      *
-     * @param resourceId the resource id
+     * @param resourceId   the resource id
      * @param resourceType the resource type
-     * @param clientMap the client map
-     * @param ruleParams the rule params
-     * @param issue the issue
+     * @param clientMap    the client map
+     * @param ruleParams   the rule params
+     * @param issue        the issue
      * @return true, if successful
      * @throws Exception the exception
      */
     public boolean backupExistingConfigForResource(String resourceId, String resourceType,
-            Map<String, Object> clientMap, Map<String, String> ruleParams,Map<String, String> issue) throws Exception;
+                                                   Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws Exception;
 
 
     /**
      * determines if resourceId is a fix candidate.
      *
-     * @param resourceId the resource id
+     * @param resourceId   the resource id
      * @param resourceType the resource type
-     * @param clientMap the client map
-     * @param ruleParams the rule params
-     * @param issue the issue
+     * @param clientMap    the client map
+     * @param ruleParams   the rule params
+     * @param issue        the issue
      * @return true, if is fix candidate
      * @throws Exception the exception
      */
     public boolean isFixCandidate(String resourceId, String resourceType,
-            Map<String, Object> clientMap, Map<String, String> ruleParams,Map<String, String> issue) throws Exception;
-
+                                  Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws Exception;
 
 
     /**
-     *
      * @return
      */
     public AutoFixTransaction addDetailsToTransactionLog(Map<String, String> annotation);

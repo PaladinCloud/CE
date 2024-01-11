@@ -16,13 +16,14 @@
 
 package com.tmobile.pacman.executor;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class UncaughtExceptionHandler.
  *
@@ -30,7 +31,9 @@ import org.slf4j.LoggerFactory;
  */
 public class PolicyEngineUncaughtExceptionHandler implements java.lang.Thread.UncaughtExceptionHandler {
 
-    /** The Constant logger. */
+    /**
+     * The Constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(PolicyEngineUncaughtExceptionHandler.class);
 
     /* (non-Javadoc)

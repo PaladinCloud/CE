@@ -17,21 +17,26 @@
 package com.tmobile.pacman.common.exception;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ServerlessRuleFailedException.
  */
 public class ServerlessPolicyFailedException extends Exception {
 
-    /** The annotation. */
+    /**
+     * The annotation.
+     */
     String annotation;
 
-    /** The responsecode. */
+    /**
+     * The responsecode.
+     */
     Integer responsecode;
 
     /**
      * Instantiates a new serverless rule failed exception.
      *
-     * @param annotation the annotation
+     * @param annotation   the annotation
      * @param responsecode the responsecode
      */
     public ServerlessPolicyFailedException(String annotation, int responsecode) {

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,17 +15,16 @@
  ******************************************************************************/
 package com.tmobile.pacman.reactors.commons;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author SGorle
- *
  */
 public class ReactorCommonValues {
     public static String getAccountId(JsonObject event) {
@@ -47,14 +46,14 @@ public class ReactorCommonValues {
     /**
      * Gets the reactor info.
      *
-     * @param resourceId the resource id
-     * @param accountId the account id
-     * @param region the region
+     * @param resourceId     the resource id
+     * @param accountId      the account id
+     * @param region         the region
      * @param reactorMessage the reactor message
      * @return reactorInfo
      */
     public static Map<String, String> getReactorInfo(String resourceId, String accountId, String region,
-            String reactorMessage) {
+                                                     String reactorMessage) {
         Map<String, String> reactionInfo = new HashMap<String, String>();
         reactionInfo.put("Message", "Run Instance/Start Instance event created in non-standandard region");
         reactionInfo.put(PacmanSdkConstants.ACCOUNT_ID, accountId);
@@ -76,9 +75,9 @@ public class ReactorCommonValues {
      * @return resourceType
      */
     public static String getResourceType(JsonObject event) {
-       String resourceType = event.get("source").getAsString().substring(4);
-   return resourceType;
-   
+        String resourceType = event.get("source").getAsString().substring(4);
+        return resourceType;
+
     }
 
     /**
@@ -86,7 +85,7 @@ public class ReactorCommonValues {
      * @return roleName
      */
     public static String getRoleName(JsonObject event) {
-        return(null!= event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("roleName"))?event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("roleName").getAsString():null;
+        return (null != event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("roleName")) ? event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("roleName").getAsString() : null;
     }
 
     /**
@@ -95,14 +94,14 @@ public class ReactorCommonValues {
      */
     public static String getPolicyName(JsonObject event) {
         String PolicyName;
-    if (  null!= event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("policyName")){
-        PolicyName = event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("policyName").getAsString();
-    }else{
-      String   policyARN = event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("policyArn").getAsString();
-      PolicyName=policyARN.substring(policyARN.lastIndexOf("/") + 1);
-       
-    }
-    return PolicyName;
+        if (null != event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("policyName")) {
+            PolicyName = event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("policyName").getAsString();
+        } else {
+            String policyARN = event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("policyArn").getAsString();
+            PolicyName = policyARN.substring(policyARN.lastIndexOf("/") + 1);
+
+        }
+        return PolicyName;
     }
 
     /**
@@ -110,11 +109,11 @@ public class ReactorCommonValues {
      * @return
      */
     public static String getConfigValue(String configName) {
-       //getConfiguration from Database;
-         String dbquery = "SELECT * FROM pac_v2_reactors_configs WHERE configName='" + configName.trim()+ "'";
-   //      List<Map<String, String>>configValue= RDSManager.executeQuery(dbquery);
-         String confiValue= "";
-         return confiValue;
+        //getConfiguration from Database;
+        String dbquery = "SELECT * FROM pac_v2_reactors_configs WHERE configName='" + configName.trim() + "'";
+        //      List<Map<String, String>>configValue= RDSManager.executeQuery(dbquery);
+        String confiValue = "";
+        return confiValue;
     }
 
     /**
@@ -122,8 +121,8 @@ public class ReactorCommonValues {
      * @return
      */
     public static String getUserName(JsonObject event) {
-        return(null!= event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("userName"))?event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("userName").getAsString():null;
-      
+        return (null != event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("userName")) ? event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("userName").getAsString() : null;
+
     }
 
     /**
@@ -131,7 +130,7 @@ public class ReactorCommonValues {
      * @return CWRuleName
      */
     public static String getCloudWatchRuleName(JsonObject event) {
-        return((null!= event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("name"))?event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("name").getAsString():null);  
+        return ((null != event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("name")) ? event.get("detail").getAsJsonObject().get("requestParameters").getAsJsonObject().get("name").getAsString() : null);
     }
 
     /**
@@ -139,15 +138,14 @@ public class ReactorCommonValues {
      * @return
      */
     public static Boolean checkValidJsonString(String policyDocument) {
-         Gson gson = new Gson();
+        Gson gson = new Gson();
         try {
             gson.fromJson(policyDocument, Object.class);
             return true;
-        } catch(com.google.gson.JsonSyntaxException ex) { 
+        } catch (com.google.gson.JsonSyntaxException ex) {
             return false;
         }
-      
-        
-    
+
+
     }
 }

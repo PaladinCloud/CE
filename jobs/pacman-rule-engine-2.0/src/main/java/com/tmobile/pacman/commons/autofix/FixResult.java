@@ -16,28 +16,66 @@
 
 package com.tmobile.pacman.commons.autofix;
 
-import java.util.Map;
-
-import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 
+import java.util.Map;
+
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class FixResult.
  */
 public class FixResult {
 
-    /**  operation status*. */
+    /**
+     * operation status*.
+     */
     Integer status;
 
-    /** The annotation. */
+    /**
+     * The annotation.
+     */
     Annotation annotation;
 
-    /** The desc. */
+    /**
+     * The desc.
+     */
     String desc;
 
-    /** The resource. */
+    /**
+     * The resource.
+     */
     private Map<String, String> resource;
+
+    /**
+     * Instantiates a new fix result.
+     *
+     * @param status the status
+     * @param desc   the desc
+     */
+    public FixResult(Integer status, String desc) {
+        if (0 != status) {
+            throw new RuntimeException("annotation expecetd in case of success, please use the other constructor");
+        }
+        this.status = status;
+        this.desc = desc;
+    }
+
+    /**
+     * Instantiates a new fix result.
+     *
+     * @param status     the status
+     * @param desc       the desc
+     * @param annotation the annotation
+     */
+    public FixResult(Integer status, String desc, Annotation annotation) {
+        if (0 == status) {
+            throw new RuntimeException("annotation not expecetd in case of success");
+        }
+        this.status = status;
+        this.desc = desc;
+        this.annotation = annotation;
+    }
 
     /**
      * Gets the resource.
@@ -55,36 +93,6 @@ public class FixResult {
      */
     public void setResource(Map<String, String> resource) {
         this.resource = resource;
-    }
-
-    /**
-     * Instantiates a new fix result.
-     *
-     * @param status the status
-     * @param desc the desc
-     */
-    public FixResult(Integer status, String desc) {
-        if (0!=status) {
-            throw new RuntimeException("annotation expecetd in case of success, please use the other constructor");
-        }
-        this.status = status;
-        this.desc = desc;
-    }
-
-    /**
-     * Instantiates a new fix result.
-     *
-     * @param status the status
-     * @param desc the desc
-     * @param annotation the annotation
-     */
-    public FixResult(Integer status, String desc, Annotation annotation) {
-        if (0==status) {
-            throw new RuntimeException("annotation not expecetd in case of success");
-        }
-        this.status = status;
-        this.desc = desc;
-        this.annotation = annotation;
     }
 
     /**

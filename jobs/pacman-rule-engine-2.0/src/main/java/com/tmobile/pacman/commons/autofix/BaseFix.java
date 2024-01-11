@@ -16,11 +16,6 @@
 
 package com.tmobile.pacman.commons.autofix;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.amazonaws.regions.Regions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -33,17 +28,26 @@ import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.dto.AutoFixTransaction;
 import com.tmobile.pacman.util.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class BaseFix.
  */
 public abstract class BaseFix implements AutoFix {
 
-    /** The Constant LOGGER. */
+    /**
+     * The Constant LOGGER.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseFix.class);
 
-    /** The issue. */
+    /**
+     * The issue.
+     */
     Annotation issue;
 
     /* (non-Javadoc)
@@ -51,7 +55,7 @@ public abstract class BaseFix implements AutoFix {
      */
     @Override
     public abstract FixResult executeFix(Map<String, String> issue, Map<String, Object> clientMap,
-            Map<String, String> ruleParams);
+                                         Map<String, String> ruleParams);
 
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()
@@ -69,9 +73,9 @@ public abstract class BaseFix implements AutoFix {
     /**
      * Gets the client for.
      *
-     * @param service the service
+     * @param service              the service
      * @param roleIdentifierString the role identifier string
-     * @param issue the issue
+     * @param issue                the issue
      * @return the client for
      * @throws UnableToCreateClientException the unable to create client exception
      */
@@ -124,16 +128,15 @@ public abstract class BaseFix implements AutoFix {
      */
     @Override
     public abstract boolean backupExistingConfigForResource(final String resourceId, final String resourceType,
-            Map<String, Object> clientMap, Map<String, String> ruleParams,Map<String, String> issue) throws Exception;
-
+                                                            Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws Exception;
 
 
     /* (non-Javadoc)
      * @see com.tmobile.pacman.commons.autofix.AutoFix#isFixCandidate(java.lang.String, java.lang.String, java.util.Map, java.util.Map, java.util.Map)
      */
     @Override
-    public  boolean isFixCandidate(String resourceId, String resourceType, Map<String, Object> clientMap,
-            Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
+    public boolean isFixCandidate(String resourceId, String resourceType, Map<String, Object> clientMap,
+                                  Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
         return true;
     }
 
@@ -142,7 +145,7 @@ public abstract class BaseFix implements AutoFix {
      *
      * @param resourceId the resource id
      * @param configType the config type
-     * @param oldConfig the old config
+     * @param oldConfig  the old config
      * @return true, if successful
      * @throws AutoFixException the auto fix exception
      */
@@ -153,7 +156,7 @@ public abstract class BaseFix implements AutoFix {
             CommonUtils.doHttpPost(url, oldConfig, Maps.newHashMap());
             return true;
         } catch (Exception exception) {
-            LOGGER.error(String.format("Exception in backuping Old Config: %s" , exception.getMessage()));
+            LOGGER.error(String.format("Exception in backuping Old Config: %s", exception.getMessage()));
             throw new AutoFixException(exception);
         }
     }

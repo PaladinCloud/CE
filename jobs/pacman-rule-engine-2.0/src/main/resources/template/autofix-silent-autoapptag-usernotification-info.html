@@ -2,112 +2,115 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<title>PacMan Auto fix Report</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<style>
-		table {
-			border-collapse: collapse;
-			/*width: 100%;*/
-		}
+    <title>PacMan Auto fix Report</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <style>
+        table {
+            border-collapse: collapse;
+            /*width: 100%;*/
+        }
 
-		th,
-		td {
-			text-align: left;
-			padding: 8px;
-		}
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+        }
 
-		tr:nth-child(even) {
-			background-color: #f2f2f2
-		}
+        tr:nth-child(even) {
+            background-color: #f2f2f2
+        }
 
-		th {
-			background-color: var(--primary-400);
-			color: white;
-		}
-	</style>
+        th {
+            background-color: var(--primary-400);
+            color: white;
+        }
+    </style>
 
 </head>
 
 <body>
 
 
-	<div class="_rp_55 ms-font-weight-regular ms-font-color-neutralDark rpHighlightAllClass rpHighlightBodyClass"
-		id="Item.MessageUniqueBody" style="font-family: wf_segoe-ui_normal,&amp; amp;">
-		<div class="rps_50b9">
-			<div>
-				<div>
-					<div class="x_3DWordSection1">
-						<table width="700" style="">
-							<tbody>
-								<tr style="">
-									<td width="3D624" valign="3Dtop" style=""><img width="700" data-imagetype="External"
-											th:src="${EMAIL_BANNER}" alt="Paladin Cloud Security Operations"
-											title="Paladin Cloud Security Operations"></td>
-								</tr>
-								<tr style="">
-									<td width="3D624" valign="3Dtop" style="">
-										<p class="x_MsoNormal" align="center"
-											style="margin-bottom: 0in; margin-bottom: .0001pt; text-align: left; line-height: normal">
-											<i style=""><span style="font-size: 9.0pt">You are
+<div class="_rp_55 ms-font-weight-regular ms-font-color-neutralDark rpHighlightAllClass rpHighlightBodyClass"
+     id="Item.MessageUniqueBody" style="font-family: wf_segoe-ui_normal,&amp; amp;">
+    <div class="rps_50b9">
+        <div>
+            <div>
+                <div class="x_3DWordSection1">
+                    <table style="" width="700">
+                        <tbody>
+                        <tr style="">
+                            <td style="" valign="3Dtop" width="3D624"><img alt="Paladin Cloud Security Operations" data-imagetype="External"
+                                                                           th:src="${EMAIL_BANNER}"
+                                                                           title="Paladin Cloud Security Operations"
+                                                                           width="700">
+                            </td>
+                        </tr>
+                        <tr style="">
+                            <td style="" valign="3Dtop" width="3D624">
+                                <p align="center" class="x_MsoNormal"
+                                   style="margin-bottom: 0in; margin-bottom: .0001pt; text-align: left; line-height: normal">
+                                    <i style=""><span style="font-size: 9.0pt">You are
 													receiving this email because one of your AWS resource were
 													found vulnerable under PaladinCloud policy. </span></i>
-										</p>
-										<p class="x_MsoNormal"
-											style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
-											<span style="font-size: 12.0pt" Hello th:text="${NAME}"></span>
-										</p>
-										<p class="x_MsoNormal"
-											style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
-											<span style="font-size: 12.0pt" th:text="${AUTOFIX_POST_FIX_MESSAGE}" />
-											,<br>
-											It is a violation of <a th:href="${POLICY_URL}">Paladin Cloud Governance
-												Policy</a> </span>
-										</p>
-										<p class="x_MsoNormal"
-											style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
-											<span style="font-size: 12.0pt" Total Auto fixes Applied
-												th:text="${RESOURCE_TYPE}"></span>
-										</p>
-										<p class="x_MsoNormal"
-											style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
-											<span style="font-size: 12.0pt" Total Auto fixes Applied
-												th:text="${AUTO_FIX_APPLIED}"></span>
-										</p>
+                                </p>
+                                <p class="x_MsoNormal"
+                                   style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
+                                    <span Hello style="font-size: 12.0pt" th:text="${NAME}"></span>
+                                </p>
+                                <p class="x_MsoNormal"
+                                   style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
+                                    <span style="font-size: 12.0pt" th:text="${AUTOFIX_POST_FIX_MESSAGE}"/>
+                                    ,<br>
+                                    It is a violation of <a th:href="${POLICY_URL}">Paladin Cloud Governance
+                                    Policy</a> </span>
+                                </p>
+                                <p class="x_MsoNormal"
+                                   style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
+											<span Applied Auto Total fixes style="font-size: 12.0pt"
+                                                  th:text="${RESOURCE_TYPE}"></span>
+                                </p>
+                                <p class="x_MsoNormal"
+                                   style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
+											<span Applied Auto Total fixes style="font-size: 12.0pt"
+                                                  th:text="${AUTO_FIX_APPLIED}"></span>
+                                </p>
 
-									</td>
-								</tr>
-							</tbody>
-						</table>
-						<br>
-						<table width="700" border=1>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <table border=1 width="700">
 
-							<tr>
+                        <tr>
 
-								<th>ResourceID</th>
-								<th>AccountId</th>
-								<th>Region</th>
-								<th>Application Tag Applied</th>
-							</tr>
-							<tr th:each="resource : ${resources}">
-								<td th:text="${resource.resourceId}">The first name</td>
-								<td th:text="${resource.accountId}">The last name</td>
-								<td th:text="${resource.region}">The last name</td>
-								<td th:text="${resource.applicationTag}">The last name</td>
-							</tr>
+                            <th>ResourceID</th>
+                            <th>AccountId</th>
+                            <th>Region</th>
+                            <th>Application Tag Applied</th>
+                        </tr>
+                        <tr th:each="resource : ${resources}">
+                            <td th:text="${resource.resourceId}">The first name</td>
+                            <td th:text="${resource.accountId}">The last name</td>
+                            <td th:text="${resource.region}">The last name</td>
+                            <td th:text="${resource.applicationTag}">The last name</td>
+                        </tr>
 
-						</table>
+                    </table>
 
-						<p class="x_MsoNormal" style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
+                    <p class="x_MsoNormal" style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
 							<span style="font-size: 12.0pt">For questions, comments,
-								or concerns, please contact <a href="mailto:CloudSecOps@PaladinCloud.com" target="_blank"
-									rel="noopener noreferrer"><span
-										style="color: var(--primary-400); white-space: nowrap;">CloudSecOps@PaladinCloud.com</span></a>.
+								or concerns, please contact <a href="mailto:CloudSecOps@PaladinCloud.com"
+                                                               rel="noopener noreferrer"
+                                                               target="_blank"><span
+                                        style="color: var(--primary-400); white-space: nowrap;">CloudSecOps@PaladinCloud.com</span></a>.
 							</span>
-						</p>
+                    </p>
 
-					</div>
-				</div>
+                </div>
+            </div>
 
-			</div>
-		</div>
-	</div>
+        </div>
+    </div>
+</div>

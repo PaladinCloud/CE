@@ -17,6 +17,7 @@
 package com.tmobile.pacman.common.exception;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class RuleEngineRunTImeException.
  *
@@ -25,10 +26,14 @@ package com.tmobile.pacman.common.exception;
 public class PolicyEngineRunTimeException extends RuntimeException {
 
 
-    /** The status code. */
+    /**
+     * The status code.
+     */
     protected final int statusCode;
 
-    /** The msg. */
+    /**
+     * The msg.
+     */
     protected final String msg;
 
 
@@ -39,19 +44,19 @@ public class PolicyEngineRunTimeException extends RuntimeException {
      */
     public PolicyEngineRunTimeException(Exception e) {
         super(e);
-        this.statusCode=-1;
-        this.msg=e.getMessage();
+        this.statusCode = -1;
+        this.msg = e.getMessage();
     }
 
     /**
      * Instantiates a new rule engine run T ime exception.
      *
      * @param statusCode the status code
-     * @param msg the msg
+     * @param msg        the msg
      */
-    public PolicyEngineRunTimeException(int statusCode,String msg) {
-        this.statusCode=statusCode;
-        this.msg=msg;
+    public PolicyEngineRunTimeException(int statusCode, String msg) {
+        this.statusCode = statusCode;
+        this.msg = msg;
     }
 
 
