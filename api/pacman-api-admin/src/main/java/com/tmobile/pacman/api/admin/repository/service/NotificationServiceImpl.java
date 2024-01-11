@@ -156,9 +156,9 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
             notificationBaseRequest.setEventCategory(NotificationTypes.POLICY);
             notificationBaseRequest.setEventCategoryName(NotificationTypes.POLICY.getValue());
-            notificationBaseRequest.setEventName(String.format(POLICY_ACTION_EVENT_NAME, exemption.getPolicyID(),
+            notificationBaseRequest.setEventName(String.format(POLICY_ACTION_EVENT_NAME, policy.getPolicyDisplayName(),
                     policyStatus));
-            notificationBaseRequest.setEventDescription(String.format(POLICY_ACTION_EVENT_NAME, exemption.getPolicyID(),
+            notificationBaseRequest.setEventDescription(String.format(POLICY_ACTION_EVENT_NAME, policy.getPolicyDisplayName(),
                     policyStatus));
             notificationBaseRequest.setSubject(POLICY_ACTION_SUBJECT);
             request.setSummary(summary);
