@@ -40,7 +40,7 @@ class SubmitAndRuleEngineJobDefinition(BatchJobDefinitionResource):
             {'name': "AUTH_API_URL",
              'value': "https://" + Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"},
             {'name': "POLICY_DETAILS_URL",
-             'value': ApplicationLoadBalancer.get_http_url() + "/api/compliance/v1/policy-details-by-uuid?policyUUID="},
+             'value': ApplicationLoadBalancer.get_http_url() + "/api/compliance/policy-details-for-policy-engine"},
             {'name': "AWS_STS_REGIONAL_ENDPOINTS", 'value': "regional"}
         ]
     })
@@ -94,7 +94,7 @@ class SubmitAndQualysJobDefinition(BatchJobDefinitionResource):
             {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
             {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/config/rule,batch/prd/latest"},
             {'name': "AUTH_API_URL",'value': "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"},
-            {'name': "POLICY_DETAILS_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/compliance/v1/policy-details-by-uuid?policyUUID="}
+            {'name': "POLICY_DETAILS_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/compliance/policy-details-for-policy-engine"}
         ]
     })
 
