@@ -210,9 +210,9 @@
    changeFilterTags(filters, filterTagOptions, currentFilterType, event){    
      try {
          if (currentFilterType) {
-           const filterTags = event.filterValue.map(value => {
-             const v = find(filterTagOptions[event.filterKeyDisplayValue], { name: value });
-             return v?v["id"]:value;
+           const filterTags = event.filterValue.flatMap(value => {
+             const v = filterTagOptions[event.filterKeyDisplayValue].filter(availableOption => availableOption.name === value);
+             return v ? v.map(item => item.id) : [value];
            });
            this.utils.addOrReplaceElement(
              filters,
@@ -313,7 +313,7 @@
        if (!labelsToExcludeSort?.toString().toLowerCase().includes(currentFilterType.optionName.toLowerCase())) {
          filterTagLabels = filterTagLabels.sort((a, b) => a.localeCompare(b));
        }
-       return [filterTagOptions, filterTagLabels];
+     return [filterTagOptions, Array.from(new Set(filterTagLabels))];
    }
  
    createFilterObj (keyDisplayValue: string, filterKey: string, validFilterValues: {name: string, id: string}[]): IFilterObj {
