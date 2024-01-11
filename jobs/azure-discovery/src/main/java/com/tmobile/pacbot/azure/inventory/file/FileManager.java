@@ -27,8 +27,6 @@ import java.util.List;
  */
 public class FileManager {
 
-    private static final String AZURE_REGISTEREDAPPLICATION_DATA = "azure-registeredapplication.data";
-    
     /**
      * Instantiates a new file manager.
      */
@@ -126,7 +124,7 @@ public class FileManager {
     }
 
     public static void generateRegisteredApplicationFiles(List<RegisteredApplicationVH> registeredApplicationVHList) {
-        FileGenerator.generateJson(registeredApplicationVHList, AZURE_REGISTEREDAPPLICATION_DATA);
+        FileGenerator.generateJson(registeredApplicationVHList, TargetTypesConstants.REGISTERED_APPLICATION);
     }
 
     public static void generateMySqlServerFiles(List<MySQLServerVH> mySqlServerList) {
@@ -202,7 +200,7 @@ public class FileManager {
     }
 
     public static void generateActivityLogFiles(List<ActivityLogVH> activityLogVHList) {
-        FileGenerator.generateJson(activityLogVHList, getFilenameFromTargetType(TargetTypesConstants.ACTIVITY_LOG));
+        FileGenerator.generateJson(activityLogVHList, getFilenameFromTargetType(TargetTypesConstants.ACTIVITY_LOG_ALERT));
     }
 
     public static void generateSecurityPricingsFiles(List<SecurityPricingsVH> securityPricingsVH) {
@@ -224,7 +222,7 @@ public class FileManager {
     public static void generateBlobServiceFiles(List<BlobServiceVH> blobServiceVHList) {
         FileGenerator.generateJson(blobServiceVHList, getFilenameFromTargetType(TargetTypesConstants.BLOB_SERVICE));
     }
-    
+
     public static void generateDiagnosticSettingFiles(List<DiagnosticSettingVH> fetchDiagnosticSettingsList) {
         FileGenerator.generateJson(fetchDiagnosticSettingsList, getFilenameFromTargetType(TargetTypesConstants.DIAGNOSTIC_SETTING));
     }
@@ -234,7 +232,7 @@ public class FileManager {
     }
 
     public static void generateKubernetesClusterDetailsInfoFile(List<KubernetesClustersVH> kubernetesClusterList) {
-        FileGenerator.generateJson(kubernetesClusterList, getFilenameFromTargetType(TargetTypesConstants.KUBERNETES));
+        FileGenerator.generateJson(kubernetesClusterList, getFilenameFromTargetType(TargetTypesConstants.AKS));
     }
 
     private static String getFilenameFromTargetType(String targetType) {

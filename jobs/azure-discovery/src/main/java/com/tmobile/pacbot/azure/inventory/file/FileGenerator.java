@@ -34,33 +34,16 @@ import java.util.List;
  */
 public class FileGenerator {
 
-    /**
-     * The Constant DELIMITER.
-     */
-    public static final String DELIMITER = "`";
-    /**
-     * The Constant LINESEPARATOR.
-     */
-    public static final String LINESEPARATOR = "\n";
+    public static final String LINE_SEPARATOR = "\n";
     public static final String COMMA = ",";
-    /**
-     * The folder name.
-     */
-    protected static String folderName;
-    /**
-     * The current date.
-     */
-    protected static String discoveryDate = new SimpleDateFormat("yyyy-MM-dd HH:00:00Z").format(new java.util.Date());
-    /**
-     * The log.
-     */
     private static final Logger log = LoggerFactory.getLogger(FileGenerator.class);
+    protected static String folderName;
+    protected static String discoveryDate = new SimpleDateFormat("yyyy-MM-dd HH:00:00Z").format(new java.util.Date());
 
     /**
      * Instantiates a new file generator.
      */
     private FileGenerator() {
-
     }
 
     /**
@@ -68,19 +51,19 @@ public class FileGenerator {
      *
      * @param filename the filename
      * @param data     the data
-     * @param appendto the appendto
+     * @param appendTo the appendTo
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public static void writeToFile(String filename, String data, boolean appendto) throws IOException {
-        log.debug("Write to File :" + filename);
+    public static void writeToFile(String filename, String data, boolean appendTo) throws IOException {
+        log.debug("Write to File : {}", filename);
         BufferedWriter bw = null;
         try {
-            bw = new BufferedWriter(new FileWriter(folderName + File.separator + filename, appendto));
+            bw = new BufferedWriter(new FileWriter(folderName + File.separator + filename, appendTo));
             bw.write(data);
             bw.flush();
             bw.close();
         } catch (IOException e) {
-            log.error("Write to File :{} failed", filename, e);
+            log.error("Write to File : {} failed", filename, e);
             throw e;
         } finally {
             if (bw != null) {
@@ -93,7 +76,6 @@ public class FileGenerator {
      * Gets the line data.
      */
     protected static boolean generateJson(List<? extends AzureVH> assetList, String fileName) {
-
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         StringBuilder sb = new StringBuilder();
@@ -104,7 +86,7 @@ public class FileGenerator {
                 if (sb.length() == 0 && new File(folderName + File.separator + fileName).length() < 2) {
                     sb.append(objectMapper.writeValueAsString(asset));
                 } else {
-                    sb.append(COMMA + LINESEPARATOR + objectMapper.writeValueAsString(asset));
+                    sb.append(COMMA + LINE_SEPARATOR + objectMapper.writeValueAsString(asset));
                 }
             } catch (Exception e) {
                 log.error("Error in generateJson ", e);

@@ -27,8 +27,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationforPermissionDenied;
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationforPermissionDenied;
 import static com.tmobile.pacbot.azure.inventory.util.TargetTypesConstants.*;
 
 @Component
@@ -647,14 +647,14 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(ACTIVITY_LOG))) {
+                if (!(isTypeInScope(ACTIVITY_LOG_ALERT))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(ACTIVITY_LOG);
+                    longRunningTargetTypeList.add(ACTIVITY_LOG_ALERT);
                     FileManager.generateActivityLogFiles(
                             activityLogsCollector.fetchActivityLogAlertDetails(subscription));
-                    longRunningTargetTypeList.remove(ACTIVITY_LOG);
+                    longRunningTargetTypeList.remove(ACTIVITY_LOG_ALERT);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
@@ -782,18 +782,33 @@ public class AssetFileGenerator {
             });
 
             executor.execute(() -> {
-                if (!(isTypeInScope(KUBERNETES))) {
+                if (!(isTypeInScope(AKS))) {
                     return;
                 }
                 try {
-                    longRunningTargetTypeList.add(KUBERNETES);
+                    longRunningTargetTypeList.add(AKS);
                     FileManager.generateKubernetesClusterDetailsInfoFile(kubernetesServicesCollector.fetchKubernetesClusterDetails(subscription));
-                    longRunningTargetTypeList.remove(KUBERNETES);
+                    longRunningTargetTypeList.remove(AKS);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Util.eCount.getAndIncrement();
                 }
             });
+
+            executor.execute(() -> {
+                if (!(isTypeInScope(REGISTERED_APPLICATION))) {
+                    return;
+                }
+                try {
+                    longRunningTargetTypeList.add(REGISTERED_APPLICATION);
+                    FileManager.generateRegisteredApplicationFiles(registeredApplicationInventoryCollector.fetchAzureRegisteredApplication());
+                    longRunningTargetTypeList.remove(REGISTERED_APPLICATION);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Util.eCount.getAndIncrement();
+                }
+            });
+
 
             executor.shutdown();
             try {
@@ -848,21 +863,6 @@ public class AssetFileGenerator {
         }
 
         return regionMap;
-    }
-
-    /**
-     * function for generating registered application file
-     */
-    private void generateAzureAplicationList() {
-
-        if ((isTypeInScope("registeredApplication"))) {
-            try {
-                FileManager.generateRegisteredApplicationFiles(
-                        registeredApplicationInventoryCollector.fetchAzureRegisteredApplication());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private boolean isTypeInScope(String type) {

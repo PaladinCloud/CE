@@ -95,7 +95,7 @@ public class S3Uploader {
             BasicSessionCredentials credentials = credProvider.getCredentials(account, region, s3Role);
             AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
             log.info("Backing up files from : {} to : {} in bucket : {}", from, to, s3Bucket);
-            copytoBackUp(s3client, s3Bucket, from, to);
+            copyToBackUp(s3client, s3Bucket, from, to);
             deleteFiles(s3client, s3Bucket, from);
         } catch (Exception e) {
             log.error(ERROR_PREFIX + "in backUpFiles method", e);
@@ -127,12 +127,12 @@ public class S3Uploader {
                     ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
                     Thread.currentThread().interrupt();
                 }
-                log.debug("    Transfer % Completed :" + xfer.getProgress().getPercentTransferred());
+                log.debug("Transfer % Completed : {}", xfer.getProgress().getPercentTransferred());
             }
             xfer.waitForCompletion();
             log.info("Transfer completed");
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + " while uploading files to S3.", e);
+            log.error(ERROR_PREFIX + "while uploading files to S3.", e);
             System.exit(1);
         }
 
@@ -147,16 +147,16 @@ public class S3Uploader {
      * @param from     the s3 from location
      * @param to       the s3 to location
      */
-    private void copytoBackUp(AmazonS3 s3client, String s3Bucket, String from, String to) {
+    private void copyToBackUp(AmazonS3 s3client, String s3Bucket, String from, String to) {
         String[] keys = listKeys(s3client, s3Bucket, from);
         String fileName = "";
         for (String key : keys) {
             try {
                 fileName = key.substring(key.lastIndexOf('/') + 1);
                 s3client.copyObject(s3Bucket, key, s3Bucket, to + "/" + fileName);
-                log.debug("    Copy " + fileName + " to backup folder");
+                log.debug("Copy {} to backup folder", fileName);
             } catch (Exception e) {
-                log.error(ERROR_PREFIX + " while copying " + fileName, e);
+                log.error(ERROR_PREFIX + "while copying " + fileName, e);
                 ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
             }
         }
@@ -176,7 +176,7 @@ public class S3Uploader {
             DeleteObjectsResult result = s3client.deleteObjects(multiObjectDeleteRequest);
             log.debug("Files Deleted " + result.getDeletedObjects().stream().map(obj -> obj.getKey()).collect(Collectors.toList()));
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + " while deleting files.", e);
+            log.error(ERROR_PREFIX + "while deleting files.", e);
             ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
         }
     }
