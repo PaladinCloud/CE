@@ -64,9 +64,9 @@ public class AzureFetchOrchestrator {
                 return ErrorManageUtil.formErrorCode();
             }
 
-            log.info("Start : FIle Generation");
+            log.info("Start : File Generation");
             fileGenerator.generateFiles(subscriptions, filePath);
-            log.info("End : FIle Generation");
+            log.info("End : File Generation");
 
             log.info("Start : Backup Current Files");
             s3Uploader.backUpFiles(s3Bucket, s3Region, s3Data, s3Processed + "/" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
