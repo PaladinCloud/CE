@@ -29,9 +29,7 @@ public class DiagnosticSettingsCollector {
             String apiUrlTemplate="https://management.azure.com/%s/providers/Microsoft.Insights/diagnosticSettings?api-version=2021-05-01-preview";
             String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
             String url = String.format(apiUrlTemplate, URLEncoder.encode("/subscriptions/"+subscription.getSubscriptionId(),java.nio.charset.StandardCharsets.UTF_8.toString()));
-            log.info("The url is {}",url);
             String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-            log.info("Response is :{}",response);
             JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
             JsonArray diagnosticSettings = responseObj.getAsJsonArray("value");
 

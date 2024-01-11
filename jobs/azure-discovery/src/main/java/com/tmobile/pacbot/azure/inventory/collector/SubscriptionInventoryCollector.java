@@ -68,10 +68,8 @@ public class SubscriptionInventoryCollector {
                     subscription.getSubscriptionId());
             PagedList<StorageAccount> storageAccounts = azure.storageAccounts().list();
             String url = String.format(apiUrlTemplate, URLEncoder.encode("/subscriptions/"+subscription.getSubscriptionId(),java.nio.charset.StandardCharsets.UTF_8.toString()));
-            log.info("The url is {}",url);
 
             String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-            log.info("Response is :{}",response);
             JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
             JsonArray storageObjects = responseObj.getAsJsonArray("value");
 
@@ -79,7 +77,6 @@ public class SubscriptionInventoryCollector {
                 StorageAccountActivityLogVH storageAccountActivityLogVH=new StorageAccountActivityLogVH();
                 JsonObject  storageObject = storageObjElement.getAsJsonObject();
                 JsonObject properties = storageObject.getAsJsonObject("properties");
-                log.debug("Properties data{}",properties);
                 if(properties!=null && properties.get("storageAccountId")!=null) {
                     String storageAccountId=properties.get("storageAccountId").getAsString();
                     storageAccountActivityLogVH.setStorageAccountActivityLogContainerId(storageAccountId);
@@ -120,26 +117,18 @@ public class SubscriptionInventoryCollector {
                 RoleDefinitionVH roleDefinitionVH=new RoleDefinitionVH();
 
                 String roleName=roleDefinition.roleName();
-                log.debug("Role Name{}",roleName);
                 roleDefinitionVH.setRoleName(roleName);
 
                 Set<String>assignableScopes=roleDefinition.assignableScopes();
-                log.debug("Assignable Scopes size{}",assignableScopes.size());
                 roleDefinitionVH.setAssignableScopes(assignableScopes);
 
                 Set<Permission>permissions= azure.accessManagement().roleDefinitions().getByScopeAndRoleName(subscription.getSubscriptionId(),roleName).permissions();
-                log.debug("Permissions size{}",permissions.size());
 
-                Iterator<Permission>permissionIterator=permissions.iterator();
+                for (Permission permission : permissions) {
+                    List<String> actions = permission.actions();
 
-                while(permissionIterator.hasNext()){
-
-                  List<String>actions= permissionIterator.next().actions();
-                  log.debug("Action size{}",actions.size());
-
-                  roleDefinitionVH.setActions(actions);
+                    roleDefinitionVH.setActions(actions);
                 }
-
 
                 roleDefinitionVHList.add(roleDefinitionVH);
             }

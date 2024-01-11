@@ -157,9 +157,6 @@ public class VMInventoryCollector {
 		JsonObject virtualMachineObject =null;
 		try {
 			String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-			log.info("response form API: {} : {}",
-					response,
-					virtualMachine.name().isEmpty() ? virtualMachine.name() : "");
 			log.info("subscriptionName: {}", subscription.getSubscriptionName());
 			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
 			virtualMachineObject = responseObj.getAsJsonObject();

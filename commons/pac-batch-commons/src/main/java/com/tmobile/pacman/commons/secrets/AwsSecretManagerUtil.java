@@ -30,13 +30,12 @@ public class AwsSecretManagerUtil {
     private static final Logger logger = LoggerFactory.getLogger(AwsSecretManagerUtil.class);
 
     public String fetchSecret(String secretId, BasicSessionCredentials credentials, String region) {
-        logger.info("Fetching secret from region: {}, secretId:{} ",region,secretId);
-        logger.debug("Fetching secret from region: {}, secretId:{} ",region,secretId);
-      AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
+        logger.info("Fetching secret from region: {}, secretId:{} ", region, secretId);
+        AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
-        GetSecretValueRequest getSecretRequest=new GetSecretValueRequest().withSecretId(secretId);
+        GetSecretValueRequest getSecretRequest = new GetSecretValueRequest().withSecretId(secretId);
         GetSecretValueResult getResponse = secretClient.getSecretValue(getSecretRequest);
         return getResponse.getSecretString();
 

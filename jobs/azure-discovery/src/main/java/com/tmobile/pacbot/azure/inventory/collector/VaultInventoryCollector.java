@@ -98,7 +98,6 @@ public class VaultInventoryCollector {
 			String id = vaultVH.getId();
 			int beginningIndex = id.indexOf("resourceGroups") + 15;
 			String resourceGroupName = (vaultVH.getId()).substring(beginningIndex, id.indexOf('/', beginningIndex + 2));
-			log.debug("Resource group name: {}", resourceGroupName);
 			vaultVH.setResourceGroupName(resourceGroupName);
 			Vault azureVault = azure.vaults().getById(id);
 			if (vaultVH.isEnableRbacAuthorization()) {

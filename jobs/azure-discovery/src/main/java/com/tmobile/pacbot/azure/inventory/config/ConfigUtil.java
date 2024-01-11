@@ -60,8 +60,8 @@ public class ConfigUtil {
         if (properties.isEmpty()) {
             throw new Exception("No config properties fetched from " + CONFIG_URL);
         }
+
         log.info("Config are fetched from {}", CONFIG_URL);
-        properties.forEach((k, v) -> log.debug("{} : {}", k, v));
         return properties;
     }
 }

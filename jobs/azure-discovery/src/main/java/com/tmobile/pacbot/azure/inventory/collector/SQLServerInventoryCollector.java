@@ -26,192 +26,178 @@ import java.util.Map;
 
 @Component
 public class SQLServerInventoryCollector {
-	
+
+    private static final Logger log = LoggerFactory.getLogger(SQLServerInventoryCollector.class);
+
 	@Autowired
-	AzureCredentialProvider azureCredentialProvider;
-	
-	private static Logger log = LoggerFactory.getLogger(SQLServerInventoryCollector.class);
-	
-	public List<SQLServerVH> fetchSQLServerDetails(SubscriptionVH subscription,
-			Map<String, Map<String, String>> tagMap) {
+    AzureCredentialProvider azureCredentialProvider;
 
-		List<SQLServerVH> sqlServerList = new ArrayList<>();
-		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
-		PagedList<SqlServer> sqlServers = azure.sqlServers().list();
+    public List<SQLServerVH> fetchSQLServerDetails(SubscriptionVH subscription,
+												   Map<String, Map<String, String>> tagMap) {
+        List<SQLServerVH> sqlServerList = new ArrayList<>();
+        Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
+        PagedList<SqlServer> sqlServers = azure.sqlServers().list();
 
-		for (SqlServer sqlServer : sqlServers) {
-			SQLServerVH sqlServerVH = new SQLServerVH();
-			sqlServerVH.setSubscription(subscription.getSubscriptionId());
-			sqlServerVH.setSubscriptionName(subscription.getSubscriptionName());
-			sqlServerVH.setId(sqlServer.id());
-			sqlServerVH.setKind(sqlServer.kind());
-			sqlServerVH.setName(sqlServer.name());
-			sqlServerVH.setRegionName(sqlServer.regionName());
-			sqlServerVH.setRegion(Util.getRegionValue(subscription,sqlServer.regionName()));
-			sqlServerVH.setResourceGroupName(sqlServer.resourceGroupName());
-			sqlServerVH.setState(sqlServer.state());
-			sqlServerVH.setSystemAssignedManagedServiceIdentityPrincipalId(
-					sqlServer.systemAssignedManagedServiceIdentityPrincipalId());
-			sqlServerVH.setSystemAssignedManagedServiceIdentityTenantId(
-					sqlServer.systemAssignedManagedServiceIdentityTenantId());
-			sqlServerVH.setTags(Util.tagsList(tagMap, sqlServer.resourceGroupName(), sqlServer.tags()));
-			sqlServerVH.setVersion(sqlServer.version());
-			sqlServerVH.setAdministratorLogin(sqlServer.administratorLogin());
-			firewallRule(sqlServer, sqlServerVH);
-			getElasticPoolList(sqlServer.elasticPools().list(), sqlServerVH);
-			getFailoverGroupList(sqlServer.failoverGroups().list(), sqlServerVH);
-			setVulnerabilityAssessment(sqlServerVH,subscription,sqlServer);
-			setRetentionDays(sqlServerVH,subscription,sqlServer);
-			sqlServerList.add(sqlServerVH);
-		}
-		log.info("Target Type : {}  Total: {} ","SqlServer",sqlServerList.size());
-		return sqlServerList;
+        for (SqlServer sqlServer : sqlServers) {
+            SQLServerVH sqlServerVH = new SQLServerVH();
+            sqlServerVH.setSubscription(subscription.getSubscriptionId());
+            sqlServerVH.setSubscriptionName(subscription.getSubscriptionName());
+            sqlServerVH.setId(sqlServer.id());
+            sqlServerVH.setKind(sqlServer.kind());
+            sqlServerVH.setName(sqlServer.name());
+            sqlServerVH.setRegionName(sqlServer.regionName());
+            sqlServerVH.setRegion(Util.getRegionValue(subscription, sqlServer.regionName()));
+            sqlServerVH.setResourceGroupName(sqlServer.resourceGroupName());
+            sqlServerVH.setState(sqlServer.state());
+            sqlServerVH.setSystemAssignedManagedServiceIdentityPrincipalId(
+                    sqlServer.systemAssignedManagedServiceIdentityPrincipalId());
+            sqlServerVH.setSystemAssignedManagedServiceIdentityTenantId(
+                    sqlServer.systemAssignedManagedServiceIdentityTenantId());
+            sqlServerVH.setTags(Util.tagsList(tagMap, sqlServer.resourceGroupName(), sqlServer.tags()));
+            sqlServerVH.setVersion(sqlServer.version());
+            sqlServerVH.setAdministratorLogin(sqlServer.administratorLogin());
+            firewallRule(sqlServer, sqlServerVH);
+            getElasticPoolList(sqlServer.elasticPools().list(), sqlServerVH);
+            getFailoverGroupList(sqlServer.failoverGroups().list(), sqlServerVH);
+            setVulnerabilityAssessment(sqlServerVH, subscription, sqlServer);
+            setRetentionDays(sqlServerVH, subscription, sqlServer);
+            sqlServerList.add(sqlServerVH);
+        }
 
-	}
+        log.info("Target Type : {}  Total: {} ", "SqlServer", sqlServerList.size());
+        return sqlServerList;
+    }
 
-	private void setRetentionDays(SQLServerVH sqlServerVH, SubscriptionVH subscription, SqlServer sqlServer) {
-		try {
-			String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Sql/servers/%s/auditingSettings?api-version=2020-11-01-preview";
-			String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
-			String url = null;
+    private void setRetentionDays(SQLServerVH sqlServerVH, SubscriptionVH subscription, SqlServer sqlServer) {
+        try {
+            String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Sql/servers/%s/auditingSettings?api-version=2020-11-01-preview";
+            String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+            String url = String.format(apiUrlTemplate,
+                    URLEncoder.encode(subscription.getSubscriptionId(),
+                            java.nio.charset.StandardCharsets.UTF_8.toString()),
+                    URLEncoder.encode(sqlServer.resourceGroupName(),
+                            java.nio.charset.StandardCharsets.UTF_8.toString()),
+                    URLEncoder.encode(sqlServer.name(),
+                            java.nio.charset.StandardCharsets.UTF_8.toString()));
 
-			url = String.format(apiUrlTemplate,
-					URLEncoder.encode(subscription.getSubscriptionId(),
-							java.nio.charset.StandardCharsets.UTF_8.toString()),
-					URLEncoder.encode(sqlServer.resourceGroupName(),
-							java.nio.charset.StandardCharsets.UTF_8.toString()),
-					URLEncoder.encode(sqlServer.name(),
-							java.nio.charset.StandardCharsets.UTF_8.toString()));
+            String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
+            JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+            JsonArray auditSettings = responseObj.getAsJsonArray("value");
+            for (JsonElement auditElement : auditSettings) {
+                JsonObject auditObject = auditElement.getAsJsonObject();
+                JsonObject properties = auditObject.getAsJsonObject("properties");
+                if (properties != null) {
+                    if (properties.has("retentionDays")) {
+                        sqlServerVH.setRetentionDays(properties.get("retentionDays").getAsJsonPrimitive().getAsInt());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-			log.info("The url is {}", url);
+    private void setVulnerabilityAssessment(SQLServerVH sqlServerVH, SubscriptionVH subscription, SqlServer sqlServer) {
+        try {
+            String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Sql/servers/%s/vulnerabilityAssessments?api-version=2020-11-01-preview";
+            String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+            String url = String.format(apiUrlTemplate,
+                    URLEncoder.encode(subscription.getSubscriptionId(),
+                            java.nio.charset.StandardCharsets.UTF_8.toString()),
+                    URLEncoder.encode(sqlServer.resourceGroupName(),
+                            java.nio.charset.StandardCharsets.UTF_8.toString()),
+                    URLEncoder.encode(sqlServer.name(),
+                            java.nio.charset.StandardCharsets.UTF_8.toString()));
 
-			String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-			log.info("Response is :{}", response);
-			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
-			JsonArray auditSettings = responseObj.getAsJsonArray("value");
-			for(JsonElement auditElement:auditSettings){
-				JsonObject  auditObject = auditElement.getAsJsonObject();
-				JsonObject properties = auditObject.getAsJsonObject("properties");
-				log.debug("Properties data{}",properties);
-				if(properties!=null) {
-					if(properties.has("retentionDays")) {
-						sqlServerVH.setRetentionDays(properties.get("retentionDays").getAsJsonPrimitive().getAsInt());
-					}
-				}
+            String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
+            JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+            JsonArray defenderObjects = responseObj.getAsJsonArray("value");
 
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+            for (JsonElement defenderElement : defenderObjects) {
+                JsonObject defenderObject = defenderElement.getAsJsonObject();
+                JsonObject properties = defenderObject.getAsJsonObject("properties");
+                if (properties != null) {
+                    if (properties.has("storageContainerPath")) {
+                        sqlServerVH.setStorageContainerPath(properties.get("storageContainerPath").getAsJsonPrimitive().getAsString());
+                    }
+                    if (properties.has("recurringScans")) {
+                        JsonObject recurringScans = properties.getAsJsonObject("recurringScans");
+                        sqlServerVH.setRecurringScansEnabled(recurringScans.getAsJsonPrimitive("isEnabled").getAsBoolean());
+                        if (recurringScans.has("emails")) {
+                            sqlServerVH.setEmails(recurringScans.getAsJsonArray("emails").getAsString());
+                        }
+                        sqlServerVH.setEmailSubscriptionAdmins(recurringScans.getAsJsonPrimitive("emailSubscriptionAdmins").getAsBoolean());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 
-	private void setVulnerabilityAssessment(SQLServerVH sqlServerVH, SubscriptionVH subscription, SqlServer sqlServer) {
-		try{
-			String apiUrlTemplate="https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Sql/servers/%s/vulnerabilityAssessments?api-version=2020-11-01-preview";
-			String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
-			String url = String.format(apiUrlTemplate,
-					URLEncoder.encode(subscription.getSubscriptionId(),
-							java.nio.charset.StandardCharsets.UTF_8.toString()),
-					URLEncoder.encode(sqlServer.resourceGroupName(),
-							java.nio.charset.StandardCharsets.UTF_8.toString()),
-					URLEncoder.encode(sqlServer.name(),
-							java.nio.charset.StandardCharsets.UTF_8.toString()));
-			log.info("The url is {}",url);
+    private void getElasticPoolList(List<SqlElasticPool> sqlElasticPoolList, SQLServerVH sqlServerVH) {
+        List<ElasticPoolVH> elasticPoolList = new ArrayList<>();
+        for (SqlElasticPool sqlElasticPool : sqlElasticPoolList) {
+            ElasticPoolVH elasticPoolVH = new ElasticPoolVH();
+            elasticPoolVH.setName(sqlElasticPool.name());
+            elasticPoolVH.setSize(sqlElasticPool.listDatabases().size());
+            elasticPoolVH.setStorageCapacity(sqlElasticPool.storageCapacityInMB());
+            elasticPoolVH.setId(sqlElasticPool.id());
+            elasticPoolVH.setStorageMB(sqlElasticPool.storageMB());
+            elasticPoolVH.setDtu(sqlElasticPool.dtu());
+            elasticPoolVH.setEdition(sqlElasticPool.edition().toString());
+            elasticPoolList.add(elasticPoolVH);
 
-			String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-			log.info("Response is :{}",response);
-			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
-			JsonArray defenderObjects = responseObj.getAsJsonArray("value");
+        }
 
-			for(JsonElement defenderElement:defenderObjects){
-				JsonObject  defenderObject = defenderElement.getAsJsonObject();
-				JsonObject properties = defenderObject.getAsJsonObject("properties");
-				log.debug("Properties data{}",properties);
-				if(properties!=null) {
-				    if(properties.has("storageContainerPath")) {
-						sqlServerVH.setStorageContainerPath(properties.get("storageContainerPath").getAsJsonPrimitive().getAsString());
-					}
-					if(properties.has("recurringScans")) {
-						JsonObject recurringScans = properties.getAsJsonObject("recurringScans");
-						sqlServerVH.setRecurringScansEnabled(recurringScans.getAsJsonPrimitive("isEnabled").getAsBoolean());
-						if (recurringScans.has("emails")) {
-							sqlServerVH.setEmails(recurringScans.getAsJsonArray("emails").getAsString());
-						}
-						sqlServerVH.setEmailSubscriptionAdmins(recurringScans.getAsJsonPrimitive("emailSubscriptionAdmins").getAsBoolean());
-					}
-					}
+        sqlServerVH.setElasticPoolList(elasticPoolList);
+    }
 
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
+    private void firewallRule(SqlServer sqlServer, SQLServerVH sqlServerVH) {
+        List<Map<String, String>> firewallRuleList = new ArrayList<>();
+        Map<String, String> firewallMap;
+        for (SqlFirewallRule sqlFirewallRule : sqlServer.firewallRules().list()) {
+            firewallMap = new HashMap<>();
+            firewallMap.put("name", sqlFirewallRule.name());
+            firewallMap.put("startIPAddress", sqlFirewallRule.startIPAddress());
+            firewallMap.put("endIPAddress", sqlFirewallRule.endIPAddress());
+            firewallRuleList.add(firewallMap);
 
-	}
+        }
+        for (SqlVirtualNetworkRule sqlVirtualNetworkRule : sqlServer.virtualNetworkRules().list()) {
+            firewallMap = new HashMap<>();
 
-	private void getElasticPoolList(List<SqlElasticPool> sqlElasticPoolList, SQLServerVH sqlServerVH) {
-		List<ElasticPoolVH> elasticPoolList = new ArrayList<>();
-		for (SqlElasticPool sqlElasticPool : sqlElasticPoolList) {
-			ElasticPoolVH elasticPoolVH = new ElasticPoolVH();
-			elasticPoolVH.setName(sqlElasticPool.name());
-			elasticPoolVH.setSize(sqlElasticPool.listDatabases().size());
-			elasticPoolVH.setStorageCapacity(sqlElasticPool.storageCapacityInMB());
-			elasticPoolVH.setId(sqlElasticPool.id());
-			elasticPoolVH.setStorageMB(sqlElasticPool.storageMB());
-			elasticPoolVH.setDtu(sqlElasticPool.dtu());
-			elasticPoolVH.setEdition(sqlElasticPool.edition().toString());
-			elasticPoolList.add(elasticPoolVH);
+            firewallMap.put("virtualNetworkRuleName",
+                    sqlVirtualNetworkRule.name() != null ? sqlVirtualNetworkRule.name() : "");
+            firewallMap.put("virtualNetworkSubnetId",
+                    sqlVirtualNetworkRule.subnetId() != null ? sqlVirtualNetworkRule.subnetId() : "");
+            firewallMap.put("virtualNetworkResourceGroupName",
+                    sqlVirtualNetworkRule.resourceGroupName() != null ? sqlVirtualNetworkRule.resourceGroupName() : "");
+            firewallMap.put("virtualNetworkState",
+                    sqlVirtualNetworkRule.state() != null ? sqlVirtualNetworkRule.state() : "");
 
-		}
-		sqlServerVH.setElasticPoolList(elasticPoolList);
+            firewallRuleList.add(firewallMap);
+        }
 
-	}
+        sqlServerVH.setFirewallRuleDetails(firewallRuleList);
+    }
 
-	private void firewallRule(SqlServer sqlServer, SQLServerVH sqlServerVH) {
-		List<Map<String, String>> firewallRuleList = new ArrayList<>();
-		Map<String, String> firewallMap;
-		for (SqlFirewallRule sqlFirewallRule : sqlServer.firewallRules().list()) {
-			firewallMap = new HashMap<>();
-			firewallMap.put("name", sqlFirewallRule.name());
-			firewallMap.put("startIPAddress", sqlFirewallRule.startIPAddress());
-			firewallMap.put("endIPAddress", sqlFirewallRule.endIPAddress());
-			firewallRuleList.add(firewallMap);
+    private void getFailoverGroupList(List<SqlFailoverGroup> sqlFailoverGroupList, SQLServerVH sqlServerVH) {
+        List<FailoverGroupVH> failoverGroupList = new ArrayList<>();
+        for (SqlFailoverGroup sqlFailoverGroup : sqlFailoverGroupList) {
+            FailoverGroupVH failoverGroupVH = new FailoverGroupVH();
+            failoverGroupVH.setSize(sqlFailoverGroup.databases().size());
+            failoverGroupVH.setId(sqlFailoverGroup.id());
+            failoverGroupVH.setName(sqlFailoverGroup.name());
+            failoverGroupVH.setReplicationState(sqlFailoverGroup.replicationState());
+            failoverGroupVH.setReadOnlyEndpointPolicy(sqlFailoverGroup.readOnlyEndpointPolicy().toString());
+            failoverGroupVH.setReadWriteEndpointPolicy(sqlFailoverGroup.readWriteEndpointPolicy().toString());
+            failoverGroupVH.setGracePeriod(sqlFailoverGroup.readWriteEndpointDataLossGracePeriodMinutes());
+            failoverGroupList.add(failoverGroupVH);
 
-		}
-		for (SqlVirtualNetworkRule sqlVirtualNetworkRule : sqlServer.virtualNetworkRules().list()) {
-			firewallMap = new HashMap<>();
+        }
 
-			firewallMap.put("virtualNetworkRuleName",
-					sqlVirtualNetworkRule.name() != null ? sqlVirtualNetworkRule.name() : "");
-			firewallMap.put("virtualNetworkSubnetId",
-					sqlVirtualNetworkRule.subnetId() != null ? sqlVirtualNetworkRule.subnetId() : "");
-			firewallMap.put("virtualNetworkResourceGroupName",
-					sqlVirtualNetworkRule.resourceGroupName() != null ? sqlVirtualNetworkRule.resourceGroupName() : "");
-			firewallMap.put("virtualNetworkState",
-					sqlVirtualNetworkRule.state() != null ? sqlVirtualNetworkRule.state() : "");
-
-			firewallRuleList.add(firewallMap);
-		}
-		sqlServerVH.setFirewallRuleDetails(firewallRuleList);
-	}
-
-	private void getFailoverGroupList(List<SqlFailoverGroup> sqlFailoverGroupList, SQLServerVH sqlServerVH) {
-		List<FailoverGroupVH> failoverGroupList = new ArrayList<>();
-		for (SqlFailoverGroup sqlFailoverGroup : sqlFailoverGroupList) {
-			FailoverGroupVH failoverGroupVH = new FailoverGroupVH();
-			failoverGroupVH.setSize(sqlFailoverGroup.databases().size());
-			failoverGroupVH.setId(sqlFailoverGroup.id());
-			failoverGroupVH.setName(sqlFailoverGroup.name());
-			failoverGroupVH.setReplicationState(sqlFailoverGroup.replicationState());
-			failoverGroupVH.setReadOnlyEndpointPolicy(sqlFailoverGroup.readOnlyEndpointPolicy().toString());
-			failoverGroupVH.setReadWriteEndpointPolicy(sqlFailoverGroup.readWriteEndpointPolicy().toString());
-			failoverGroupVH.setGracePeriod(sqlFailoverGroup.readWriteEndpointDataLossGracePeriodMinutes());
-			failoverGroupList.add(failoverGroupVH);
-
-		}
-		sqlServerVH.setFailoverGroupList(failoverGroupList);
-
-	}
-
+        sqlServerVH.setFailoverGroupList(failoverGroupList);
+    }
 }

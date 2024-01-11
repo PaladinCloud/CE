@@ -50,7 +50,6 @@ public class BlobServiceInventoryCollector {
                         blobServiceVH.setTags(storageAccount.tags());
                         JsonObject blobObject = blobObjectElement.getAsJsonObject();
                         JsonObject properties = blobObject.getAsJsonObject("properties");
-                        log.debug("Properties data{}", properties);
                         blobServiceVH.setId(blobObject.get("id").getAsString());
                         blobServiceVH.setName(blobObject.get("name").getAsString());
                         blobServiceVH.setType(blobObject.get("type").getAsString());

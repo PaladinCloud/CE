@@ -36,7 +36,6 @@ public class MySQLFlexibleInventoryCollector {
                     URLEncoder.encode(subscription.getSubscriptionId(),
                             java.nio.charset.StandardCharsets.UTF_8.toString()));
             String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-            logger.info("response form API: {}",response);
             logger.info("subscriptionName: {}", subscription.getSubscriptionName());
             JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
             logger.info("JSON Response object {}",responseObj);
@@ -62,19 +61,15 @@ public class MySQLFlexibleInventoryCollector {
                         URLEncoder.encode(serverName,
                                 java.nio.charset.StandardCharsets.UTF_8.toString()));
                 String responseConfig = CommonUtils.doHttpGet(configUrl, "Bearer", accessToken);
-                logger.info("response form API: {} ",
-                        responseConfig);
                 JsonObject responseConfigObj = new JsonParser().parse(responseConfig).getAsJsonObject();
                 JsonArray value=responseConfigObj.getAsJsonArray("value");
                 for (int j=0;j< value.size();j++)
                 {
-                    logger.debug("json object{} :{}",j,value.get(j));
                     JsonObject properties=value.get(j).getAsJsonObject().getAsJsonObject("properties");
 
                     String tlsVersion=properties.get("value").getAsString();
                     if(tlsVersion.startsWith("TLS"))
                     {
-                        logger.debug("TLS version is :{}",tlsVersion);
                         mySQLFlexibleVH.setTlsVersion(tlsVersion);
                         mySQLFlexibleVH.setResourceGroupName(resourceGroupName);
                         mySQLFlexibleVH.setId(id);

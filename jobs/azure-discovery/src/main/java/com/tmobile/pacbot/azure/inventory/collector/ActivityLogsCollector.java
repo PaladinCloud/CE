@@ -53,9 +53,7 @@ public final class ActivityLogsCollector {
                                         URLEncoder.encode(activityLogAlert.name(),
                                                 java.nio.charset.StandardCharsets.UTF_8.toString()));
                                 String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-                                logger.info("response form API: {} for log alert name: {}",
-                                                response,
-                                                activityLogAlert.name().isEmpty() ? activityLogAlert.name() : "");
+
                                 logger.info("subscriptionName: {}", subscription.getSubscriptionName());
                                 JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
                                 JsonObject activityLogObject = responseObj.getAsJsonObject();
