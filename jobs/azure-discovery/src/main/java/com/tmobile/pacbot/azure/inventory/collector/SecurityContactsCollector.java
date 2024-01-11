@@ -73,10 +73,8 @@ public class SecurityContactsCollector {
             String apiUrlTemplate="https://management.azure.com/%s/providers/Microsoft.Security/autoProvisioningSettings?api-version=2017-08-01-preview";
             String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
             String url = String.format(apiUrlTemplate, URLEncoder.encode("/subscriptions/"+subscription.getSubscriptionId(),java.nio.charset.StandardCharsets.UTF_8.toString()));
-            LOGGER.info("The url is {}",url);
 
             String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-            LOGGER.info("Response is :{}",response);
             JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
             JsonArray autoProvisioningObjects = responseObj.getAsJsonArray("value");
 
@@ -93,7 +91,6 @@ public class SecurityContactsCollector {
                 autoProvisioningSettingsVH.setType(type);
 
                 JsonObject properties =autoProvisioningObject.getAsJsonObject(PROPERTY);
-                LOGGER.debug("Properties data{}",properties);
 
                 if(properties!=null){
                     String autoProvision=properties.get(AUTO_PROVISION).getAsString();

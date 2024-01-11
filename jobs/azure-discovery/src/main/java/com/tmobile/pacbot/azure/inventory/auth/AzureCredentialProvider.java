@@ -70,7 +70,7 @@ public class AzureCredentialProvider {
 
     private ApplicationTokenCredentials getCredentials(String tenant) {
         BasicSessionCredentials credentials = credentialProvider.getCredentials(baseAccount, region, roleName);
-        Map<String, String> creds = decodeCredetials(tenant, credentials, region).get(tenant);
+        Map<String, String> creds = decodeCredentials(tenant, credentials, region).get(tenant);
         String clientId = creds.get("clientId");
         String secret = creds.get("secretId");
 
@@ -80,7 +80,7 @@ public class AzureCredentialProvider {
     public String getAuthToken(String tenant) throws Exception {
         String url = "https://login.microsoftonline.com/%s/oauth2/token";
         BasicSessionCredentials credentials = credentialProvider.getCredentials(baseAccount, region, roleName);
-        Map<String, String> creds = decodeCredetials(tenant, credentials, region).get(tenant);
+        Map<String, String> creds = decodeCredentials(tenant, credentials, region).get(tenant);
         String clientId = creds.get("clientId");
         String secret = creds.get("secretId");
 
@@ -102,17 +102,16 @@ public class AzureCredentialProvider {
         }
     }
 
-    private Map<String, Map<String, String>> decodeCredetials(String tenant, BasicSessionCredentials credentials, String region) {
+    private Map<String, Map<String, String>> decodeCredentials(String tenant, BasicSessionCredentials credentials, String region) {
         Map<String, Map<String, String>> credsMap = new HashMap<>();
-        logger.info("Inside decodeCredetials");
-        logger.info("Credential prefix:{}", credentialPrefix);
-        logger.info("roleName:{}", roleName);
         String secretId = credentialPrefix + "/" + roleName + "/azure/" + tenant;
+        logger.info("Credential - {}", secretId);
+
         String secretData = awsSecretManagerUtil.fetchSecret(secretId, credentials, region);
         String azureCreds = Util.getJson(secretData).get("secretdata");
-        Arrays.asList(azureCreds.split("##")).stream().forEach(cred -> {
+        Arrays.asList(azureCreds.split("##")).forEach(cred -> {
             Map<String, String> credInfoMap = new HashMap<>();
-            Arrays.asList(cred.split(",")).stream().forEach(str -> credInfoMap.put(str.split(":")[0], str.split(":")[1]));
+            Arrays.asList(cred.split(",")).forEach(str -> credInfoMap.put(str.split(":")[0], str.split(":")[1]));
             credsMap.put(credInfoMap.get("tenant"), credInfoMap);
         });
 

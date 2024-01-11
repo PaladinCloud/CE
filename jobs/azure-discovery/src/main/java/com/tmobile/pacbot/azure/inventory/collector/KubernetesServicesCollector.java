@@ -48,9 +48,6 @@ public class KubernetesServicesCollector {
                         URLEncoder.encode(kubernetesCluster.name(),
                                 java.nio.charset.StandardCharsets.UTF_8.toString()));
                 String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-                logger.info("response form API: {} for log alert name: {}",
-                        response,
-                        kubernetesCluster.name().isEmpty() ? kubernetesCluster.name() : "");
                 logger.info("subscriptionName: {}", subscription.getSubscriptionName());
                 JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
                 JsonObject kubernetesClusterObject = responseObj.getAsJsonObject();
