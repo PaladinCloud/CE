@@ -25,5 +25,5 @@ public class Constants {
 
         }
 
-        public static final String ERROR_PREFIX = DATA_ALERT_ERROR_STRING + " " + JOB_NAME + " - ";
+        public static final String ERROR_PREFIX = DATA_ALERT_ERROR_STRING + "- " + JOB_NAME + " - ";
 }
