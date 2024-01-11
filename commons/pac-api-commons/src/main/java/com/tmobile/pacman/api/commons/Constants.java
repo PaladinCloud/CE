@@ -142,6 +142,7 @@ public interface Constants {
     String ISSUE_RESOURCE_ID = "resourceId";
     String ISSUE_EXCEPTION = "issueException";
     String ISSUE_EXEMPTION_REASON = "exemptionReason";
+    String ISSUE_EXEMPTION_EXPIRY_DATE = "exemptionExpiryDate";
     String DELIMITER_UNDERSCORE = "_";
     String DELIMITER_COMMA = ",";
     String RESOURCE_TYPE = "resourcetType";
