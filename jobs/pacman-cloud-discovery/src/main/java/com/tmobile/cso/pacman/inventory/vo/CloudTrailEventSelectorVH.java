@@ -1,59 +1,54 @@
 package com.tmobile.cso.pacman.inventory.vo;
 
 public class CloudTrailEventSelectorVH {
-	
 
-	private String readWriteType;
-	private boolean includeManagementEvents;
-	private String dataResourcesType;
-	private String dataResourcesValue;
-	
-	public CloudTrailEventSelectorVH( String readWriteType, boolean includeManagementEvents,
-			String dataResourcesType, String dataResourcesValue) {
-		super();
-		this.readWriteType = readWriteType;
-		this.includeManagementEvents = includeManagementEvents;
-		this.dataResourcesType = dataResourcesType;
-		this.dataResourcesValue = dataResourcesValue;
-	}
+    private String readWriteType;
+    private boolean includeManagementEvents;
+    private String dataResourcesType;
+    private String dataResourcesValue;
 
-	public CloudTrailEventSelectorVH() {
-		
-	}
-	public String getReadWriteType() {
-		return readWriteType;
-	}
+    public CloudTrailEventSelectorVH(String readWriteType, boolean includeManagementEvents,
+                                     String dataResourcesType, String dataResourcesValue) {
+        super();
+        this.readWriteType = readWriteType;
+        this.includeManagementEvents = includeManagementEvents;
+        this.dataResourcesType = dataResourcesType;
+        this.dataResourcesValue = dataResourcesValue;
+    }
 
-	public void setReadWriteType(String readWriteType) {
-		this.readWriteType = readWriteType;
-	}
+    public CloudTrailEventSelectorVH() {
 
-	
+    }
 
-	public boolean isIncludeManagementEvents() {
-		return includeManagementEvents;
-	}
+    public String getReadWriteType() {
+        return readWriteType;
+    }
 
-	public void setIncludeManagementEvents(boolean includeManagementEvents) {
-		this.includeManagementEvents = includeManagementEvents;
-	}
+    public void setReadWriteType(String readWriteType) {
+        this.readWriteType = readWriteType;
+    }
 
-	public String getDataResourcesType() {
-		return dataResourcesType;
-	}
+    public boolean isIncludeManagementEvents() {
+        return includeManagementEvents;
+    }
 
-	public void setDataResourcesType(String dataResourcesType) {
-		this.dataResourcesType = dataResourcesType;
-	}
+    public void setIncludeManagementEvents(boolean includeManagementEvents) {
+        this.includeManagementEvents = includeManagementEvents;
+    }
 
-	public String getDataResourcesValue() {
-		return dataResourcesValue;
-	}
+    public String getDataResourcesType() {
+        return dataResourcesType;
+    }
 
-	public void setDataResourcesValue(String dataResourcesValue) {
-		this.dataResourcesValue = dataResourcesValue;
-	}
-	
-	
+    public void setDataResourcesType(String dataResourcesType) {
+        this.dataResourcesType = dataResourcesType;
+    }
 
+    public String getDataResourcesValue() {
+        return dataResourcesValue;
+    }
+
+    public void setDataResourcesValue(String dataResourcesValue) {
+        this.dataResourcesValue = dataResourcesValue;
+    }
 }

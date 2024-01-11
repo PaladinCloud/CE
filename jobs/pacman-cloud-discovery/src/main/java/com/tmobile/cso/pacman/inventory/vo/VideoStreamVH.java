@@ -1,13 +1,13 @@
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.List;
-
 import com.amazonaws.services.kinesisvideo.model.StreamInfo;
+
+import java.util.List;
 
 public class VideoStreamVH {
 
     private StreamInfo streamInfo;
-    
+
     private List<Attribute> tags;
 
     public VideoStreamVH(StreamInfo streamInfo, List<Attribute> tags) {

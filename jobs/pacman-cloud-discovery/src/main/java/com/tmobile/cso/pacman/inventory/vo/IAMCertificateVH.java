@@ -4,39 +4,42 @@ import java.util.Date;
 
 public class IAMCertificateVH {
 
-	/** The serverCertificateName. */
-	String serverCertificateName;
+    /**
+     * The serverCertificateName.
+     */
+    String serverCertificateName;
 
-	/** The arn. */
-	String arn;
+    /**
+     * The arn.
+     */
+    String arn;
 
-	/** The expiryDate. */
-	Date expiryDate;
+    /**
+     * The expiryDate.
+     */
+    Date expiryDate;
 
-	public String getServerCertificateName() {
-		return serverCertificateName;
-	}
+    public String getServerCertificateName() {
+        return serverCertificateName;
+    }
 
-	public void setServerCertificateName(String serverCertificateName) {
-		this.serverCertificateName = serverCertificateName;
-	}
+    public void setServerCertificateName(String serverCertificateName) {
+        this.serverCertificateName = serverCertificateName;
+    }
 
-	public String getArn() {
-		return arn;
-	}
+    public String getArn() {
+        return arn;
+    }
 
-	public void setArn(String arn) {
-		this.arn = arn;
-	}
+    public void setArn(String arn) {
+        this.arn = arn;
+    }
 
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
+    public Date getExpiryDate() {
+        return expiryDate;
+    }
 
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
-	}
-
-
-
+    public void setExpiryDate(Date expiryDate) {
+        this.expiryDate = expiryDate;
+    }
 }

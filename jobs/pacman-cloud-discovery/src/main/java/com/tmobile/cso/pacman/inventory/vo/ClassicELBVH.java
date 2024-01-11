@@ -15,47 +15,55 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.List;
-
 import com.amazonaws.services.elasticloadbalancing.model.ListenerDescription;
 import com.amazonaws.services.elasticloadbalancing.model.LoadBalancerDescription;
 import com.amazonaws.services.elasticloadbalancing.model.Tag;
 
+import java.util.List;
 
 /**
  * The Class ClassicELBVH.
  */
 public class ClassicELBVH {
 
-	/** The elb. */
-	LoadBalancerDescription elb;
+    /**
+     * The elb.
+     */
+    LoadBalancerDescription elb;
 
-	/** The tags. */
-	List<Tag> tags;
+    /**
+     * The tags.
+     */
+    List<Tag> tags;
 
-	/** The accessLogBucketName. */
-	String accessLogBucketName;
+    /**
+     * The accessLogBucketName.
+     */
+    String accessLogBucketName;
 
-	/** The accessLog. */
-	boolean accessLog;
+    /**
+     * The accessLog.
+     */
+    boolean accessLog;
 
-	/** ELB Listener */
-	List<ListenerDescription> listnerDesc;
-	
-	/**
-	 * Instantiates a new classic ELBVH.
-	 *
-	 * @param elb the elb
-	 * @param tags the tags
-	 */
-	public ClassicELBVH(LoadBalancerDescription elb,List<Tag> tags, String accessLogBucketName, boolean accessLog){
-		this.elb = elb;
-		this.tags = tags;
-		this.accessLogBucketName = accessLogBucketName;
-		this.accessLog = accessLog;
-		if(elb != null) {
-			this.listnerDesc = elb.getListenerDescriptions();
-		}
-	}
+    /**
+     * ELB Listener
+     */
+    List<ListenerDescription> listnerDesc;
 
+    /**
+     * Instantiates a new classic ELBVH.
+     *
+     * @param elb  the elb
+     * @param tags the tags
+     */
+    public ClassicELBVH(LoadBalancerDescription elb, List<Tag> tags, String accessLogBucketName, boolean accessLog) {
+        this.elb = elb;
+        this.tags = tags;
+        this.accessLogBucketName = accessLogBucketName;
+        this.accessLog = accessLog;
+        if (elb != null) {
+            this.listnerDesc = elb.getListenerDescriptions();
+        }
+    }
 }

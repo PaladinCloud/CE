@@ -1,4 +1,5 @@
 package com.tmobile.cso.pacman.inventory.vo;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,9 +19,9 @@ public class SQS {
     private String LastModifiedTimestamp;
     private String KmsMasterKeyId;
     private String KmsDataKeyReusePeriodSeconds;
-    private String FifoQueue ;
-    private String ContentBasedDeduplication ;
-    private String RedrivePolicy   ;
+    private String FifoQueue;
+    private String ContentBasedDeduplication;
+    private String RedrivePolicy;
 
     public String getQueueArn() {
         return QueueArn;
@@ -117,7 +118,7 @@ public class SQS {
     public void setLastModifiedTimestamp(String lastModifiedTimestamp) {
         LastModifiedTimestamp = lastModifiedTimestamp;
     }
-    
+
     public String getKmsMasterKeyId() {
         return KmsMasterKeyId;
     }

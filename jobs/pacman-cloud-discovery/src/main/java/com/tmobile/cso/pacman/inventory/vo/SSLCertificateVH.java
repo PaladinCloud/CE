@@ -5,58 +5,62 @@ import java.util.List;
 
 public class SSLCertificateVH {
 
-	/** The domainName. */
-	String domainName;
+    /**
+     * The domainName.
+     */
+    String domainName;
 
-	/** The certificateARN. */
-	String certificateARN;
+    /**
+     * The certificateARN.
+     */
+    String certificateARN;
 
-	/** The expiryDate. */
-	Date expiryDate;
+    /**
+     * The expiryDate.
+     */
+    Date expiryDate;
 
-	String status;
-	
-	List<String> issuerDetails;
+    String status;
 
-	public String getDomainName() {
-		return domainName;
-	}
+    List<String> issuerDetails;
 
-	public void setDomainName(String domainName) {
-		this.domainName = domainName;
-	}
+    public String getDomainName() {
+        return domainName;
+    }
 
-	public String getCertificateARN() {
-		return certificateARN;
-	}
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
+    }
 
-	public void setCertificateARN(String certificateARN) {
-		this.certificateARN = certificateARN;
-	}
+    public String getCertificateARN() {
+        return certificateARN;
+    }
 
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
+    public void setCertificateARN(String certificateARN) {
+        this.certificateARN = certificateARN;
+    }
 
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
-	}
+    public Date getExpiryDate() {
+        return expiryDate;
+    }
 
-	public List<String> getIssuerDetails() {
-		return issuerDetails;
-	}
+    public void setExpiryDate(Date expiryDate) {
+        this.expiryDate = expiryDate;
+    }
 
-	public void setIssuerDetails(List<String> issuerDetails) {
-		this.issuerDetails = issuerDetails;
-	}
+    public List<String> getIssuerDetails() {
+        return issuerDetails;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setIssuerDetails(List<String> issuerDetails) {
+        this.issuerDetails = issuerDetails;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

@@ -1,21 +1,21 @@
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.List;
-
 import com.amazonaws.services.kinesisfirehose.model.DeliveryStreamDescription;
 import com.amazonaws.services.kinesisfirehose.model.DestinationDescription;
 import com.amazonaws.services.kinesisfirehose.model.Tag;
 
+import java.util.List;
+
 public class DeliveryStreamVH {
 
     private DeliveryStreamDescription deliveryStreamDescription;
-    
+
     private DestinationDescription destinationDescription;
-    
+
     private List<Tag> tags;
 
     public DeliveryStreamVH(DeliveryStreamDescription deliveryStreamDescription,
-            DestinationDescription destinationDescription,List<Tag> tags) {
+                            DestinationDescription destinationDescription, List<Tag> tags) {
         super();
         this.deliveryStreamDescription = deliveryStreamDescription;
         this.destinationDescription = destinationDescription;
