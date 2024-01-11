@@ -27,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tmobile.pacman.api.asset.AssetConstants;
 import com.tmobile.pacman.api.asset.client.ComplianceServiceClient;
 import com.tmobile.pacman.api.asset.domain.FilterRequest;
+import com.tmobile.pacman.api.asset.domain.PolicyParamResponse;
 import com.tmobile.pacman.api.asset.domain.ResourceResponse;
 import com.tmobile.pacman.api.asset.domain.ResourceResponse.Source;
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
@@ -2980,19 +2981,68 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     @Override
     public List<Map<String, Object>> getAssetCountTrend(String assetGroup, List<String> type, String from, String to) {
-
         List<Map<String, Object>> assetCountList = new ArrayList<>();
         try {
-            String docType = (type != null && !type.isEmpty()) ? "count_type" : "count_asset";
-            StringBuilder request = new StringBuilder(
-                    "{\"size\": 10000, \"query\": { \"bool\": { \"must\": [ {\"term\":{\"docType.keyword\":\"" + docType + "\"}}, { \"term\": {\"ag.keyword\": ");
-            request.append("\"" + assetGroup + "\"}}");
-            if (type != null && !type.isEmpty()) {
-                request.append(",{ \"terms\": {\"type.keyword\": " + "[" + type.stream().map(str -> "\"" + str + "\"").collect(Collectors.joining(",")) + "]}}");
+            String docType;
+            String combinedAssetTypeString = null;
+            if (type.contains(Constants.TOTAL_ASSETS)) {
+                if (type.size() == 1)
+                    docType = "{\n" +
+                            "                \"term\": {\n" +
+                            "                  \"docType.keyword\": \"count_asset\"\n" +
+                            "                }\n" +
+                            "              }";
+                else
+                    docType = "{\"bool\": {\n" +
+                            "            \"should\": [\n" +
+                            "              {\n" +
+                            "                \"bool\": {\n" +
+                            "                  \"must\": [\n" +
+                            "                    {\n" +
+                            "                      \"term\": {\n" +
+                            "                        \"docType.keyword\": \"count_type\"\n" +
+                            "                      }\n" +
+                            "                    },\n" +
+                            "                    {\n" +
+                            "                      \"terms\": {\n" +
+                            "                        \"type.keyword\": [\n" +
+                            "                          %s\n" +
+                            "                        ]\n" +
+                            "                      }\n" +
+                            "                    }\n" +
+                            "                  ]\n" +
+                            "                }\n" +
+                            "              },\n" +
+                            "              {\n" +
+                            "                \"term\": {\n" +
+                            "                  \"docType.keyword\": \"count_asset\"\n" +
+                            "                }\n" +
+                            "              }\n" +
+                            "            ]\n" +
+                            "          }" +
+                            "       }";
+                type.remove(Constants.TOTAL_ASSETS);
+                combinedAssetTypeString = type.stream().map(str -> "\"" + str + "\"").collect(Collectors.joining(","));
+            } else {
+                docType = "{\n" +
+                        "                      \"term\": {\n" +
+                        "                        \"docType.keyword\": \"count_type\"\n" +
+                        "                      }\n" +
+                        "                    },\n" +
+                        "                    {\n" +
+                        "                      \"terms\": {\n" +
+                        "                        \"type.keyword\": [\n" +
+                        "                          %s\n" +
+                        "                        ]\n" +
+                        "                      }\n" +
+                        "                    }";
+                combinedAssetTypeString = type.stream().map(str -> "\"" + str + "\"").collect(Collectors.joining(","));
             }
+            docType = String.format(docType, combinedAssetTypeString);
+            StringBuilder request = new StringBuilder("{\"size\": 10000, \"query\": { \"bool\": { \"must\": [{ \"term\": {\"ag.keyword\": ");
+            request.append("\"" + assetGroup + "\"}}, %s");
             String gte = null;
             String lte = null;
-
             if (from != null) {
                 gte = "\"gte\": \"" + from + "\"";
             }
@@ -3008,26 +3058,30 @@ public class AssetRepositoryImpl implements AssetRepository {
             } else {
                 request.append(AssetConstants.ESQUERY_RANGE + lte + AssetConstants.ESQUERY_RANGE_CLOSE);
             }
-            assetCountList = getAssetCountStat(request.toString());
-            if ("count_type".equalsIgnoreCase(docType)) {
-                List<Map<String, Object>> countByTypeAndDateList = new ArrayList<>();
-                Map<String, List<Map<String, Object>>> groupByDateMap = assetCountList.stream().collect(Collectors.groupingBy(obj -> (String) obj.get("date")));
-                List<Map<String, Object>> finalCountByTypeAndDateList = countByTypeAndDateList;
-                groupByDateMap.entrySet().stream().forEach(entry -> {
-                    Map<String, Object> detailsMapForDate = new HashMap<>();
-                    detailsMapForDate.put("date", entry.getKey());
-                    entry.getValue().stream().forEach(detMap -> detailsMapForDate.put(detMap.get("type").toString(), detMap.get("totalassets")));
-                    finalCountByTypeAndDateList.add(detailsMapForDate);
+            assetCountList = getAssetCountStat(String.format(request.toString(), docType));
+            List<Map<String, Object>> countByTypeAndDateList = new ArrayList<>();
+            Map<String, List<Map<String, Object>>> groupByDateMap = assetCountList.stream().collect(Collectors.groupingBy(obj -> (String) obj.get(Constants.DATE)));
+            List<Map<String, Object>> finalCountByTypeAndDateList = countByTypeAndDateList;
+            groupByDateMap.entrySet().stream().forEach(entry -> {
+                Map<String, Object> detailsMapForDate = new HashMap<>();
+                detailsMapForDate.put(Constants.DATE, entry.getKey());
+                entry.getValue().stream().forEach(detMap -> {
+                    if(detMap.containsKey(Constants.TYPE))
+                        detailsMapForDate.put(detMap.get(Constants.TYPE).toString(), detMap.get(Constants.TOTAL_ASSETS));
+                    else
+                        detailsMapForDate.put(Constants.TOTAL_ASSETS, detMap.get(Constants.TOTAL_ASSETS));
                 });
-                countByTypeAndDateList = finalCountByTypeAndDateList.stream().sorted(Comparator.comparing(obj -> {
-                    try {
-                        return new SimpleDateFormat("yyyy-MM-dd").parse(obj.get("date").toString());
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                })).collect(Collectors.toList());
-                return countByTypeAndDateList;
-            }
+                finalCountByTypeAndDateList.add(detailsMapForDate);
+            });
+            countByTypeAndDateList = finalCountByTypeAndDateList.stream().sorted(Comparator.comparing(obj -> {
+                try {
+                    return new SimpleDateFormat("yyyy-MM-dd").parse(obj.get(Constants.DATE).toString());
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            })).collect(Collectors.toList());
+            return countByTypeAndDateList;
+
         } catch (Exception e) {
             LOGGER.error("Exception in getAssetMinMax ", e);
         }
@@ -3035,7 +3089,6 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     List<Map<String, Object>> getAssetCountStat(String rqstBody) {
-
         List<Map<String, Object>> docs = new ArrayList<>();
         String responseJson = "";
         try {
@@ -3056,18 +3109,17 @@ public class AssetRepositoryImpl implements AssetRepository {
                     Map<String, Object> doc = new Gson().fromJson(sourceJson, new TypeToken<Map<String, Object>>() {
                     }.getType());
                     doc.remove("assetCount");
-                    if ("count_type".equalsIgnoreCase((String) doc.get("docType"))) {
-                        doc.put("totalassets", doc.get("max") != null ? Math.round(Double.parseDouble(doc.get("max").toString())) : 0);
+                    if ("count_type".equalsIgnoreCase((String) doc.get(Constants.DOC_TYPE))) {
+                        doc.put(Constants.TOTAL_ASSETS, doc.get("max") != null ? Math.round(Double.parseDouble(doc.get("max").toString())) : 0);
                     } else {
-                        doc.put("totalassets", Math.round(Double.parseDouble(doc.get("totalassets").toString())));
+                        doc.put(Constants.TOTAL_ASSETS, Math.round(Double.parseDouble(doc.get(Constants.TOTAL_ASSETS).toString())));
                     }
-                    doc.keySet().retainAll(Arrays.asList("date", "totalassets", "type"));
+                    doc.keySet().retainAll(Arrays.asList(Constants.DATE, Constants.TOTAL_ASSETS, Constants.TYPE));
                     docs.add(doc);
                 }
             }
         }
         return docs;
-
     }
 
     public Set<String> getMandatoryTags(String filterName) {

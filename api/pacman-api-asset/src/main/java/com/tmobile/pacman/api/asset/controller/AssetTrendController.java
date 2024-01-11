@@ -110,6 +110,11 @@ public class AssetTrendController {
                     return ResponseUtils.buildFailureResponse(new Exception("Attribute 'type' should be a List."));
                 }
                 type = (List<String>) requestPayload.get("type");
+                if (type.isEmpty()) {
+                    return ResponseUtils.buildFailureResponse(new Exception("Attribute 'type' cannot be empty."));
+                }
+            } else {
+                return ResponseUtils.buildFailureResponse(new Exception("Attribute 'type' is not provided."));
             }
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("ag", assetGroup);
