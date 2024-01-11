@@ -5,7 +5,7 @@ import java.util.List;
 public class SQSVH {
 
     private String queueUrl;
-    
+
     private SQS sqs;
 
     private List<Attribute> tags;

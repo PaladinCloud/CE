@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -14,15 +14,6 @@
  * the License.
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.file;
-
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.verifyNew;
-
-import java.io.File;
-import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,21 +25,29 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import java.io.File;
+import java.util.HashMap;
+
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 
 /**
  * The Class FileManagerTest.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({FileGenerator.class,File.class})
+@PrepareForTest({FileGenerator.class, File.class})
 @PowerMockIgnore("javax.management.*")
 public class FileManagerTest {
 
-    /** The file manager. */
+    /**
+     * The file manager.
+     */
     @InjectMocks
     FileManager fileManager;
-    
+
     /**
      * Sets the up.
      */
@@ -56,7 +55,7 @@ public class FileManagerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
-    
+
     /**
      * Initialise test.
      *
@@ -64,18 +63,18 @@ public class FileManagerTest {
      */
     @SuppressWarnings("static-access")
     @Test
-    public void initialiseTest() throws Exception{
-        
+    public void initialiseTest() throws Exception {
+
         File file = PowerMockito.mock(File.class);
         PowerMockito.whenNew(File.class).withAnyArguments().thenReturn(file);
-        when(file,"mkdirs").thenReturn(true);
-        
+        when(file, "mkdirs").thenReturn(true);
+
         mockStatic(FileGenerator.class);
-        PowerMockito.doNothing().when(FileGenerator.class,"writeToFile",anyString(),anyString(),anyBoolean());
-        
+        PowerMockito.doNothing().when(FileGenerator.class, "writeToFile", anyString(), anyString(), anyBoolean());
+
         fileManager.initialise("src/test/resources/testfolder");
     }
-    
+
     /**
      * Generate files test.
      *
@@ -83,11 +82,11 @@ public class FileManagerTest {
      */
     @SuppressWarnings("static-access")
     @Test
-    public void generateFilesTest() throws Exception{
-        
+    public void generateFilesTest() throws Exception {
+
         mockStatic(FileGenerator.class);
-        PowerMockito.doNothing().when(FileGenerator.class,"writeToFile",anyString(),anyString(),anyBoolean());
-        
+        PowerMockito.doNothing().when(FileGenerator.class, "writeToFile", anyString(), anyString(), anyBoolean());
+
         fileManager.generateInstanceFiles(new HashMap<>());
         fileManager.generateNwInterfaceFiles(new HashMap<>());
         fileManager.generateAsgFiles(new HashMap<>());

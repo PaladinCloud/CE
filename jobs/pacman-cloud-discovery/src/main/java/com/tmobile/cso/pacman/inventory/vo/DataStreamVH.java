@@ -1,14 +1,14 @@
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.List;
-
 import com.amazonaws.services.kinesis.model.StreamDescription;
 import com.amazonaws.services.kinesis.model.Tag;
+
+import java.util.List;
 
 public class DataStreamVH {
 
     private StreamDescription streamDescription;
-    
+
     private List<Tag> tags;
 
     public DataStreamVH(StreamDescription streamDescription, List<Tag> tags) {

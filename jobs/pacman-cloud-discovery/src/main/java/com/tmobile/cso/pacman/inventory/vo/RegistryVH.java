@@ -5,31 +5,31 @@ import com.amazonaws.services.ecr.model.Repository;
 
 public class RegistryVH {
 
-  private Repository repository;
-  private ImageDetail imageDetail;
+    private Repository repository;
+    private ImageDetail imageDetail;
 
-  public Repository getRepository() {
-    return repository;
-  }
+    public RegistryVH() {
 
-  public void setRepository(Repository repository) {
-    this.repository = repository;
-  }
+    }
 
-  public ImageDetail getImageDetail() {
-    return imageDetail;
-  }
+    public RegistryVH(Repository repository, ImageDetail imageDetail) {
+        this.repository = repository;
+        this.imageDetail = imageDetail;
+    }
 
-  public void setImageDetail(ImageDetail imageDetail) {
-    this.imageDetail = imageDetail;
-  }
+    public Repository getRepository() {
+        return repository;
+    }
 
-  public RegistryVH()
-  {
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
-  }
-  public RegistryVH(Repository repository, ImageDetail imageDetail) {
-    this.repository = repository;
-    this.imageDetail = imageDetail;
-  }
+    public ImageDetail getImageDetail() {
+        return imageDetail;
+    }
+
+    public void setImageDetail(ImageDetail imageDetail) {
+        this.imageDetail = imageDetail;
+    }
 }

@@ -15,110 +15,119 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 import com.amazonaws.services.elasticloadbalancingv2.model.Listener;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancer;
 import com.amazonaws.services.elasticloadbalancingv2.model.Rule;
 import com.amazonaws.services.elasticloadbalancingv2.model.Tag;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class LoadBalancerVH.
  */
 public class LoadBalancerVH {
 
-	/** The availability zones. */
-	private List<String> availabilityZones;
-
-	/** The lb. */
-	private LoadBalancer lb;
-
-	/** The instances. */
-	private List<Instance> instances;
-
-	/** The tags. */
-	private List<Tag> tags;
-
-	/** The availability zones. */
+    /**
+     * The accessLogBucketName.
+     */
+    String accessLogBucketName;
+    /**
+     * The accessLog.
+     */
+    boolean accessLog;
+    List<Rule> rules;
+    /**
+     * The availability zones.
+     */
+    private final List<String> availabilityZones;
+    /**
+     * The lb.
+     */
+    private final LoadBalancer lb;
+    /**
+     * The instances.
+     */
+    private List<Instance> instances;
+    /**
+     * The tags.
+     */
+    private List<Tag> tags;
+    /**
+     * The availability zones.
+     */
     private List<String> subnets;
+    /**
+     * load balancer lister list
+     */
+    private List<Listener> listenersList;
 
-    /** The accessLogBucketName. */
-	 String accessLogBucketName;
+    /**
+     * Instantiates a new load balancer VH.
+     *
+     * @param elb the elb
+     */
+    public LoadBalancerVH(LoadBalancer elb) {
+        lb = elb;
+        availabilityZones = new ArrayList<>();
+        this.instances = new ArrayList<>();
+        if (lb.getAvailabilityZones() != null) {
+            lb.getAvailabilityZones().forEach(e -> {
+                availabilityZones.add(e.getZoneName());
+                subnets.add(e.getSubnetId());
+            });
+        }
+    }
 
-	 /** The accessLog. */
-	 boolean accessLog;
+    /**
+     * Instantiates a new load balancer VH.
+     *
+     * @param elb  the elb
+     * @param tags the tags
+     */
+    public LoadBalancerVH(LoadBalancer elb, List<Tag> tags, String accessLogBucketName, boolean accessLog,
+                          List<Listener> listenersList, List<Rule> rules) {
+        lb = elb;
+        this.tags = tags;
+        this.accessLog = accessLog;
+        this.accessLogBucketName = accessLogBucketName;
+        availabilityZones = new ArrayList<>();
+        subnets = new ArrayList<>();
+        this.instances = new ArrayList<>();
+        if (lb.getAvailabilityZones() != null) {
+            lb.getAvailabilityZones().forEach(e -> {
+                availabilityZones.add(e.getZoneName());
+                subnets.add(e.getSubnetId());
+            });
+        }
+        this.listenersList = listenersList;
+        this.rules = rules;
+    }
 
-	 /** load balancer lister list */
-		private List<Listener> listenersList;
-		
-		List<Rule> rules;
-	/**
-	 * Instantiates a new load balancer VH.
-	 *
-	 * @param elb the elb
-	 */
-	public LoadBalancerVH(LoadBalancer elb){
-		lb = elb;
-		availabilityZones = new ArrayList<>();
-		this.instances = new ArrayList<>();
-		if(lb.getAvailabilityZones()!=null){
-		    lb.getAvailabilityZones().forEach(e-> { availabilityZones.add(e.getZoneName());
-            subnets.add(e.getSubnetId());});
-		}
-	}
+    /**
+     * Sets the instances.
+     *
+     * @param instances the new instances
+     */
+    public void setInstances(List<Instance> instances) {
+        this.instances = instances;
+    }
 
-	/**
-	 * Instantiates a new load balancer VH.
-	 *
-	 * @param elb the elb
-	 * @param tags the tags
-	 */
-	public LoadBalancerVH(LoadBalancer elb,List<Tag> tags, String accessLogBucketName, boolean accessLog,
-			List<Listener> listenersList, List<Rule> rules){
-		lb = elb;
-		this.tags = tags;
-		this.accessLog = accessLog;
-		this.accessLogBucketName = accessLogBucketName;
-		availabilityZones = new ArrayList<>();
-		subnets = new ArrayList<>();
-		this.instances = new ArrayList<>();
-		if(lb.getAvailabilityZones()!=null){
-		    lb.getAvailabilityZones().forEach(e-> { availabilityZones.add(e.getZoneName());
-			                                        subnets.add(e.getSubnetId());});
-		}
-		this.listenersList = listenersList;
-		this.rules = rules;
+    public List<Listener> getListenersList() {
+        return listenersList;
+    }
 
-	}
+    public void setListenersList(List<Listener> listenersList) {
+        this.listenersList = listenersList;
+    }
 
-	/**
-	 * Sets the instances.
-	 *
-	 * @param instances the new instances
-	 */
-	public void setInstances( List<Instance> instances){
-		this.instances = instances;
-	}
+    public List<Rule> getRules() {
+        return rules;
+    }
 
-	public List<Listener> getListenersList() {
-		return listenersList;
-	}
-
-	public void setListenersList(List<Listener> listenersList) {
-		this.listenersList = listenersList;
-	}
-
-	public List<Rule> getRules() {
-		return rules;
-	}
-
-	public void setRules(List<Rule> rules) {
-		this.rules = rules;
-	}
-	
-
+    public void setRules(List<Rule> rules) {
+        this.rules = rules;
+    }
 }
 

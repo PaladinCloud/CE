@@ -15,97 +15,100 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.List;
-
 import com.amazonaws.services.cloudfront.model.DistributionSummary;
 import com.amazonaws.services.cloudfront.model.Tag;
 
+import java.util.List;
 
 /**
  * The Class CloudFrontVH.
  */
 public class CloudFrontVH {
 
-	/** The dist summary. */
-	DistributionSummary distSummary;
+    /**
+     * The dist summary.
+     */
+    DistributionSummary distSummary;
 
-	/** The tags. */
-	List<Tag> tags;
+    /**
+     * The tags.
+     */
+    List<Tag> tags;
 
-	/** The bucketName. */
-	String bucketName;
+    /**
+     * The bucketName.
+     */
+    String bucketName;
 
-	/** The accessLogEnabled. */
-	boolean accessLogEnabled;
-	
-	/**  Default Root Object for the distribution *. */
-	String defaultRootObject;
+    /**
+     * The accessLogEnabled.
+     */
+    boolean accessLogEnabled;
 
-	public String getDefaultRootObject() {
-		return defaultRootObject;
-	}
+    /**
+     * Default Root Object for the distribution *.
+     */
+    String defaultRootObject;
 
-
-
-	public void setDefaultRootObject(String defaultRootObject) {
-		this.defaultRootObject = defaultRootObject;
-	}
-
-
-
-	/**
-	 * Gets the dist summary.
-	 *
-	 * @return the dist summary
-	 */
-	public DistributionSummary getDistSummary() {
-		return distSummary;
-	}
-	
-	
-
-	/**
-	 * Sets the dist summary.
-	 *
-	 * @param distSummary the new dist summary
-	 */
-	public void setDistSummary(DistributionSummary distSummary) {
-		this.distSummary = distSummary;
-	}
-
-	/**
-	 * Gets the tags.
-	 *
-	 * @return the tags
-	 */
-	public List<Tag> getTags() {
-		return tags;
-	}
-
-	/**
-	 * Sets the tags.
-	 *
-	 * @param tags the new tags
-	 */
-	public void setTags(List<Tag> tags) {
-		this.tags = tags;
-	}
-
-	public String getBucketName() {
-		return bucketName;
-	}
-
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
-
-	public boolean isAccessLogEnabled() {
-		return accessLogEnabled;
-	}
-
-	public void setAccessLogEnabled(boolean accessLogEnabled) {
-		this.accessLogEnabled = accessLogEnabled;
-	}
+    public String getDefaultRootObject() {
+        return defaultRootObject;
+    }
 
 
+    public void setDefaultRootObject(String defaultRootObject) {
+        this.defaultRootObject = defaultRootObject;
+    }
+
+
+    /**
+     * Gets the dist summary.
+     *
+     * @return the dist summary
+     */
+    public DistributionSummary getDistSummary() {
+        return distSummary;
+    }
+
+    /**
+     * Sets the dist summary.
+     *
+     * @param distSummary the new dist summary
+     */
+    public void setDistSummary(DistributionSummary distSummary) {
+        this.distSummary = distSummary;
+    }
+
+    /**
+     * Gets the tags.
+     *
+     * @return the tags
+     */
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    /**
+     * Sets the tags.
+     *
+     * @param tags the new tags
+     */
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public boolean isAccessLogEnabled() {
+        return accessLogEnabled;
+    }
+
+    public void setAccessLogEnabled(boolean accessLogEnabled) {
+        this.accessLogEnabled = accessLogEnabled;
+    }
 }

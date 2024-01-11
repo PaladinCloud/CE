@@ -15,12 +15,12 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.List;
-
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.BucketLoggingConfiguration;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.Tag;
+
+import java.util.List;
 
 
 /**
@@ -28,56 +28,74 @@ import com.amazonaws.services.s3.model.Tag;
  */
 public class BucketVH {
 
-	/** The bucket. */
-	Bucket bucket;
+    /**
+     * The bucket.
+     */
+    Bucket bucket;
 
-	/** The tags. */
-	List<Tag> tags ;
+    /**
+     * The tags.
+     */
+    List<Tag> tags;
 
-	/** The location. */
-	String location;
+    /**
+     * The location.
+     */
+    String location;
 
-	/** The version status. */
-	String versionStatus;
+    /**
+     * The version status.
+     */
+    String versionStatus;
 
-	/** The mfa delete. */
-	Boolean mfaDelete;
+    /**
+     * The mfa delete.
+     */
+    Boolean mfaDelete;
 
-	/** The Bucket Encryption. */
+    /**
+     * The Bucket Encryption.
+     */
     String bucketEncryp;
-    
+
     Boolean websiteConfiguration;
 
     Boolean isLoggingEnabled;
-    
-    /** The destination bucket name. */
+
+    /**
+     * The destination bucket name.
+     */
     String destinationBucketName;
-    
-    /** The log file prefix. */
+
+    /**
+     * The log file prefix.
+     */
     String logFilePrefix;
 
-    /** The bucket policy. */
+    /**
+     * The bucket policy.
+     */
     String bucketPolicy;
 
-	/**
-	 * Instantiates a new bucket VH.
-	 *
-	 * @param bucket the bucket
-	 * @param location the location
-	 * @param versionConfig the version config
-	 * @param tags the tags
-	 */
-	public BucketVH(Bucket bucket,String location,BucketVersioningConfiguration versionConfig, List<Tag> tags, String bucketEncryp, boolean websiteConfiguration,BucketLoggingConfiguration bucketLoggingConfiguration,String bucketPolicy){
-		this.bucket = bucket;
-		this.location = location;
-		this.versionStatus = versionConfig==null?"":versionConfig.getStatus();
-		this.mfaDelete =  versionConfig==null?null:versionConfig.isMfaDeleteEnabled();
-		this.tags = tags;
-		this.bucketEncryp = bucketEncryp;
-		this.websiteConfiguration = websiteConfiguration;
-        this.isLoggingEnabled = bucketLoggingConfiguration==null?null:bucketLoggingConfiguration.isLoggingEnabled();
-        this.destinationBucketName = bucketLoggingConfiguration==null?"":bucketLoggingConfiguration.getDestinationBucketName();
-        this.logFilePrefix = bucketLoggingConfiguration==null?"":bucketLoggingConfiguration.getLogFilePrefix();
+    /**
+     * Instantiates a new bucket VH.
+     *
+     * @param bucket        the bucket
+     * @param location      the location
+     * @param versionConfig the version config
+     * @param tags          the tags
+     */
+    public BucketVH(Bucket bucket, String location, BucketVersioningConfiguration versionConfig, List<Tag> tags, String bucketEncrypt, boolean websiteConfiguration, BucketLoggingConfiguration bucketLoggingConfiguration, String bucketPolicy) {
+        this.bucket = bucket;
+        this.location = location;
+        this.versionStatus = versionConfig == null ? "" : versionConfig.getStatus();
+        this.mfaDelete = versionConfig == null ? null : versionConfig.isMfaDeleteEnabled();
+        this.tags = tags;
+        this.bucketEncryp = bucketEncrypt;
+        this.websiteConfiguration = websiteConfiguration;
+        this.isLoggingEnabled = bucketLoggingConfiguration == null ? null : bucketLoggingConfiguration.isLoggingEnabled();
+        this.destinationBucketName = bucketLoggingConfiguration == null ? "" : bucketLoggingConfiguration.getDestinationBucketName();
+        this.logFilePrefix = bucketLoggingConfiguration == null ? "" : bucketLoggingConfiguration.getLogFilePrefix();
         this.bucketPolicy = bucketPolicy;
-	}
+    }
 }

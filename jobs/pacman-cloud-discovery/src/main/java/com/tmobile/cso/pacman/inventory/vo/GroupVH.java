@@ -15,47 +15,49 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.Date;
-import java.util.List;
-
 import com.amazonaws.services.identitymanagement.model.Group;
 
+import java.util.List;
 
 /**
  * The Class GroupVH.
  */
 public class GroupVH {
 
-	/** The user. */
-	private Group group;
+    /**
+     * The user.
+     */
+    private final Group group;
 
-	/** The policies. */
-	private List<String> policies;
+    /**
+     * The policies.
+     */
+    private List<String> policies;
 
-	/**
-	 * Instantiates a new user VH.
-	 *
-	 * @param usr the usr
-	 */
-	public GroupVH(Group grp){
-		this.group = grp;
-	}
+    /**
+     * Instantiates a new user VH.
+     *
+     * @param grp the usr
+     */
+    public GroupVH(Group grp) {
+        this.group = grp;
+    }
 
-	/**
-	 * Gets the policies.
-	 *
-	 * @return the policies
-	 */
-	public List<String> getPolicies() {
-		return policies;
-	}
+    /**
+     * Gets the policies.
+     *
+     * @return the policies
+     */
+    public List<String> getPolicies() {
+        return policies;
+    }
 
-	/**
-	 * Sets the groups.
-	 *
-	 * @param groups the new groups
-	 */
-	public void setPolicies(List<String> policies) {
-		this.policies = policies;
-	}
+    /**
+     * Sets the groups.
+     *
+     * @param policies the new groups
+     */
+    public void setPolicies(List<String> policies) {
+        this.policies = policies;
+    }
 }
