@@ -16,18 +16,19 @@
 
 package com.tmobile.pacman.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation.Type;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
-import com.tmobile.pacman.commons.policy.Annotation.Type;
+
+import java.util.HashMap;
+import java.util.Map;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class RuleExecutionUtils.
  */
@@ -37,11 +38,11 @@ public class PolicyExecutionUtils {
      * If filter matches the current resource.
      *
      * @param policyParam the policy param
-     * @param resource the resource
+     * @param resource    the resource
      * @return true, if successful
      */
     public static boolean ifFilterMatchesTheCurrentResource(Map<String, String> policyParam,
-            Map<String, String> resource) {
+                                                            Map<String, String> resource) {
 
         String ruleParam_account = !Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.ACCOUNT_ID))
                 ? policyParam.get(PacmanSdkConstants.ACCOUNT_ID) : resource.get(PacmanSdkConstants.ACCOUNT_ID);
@@ -65,7 +66,7 @@ public class PolicyExecutionUtils {
      * Gets the local policy param.
      *
      * @param policyParam the policy param
-     * @param resource the resource
+     * @param resource    the resource
      * @return the local policy param
      */
     public static Map<String, String> getLocalPolicyParam(Map<String, String> policyParam, Map<String, String> resource) {
@@ -84,15 +85,15 @@ public class PolicyExecutionUtils {
     /**
      * Gets the rule attribute.
      *
-     * @param result the result
-     * @param policyParam the policy param
+     * @param result           the result
+     * @param policyParam      the policy param
      * @param policyAnnotation the policy annotation
-     * @param attribute the attribute
+     * @param attribute        the attribute
      * @return the attribute value from policyParam--policyAnnotation--PolicyResult
-     *         wherever found first, not_found otherwise
+     * wherever found first, not_found otherwise
      */
     public static String getPolicyAttribute(PolicyResult result, Map<String, String> policyParam, PacmanPolicy policyAnnotation,
-            String attribute) {
+                                            String attribute) {
         if (policyParam != null && policyParam.containsKey(attribute)) {
             return policyParam.get(attribute);
         }
@@ -106,7 +107,7 @@ public class PolicyExecutionUtils {
      * Gets the value from result.
      *
      * @param result the result
-     * @param key the key
+     * @param key    the key
      * @return the value from result
      */
     private static String getValueFromResult(final PolicyResult result, final String key) {
@@ -123,15 +124,15 @@ public class PolicyExecutionUtils {
     /**
      * Builds the annotation.
      *
-     * @param ruleParam the rule param
-     * @param resource the resource
-     * @param executionId the execution id
+     * @param ruleParam      the rule param
+     * @param resource       the resource
+     * @param executionId    the execution id
      * @param annotationType the annotation type
      * @param ruleAnnotation the rule annotation
      * @return the annotation
      */
     public static Annotation buildAnnotation(Map<String, String> ruleParam, Map<String, String> resource,
-            String executionId, Type annotationType) {
+                                             String executionId, Type annotationType) {
 
         Annotation annotation = Annotation.buildAnnotation(ruleParam, annotationType);
         annotation.put(PacmanSdkConstants.EXECUTION_ID, executionId);

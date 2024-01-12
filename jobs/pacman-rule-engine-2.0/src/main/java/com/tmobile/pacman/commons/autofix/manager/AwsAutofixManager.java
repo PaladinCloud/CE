@@ -15,43 +15,19 @@ import com.tmobile.pacman.util.CommonUtils;
 
 import java.util.*;
 
-public class AwsAutofixManager implements IAutofixManger{
-
-    @Override
-    public Map<String, Object> getClientMap(String targetType, Map<String, String> annotation, String ruleIdentifyingString) throws Exception {
-
-        StringBuilder roleArn = new StringBuilder();
-        Map<String, Object> clientMap = null;
-        roleArn.append(PacmanSdkConstants.ROLE_ARN_PREFIX).append(annotation.get(PacmanSdkConstants.ACCOUNT_ID))
-                .append(":").append(ruleIdentifyingString);
-
-        AWSClientManager awsClientManager = new AWSClientManagerImpl();
-        try {
-            clientMap = awsClientManager.getClient(annotation.get(PacmanSdkConstants.ACCOUNT_ID), roleArn.toString(),
-                    AWSService.valueOf(targetType.toUpperCase()), Regions.fromName(
-                            annotation.get(PacmanSdkConstants.REGION) == null ? Regions.DEFAULT_REGION.getName()
-                                    : annotation.get(PacmanSdkConstants.REGION)),
-                    ruleIdentifyingString);
-        } catch (UnableToCreateClientException e1) {
-            logger.error("unable to create client for account {} and region {} and {}" , annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),e1);
-            throw new Exception("unable to create client for account and region");
-        }
-        return clientMap;
-    }
-
-
+public class AwsAutofixManager implements IAutofixManger {
 
     public static void main(String[] args) throws Exception {
         CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL);
-        Map<String,String> params = new HashMap<>();
-        Arrays.asList(args).stream().forEach(obj-> {
+        Map<String, String> params = new HashMap<>();
+        Arrays.asList(args).stream().forEach(obj -> {
             String[] keyValue = obj.split("[:]");
             params.put(keyValue[0], keyValue[1]);
         });
         try {
-            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS),"inventory");
-            if( !(params==null || params.isEmpty())){
-                params.forEach((k,v) -> System.setProperty(k, v));
+            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS), "inventory");
+            if (!(params == null || params.isEmpty())) {
+                params.forEach((k, v) -> System.setProperty(k, v));
             }
         } catch (Exception e) {
             logger.error("Error fetching config", e);
@@ -72,9 +48,31 @@ public class AwsAutofixManager implements IAutofixManger{
     }
 
     @Override
+    public Map<String, Object> getClientMap(String targetType, Map<String, String> annotation, String ruleIdentifyingString) throws Exception {
+
+        StringBuilder roleArn = new StringBuilder();
+        Map<String, Object> clientMap = null;
+        roleArn.append(PacmanSdkConstants.ROLE_ARN_PREFIX).append(annotation.get(PacmanSdkConstants.ACCOUNT_ID))
+                .append(":").append(ruleIdentifyingString);
+
+        AWSClientManager awsClientManager = new AWSClientManagerImpl();
+        try {
+            clientMap = awsClientManager.getClient(annotation.get(PacmanSdkConstants.ACCOUNT_ID), roleArn.toString(),
+                    AWSService.valueOf(targetType.toUpperCase()), Regions.fromName(
+                            annotation.get(PacmanSdkConstants.REGION) == null ? Regions.DEFAULT_REGION.getName()
+                                    : annotation.get(PacmanSdkConstants.REGION)),
+                    ruleIdentifyingString);
+        } catch (UnableToCreateClientException e1) {
+            logger.error("unable to create client for account {} and region {} and {}", annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), e1);
+            throw new Exception("unable to create client for account and region");
+        }
+        return clientMap;
+    }
+
+    @Override
     public void initializeConfigs() {
         try {
-            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS),"inventory");
+            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS), "inventory");
         } catch (Exception e) {
             logger.error("Error fetching config", e);
         }

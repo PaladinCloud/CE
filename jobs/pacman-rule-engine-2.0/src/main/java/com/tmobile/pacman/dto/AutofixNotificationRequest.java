@@ -17,7 +17,10 @@ public class AutofixNotificationRequest {
     private String policyNameLink;
     private String issueIdLink;
     private String resourceIdLink;
-    private Map<String,Object> additionalInfo=new HashMap<>();
+    private Map<String, Object> additionalInfo = new HashMap<>();
+
+    public AutofixNotificationRequest() {
+    }
 
     public Map<String, Object> getAdditionalInfo() {
         return additionalInfo;
@@ -49,9 +52,6 @@ public class AutofixNotificationRequest {
 
     public void setResourceIdLink(String resourceIdLink) {
         this.resourceIdLink = resourceIdLink;
-    }
-
-    public AutofixNotificationRequest(){
     }
 
     public String getPolicyName() {
@@ -105,6 +105,7 @@ public class AutofixNotificationRequest {
     public AutoFixAction getAction() {
         return action;
     }
+
     public void setAction(AutoFixAction action) {
         this.action = action;
     }

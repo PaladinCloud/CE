@@ -16,13 +16,14 @@
 
 package com.tmobile.pacman.executor;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 // TODO: Auto-generated Javadoc
+
 /**
  * The Interface PolicyRunner.
  */
@@ -31,7 +32,7 @@ public interface PolicyRunner {
     /**
      * Run policy.
      *
-     * @param resources the resources
+     * @param resources   the resources
      * @param policyParam the policy param
      * @param executionId the execution id
      * @return the list
@@ -39,9 +40,10 @@ public interface PolicyRunner {
      */
     public List<PolicyResult> runPolicies(List<Map<String, String>> resources, Map<String, String> policyParam,
                                           String executionId) throws Exception;
-    default void populateAnnotationParams(PolicyResult result,Map<String, String> resource, Map<String, String> policyParam ){
-        String assetGroup=policyParam.get(PacmanSdkConstants.ASSET_GROUP_KEY);
-        switch (assetGroup.toUpperCase()){
+
+    default void populateAnnotationParams(PolicyResult result, Map<String, String> resource, Map<String, String> policyParam) {
+        String assetGroup = policyParam.get(PacmanSdkConstants.ASSET_GROUP_KEY);
+        switch (assetGroup.toUpperCase()) {
             case "AWS":
                 result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanSdkConstants.ACCOUNT_ID));
                 break;
@@ -50,20 +52,21 @@ public interface PolicyRunner {
                 break;
             case "GCP":
                 result.getAnnotation().put(PacmanSdkConstants.PROJECT_NAME, resource.get(PacmanSdkConstants.PROJECT_NAME));
-                result.getAnnotation().put(PacmanSdkConstants.PROJECT_ID,resource.get(PacmanSdkConstants.PROJECT_ID));
+                result.getAnnotation().put(PacmanSdkConstants.PROJECT_ID, resource.get(PacmanSdkConstants.PROJECT_ID));
                 break;
         }
     }
-    default Map<String,String> getMandatoryTagsForAnnotation(String mandatoryTags, Map<String,String> resourceData){
-        if(mandatoryTags==null || mandatoryTags.isEmpty()){
+
+    default Map<String, String> getMandatoryTagsForAnnotation(String mandatoryTags, Map<String, String> resourceData) {
+        if (mandatoryTags == null || mandatoryTags.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String,String> annotationMap=new HashMap<>();
+        Map<String, String> annotationMap = new HashMap<>();
         Set<String> mandatoryTagSet = Arrays.stream(mandatoryTags.split(",")).map(String::trim).collect(Collectors.toSet());
-        mandatoryTagSet.stream().forEach(element->{
-            String tag="tags."+element;
-            if(resourceData.containsKey(tag)){
-                annotationMap.put(tag,resourceData.get(tag));
+        mandatoryTagSet.stream().forEach(element -> {
+            String tag = "tags." + element;
+            if (resourceData.containsKey(tag)) {
+                annotationMap.put(tag, resourceData.get(tag));
             }
         });
         return annotationMap;

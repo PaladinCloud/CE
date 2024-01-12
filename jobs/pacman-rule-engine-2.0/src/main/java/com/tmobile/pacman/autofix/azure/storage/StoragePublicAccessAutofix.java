@@ -17,12 +17,12 @@ import java.util.Map;
 @PacmanFix(key = "storage-account-public-access-auto-fix", desc = "Public access on the storage account will be removed")
 public class StoragePublicAccessAutofix extends BaseFix {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StoragePublicAccessAutofix.class);
     public static final String RESOURCEID = "_resourceid";
     public static final String ACCOUNTID = "accountid";
     public static final String REGION = "region";
     public static final String NAME = "name";
     public static final String NO_DATA = "No Data";
+    private static final Logger LOGGER = LoggerFactory.getLogger(StoragePublicAccessAutofix.class);
 
     @Override
     public FixResult executeFix(Map<String, String> issue, Map<String, Object> clientMap, Map<String, String> ruleParams) {

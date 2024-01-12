@@ -16,20 +16,23 @@
 
 package com.tmobile.pacman.executor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ShutDownHook.
  */
 public class ShutDownHook implements Runnable {
 
-    /** The rule engine stats. */
+    /**
+     * The rule engine stats.
+     */
     Map<String, Object> ruleEngineStats;
 
     /**
@@ -54,14 +57,14 @@ public class ShutDownHook implements Runnable {
      */
     @Override
     public void run() {
-        if(null==ruleEngineStats)ruleEngineStats = new HashMap<>();
+        if (null == ruleEngineStats) ruleEngineStats = new HashMap<>();
         ruleEngineStats.put("endTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT));
-        ruleEngineStats.put(PacmanSdkConstants.STATUS_REASON, "SIGTERM"); 
+        ruleEngineStats.put(PacmanSdkConstants.STATUS_REASON, "SIGTERM");
         ruleEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_FINISHED);
         ruleEngineStats.put("_docid", "executionId");
 
-        ESUtils.publishMetrics(ruleEngineStats,CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY));
+        ESUtils.publishMetrics(ruleEngineStats, CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY));
     }
 
 }

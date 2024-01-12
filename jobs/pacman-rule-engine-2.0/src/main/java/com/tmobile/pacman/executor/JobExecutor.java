@@ -17,6 +17,16 @@
 
 package com.tmobile.pacman.executor;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.base.Joiner;
+import com.tmobile.pacman.commons.jobs.PacmanJob;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ProgramExitUtils;
+import com.tmobile.pacman.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,21 +38,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.common.base.Joiner;
-import com.tmobile.pacman.commons.jobs.PacmanJob;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ProgramExitUtils;
-import com.tmobile.pacman.util.ReflectionUtils;
-
-import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+import static com.tmobile.pacman.common.Constants.ERROR_PREFIX;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * This class is responsible for firing the execute method of the Job.
  *
@@ -50,28 +49,30 @@ import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STR
  */
 public class JobExecutor {
 
-    /** The Constant logger. */
+    /**
+     * The Constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(JobExecutor.class);
 
     /**
      * The main method.
      *
-     * @param args            job parameters
-     * @throws InstantiationException the instantiation exception
-     * @throws IllegalAccessException the illegal access exception
-     * @throws IllegalArgumentException the illegal argument exception
+     * @param args job parameters
+     * @throws InstantiationException    the instantiation exception
+     * @throws IllegalAccessException    the illegal access exception
+     * @throws IllegalArgumentException  the illegal argument exception
      * @throws InvocationTargetException the invocation target exception
-     * @throws JsonParseException the json parse exception
-     * @throws JsonMappingException the json mapping exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws NoSuchMethodException the no such method exception
-     * @throws ClassNotFoundException the class not found exception
+     * @throws JsonParseException        the json parse exception
+     * @throws JsonMappingException      the json mapping exception
+     * @throws IOException               Signals that an I/O exception has occurred.
+     * @throws NoSuchMethodException     the no such method exception
+     * @throws ClassNotFoundException    the class not found exception
      */
     public static void main(String[] args)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
             JsonParseException, JsonMappingException, IOException, NoSuchMethodException, ClassNotFoundException {
 
-        Map<String, String> jobParams = new HashMap<String, String>();
+        Map<String, String> jobParams = new HashMap<>();
         String programArgs = "";
 
         if (args.length > 0) {
@@ -96,30 +97,28 @@ public class JobExecutor {
             executeMethod = ReflectionUtils.findAssociatedMethod(jobObject, methodName);
         } catch (Exception e) {
             logger.error("Please check the job class complies to implementation contract", e);
-            logger.error(DATA_ALERT_ERROR_STRING + jobParams);
+            logger.error(ERROR_PREFIX + jobParams);
             ProgramExitUtils.exitWithError();
         }
-        if(null==executeMethod){
-            logger.error(DATA_ALERT_ERROR_STRING + "because unable to find execute method." + jobParams);
+        if (null == executeMethod) {
+            logger.error(ERROR_PREFIX + "unable to find execute method - {}", jobParams);
             ProgramExitUtils.exitWithError();
-        }else
-        {
+        } else {
             long startTime = System.nanoTime();
             // loop through resources and call rule execute method
             try {
-                if (hasArgumentsOtherThenHints(jobParams)){
+                if (hasArgumentsOtherThenHints(jobParams)) {
                     executeMethod.invoke(jobObject, Collections.unmodifiableMap(jobParams));
-                }
-                else {
+                } else {
                     executeMethod.invoke(jobObject);
                 }
             } catch (Exception e) {
-                logger.error(DATA_ALERT_ERROR_STRING + " because job execution failed.", e);
+                logger.error(ERROR_PREFIX + "job execution failed.", e);
                 ProgramExitUtils.exitWithError();
             }
             long endTime = System.nanoTime();
             long timeTakenToExecute = TimeUnit.MINUTES.convert(endTime - startTime, TimeUnit.NANOSECONDS);
-            logger.info("Elapsed time in minutes for evaluation: " + timeTakenToExecute);
+            logger.info("Elapsed time in minutes for evaluation: {}", timeTakenToExecute);
             startTime = System.nanoTime();
             // process rule evaluations the annotations based on result
             Map<String, String> evalResults = new HashMap<>();
@@ -130,7 +129,7 @@ public class JobExecutor {
     }
 
     /**
-     * Checks for arguments other then hints.
+     * Checks for arguments other than hints.
      *
      * @param jobParams the job params
      * @return true, if successful
@@ -141,6 +140,7 @@ public class JobExecutor {
                 return Boolean.TRUE;
             }
         }
+
         return Boolean.FALSE;
     }
 
@@ -160,14 +160,11 @@ public class JobExecutor {
      * sure the VM is terminated gracefully close all clients here.
      */
     private static void setUncaughtExceptionHandler() {
-        Thread.currentThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            public void uncaughtException(Thread t, Throwable e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
-                logger.error(stacktrace);
-            }
+        Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String stacktrace = sw.toString();
+            logger.error(stacktrace);
         });
     }
-
 }

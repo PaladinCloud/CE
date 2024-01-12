@@ -16,22 +16,23 @@
 
 package com.tmobile.pacman.executor.rules;
 
-import java.util.Map;
-
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
+import java.util.Map;
+
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class TestPacRule.
  *
  * @author kkumar
  */
 
-@PacmanPolicy(key="test_key",category="security",desc="test rule",severity="high")
-public class TestPacRule extends BasePolicy{
+@PacmanPolicy(key = "test_key", category = "security", desc = "test rule", severity = "high")
+public class TestPacRule extends BasePolicy {
 
     /* (non-Javadoc)
      * @see com.tmobile.pacman.commons.rule.Rule#execute(java.util.Map, java.util.Map)

@@ -15,14 +15,17 @@
  ******************************************************************************/
 package com.tmobile.pacman.publisher.impl;
 
-import java.io.IOException;
-import java.util.*;
-
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.tmobile.pacman.common.AutoFixAction;
+import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.autofix.AutoFixPlan;
+import com.tmobile.pacman.dto.AutoFixTransaction;
 import com.tmobile.pacman.dto.ESBulkApiResponse;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ESUtils;
 import org.apache.http.HttpHost;
 import org.opensearch.action.bulk.BulkItemResponse;
-import org.opensearch.action.bulk.BulkRequest;
 import org.opensearch.action.index.IndexRequest;
 import org.opensearch.client.RestClient;
 import org.opensearch.client.RestHighLevelClient;
@@ -30,13 +33,8 @@ import org.opensearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.tmobile.pacman.common.AutoFixAction;
-import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.autofix.AutoFixPlan;
-import com.tmobile.pacman.dto.AutoFixTransaction;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
+import java.io.IOException;
+import java.util.*;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.DOC_TYPE;
 
@@ -46,7 +44,6 @@ import static com.tmobile.pacman.common.PacmanSdkConstants.DOC_TYPE;
  * The Class ElasticSearchDataPublisher.
  */
 public class ElasticSearchDataPublisher {
-
 
     /**
      * The Constant BULK_INDEX_REQUEST_TEMPLATE.
@@ -58,17 +55,14 @@ public class ElasticSearchDataPublisher {
      * The Constant logger.
      */
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearchDataPublisher.class);
-
-    /**
-     * The client.
-     */
-    private RestHighLevelClient client;
-
-
     /**
      * test mode flag *.
      */
     boolean testMode = false;
+    /**
+     * The client.
+     */
+    private RestHighLevelClient client;
 
     /**
      * Instantiates a new elastic search data publisher.
@@ -84,6 +78,42 @@ public class ElasticSearchDataPublisher {
      */
     public ElasticSearchDataPublisher(Boolean testMode) {
         this.testMode = testMode;
+    }
+
+    /**
+     * @param ruleParam
+     * @return
+     */
+    public static String getIndexName(Map<String, String> ruleParam) {
+
+        return ruleParam.get(PacmanSdkConstants.DATA_SOURCE_KEY).replace("_all", "") + "_"
+                + ruleParam.get(PacmanSdkConstants.TARGET_TYPE);
+    }
+
+    /**
+     * @param plan
+     * @param planTypeName
+     * @param parentType
+     * @param parentId
+     * @return String
+     */
+    private static String addRelationsToPlan(AutoFixPlan plan, String planTypeName, String parentType, String parentId) {
+        Gson gson = new Gson();
+        String json = gson.toJson(plan);
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+
+        // Add the parent-child mapping
+        Map<String, String> relations = new HashMap<>();
+        relations.put("parent", parentId);
+        relations.put("name", planTypeName);
+        JsonObject relationsObject = new JsonObject();
+        for (Map.Entry<String, String> entry : relations.entrySet()) {
+            relationsObject.addProperty(entry.getKey(), entry.getValue());
+        }
+        jsonObject.addProperty(DOC_TYPE, planTypeName);
+        jsonObject.add(parentType + "_relations", relationsObject);
+
+        return jsonObject.toString();
     }
 
     /**
@@ -120,7 +150,7 @@ public class ElasticSearchDataPublisher {
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-                    }
+                }
                 try {
                     // parent child document seems to have some issue
                     bulkRequestBody.append(String.format(BULK_INDEX_REQUEST_TEMPLATE, getIndexName(ruleParam), getDocId(autoFixTransaction)));
@@ -228,16 +258,6 @@ public class ElasticSearchDataPublisher {
     }
 
     /**
-     * @param ruleParam
-     * @return
-     */
-    public static String getIndexName(Map<String, String> ruleParam) {
-
-        return ruleParam.get(PacmanSdkConstants.DATA_SOURCE_KEY).replace("_all", "") + "_"
-                + ruleParam.get(PacmanSdkConstants.TARGET_TYPE);
-    }
-
-    /**
      * Checks if is index avaialble.
      *
      * @param bulkItemResponses the bulk item responses
@@ -247,7 +267,6 @@ public class ElasticSearchDataPublisher {
         return null == Arrays.stream(bulkItemResponses)
                 .filter(x -> x.getFailure().getCause().getMessage().contains("no such index")).findAny().orElse(null);
     }
-
 
     /**
      * Close.
@@ -288,44 +307,17 @@ public class ElasticSearchDataPublisher {
         indexRequest.routing(parentId);
         // indexRequest.parent(parentId);
         try {
-            CommonUtils.doHttpPut(ESUtils.getEsUrl()+"/"+getIndexName(ruleParam)+"/_doc/"+ UUID.randomUUID()+"?routing="+parentId,addRelationsToPlan(plan, planTypeName, parentType, parentId));
-          //  client.index(indexRequest, RequestOptions.DEFAULT);
+            CommonUtils.doHttpPut(ESUtils.getEsUrl() + "/" + getIndexName(ruleParam) + "/_doc/" + UUID.randomUUID() + "?routing=" + parentId, addRelationsToPlan(plan, planTypeName, parentType, parentId));
+            //  client.index(indexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             logger.error("error indexing autofix plan", e);
             return false;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             logger.error("error indexing autofix plan", e);
             return false;
         }
         logger.debug("posts the plan to ES plan id =  {}", plan.getPlanId());
 
         return true;
-    }
-
-    /**
-     * @param plan
-     * @param planTypeName
-     * @param parentType
-     * @param parentId
-     * @return String
-     */
-    private static String addRelationsToPlan(AutoFixPlan plan, String planTypeName, String parentType, String parentId) {
-        Gson gson = new Gson();
-        String json = gson.toJson(plan);
-        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-
-        // Add the parent-child mapping
-        Map<String, String> relations = new HashMap<>();
-        relations.put("parent", parentId);
-        relations.put("name", planTypeName);
-        JsonObject relationsObject = new JsonObject();
-        for (Map.Entry<String, String> entry : relations.entrySet()) {
-            relationsObject.addProperty(entry.getKey(), entry.getValue());
-        }
-        jsonObject.addProperty(DOC_TYPE, planTypeName);
-        jsonObject.add(parentType + "_relations", relationsObject);
-
-        return jsonObject.toString();
     }
 }

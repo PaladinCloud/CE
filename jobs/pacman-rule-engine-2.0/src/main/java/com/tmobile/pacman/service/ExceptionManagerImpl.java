@@ -16,20 +16,20 @@
 
 package com.tmobile.pacman.service;
 
+import com.tmobile.pacman.dto.ExceptionType;
+import com.tmobile.pacman.dto.IssueException;
+import com.tmobile.pacman.util.ESUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.tmobile.pacman.dto.ExceptionType;
-import com.tmobile.pacman.dto.IssueException;
-import com.tmobile.pacman.util.ESUtils;
-
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ExceptionManagerImpl.
  *
@@ -112,7 +112,7 @@ public class ExceptionManagerImpl implements ExceptionManager {
     /**
      * returns map of resourceId and corresponding exception.
      *
-     * @param policyId the policy id
+     * @param policyId     the policy id
      * @param resourceType the resource type
      * @return the sticky exceptions
      * @throws Exception the exception

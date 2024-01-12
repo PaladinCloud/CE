@@ -1,19 +1,18 @@
 /**
-  Copyright (C) 2017 T Mobile Inc - All Rights Reserve
-  Purpose:
-  Author :kkumar28
-  Modified Date: Jun 19, 2019
-  
-**/
+ Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+ Purpose:
+ Author :kkumar28
+ Modified Date: Jun 19, 2019
+ **/
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -33,14 +32,16 @@ import java.util.stream.Collectors;
 
 /**
  * @author kkumar28
- *
  */
-public class AutoFixPlan implements Serializable , PropertyChangeListener  {
-    
+public class AutoFixPlan implements Serializable, PropertyChangeListener {
+
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
+    /*this property will be used to monitor the state of line items , when all the line items are completed, plan status
+     * should also update*/
+    private transient final PropertyChangeSupport pcs; // transient is required else Gson will throw StackOverflow Exception while serializing the plan for posting
     private List<PlanItem> planItems;
     private String planId;
     private String policyId;
@@ -49,12 +50,9 @@ public class AutoFixPlan implements Serializable , PropertyChangeListener  {
     private String docId; // system wide unique id of the resource
     private String resourceType;
     private Status planStatus;
-    /*this property will be used to monitor the state of line items , when all the line items are completed, plan status 
-     * should also update*/
-    private transient final PropertyChangeSupport pcs; // transient is required else Gson will throw StackOverflow Exception while serializing the plan for posting
 
     /**
-     * 
+     *
      */
     private AutoFixPlan() {
         super();
@@ -62,47 +60,44 @@ public class AutoFixPlan implements Serializable , PropertyChangeListener  {
         this.pcs.addPropertyChangeListener("planItems", this);
         planItems = new ArrayList<>();
     }
-    
+
     /**
-     * 
      * @param planId
      * @param policyId
      * @param issueId
      * @param resourceId
      */
-    public AutoFixPlan(String policyId, String issueId, String resourceId,String docId,String resourceType) {
+    public AutoFixPlan(String policyId, String issueId, String resourceId, String docId, String resourceType) {
         this();
         this.planId = issueId;
         this.policyId = policyId;
         this.issueId = issueId;
         this.resourceId = resourceId;
-        this.docId=docId;
-        this.resourceType=resourceType;
+        this.docId = docId;
+        this.resourceType = resourceType;
         this.planStatus = Status.SCHEDULED;
     }
-    
-    
+
+
     /**
-     * 
      * @param index
      * @return
      */
-    public Boolean markPlanItemStatus(Integer index,Status status){
-       Optional<PlanItem> pi =  this.getPlanItems().stream().filter(item->item.getIndex().equals(index)).findFirst();
-       if(pi.isPresent()) {
-           pi.get().setStatus(status);
-       }
-       this.pcs.firePropertyChange("planItems", "", status);
-       return Status.COMPLETED.equals(pi.get().getStatus());
-       
+    public Boolean markPlanItemStatus(Integer index, Status status) {
+        Optional<PlanItem> pi = this.getPlanItems().stream().filter(item -> item.getIndex().equals(index)).findFirst();
+        if (pi.isPresent()) {
+            pi.get().setStatus(status);
+        }
+        this.pcs.firePropertyChange("planItems", "", status);
+        return Status.COMPLETED.equals(pi.get().getStatus());
+
     }
-    
+
     /**
-     * 
      * @param pi
      * @return
      */
-    public Boolean addPlanItem(PlanItem pi){
+    public Boolean addPlanItem(PlanItem pi) {
         return planItems.add(pi);
     }
 
@@ -113,13 +108,12 @@ public class AutoFixPlan implements Serializable , PropertyChangeListener  {
     public String getPlanId() {
         return planId;
     }
-    
+
     /**
-     * 
      * @param index
      * @return
      */
-    public PlanItem getPlanItemByIndex(Integer index){
+    public PlanItem getPlanItemByIndex(Integer index) {
         return planItems.get(index);
     }
 
@@ -169,10 +163,10 @@ public class AutoFixPlan implements Serializable , PropertyChangeListener  {
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        List<PlanItem> pItems = this.planItems.stream().filter(planItem->!planItem.getStatus().equals(Status.COMPLETED)).collect(Collectors.toList());
-        if(!(pItems.size()>0)){
-            this .planStatus=Status.COMPLETED;
-    }
+        List<PlanItem> pItems = this.planItems.stream().filter(planItem -> !planItem.getStatus().equals(Status.COMPLETED)).collect(Collectors.toList());
+        if (!(pItems.size() > 0)) {
+            this.planStatus = Status.COMPLETED;
+        }
 
-}
+    }
 }

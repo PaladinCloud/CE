@@ -16,21 +16,9 @@
 
 package com.tmobile.pacman.autofix.s3;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.AccessControlList;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.BucketPolicy;
-import com.amazonaws.services.s3.model.Grant;
-import com.amazonaws.services.s3.model.PublicAccessBlockConfiguration;
-import com.amazonaws.services.s3.model.SetPublicAccessBlockRequest;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.CollectionUtils;
 import com.amazonaws.util.StringUtils;
 import com.google.common.base.Strings;
@@ -42,20 +30,33 @@ import com.tmobile.pacman.commons.autofix.BaseFix;
 import com.tmobile.pacman.commons.autofix.FixResult;
 import com.tmobile.pacman.commons.autofix.PacmanFix;
 import com.tmobile.pacman.dto.AutoFixTransaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class S3GlobalAccessAutoFix.
  */
 @PacmanFix(key = "s3-global-access-fix", desc = "fixes the global access issue")
 public class S3GlobalAccessAutoFix extends BaseFix {
 
-    /** The Constant BUCKET_ACL. */
+    /**
+     * The Constant BUCKET_ACL.
+     */
     private static final String BUCKET_ACL = "bucketACL";
-    
-    /** The Constant BUCKET_POLICY. */
+
+    /**
+     * The Constant BUCKET_POLICY.
+     */
     private static final String BUCKET_POLICY = "bucketPolicy";
-    /** The Constant LOGGER. */
+    /**
+     * The Constant LOGGER.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(S3GlobalAccessAutoFix.class);
 
     /* (non-Javadoc)
@@ -63,17 +64,17 @@ public class S3GlobalAccessAutoFix extends BaseFix {
      */
     @Override
     public FixResult executeFix(Map<String, String> issue, Map<String, Object> clientMap,
-            Map<String, String> ruleParams) {
+                                Map<String, String> ruleParams) {
 
         AmazonS3Client awsS3Client = null;
         awsS3Client = (AmazonS3Client) clientMap.get(PacmanSdkConstants.CLIENT);
         String s3BucketName = issue.get(PacmanSdkConstants.RESOURCE_ID);
-        try{
-        	LOGGER.info("block all public permissions");
-        	blockAllPublicAcces(awsS3Client, s3BucketName);
-        }catch(Exception e){
-        	LOGGER.debug("Error while blocking all public permissions {} ",e);
-        	LOGGER.info("revoking all ACL permissions");
+        try {
+            LOGGER.info("block all public permissions");
+            blockAllPublicAcces(awsS3Client, s3BucketName);
+        } catch (Exception e) {
+            LOGGER.debug("Error while blocking all public permissions {} ", e);
+            LOGGER.info("revoking all ACL permissions");
             revokeACLPublicPermission(awsS3Client, s3BucketName);
             LOGGER.info("revking all Bucket Policy");
             revokePublicBucketPolicy(awsS3Client, s3BucketName);
@@ -86,8 +87,8 @@ public class S3GlobalAccessAutoFix extends BaseFix {
      */
     @Override
     public boolean backupExistingConfigForResource(final String resourceId, final String resourceType,
-            Map<String, Object> clientMap, Map<String, String> ruleParams,Map<String, String> issue) throws AutoFixException {
-        LOGGER.debug(String.format("backing up the config for %s" , resourceId));
+                                                   Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
+        LOGGER.debug(String.format("backing up the config for %s", resourceId));
         AmazonS3 client = (AmazonS3) clientMap.get("client");
         Gson gson = new Gson();
         AccessControlList bucketAcl = client.getBucketAcl(resourceId);
@@ -105,7 +106,7 @@ public class S3GlobalAccessAutoFix extends BaseFix {
     /**
      * revokes all ACL permissions.
      *
-     * @param awsS3Client the aws S 3 client
+     * @param awsS3Client  the aws S 3 client
      * @param s3BucketName the s 3 bucket name
      */
     private void revokeACLPublicPermission(AmazonS3Client awsS3Client, String s3BucketName) {
@@ -124,11 +125,11 @@ public class S3GlobalAccessAutoFix extends BaseFix {
                             (grant.getPermission().toString().equalsIgnoreCase(PacmanSdkConstants.READ_ACCESS) || (grant
                                     .getPermission().toString().equalsIgnoreCase(PacmanSdkConstants.WRITE_ACCESS)
                                     || (grant.getPermission().toString()
-                                            .equalsIgnoreCase(PacmanSdkConstants.READ_ACP_ACCESS)
-                                            || (grant.getPermission().toString()
-                                                    .equalsIgnoreCase(PacmanSdkConstants.WRITE_ACP_ACCESS)
-                                                    || grant.getPermission().toString()
-                                                            .equalsIgnoreCase(PacmanSdkConstants.FULL_CONTROL)))))) {
+                                    .equalsIgnoreCase(PacmanSdkConstants.READ_ACP_ACCESS)
+                                    || (grant.getPermission().toString()
+                                    .equalsIgnoreCase(PacmanSdkConstants.WRITE_ACP_ACCESS)
+                                    || grant.getPermission().toString()
+                                    .equalsIgnoreCase(PacmanSdkConstants.FULL_CONTROL)))))) {
                         bucketAcl.revokeAllPermissions(grant.getGrantee());
                     }
                 }
@@ -144,7 +145,7 @@ public class S3GlobalAccessAutoFix extends BaseFix {
     /**
      * Revoke public bucket policy.
      *
-     * @param awsS3Client the aws S 3 client
+     * @param awsS3Client  the aws S 3 client
      * @param s3BucketName the s 3 bucket name
      */
     private void revokePublicBucketPolicy(AmazonS3Client awsS3Client, String s3BucketName) {
@@ -153,55 +154,55 @@ public class S3GlobalAccessAutoFix extends BaseFix {
             awsS3Client.deleteBucketPolicy(s3BucketName);
         }
     }
-    
-    private void blockAllPublicAcces(AmazonS3Client awsS3Client, String s3BucketName) {
-    	Boolean globalFlag = Boolean.parseBoolean(PacmanSdkConstants.BOOLEAN_TRUE);
-         
- 		PublicAccessBlockConfiguration accessBlockConfiguration = new PublicAccessBlockConfiguration();
- 		accessBlockConfiguration.setBlockPublicAcls(globalFlag);
- 		accessBlockConfiguration.setBlockPublicPolicy(globalFlag);
- 		accessBlockConfiguration.setIgnorePublicAcls(globalFlag);
- 		accessBlockConfiguration.setRestrictPublicBuckets(globalFlag);
- 		SetPublicAccessBlockRequest setPublicAccessBlockRequest = new SetPublicAccessBlockRequest();
- 		setPublicAccessBlockRequest.setBucketName(s3BucketName);
- 		setPublicAccessBlockRequest.setPublicAccessBlockConfiguration(accessBlockConfiguration);
- 		
- 		awsS3Client.setPublicAccessBlock(setPublicAccessBlockRequest);
-    }
-    
-   
 
-	
-	/* * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.tmobile.pacman.commons.autofix.BaseFix#isFixCandidate(java.lang.String
-	 * , java.lang.String, java.util.Map, java.util.Map, java.util.Map)*/
-	 
-	@Override
-	public boolean isFixCandidate(String resourceId, String resourceType, Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
-		return true;
-	}
-	
-	@Override
-	public AutoFixTransaction addDetailsToTransactionLog(Map<String, String> annotation) {
-		LinkedHashMap<String,String> transactionParams = new LinkedHashMap();
-		if (!StringUtils.isNullOrEmpty(annotation.get("_resourceid"))) {
-			transactionParams.put("resourceId", annotation.get("_resourceid"));
-		} else {
-			transactionParams.put("resourceId", "No Data");
-		}
-		if (!StringUtils.isNullOrEmpty(annotation.get("accountid"))) {
-			transactionParams.put("accountId", annotation.get("accountid"));
-		} else {
-			transactionParams.put("accountId", "No Data");
-		}
-		if (!StringUtils.isNullOrEmpty(annotation.get("region"))) {
-			transactionParams.put("region", annotation.get("region"));
-		} else {
-			transactionParams.put("region", "No Data");
-		}
-		
-		return new AutoFixTransaction(null,transactionParams);
-	}
+    private void blockAllPublicAcces(AmazonS3Client awsS3Client, String s3BucketName) {
+        Boolean globalFlag = Boolean.parseBoolean(PacmanSdkConstants.BOOLEAN_TRUE);
+
+        PublicAccessBlockConfiguration accessBlockConfiguration = new PublicAccessBlockConfiguration();
+        accessBlockConfiguration.setBlockPublicAcls(globalFlag);
+        accessBlockConfiguration.setBlockPublicPolicy(globalFlag);
+        accessBlockConfiguration.setIgnorePublicAcls(globalFlag);
+        accessBlockConfiguration.setRestrictPublicBuckets(globalFlag);
+        SetPublicAccessBlockRequest setPublicAccessBlockRequest = new SetPublicAccessBlockRequest();
+        setPublicAccessBlockRequest.setBucketName(s3BucketName);
+        setPublicAccessBlockRequest.setPublicAccessBlockConfiguration(accessBlockConfiguration);
+
+        awsS3Client.setPublicAccessBlock(setPublicAccessBlockRequest);
+    }
+
+
+
+
+    /* * (non-Javadoc)
+     *
+     * @see
+     * com.tmobile.pacman.commons.autofix.BaseFix#isFixCandidate(java.lang.String
+     * , java.lang.String, java.util.Map, java.util.Map, java.util.Map)*/
+
+    @Override
+    public boolean isFixCandidate(String resourceId, String resourceType, Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
+        return true;
+    }
+
+    @Override
+    public AutoFixTransaction addDetailsToTransactionLog(Map<String, String> annotation) {
+        LinkedHashMap<String, String> transactionParams = new LinkedHashMap();
+        if (!StringUtils.isNullOrEmpty(annotation.get("_resourceid"))) {
+            transactionParams.put("resourceId", annotation.get("_resourceid"));
+        } else {
+            transactionParams.put("resourceId", "No Data");
+        }
+        if (!StringUtils.isNullOrEmpty(annotation.get("accountid"))) {
+            transactionParams.put("accountId", annotation.get("accountid"));
+        } else {
+            transactionParams.put("accountId", "No Data");
+        }
+        if (!StringUtils.isNullOrEmpty(annotation.get("region"))) {
+            transactionParams.put("region", annotation.get("region"));
+        } else {
+            transactionParams.put("region", "No Data");
+        }
+
+        return new AutoFixTransaction(null, transactionParams);
+    }
 }

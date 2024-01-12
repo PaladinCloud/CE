@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.tmobile.pacman.dto;
 
-import java.util.Map;
-
 import com.tmobile.pacman.common.AutoFixAction;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.util.CommonUtils;
+
+import java.util.Map;
 
 public class AutoFixTransaction {
 
@@ -32,200 +32,90 @@ public class AutoFixTransaction {
      * The parent doc id.
      */
     private String parentDocId;
-
-    public String getParentDocId() {
-        return parentDocId;
-    }
-
-    public void setParentDocId(String parentDocId) {
-        this.parentDocId = parentDocId;
-    }
-
-
     private String attachedSg;
     private String detachedSg;
-
-    public String getAttachedSg() {
-        return attachedSg;
-    }
-
-    public void setAttachedSg(String attachedSg) {
-        this.attachedSg = attachedSg;
-    }
-
-    public String getDetachedSg() {
-        return detachedSg;
-    }
-
-    public void setDetachedSg(String detachedSg) {
-        this.detachedSg = detachedSg;
-    }
-
-    public String getAllocationId() {
-        return allocationId;
-    }
-
-    public void setAllocationId(String allocationId) {
-        this.allocationId = allocationId;
-    }
-
-
     /**
      * The group name.
      */
     private String groupName;
-
     /**
      * The transation time.
      */
     private String transationTime;
-
     /**
      * The action.
      */
     private AutoFixAction action;
-
     /**
      * The resource id.
      */
     private String resourceId;
-
     /**
      * The execution id.
      */
     private String executionId;
-
     /**
      * The transaction id.
      */
     private String transactionId;
-
     /**
      * The desc.
      */
     private String desc;
-
     /**
      * ruleId.
      */
     private String policyId;
-
     /**
      * The account id.
      */
     private String accountId;
-
     /**
      * The region.
      */
     private String region;
-
     /**
      * The application tag.
      */
     private String applicationTag;
-
     /**
      * The resource type
      */
     private String type;
-
     /**
      * The issue Id.
      */
     private String issueId;
-
     /**
      * additional information about this transaction
      */
     private String additionalInfo;
-
     /**
      * inline policy
      */
     private String inlinePolicy;
-
     private String subscription;
-
     private String project;
-
     private String name;
-
     private String firewallRuleName;
-
-    public String getSubscription() {
-        return subscription;
-    }
-
-    public void setSubscription(String subscription) {
-        this.subscription = subscription;
-    }
-
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFirewallRuleName() {
-        return firewallRuleName;
-    }
-
-    public void setFirewallRuleName(String firewallRuleName) {
-        this.firewallRuleName = firewallRuleName;
-    }
-
-    public String getInlinePolicy() {
-        return inlinePolicy;
-    }
-
-    public void setInlinePolicy(String inlinePolicy) {
-        this.inlinePolicy = inlinePolicy;
-    }
-
-    public String getManagedPolicy() {
-        return managedPolicy;
-    }
-
-    public void setManagedPolicy(String managedPolicy) {
-        this.managedPolicy = managedPolicy;
-    }
-
-
     /**
      * managed policy
      */
     private String managedPolicy;
-
     /**
      * Elasticsearch policy
      */
     private String policy;
-
-
-    public String getPolicy() {
-        return policy;
-    }
-
-    public void setPolicy(String policy) {
-        this.policy = policy;
-    }
+    /**
+     * The targetType
+     */
+    private String targetType;
 
     /**
      * Instantiates a new auto fix transaction.
      *
      * @param resourceId     the resource id
-     * @param policyId         the rule id
+     * @param policyId       the rule id
      * @param accountId      the account id
      * @param region         the region
      * @param applicationTag the application tag
@@ -240,60 +130,6 @@ public class AutoFixTransaction {
         this.applicationTag = applicationTag;
         this.type = type;
         this.issueId = issueId;
-    }
-
-    /**
-     * Gets the account id.
-     *
-     * @return the account id
-     */
-    public String getAccountId() {
-        return accountId;
-    }
-
-    /**
-     * Sets the account id.
-     *
-     * @param accountId the new account id
-     */
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
-
-    /**
-     * Gets the region.
-     *
-     * @return the region
-     */
-    public String getRegion() {
-        return region;
-    }
-
-    /**
-     * Sets the region.
-     *
-     * @param region the new region
-     */
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    /**
-     * Gets the application tag.
-     *
-     * @return the application tag
-     */
-    public String getApplicationTag() {
-        return applicationTag;
-    }
-
-    /**
-     * Sets the application tag.
-     *
-     * @param applicationTag the new application tag
-     */
-    public void setApplicationTag(String applicationTag) {
-        this.applicationTag = applicationTag;
     }
 
     /**
@@ -359,6 +195,227 @@ public class AutoFixTransaction {
         this.type = type;
         this.targetType = targetType;
         this.issueId = issueId;
+    }
+
+    /**
+     * Instantiates a new auto fix transaction.
+     *
+     * @param resourceId the resource id
+     * @param policyId   the rule id
+     * @param accountId  the account id
+     * @param region     the region
+     */
+    public AutoFixTransaction(String resourceId,
+                              String policyId, String accountId, String region) {
+        super();
+        this.resourceId = resourceId;
+        this.policyId = policyId;
+        this.accountId = accountId;
+        this.region = region;
+    }
+
+    public AutoFixTransaction(AutoFixAction action, Map<String, String> transactionParams) {
+        super();
+
+        if (null != action) {
+            this.action = action;
+        }
+        for (Map.Entry<String, String> str : transactionParams.entrySet()) {
+            if ("ruleId".equals(str.getKey()) && null != str.getValue()) {
+                this.policyId = str.getValue();
+            } else if ("resourceId".equals(str.getKey()) && null != str.getValue()) {
+                this.resourceId = str.getValue();
+            } else if ("accountId".equals(str.getKey()) && null != str.getValue()) {
+                this.accountId = str.getValue();
+            } else if ("region".equals(str.getKey()) && null != str.getValue()) {
+                this.region = str.getValue();
+            } else if ("applicationTag".equals(str.getKey()) && null != str.getValue()) {
+                this.applicationTag = str.getValue();
+            } else if ("transationTime".equals(str.getKey()) && null != str.getValue()) {
+                this.transationTime = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
+                        PacmanSdkConstants.DATE_FORMAT);
+            } else if ("transactionId".equals(str.getKey()) && null != str.getValue()) {
+                this.transactionId = str.getValue();
+            } else if ("desc".equals(str.getKey()) && null != str.getValue()) {
+                this.desc = str.getValue();
+            } else if ("additionalInfo".equals(str.getKey()) && null != str.getValue()) {
+                this.additionalInfo = str.getValue();
+            } else if ("issueId".equals(str.getKey()) && null != str.getValue()) {
+                this.issueId = str.getValue();
+            } else if ("type".equals(str.getKey()) && null != str.getValue()) {
+                this.type = str.getValue();
+            } else if ("inlinePolicy".equals(str.getKey()) && null != str.getValue()) {
+                this.inlinePolicy = str.getValue();
+            } else if ("managedPolicy".equals(str.getKey()) && null != str.getValue()) {
+                this.managedPolicy = str.getValue();
+            } else if ("executionId".equals(str.getKey()) && null != str.getValue()) {
+                this.executionId = str.getValue();
+            } else if ("groupName".equals(str.getKey()) && null != str.getValue()) {
+                this.groupName = str.getValue();
+            } else if ("allocationId".equals(str.getKey()) && null != str.getValue()) {
+                this.allocationId = str.getValue();
+            } else if ("attachedSg".equals(str.getKey()) && null != str.getValue()) {
+                this.attachedSg = str.getValue();
+            } else if ("detachedSg".equals(str.getKey()) && null != str.getValue()) {
+                this.detachedSg = str.getValue();
+            } else if ("targetType".equals(str.getKey()) && null != str.getValue()) {
+                this.targetType = str.getValue();
+            } else if ("policy".equals(str.getKey()) && null != str.getValue()) {
+                this.policy = str.getValue();
+            } else if ("subscription".equals(str.getKey()) && null != str.getValue()) {
+                this.subscription = str.getValue();
+            } else if ("projectName".equals(str.getKey()) && null != str.getValue()) {
+                this.project = str.getValue();
+            } else if ("name".equals(str.getKey()) && null != str.getValue()) {
+                this.name = str.getValue();
+            } else if ("firewallRuleName".equals(str.getKey()) && null != str.getValue()) {
+                this.firewallRuleName = str.getValue();
+            }
+
+
+        }
+    }
+
+    public String getParentDocId() {
+        return parentDocId;
+    }
+
+    public void setParentDocId(String parentDocId) {
+        this.parentDocId = parentDocId;
+    }
+
+    public String getAttachedSg() {
+        return attachedSg;
+    }
+
+    public void setAttachedSg(String attachedSg) {
+        this.attachedSg = attachedSg;
+    }
+
+    public String getDetachedSg() {
+        return detachedSg;
+    }
+
+    public void setDetachedSg(String detachedSg) {
+        this.detachedSg = detachedSg;
+    }
+
+    public String getAllocationId() {
+        return allocationId;
+    }
+
+    public void setAllocationId(String allocationId) {
+        this.allocationId = allocationId;
+    }
+
+    public String getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(String subscription) {
+        this.subscription = subscription;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getFirewallRuleName() {
+        return firewallRuleName;
+    }
+
+    public void setFirewallRuleName(String firewallRuleName) {
+        this.firewallRuleName = firewallRuleName;
+    }
+
+    public String getInlinePolicy() {
+        return inlinePolicy;
+    }
+
+    public void setInlinePolicy(String inlinePolicy) {
+        this.inlinePolicy = inlinePolicy;
+    }
+
+    public String getManagedPolicy() {
+        return managedPolicy;
+    }
+
+    public void setManagedPolicy(String managedPolicy) {
+        this.managedPolicy = managedPolicy;
+    }
+
+    public String getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy(String policy) {
+        this.policy = policy;
+    }
+
+    /**
+     * Gets the account id.
+     *
+     * @return the account id
+     */
+    public String getAccountId() {
+        return accountId;
+    }
+
+    /**
+     * Sets the account id.
+     *
+     * @param accountId the new account id
+     */
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
+    /**
+     * Gets the region.
+     *
+     * @return the region
+     */
+    public String getRegion() {
+        return region;
+    }
+
+    /**
+     * Sets the region.
+     *
+     * @param region the new region
+     */
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    /**
+     * Gets the application tag.
+     *
+     * @return the application tag
+     */
+    public String getApplicationTag() {
+        return applicationTag;
+    }
+
+    /**
+     * Sets the application tag.
+     *
+     * @param applicationTag the new application tag
+     */
+    public void setApplicationTag(String applicationTag) {
+        this.applicationTag = applicationTag;
     }
 
     /**
@@ -487,24 +544,6 @@ public class AutoFixTransaction {
         this.policyId = policyId;
     }
 
-
-    /**
-     * Instantiates a new auto fix transaction.
-     *
-     * @param resourceId the resource id
-     * @param policyId     the rule id
-     * @param accountId  the account id
-     * @param region     the region
-     */
-    public AutoFixTransaction(String resourceId,
-                              String policyId, String accountId, String region) {
-        super();
-        this.resourceId = resourceId;
-        this.policyId = policyId;
-        this.accountId = accountId;
-        this.region = region;
-    }
-
     public String getType() {
         return type;
     }
@@ -529,69 +568,6 @@ public class AutoFixTransaction {
         this.additionalInfo = additionalInfo;
     }
 
-
-    public AutoFixTransaction(AutoFixAction action, Map<String, String> transactionParams) {
-        super();
-
-        if (null != action) {
-            this.action = action;
-        }
-        for (Map.Entry<String, String> str : transactionParams.entrySet()) {
-            if ("ruleId".equals(str.getKey()) && null != str.getValue()) {
-                this.policyId = str.getValue();
-            } else if ("resourceId".equals(str.getKey()) && null != str.getValue()) {
-                this.resourceId = str.getValue();
-            } else if ("accountId".equals(str.getKey()) && null != str.getValue()) {
-                this.accountId = str.getValue();
-            } else if ("region".equals(str.getKey()) && null != str.getValue()) {
-                this.region = str.getValue();
-            } else if ("applicationTag".equals(str.getKey()) && null != str.getValue()) {
-                this.applicationTag = str.getValue();
-            } else if ("transationTime".equals(str.getKey()) && null != str.getValue()) {
-                this.transationTime = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
-                        PacmanSdkConstants.DATE_FORMAT);
-            } else if ("transactionId".equals(str.getKey()) && null != str.getValue()) {
-                this.transactionId = str.getValue();
-            } else if ("desc".equals(str.getKey()) && null != str.getValue()) {
-                this.desc = str.getValue();
-            } else if ("additionalInfo".equals(str.getKey()) && null != str.getValue()) {
-                this.additionalInfo = str.getValue();
-            } else if ("issueId".equals(str.getKey()) && null != str.getValue()) {
-                this.issueId = str.getValue();
-            } else if ("type".equals(str.getKey()) && null != str.getValue()) {
-                this.type = str.getValue();
-            } else if ("inlinePolicy".equals(str.getKey()) && null != str.getValue()) {
-                this.inlinePolicy = str.getValue();
-            } else if ("managedPolicy".equals(str.getKey()) && null != str.getValue()) {
-                this.managedPolicy = str.getValue();
-            } else if ("executionId".equals(str.getKey()) && null != str.getValue()) {
-                this.executionId = str.getValue();
-            } else if ("groupName".equals(str.getKey()) && null != str.getValue()) {
-                this.groupName = str.getValue();
-            } else if ("allocationId".equals(str.getKey()) && null != str.getValue()) {
-                this.allocationId = str.getValue();
-            } else if ("attachedSg".equals(str.getKey()) && null != str.getValue()) {
-                this.attachedSg = str.getValue();
-            } else if ("detachedSg".equals(str.getKey()) && null != str.getValue()) {
-                this.detachedSg = str.getValue();
-            } else if ("targetType".equals(str.getKey()) && null != str.getValue()) {
-                this.targetType = str.getValue();
-            } else if ("policy".equals(str.getKey()) && null != str.getValue()) {
-                this.policy = str.getValue();
-            } else if ("subscription".equals(str.getKey()) && null != str.getValue()) {
-                this.subscription = str.getValue();
-            } else if ("projectName".equals(str.getKey()) && null != str.getValue()) {
-                this.project = str.getValue();
-            } else if ("name".equals(str.getKey()) && null != str.getValue()) {
-                this.name = str.getValue();
-            } else if ("firewallRuleName".equals(str.getKey()) && null != str.getValue()) {
-                this.firewallRuleName = str.getValue();
-            }
-
-
-        }
-    }
-
     public String getGroupName() {
         return groupName;
     }
@@ -599,11 +575,6 @@ public class AutoFixTransaction {
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
-
-    /**
-     * The targetType
-     */
-    private String targetType;
 
     public String getTargetType() {
         return targetType;

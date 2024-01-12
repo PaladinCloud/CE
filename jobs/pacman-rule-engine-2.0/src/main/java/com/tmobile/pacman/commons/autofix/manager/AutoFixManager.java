@@ -1,44 +1,30 @@
-/*******************************************************************************
+/**
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
  * the License.
- ******************************************************************************/
+ * <p>
+ * Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+ * Purpose:
+ * Author :kkumar28
+ * Modified Date: Sep 26, 2017
+ **/
 /**
-  Copyright (C) 2017 T Mobile Inc - All Rights Reserve
-  Purpose:
-  Author :kkumar28
-  Modified Date: Sep 26, 2017
-  
-**/
+ Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+ Purpose:
+ Author :kkumar28
+ Modified Date: Sep 26, 2017
+ **/
 package com.tmobile.pacman.commons.autofix.manager;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.util.CollectionUtils;
@@ -68,6 +54,18 @@ import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
 import com.tmobile.pacman.util.MailUtils;
 import com.tmobile.pacman.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The Class AutoFixManager.
@@ -80,9 +78,9 @@ public class AutoFixManager {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoFixManager.class);
 
-    
-    Map<String,String> targetTypeAlias;
-    
+
+    Map<String, String> targetTypeAlias;
+
     /**
      * Perform auto fixs.
      *
@@ -93,30 +91,50 @@ public class AutoFixManager {
      * @throws Exception the exception
      */
 
-    
+
     /**
-     * 
+     *
      */
     public AutoFixManager() {
         targetTypeAlias = new HashMap<>();
         String alias = CommonUtils.getPropValue(PacmanSdkConstants.TARGET_TYPE_ALIAS);
-        if(!Strings.isNullOrEmpty(alias))
-         {
+        if (!Strings.isNullOrEmpty(alias)) {
             targetTypeAlias = Splitter.on(",").withKeyValueSeparator("=").split(alias);
-         }
-             }
-        
-   /**
-    *  
-    * @param policyParam
-    * @param exemptedResourcesForRule
-    * @param individuallyExcemptedIssues
-    * @return
-    * @throws Exception
-    */
+        }
+    }
+
+    /**
+     * test the code locally.
+     *
+     * @param args the arguments
+
+     * @throws Exception the exception
+     */
+    public static void main(String[] args) throws Exception {
+        CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL);
+
+        Map<String, String> ruleParam = CommonUtils.createParamMap(args[0]);
+        ExceptionManager exceptionManager = new ExceptionManagerImpl();
+        Map<String, List<IssueException>> excemptedResourcesForRule = exceptionManager.getStickyExceptions(
+                ruleParam.get(PacmanSdkConstants.POLICY_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+        Map<String, IssueException> individuallyExcemptedIssues = exceptionManager
+                .getIndividualExceptions(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+        AutoFixManager autoFixManager = new AutoFixManager();
+        autoFixManager.performAutoFixs(ruleParam, excemptedResourcesForRule, individuallyExcemptedIssues);
+
+    }
+
+    /**
+     *
+     * @param policyParam
+     * @param exemptedResourcesForRule
+     * @param individuallyExcemptedIssues
+     * @return
+     * @throws Exception
+     */
     public Map<String, Object> performAutoFixs(Map<String, String> policyParam,
-            Map<String, List<IssueException>> exemptedResourcesForRule,
-            Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
+                                               Map<String, List<IssueException>> exemptedResourcesForRule,
+                                               Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
 
         List<Map<String, String>> existingIssues = null;
         String policyId = policyParam.get(PacmanSdkConstants.POLICY_ID);
@@ -136,8 +154,8 @@ public class AutoFixManager {
         Object fixObject = null;
         Method executeMethod = null;
         Method backupMethod = null;
-        Method isFixCandidateMethod=null;
-        Method addDetailsToTransactionLogMethod=null;
+        Method isFixCandidateMethod = null;
+        Method addDetailsToTransactionLogMethod = null;
         String fixKey = null;
         Map<String, Object> autoFixStats = new HashMap<>();
         List<AutoFixTransaction> autoFixTrans = new ArrayList<>();
@@ -151,107 +169,107 @@ public class AutoFixManager {
         Integer resourceOwnerNotFoundCounter = 0;
         Integer didNothingCounter = 0;
         Integer backupConfigCounter = 0;
-        Integer autoFixPlanCreatedCounter=0;
+        Integer autoFixPlanCreatedCounter = 0;
 
         String executionId = policyParam.get(PacmanSdkConstants.EXECUTION_ID);
         String transactionId = null;
 
         MDC.put("executionId", executionId);
         MDC.put("ruleId", policyParam.get(PacmanSdkConstants.POLICY_ID));
-        
+
         String type = "autofix";
         logger.info("autoFixmanager start");
 
         // check fix exists for rule
         try {
-                fixKey = policyParam.get("fixKey");
-                fixClass = ReflectionUtils.findFixClass(fixKey);
-                fixObject = fixClass.newInstance();
-                executeMethod = ReflectionUtils.findAssociatedMethod(fixObject, "executeFix");
-                backupMethod = ReflectionUtils.findAssociatedMethod(fixObject, "backupExistingConfigForResource");
-                isFixCandidateMethod = findIsFixCandidateMethod(fixObject, isFixCandidateMethod);
-                try{
-                    addDetailsToTransactionLogMethod = ReflectionUtils.findAssociatedMethod(fixObject, "addDetailsToTransactionLog");
-                }catch (NoSuchMethodException e) {
-                    logger.debug("addDetailsToTransactionLog method not implemented",e);
-                }
+            fixKey = policyParam.get("fixKey");
+            fixClass = ReflectionUtils.findFixClass(fixKey);
+            fixObject = fixClass.newInstance();
+            executeMethod = ReflectionUtils.findAssociatedMethod(fixObject, "executeFix");
+            backupMethod = ReflectionUtils.findAssociatedMethod(fixObject, "backupExistingConfigForResource");
+            isFixCandidateMethod = findIsFixCandidateMethod(fixObject, isFixCandidateMethod);
+            try {
+                addDetailsToTransactionLogMethod = ReflectionUtils.findAssociatedMethod(fixObject, "addDetailsToTransactionLog");
+            } catch (NoSuchMethodException e) {
+                logger.debug("addDetailsToTransactionLog method not implemented", e);
+            }
         } catch (Exception e) {
-            logger.error(String.format("Please check the rule class complies to implemetation contract, fix key= %s" , fixKey), e);
+            logger.error(String.format("Please check the rule class complies to implemetation contract, fix key= %s", fixKey), e);
             autoFixStats.put("auto-fix-enabled", true);
             autoFixStats.put("auto-fix-error", "error finding fix class - >" + e.getMessage());
             return autoFixStats;
         }
         try {
-                existingIssues = getOpenAndExcepmtedAnnotationForRule(policyParam);
+            existingIssues = getOpenAndExcepmtedAnnotationForRule(policyParam);
         } catch (Exception e) {
-            logger.error("unable to get open issue for rule {} {}",policyId,e);
+            logger.error("unable to get open issue for rule {} {}", policyId, e);
             autoFixStats.put("auto-fix-error", "unable to get open issue for rule" + policyId + "-- >" + e.getMessage());
             return autoFixStats;
         }
         int count = 0;
         AutoFixPlanManager autoFixPlanManager = new AutoFixPlanManager();
-        AutoFixPlan autoFixPlan=null;
+        AutoFixPlan autoFixPlan = null;
         for (Map<String, String> annotation : existingIssues) {
-        	List<AutoFixTransaction> addDetailsToLogTrans = new ArrayList<>();
-        	logger.debug("display issue count {}",count++);
+            List<AutoFixTransaction> addDetailsToLogTrans = new ArrayList<>();
+            logger.debug("display issue count {}", count++);
             targetType = annotation.get("targetType");
-            resourceId =annotation.get("_resourceid");
+            resourceId = annotation.get("_resourceid");
             parentDocId = annotation.get(PacmanSdkConstants.DOC_ID);
             transactionId = CommonUtils.getUniqueIdForString(resourceId);
-            autoFixPlan=null;
+            autoFixPlan = null;
             annotationId = annotation.get(PacmanSdkConstants.ES_DOC_ID_KEY); // this
-                                                                             // will
-                                                                             // be
-                                                                             // used
-                                                                             // to
-                                                                             // identify
-                                                                             // the
-                                                                             // exception
-                                                                             // for
-                                                                             // the
-                                                                             // resource
+            // will
+            // be
+            // used
+            // to
+            // identify
+            // the
+            // exception
+            // for
+            // the
+            // resource
             //targetType =  getTargetTypeAlias(targetType);
             // commenting this , as alias is only used to create client, so using the function directly below
-            
+
             serviceType = AWSService.valueOf(getTargetTypeAlias(targetType).toUpperCase());
-            
+
             // create client
-            if(isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),
-            		policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_ALLOWLIST), policyParam.get(PacmanSdkConstants.POLICY_ID))){
-            	clientMap = getAWSClient(getTargetTypeAlias(targetType), annotation,CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_ROLE_NAME));
-            }else{
-            	 logger.info("Account id is blacklisted {}" , annotation.get(PacmanSdkConstants.ACCOUNT_ID));
-            	continue;
-            }
-            logger.debug("processing for{} " , resourceId);
-            if ((!isResourceTypeExemptedFromCutOfDateCriteria(targetType)
-                       && resourceCreatedBeforeCutoffData(resourceId, targetType))
-                    || !isresourceIdMatchesCriteria(resourceId) ||!isAFixCandidate(isFixCandidateMethod,fixObject, resourceId, targetType, clientMap, policyParam,annotation)) {
-                logger.debug("exempted by various conditions -->{} " , resourceId);
+            if (isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),
+                    policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_ALLOWLIST), policyParam.get(PacmanSdkConstants.POLICY_ID))) {
+                clientMap = getAWSClient(getTargetTypeAlias(targetType), annotation, CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_ROLE_NAME));
+            } else {
+                logger.info("Account id is blacklisted {}", annotation.get(PacmanSdkConstants.ACCOUNT_ID));
                 continue;
             }
-            logger.debug("not exempted by conditions --> {} " , resourceId);
-          
-            try{
+            logger.debug("processing for{} ", resourceId);
+            if ((!isResourceTypeExemptedFromCutOfDateCriteria(targetType)
+                    && resourceCreatedBeforeCutoffData(resourceId, targetType))
+                    || !isresourceIdMatchesCriteria(resourceId) || !isAFixCandidate(isFixCandidateMethod, fixObject, resourceId, targetType, clientMap, policyParam, annotation)) {
+                logger.debug("exempted by various conditions -->{} ", resourceId);
+                continue;
+            }
+            logger.debug("not exempted by conditions --> {} ", resourceId);
+
+            try {
                 autoFixPlan = autoFixPlanManager.getAutoFixPlanForResource(resourceId, policyParam); // find plan associates with resource and issue
-            }catch (Exception e) {
-              logger.error("no plan found for resource {} {}",e,resourceId);
+            } catch (Exception e) {
+                logger.error("no plan found for resource {} {}", e, resourceId);
             }
-            if(null!=autoFixPlan){
-               logger.debug("got autofix plan with id" + autoFixPlan.getPlanId());
+            if (null != autoFixPlan) {
+                logger.debug("got autofix plan with id" + autoFixPlan.getPlanId());
             }
-            
-            
+
+
             // if resource is exempted tag the resource
             String issueStatus = annotation.get("issueStatus");
 
             // find resource owner
             //resourceOwner = ownerService.findResourceOwnerByIdAndType(resourceId, serviceType);
             // the following method will also trigger a auto fix plan creation if no action is taken on resource yet
-            autoFixAction = nextStepManager.getNextStep(policyParam,normalizeResourceId(resourceId, serviceType,annotation),resourceId, clientMap, serviceType);
-            if(AutoFixAction.UNABLE_TO_DETERMINE==autoFixAction){
-                autoFixTrans.add(new AutoFixTransaction(AutoFixAction.UNABLE_TO_DETERMINE, resourceId,policyId,
-                        executionId, transactionId, "unable to determine the next set of action , not processing for this pass",type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
+            autoFixAction = nextStepManager.getNextStep(policyParam, normalizeResourceId(resourceId, serviceType, annotation), resourceId, clientMap, serviceType);
+            if (AutoFixAction.UNABLE_TO_DETERMINE == autoFixAction) {
+                autoFixTrans.add(new AutoFixTransaction(AutoFixAction.UNABLE_TO_DETERMINE, resourceId, policyId,
+                        executionId, transactionId, "unable to determine the next set of action , not processing for this pass", type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
                 continue;
             }
             if (PacmanSdkConstants.ISSUE_STATUS_EXEMPTED_VALUE.equals(issueStatus)) {
@@ -264,27 +282,27 @@ public class AutoFixManager {
                     // check the next step
                     exceptionExpiryDate = getMaxExceptionExpiry(annotationId, resourceId, exemptedResourcesForRule,
                             individuallyExcemptedIssues);
-                    try{
-                        if(autoFixPlan!=null && !Status.SUSPENDED.equals(autoFixPlan.getPlanStatus())) // suspend if not already suspended
-                            autoFixPlanManager.suspendPlan(autoFixPlan,policyParam);
-                        logger.debug("auto fix plan suspended for plan # --> {}",autoFixPlan.getPlanId());
-                        autoFixTrans.add(new AutoFixTransaction(AutoFixAction.SUSPEND_AUTO_FIX_PLAN, resourceId,policyId, executionId,
-                                transactionId, "auto fix plan suspended with id" + autoFixPlan.getPlanId(),type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
-                    }catch(Exception e) {
-                        logger.error("unable to sync plna status , while resource is exempted, will try in next pass",e);
+                    try {
+                        if (autoFixPlan != null && !Status.SUSPENDED.equals(autoFixPlan.getPlanStatus())) // suspend if not already suspended
+                            autoFixPlanManager.suspendPlan(autoFixPlan, policyParam);
+                        logger.debug("auto fix plan suspended for plan # --> {}", autoFixPlan.getPlanId());
+                        autoFixTrans.add(new AutoFixTransaction(AutoFixAction.SUSPEND_AUTO_FIX_PLAN, resourceId, policyId, executionId,
+                                transactionId, "auto fix plan suspended with id" + autoFixPlan.getPlanId(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
+                    } catch (Exception e) {
+                        logger.error("unable to sync plna status , while resource is exempted, will try in next pass", e);
                     }
                     if (AutoFixAction.AUTOFIX_ACTION_FIX == autoFixAction) {
                         Map<String, String> pacTag = createPacTag(exceptionExpiryDate);
-                        taggingManager.tagResource(normalizeResourceId(resourceId, serviceType,annotation), clientMap, serviceType, pacTag);
-                        autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_TAG, resourceId,policyId,
-                                executionId, transactionId, "resource tagged",type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
+                        taggingManager.tagResource(normalizeResourceId(resourceId, serviceType, annotation), clientMap, serviceType, pacTag);
+                        autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_TAG, resourceId, policyId,
+                                executionId, transactionId, "resource tagged", type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
                         resourcesTaggedCounter++;
                         // this means this resource was exempted after sending
                         // the violation emails and exempted afterwards
-                        if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE)) 
-                        		&& !MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
-                                exceptionExpiryDate, AutoFixAction.AUTOFIX_ACTION_EXEMPTED,addDetailsToLogTrans,annotation)) {
-                            logger.error("unable to send email to {}" ,resourceOwner);
+                        if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))
+                                && !MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
+                                exceptionExpiryDate, AutoFixAction.AUTOFIX_ACTION_EXEMPTED, addDetailsToLogTrans, annotation)) {
+                            logger.error("unable to send email to {}", resourceOwner);
                         }
                     }
                     // should be removed for deployment
@@ -300,46 +318,47 @@ public class AutoFixManager {
             } else {
                 try {
                     // if issue is not exempted create auto fix plan
-                    try{
-                        if(null==autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)){
-                          autoFixPlan = autoFixPlanManager.createPlan(policyId, annotation.get(PacmanSdkConstants.ANNOTATION_PK), resourceId, 
-                                annotation.get(PacmanSdkConstants.DOC_ID), targetType, NextStepManager.getMaxNotifications(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION)),
-                                NextStepManager.getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME)));
-                        autoFixPlanManager.publishPlan(policyParam, autoFixPlan);autoFixPlanCreatedCounter++;
-                        logger.debug("auto fix plan published with id {} " , autoFixPlan.getPlanId());
-                        autoFixTrans.add(new AutoFixTransaction(AutoFixAction.CREATE_AUTO_FIX_PLAN, resourceId,policyId, executionId,
-                                transactionId, "auto fix plan created with id" + autoFixPlan.getPlanId(),type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
+                    try {
+                        if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)) {
+                            autoFixPlan = autoFixPlanManager.createPlan(policyId, annotation.get(PacmanSdkConstants.ANNOTATION_PK), resourceId,
+                                    annotation.get(PacmanSdkConstants.DOC_ID), targetType, NextStepManager.getMaxNotifications(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION)),
+                                    NextStepManager.getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME)));
+                            autoFixPlanManager.publishPlan(policyParam, autoFixPlan);
+                            autoFixPlanCreatedCounter++;
+                            logger.debug("auto fix plan published with id {} ", autoFixPlan.getPlanId());
+                            autoFixTrans.add(new AutoFixTransaction(AutoFixAction.CREATE_AUTO_FIX_PLAN, resourceId, policyId, executionId,
+                                    transactionId, "auto fix plan created with id" + autoFixPlan.getPlanId(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
                         }
-                    }catch (Exception e) {
-                        logger.error(String.format("unable to create autofix plan for %s,%s,%s,%s,%s",policyId, annotation.get(PacmanSdkConstants.ANNOTATION_PK), resourceId, annotation.get(PacmanSdkConstants.DOC_ID), targetType),e);
+                    } catch (Exception e) {
+                        logger.error(String.format("unable to create autofix plan for %s,%s,%s,%s,%s", policyId, annotation.get(PacmanSdkConstants.ANNOTATION_PK), resourceId, annotation.get(PacmanSdkConstants.DOC_ID), targetType), e);
                     }
-                    
-                    logger.debug("found the resource Owner {}" , resourceOwner);
+
+                    logger.debug("found the resource Owner {}", resourceOwner);
                     if (Strings.isNullOrEmpty(resourceOwner.getEmailId())
                             && !Strings.isNullOrEmpty(resourceOwner.getName())
                             && resourceOwner.getName().contains("@")) { // case
-                                                                        // when
-                                                                        // name
-                                                                        // contains
-                                                                        // email
+                        // when
+                        // name
+                        // contains
+                        // email
                         resourceOwner.setEmailId(resourceOwner.getName());
                     }
 
                     if (resourceOwner == null || resourceOwner.getEmailId() == null ||
-                    		!resourceOwner.getEmailId().contains("@")) { // service
-                                                                     // account
-                                                                     // case, in
-                                                                     // this
-                                                                     // case it
-                                                                     // is a
-                                                                     // service
-                                                                     // account
-                                                                     // name
+                            !resourceOwner.getEmailId().contains("@")) { // service
+                        // account
+                        // case, in
+                        // this
+                        // case it
+                        // is a
+                        // service
+                        // account
+                        // name
                         resourceOwner
                                 .setEmailId(CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL));
                     }
                 } catch (Exception e) {
-                    logger.error("unable to find the resource owner for {} and {} " , resourceId,e);
+                    logger.error("unable to find the resource owner for {} and {} ", resourceId, e);
                     resourceOwner = new ResourceOwner("Team",
                             CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL));
                     resourceOwnerNotFoundCounter++;
@@ -347,100 +366,100 @@ public class AutoFixManager {
 
                 if (AutoFixAction.DO_NOTHING == autoFixAction) {
                     didNothingCounter++;
-                    autoFixTrans.add(new AutoFixTransaction(AutoFixAction.DO_NOTHING, resourceId,policyId, executionId,
-                            transactionId, "waiting for 24 hours before fixing the violation",type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
+                    autoFixTrans.add(new AutoFixTransaction(AutoFixAction.DO_NOTHING, resourceId, policyId, executionId,
+                            transactionId, "waiting for 24 hours before fixing the violation", type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
 
                     continue;
                 }
 
                 if (AutoFixAction.AUTOFIX_ACTION_EMAIL == autoFixAction
                         && isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),
-                        		policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_ALLOWLIST), policyId)) {
-                    long autofixExpiring=nextStepManager.getAutoFixExpirationTimeInHours(policyParam,policyParam.get(PacmanSdkConstants.POLICY_ID),resourceId);
+                        policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_ALLOWLIST), policyId)) {
+                    long autofixExpiring = nextStepManager.getAutoFixExpirationTimeInHours(policyParam, policyParam.get(PacmanSdkConstants.POLICY_ID), resourceId);
                 	/*ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(Integer.parseInt(CommonUtils.getPropValue(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY
                             +"."+ ruleParam.get(PacmanSdkConstants.RULE_ID))));*/
                     ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(autofixExpiring);
                     String expiringTime = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                     if (!MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
-                            expiringTime, AutoFixAction.AUTOFIX_ACTION_EMAIL,addDetailsToLogTrans,annotation)) {
-                        String msg = String.format("unable to send email to %s for vulnerable resource %s, hence skipping this pass" , resourceOwner.toString(),resourceId);
+                            expiringTime, AutoFixAction.AUTOFIX_ACTION_EMAIL, addDetailsToLogTrans, annotation)) {
+                        String msg = String.format("unable to send email to %s for vulnerable resource %s, hence skipping this pass", resourceOwner.toString(), resourceId);
                         logger.error(msg);
                         new SlackMessageRelay().sendMessage(CommonUtils.getPropValue(PacmanSdkConstants.PAC_MONITOR_SLACK_USER), msg);
                         continue; // notification was not sent, skip further
-                                  // execution
+                        // execution
                     }
-                    logger.debug("email sent to {}" , resourceOwner);
-                    autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_EMAIL, resourceId,policyId, executionId,
-                            transactionId, "email sent to " + resourceOwner.getEmailId(),type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
+                    logger.debug("email sent to {}", resourceOwner);
+                    autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_EMAIL, resourceId, policyId, executionId,
+                            transactionId, "email sent to " + resourceOwner.getEmailId(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
                     notificationSentCounter++;
                     try {
-                            nextStepManager.postFixAction(resourceId, AutoFixAction.EMAIL);
-                            try{
-                                if(null==autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)){
-                                    autoFixPlanManager.synchronizeAndRepublishAutoFixPlan(autoFixPlan,resourceId, policyParam);
-                                    autoFixTrans.add(new AutoFixTransaction(AutoFixAction.SYNC_AUTO_FIX_PLAN, resourceId,policyId, executionId,
-                                            transactionId, "auto fix plan synchronized with id" + autoFixPlan.getPlanId(),type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
-                                }
-                                }catch(Exception e){
-                                logger.error("unable to syn plan for {} and {}" , resourceId,e);
+                        nextStepManager.postFixAction(resourceId, AutoFixAction.EMAIL);
+                        try {
+                            if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)) {
+                                autoFixPlanManager.synchronizeAndRepublishAutoFixPlan(autoFixPlan, resourceId, policyParam);
+                                autoFixTrans.add(new AutoFixTransaction(AutoFixAction.SYNC_AUTO_FIX_PLAN, resourceId, policyId, executionId,
+                                        transactionId, "auto fix plan synchronized with id" + autoFixPlan.getPlanId(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
                             }
+                        } catch (Exception e) {
+                            logger.error("unable to syn plan for {} and {}", resourceId, e);
+                        }
                     } catch (Exception e) {
-                        logger.error("unable to post email action for {} and {}", resourceId,e);
+                        logger.error("unable to post email action for {} and {}", resourceId, e);
                     }
                     fixResults.add(new FixResult(PacmanSdkConstants.STATUS_SUCCESS_CODE,
-                            String.format("email sent to owner of resource %s" , resourceId)));
+                            String.format("email sent to owner of resource %s", resourceId)));
                     continue;
                 } else {
                     if (AutoFixAction.AUTOFIX_ACTION_FIX == autoFixAction) {
                         try {
+                            try {
+                                backupMethod.invoke(fixObject, resourceId, targetType, clientMap, policyParam, annotation);
+                            } catch (Exception e) {
+                                logger.error("unable to backup the configuration for {} and {} and {}", targetType, resourceId, e);
+                                continue;
+                            }
+                            autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_BACKUP, resourceId, policyId,
+                                    executionId, transactionId, "resource aconfig backedup", type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
+                            backupConfigCounter++;
+                            FixResult result = (FixResult) executeMethod.invoke(fixObject, annotation, clientMap, policyParam);
+                            fixResults
+                                    .add(result);
+                            autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_FIX, resourceId, policyId,
+                                    executionId, transactionId, result.toString(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
+                            if (!nextStepManager.isSilentFixEnabledForRule(policyId)) {
+
+                                if (null != addDetailsToTransactionLogMethod) {
+                                    addDetailsToLogTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject, annotation));
+                                }
+                                MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId, "",
+                                        AutoFixAction.AUTOFIX_ACTION_FIX, addDetailsToLogTrans, annotation);
+                                nextStepManager.postFixAction(resourceId, AutoFixAction.AUTOFIX_ACTION_FIX);
                                 try {
-                                       backupMethod.invoke(fixObject, resourceId, targetType, clientMap, policyParam,annotation);
+                                    if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)) {
+                                        autoFixPlanManager.synchronizeAndRepublishAutoFixPlan(autoFixPlan, resourceId, policyParam);
+                                        autoFixTrans.add(new AutoFixTransaction(AutoFixAction.SYNC_AUTO_FIX_PLAN, resourceId, policyId, executionId,
+                                                transactionId, "auto fix plan synchronized with id" + autoFixPlan.getPlanId(), type, annotation.get("targetType"), annotationId, annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), parentDocId));
+                                    }
                                 } catch (Exception e) {
-                                    logger.error("unable to backup the configuration for {} and {} and {}" , targetType ,resourceId,e);
-                                    continue;
+                                    logger.error(String.format("unable to syn plan for %s", resourceId), e);
                                 }
-                                autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_BACKUP, resourceId,policyId,
-                                        executionId, transactionId, "resource aconfig backedup",type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
-                                backupConfigCounter++;
-                                FixResult result = (FixResult) executeMethod.invoke(fixObject, annotation, clientMap, policyParam);
-                                fixResults
-                                        .add(result);
-                                autoFixTrans.add(new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_FIX, resourceId,policyId,
-                                        executionId, transactionId, result.toString(),type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
-                                if (!nextStepManager.isSilentFixEnabledForRule(policyId)){
-                                	
-                                	if(null!=addDetailsToTransactionLogMethod){
-                                		addDetailsToLogTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject,annotation));
-                                    }
-                                	MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId, "",
-                                        AutoFixAction.AUTOFIX_ACTION_FIX,addDetailsToLogTrans,annotation);
-                                    nextStepManager.postFixAction(resourceId, AutoFixAction.AUTOFIX_ACTION_FIX);
-                                    try{
-                                        if(null==autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)){
-                                         autoFixPlanManager.synchronizeAndRepublishAutoFixPlan(autoFixPlan, resourceId,policyParam);
-                                         autoFixTrans.add(new AutoFixTransaction(AutoFixAction.SYNC_AUTO_FIX_PLAN, resourceId,policyId, executionId,
-                                                 transactionId, "auto fix plan synchronized with id" + autoFixPlan.getPlanId(),type,annotation.get("targetType"),annotationId,annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),parentDocId));
-                                        }
-                                        }catch(Exception e){
-                                        logger.error(String.format("unable to syn plan for %s" , resourceId),e);
-                                    }
-                                    logger.debug("autofixed the resource {} and email sent to  {} and plan synchronized",
-                                            resourceId, resourceOwner);
-                                }
+                                logger.debug("autofixed the resource {} and email sent to  {} and plan synchronized",
+                                        resourceId, resourceOwner);
+                            }
 //                                    if(annotation.get("policyId").equalsIgnoreCase("PacMan_ApplicationTagsShouldBeValid_version-1")){
 //                                    silentautoFixTrans.add(new AutoFixTransaction(resourceId, ruleId,annotation.get("accountid") , annotation.get("region"),annotation.get("correct_application_tag")));
 //                                    }
-                                    else{
-                                    logger.error("unable to send email to {}" , resourceOwner);
-                                   
-                                    }
-                                if(nextStepManager.isSilentFixEnabledForRule(policyId) && null!=addDetailsToTransactionLogMethod){
-                                    silentautoFixTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject,annotation));
-                                }
-                                                                
-                                autoFixCounter++;
+                            else {
+                                logger.error("unable to send email to {}", resourceOwner);
+
+                            }
+                            if (nextStepManager.isSilentFixEnabledForRule(policyId) && null != addDetailsToTransactionLogMethod) {
+                                silentautoFixTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject, annotation));
+                            }
+
+                            autoFixCounter++;
                         } catch (Exception e) {
-                            logger.error(String.format("unable to execute auto fix for %s  will not fix at this time",resourceId),
+                            logger.error(String.format("unable to execute auto fix for %s  will not fix at this time", resourceId),
                                     e);
                             // continue with next bucket
                             continue;
@@ -448,29 +467,29 @@ public class AutoFixManager {
                     } else if (AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY == autoFixAction) {
 
                         if (!MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId, "",
-                                AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY,addDetailsToLogTrans,annotation)) {
-                            logger.error("unable to send email to {}" , resourceOwner);
+                                AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY, addDetailsToLogTrans, annotation)) {
+                            logger.error("unable to send email to {}", resourceOwner);
                         }
                     }
                 }
             } // if issue open
-        
-}// for
-        
+
+        }// for
+
         autoFixPlanManager.releaseResourfes();
         //Silent fix send Digest email
-        if(!silentautoFixTrans.isEmpty() && nextStepManager.isSilentFixEnabledForRule(policyId)){
-            
+        if (!silentautoFixTrans.isEmpty() && nextStepManager.isSilentFixEnabledForRule(policyId)) {
+
             MailUtils.sendCommonFixNotification(silentautoFixTrans, policyParam, resourceOwner, targetType);
         }
         // publish the transactions here
         // if any transaction exists post it
         if (autoFixTrans != null && !autoFixTrans.isEmpty()) {
-            ElasticSearchDataPublisher dataPublisher =  new ElasticSearchDataPublisher();
-            dataPublisher.publishAutoFixTransactions(autoFixTrans,policyParam);
+            ElasticSearchDataPublisher dataPublisher = new ElasticSearchDataPublisher();
+            dataPublisher.publishAutoFixTransactions(autoFixTrans, policyParam);
             dataPublisher.close();
         }
-        
+
         autoFixStats.put("autoFixCounter", autoFixCounter);
         autoFixStats.put("resourcesTaggedCounter", resourcesTaggedCounter);
         autoFixStats.put("notificationSentCounter", notificationSentCounter);
@@ -482,34 +501,32 @@ public class AutoFixManager {
         logger.info("autoFixmanager end");
         return autoFixStats;
     }
-    
-   
+
     /**
      * return the right id needed for operation
      * @param resourceId
      * @param serviceType
-     * @param annotation 
+     * @param annotation
      * @return
      */
-private String normalizeResourceId(String resourceId, AWSService serviceType, Map<String, String> annotation) {
-    
-    switch(serviceType){
-    
-    case ELB_APP:
-            return annotation.get(PacmanSdkConstants.APP_ELB_ARN_ATTRIBUTE_NAME);
-    default:
-            return resourceId;
+    private String normalizeResourceId(String resourceId, AWSService serviceType, Map<String, String> annotation) {
+
+        switch (serviceType) {
+
+            case ELB_APP:
+                return annotation.get(PacmanSdkConstants.APP_ELB_ARN_ATTRIBUTE_NAME);
+            default:
+                return resourceId;
+        }
     }
-}
 
     /**
      * @param targetType
      * @return
      */
     private String getTargetTypeAlias(String targetType) {
-        return targetTypeAlias.get(targetType)==null?targetType:targetTypeAlias.get(targetType);
+        return targetTypeAlias.get(targetType) == null ? targetType : targetTypeAlias.get(targetType);
     }
-
 
     /**
      * find the method isfixCandidate.
@@ -519,10 +536,10 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
      * @return the method
      */
     private Method findIsFixCandidateMethod(Object fixObject, Method isFixCandidateMethod) {
-        try{
-                isFixCandidateMethod =  ReflectionUtils.findAssociatedMethod(fixObject, "isFixCandidate");
-        }catch(Exception e){
-            logger.debug("isFixCandidateMethod not implemented will use the default value true",e);
+        try {
+            isFixCandidateMethod = ReflectionUtils.findAssociatedMethod(fixObject, "isFixCandidate");
+        } catch (Exception e) {
+            logger.debug("isFixCandidateMethod not implemented will use the default value true", e);
         }
         return isFixCandidateMethod;
     }
@@ -543,17 +560,17 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
      * @throws InvocationTargetException the invocation target exception
      */
     private boolean isAFixCandidate(Method isFixCandidateMethod, Object fixObject, String resourceId, String targetType,
-            Map<String, Object> clientMap, Map<String, String> ruleParam, Map<String, String> annotation) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        try{
-                Boolean isFixCandidate =  null==isFixCandidateMethod?true:(Boolean)isFixCandidateMethod.invoke(fixObject, resourceId, targetType, clientMap, ruleParam,annotation);
-                logger.debug("is fix candidate ==> {} ",isFixCandidate);
-                return isFixCandidate;
+                                    Map<String, Object> clientMap, Map<String, String> ruleParam, Map<String, String> annotation) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        try {
+            Boolean isFixCandidate = null == isFixCandidateMethod ? true : (Boolean) isFixCandidateMethod.invoke(fixObject, resourceId, targetType, clientMap, ruleParam, annotation);
+            logger.debug("is fix candidate ==> {} ", isFixCandidate);
+            return isFixCandidate;
 
-        }catch(Exception e){
-            logger.error("error executing is fix candidate ",e);
+        } catch (Exception e) {
+            logger.error("error executing is fix candidate ", e);
             return Boolean.FALSE;
         }
-        
+
     }
 
     /**
@@ -569,7 +586,7 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
                     .asList(CommonUtils.getPropValue(PacmanSdkConstants.AUTOFIX_EXEMPTED_TYPES_KEY).split("\\s*,\\s*"));
             return exemptedtypes.contains(targetType);
         } catch (Exception e) {
-        	logger.error("error in isResourceTypeExemptedFromCutOfDateCriteria {}",e);
+            logger.error("error in isResourceTypeExemptedFromCutOfDateCriteria {}", e);
             return false;
         }
     }
@@ -585,8 +602,8 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
      * @throws Exception the exception
      */
     private String getMaxExceptionExpiry(String annotationId, String resourceId,
-            Map<String, List<IssueException>> exemptedResourcesForRule,
-            Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
+                                         Map<String, List<IssueException>> exemptedResourcesForRule,
+                                         Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
 
         // check if resource exempted using sticky exception
         List<IssueException> issueExceptions = exemptedResourcesForRule.get(resourceId);
@@ -620,7 +637,7 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
         try {
             p = Pattern.compile(CommonUtils.getPropValue(PacmanSdkConstants.FIX_ONLY_MATCHING_RESOURCE_PATTERN));
         } catch (Exception e) {
-            logger.info("no resource filter pattern defined {}",e);
+            logger.info("no resource filter pattern defined {}", e);
             return true;
         }
         Matcher m = p.matcher(resourceId.toLowerCase());
@@ -638,7 +655,7 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
      * @throws Exception the exception
      */
     private Map<String, Object> getAWSClient(String targetType, Map<String, String> annotation,
-            String ruleIdentifyingString) throws Exception {
+                                             String ruleIdentifyingString) throws Exception {
 
         StringBuilder roleArn = new StringBuilder();
         Map<String, Object> clientMap = null;
@@ -653,7 +670,7 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
                                     : annotation.get(PacmanSdkConstants.REGION)),
                     ruleIdentifyingString);
         } catch (UnableToCreateClientException e1) {
-            logger.error("unable to create client for account {} and region {} and {}" , annotation.get(PacmanSdkConstants.ACCOUNT_ID),annotation.get(PacmanSdkConstants.REGION),e1);
+            logger.error("unable to create client for account {} and region {} and {}", annotation.get(PacmanSdkConstants.ACCOUNT_ID), annotation.get(PacmanSdkConstants.REGION), e1);
             throw new Exception("unable to create client for account and region");
         }
         return clientMap;
@@ -678,10 +695,29 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
             // get the creation date
             // for now returning true to indicate resource was created befroe
             // cutoff
-        	logger.error("error {}" , e);
+            logger.error("error {}", e);
             return true;
         }
     }
+
+//    /**
+//     * Checks if is account allow listed for auto fix.
+//     *
+//     * @param account the account
+//     * @param ruleId the rule id
+//     * @return true, if is account allow listed for auto fix
+//     */
+//    private boolean isAccountAllowListedForAutoFix(String account, String ruleId) {
+//        try {
+//            String allowlistStr = CommonUtils
+//                    .getPropValue(PacmanSdkConstants.AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX + ruleId);
+//            List<String> allowlist = Arrays.asList(allowlistStr.split("\\s*,\\s*"));
+//            return allowlist.contains(account);
+//        } catch (Exception e) {
+//            logger.error(String.format("%s account assumed not allowlisted for autofix for ruleId %s" ,account, ruleId));
+//            return Boolean.FALSE;
+//        }
+//    }
 
     /**
      * Gets the resource created date.
@@ -710,31 +746,11 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
             }
             throw new Exception("unable to find resource creation date");
         } catch (Exception exception) {
-            logger.error("Cannot find resource creation data {} response from service--> {}" , response, exception);
+            logger.error("Cannot find resource creation data {} response from service--> {}", response, exception);
             throw exception;
         }
     }
 
-//    /**
-//     * Checks if is account allow listed for auto fix.
-//     *
-//     * @param account the account
-//     * @param ruleId the rule id
-//     * @return true, if is account allow listed for auto fix
-//     */
-//    private boolean isAccountAllowListedForAutoFix(String account, String ruleId) {
-//        try {
-//            String allowlistStr = CommonUtils
-//                    .getPropValue(PacmanSdkConstants.AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX + ruleId);
-//            List<String> allowlist = Arrays.asList(allowlistStr.split("\\s*,\\s*"));
-//            return allowlist.contains(account);
-//        } catch (Exception e) {
-//            logger.error(String.format("%s account assumed not allowlisted for autofix for ruleId %s" ,account, ruleId));
-//            return Boolean.FALSE;
-//        }
-//    }
-    
-    
     /**
      * Checks if is account allow listed for auto fix.
      *
@@ -748,13 +764,10 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
             List<String> allowlist = Arrays.asList(allowlistStr.split("\\s*,\\s*"));
             return allowlist.contains(account);
         } catch (Exception e) {
-            logger.error("account is assumed allowlisted for autofix for policyId {} and {} and {}" ,account, policyId,e);
-            return Boolean.TRUE; // be defensive , if not able to figure out , assume deny list 
+            logger.error("account is assumed allowlisted for autofix for policyId {} and {} and {}", account, policyId, e);
+            return Boolean.TRUE; // be defensive , if not able to figure out , assume deny list
         }
     }
-    
-    
-    
 
     /**
      * Gets the open and excepmted annotation for rule.
@@ -802,27 +815,4 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
         tagMap.put(pacTagName, pacTagValue);
         return tagMap;
     }
-    
-    
-
-    /**
-     * test the code locally.
-     *
-     * @param args the arguments
-
-     * @throws Exception the exception
-     */
-    public static void main(String[] args) throws Exception {
-        CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL);
-
-        Map<String, String> ruleParam = CommonUtils.createParamMap(args[0]);
-        ExceptionManager exceptionManager = new ExceptionManagerImpl();
-        Map<String, List<IssueException>> excemptedResourcesForRule = exceptionManager.getStickyExceptions(
-                ruleParam.get(PacmanSdkConstants.POLICY_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-        Map<String, IssueException> individuallyExcemptedIssues = exceptionManager
-                .getIndividualExceptions(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-       AutoFixManager autoFixManager = new AutoFixManager();
-       autoFixManager.performAutoFixs(ruleParam, excemptedResourcesForRule, individuallyExcemptedIssues);
-
-}
 }

@@ -16,17 +16,13 @@
 
 package com.tmobile.pacman.executor;
 
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.JsonObject;
+import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.config.ConfigManager;
+import com.tmobile.pacman.executor.rules.TestPacRule;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ESUtils;
+import com.tmobile.pacman.util.ProgramExitUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,16 +31,14 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.google.gson.JsonObject;
-import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.config.ConfigManager;
-import com.tmobile.pacman.executor.rules.TestPacRule;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
-import com.tmobile.pacman.util.ProgramExitUtils;
+import java.util.*;
+
+import static org.mockito.Matchers.*;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class RuleExecutorTest.
  *
@@ -53,41 +47,43 @@ import com.tmobile.pacman.util.ProgramExitUtils;
 
 @PowerMockIgnore("javax.net.ssl.*")
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ESUtils.class,ProgramExitUtils.class,ConfigManager.class})
+@PrepareForTest({ESUtils.class, ProgramExitUtils.class, ConfigManager.class})
 public class PolicyExecutorTest {
 
-    
-    /** The re. */
+
+    /**
+     * The re.
+     */
     //RuleExecutor re = new RuleExecutor();
-    
+
     final static String TEST_KEY = "test_key";
 
     /**
      * Setup.
      */
     @Before
-    public void setup(){
+    public void setup() {
         PowerMockito.mockStatic(ProgramExitUtils.class);
-        
+
         mockStatic(ConfigManager.class);
         ConfigManager ConfigManager = PowerMockito.mock(ConfigManager.class);
-		PowerMockito.when(ConfigManager.getConfigurationsMap()).thenReturn(new Hashtable<String, Object>());
+        PowerMockito.when(ConfigManager.getConfigurationsMap()).thenReturn(new Hashtable<String, Object>());
     }
-    
-    
+
+
     /**
      * Test run single thread.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testRunSingleThread() throws Exception{
-        
+    public void testRunSingleThread() throws Exception {
+
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(), anyString())).thenReturn(Boolean.TRUE);
         List<Map<String, String>> resources = new ArrayList<>();
-        
+
 //        PowerMockito.mockStatic(CommonUtils.class);
 //        PowerMockito.when(CommonUtils.createParamMap(anyString())).thenCallRealMethod();
 //        PowerMockito.when(CommonUtils.doHttpPost(anyString(),anyString() ,anyMap())).thenReturn("");
@@ -100,27 +96,27 @@ public class PolicyExecutorTest {
 //                return ruleClass;
 //            }
 //        });
-        
+
         Map<String, String> resource = new HashMap<>();
         resource.put(PacmanSdkConstants.DOC_ID, "testId");
-        resource.put(PacmanSdkConstants.RESOURCE_ID,"testResId");
+        resource.put(PacmanSdkConstants.RESOURCE_ID, "testResId");
         resources.add(resource);
         PowerMockito.when(ESUtils.getResourcesFromEs(anyString(), anyString(), anyMap(), anyList())).thenReturn(resources);
-        
+
 //        PowerMockito.mockStatic(CommonUtils.class);
 //        PowerMockito.doNothing().when(CommonUtils.class);
-        
+
         JsonObject input = new JsonObject();
         PowerMockito.mockStatic(CommonUtils.class);
         input.addProperty("ruleName", "test");
         input.addProperty(PacmanSdkConstants.POLICY_KEY, TEST_KEY);
         input.addProperty(PacmanSdkConstants.DATA_SOURCE_KEY, "aws");
         String[] args = {input.toString()};
-        PolicyExecutor.main(args);   
+        PolicyExecutor.main(args);
     }
-    
-    
-   /* *//**
+
+
+    /* *//**
      * Test run.
      *
      * @throws Exception the exception
@@ -148,58 +144,58 @@ public class PolicyExecutorTest {
         PowerMockito.mockStatic(RuleExecutor.class);
         RuleExecutor.main(args);   
     }*/
-    
-    
+
+
     /**
      * Test run.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testRunWithNoResourcesFound() throws Exception{
-        
+    public void testRunWithNoResourcesFound() throws Exception {
+
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(), anyString())).thenReturn(Boolean.TRUE);
         PowerMockito.when(ESUtils.getResourcesFromEs(anyString(), anyString(), anyMap(), anyList())).thenReturn(new ArrayList<>());
         PowerMockito.mockStatic(CommonUtils.class);
 //        PowerMockito.mockStatic(CommonUtils.class);
 //        PowerMockito.doNothing().when(CommonUtils.class);
-        
+
         JsonObject input = new JsonObject();
-        
+
         input.addProperty("ruleName", "test");
-        
+
         input.addProperty(PacmanSdkConstants.DATA_SOURCE_KEY, "aws");
         String[] args = {input.toString()};
         PowerMockito.mockStatic(PolicyExecutor.class);
-        PolicyExecutor.main(args);    
+        PolicyExecutor.main(args);
     }
-    
-    
+
+
     /**
      * Test run.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testRunWithEmptyDS() throws Exception{
-        
+    public void testRunWithEmptyDS() throws Exception {
+
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
-        
-        
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(), anyString())).thenReturn(Boolean.TRUE);
+
+
         JsonObject input = new JsonObject();
         PowerMockito.mockStatic(CommonUtils.class);
         input.addProperty("ruleName", "test");
         input.addProperty(PacmanSdkConstants.DATA_SOURCE_KEY, "");
         String[] args = {input.toString()};
         PowerMockito.mockStatic(PolicyExecutor.class);
-        PolicyExecutor.main(args);    
+        PolicyExecutor.main(args);
     }
-    
-    
+
+
 //    @Test
 //    public void testDSNull() throws Exception{
 //        
@@ -218,39 +214,39 @@ public class PolicyExecutorTest {
 //        String[] args = {input.toString()};
 //        re.main(args);   
 //    }
-    
-    
+
+
     /**
- * Test run multi thread with rule passing.
- *
- * @throws Exception the exception
- */
-@Test
-    public void testRunMultiThreadWithRulePassing() throws Exception{
-        
+     * Test run multi thread with rule passing.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testRunMultiThreadWithRulePassing() throws Exception {
+
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
-        
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(), anyString())).thenReturn(Boolean.TRUE);
+
         final Class<?> ruleClass = TestPacRule.class;
         List<Map<String, String>> resources = new ArrayList<>();
 
         Map<String, String> resource = new HashMap<>();
         resource.put(PacmanSdkConstants.DOC_ID, "testId");
-        resource.put(PacmanSdkConstants.RESOURCE_ID,"testResId");
+        resource.put(PacmanSdkConstants.RESOURCE_ID, "testResId");
         resources.add(resource);
         PowerMockito.when(ESUtils.getResourcesFromEs(anyString(), anyString(), anyMap(), anyList())).thenReturn(resources);
-        
+
         JsonObject input = new JsonObject();
         input.addProperty("ruleName", "test");
         input.addProperty(PacmanSdkConstants.RUN_ON_MULTI_THREAD_KEY, "true");
         input.addProperty(PacmanSdkConstants.POLICY_KEY, TEST_KEY);
         input.addProperty(PacmanSdkConstants.DATA_SOURCE_KEY, "aws");
         String[] args = {input.toString()};
-        PolicyExecutor.main(args);   
+        PolicyExecutor.main(args);
     }
-    
-   /* *//**
+
+    /* *//**
      * Test run multi thread with rule failing.
      *
      * @throws Exception the exception
@@ -279,8 +275,8 @@ public class PolicyExecutorTest {
         String[] args = {input.toString()};
         RuleExecutor.main(args);   
     }*/
-    
-   /* *//**
+
+    /* *//**
      * Test run serverless rule.
      *
      * @throws Exception the exception
@@ -321,6 +317,6 @@ public class PolicyExecutorTest {
         String[] args = {input.toString()};
         RuleExecutor.main(args);   
     }*/
-    
-    
+
+
 }

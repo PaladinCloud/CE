@@ -16,11 +16,6 @@
 
 package com.tmobile.pacman.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -30,7 +25,12 @@ import com.tmobile.pacman.dto.ResourceOwner;
 import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ResourceOwnerService.
  *
@@ -38,31 +38,45 @@ import com.tmobile.pacman.util.ESUtils;
  */
 public class ResourceOwnerService {
 
-    /** The Constant DETAIL_FIELD_NAME. */
+    /**
+     * The Constant DETAIL_FIELD_NAME.
+     */
     private static final String DETAIL_FIELD_NAME = "detail";
 
-    /** The Constant HEIMDALL_PORT. */
+    /**
+     * The Constant HEIMDALL_PORT.
+     */
     private static final String HEIMDALL_PORT = "heimdall-port";
 
-    /** The Constant PROTOCOL. */
+    /**
+     * The Constant PROTOCOL.
+     */
     private static final String PROTOCOL = "http";
 
-    /** The Constant EMAIL. */
+    /**
+     * The Constant EMAIL.
+     */
     private static final String EMAIL = "email";
 
-    /** The Constant USER. */
+    /**
+     * The Constant USER.
+     */
     private static final String USER = "user";
 
-    /** The Constant HEIMDALL_HOST. */
+    /**
+     * The Constant HEIMDALL_HOST.
+     */
     private static final String HEIMDALL_HOST = "heimdall-host";
 
-    /** The Constant HEIMDALL_RESOURCE_INDEX. */
+    /**
+     * The Constant HEIMDALL_RESOURCE_INDEX.
+     */
     private static final String HEIMDALL_RESOURCE_INDEX = "pacman-resource-claim";
 
     /**
      * Find resource owner by id and type.
      *
-     * @param resourceId the resource id
+     * @param resourceId  the resource id
      * @param serviceType the service type
      * @return the resource owner
      * @throws Exception the exception
@@ -91,17 +105,17 @@ public class ResourceOwnerService {
         Map<String, Object> mustFilter = Maps.newHashMap();
         mustFilter.put(ESUtils.createKeyword("resourceid"), resourceId);
         HashMultimap<String, Object> shouldFilter = null;
-        try{
-        resourceDetails = ESUtils.getDataFromES(heimdallUrl, HEIMDALL_RESOURCE_INDEX, "",
-                mustFilter, Maps.newHashMap(), shouldFilter, fields, 0, 10, "_docid");
-        
-        if (resourceDetails.size() > 0) {
-            resourceOwner.setEmailId(findEmail(resourceDetails));
-            resourceOwner.setName(resourceDetails.get(0).get(USER));
-        }
-        }catch(Exception e){
-        	resourceOwner.setEmailId(CommonUtils.getPropValue(PacmanSdkConstants.PACBOT_AUTOFIX_RESOURCE_OWNER_FALLBACK_MAIL));
-        	resourceOwner.setName("Team");
+        try {
+            resourceDetails = ESUtils.getDataFromES(heimdallUrl, HEIMDALL_RESOURCE_INDEX, "",
+                    mustFilter, Maps.newHashMap(), shouldFilter, fields, 0, 10, "_docid");
+
+            if (resourceDetails.size() > 0) {
+                resourceOwner.setEmailId(findEmail(resourceDetails));
+                resourceOwner.setName(resourceDetails.get(0).get(USER));
+            }
+        } catch (Exception e) {
+            resourceOwner.setEmailId(CommonUtils.getPropValue(PacmanSdkConstants.PACBOT_AUTOFIX_RESOURCE_OWNER_FALLBACK_MAIL));
+            resourceOwner.setName("Team");
         }
         return resourceOwner;
     }

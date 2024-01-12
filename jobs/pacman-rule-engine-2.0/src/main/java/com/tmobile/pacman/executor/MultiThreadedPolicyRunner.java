@@ -16,36 +16,31 @@
 
 package com.tmobile.pacman.executor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import com.google.common.base.Strings;
-import com.tmobile.cloud.constants.PacmanRuleConstants;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ReflectionUtils;
 import com.tmobile.pacman.util.PolicyExecutionUtils;
+import com.tmobile.pacman.util.ReflectionUtils;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class MultiThreadedRuleRunner.
  *
@@ -53,7 +48,9 @@ import com.tmobile.pacman.util.PolicyExecutionUtils;
  */
 public class MultiThreadedPolicyRunner implements PolicyRunner {
 
-    /** The Constant LOGGER. */
+    /**
+     * The Constant LOGGER.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiThreadedPolicyRunner.class);
 
     /* (non-Javadoc)
@@ -61,7 +58,7 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
      */
     @Override
     public List<PolicyResult> runPolicies(List<Map<String, String>> resources, Map<String, String> policyParam,
-            String executionId) throws Exception {
+                                          String executionId) throws Exception {
 
         String policyKey = policyParam.get("policyKey");
         Class<?> policyClass = null;
@@ -175,7 +172,7 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
                 // FINDING NON EVALUATED RESOURCES
             }
             String tagMandatory = policyParam.get(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
-            Map<String, String> mandatoryTags = getMandatoryTagsForAnnotation(tagMandatory,resource);
+            Map<String, String> mandatoryTags = getMandatoryTagsForAnnotation(tagMandatory, resource);
             // if fail issue will get logged to database, hence update the
             // category and severity
             if (PacmanSdkConstants.STATUS_FAILURE.equalsIgnoreCase(result.getStatus())
@@ -190,7 +187,7 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
                 }
                 result.getAnnotation().put(PacmanSdkConstants.RESOURCE_ID,
                         resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
-                populateAnnotationParams(result,resource,policyParam);
+                populateAnnotationParams(result, resource, policyParam);
                 result.getAnnotation().put(PacmanSdkConstants.REGION, resource.get("region"));
                 result.getAnnotation().put(PacmanSdkConstants.POLICY_CATEGORY, PolicyExecutionUtils.getPolicyAttribute(result,
                         policyParam, policyAnnotation, PacmanSdkConstants.POLICY_CATEGORY));
@@ -209,11 +206,11 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
                 annotation = Annotation.buildAnnotation(policyParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.EXECUTION_ID, executionId);
                 annotation.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, result.getDesc()); // this
-                                                                                          // is
-                                                                                          // the
-                                                                                          // reason
-                                                                                          // to
-                                                                                          // close
+                // is
+                // the
+                // reason
+                // to
+                // close
                 if (null != policyParam) {
                     annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY,
                             policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));

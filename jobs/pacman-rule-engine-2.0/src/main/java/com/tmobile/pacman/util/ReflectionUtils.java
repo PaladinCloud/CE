@@ -16,32 +16,34 @@
 
 package com.tmobile.pacman.util;
 
+import com.google.common.base.Strings;
+import com.tmobile.pacman.commons.autofix.PacmanFix;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.reactors.PacReactor;
+import com.tmobile.pacman.reactors.ReactorShell;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.reflections.Reflections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-import com.tmobile.pacman.commons.autofix.PacmanFix;
-import com.tmobile.pacman.commons.policy.PacmanPolicy;
-import com.tmobile.pacman.reactors.PacReactor;
-import com.tmobile.pacman.reactors.ReactorShell;
-
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class ReflectionUtils.
  */
 public class ReflectionUtils {
-    
-    
-    /** The Constant logger. */
+
+
+    /**
+     * The Constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(ReflectionUtils.class);
-    
+
 
     /**
      * Find associate class.
@@ -95,7 +97,7 @@ public class ReflectionUtils {
      * Find associate class.
      *
      * @param annotationClass the annotation class
-     * @param hintPackage the hint package
+     * @param hintPackage     the hint package
      * @return the class
      * @throws InstantiationException the instantiation exception
      * @throws IllegalAccessException the illegal access exception
@@ -110,7 +112,7 @@ public class ReflectionUtils {
             reflections = new Reflections();
         }
         Set<Class<?>> allClass = reflections.getTypesAnnotatedWith(annotationClass);
-        if(allClass.size()>1){
+        if (allClass.size() > 1) {
             logger.error("multiple classes found with @PacmanJob annotation, will pick first in the classpath");
         }
         for (Class<?> _class : allClass) {
@@ -124,7 +126,7 @@ public class ReflectionUtils {
     /**
      * Find associated method.
      *
-     * @param ruleClass the rule class
+     * @param ruleClass  the rule class
      * @param methodName the method name
      * @return the method
      * @throws NoSuchMethodException the no such method exception
@@ -137,13 +139,13 @@ public class ReflectionUtils {
             }
         }
         // if control is here that means no execute method found in the class
-        throw new NoSuchMethodException("unable to find  "+ methodName +" method");
+        throw new NoSuchMethodException("unable to find  " + methodName + " method");
     }
 
     /**
      * Find entry method.
      *
-     * @param ruleClass the rule class
+     * @param ruleClass       the rule class
      * @param entryAnnotation the entry annotation
      * @return the method
      * @throws NoSuchMethodException the no such method exception
@@ -169,14 +171,15 @@ public class ReflectionUtils {
         Object reactorObject;
         Method reactMethod = null;
         Method backupMethod = null;
-        Set<ReactorShell>  reactors = new HashSet();
+        Set<ReactorShell> reactors = new HashSet();
         for (Class<?> reactor : allReactors) {
             PacReactor pacReactor = reactor.getAnnotation(PacReactor.class);
             if (isAMatchingEvent(eventName, pacReactor.eventsofInterest())) {
                 try {
-                        reactorObject = reactor.newInstance();
+                    reactorObject = reactor.newInstance();
                 } catch (InstantiationException e) {
-                    logger.error("unable to create reactor" + e.getMessage());continue;
+                    logger.error("unable to create reactor" + e.getMessage());
+                    continue;
                 } catch (IllegalAccessException e) {
                     logger.error("unable to create reactor" + e.getMessage());
                     continue;
@@ -184,21 +187,20 @@ public class ReflectionUtils {
                 // executeMethod =
                 // ReflectionUtils.findEntryMethod(ruleObject,PacmanExecute.class);
                 try {
-                        reactMethod = findAssociatedMethod(reactorObject, "react");
-                        backupMethod = findAssociatedMethod(reactorObject, "backup");
-                        
+                    reactMethod = findAssociatedMethod(reactorObject, "react");
+                    backupMethod = findAssociatedMethod(reactorObject, "backup");
+
                 } catch (NoSuchMethodException e) {
                     logger.error("unable to find method in reactor" + reactor);
                     continue;
                 }
-                reactors.add(new ReactorShell(pacReactor,reactorObject, reactMethod, backupMethod));
+                reactors.add(new ReactorShell(pacReactor, reactorObject, reactMethod, backupMethod));
             }
         }
         return reactors;
     }
-    
+
     /**
-     * 
      * @param eventName
      * @param events
      * @return

@@ -16,12 +16,13 @@
 
 package com.tmobile.pacman.executor;
 
+import com.tmobile.pacman.commons.policy.PolicyResult;
+
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import com.tmobile.pacman.commons.policy.PolicyResult;
-
 // TODO: Auto-generated Javadoc
+
 /**
  * The Interface RuleHandler.
  *
@@ -33,7 +34,7 @@ public interface PolicyHandler extends Callable<PolicyResult> {
      * Handle policy.
      *
      * @param policyParams the policy params
-     * @param resource the resource
+     * @param resource     the resource
      * @return the policy result
      */
     public PolicyResult handlePolicy(Map<String, String> policyParams, Map<String, String> resource);

@@ -17,6 +17,7 @@
 package com.tmobile.pacman.common.exception;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class FailedExecutionException.
  *
@@ -38,10 +39,10 @@ public class FailedExecutionException extends PolicyEngineRunTimeException {
      * Instantiates a new failed execution exception.
      *
      * @param statusCode the status code
-     * @param msg the msg
+     * @param msg        the msg
      */
-     public FailedExecutionException(Integer statusCode,String msg) {
-         super(statusCode,msg);
-     }
+    public FailedExecutionException(Integer statusCode, String msg) {
+        super(statusCode, msg);
+    }
 
 }

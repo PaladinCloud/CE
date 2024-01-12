@@ -16,51 +16,26 @@
 
 package com.tmobile.pacman.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
+import com.amazonaws.util.StringUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.*;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
+import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.autofix.manager.AuthManager;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.config.ConfigManager;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.*;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
@@ -74,46 +49,48 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.util.StringUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.autofix.manager.AuthManager;
-import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.config.ConfigManager;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.*;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class CommonUtils.
  */
 public class CommonUtils {
 
     /**
+     * The Constant LOGGER.
+     */
+    static final Logger LOGGER = LoggerFactory.getLogger(CommonUtils.class);
+    /**
      * The Constant TLS.
      */
     private static final String TLS = "TLS";
-
     /**
      * The Constant BOOL.
      */
     private static final String BOOL = "bool";
-
     /**
      * The Constant SHOULD.
      */
     private static final String SHOULD = "should";
-
     /**
      *
      */
@@ -123,37 +100,43 @@ public class CommonUtils {
      */
 
     private static final String MUST_NOT = "must_not";
-
-    /** The Constant MUST. */
+    /**
+     * The Constant MUST.
+     */
     private static final String MUST = "must";
-
-    /** The Constant APPLICATION_JSON. */
+    /**
+     * The Constant APPLICATION_JSON.
+     */
     private static final String APPLICATION_JSON = "application/json";
-
-    /** The Constant CONTENT_TYPE. */
+    /**
+     * The Constant CONTENT_TYPE.
+     */
     private static final String CONTENT_TYPE = "Content-Type";
-
-    /** The Constant HTTPS. */
+    /**
+     * The Constant HTTPS.
+     */
     private static final String HTTPS = "https";
-
-    /** The Constant LOGGER. */
-    static final Logger LOGGER = LoggerFactory.getLogger(CommonUtils.class);
-
-    /** The prop. */
+    /**
+     * The prop.
+     */
     static Properties prop;
+    /**
+     * The random.
+     */
+    private static Random random = new Random((new Date()).getTime());
+
     static {
-    	prop = new Properties();
-    	Hashtable<String, Object> configMap = ConfigManager.getConfigurationsMap();
-    	if (configMap != null && !configMap.isEmpty()) {
+        prop = new Properties();
+        Hashtable<String, Object> configMap = ConfigManager.getConfigurationsMap();
+        if (configMap != null && !configMap.isEmpty()) {
             prop.putAll(configMap);
             prop.putAll(System.getProperties());
             System.setProperties(prop);
-        }else{
-    	          LOGGER.info("unable to load configuration, exiting now");
-    	          throw new RuntimeException("unable to load configuration");
-    	      }
-    	  }
-
+        } else {
+            LOGGER.info("unable to load configuration, exiting now");
+            throw new RuntimeException("unable to load configuration");
+        }
+    }
 
     /**
      * Checks if is env variable exists.
@@ -178,12 +161,12 @@ public class CommonUtils {
     /**
      * Do http post.
      *
-     * @param url the url
+     * @param url         the url
      * @param requestBody the request body
      * @return String
      * @throws Exception the exception
      */
-    public static String doHttpPost(final String url,  String requestBody) throws Exception {
+    public static String doHttpPost(final String url, String requestBody) throws Exception {
         CloseableHttpClient httpclient = null;
         try {
 
@@ -262,7 +245,7 @@ public class CommonUtils {
     /**
      * Do http put.
      *
-     * @param url the url
+     * @param url         the url
      * @param requestBody the request body
      * @return String
      * @throws Exception the exception
@@ -330,9 +313,9 @@ public class CommonUtils {
     /**
      * Builds the query.
      *
-     * @param mustFilter the must filter
+     * @param mustFilter    the must filter
      * @param mustNotFilter the must not filter
-     * @param shouldFilter the should filter
+     * @param shouldFilter  the should filter
      * @return elastic search query details
      */
     static Map<String, Object> buildQuery(final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
@@ -518,6 +501,12 @@ public class CommonUtils {
                 annotation.get(PacmanSdkConstants.POLICY_ID));
     }
 
+    // In order to avoid collision 100%, you need a prime number that
+    // is bigger than the wider difference between your characters. So for 7-bit
+    // ASCII,
+    // you need something higher than 128. So instead of 31, use 131 (the next
+    // prime number after 128).
+
     /**
      * Gets the unique annotation id.
      *
@@ -529,11 +518,6 @@ public class CommonUtils {
         return getUniqueIdForString(parentId + ruleId);
     }
 
-    // In order to avoid collision 100%, you need a prime number that
-    // is bigger than the wider difference between your characters. So for 7-bit
-    // ASCII,
-    // you need something higher than 128. So instead of 31, use 131 (the next
-    // prime number after 128).
     /**
      * This is inspired by java hash function.
      *
@@ -578,17 +562,15 @@ public class CommonUtils {
         return Long.toString(h);
     }
 
-    
     public static String buildPolicyUUIDFromJson(String json) {
- 		JsonElement jsonelement = new JsonParser().parse(json);
- 		JsonObject jobject = jsonelement.getAsJsonObject();
- 		if (!jobject.isJsonNull()) {
- 			return jobject.get("policyUUID").getAsString();
- 		}
- 		return null;
-     }
-     
- 
+        JsonElement jsonelement = new JsonParser().parse(json);
+        JsonObject jobject = jsonelement.getAsJsonObject();
+        if (!jobject.isJsonNull()) {
+            return jobject.get("policyUUID").getAsString();
+        }
+        return null;
+    }
+
     /**
      * Creates the param map.
      *
@@ -600,8 +582,8 @@ public class CommonUtils {
         if (ruleParams.contains("*")) // this is for backward compatibility
             return buildMapFromString(ruleParams, "*", "=");
         else {*/
-            return buildMapFromJson(ruleParams);
-       // }
+        return buildMapFromJson(ruleParams);
+        // }
     }
 
     /**
@@ -632,7 +614,6 @@ public class CommonUtils {
 
     }
 
-    
     /**
      * Creates the param map.z
      *
@@ -644,8 +625,8 @@ public class CommonUtils {
         if (ruleParams.contains("*")) // this is for backward compatibility
             return buildMapFromString(ruleParams, "*", "=");
         else {*/
-            return buildPolicyMapFromJson(ruleParams);
-       // }
+        return buildPolicyMapFromJson(ruleParams);
+        // }
     }
 
     /**
@@ -654,54 +635,53 @@ public class CommonUtils {
      * @param json the json
      * @return the map
      */
-	private static Map<String, String> buildPolicyMapFromJson(String json) {
-		JsonParser parser = new JsonParser();
-		String ruleUUID = "";
-		JsonElement element = parser.parse(json);
-		JsonObject dataObject = element.getAsJsonObject();
-		JsonObject obj = dataObject.getAsJsonObject("data");
-		Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
-		if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
-			ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
-		}
-		Map<String, String> toReturn = new HashMap<>();
-		for (Map.Entry<String, JsonElement> entry : entries) {
-			if (entry.getValue().isJsonArray()) {
-				toReturn.putAll(getMapFromArray(entry.getValue().getAsJsonArray(), ruleUUID));
-			} else if (!obj.get(entry.getKey()).isJsonNull()) {
-				toReturn.put(entry.getKey(), entry.getValue().getAsString());
-			}
-		}
-		toReturn.put("policyCategory", toReturn.get("category"));
-		toReturn.put("pac_ds", toReturn.get("assetGroup"));
-		if(toReturn.containsKey("autoFixEnabled")) {
-			toReturn.put("autofix", toReturn.get("autoFixEnabled"));
-		} else  {
-			toReturn.put("autofix", "false");
-		}
-		
-		if (!obj.get("policyParams").isJsonNull()) {
-			JsonObject policyParam = parser.parse(obj.get("policyParams").getAsString()).getAsJsonObject();
-			if (!policyParam.isJsonNull() && policyParam.has("params")) {
-				toReturn.putAll(getMapFromArray(policyParam.getAsJsonArray("params"), ruleUUID));
-			}
-		}
-		toReturn.remove("policyDesc");
-		toReturn.remove("resolution");
-		toReturn.remove("resolutionUrl");
-		toReturn.remove("policyParams");
-		toReturn.remove("policyArn");
-		toReturn.remove("policyExecutable");
-		toReturn.remove("createdDate");
-		toReturn.remove("policyFrequency");
-		toReturn.remove("modifiedDate");
-		toReturn.remove("policyParams");
-		toReturn.remove("alexaKeyword");
-		return toReturn;
+    private static Map<String, String> buildPolicyMapFromJson(String json) {
+        JsonParser parser = new JsonParser();
+        String ruleUUID = "";
+        JsonElement element = parser.parse(json);
+        JsonObject dataObject = element.getAsJsonObject();
+        JsonObject obj = dataObject.getAsJsonObject("data");
+        Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
+        if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
+            ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
+        }
+        Map<String, String> toReturn = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : entries) {
+            if (entry.getValue().isJsonArray()) {
+                toReturn.putAll(getMapFromArray(entry.getValue().getAsJsonArray(), ruleUUID));
+            } else if (!obj.get(entry.getKey()).isJsonNull()) {
+                toReturn.put(entry.getKey(), entry.getValue().getAsString());
+            }
+        }
+        toReturn.put("policyCategory", toReturn.get("category"));
+        toReturn.put("pac_ds", toReturn.get("assetGroup"));
+        if (toReturn.containsKey("autoFixEnabled")) {
+            toReturn.put("autofix", toReturn.get("autoFixEnabled"));
+        } else {
+            toReturn.put("autofix", "false");
+        }
 
-	}
- 
-  
+        if (!obj.get("policyParams").isJsonNull()) {
+            JsonObject policyParam = parser.parse(obj.get("policyParams").getAsString()).getAsJsonObject();
+            if (!policyParam.isJsonNull() && policyParam.has("params")) {
+                toReturn.putAll(getMapFromArray(policyParam.getAsJsonArray("params"), ruleUUID));
+            }
+        }
+        toReturn.remove("policyDesc");
+        toReturn.remove("resolution");
+        toReturn.remove("resolutionUrl");
+        toReturn.remove("policyParams");
+        toReturn.remove("policyArn");
+        toReturn.remove("policyExecutable");
+        toReturn.remove("createdDate");
+        toReturn.remove("policyFrequency");
+        toReturn.remove("modifiedDate");
+        toReturn.remove("policyParams");
+        toReturn.remove("alexaKeyword");
+        return toReturn;
+
+    }
+
     /**
      * Decrypt.
      *
@@ -717,7 +697,7 @@ public class CommonUtils {
      * Gets the map from array.
      *
      * @param jsonArray the json array
-     * @param ruleUUID the rule UUID
+     * @param ruleUUID  the rule UUID
      * @return the map from array
      */
     private static Map<String, String> getMapFromArray(JsonArray jsonArray, String ruleUUID) {
@@ -740,8 +720,8 @@ public class CommonUtils {
     /**
      * Builds the map from string.
      *
-     * @param input the input
-     * @param splitOn the split on
+     * @param input             the input
+     * @param splitOn           the split on
      * @param keyValueSeparator the key value separator
      * @return the map
      */
@@ -764,7 +744,7 @@ public class CommonUtils {
      * Gets the current date string with format.
      *
      * @param timeZone the time zone
-     * @param format the format
+     * @param format   the format
      * @return the current date string with format
      */
     public static String getCurrentDateStringWithFormat(String timeZone, String format) {
@@ -782,7 +762,7 @@ public class CommonUtils {
      * Gets the date from string.
      *
      * @param dateInString the date in string
-     * @param format the format
+     * @param format       the format
      * @return the date from string
      * @throws ParseException the parse exception
      */
@@ -800,8 +780,8 @@ public class CommonUtils {
      * Date format.
      *
      * @param dateInString the date in string
-     * @param formatFrom the format from
-     * @param formatTo the format to
+     * @param formatFrom   the format from
+     * @param formatTo     the format to
      * @return the date
      * @throws ParseException the parse exception
      */
@@ -823,7 +803,7 @@ public class CommonUtils {
      * Compare date.
      *
      * @param firstDate the first date
-     * @param lastDate the last date
+     * @param lastDate  the last date
      * @return the int
      */
     public static int compareDate(final Date firstDate, final Date lastDate) {
@@ -857,9 +837,9 @@ public class CommonUtils {
     /**
      * Do http post.
      *
-     * @param url the url
+     * @param url         the url
      * @param requestBody the request body
-     * @param headers the headers
+     * @param headers     the headers
      * @return the string
      */
     public static String doHttpPost(final String url, final String requestBody, final Map<String, String> headers) {
@@ -951,7 +931,7 @@ public class CommonUtils {
                     httpGet.setHeader(PacmanSdkConstants.AUTH_HEADER, "Bearer " + accessToken);
                 }
             }
-            
+
             httpGet.setHeader(CONTENT_TYPE, APPLICATION_JSON);
             CloseableHttpResponse response = httpclient.execute(httpGet);
             return EntityUtils.toString(response.getEntity());
@@ -998,9 +978,9 @@ public class CommonUtils {
                  * no implementation required
                  * **/
             }
-        } };
+        }};
         try {
-            if(null!=ssl_ctx){
+            if (null != ssl_ctx) {
                 ssl_ctx.init(null, trust_mgr, new SecureRandom());
             }
         } catch (KeyManagementException e) {
@@ -1022,9 +1002,6 @@ public class CommonUtils {
         }
         return null;
     }
-
-    /** The random. */
-    private static Random random = new Random((new Date()).getTime());
 
     /**
      * Encrypt B 64.
@@ -1059,7 +1036,7 @@ public class CommonUtils {
      * Encrypt.
      *
      * @param plainText the plain text
-     * @param key the key
+     * @param key       the key
      * @return the string
      * @throws Exception the exception
      */
@@ -1077,7 +1054,7 @@ public class CommonUtils {
      * Decrypt.
      *
      * @param encryptedText the encrypted text
-     * @param key the key
+     * @param key           the key
      * @return the string
      * @throws Exception the exception
      */
@@ -1169,21 +1146,21 @@ public class CommonUtils {
         Gson serializer = new GsonBuilder().create();
         return serializer.fromJson(jsonString, Object.class);
     }
-    
+
     /**
      * Does all have value.
      *
      * @param strings the strings
      * @return the boolean
      */
-    public static Boolean doesAllHaveValue(String...strings ){
-        if(null==strings || strings.length==0){
+    public static Boolean doesAllHaveValue(String... strings) {
+        if (null == strings || strings.length == 0) {
             return Boolean.FALSE;
         }
-        for(String str:strings){
-            if(Strings.isNullOrEmpty(str)){
+        for (String str : strings) {
+            if (Strings.isNullOrEmpty(str)) {
                 LOGGER.error("Blank value found for param" + str);
-                return Boolean.FALSE; 
+                return Boolean.FALSE;
             }
         }
         return Boolean.TRUE;

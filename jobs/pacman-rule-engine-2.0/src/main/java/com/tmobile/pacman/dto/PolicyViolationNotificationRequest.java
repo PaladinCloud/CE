@@ -15,7 +15,7 @@ public class PolicyViolationNotificationRequest {
     private String description;
     private String scanTime;
     private Constants.Actions action;
-    private Map<String,Object> additionalInfo=new HashMap<>();
+    private Map<String, Object> additionalInfo = new HashMap<>();
 
     public Map<String, Object> getAdditionalInfo() {
         return additionalInfo;
@@ -24,6 +24,7 @@ public class PolicyViolationNotificationRequest {
     public void setAdditionalInfo(Map<String, Object> additionalInfo) {
         this.additionalInfo = additionalInfo;
     }
+
     public String getScanTime() {
         return scanTime;
     }

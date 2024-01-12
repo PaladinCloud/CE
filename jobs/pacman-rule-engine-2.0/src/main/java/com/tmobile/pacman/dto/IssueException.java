@@ -19,6 +19,7 @@ package com.tmobile.pacman.dto;
 import java.util.Map;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class IssueException.
  *
@@ -26,32 +27,46 @@ import java.util.Map;
  */
 public class IssueException {
 
-    /** The id. */
+    /**
+     * The id.
+     */
     private String id;
 
-    /** The exception name. */
+    /**
+     * The exception name.
+     */
     private String exceptionName;
 
-    /** The asset group. */
+    /**
+     * The asset group.
+     */
     private String assetGroup;
 
-    /** The exception reason. */
+    /**
+     * The exception reason.
+     */
     private String exceptionReason;
 
-    /** The expiry date. */
+    /**
+     * The expiry date.
+     */
     private String expiryDate;
 
-    /** The exception type. */
+    /**
+     * The exception type.
+     */
     // sticky or individual
     private ExceptionType exceptionType;
 
-    /** The issue id. */
+    /**
+     * The issue id.
+     */
     private String issueId;
 
     /**
      * Instantiates a new issue exception.
      *
-     * @param exception the exception
+     * @param exception     the exception
      * @param exceptionType the exception type
      */
     public IssueException(Map<String, String> exception, ExceptionType exceptionType) {
@@ -60,30 +75,30 @@ public class IssueException {
         this.exceptionReason = exception.get("exceptionReason");
         this.exceptionType = exceptionType;
         switch (exceptionType) {
-        case STICKY: {
-            this.exceptionName = exception.get("exceptionName");
-            this.assetGroup = exception.get("assetGroup");
-            this.expiryDate = exception.get("expiryDate");
-            break;
-        }
-        case INDIVIDUAL: {
-            this.issueId = exception.get("issueId");
-            this.expiryDate = exception.get("exceptionEndDate");
-        }
+            case STICKY: {
+                this.exceptionName = exception.get("exceptionName");
+                this.assetGroup = exception.get("assetGroup");
+                this.expiryDate = exception.get("expiryDate");
+                break;
+            }
+            case INDIVIDUAL: {
+                this.issueId = exception.get("issueId");
+                this.expiryDate = exception.get("exceptionEndDate");
+            }
         }
     }
 
     /**
      * Instantiates a new issue exception.
      *
-     * @param exceptionName the exception name
-     * @param assetGroup the asset group
+     * @param exceptionName   the exception name
+     * @param assetGroup      the asset group
      * @param exceptionReason the exception reason
-     * @param expiryDate the expiry date
-     * @param exceptionType the exception type
+     * @param expiryDate      the expiry date
+     * @param exceptionType   the exception type
      */
     public IssueException(String exceptionName, String assetGroup, String exceptionReason, String expiryDate,
-            ExceptionType exceptionType) {
+                          ExceptionType exceptionType) {
         super();
         this.exceptionType = exceptionType;
         this.exceptionName = exceptionName;

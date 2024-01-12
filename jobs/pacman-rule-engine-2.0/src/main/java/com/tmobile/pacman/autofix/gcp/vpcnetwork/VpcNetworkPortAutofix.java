@@ -5,7 +5,6 @@ import com.google.cloud.compute.v1.FirewallsClient;
 import com.google.cloud.compute.v1.Operation;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.common.exception.AutoFixException;
 import com.tmobile.pacman.commons.autofix.BaseFix;
 import com.tmobile.pacman.commons.autofix.FixResult;
 import com.tmobile.pacman.commons.autofix.PacmanFix;
@@ -20,12 +19,12 @@ import java.util.concurrent.ExecutionException;
 @PacmanFix(key = "vpc-firewall-port-access-fix", desc = "VPC firewall rules providing public access on port will be removed")
 public class VpcNetworkPortAutofix extends BaseFix {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VpcNetworkPortAutofix.class);
     public static final String RESOURCEID = "_resourceid";
     public static final String ACCOUNTID = "accountid";
     public static final String REGION = "region";
     public static final String NAME = "name";
     public static final String NO_DATA = "No Data";
+    private static final Logger LOGGER = LoggerFactory.getLogger(VpcNetworkPortAutofix.class);
 
     @Override
     public FixResult executeFix(Map<String, String> issue, Map<String, Object> clientMap, Map<String, String> ruleParams) {
