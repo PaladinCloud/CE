@@ -47,7 +47,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnChanges, OnDes
   selectedAssetGroup: string;
   public apiData: any;
   public applicationValue: any;
-  public errorMessage: any;
+  public errorMessage: any = '';
   public dataComing = true;
   public showLoader = true;
   public tableHeaderData: any;
@@ -201,7 +201,8 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnChanges, OnDes
       this.currentBucket = [];
       // this.bucketNumber = 0;
       this.dataTableData = [];
-      this.tableDataLoaded = false;
+      this.policyTableDataLoaded = false;
+      this.associatedPolicies = [];
       this.firstPaginator = 1;
       // this.currentPointer = 0;
       this.showLoader = true;
