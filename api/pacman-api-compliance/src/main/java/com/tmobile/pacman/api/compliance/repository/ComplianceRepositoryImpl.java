@@ -2233,23 +2233,23 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return urlToQuery;
     }
 
-    private String createAuditTrail(String ds, String type, String status, String id, String createdBy, String _type, Map<String, Object> parentDetMap, String target, Map<String, String> optionalAuditFields) {
+    private String createAuditTrail(AuditTrailDTO auditTrailDTO) {
         String date = CommonUtils.getCurrentDateStringWithFormat("UTC","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Map<String, Object> auditTrail = new LinkedHashMap<>();
-        auditTrail.put("datasource", ds);
-        if(!StringUtils.isEmpty(_type))
-            auditTrail.put("docType", _type);
-        auditTrail.put("targetType", type);
-        auditTrail.put("annotationid", id);
-        auditTrail.put(Constants.DOCID, id);
-        auditTrail.put("status", status);
+        auditTrail.put("datasource", auditTrailDTO.getAssetGroup());
+        if (!StringUtils.isEmpty(auditTrailDTO.getDocType()))
+            auditTrail.put("docType", auditTrailDTO.getDocType());
+        auditTrail.put("targetType", auditTrailDTO.getTargetType());
+        auditTrail.put("annotationid", auditTrailDTO.getId());
+        auditTrail.put(Constants.DOCID, auditTrailDTO.getId());
+        auditTrail.put("status", auditTrailDTO.getStatus());
         auditTrail.put("auditdate", date);
-        auditTrail.put("createdBy",createdBy);
+        auditTrail.put("createdBy", auditTrailDTO.getCreatedBy());
         auditTrail.put("_auditdate", date.substring(0, date.indexOf('T')));
-        if(parentDetMap != null)
-            auditTrail.put(target+RELATIONS, parentDetMap);
-        if (optionalAuditFields != null && !optionalAuditFields.isEmpty()) {
-            optionalAuditFields.forEach(auditTrail::put);
+        if (auditTrailDTO.getParentDetailsMap() != null)
+            auditTrail.put(auditTrailDTO.getTarget() + RELATIONS, auditTrailDTO.getParentDetailsMap());
+        if (auditTrailDTO.getOptionalAuditFields() != null && !auditTrailDTO.getOptionalAuditFields().isEmpty()) {
+            auditTrailDTO.getOptionalAuditFields().forEach(auditTrail::put);
         }
         String _auditTrail = null;
         try {
@@ -2345,7 +2345,19 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                             Map<String, String> optionalAuditFields = new HashMap<>(2);
                             optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(issuesException.getExceptionEndDate()));
                             optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, issuesException.getExceptionReason());
-                            builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id, issuesException.getCreatedBy(), _type, parentDetMap, target, optionalAuditFields) + "\n");
+                            AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
+                                    .withId(id)
+                                    .withAssetGroup(assetGroup)
+                                    .withTargetType(targetType)
+                                    .withStatus("exempt")
+                                    .withCreatedBy(issuesException.getCreatedBy())
+                                    .withDocType(_type)
+                                    .withTarget(target)
+                                    .withParentDetailsMap(parentDetMap)
+                                    .withOptionalAuditFields(optionalAuditFields)
+                                    .build();
+
+                            builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(auditTrailDTO) + "\n");
                         } else {
                             builderRequestAudit.append(String.format(actionTemplateAudit, _index, id));
                         }
@@ -2496,7 +2508,19 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String _index = dataSource;
                         String _type = targetType + "_audit";
 
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(assetGroup, targetType, "revoked", id,revokedBy, _type, parentDetMap, target, null)+"\n");
+                        AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
+                                .withId(id)
+                                .withAssetGroup(assetGroup)
+                                .withTargetType(targetType)
+                                .withStatus("revoked")
+                                .withCreatedBy(revokedBy)
+                                .withDocType(_type)
+                                .withTarget(target)
+                                .withParentDetailsMap(parentDetMap)
+                                .withOptionalAuditFields(null)
+                                .build();
+
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(auditTrailDTO) + "\n");
 
                     }
                     i++;
@@ -3025,14 +3049,26 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     bulkRequest.append(String.format(ACTION_TEMPLATE_ISSUE, id, dataSource, routing));
                     bulkRequest.append(doc).append(NEW_LINE);
 
+                    String status = exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST) ? REQUEST_EXEMPT : exemptionRequest.getAction().equals(ExemptionActions.REVOKE_EXEMPTION_REQUEST) ? REVOKE_EXEMPT : exemptionRequest.getAction().equals(ExemptionActions.CANCEL_EXEMPTION_REQUEST) ? DENY_EXEMPT : GRANT_EXEMPT;
+                    String createdBy = exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST) ? exemptionRequest.getApprovedBy() : exemptionRequest.getCreatedBy();
                     String _type = targetType + AUDIT;
                     Map<String, String> optionalAuditFields = new HashMap<>(2);
                     optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(exemptionRequest.getExceptionEndDate()));
                     optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, exemptionRequest.getExceptionReason());
 
-                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id))
-                            .append(createAuditTrail(exemptionRequest.getAssetGroup(), targetType,exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST)?REQUEST_EXEMPT:exemptionRequest.getAction().equals(ExemptionActions.REVOKE_EXEMPTION_REQUEST)?REVOKE_EXEMPT:exemptionRequest.getAction().equals(ExemptionActions.CANCEL_EXEMPTION_REQUEST)?DENY_EXEMPT:GRANT_EXEMPT, id,
-                                    exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST)?exemptionRequest.getApprovedBy():exemptionRequest.getCreatedBy(), _type, parentDetMap, target, optionalAuditFields)+"\n");
+                    AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
+                            .withId(id)
+                            .withAssetGroup(exemptionRequest.getAssetGroup())
+                            .withTargetType(targetType)
+                            .withStatus(status)
+                            .withCreatedBy(createdBy)
+                            .withDocType(_type)
+                            .withTarget(target)
+                            .withParentDetailsMap(parentDetMap)
+                            .withOptionalAuditFields(optionalAuditFields)
+                            .build();
+
+                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id)).append(createAuditTrail(auditTrailDTO) + "\n");
 
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
