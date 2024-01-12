@@ -56,6 +56,10 @@ mat-card-header {
   color: var(--text-high-emphasis);
 }
 
+.mat-card-header .title {
+  margin-right: 8px;
+}
+
 mat-card-content {
   display: flex;
   flex-direction: column;

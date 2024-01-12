@@ -48,23 +48,19 @@ export class MultilineChartService {
             this.handleError(error);
         }    }
 
-    getAssetTrendData(queryParameters): Observable<any> {
+    getAssetTrendData(payload): Observable<any> {
         const assetTrendUrl = environment.assetTrend.url;
         const method = environment.assetTrend.method;
-        const payload = {};
         try {
             const allObservables: Observable<any>[] = [];
-                const queryParams = {};
                 allObservables.push(
-                    this.httpService.getHttpResponse(assetTrendUrl, method, payload, queryParameters)
-                        // .pipe(map(response => this.massageResponseNew(response))
-                        // .catch(error => this.handleCombiningError(error))
-                // )
+                    this.httpService.getHttpResponse(assetTrendUrl, method, payload, {})
                 );
             return allObservables.length > 0 ? combineLatest(allObservables) : of([]);
         } catch (error) {
             this.handleError(error);
-        }    }
+        }    
+    }
 
     massageResponse(data) {
         const apiResponse = data;

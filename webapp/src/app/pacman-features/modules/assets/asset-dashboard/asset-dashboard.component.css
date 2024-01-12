@@ -19,3 +19,7 @@
 .asset-summary-card {
     flex: 1;
 }
+
+.asset-trend-graph {
+    height: 520px;
+}

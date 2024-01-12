@@ -1,6 +1,20 @@
 <mat-card class="panel">
     <mat-card-header>
-        {{ card.header }}
+        <span class="title">{{ card.header }}</span>
+        <div *ngIf="tabs">
+            <app-multi-tab-switcher [tabs]="tabs" [tabSelected]="tabSelected" (switchView)="switchTabView($event)"></app-multi-tab-switcher>
+        </div>
+        <app-table-filter-chip
+            *ngIf="filters?.list?.length !== 0 && appliedFiltersDict"
+            [category]="filters.category"
+            [options]="filters.list"
+            [shortFilters]="filters.shortFilters"
+            [numberOfAllowedFilters]="filters.numberOfAllowedFilters"
+            enableMultiValuedFilter="true"
+            [appliedFiltersDict]="appliedFiltersDict"
+            disableRemoveChip="true"
+            (update)="filtersUpdate($event)"
+        ></app-table-filter-chip>
         <div *ngIf="showDateDropdown" class="date-dropdown-container">
             <div
                 class="date-selection-trigger"

@@ -1,7 +1,7 @@
 <div [class.loader]="graphLinesData.length==0 && errorMessage==''"></div>
 <app-error-message *ngIf="errorMessage"
     [selectedValue]="errorMessage"></app-error-message>
- <div *ngIf="graphLinesData" #graphContainer class="multiline-graph-container" id="{{id}}">
+ <div *ngIf="graphLinesData.length > 0" #graphContainer class="multiline-graph-container" id="{{id}}">
      <div class="flex nowrap-ellipsis gap-16" style="padding: 0px 20px;">
          <ul *ngIf="showLegend" style="flex-grow: 1;" class="flex flex-row nowrap-ellipsis flex-wrap" [class.flex-center]="multiSelectForm.value.length<6">
             <li [title]="line.split('-')[0]" (click)="handleLegendClick(line.split('-')[0])" *ngFor="let line of multiSelectForm.value; let i = index;" class="flex flex-align-center pointer nowrap-ellipsis">

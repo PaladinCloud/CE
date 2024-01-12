@@ -526,4 +526,15 @@ export class UtilsService {
       const diffDays = Math.round(Math.abs((date1.getTime() - date2.getTime()) / oneDay));      
       return diffDays;
     }
+
+    mapToObject(map: Map<string, string> | undefined): { [key: string]: string } | undefined {
+      return map
+        ? Object.fromEntries(map)
+        : undefined;
+    }
+
+    mapValuesToArray(map):string[] {
+      if(map) return Array.from(map.values());
+      else return undefined;
+    }
 }

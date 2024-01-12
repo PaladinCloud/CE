@@ -1,0 +1,23 @@
+
+<app-custom-card
+    [card]="card"
+    [fromDate]="fromDate"
+    [minDate]="minDate"
+    [selectedItem]="graphInterval"
+    (graphIntervalSelected)="getAssetsCountData($event)"
+    [showDateDropdown]="true"
+    [filters]="assetTypeFilters"
+    (filterChange)="onFilterChange($event)"
+>   
+    <div [class.loader]="assetsTrendData.length==0 && assetsTrendError==''"></div>
+    <app-multiline-zoom-graph
+        *ngIf="assetsTrendData.length != 0 && assetsTrendError === ''"
+        [id]="'AssetsSummaryTrend'"
+        [showLegend]="true"
+        [yAxisLabel]="'Count'"
+        [graphHeight]="graphHeight"
+        [graphLinesData]="assetsTrendData"
+        [errorMessage]="assetsTrendError"
+    >
+    </app-multiline-zoom-graph>
+</app-custom-card>

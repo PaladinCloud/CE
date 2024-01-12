@@ -128,6 +128,7 @@ import { WidgetSectionStarterComponent } from './widget-section-starter/widget-s
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import { IssueFilterService } from '../pacman-features/services/issue-filter.service';
 import { DateRangeFormatterPipe } from './table-filters/pipes/date-range-formatter.pipe';
+import { AssetTrendGraphComponent } from '../pacman-features/secondary-components/asset-trend-graph/asset-trend-graph.component';
 
 @NgModule({
     imports: [
@@ -235,7 +236,8 @@ import { DateRangeFormatterPipe } from './table-filters/pipes/date-range-formatt
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
         CellDataCasePipe,
-        DateRangeFormatterPipe
+        DateRangeFormatterPipe,
+        AssetTrendGraphComponent
     ],
     exports: [
         CellDataCasePipe,
@@ -317,6 +319,7 @@ import { DateRangeFormatterPipe } from './table-filters/pipes/date-range-formatt
         TitleBurgerHeadComponent,
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
+        AssetTrendGraphComponent
     ],
     providers: [
         IssueFilterService,

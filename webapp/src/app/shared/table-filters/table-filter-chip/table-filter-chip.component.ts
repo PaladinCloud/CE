@@ -14,10 +14,13 @@ export interface FilterChipUpdateEvent {
 })
 export class TableFilterChipComponent implements OnInit, OnChanges {
     @Input() isDisabled = false;
+    @Input() disableRemoveChip = false;
     @Input() filtersToExcludeFromCasing = [];
     @Input() category: string;
     @Input() options: string[] = [];
     @Input() dateCategoryList: string[] = [];
+    @Input() shortFilters: string[] = [];
+    @Input() numberOfAllowedFilters:number;
     isDateFilter: boolean = false;
     calendarMinDate: Date;
     calendarMaxDate: Date;
@@ -49,6 +52,7 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
 
     optionFilterQuery = '';
     filteredOptions = [];
+    isDisableFilters = false;
 
     private _appliedFilters: { name: string; value: boolean }[] = [];
     private _appliedFiltersDict: { [key: string]: boolean } = {};
@@ -67,6 +71,9 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
                 this.calendarMaxDate = new Date(this.options[1]);
             }
             this.filterOptionsByQuery();
+        }
+        if(changes.appliedFiltersDict){
+            this.isMaxfiltersSelected();
         }
     }
 
@@ -97,9 +104,15 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     }
 
     sortCheckedOptionsFirst(){
-        const checkedOptions = Object.keys(this.appliedFiltersDict || {}).filter(key => this.appliedFiltersDict[key]);
-        const uncheckedOptions = this.options?.filter((f) => !checkedOptions.includes(f)) || [];
-        this.options = [...checkedOptions, ...uncheckedOptions];
+        let checkedOptions = Object.keys(this.appliedFiltersDict || {}).filter(key => this.appliedFiltersDict[key]);
+        let uncheckedOptions = this.options?.filter((f) => !checkedOptions.includes(f)) || [];
+        if(this.shortFilters?.length === 0){
+            this.options = [...checkedOptions, ...uncheckedOptions];
+        }else{
+            checkedOptions = checkedOptions.filter(item => !this.shortFilters.includes(item));
+            uncheckedOptions = uncheckedOptions.filter(item => !this.shortFilters.includes(item));
+            this.options = [...this.shortFilters, ...checkedOptions, ...uncheckedOptions];
+        }
     }
 
     dateIntervalSelected(from?, to?){
@@ -137,6 +150,14 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
             }catch(e){
                 this.logger.log('jsError', e);
             }
+        }
+    }
+
+    isMaxfiltersSelected(){
+        if(this.numberOfAllowedFilters && Object.values(this.appliedFiltersDict).filter(value => value).length >=this.numberOfAllowedFilters){
+            this.isDisableFilters = true;
+        }else{
+            this.isDisableFilters = false;
         }
     }
 }

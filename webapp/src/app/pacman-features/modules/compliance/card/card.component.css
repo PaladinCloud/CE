@@ -40,6 +40,10 @@ mat-card-header {
     color: var(--text-high-emphasis);
 }
 
+mat-card-content.asset-graph{
+    padding:0;
+}
+
 mat-card-content {
     display: flex;
     flex-direction: column;
@@ -78,6 +82,10 @@ mat-card-actions button {
     display: flex;
     letter-spacing: -0.005em;
     color: var(--primary-500);
+}
+
+.asset-graph .chart {
+    overflow-y: unset;
 }
 
 .chart {
