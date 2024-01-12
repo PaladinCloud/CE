@@ -19,9 +19,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import find from 'lodash/find';
 import map from 'lodash/map';
 import { Subscription } from 'rxjs';
-import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
-import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
@@ -92,8 +90,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   tableDataLoaded = false;
   showSearchBar = false;
   showAddRemoveCol = false;
-  private trendDataSubscription: Subscription;
-  private assetGroupSubscription: Subscription;
   private onFilterChange: Subscription;
   private routeSubscription: Subscription;
   private complianceTableSubscription: Subscription;
@@ -130,8 +126,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   direction;
   complianceData = [];
   complianceDataError = '';
-  assetsCountData = [];
-  assetsCountDataError = '';
   breadcrumbArray = [];
   breadcrumbLinks = [];
   breadcrumbPresent = 'Dashboard';
@@ -245,16 +239,9 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   state: any = {};
   whiteListColumns;
   displayedColumns;
-
-  totalAssetsCountData = [];
-  totalAssetsCountDataError = '';
   isStatePreserved = false;
   showDownloadBtn = true;
   tableScrollTop = 0;
-  graphFromDate: Date = new Date(2022, 0, 1);
-  graphToDate: Date = new Date();
-  minDate: Date;
-  graphInterval: string = "All time";
 
   dashboardContainers: DashboardArrangementItems;
   dashcobardCollapsedContainers: DasbhoardCollapsedDict;
@@ -340,37 +327,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.breakpoint4 = window.innerWidth <= 400 ? 1 : 1;
     this.dashboardContainers = this.dashboardArrangementService.getArrangement();
     this.dashcobardCollapsedContainers = this.dashboardArrangementService.getCollapsed();
-  }
-
-  massageAssetTrendGraphData(graphData) {
-    const data = [];
-    data.push({ key: 'Total Assets', values: [], info: {} });
-
-    for (let i = 0; i < data.length; i++) {
-      graphData.trend.forEach((e) => {
-        data[i].values.push({
-          date: new Date(e.date),
-          value: e.totalassets,
-          'zero-value': e.totalassets == 0,
-        });
-      });
-    }
-    data[0].values.sort(function (a, b) {
-      return new Date(a.date) > new Date(b.date) ? 1 : -1;
-    });
-
-    if (!this.minDate) {
-      this.minDate = data[0].values[0].date;
-    }
-
-    data[0].info = {
-      id: 'TotalAssetsCountTrend',
-      showLegend: true,
-      yAxisLabel: 'Count',
-      height: 320,
-    };
-
-    return data;
   }
 
   openOverAllComplianceTrendModal = () => {
@@ -929,18 +885,12 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
     this.ruleCatFilter = undefined;
     this.noMinHeight = false;
-    // this.bucketNumber = 0;
-    // this.currentPointer = 0;
-
-    this.assetsCountData = [];
-    this.assetsCountDataError = '';
     this.complianceData = [];
     this.complianceDataError = '';
     this.policyDataError = '';
     if (this.isStatePreserved) {
       this.tableDataLoaded = true;
       this.getFilters();
-      // this.clearState();
     } else {
       this.tableScrollTop = 0;
       this.searchTxt = "";
@@ -955,96 +905,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
     this.getDistributionBySeverity();
     this.getPacmanIssues();
-    this.getAssetsCountData({});
     this.getComplianceData();
-  }
-
-  // changeFilterTags(value) {
-  //   try {
-  //     if (this.currentFilterType) {
-  //       const filterTag = _.find(this.filterTagOptions, { name: value.value });
-  //       this.utils.addOrReplaceElement(
-  //         this.filters,
-  //         {
-  //           typeName: this.currentFilterType.optionName,
-  //           typeValue: this.currentFilterType.optionValue,
-  //           tagName: filterTag.name,
-  //           tagValue: filterTag["id"],
-  //           key: this.currentFilterType.optionName,
-  //           value: filterTag.name,
-  //         },
-  //         (el) => {
-  //           return el.key === this.currentFilterType.optionName;
-  //         }
-  //       );
-  //       this.updateComponent();
-  //     }
-  //     this.utils.clickClearDropdown();
-  //   } catch (error) {
-  //     this.errorMessage = this.errorHandling.handleJavascriptError(error);
-  //     this.logger.log("error", error);
-  //   }
-  // }
-
-  getFormattedDate(date: Date) {
-    const offset = date.getTimezoneOffset();
-    const formattedDate = new Date(date.getTime() - offset * 60 * 1000)
-      .toISOString()
-      .split('T')[0];
-    return formattedDate;
-  }
-
-  getAssetsCountData(dateIntervalObj) {
-    if(!this.selectedAssetGroup){
-      return;
-    }
-    if(this.trendDataSubscription){
-      this.trendDataSubscription.unsubscribe();
-    }
-
-    if(dateIntervalObj.from){
-      this.graphFromDate = dateIntervalObj.from;
-    }else{
-      this.graphFromDate = new Date(2022, 1, 1);
-    }
-
-    if(dateIntervalObj.to){
-      this.graphToDate = dateIntervalObj.to;
-    }else{
-      this.graphToDate = new Date();
-    }
-
-    if(dateIntervalObj.graphInterval){
-      this.graphInterval = dateIntervalObj.graphInterval;
-    }else{
-      this.graphInterval = "All time";
-    }  
-
-    const queryParams = {
-      ag: this.selectedAssetGroup,
-      domain: this.selectedDomain,
-      from: this.getFormattedDate(this.graphFromDate),
-      to: this.getFormattedDate(this.graphToDate)
-    };
-    this.totalAssetsCountDataError = '';
-    this.totalAssetsCountData = [];
-    try {
-        this.trendDataSubscription = this.multilineChartService.getAssetTrendData(queryParams).subscribe(response => {
-          this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
-          this.getMinDateForDateSelector(this.totalAssetsCountData[0].values);
-          if (this.utils.getDifferenceBetweenDateByDays(this.minDate, new Date())<2 && this.totalAssetsCountData[0].values.length < 2) {
-              this.totalAssetsCountDataError = 'waitForData';
-          } else if(this.totalAssetsCountData[0].values.length==0){
-              this.totalAssetsCountDataError = 'noDataAvailable';
-          }
-        }, (error) => {
-          this.logger.log("error", error);
-          this.totalAssetsCountDataError = "apiResponseError";
-        });
-    } catch (error) {
-        this.totalAssetsCountDataError = "apiResponseError";
-        this.logger.log("error", error);
-    }
   }
 
   processData(data) {
@@ -1099,16 +960,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log('error', error);
-    }
-  }
-
-  getMinDateForDateSelector(dataList){
-    if(this.graphInterval == "All time"){
-      if(dataList.length>0){
-          this.minDate = new Date(dataList[0].date);
-      }else{
-          this.minDate = new Date();
-      }
     }
   }
 
@@ -1427,9 +1278,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       }
       if (this.activatedRouteSubscription) {
         this.activatedRouteSubscription.unsubscribe();
-      }
-      if (this.trendDataSubscription) {
-        this.trendDataSubscription.unsubscribe();
       }
     } catch (error) {
       this.logger.log('error', error);

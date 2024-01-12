@@ -1,22 +1,27 @@
+// Import necessary Angular modules and services
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DataCacheService } from '../../../../core/services/data-cache.service';
-import { LoggerService } from '../../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import { WorkflowService } from '../../../../core/services/workflow.service';
-import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
-import { CONFIGURATIONS } from './../../../../../config/configurations';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+// Import necessary custom services and components
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { MultilineChartService } from 'src/app/pacman-features/services/multilinechart.service';
 import { environment } from 'src/environments/environment';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
-import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
 import { FetchResourcesService } from 'src/app/pacman-features/services/fetch-resources.service';
 import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { Subscription } from 'rxjs';
 import { OverviewTile } from 'src/app/shared/components/molecules/overview-tile/overview-tile.component';
 import { TourService } from 'src/app/core/services/tour.service';
-import { UtilsService } from 'src/app/shared/services/utils.service';
+
+// Constants for error handling
+import { API_RESPONSE_ERROR, JS_ERROR } from 'src/app/shared/constants/global';
+import { ASSET_TYPE, EXEMPT_ASSETS, EXEMPT_ASSET_TYPES, TAGGED_ASSETS, TOTAL_ASSETS, UNTAGGED_ASSETS } from 'src/app/shared/constants/asset-trend-graph';
 
 @Component({
     selector: 'app-asset-dashboard',
@@ -26,77 +31,52 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 })
 export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
+    private destroy$: Subject<void> = new Subject<void>();
 
-    pageTitle = 'Asset Summary';
-    showNotif = false;
-    beepCount = 0;
-    errorMessage: string;
-    urlToRedirect = '';
-    pageLevel = 0;
-    backButtonRequired;
-    config;
-    oss;
-    assetGroupName;
-    domainName;
-    totalAssetsCountData = [];
-    totalAssetsCountDataError = '';
-    dataSubscription: Subscription;
-    trendDataSubscription: Subscription;
-    taggedTileDataSubscription: Subscription;
-    unTaggedTileDataSubscription: Subscription;
-    exemptTileDataSubscription: Subscription;
-    assetGroupSubscription: Subscription;
-    domainSubscription: Subscription;
+    // Properties for page title, URL redirection, page level, and back button requirement
+    public pageTitle = 'Asset Summary';
+    public urlToRedirect = '';
+    public pageLevel = 0;
+    public backButtonRequired;
 
-    graphHeight: number;
-
-    card = {
-        id: 3,
-        header: 'Asset Trend',
-    };
-
-    tiles: OverviewTile[] = [
+    // Properties for asset group name, domain name, and overview tiles
+    public assetGroupName;
+    public domainName;
+    public tiles: OverviewTile[] = [
         {
             mainContent: {
-                title: 'Total Assets',
+                title: TOTAL_ASSETS,
                 count: 0,
                 image: 'total-assets-icon',
             },
             subContent: [{
-                title: 'Asset Types',
+                title: ASSET_TYPE,
                 count: 0,
             }],
         },
         {
             mainContent: {
-                title: 'Exempt Assets',
+                title: EXEMPT_ASSETS,
                 count: 0,
                 image: 'exempted-assets-icon',
             },
             subContent: [{
-                title: 'Exempt Asset Types',
+                title: EXEMPT_ASSET_TYPES,
                 count: 0,
             }],
         },
         {
             mainContent: {
-                title: 'UnTagged Assets',
+                title: UNTAGGED_ASSETS,
                 count: 0,
                 image: 'category-tagging',
             },
             subContent: [{
-                title: 'Tagged Assets',
+                title: TAGGED_ASSETS,
                 count: 0,
             }],
         },
     ];
-
-    graphInterval = 'All time';
-    isCustomSelected = false;
-    fromDate: Date = new Date(2022, 0, 1);
-    toDate: Date = new Date();
-    dataSubscriber: Subscription;
-    minDate: Date;
 
     constructor(
         private dataStore: DataCacheService,
@@ -104,31 +84,21 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         private logger: LoggerService,
         private workflowService: WorkflowService,
         private assetGroupObservableService: AssetGroupObservableService,
-        private multilineChartService: MultilineChartService,
         private commonResponseService: CommonResponseService,
-        private utils: UtilsService,
         private fetchResourcesService: FetchResourcesService,
         private tourService: TourService,
         private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
-    ) {
-        this.config = CONFIGURATIONS;
+    ) {}
 
-        this.oss =
-            this.config &&
-            this.config.optional &&
-            this.config.optional.general &&
-            this.config.optional.general.OSS;
-
-        this.getAssetGroup();
-    }
     ngAfterViewInit(): void {
         this.tourService.setComponentReady();
     }
 
     ngOnInit() {
-        this.graphHeight = 320;
+        this.getAssetGroup();
     }
 
+    // Method to format date
     getFormattedDate(date: Date) {
         const offset = date.getTimezoneOffset();
         const formattedDate = new Date(date.getTime() - offset * 60 * 1000)
@@ -137,55 +107,29 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         return formattedDate;
     }
 
+    // Method to fetch data for untagged assets
     getAssetsTileData() {
-        const queryParams = {
-            'ag': this.assetGroupName
-    }
-
-    const taggingSummaryUrl = environment.taggingSummary.url;
-    const taggingSummaryMethod = environment.taggingSummary.method;
-
+        const queryParams = {'ag': this.assetGroupName}
+        const {url, method} = environment.taggingSummary;
         try {
-            this.dataSubscriber = this.commonResponseService.getData( taggingSummaryUrl, taggingSummaryMethod, {}, queryParams).subscribe(
-            response => {
-                try {
-                    this.tiles[2].mainContent.count = response.output.untagged;
-                    this.tiles[2].subContent[0].count = response.output.tagged;                    
-                }catch (e) {
-                  this.logger.log('jserror', e);
-              }
-              }, error => {
-                this.logger.log("apiError", error);
-            });
+            this.commonResponseService.getData(url, method, {}, queryParams)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(
+                    response => {
+                        try {
+                            this.tiles[2].mainContent.count = response.output.untagged;
+                            this.tiles[2].subContent[0].count = response.output.tagged;
+                        } catch (e) {
+                            this.logger.log(JS_ERROR, e);
+                        }
+                    },
+                    error => this.logger.log(API_RESPONSE_ERROR, error));
         } catch (error) {
-          this.logger.log('jsError', error);
-        } 
+            this.logger.log(JS_ERROR, error);
+        }
     }
 
-    massageAssetTrendGraphData(graphData) {
-        const data = [];
-        data.push({ key: 'Total Assets', values: [], info: {} });
-        graphData.trend.forEach((e) => {
-            data[0].values.push({
-                date: new Date(e.date),
-                value: e.totalassets,
-                'zero-value': e.totalassets == 0,
-            });
-        });
-        data[0].values.sort(function(a,b){
-            return new Date(a.date) > new Date(b.date);
-        });
-
-        data[0].info = {
-            id: 'AssetsCountTrend',
-            showLegend: true,
-            yAxisLabel: 'Total Assets',
-            height: 320,
-        };
-
-        return data;
-    }
-
+    // Method to redirect to specific pages based on user selection
     redirectTo(data: any) {
         this.workflowService.addRouterSnapshotToLevel(
             this.router.routerState.snapshot.root,
@@ -225,88 +169,14 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         }
     }
 
-    getAssetsCountData(dateIntervalObj) {
-        if (!this.assetGroupName) {
-            return;
-        }
-
-        if (this.trendDataSubscription) {
-            this.trendDataSubscription.unsubscribe();
-        }
-
-        if(dateIntervalObj.from){
-            this.fromDate = dateIntervalObj.from;
-          }else{
-            this.fromDate = new Date(2022, 1, 1);
-          }
-      
-          if(dateIntervalObj.to){
-            this.toDate = dateIntervalObj.to;
-          }else{
-            this.toDate = new Date();
-          }
-          
-          if(dateIntervalObj.graphInterval){
-            this.graphInterval = dateIntervalObj.graphInterval;
-          }else{
-            this.graphInterval = "All time";
-          }  
-
-        const queryParams = {
-            ag: this.assetGroupName,
-            domain: this.domainName,
-            from: this.getFormattedDate(this.fromDate),
-            to: this.getFormattedDate(this.toDate),
-        };
-
-        this.totalAssetsCountDataError = '';
-        this.totalAssetsCountData = [];
-
-        try {
-            this.trendDataSubscription = this.multilineChartService
-                .getAssetTrendData(queryParams)
-                .subscribe(
-                    (response) => {
-                        this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
-                        this.getMinDateForDateSelector(this.totalAssetsCountData[0].values);
-                        if (this.utils.getDifferenceBetweenDateByDays(this.minDate, new Date())<2 && this.totalAssetsCountData[0].values.length < 2) {
-                            this.totalAssetsCountDataError = 'waitForData';
-                        } else if(response[0].trend.length==0){
-                            this.totalAssetsCountDataError = 'noDataAvailable';
-                        }
-                    },
-                    (error) => {
-                        this.logger.log('error', error);
-                        this.totalAssetsCountDataError = 'apiResponseError';
-                    },
-                );
-        } catch (error) {
-            this.totalAssetsCountDataError = 'apiResponseError';
-            this.logger.log('error', error);
-        }
-    }
-
-    getMinDateForDateSelector(dataList){
-        if(this.graphInterval == "All time"){
-            if(dataList.length>0){
-                this.minDate = new Date(dataList[0].date);
-            }else{
-                this.minDate = new Date();
-            }
-        }
-    }
-
+    // Method to fetch the count of exempted assets
     getExemtedAssetsCount() {
-        const exemptedAssetCountUrl = environment.exemptedAssetCount.url;
-        const exemptedAssetCountMethod = environment.exemptedAssetCount.method;
-
-        const queryParams = {
-            ag: this.assetGroupName,
-        };
+        const { url, method} = environment.exemptedAssetCount;
+        const queryParams = { ag: this.assetGroupName};
 
         try {
-            this.exemptTileDataSubscription = this.commonResponseService
-                .getData(exemptedAssetCountUrl, exemptedAssetCountMethod, {}, queryParams)
+            this.commonResponseService.getData(url, method, {}, queryParams)
+                .pipe(takeUntil(this.destroy$))
                 .subscribe((response) => {
                     this.tiles[1].mainContent.count = response.totalassets || 0;
                     this.tiles[1].subContent[0].count = response.assettype;
@@ -314,11 +184,9 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         } catch (e) {}
     }
 
+    // Method to fetch resource type, count, and recommendations
     getResourceTypeAndCountAndRecommendation() {
         try {
-            if (this.dataSubscription) {
-                this.dataSubscription.unsubscribe();
-            }
             const queryParams = {
                 ag: this.assetGroupName,
                 domain: this.domainName,
@@ -327,43 +195,37 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             this.fetchResourcesService.getResourceTypesAndCount(queryParams);
 
             this.awsResourceTypeSelectionService.getAssetTypeCount().subscribe((asset) => {
-                this.tiles[0].mainContent.count = asset['totalassets'];
-                this.tiles[0].subContent[0].count = asset['assettype'];
+                this.tiles[0].mainContent.count = asset[TOTAL_ASSETS.toLowerCase().replace(/\s/g, '')];
+                this.tiles[0].subContent[0].count = asset[ASSET_TYPE.toLowerCase().replace(/\s/g, '')];
             });
-        } catch (e) {
-            this.logger.log(e, 'error');
+        } catch (error) {
+            this.logger.log(JS_ERROR, error);
         }
     }
 
+    // Method to get the selected asset group
     getAssetGroup() {
-        this.assetGroupSubscription = this.assetGroupObservableService.getAssetGroup().subscribe((assetGroupName) => {
-            this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
-                this.pageLevel,
-            );
-            this.assetGroupName = assetGroupName;
-            this.updateComponent();
-        });
+        this.assetGroupObservableService.getAssetGroup()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((assetGroupName) => {
+                this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
+                    this.pageLevel,
+                );
+                this.assetGroupName = assetGroupName;
+                this.updateComponent();
+            });
     }
 
-    updateComponent(){
-        this.getAssetsCountData({});
+    // Method to update the component with relevant data
+    updateComponent() {
         this.getAssetsTileData();
         this.getExemtedAssetsCount();
         this.getResourceTypeAndCountAndRecommendation();
     }
 
     ngOnDestroy() {
-        try {
-            if (this.trendDataSubscription) {
-                this.trendDataSubscription.unsubscribe();
-            }
-            if(this.taggedTileDataSubscription) this.taggedTileDataSubscription.unsubscribe();
-            if(this.unTaggedTileDataSubscription) this.unTaggedTileDataSubscription.unsubscribe();
-            if(this.exemptTileDataSubscription) this.exemptTileDataSubscription.unsubscribe();
-            if(this.assetGroupSubscription) this.assetGroupSubscription.unsubscribe();
-            this.dataStore.set('urlToRedirect', this.urlToRedirect);
-        } catch (error) {
-            this.logger.log('error', '--- Error while unsubscribing ---');
-        }
+        this.dataStore.set('urlToRedirect', this.urlToRedirect);
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }

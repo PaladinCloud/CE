@@ -1,20 +1,43 @@
 
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { DateRange } from '@angular/material/datepicker';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { Subscription } from 'rxjs';
 import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
+import { ALL_TIME } from 'src/app/shared/constants/global';
+
+interface AssetTypesFilters {
+  list:string[],
+  listData:{
+    [key: string]: boolean;
+  },
+  category:string,
+  shortFilters:string[],
+  numberOfAllowedFilters:number
+}
+
+interface AssetTypeFilterChangeData {
+  category: string;
+  filterName: string;
+  filterValue: boolean;
+}
+
+interface AppliedFilter {
+  [categoryName: string]: boolean
+}
 
 @Component({
   selector: 'app-custom-card',
   templateUrl: './custom-card.component.html',
   styleUrls: ['./custom-card.component.css']
 })
-export class CustomCardComponent implements OnInit {
+export class CustomCardComponent implements OnInit, OnChanges{
 
   @Output() graphIntervalSelected = new EventEmitter();
 
-  @Input() selectedItem = "All time";
+  @Input() tabs;
+  @Input() tabSelected = 0;
+  @Input() selectedItem = ALL_TIME;
   @Input() fromDate: Date;
   @Input() toDate: Date = new Date();
   @Input() minDate: Date = new Date();
@@ -23,10 +46,13 @@ export class CustomCardComponent implements OnInit {
   @Input() card = {
     header: "Default title"
   };
+  @Input() filters: AssetTypesFilters;
   isCustomSelected: boolean = false;
   @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
   @Output() switchTabs = new EventEmitter<any>();
+  @Output() filterChange = new EventEmitter<AssetTypeFilterChangeData>();
   agDomainSubscription: Subscription;
+  appliedFiltersDict:AppliedFilter | undefined;
 
 
   constructor(private agDomainObservableService:AgDomainObservableService) {
@@ -36,6 +62,14 @@ export class CustomCardComponent implements OnInit {
    }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes?.filters?.currentValue?.listData) this.appliedFiltersDict = {...changes?.filters?.currentValue?.listData}
+  }
+
+  switchTabView($event){
+    this.switchTabs.emit($event);
   }
 
   handleGraphIntervalSelection = (e) => {
@@ -94,6 +128,10 @@ export class CustomCardComponent implements OnInit {
     if(this.selectedItem=="Custom"){
       this.selectedItem = "-1";
     }
+  }
+
+  filtersUpdate(e:AssetTypeFilterChangeData){
+    this.filterChange.emit(e);
   }
 
   ngOnDestroy(){

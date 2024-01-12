@@ -1,7 +1,7 @@
 <div class="container-wrapper">
     <div class="asset-dashboard-wrapper flex flex-col">
         <div class="asset-dashboard-header">
-            <app-text classNames="page-title" text="Asset Summary"></app-text>
+            <app-text classNames="page-title" [text]="pageTitle"></app-text>
         </div>
         <div class="type-count-container flex flex-row">
             <app-overview-tile
@@ -11,30 +11,6 @@
                 (navigateTo)="redirectTo($event)"
             ></app-overview-tile>
         </div>
-        <app-custom-card
-            [card]="card"
-            [fromDate]="fromDate"
-            [minDate]="minDate"
-            [selectedItem]="graphInterval"
-            (graphIntervalSelected)="getAssetsCountData($event)"
-            [showDateDropdown]="true"
-        >
-            <div
-                [class.loader]="!totalAssetsCountData.length && totalAssetsCountDataError === ''"
-            ></div>
-            <app-error-message
-                *ngIf="totalAssetsCountDataError"
-                [selectedValue]="totalAssetsCountDataError"
-            ></app-error-message>
-            <app-multiline-zoom-graph
-                *ngIf="totalAssetsCountData.length > 0 && totalAssetsCountDataError === ''"
-                [id]="'TotalAssetsSummaryTrend'"
-                [showLegend]="true"
-                [yAxisLabel]="'Count'"
-                [graphHeight]="graphHeight"
-                [graphLinesData]="totalAssetsCountData"
-            >
-            </app-multiline-zoom-graph>
-        </app-custom-card>
+        <app-asset-trend-graph class="asset-trend-graph"></app-asset-trend-graph>
     </div>
 </div>

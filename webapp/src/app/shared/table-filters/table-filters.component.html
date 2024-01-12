@@ -57,6 +57,7 @@
                     *ngFor="let option of filterSelectedCategoryOptionsByQuery()"
                     class="fcm-item"
                     [title]="option"
+                    [ngClass]="{'selected': appliedFiltersDict[selectedCategory!][option]}"
                 >
                     <mat-checkbox
                         [checked]="appliedFiltersDict[selectedCategory!][option]"

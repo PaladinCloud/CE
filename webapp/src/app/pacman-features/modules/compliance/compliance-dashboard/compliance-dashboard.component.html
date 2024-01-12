@@ -64,20 +64,12 @@
         <mat-grid-list
             *ngIf="item === 2"
             [cols]="breakpoint3"
-            rowHeight="530px"
+            rowHeight="580px"
             gutterSize="20px"
             (window:resize)="onresize($event)"
         >
             <mat-grid-tile>
-                <app-card
-                    [card]="cards[2]"
-                    [dataError]="totalAssetsCountDataError"
-                    [data]="totalAssetsCountData"
-                    [fromDate] = "fromDate"
-                    [minDate] = "minDate"
-                    [selectedItem]="graphInterval"
-                    (graphIntervalSelected)="getAssetsCountData($event)"
-                ></app-card>
+                <app-card [card]="cards[2]"></app-card>
             </mat-grid-tile>
         </mat-grid-list>
         <!--./Asset Chart -->

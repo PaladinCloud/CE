@@ -1,33 +1,8 @@
 <mat-card class="panel">
     <mat-card-header>
         {{ card.header }}
-        <div class="graph-dropdown-container" (blur)="test()" *ngIf="card.id === 3">
-            <div class="graph-dropdown-wrapper">
-                <div
-                    class="date-selection-trigger"
-                    #menuTrigger="matMenuTrigger"
-                    [matMenuTriggerFor]="menu"
-                ></div>
-                <app-dropdown
-                    (closeEventEmitter)="onDropdownClose()"
-                    (click)="ifCustomSelected()"
-                    [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']"
-                    [selectedItem]="selectedItem"
-                    (selected)="handleGraphIntervalSelection($event)"
-                ></app-dropdown>
-                <mat-menu #menu="matMenu" xPosition="before">
-                    <div class="date-selection-modal">
-                        <app-date-selection
-                            [minDate]="minDate"
-                            [selectedRange]="selectedRange"
-                            (datesSelected)="dateIntervalSelected($event.from, $event.to)"
-                        ></app-date-selection>
-                    </div>
-                </mat-menu>
-            </div>
-        </div>
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content [ngClass]="{'asset-graph':card.id === 3}">
         <div class="chart" *ngIf="card.id === 1">
             <div [class.loader]="data.length === 0 && dataError === ''"></div>
             <app-error-message *ngIf="dataError" [selectedValue]="dataError"></app-error-message>
@@ -58,18 +33,7 @@
             </div>
         </div>
         <div class="chart" *ngIf="card.id === 3">
-            <div [class.loader]="data.length === 0 && dataError === ''"></div>
-            <app-error-message *ngIf="dataError" [selectedValue]="dataError"></app-error-message>
-            <div class="chart-wrapper" id="TotalAssetsCountTrend">
-                <app-multiline-zoom-graph
-                    *ngIf="data.length > 0 && dataError === ''"
-                    [id]="data[0].info.id"
-                    [showLegend]="data[0].info.showLegend"
-                    [yAxisLabel]="data[0].info.yAxisLabel"
-                    [graphHeight]="data[0].info.height"
-                    [graphLinesData]="data"
-                ></app-multiline-zoom-graph>
-            </div>
+            <app-asset-trend-graph [header]="card.header" [footer]="card.footer"></app-asset-trend-graph>
         </div>
     </mat-card-content>
     <mat-card-actions *ngIf="card.footer">

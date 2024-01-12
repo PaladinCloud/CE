@@ -215,7 +215,7 @@
     },
     assetTrend: {
         url: '{{baseUrl}}/asset/v1/trend/assetcount',
-        method: 'GET'
+        method: 'POST'
     },
     resourceCount: {
         url: '{{baseUrl}}/asset/v1/count',
