@@ -12,6 +12,7 @@ import { ALL_TIME, API_RESPONSE_ERROR, ERROR } from 'src/app/shared/constants/gl
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { MultilineChartService } from 'src/app/pacman-features/services/multilinechart.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 // Interface to define the structure of the AssetTypesFilters object
 interface AssetTypesFilters {
@@ -45,6 +46,9 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
   private defaultFilter = {};
   private assetTypesList;
   private assetGroupName: string;
+  private savedFilterList:{
+    [key: string]: boolean;
+  };
 
   // Public properties
   public graphInterval = ALL_TIME;
@@ -71,18 +75,29 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
     private assetTypeMapService: AssetTypeMapService,
     private multilineChartService: MultilineChartService,
     private utils: UtilsService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private dataStore: DataCacheService,
   ) {}
 
   ngOnInit(): void {
-    // Initialize default
-    this.defaultFilter[TOTAL_ASSETS] = true;
-    this.card.header = this.header;
-    this.card = { ...this.card };
+    // Initialize saved or default state 
+    this.initializeState();
     
     // Subscribe to asset group and asset type map services
     this.subscribeToAssetGroup();
     this.subscribeToAssetTypeMapForAG();
+  }
+
+  private initializeState(){
+    this.card = { ...{ header:this.header }};
+    const retriveState = this.dataStore.getAssetTrendGraphFiltersList();
+    this.savedFilterList = retriveState ? retriveState : undefined;
+    if(this.savedFilterList){
+      this.assetTypeFilters.listData = this.savedFilterList;
+    }else{
+      this.defaultFilter[TOTAL_ASSETS] = true;
+      this.assetTypeFilters.listData = {...this.assetTypeFilters.listData, ...this.defaultFilter}
+    }
   }
 
   // Subscribe to asset group changes
@@ -103,10 +118,16 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
         this.assetTypesList = this.utils.mapToObject(data);
         this.assetTypesList.totalassets = TOTAL_ASSETS;
         this.assetTypeFilters.list = [TOTAL_ASSETS, ...list];
-        this.assetTypeFilters.listData = {
-          ...this.assetTypeFilters.listData,
-          ...Object.fromEntries(list.map((key) => [key, false])),
-        };
+        if(this.savedFilterList){
+          this.assetTypeFilters.listData = {
+            ...this.assetTypeFilters.listData,
+          };
+        }else{
+          this.assetTypeFilters.listData = {
+            ...this.assetTypeFilters.listData,
+            ...Object.fromEntries(list.map((key) => [key, false])),
+          };
+        }
         this.assetTypeFilters = { ...this.assetTypeFilters };
         this.getAssetsCountData({});
       });
@@ -198,6 +219,7 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
     const transformedValue = Object.values(transformedData);
     transformedValue.forEach((item) => (item['key'] = this.assetTypesList[item['key']] || item['key']));
     this.assetsTrendData = [...transformedValue];
+    this.storeState();
   }
 
   // Get minimum date for the date selector
@@ -216,6 +238,10 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
     const offset = date.getTimezoneOffset();
     const formattedDate = new Date(date.getTime() - offset * 60 * 1000).toISOString().split('T')[0];
     return formattedDate;
+  }
+
+  private storeState(){
+    this.dataStore.setAssetTrendGraphFiltersList(this.assetTypeFilters.listData);
   }
 
   ngOnDestroy(): void {

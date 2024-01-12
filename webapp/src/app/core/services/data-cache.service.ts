@@ -252,6 +252,17 @@ export class DataCacheService {
     return this.get(key);
   }
 
+  public setAssetTrendGraphFiltersList(list) {
+    const key = 'assetTrendGraphFiltersList';
+    return this.set(key,JSON.stringify(list));
+  }
+
+  public getAssetTrendGraphFiltersList() {
+    const key = 'assetTrendGraphFiltersList';
+    const list = this.get(key);
+    return list ? JSON.parse(this.get(key)) : undefined;
+  }
+
   /**
    * @author Trinanjan added on 09.04.2018
    * @func setOmniSeachData
