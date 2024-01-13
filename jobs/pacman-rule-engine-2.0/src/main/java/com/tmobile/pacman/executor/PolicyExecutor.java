@@ -85,7 +85,7 @@ public class PolicyExecutor {
         // of execution
         
         //check if triggered by event of square one project.
-        logger.debug("received input-->" + args[0]);
+        logger.debug("received input: " + args[0]);
         if(PacEventHandler.isInvocationSourceAnEvent(args[0]))
         {
             logger.info("input source detected as event, will process event now.");
@@ -192,7 +192,7 @@ public class PolicyExecutor {
                     PacmanSdkConstants.DATE_FORMAT));
             // publish the stats once to let ES know rule engine has started.
             ESUtils.publishMetrics(policyEngineStats, type);
-            logger.info("Published stats to ES.");
+            logger.info("published stats to ES.");
             policyEngineStats.put("timeTakenToFindExecutable", CommonUtils.getElapseTimeSince(startTime));
             List<String> userFields = null;
             if (!Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.ES_SOURCE_FIELDS_KEY))) {
@@ -219,7 +219,7 @@ public class PolicyExecutor {
                 }
                 resources = ESUtils.getResourcesFromEs(indexName, policyParam.get(PacmanSdkConstants.TARGET_TYPE), filter,
                         userFields);
-                logger.debug("got resources for evaluation, total resources = " + resources.size());
+                logger.debug("got resources for evaluation, total resources: " + resources.size());
                 policyEngineStats.put("timeTakenToFetchInventory", CommonUtils.getElapseTimeSince(startTime));
                 if (resources.isEmpty()) {
                     logger.info("no resources to evaluate exiting now");
@@ -236,7 +236,7 @@ public class PolicyExecutor {
             }
 
             startTime = resetStartTime();
-            logger.info("total objects received for policy " + resources.size());
+            logger.info("total objects received for policy: " + resources.size());
             String policyParamStr = Joiner.on("#").withKeyValueSeparator("=").join(policyParam);
             policyEngineStats.put("timeTakenToGetResources", CommonUtils.getElapseTimeSince(startTime));
             policyEngineStats.put("totalResourcesForThisExecutionCycle", resources.size());
@@ -260,7 +260,7 @@ public class PolicyExecutor {
 
             evaluations = policyRunner.runPolicies(resources, policyParam, executionId);
             policyEngineStats.put("totalEvaluationsFromPolicyRunner", evaluations.size());
-            logger.debug("total evaluations received back from policy Runner" + evaluations.size());
+            logger.debug("total evaluations received back from policy runner: " + evaluations.size());
         } catch (Exception e) {
             String msg = "error occurred while executing";
             policyEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
@@ -311,7 +311,7 @@ public class PolicyExecutor {
         // handle missing evaluation end
         // ***********************************************************************************
 
-        logger.info("Elapsed time in minutes for evaluation: " + CommonUtils.getElapseTimeSince(startTime));
+        logger.info("elapsed time in minutes for evaluation: " + CommonUtils.getElapseTimeSince(startTime));
         policyEngineStats.put("timeTakenToEvaluate", CommonUtils.getElapseTimeSince(startTime));
         startTime = System.nanoTime();
         IAutofixManger autoFixManager = AutoFixManagerFactory.getAutofixManager(policyParam.get(PacmanSdkConstants.ASSET_GROUP_KEY));

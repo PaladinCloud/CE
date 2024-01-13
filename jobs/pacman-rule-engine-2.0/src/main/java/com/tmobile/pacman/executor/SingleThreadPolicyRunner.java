@@ -75,8 +75,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                 throw e;
             }
         }
-        logger.info(
-                "----------------------------------------------------scan start------------------------------------------------------------------");
+        logger.info("scan start");
 
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager()); // create
                                                                                // this
@@ -89,7 +88,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
         for (Map<String, String> resource : resources) {
             try {
                 Map<String, String> localPolicyParam = PolicyExecutionUtils.getLocalPolicyParam(policyParam, resource);
-                logger.debug("Resource-->: " + Joiner.on("#").withKeyValueSeparator("=").join(resource));
+                logger.debug("resource: " + Joiner.on("#").withKeyValueSeparator("=").join(resource));
                 PolicyResult result = null;
                 // RuleResult result =
                 // (RuleResult)executeMethod.invoke(ruleObject,
