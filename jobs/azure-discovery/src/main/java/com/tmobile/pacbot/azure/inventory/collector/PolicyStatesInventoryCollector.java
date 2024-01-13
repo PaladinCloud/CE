@@ -25,11 +25,11 @@ import java.util.Optional;
 public class PolicyStatesInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(PolicyStatesInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.PolicyInsights/policyStates/latest/queryResults?api-version=2018-04-04";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
     @Autowired
     private PolicyDefinitionInventoryCollector policyDefinitionInventoryCollector;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.PolicyInsights/policyStates/latest/queryResults?api-version=2018-04-04";
 
     @Override
     public List<? extends AzureVH> collect() {

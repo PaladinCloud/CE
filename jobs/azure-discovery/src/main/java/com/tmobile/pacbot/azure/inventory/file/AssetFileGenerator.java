@@ -6,7 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.microsoft.azure.management.Azure;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.collector.*;
+import com.tmobile.pacbot.azure.inventory.collector.ResourceGroupInventoryCollector;
+import com.tmobile.pacbot.azure.inventory.collector.Util;
 import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.database.RDSDBManager;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
 import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationforPermissionDenied;
-import static com.tmobile.pacbot.azure.inventory.util.TargetTypesConstants.*;
+import static com.tmobile.pacbot.azure.inventory.util.TargetTypesConstants.TARGET_TYPES_TO_COLLECT;
 
 @Component
 public class AssetFileGenerator {

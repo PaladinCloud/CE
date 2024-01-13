@@ -25,9 +25,9 @@ import java.util.*;
 public class VaultInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(VaultInventoryCollector.class);
+    private final String vaultDetailsTemplate = "https://management.azure.com/%s?api-version=2022-07-01";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String vaultDetailsTemplate = "https://management.azure.com/%s?api-version=2022-07-01";
 
     public VaultVH fetchVaultDetailsById(String keyVaultId, SubscriptionVH subscription) {
         Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());

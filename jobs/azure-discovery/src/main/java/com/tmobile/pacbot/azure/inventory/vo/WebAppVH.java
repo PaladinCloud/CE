@@ -2,7 +2,6 @@ package com.tmobile.pacbot.azure.inventory.vo;
 
 import com.microsoft.azure.management.appservice.FtpsState;
 
-
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +19,8 @@ public class WebAppVH extends AzureVH {
     private String systemAssignedManagedServiceIdentityPrincipalId;
 
     private Map<String, String> tags;
+    private boolean authEnabled;
+    private Set<String> hostNames;
 
     public Map<String, String> getTags() {
         return tags;
@@ -45,7 +46,6 @@ public class WebAppVH extends AzureVH {
         this.clientCertEnabled = clientCertEnabled;
     }
 
-
     public boolean isHttpsOnly() {
         return httpsOnly;
     }
@@ -54,7 +54,6 @@ public class WebAppVH extends AzureVH {
         this.httpsOnly = httpsOnly;
     }
 
-    private boolean authEnabled;
     public boolean isAuthEnabled() {
         return authEnabled;
     }
@@ -65,6 +64,10 @@ public class WebAppVH extends AzureVH {
 
     public Set<String> getHostNames() {
         return hostNames;
+    }
+
+    public void setHostNames(Set<String> hostNames) {
+        this.hostNames = hostNames;
     }
 
     public boolean isHttp20Enabled() {
@@ -85,11 +88,6 @@ public class WebAppVH extends AzureVH {
         this.resourceGroupName = resourceGroupName;
     }
 
-    public void setHostNames(Set<String> hostNames) {
-        this.hostNames = hostNames;
-    }
-
-    private Set<String> hostNames;
     public boolean getRemoteDebuggingEnabled() {
         return remoteDebuggingEnabled;
     }
@@ -101,6 +99,7 @@ public class WebAppVH extends AzureVH {
     public FtpsState getFtpsState() {
         return ftpsState;
     }
+
     public void setFtpsState(FtpsState ftpsState) {
         this.ftpsState = ftpsState;
     }

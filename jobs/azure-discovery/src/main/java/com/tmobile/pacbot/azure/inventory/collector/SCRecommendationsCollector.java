@@ -12,16 +12,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class SCRecommendationsCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(SCRecommendationsCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/tasks?api-version=2015-06-01-preview";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/tasks?api-version=2015-06-01-preview";
 
     @Override
     public List<? extends AzureVH> collect() {

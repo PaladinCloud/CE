@@ -4,59 +4,59 @@ import java.util.Map;
 
 public class PostgreSQLServerVH extends AzureVH {
 
-	private String name;
-	private String type;
-	private String location;
-	private Map<String, Object> propertiesMap;
-	private Map<String, Object> skuMap;
-	private Map<String, String> tags;
+    private String name;
+    private String type;
+    private String location;
+    private Map<String, Object> propertiesMap;
+    private Map<String, Object> skuMap;
+    private Map<String, String> tags;
 
-	public Map<String, String> getTags() {
-		return tags;
-	}
+    public Map<String, String> getTags() {
+        return tags;
+    }
 
-	public void setTags(Map<String, String> tags) {
-		this.tags = tags;
-	}
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getLocation() {
-		return location;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public Map<String, Object> getPropertiesMap() {
-		return propertiesMap;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public Map<String, Object> getSkuMap() {
-		return skuMap;
-	}
+    public String getLocation() {
+        return location;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public Map<String, Object> getPropertiesMap() {
+        return propertiesMap;
+    }
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    public void setPropertiesMap(Map<String, Object> propertiesMap) {
+        this.propertiesMap = propertiesMap;
+    }
 
-	public void setPropertiesMap(Map<String, Object> propertiesMap) {
-		this.propertiesMap = propertiesMap;
-	}
+    public Map<String, Object> getSkuMap() {
+        return skuMap;
+    }
 
-	public void setSkuMap(Map<String, Object> skuMap) {
-		this.skuMap = skuMap;
-	}
+    public void setSkuMap(Map<String, Object> skuMap) {
+        this.skuMap = skuMap;
+    }
 
 }

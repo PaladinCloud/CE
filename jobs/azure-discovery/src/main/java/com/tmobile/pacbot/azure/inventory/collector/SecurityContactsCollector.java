@@ -11,7 +11,6 @@ import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
@@ -28,9 +27,9 @@ public class SecurityContactsCollector implements Collector {
     private static final String PROPERTY = "properties";
     private static final String AUTO_PROVISION = "autoProvision";
     private static final Logger log = LoggerFactory.getLogger(SecurityContactsCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/securityContacts?api-version=2020-01-01-preview";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/securityContacts?api-version=2020-01-01-preview";
 
     @Override
     public List<? extends AzureVH> collect() {

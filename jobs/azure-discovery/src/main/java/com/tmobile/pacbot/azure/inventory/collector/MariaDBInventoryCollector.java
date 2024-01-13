@@ -9,7 +9,6 @@ import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
@@ -22,9 +21,9 @@ import java.util.Map;
 public class MariaDBInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(MariaDBInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.DBforMariaDB/servers?api-version=2018-06-01-preview";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.DBforMariaDB/servers?api-version=2018-06-01-preview";
 
     @Override
     public List<? extends AzureVH> collect() {

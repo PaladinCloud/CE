@@ -11,7 +11,7 @@ public class SecurityContactsVH extends AzureVH {
 
     private String etag;
 
-    private List<AutoProvisioningSettingsVH>autoProvisioningSettingsList;
+    private List<AutoProvisioningSettingsVH> autoProvisioningSettingsList;
 
     public String getName() {
         return name;
@@ -44,6 +44,7 @@ public class SecurityContactsVH extends AzureVH {
     public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
     }
+
     public List<AutoProvisioningSettingsVH> getAutoProvisioningSettingsList() {
         return autoProvisioningSettingsList;
     }

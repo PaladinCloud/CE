@@ -4,51 +4,51 @@ import java.util.Map;
 
 public class SearchServiceVH extends AzureVH {
 
-	private String name;
-	private String type;
-	private String location;
-	private Map<String, Object> properties;
-	private Map<String, Object> sku;
+    private String name;
+    private String type;
+    private String location;
+    private Map<String, Object> properties;
+    private Map<String, Object> sku;
 
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getLocation() {
-		return location;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public Map<String, Object> getProperties() {
-		return properties;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public Map<String, Object> getSku() {
-		return sku;
-	}
+    public String getLocation() {
+        return location;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
 
-	public void setProperties(Map<String, Object> properties) {
-		this.properties = properties;
-	}
+    public Map<String, Object> getSku() {
+        return sku;
+    }
 
-	public void setSku(Map<String, Object> sku) {
-		this.sku = sku;
-	}
+    public void setSku(Map<String, Object> sku) {
+        this.sku = sku;
+    }
 
 }

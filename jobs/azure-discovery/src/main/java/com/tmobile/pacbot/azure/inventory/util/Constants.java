@@ -21,9 +21,9 @@ import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STR
 
 public class Constants {
 
-        private Constants() {
+    public static final String ERROR_PREFIX = DATA_ALERT_ERROR_STRING + "- " + JOB_NAME + " - ";
 
-        }
+    private Constants() {
 
-        public static final String ERROR_PREFIX = DATA_ALERT_ERROR_STRING + "- " + JOB_NAME + " - ";
+    }
 }

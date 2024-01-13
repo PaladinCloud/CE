@@ -21,9 +21,9 @@ import java.util.Map;
 public class SecurityAlertsInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityAlertsInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/alerts?api-version=2019-01-01";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/alerts?api-version=2019-01-01";
 
     @Override
     public List<? extends AzureVH> collect() {

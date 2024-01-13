@@ -26,9 +26,9 @@ import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroup
 public class SubnetInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(SubnetInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Network/virtualNetworks/%s/subnets?api-version=2019-07-01";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Network/virtualNetworks/%s/subnets?api-version=2019-07-01";
 
     @Override
     public List<? extends AzureVH> collect() {

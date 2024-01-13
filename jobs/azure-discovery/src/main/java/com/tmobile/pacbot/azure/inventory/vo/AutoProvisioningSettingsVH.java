@@ -1,6 +1,6 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
-public class AutoProvisioningSettingsVH extends AzureVH{
+public class AutoProvisioningSettingsVH extends AzureVH {
 
     private String name;
     private String type;

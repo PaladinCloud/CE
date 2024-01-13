@@ -46,7 +46,7 @@ public class AzureDiscoveryJob {
             params.put(keyValue[0], keyValue[1]);
         });
 
-		execute(params);
+        execute(params);
     }
 
     /**

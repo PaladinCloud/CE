@@ -9,7 +9,6 @@ import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
@@ -24,9 +23,9 @@ import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroup
 public class DatabricksInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(DatabricksInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Databricks/workspaces?api-version=2018-04-01";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Databricks/workspaces?api-version=2018-04-01";
 
     @Override
     public List<? extends AzureVH> collect() {

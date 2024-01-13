@@ -17,7 +17,7 @@ package com.tmobile.pacbot.azure.inventory.file;
 
 import com.tmobile.pacbot.azure.inventory.util.InventoryConstants;
 import com.tmobile.pacbot.azure.inventory.util.TargetTypesConstants;
-import com.tmobile.pacbot.azure.inventory.vo.*;
+import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

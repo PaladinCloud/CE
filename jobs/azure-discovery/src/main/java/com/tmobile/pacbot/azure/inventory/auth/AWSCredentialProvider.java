@@ -70,7 +70,7 @@ public class AWSCredentialProvider {
      * Gets the role arn.
      *
      * @param account the account
-     * @param role   the role
+     * @param role    the role
      * @return the role arn
      */
     private String getRoleArn(String account, String role) {

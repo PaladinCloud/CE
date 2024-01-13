@@ -24,9 +24,9 @@ import static com.tmobile.pacbot.azure.inventory.util.InventoryConstants.REGION_
 public class SecurityPricingsInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityPricingsInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/pricings?api-version=2022-03-01";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/pricings?api-version=2022-03-01";
 
     @Override
     public List<? extends AzureVH> collect() {

@@ -4,11 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 public class VirtualMachineScaleSetVH extends AzureVH {
+    List<String> virtualMachineIds;
+    List<String> loadBalancerIds;
     private String computerName;
-    List<String>virtualMachineIds;
-
-    List<String>loadBalancerIds;
-
     private Map<String, Object> properties;
 
     private Map<String, String> tags;

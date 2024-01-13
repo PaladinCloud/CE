@@ -21,9 +21,9 @@ import java.util.Map;
 public class WorkflowInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(WorkflowInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Logic/workflows?api-version=2016-06-01";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Logic/workflows?api-version=2016-06-01";
 
     @Override
     public List<? extends AzureVH> collect() {

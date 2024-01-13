@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationforPermissionDenied;
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationforPermissionDenied;
 
 @Component
 public class AzureFetchOrchestrator {
