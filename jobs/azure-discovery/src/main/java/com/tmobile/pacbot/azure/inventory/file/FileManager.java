@@ -54,7 +54,7 @@ public class FileManager {
             System.exit(1); // We want to exit if the S3 folder is not created
         }
 
-        TargetTypesConstants.TARGET_TYPES.forEach(type -> {
+        TargetTypesConstants.TARGET_TYPES_TO_COLLECT.forEach(type -> {
             try {
                 FileGenerator.writeToFile(getFilenameFromTargetType(type), InventoryConstants.OPEN_ARRAY, false);
             } catch (IOException e) {
@@ -64,7 +64,7 @@ public class FileManager {
     }
 
     public static void finalise() {
-        TargetTypesConstants.TARGET_TYPES.forEach(type -> {
+        TargetTypesConstants.TARGET_TYPES_TO_COLLECT.forEach(type -> {
             try {
                 FileGenerator.writeToFile(getFilenameFromTargetType(type), InventoryConstants.CLOSE_ARRAY, true);
             } catch (IOException e) {
