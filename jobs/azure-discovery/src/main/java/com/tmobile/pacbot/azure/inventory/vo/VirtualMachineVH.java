@@ -1,6 +1,5 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,7 +104,7 @@ public class VirtualMachineVH extends AzureVH {
 		this.secondaryNetworks = secondaryNetworks;
 	}
 
-	private String primaryNetworkIntefaceId;
+	private String primaryNetworkInterfaceId;
 
 	List<Map<String, String>> secondaryNetworks;
 	
@@ -133,12 +132,12 @@ public class VirtualMachineVH extends AzureVH {
 		this.vnetName = vnetName;
 	}
 
-	public String getPrimaryNetworkIntefaceId() {
-		return primaryNetworkIntefaceId;
+	public String getPrimaryNetworkInterfaceId() {
+		return primaryNetworkInterfaceId;
 	}
 
-	public void setPrimaryNetworkIntefaceId(String primaryNetworkIntefaceId) {
-		this.primaryNetworkIntefaceId = primaryNetworkIntefaceId;
+	public void setPrimaryNetworkInterfaceId(String primaryNetworkInterfaceId) {
+		this.primaryNetworkInterfaceId = primaryNetworkInterfaceId;
 	}
 
 	public List<Map<String, String>> getNetworkSecurityGroups() {

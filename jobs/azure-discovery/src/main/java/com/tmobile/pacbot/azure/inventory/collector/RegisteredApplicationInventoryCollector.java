@@ -4,9 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.tmobile.pacbot.azure.inventory.vo.RegAppCertificateVH;
-import com.tmobile.pacbot.azure.inventory.vo.RegAppSecretVH;
-import com.tmobile.pacbot.azure.inventory.vo.RegisteredApplicationVH;
+import com.tmobile.pacbot.azure.inventory.vo.*;
 import com.tmobile.pacman.commons.azure.clients.AzureCredentialManager;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,9 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
-public class RegisteredApplicationInventoryCollector {
+public class RegisteredApplicationInventoryCollector implements Collector {
 
     // constants for API data
     private static final String VALUE = "value";
@@ -47,7 +46,7 @@ public class RegisteredApplicationInventoryCollector {
     private static final String API_URL_TEMPLATE = "https://graph.microsoft.com/beta/applications";
     private static final String TOKEN_TYPE = "Bearer";
 
-    public List<RegisteredApplicationVH> fetchAzureRegisteredApplication() {
+    public List<RegisteredApplicationVH> collect() {
         List<RegisteredApplicationVH> registeredApplicationList = new ArrayList<>();
         String accessToken;
         try {
@@ -160,5 +159,15 @@ public class RegisteredApplicationInventoryCollector {
 
     private String getStringValueForJsonElement(JsonElement jsonElement) {
         return jsonElement.isJsonNull() ? null : jsonElement.getAsString();
+    }
+
+    @Override
+    public List<? extends AzureVH> collect(SubscriptionVH subscription) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+        throw new UnsupportedOperationException();
     }
 }

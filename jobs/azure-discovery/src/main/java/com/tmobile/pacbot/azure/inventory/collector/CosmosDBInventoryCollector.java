@@ -5,12 +5,14 @@ import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.cosmosdb.CosmosDBAccount;
 import com.microsoft.azure.management.cosmosdb.VirtualNetworkRule;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import com.tmobile.pacbot.azure.inventory.vo.CosmosDBVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacbot.azure.inventory.vo.VirtualNetworkRuleVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,14 +20,24 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class CosmosDBInventoryCollector {
+public class CosmosDBInventoryCollector implements Collector {
 	
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
-	
 
 	private static Logger log = LoggerFactory.getLogger(CosmosDBInventoryCollector.class);
-	public List<CosmosDBVH> fetchCosmosDBDetails(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+
+	@Override
+	public List<? extends AzureVH> collect() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<? extends AzureVH> collect(SubscriptionVH subscription) {
+		throw new UnsupportedOperationException();
+	}
+
+	public List<CosmosDBVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
 		List<CosmosDBVH> cosmosDBList = new ArrayList<>();
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 		PagedList<CosmosDBAccount> CosmosDB = azure.cosmosDBAccounts().list();
@@ -45,6 +57,7 @@ public class CosmosDBInventoryCollector {
 			cosmosDBVH.setVirtualNetworkRuleList(getVirtualNetworkRule(cosmosDB.virtualNetworkRules()));
 			cosmosDBList.add(cosmosDBVH);
 		}
+
 		log.info("Target Type : {}  Total: {} ","Cosom DB",cosmosDBList.size());
 		return cosmosDBList;
 	}
@@ -59,8 +72,7 @@ public class CosmosDBInventoryCollector {
 			virtualNetworkRuleVHlist.add(virtualNetworkRuleVH);
 
 		}
+
 		return virtualNetworkRuleVHlist;
-
 	}
-
 }

@@ -67,49 +67,49 @@ public class TargetTypesConstants {
 
 
     public static final List<String> TARGET_TYPES = Arrays.asList(
-            ACTIVITY_LOG_ALERT,
-            AKS,
-            BATCH_ACCOUNTS,
-            BLOB_CONTAINER,
-            BLOB_SERVICE,
-            COSMOSDB,
-            DATABRICKS,
-            DEFENDER,
-            DIAGNOSTIC_SETTING,
-            DISK,
-            FUNCTION_APP,
-            LOADBALANCER,
-            MARIADB,
-            MYSQL_FLEXIBLE,
-            MYSQLSERVER,
-            NAMESPACES,
-            NETWORK_INTERFACE,
-            NSG,
-            POLICY_DEFINITIONS,
-            POLICY_EVALUATION_RESULTS,
-            POSTGRESQL,
-            PUBLICIP_ADDRESS,
-            REDIS_CACHE,
-            REGISTERED_APPLICATION,
-            RESOURCE_GROUP,
-            ROUTE_TABLE,
-            SEARCH_SERVICES,
-            SECURITY_ALERTS,
-            SECURITY_CENTER,
-            SECURITY_PRICINGS,
-            SITES,
-            SNAPSHOT,
-            SQL_DATABASE,
-            SQLSERVER,
-            STORAGE_ACCOUNT,
-            SUBNETS,
-            SUBSCRIPTION,
-            VIRTUAL_MACHINE,
-            VIRTUAL_MACHINE_SCALESET,
-            VAULTS,
-            VNET,
-            WEBAPP,
-            WORKFLOWS
+            ACTIVITY_LOG_ALERT, // done
+            AKS,    // done
+            BATCH_ACCOUNTS, // done
+            BLOB_CONTAINER, // done
+            BLOB_SERVICE, // done
+            COSMOSDB, // done
+            DATABRICKS, // done
+            DEFENDER, // done
+            DIAGNOSTIC_SETTING, // done
+            DISK, // done
+            FUNCTION_APP, // done
+            LOADBALANCER, // done
+            MARIADB, // done
+            MYSQL_FLEXIBLE, // done
+            MYSQLSERVER, // done
+            NAMESPACES, // done
+            NETWORK_INTERFACE, // done
+            NSG, // done
+            POLICY_DEFINITIONS, // done
+            POLICY_EVALUATION_RESULTS, // done
+            POSTGRESQL, // done
+            PUBLICIP_ADDRESS, // done
+            REDIS_CACHE, // done
+            REGISTERED_APPLICATION, // done
+            RESOURCE_GROUP, // done
+            ROUTE_TABLE, // done
+            SEARCH_SERVICES, // done
+            SECURITY_ALERTS, // done
+            SECURITY_CENTER, // done
+            SECURITY_PRICINGS, // done
+            SITES, // done
+            SNAPSHOT, // done
+            SQL_DATABASE, // done
+            SQLSERVER, // done
+            STORAGE_ACCOUNT, // done
+            SUBNETS, // done
+            SUBSCRIPTION, // done
+            VIRTUAL_MACHINE, // done
+            VIRTUAL_MACHINE_SCALESET, // done
+            VAULTS, // done
+            VNET, // done
+            WEBAPP, // done
+            WORKFLOWS // done
     );
 
     private TargetTypesConstants() {

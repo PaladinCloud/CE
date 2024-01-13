@@ -2,12 +2,14 @@ package com.tmobile.pacbot.azure.inventory.collector;
 
 import com.google.gson.*;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import com.tmobile.pacbot.azure.inventory.vo.BatchAccountVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
@@ -19,15 +21,20 @@ import java.util.Map;
 import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroupNameFromId;
 
 @Component
-public class BatchAccountInventoryCollector {
+public class BatchAccountInventoryCollector implements Collector {
 	
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
 	
-	private static Logger LOGGER = LoggerFactory.getLogger(BatchAccountInventoryCollector.class);
+	private static Logger log = LoggerFactory.getLogger(BatchAccountInventoryCollector.class);
 	private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Batch/batchAccounts?api-version=2019-08-01";
 
-	public List<BatchAccountVH> fetchBatchAccountDetails(SubscriptionVH subscription) throws Exception {
+	@Override
+	public List<? extends AzureVH> collect() {
+		throw new UnsupportedOperationException();
+	}
+
+	public List<BatchAccountVH> collect(SubscriptionVH subscription) {
 
 		List<BatchAccountVH> batchAccountList = new ArrayList<BatchAccountVH>();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
@@ -73,13 +80,16 @@ public class BatchAccountInventoryCollector {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error fetching BatchAccount",e);
+			log.error("Error fetching BatchAccount",e);
 			Util.eCount.getAndIncrement();
 		}
 
-		LOGGER.info("Target Type : {}  Total: {} ","Batch Account",batchAccountList.size());
+		log.info("Target Type : {}  Total: {} ","Batch Account",batchAccountList.size());
 		return batchAccountList;
 	}
 
-
+	@Override
+	public List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+		throw new UnsupportedOperationException();
+	}
 }

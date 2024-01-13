@@ -56,19 +56,12 @@ public class FileGenerator {
      */
     public static void writeToFile(String filename, String data, boolean appendTo) throws IOException {
         log.debug("Write to File : {}", filename);
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new FileWriter(folderName + File.separator + filename, appendTo));
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(folderName + File.separator + filename, appendTo))) {
             bw.write(data);
             bw.flush();
-            bw.close();
         } catch (IOException e) {
             log.error("Write to File : {} failed", filename, e);
             throw e;
-        } finally {
-            if (bw != null) {
-                bw.close();
-            }
         }
     }
 

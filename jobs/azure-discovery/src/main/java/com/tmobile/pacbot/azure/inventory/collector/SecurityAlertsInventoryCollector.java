@@ -2,6 +2,7 @@ package com.tmobile.pacbot.azure.inventory.collector;
 
 import com.google.gson.*;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import com.tmobile.pacbot.azure.inventory.vo.SecurityAlertsVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
@@ -14,19 +15,23 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
-public class SecurityAlertsInventoryCollector {
+public class SecurityAlertsInventoryCollector implements Collector {
 
+    private static final Logger log = LoggerFactory.getLogger(SecurityAlertsInventoryCollector.class);
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/alerts?api-version=2019-01-01";
 
-    private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/alerts?api-version=2019-01-01";
-    private static Logger log = LoggerFactory.getLogger(SecurityAlertsInventoryCollector.class);
+    @Override
+    public List<? extends AzureVH> collect() {
+        throw new UnsupportedOperationException();
+    }
 
-    public List<SecurityAlertsVH> fetchSecurityAlertsDetails(SubscriptionVH subscription) throws Exception {
-
-        List<SecurityAlertsVH> securityAlertsList = new ArrayList<SecurityAlertsVH>();
+    public List<SecurityAlertsVH> collect(SubscriptionVH subscription) {
+        List<SecurityAlertsVH> securityAlertsList = new ArrayList<>();
         String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
 
         String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()));
@@ -51,6 +56,7 @@ public class SecurityAlertsInventoryCollector {
                     HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
                     securityAlertsVH.setPropertiesMap(propertiesMap);
                 }
+
                 securityAlertsList.add(securityAlertsVH);
             }
         } catch (Exception e) {
@@ -62,4 +68,8 @@ public class SecurityAlertsInventoryCollector {
         return securityAlertsList;
     }
 
+    @Override
+    public List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+        throw new UnsupportedOperationException();
+    }
 }

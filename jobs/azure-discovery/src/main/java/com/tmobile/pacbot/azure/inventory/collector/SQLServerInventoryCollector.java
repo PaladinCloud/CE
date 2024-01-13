@@ -8,10 +8,7 @@ import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.sql.*;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.vo.ElasticPoolVH;
-import com.tmobile.pacbot.azure.inventory.vo.FailoverGroupVH;
-import com.tmobile.pacbot.azure.inventory.vo.SQLServerVH;
-import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
+import com.tmobile.pacbot.azure.inventory.vo.*;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,19 +22,27 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class SQLServerInventoryCollector {
+public class SQLServerInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(SQLServerInventoryCollector.class);
 
-	@Autowired
+    @Autowired
     AzureCredentialProvider azureCredentialProvider;
 
-    public List<SQLServerVH> fetchSQLServerDetails(SubscriptionVH subscription,
-												   Map<String, Map<String, String>> tagMap) {
+    @Override
+    public List<? extends AzureVH> collect() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<? extends AzureVH> collect(SubscriptionVH subscription) {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<SQLServerVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
         List<SQLServerVH> sqlServerList = new ArrayList<>();
         Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
         PagedList<SqlServer> sqlServers = azure.sqlServers().list();
-
         for (SqlServer sqlServer : sqlServers) {
             SQLServerVH sqlServerVH = new SQLServerVH();
             sqlServerVH.setSubscription(subscription.getSubscriptionId());
@@ -148,7 +153,6 @@ public class SQLServerInventoryCollector {
             elasticPoolVH.setDtu(sqlElasticPool.dtu());
             elasticPoolVH.setEdition(sqlElasticPool.edition().toString());
             elasticPoolList.add(elasticPoolVH);
-
         }
 
         sqlServerVH.setElasticPoolList(elasticPoolList);
@@ -163,7 +167,6 @@ public class SQLServerInventoryCollector {
             firewallMap.put("startIPAddress", sqlFirewallRule.startIPAddress());
             firewallMap.put("endIPAddress", sqlFirewallRule.endIPAddress());
             firewallRuleList.add(firewallMap);
-
         }
         for (SqlVirtualNetworkRule sqlVirtualNetworkRule : sqlServer.virtualNetworkRules().list()) {
             firewallMap = new HashMap<>();
@@ -195,7 +198,6 @@ public class SQLServerInventoryCollector {
             failoverGroupVH.setReadWriteEndpointPolicy(sqlFailoverGroup.readWriteEndpointPolicy().toString());
             failoverGroupVH.setGracePeriod(sqlFailoverGroup.readWriteEndpointDataLossGracePeriodMinutes());
             failoverGroupList.add(failoverGroupVH);
-
         }
 
         sqlServerVH.setFailoverGroupList(failoverGroupList);
