@@ -2,7 +2,7 @@ package com.tmobile.pacbot.azure.inventory.vo;
 
 import java.util.Map;
 
-public class BlobServiceVH extends AzureVH{
+public class BlobServiceVH extends AzureVH {
     private String name;
     private String type;
     private Map<String, Object> propertiesMap;

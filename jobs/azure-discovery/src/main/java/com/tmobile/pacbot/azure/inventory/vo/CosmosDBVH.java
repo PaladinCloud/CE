@@ -4,71 +4,69 @@ import java.util.List;
 import java.util.Map;
 
 public class CosmosDBVH extends AzureVH {
-	private String key;
-	private String name;
-	private String type;
-	private Map<String, String> tags;
-	private String ipRangeFilter;
-	private boolean multipleWriteLocationsEnabled;
-	private List<VirtualNetworkRuleVH> virtualNetworkRuleList;
-
-	
-
-	public String getKey() {
-		return key;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public Map<String, String> getTags() {
-		return tags;
-	}
+    private String key;
+    private String name;
+    private String type;
+    private Map<String, String> tags;
+    private String ipRangeFilter;
+    private boolean multipleWriteLocationsEnabled;
+    private List<VirtualNetworkRuleVH> virtualNetworkRuleList;
 
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setTags(Map<String, String> tags) {
-		this.tags = tags;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getIpRangeFilter() {
-		return ipRangeFilter;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public boolean isMultipleWriteLocationsEnabled() {
-		return multipleWriteLocationsEnabled;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setIpRangeFilter(String ipRangeFilter) {
-		this.ipRangeFilter = ipRangeFilter;
-	}
+    public Map<String, String> getTags() {
+        return tags;
+    }
 
-	public void setMultipleWriteLocationsEnabled(boolean multipleWriteLocationsEnabled) {
-		this.multipleWriteLocationsEnabled = multipleWriteLocationsEnabled;
-	}
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
-	public List<VirtualNetworkRuleVH> getVirtualNetworkRuleList() {
-		return virtualNetworkRuleList;
-	}
+    public String getIpRangeFilter() {
+        return ipRangeFilter;
+    }
 
-	public void setVirtualNetworkRuleList(List<VirtualNetworkRuleVH> virtualNetworkRuleList) {
-		this.virtualNetworkRuleList = virtualNetworkRuleList;
-	}
+    public void setIpRangeFilter(String ipRangeFilter) {
+        this.ipRangeFilter = ipRangeFilter;
+    }
+
+    public boolean isMultipleWriteLocationsEnabled() {
+        return multipleWriteLocationsEnabled;
+    }
+
+    public void setMultipleWriteLocationsEnabled(boolean multipleWriteLocationsEnabled) {
+        this.multipleWriteLocationsEnabled = multipleWriteLocationsEnabled;
+    }
+
+    public List<VirtualNetworkRuleVH> getVirtualNetworkRuleList() {
+        return virtualNetworkRuleList;
+    }
+
+    public void setVirtualNetworkRuleList(List<VirtualNetworkRuleVH> virtualNetworkRuleList) {
+        this.virtualNetworkRuleList = virtualNetworkRuleList;
+    }
 
 }

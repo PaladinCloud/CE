@@ -1,126 +1,126 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.microsoft.azure.management.network.LoadBalancer;
 import com.microsoft.azure.management.network.LoadBalancerPrivateFrontend;
 import com.microsoft.azure.management.network.LoadBalancerPublicFrontend;
 import com.microsoft.azure.management.network.LoadBalancingRule;
 
+import java.util.List;
+import java.util.Map;
+
 @JsonSerialize
 public class LoadBalancerVH extends AzureVH {
 
-	private int hashCode;
-	private String name;
+    private int hashCode;
+    private String name;
 
-	private String key;
-	private LoadBalancer refresh;
+    private String key;
+    private LoadBalancer refresh;
 
-	private String regionName;
-	private String type;
-	private List<String> publicIPAddressIds;
-	private Map<String, String> tags;
-	private Map<String, LoadBalancingRule> loadBalancingRules;
-	private Map<String, LoadBalancerPrivateFrontend> privateFrontends;
-	private Map<String, LoadBalancerPublicFrontend> publicFrontends;
-	private List<String> backendPoolInstances;
+    private String regionName;
+    private String type;
+    private List<String> publicIPAddressIds;
+    private Map<String, String> tags;
+    private Map<String, LoadBalancingRule> loadBalancingRules;
+    private Map<String, LoadBalancerPrivateFrontend> privateFrontends;
+    private Map<String, LoadBalancerPublicFrontend> publicFrontends;
+    private List<String> backendPoolInstances;
 
-	public int getHashCode() {
-		return hashCode;
-	}
+    public int getHashCode() {
+        return hashCode;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setHashCode(int hashCode) {
+        this.hashCode = hashCode;
+    }
 
-	public String getKey() {
-		return key;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Map<String, LoadBalancingRule> getLoadBalancingRules() {
-		return loadBalancingRules;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Map<String, LoadBalancerPrivateFrontend> getPrivateFrontends() {
-		return privateFrontends;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	public Map<String, LoadBalancerPublicFrontend> getPublicFrontends() {
-		return publicFrontends;
-	}
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	public List<String> getPublicIPAddressIds() {
-		return publicIPAddressIds;
-	}
+    public Map<String, LoadBalancingRule> getLoadBalancingRules() {
+        return loadBalancingRules;
+    }
 
-	public LoadBalancer getRefresh() {
-		return refresh;
-	}
+    public void setLoadBalancingRules(Map<String, LoadBalancingRule> loadBalancingRules) {
+        this.loadBalancingRules = loadBalancingRules;
+    }
 
-	public String getRegionName() {
-		return regionName;
-	}
+    public Map<String, LoadBalancerPrivateFrontend> getPrivateFrontends() {
+        return privateFrontends;
+    }
 
-	public Map<String, String> getTags() {
-		return tags;
-	}
+    public void setPrivateFrontends(Map<String, LoadBalancerPrivateFrontend> privateFrontends) {
+        this.privateFrontends = privateFrontends;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public Map<String, LoadBalancerPublicFrontend> getPublicFrontends() {
+        return publicFrontends;
+    }
 
-	public void setHashCode(int hashCode) {
-		this.hashCode = hashCode;
-	}
+    public void setPublicFrontends(Map<String, LoadBalancerPublicFrontend> publicFrontends) {
+        this.publicFrontends = publicFrontends;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public List<String> getPublicIPAddressIds() {
+        return publicIPAddressIds;
+    }
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+    public void setPublicIPAddressIds(List<String> publicIPAddressIds) {
+        this.publicIPAddressIds = publicIPAddressIds;
+    }
 
-	public void setLoadBalancingRules(Map<String, LoadBalancingRule> loadBalancingRules) {
-		this.loadBalancingRules = loadBalancingRules;
-	}
+    public LoadBalancer getRefresh() {
+        return refresh;
+    }
 
-	public void setPrivateFrontends(Map<String, LoadBalancerPrivateFrontend> privateFrontends) {
-		this.privateFrontends = privateFrontends;
-	}
+    public void setRefresh(LoadBalancer refresh) {
+        this.refresh = refresh;
+    }
 
-	public void setPublicFrontends(Map<String, LoadBalancerPublicFrontend> publicFrontends) {
-		this.publicFrontends = publicFrontends;
-	}
+    public String getRegionName() {
+        return regionName;
+    }
 
-	public void setPublicIPAddressIds(List<String> publicIPAddressIds) {
-		this.publicIPAddressIds = publicIPAddressIds;
-	}
+    public void setRegionName(String regionName) {
+        this.regionName = regionName;
+    }
 
-	public void setRefresh(LoadBalancer refresh) {
-		this.refresh = refresh;
-	}
+    public Map<String, String> getTags() {
+        return tags;
+    }
 
-	public void setRegionName(String regionName) {
-		this.regionName = regionName;
-	}
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
-	public void setTags(Map<String, String> tags) {
-		this.tags = tags;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public List<String> getBackendPoolInstances() {
-		return backendPoolInstances;
-	}
+    public List<String> getBackendPoolInstances() {
+        return backendPoolInstances;
+    }
 
-	public void setBackendPoolInstances(List<String> backendPoolInstances) {
-		this.backendPoolInstances = backendPoolInstances;
-	}
+    public void setBackendPoolInstances(List<String> backendPoolInstances) {
+        this.backendPoolInstances = backendPoolInstances;
+    }
 
 }

@@ -1,275 +1,275 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
 public class PolicyStatesVH extends AzureVH {
-	private String timestamp;
-	private String resourceId;
-	private String resourceIdLower;
-	private String policyAssignmentId;
-	private String policyDefinitionId;
-	private String effectiveParameters;
-	private Boolean isCompliant;
-	private String subscriptionId;
-	private String resourceType;
-	private String resourceLocation;
-	private String resourceGroup;
-	private String resourceTags;
-	private String policyAssignmentName;
-	private String policyAssignmentOwner;
-	private String policyAssignmentParameters;
-	private String policyAssignmentScope;
-	private String policyDefinitionName;
-	private String policyDefinitionAction;
-	private String policyDefinitionCategory;
-	private String policySetDefinitionId;
-	private String policySetDefinitionName;
-	private String policySetDefinitionOwner;
-	private String policySetDefinitionCategory;
-	private String policySetDefinitionParameters;
-	private String managementGroupIds;
-	private String policyDefinitionReferenceId;
-	private String policyDescription;
-	private String policyName;
-	private String policyType;
-	private String policyRule;
+    private String timestamp;
+    private String resourceId;
+    private String resourceIdLower;
+    private String policyAssignmentId;
+    private String policyDefinitionId;
+    private String effectiveParameters;
+    private Boolean isCompliant;
+    private String subscriptionId;
+    private String resourceType;
+    private String resourceLocation;
+    private String resourceGroup;
+    private String resourceTags;
+    private String policyAssignmentName;
+    private String policyAssignmentOwner;
+    private String policyAssignmentParameters;
+    private String policyAssignmentScope;
+    private String policyDefinitionName;
+    private String policyDefinitionAction;
+    private String policyDefinitionCategory;
+    private String policySetDefinitionId;
+    private String policySetDefinitionName;
+    private String policySetDefinitionOwner;
+    private String policySetDefinitionCategory;
+    private String policySetDefinitionParameters;
+    private String managementGroupIds;
+    private String policyDefinitionReferenceId;
+    private String policyDescription;
+    private String policyName;
+    private String policyType;
+    private String policyRule;
 
-	public String getTimestamp() {
-		return timestamp;
-	}
+    public String getTimestamp() {
+        return timestamp;
+    }
 
-	public String getResourceId() {
-		return resourceId;
-	}
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
 
-	public String getPolicyAssignmentId() {
-		return policyAssignmentId;
-	}
+    public String getResourceId() {
+        return resourceId;
+    }
 
-	public String getPolicyDefinitionId() {
-		return policyDefinitionId;
-	}
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
+    }
 
-	public String getEffectiveParameters() {
-		return effectiveParameters;
-	}
+    public String getPolicyAssignmentId() {
+        return policyAssignmentId;
+    }
 
-	public String getSubscriptionId() {
-		return subscriptionId;
-	}
+    public void setPolicyAssignmentId(String policyAssignmentId) {
+        this.policyAssignmentId = policyAssignmentId;
+    }
 
-	public String getResourceType() {
-		return resourceType;
-	}
+    public String getPolicyDefinitionId() {
+        return policyDefinitionId;
+    }
 
-	public String getResourceLocation() {
-		return resourceLocation;
-	}
+    public void setPolicyDefinitionId(String policyDefinitionId) {
+        this.policyDefinitionId = policyDefinitionId;
+    }
 
-	public String getResourceGroup() {
-		return resourceGroup;
-	}
+    public String getEffectiveParameters() {
+        return effectiveParameters;
+    }
 
-	public String getResourceTags() {
-		return resourceTags;
-	}
+    public void setEffectiveParameters(String effectiveParameters) {
+        this.effectiveParameters = effectiveParameters;
+    }
 
-	public String getPolicyAssignmentName() {
-		return policyAssignmentName;
-	}
+    public String getSubscriptionId() {
+        return subscriptionId;
+    }
 
-	public String getPolicyAssignmentOwner() {
-		return policyAssignmentOwner;
-	}
+    public void setSubscriptionId(String subscriptionId) {
+        this.subscriptionId = subscriptionId;
+    }
 
-	public String getPolicyAssignmentParameters() {
-		return policyAssignmentParameters;
-	}
+    public String getResourceType() {
+        return resourceType;
+    }
 
-	public String getPolicyAssignmentScope() {
-		return policyAssignmentScope;
-	}
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
 
-	public String getPolicyDefinitionName() {
-		return policyDefinitionName;
-	}
+    public String getResourceLocation() {
+        return resourceLocation;
+    }
 
-	public String getPolicyDefinitionAction() {
-		return policyDefinitionAction;
-	}
+    public void setResourceLocation(String resourceLocation) {
+        this.resourceLocation = resourceLocation;
+    }
 
-	public String getPolicyDefinitionCategory() {
-		return policyDefinitionCategory;
-	}
+    public String getResourceGroup() {
+        return resourceGroup;
+    }
 
-	public String getPolicySetDefinitionId() {
-		return policySetDefinitionId;
-	}
+    public void setResourceGroup(String resourceGroup) {
+        this.resourceGroup = resourceGroup;
+    }
 
-	public String getPolicySetDefinitionName() {
-		return policySetDefinitionName;
-	}
+    public String getResourceTags() {
+        return resourceTags;
+    }
 
-	public String getPolicySetDefinitionOwner() {
-		return policySetDefinitionOwner;
-	}
+    public void setResourceTags(String resourceTags) {
+        this.resourceTags = resourceTags;
+    }
 
-	public String getPolicySetDefinitionCategory() {
-		return policySetDefinitionCategory;
-	}
+    public String getPolicyAssignmentName() {
+        return policyAssignmentName;
+    }
 
-	public String getPolicySetDefinitionParameters() {
-		return policySetDefinitionParameters;
-	}
+    public void setPolicyAssignmentName(String policyAssignmentName) {
+        this.policyAssignmentName = policyAssignmentName;
+    }
 
-	public String getManagementGroupIds() {
-		return managementGroupIds;
-	}
+    public String getPolicyAssignmentOwner() {
+        return policyAssignmentOwner;
+    }
 
-	public String getPolicyDefinitionReferenceId() {
-		return policyDefinitionReferenceId;
-	}
+    public void setPolicyAssignmentOwner(String policyAssignmentOwner) {
+        this.policyAssignmentOwner = policyAssignmentOwner;
+    }
 
-	public void setTimestamp(String timestamp) {
-		this.timestamp = timestamp;
-	}
+    public String getPolicyAssignmentParameters() {
+        return policyAssignmentParameters;
+    }
 
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
-	}
+    public void setPolicyAssignmentParameters(String policyAssignmentParameters) {
+        this.policyAssignmentParameters = policyAssignmentParameters;
+    }
 
-	public void setPolicyAssignmentId(String policyAssignmentId) {
-		this.policyAssignmentId = policyAssignmentId;
-	}
+    public String getPolicyAssignmentScope() {
+        return policyAssignmentScope;
+    }
 
-	public void setPolicyDefinitionId(String policyDefinitionId) {
-		this.policyDefinitionId = policyDefinitionId;
-	}
+    public void setPolicyAssignmentScope(String policyAssignmentScope) {
+        this.policyAssignmentScope = policyAssignmentScope;
+    }
 
-	public void setEffectiveParameters(String effectiveParameters) {
-		this.effectiveParameters = effectiveParameters;
-	}
+    public String getPolicyDefinitionName() {
+        return policyDefinitionName;
+    }
 
-	public Boolean getIsCompliant() {
-		return isCompliant;
-	}
+    public void setPolicyDefinitionName(String policyDefinitionName) {
+        this.policyDefinitionName = policyDefinitionName;
+    }
 
-	public void setIsCompliant(Boolean isCompliant) {
-		this.isCompliant = isCompliant;
-	}
+    public String getPolicyDefinitionAction() {
+        return policyDefinitionAction;
+    }
 
-	public void setSubscriptionId(String subscriptionId) {
-		this.subscriptionId = subscriptionId;
-	}
+    public void setPolicyDefinitionAction(String policyDefinitionAction) {
+        this.policyDefinitionAction = policyDefinitionAction;
+    }
 
-	public void setResourceType(String resourceType) {
-		this.resourceType = resourceType;
-	}
+    public String getPolicyDefinitionCategory() {
+        return policyDefinitionCategory;
+    }
 
-	public void setResourceLocation(String resourceLocation) {
-		this.resourceLocation = resourceLocation;
-	}
+    public void setPolicyDefinitionCategory(String policyDefinitionCategory) {
+        this.policyDefinitionCategory = policyDefinitionCategory;
+    }
 
-	public void setResourceGroup(String resourceGroup) {
-		this.resourceGroup = resourceGroup;
-	}
+    public String getPolicySetDefinitionId() {
+        return policySetDefinitionId;
+    }
 
-	public void setResourceTags(String resourceTags) {
-		this.resourceTags = resourceTags;
-	}
+    public void setPolicySetDefinitionId(String policySetDefinitionId) {
+        this.policySetDefinitionId = policySetDefinitionId;
+    }
 
-	public void setPolicyAssignmentName(String policyAssignmentName) {
-		this.policyAssignmentName = policyAssignmentName;
-	}
+    public String getPolicySetDefinitionName() {
+        return policySetDefinitionName;
+    }
 
-	public void setPolicyAssignmentOwner(String policyAssignmentOwner) {
-		this.policyAssignmentOwner = policyAssignmentOwner;
-	}
+    public void setPolicySetDefinitionName(String policySetDefinitionName) {
+        this.policySetDefinitionName = policySetDefinitionName;
+    }
 
-	public void setPolicyAssignmentParameters(String policyAssignmentParameters) {
-		this.policyAssignmentParameters = policyAssignmentParameters;
-	}
+    public String getPolicySetDefinitionOwner() {
+        return policySetDefinitionOwner;
+    }
 
-	public void setPolicyAssignmentScope(String policyAssignmentScope) {
-		this.policyAssignmentScope = policyAssignmentScope;
-	}
+    public void setPolicySetDefinitionOwner(String policySetDefinitionOwner) {
+        this.policySetDefinitionOwner = policySetDefinitionOwner;
+    }
 
-	public void setPolicyDefinitionName(String policyDefinitionName) {
-		this.policyDefinitionName = policyDefinitionName;
-	}
+    public String getPolicySetDefinitionCategory() {
+        return policySetDefinitionCategory;
+    }
 
-	public void setPolicyDefinitionAction(String policyDefinitionAction) {
-		this.policyDefinitionAction = policyDefinitionAction;
-	}
+    public void setPolicySetDefinitionCategory(String policySetDefinitionCategory) {
+        this.policySetDefinitionCategory = policySetDefinitionCategory;
+    }
 
-	public void setPolicyDefinitionCategory(String policyDefinitionCategory) {
-		this.policyDefinitionCategory = policyDefinitionCategory;
-	}
+    public String getPolicySetDefinitionParameters() {
+        return policySetDefinitionParameters;
+    }
 
-	public void setPolicySetDefinitionId(String policySetDefinitionId) {
-		this.policySetDefinitionId = policySetDefinitionId;
-	}
+    public void setPolicySetDefinitionParameters(String policySetDefinitionParameters) {
+        this.policySetDefinitionParameters = policySetDefinitionParameters;
+    }
 
-	public void setPolicySetDefinitionName(String policySetDefinitionName) {
-		this.policySetDefinitionName = policySetDefinitionName;
-	}
+    public String getManagementGroupIds() {
+        return managementGroupIds;
+    }
 
-	public void setPolicySetDefinitionOwner(String policySetDefinitionOwner) {
-		this.policySetDefinitionOwner = policySetDefinitionOwner;
-	}
+    public void setManagementGroupIds(String managementGroupIds) {
+        this.managementGroupIds = managementGroupIds;
+    }
 
-	public void setPolicySetDefinitionCategory(String policySetDefinitionCategory) {
-		this.policySetDefinitionCategory = policySetDefinitionCategory;
-	}
+    public String getPolicyDefinitionReferenceId() {
+        return policyDefinitionReferenceId;
+    }
 
-	public void setPolicySetDefinitionParameters(String policySetDefinitionParameters) {
-		this.policySetDefinitionParameters = policySetDefinitionParameters;
-	}
+    public void setPolicyDefinitionReferenceId(String policyDefinitionReferenceId) {
+        this.policyDefinitionReferenceId = policyDefinitionReferenceId;
+    }
 
-	public void setManagementGroupIds(String managementGroupIds) {
-		this.managementGroupIds = managementGroupIds;
-	}
+    public Boolean getIsCompliant() {
+        return isCompliant;
+    }
 
-	public void setPolicyDefinitionReferenceId(String policyDefinitionReferenceId) {
-		this.policyDefinitionReferenceId = policyDefinitionReferenceId;
-	}
+    public void setIsCompliant(Boolean isCompliant) {
+        this.isCompliant = isCompliant;
+    }
 
-	public String getPolicyType() {
-		return policyType;
-	}
+    public String getPolicyType() {
+        return policyType;
+    }
 
-	public String getPolicyRule() {
-		return policyRule;
-	}
+    public void setPolicyType(String policyType) {
+        this.policyType = policyType;
+    }
 
-	public String getPolicyDescription() {
-		return policyDescription;
-	}
+    public String getPolicyRule() {
+        return policyRule;
+    }
 
-	public String getPolicyName() {
-		return policyName;
-	}
+    public void setPolicyRule(String policyRule) {
+        this.policyRule = policyRule;
+    }
 
-	public void setPolicyDescription(String policyDescription) {
-		this.policyDescription = policyDescription;
-	}
+    public String getPolicyDescription() {
+        return policyDescription;
+    }
 
-	public void setPolicyName(String policyName) {
-		this.policyName = policyName;
-	}
+    public void setPolicyDescription(String policyDescription) {
+        this.policyDescription = policyDescription;
+    }
 
-	public void setPolicyType(String policyType) {
-		this.policyType = policyType;
-	}
+    public String getPolicyName() {
+        return policyName;
+    }
 
-	public void setPolicyRule(String policyRule) {
-		this.policyRule = policyRule;
-	}
+    public void setPolicyName(String policyName) {
+        this.policyName = policyName;
+    }
 
-	public String getResourceIdLower() {
-		return resourceIdLower;
-	}
+    public String getResourceIdLower() {
+        return resourceIdLower;
+    }
 
-	public void setResourceIdLower(String resourceIdLower) {
-		this.resourceIdLower = resourceIdLower;
-	}
+    public void setResourceIdLower(String resourceIdLower) {
+        this.resourceIdLower = resourceIdLower;
+    }
 
 }

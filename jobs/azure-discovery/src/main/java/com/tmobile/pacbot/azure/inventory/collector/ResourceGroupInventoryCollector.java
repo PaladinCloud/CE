@@ -18,45 +18,42 @@ import java.util.Map;
 
 @Component
 public class ResourceGroupInventoryCollector implements Collector {
-	
-	@Autowired
-	AzureCredentialProvider azureCredentialProvider;
-	
-	private static Logger log = LoggerFactory.getLogger(ResourceGroupInventoryCollector.class);
+
+    private static Logger log = LoggerFactory.getLogger(ResourceGroupInventoryCollector.class);
+    @Autowired
+    AzureCredentialProvider azureCredentialProvider;
+
+    public List<ResourceGroupVH> collect(SubscriptionVH subscription) {
+        List<ResourceGroupVH> resourceGroupList = new ArrayList<>();
+        Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
+        PagedList<ResourceGroup> resourceGroups = azure.resourceGroups().list();
+        for (ResourceGroup resourceGroup : resourceGroups) {
+            ResourceGroupVH resourceGroupVH = new ResourceGroupVH();
+            resourceGroupVH.setSubscription(subscription.getSubscriptionId());
+            resourceGroupVH.setSubscriptionName(subscription.getSubscriptionName());
+            resourceGroupVH.setId(resourceGroup.id());
+            resourceGroupVH.setResourceGroupName(resourceGroup.name());
+            resourceGroupVH.setKey(resourceGroup.key());
+            resourceGroupVH.setType(resourceGroup.type());
+            resourceGroupVH.setProvisioningState(resourceGroup.provisioningState());
+            resourceGroupVH.setRegionName(resourceGroup.regionName());
+            resourceGroupVH.setRegion(Util.getRegionValue(subscription, resourceGroup.regionName()));
+            resourceGroupVH.setTags(resourceGroup.tags());
+            resourceGroupVH.setName(resourceGroup.name());
+            resourceGroupList.add(resourceGroupVH);
+        }
+        log.info("Target Type : {}  Total: {} ", "ResourceGroup", resourceGroupList.size());
+        return resourceGroupList;
+    }
 
 
+    @Override
+    public List<? extends AzureVH> collect() {
+        throw new UnsupportedOperationException();
+    }
 
-	public List<ResourceGroupVH> collect(SubscriptionVH subscription) {
-		List<ResourceGroupVH> resourceGroupList = new ArrayList<>();
-		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
-		PagedList<ResourceGroup> resourceGroups = azure.resourceGroups().list();
-		for (ResourceGroup resourceGroup : resourceGroups) {
-			ResourceGroupVH resourceGroupVH = new ResourceGroupVH();
-			resourceGroupVH.setSubscription(subscription.getSubscriptionId());
-			resourceGroupVH.setSubscriptionName(subscription.getSubscriptionName());
-			resourceGroupVH.setId(resourceGroup.id());
-			resourceGroupVH.setResourceGroupName(resourceGroup.name());
-			resourceGroupVH.setKey(resourceGroup.key());
-			resourceGroupVH.setType(resourceGroup.type());
-			resourceGroupVH.setProvisioningState(resourceGroup.provisioningState());
-			resourceGroupVH.setRegionName(resourceGroup.regionName());
-			resourceGroupVH.setRegion(Util.getRegionValue(subscription,resourceGroup.regionName()));
-			resourceGroupVH.setTags(resourceGroup.tags());
-			resourceGroupVH.setName(resourceGroup.name());
-			resourceGroupList.add(resourceGroupVH);
-		}
-		log.info("Target Type : {}  Total: {} ","ResourceGroup",resourceGroupList.size());
-		return resourceGroupList;
-	}
-
-
-	@Override
-	public List<? extends AzureVH> collect() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+        throw new UnsupportedOperationException();
+    }
 }

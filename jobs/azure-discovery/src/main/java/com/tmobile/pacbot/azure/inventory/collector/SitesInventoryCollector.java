@@ -21,9 +21,9 @@ import java.util.Map;
 public class SitesInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(SitesInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Network/vpnSites?api-version=2019-06-01";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Network/vpnSites?api-version=2019-06-01";
 
     @Override
     public List<? extends AzureVH> collect() {

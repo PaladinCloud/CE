@@ -2,7 +2,7 @@ package com.tmobile.pacbot.azure.inventory.vo;
 
 import java.util.Map;
 
-public class RedisCacheVH extends AzureVH{
+public class RedisCacheVH extends AzureVH {
     private boolean nonSslPort;
     private String name;
 

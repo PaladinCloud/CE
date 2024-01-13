@@ -2,7 +2,7 @@ package com.tmobile.pacbot.azure.inventory.vo;
 
 import java.util.Map;
 
-public class MySQLFlexibleVH extends AzureVH{
+public class MySQLFlexibleVH extends AzureVH {
     String tlsVersion;
 
     private Map<String, String> tags;

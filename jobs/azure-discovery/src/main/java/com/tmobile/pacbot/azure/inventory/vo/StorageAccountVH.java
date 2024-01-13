@@ -1,314 +1,298 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microsoft.azure.management.storage.MinimumTlsVersion;
+
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.microsoft.azure.management.appservice.SupportedTlsVersions;
-import com.microsoft.azure.management.storage.MinimumTlsVersion;
 
 @JsonSerialize
 public class StorageAccountVH extends AzureVH {
 
-	private String resourceGroupName;
-	private boolean canAccessFromAzureServices;
-	private boolean isAccessAllowedFromAllNetworks;
-	private boolean isAzureFilesAadIntegrationEnabled;
-	private boolean isHnsEnabled;
-	private String name;
-	private String regionName;
-	private String customerManagedKey;
-	private String systemAssignedManagedServiceIdentityPrincipalId;
-	private String systemAssignedManagedServiceIdentityTenantId;
-	private List<String> endPoints;
-	private List<String> ipAddressesWithAccess;
-	private List<String> ipAddressRangesWithAccess;
-	private List<String> networkSubnetsWithAccess;
-	private Map<String, String> tags;
-	private String kind;
-	private Map<String, String> endpointsMap;
-	private String  networkRuleBypass;
-	private MinimumTlsVersion minimumTlsVersion;
+    private String resourceGroupName;
+    private boolean canAccessFromAzureServices;
+    private boolean isAccessAllowedFromAllNetworks;
+    private boolean isAzureFilesAadIntegrationEnabled;
+    private boolean isHnsEnabled;
+    private String name;
+    private String regionName;
+    private String customerManagedKey;
+    private String systemAssignedManagedServiceIdentityPrincipalId;
+    private String systemAssignedManagedServiceIdentityTenantId;
+    private List<String> endPoints;
+    private List<String> ipAddressesWithAccess;
+    private List<String> ipAddressRangesWithAccess;
+    private List<String> networkSubnetsWithAccess;
+    private Map<String, String> tags;
+    private String kind;
+    private Map<String, String> endpointsMap;
+    private String networkRuleBypass;
+    private MinimumTlsVersion minimumTlsVersion;
+    private boolean isBlobPublicAccessAllowed;
+    private String defaultAction;
 
-	public String getNetworkRuleBypass() {
-		return networkRuleBypass;
-	}
+    public String getNetworkRuleBypass() {
+        return networkRuleBypass;
+    }
 
-	public void setNetworkRuleBypass(String networkRuleBypass) {
-		this.networkRuleBypass = networkRuleBypass;
-	}
+    public void setNetworkRuleBypass(String networkRuleBypass) {
+        this.networkRuleBypass = networkRuleBypass;
+    }
 
-	private boolean isBlobPublicAccessAllowed;
-	private String defaultAction;
+    public String getDefaultAction() {
+        return defaultAction;
+    }
 
-	public String getDefaultAction() {
-		return defaultAction;
-	}
+    public void setDefaultAction(String defaultAction) {
+        this.defaultAction = defaultAction;
+    }
 
-	public void setDefaultAction(String defaultAction) {
-		this.defaultAction = defaultAction;
-	}
+    public boolean isBlobPublicAccessAllowed() {
+        return isBlobPublicAccessAllowed;
+    }
 
-	public boolean isBlobPublicAccessAllowed() {
-		return isBlobPublicAccessAllowed;
-	}
+    public void setBlobPublicAccessAllowed(boolean blobPublicAccessAllowed) {
+        isBlobPublicAccessAllowed = blobPublicAccessAllowed;
+    }
 
-	public void setBlobPublicAccessAllowed(boolean blobPublicAccessAllowed) {
-		isBlobPublicAccessAllowed = blobPublicAccessAllowed;
-	}
+    /**
+     * @return the resourceGroupName
+     */
+    public String getResourceGroupName() {
+        return resourceGroupName;
+    }
 
-	/**
-	 * @return the resourceGroupName
-	 */
-	public String getResourceGroupName() {
-		return resourceGroupName;
-	}
+    /**
+     * @param resourceGroupName the resourceGroupName to set
+     */
+    public void setResourceGroupName(String resourceGroupName) {
+        this.resourceGroupName = resourceGroupName;
+    }
 
-	/**
-	 * @return the customerManagedKey
-	 */
-	public String getCustomerManagedKey() {
-		return customerManagedKey;
-	}
+    /**
+     * @return the customerManagedKey
+     */
+    public String getCustomerManagedKey() {
+        return customerManagedKey;
+    }
 
-	/**
-	 * @param customerManagedKey
-	 *            the customerManagedKey to set
-	 */
-	public void setCustomerManagedKey(String customerManagedKey) {
-		this.customerManagedKey = customerManagedKey;
-	}
+    /**
+     * @param customerManagedKey the customerManagedKey to set
+     */
+    public void setCustomerManagedKey(String customerManagedKey) {
+        this.customerManagedKey = customerManagedKey;
+    }
 
-	/**
-	 * @param resourceGroupName
-	 *            the resourceGroupName to set
-	 */
-	public void setResourceGroupName(String resourceGroupName) {
-		this.resourceGroupName = resourceGroupName;
-	}
+    /**
+     * @return the canAccessFromAzureServices
+     */
+    public boolean isCanAccessFromAzureServices() {
+        return canAccessFromAzureServices;
+    }
 
-	/**
-	 * @return the canAccessFromAzureServices
-	 */
-	public boolean isCanAccessFromAzureServices() {
-		return canAccessFromAzureServices;
-	}
+    /**
+     * @param canAccessFromAzureServices the canAccessFromAzureServices to set
+     */
+    public void setCanAccessFromAzureServices(boolean canAccessFromAzureServices) {
+        this.canAccessFromAzureServices = canAccessFromAzureServices;
+    }
 
-	/**
-	 * @param canAccessFromAzureServices
-	 *            the canAccessFromAzureServices to set
-	 */
-	public void setCanAccessFromAzureServices(boolean canAccessFromAzureServices) {
-		this.canAccessFromAzureServices = canAccessFromAzureServices;
-	}
+    /**
+     * @return the creationTime
+     */
 
-	/**
-	 * @return the creationTime
-	 */
+    /**
+     * @return the endPoints
+     */
+    public List<String> getEndPoints() {
+        return endPoints;
+    }
 
-	/**
-	 * @return the endPoints
-	 */
-	public List<String> getEndPoints() {
-		return endPoints;
-	}
+    /**
+     * @param endPoints the endPoints to set
+     */
+    public void setEndPoints(List<String> endPoints) {
+        this.endPoints = endPoints;
+    }
 
-	/**
-	 * @param endPoints
-	 *            the endPoints to set
-	 */
-	public void setEndPoints(List<String> endPoints) {
-		this.endPoints = endPoints;
-	}
+    /**
+     * @return the ipAddressRangesWithAccess
+     */
+    public List<String> getIpAddressRangesWithAccess() {
+        return ipAddressRangesWithAccess;
+    }
 
-	/**
-	 * @return the ipAddressRangesWithAccess
-	 */
-	public List<String> getIpAddressRangesWithAccess() {
-		return ipAddressRangesWithAccess;
-	}
+    /**
+     * @param ipAddressRangesWithAccess the ipAddressRangesWithAccess to set
+     */
+    public void setIpAddressRangesWithAccess(List<String> ipAddressRangesWithAccess) {
+        this.ipAddressRangesWithAccess = ipAddressRangesWithAccess;
+    }
 
-	/**
-	 * @param ipAddressRangesWithAccess
-	 *            the ipAddressRangesWithAccess to set
-	 */
-	public void setIpAddressRangesWithAccess(List<String> ipAddressRangesWithAccess) {
-		this.ipAddressRangesWithAccess = ipAddressRangesWithAccess;
-	}
+    /**
+     * @return the isAccessAllowedFromAllNetworks
+     */
+    public boolean isAccessAllowedFromAllNetworks() {
+        return isAccessAllowedFromAllNetworks;
+    }
 
-	/**
-	 * @return the isAccessAllowedFromAllNetworks
-	 */
-	public boolean isAccessAllowedFromAllNetworks() {
-		return isAccessAllowedFromAllNetworks;
-	}
+    /**
+     * @param isAccessAllowedFromAllNetworks the isAccessAllowedFromAllNetworks to set
+     */
+    public void setAccessAllowedFromAllNetworks(boolean isAccessAllowedFromAllNetworks) {
+        this.isAccessAllowedFromAllNetworks = isAccessAllowedFromAllNetworks;
+    }
 
-	/**
-	 * @param isAccessAllowedFromAllNetworks
-	 *            the isAccessAllowedFromAllNetworks to set
-	 */
-	public void setAccessAllowedFromAllNetworks(boolean isAccessAllowedFromAllNetworks) {
-		this.isAccessAllowedFromAllNetworks = isAccessAllowedFromAllNetworks;
-	}
+    /**
+     * @return the isAzureFilesAadIntegrationEnabled
+     */
+    public boolean isAzureFilesAadIntegrationEnabled() {
+        return isAzureFilesAadIntegrationEnabled;
+    }
 
-	/**
-	 * @return the isAzureFilesAadIntegrationEnabled
-	 */
-	public boolean isAzureFilesAadIntegrationEnabled() {
-		return isAzureFilesAadIntegrationEnabled;
-	}
+    /**
+     * @param isAzureFilesAadIntegrationEnabled the isAzureFilesAadIntegrationEnabled to set
+     */
+    public void setAzureFilesAadIntegrationEnabled(boolean isAzureFilesAadIntegrationEnabled) {
+        this.isAzureFilesAadIntegrationEnabled = isAzureFilesAadIntegrationEnabled;
+    }
 
-	/**
-	 * @param isAzureFilesAadIntegrationEnabled
-	 *            the isAzureFilesAadIntegrationEnabled to set
-	 */
-	public void setAzureFilesAadIntegrationEnabled(boolean isAzureFilesAadIntegrationEnabled) {
-		this.isAzureFilesAadIntegrationEnabled = isAzureFilesAadIntegrationEnabled;
-	}
+    /**
+     * @return the isHnsEnabled
+     */
+    public boolean isHnsEnabled() {
+        return isHnsEnabled;
+    }
 
-	/**
-	 * @return the isHnsEnabled
-	 */
-	public boolean isHnsEnabled() {
-		return isHnsEnabled;
-	}
+    /**
+     * @param isHnsEnabled the isHnsEnabled to set
+     */
+    public void setHnsEnabled(boolean isHnsEnabled) {
+        this.isHnsEnabled = isHnsEnabled;
+    }
 
-	/**
-	 * @param isHnsEnabled
-	 *            the isHnsEnabled to set
-	 */
-	public void setHnsEnabled(boolean isHnsEnabled) {
-		this.isHnsEnabled = isHnsEnabled;
-	}
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @return the regionName
+     */
+    public String getRegionName() {
+        return regionName;
+    }
 
-	/**
-	 * @return the regionName
-	 */
-	public String getRegionName() {
-		return regionName;
-	}
+    /**
+     * @param regionName the regionName to set
+     */
+    public void setRegionName(String regionName) {
+        this.regionName = regionName;
+    }
 
-	/**
-	 * @param regionName
-	 *            the regionName to set
-	 */
-	public void setRegionName(String regionName) {
-		this.regionName = regionName;
-	}
+    /**
+     * @return the networkSubnetsWithAccess
+     */
+    public List<String> getNetworkSubnetsWithAccess() {
+        return networkSubnetsWithAccess;
+    }
 
-	/**
-	 * @return the networkSubnetsWithAccess
-	 */
-	public List<String> getNetworkSubnetsWithAccess() {
-		return networkSubnetsWithAccess;
-	}
+    /**
+     * @param networkSubnetsWithAccess the networkSubnetsWithAccess to set
+     */
+    public void setNetworkSubnetsWithAccess(List<String> networkSubnetsWithAccess) {
+        this.networkSubnetsWithAccess = networkSubnetsWithAccess;
+    }
 
-	/**
-	 * @param networkSubnetsWithAccess
-	 *            the networkSubnetsWithAccess to set
-	 */
-	public void setNetworkSubnetsWithAccess(List<String> networkSubnetsWithAccess) {
-		this.networkSubnetsWithAccess = networkSubnetsWithAccess;
-	}
+    /**
+     * @return the systemAssignedManagedServiceIdentityPrincipalId
+     */
+    public String getSystemAssignedManagedServiceIdentityPrincipalId() {
+        return systemAssignedManagedServiceIdentityPrincipalId;
+    }
 
-	/**
-	 * @return the systemAssignedManagedServiceIdentityPrincipalId
-	 */
-	public String getSystemAssignedManagedServiceIdentityPrincipalId() {
-		return systemAssignedManagedServiceIdentityPrincipalId;
-	}
+    /**
+     * @param systemAssignedManagedServiceIdentityPrincipalId the systemAssignedManagedServiceIdentityPrincipalId to set
+     */
+    public void setSystemAssignedManagedServiceIdentityPrincipalId(
+            String systemAssignedManagedServiceIdentityPrincipalId) {
+        this.systemAssignedManagedServiceIdentityPrincipalId = systemAssignedManagedServiceIdentityPrincipalId;
+    }
 
-	/**
-	 * @param systemAssignedManagedServiceIdentityPrincipalId
-	 *            the systemAssignedManagedServiceIdentityPrincipalId to set
-	 */
-	public void setSystemAssignedManagedServiceIdentityPrincipalId(
-			String systemAssignedManagedServiceIdentityPrincipalId) {
-		this.systemAssignedManagedServiceIdentityPrincipalId = systemAssignedManagedServiceIdentityPrincipalId;
-	}
+    /**
+     * @return the systemAssignedManagedServiceIdentityTenantId
+     */
+    public String getSystemAssignedManagedServiceIdentityTenantId() {
+        return systemAssignedManagedServiceIdentityTenantId;
+    }
 
-	/**
-	 * @return the systemAssignedManagedServiceIdentityTenantId
-	 */
-	public String getSystemAssignedManagedServiceIdentityTenantId() {
-		return systemAssignedManagedServiceIdentityTenantId;
-	}
+    /**
+     * @param systemAssignedManagedServiceIdentityTenantId the systemAssignedManagedServiceIdentityTenantId to set
+     */
+    public void setSystemAssignedManagedServiceIdentityTenantId(String systemAssignedManagedServiceIdentityTenantId) {
+        this.systemAssignedManagedServiceIdentityTenantId = systemAssignedManagedServiceIdentityTenantId;
+    }
 
-	/**
-	 * @param systemAssignedManagedServiceIdentityTenantId
-	 *            the systemAssignedManagedServiceIdentityTenantId to set
-	 */
-	public void setSystemAssignedManagedServiceIdentityTenantId(String systemAssignedManagedServiceIdentityTenantId) {
-		this.systemAssignedManagedServiceIdentityTenantId = systemAssignedManagedServiceIdentityTenantId;
-	}
+    /**
+     * @return the tags
+     */
+    public Map<String, String> getTags() {
+        return tags;
+    }
 
-	/**
-	 * @return the tags
-	 */
-	public Map<String, String> getTags() {
-		return tags;
-	}
+    /**
+     * @param tags the tags to set
+     */
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
-	/**
-	 * @param tags
-	 *            the tags to set
-	 */
-	public void setTags(Map<String, String> tags) {
-		this.tags = tags;
-	}
+    /**
+     * @return the ipAddressesWithAccess
+     */
+    public List<String> getIpAddressesWithAccess() {
+        return ipAddressesWithAccess;
+    }
 
-	/**
-	 * @return the ipAddressesWithAccess
-	 */
-	public List<String> getIpAddressesWithAccess() {
-		return ipAddressesWithAccess;
-	}
+    /**
+     * @param ipAddressesWithAccess the ipAddressesWithAccess to set
+     */
+    public void setIpAddressesWithAccess(List<String> ipAddressesWithAccess) {
+        this.ipAddressesWithAccess = ipAddressesWithAccess;
+    }
 
-	/**
-	 * @param ipAddressesWithAccess
-	 *            the ipAddressesWithAccess to set
-	 */
-	public void setIpAddressesWithAccess(List<String> ipAddressesWithAccess) {
-		this.ipAddressesWithAccess = ipAddressesWithAccess;
-	}
+    public String getKind() {
+        return kind;
+    }
 
-	public String getKind() {
-		return kind;
-	}
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
 
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
+    public Map<String, String> getEndpointsMap() {
+        return endpointsMap;
+    }
 
-	public Map<String, String> getEndpointsMap() {
-		return endpointsMap;
-	}
+    public void setEndpointsMap(Map<String, String> endpointsMap) {
+        this.endpointsMap = endpointsMap;
+    }
 
-	public void setEndpointsMap(Map<String, String> endpointsMap) {
-		this.endpointsMap = endpointsMap;
-	}
-	public MinimumTlsVersion getMinimumTlsVersion() {
-		return minimumTlsVersion;
-	}
-	public void setMinimumTlsVersion(MinimumTlsVersion minimumTlsVersion) {
-		this.minimumTlsVersion = minimumTlsVersion;
-	}
+    public MinimumTlsVersion getMinimumTlsVersion() {
+        return minimumTlsVersion;
+    }
 
+    public void setMinimumTlsVersion(MinimumTlsVersion minimumTlsVersion) {
+        this.minimumTlsVersion = minimumTlsVersion;
+    }
 
 
 }

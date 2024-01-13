@@ -1,13 +1,10 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
-import com.microsoft.azure.management.storage.StorageAccountEncryptionKeySource;
-
-public class StorageAccountActivityLogVH extends AzureVH{
+public class StorageAccountActivityLogVH extends AzureVH {
 
     private String storageAccountActivityLogContainerId;
 
     private String storageAccountEncryptionKeySource;
-
 
 
     public String getStorageAccountActivityLogContainerId() {

@@ -23,9 +23,9 @@ import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroup
 public class PostgreSQLInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(PostgreSQLInventoryCollector.class);
+    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.DBforPostgreSQL/servers?api-version=2017-12-01";
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.DBforPostgreSQL/servers?api-version=2017-12-01";
 
     @Override
     public List<? extends AzureVH> collect() {

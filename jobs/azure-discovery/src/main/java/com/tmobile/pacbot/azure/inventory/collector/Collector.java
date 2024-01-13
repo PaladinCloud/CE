@@ -25,6 +25,8 @@ import java.util.Map;
 public interface Collector {
 
     List<? extends AzureVH> collect();
+
     List<? extends AzureVH> collect(SubscriptionVH subscription);
+
     List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap);
 }
