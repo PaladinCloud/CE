@@ -214,7 +214,7 @@ public class AnnotationPublisher {
             Map<String, Object> relMap = new HashMap<>();
             relMap.put("name", getTypeFromAnnotation(_annotation));
             relMap.put("parent", _annotation.get(PacmanSdkConstants.DOC_ID));
-            logger.info("Printing relations: {}", serializer.toJson(relMap));
+            logger.info("printing relations: {}", serializer.toJson(relMap));
             _annotation.put(_annotation.get(TARGET_TYPE) + "_relations", serializer.toJson(relMap));
             _annotation.put("targetTypeDisplayName",targetTypeDisplayName);
             if (null != issueAttributes) {
@@ -264,8 +264,8 @@ public class AnnotationPublisher {
             String updatedInputStr = gson.toJson(inputObj);
             bulkRequestBody.append(updatedInputStr);
             bulkRequestBody.append("\n");
-            logger.info("************************ Printing Annotation****************** : {}", updatedInputStr);
-            logger.info("************************ Bulk POst url****************** : {}", bulkPostUrl);
+            logger.info("annotation: {}", updatedInputStr);
+            logger.info("bulk post url: {}", bulkPostUrl);
             if (bulkRequestBody.toString().getBytes().length
                     / (1024 * 1024) >= PacmanSdkConstants.ES_MAX_BULK_POST_SIZE) {
                 response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequestBody.toString(),new HashMap<>());
