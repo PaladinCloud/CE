@@ -4,6 +4,7 @@ import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.resources.ResourceGroup;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import org.slf4j.Logger;
@@ -13,16 +14,19 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
-public class ResourceGroupInventoryCollector {
+public class ResourceGroupInventoryCollector implements Collector {
 	
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
 	
 	private static Logger log = LoggerFactory.getLogger(ResourceGroupInventoryCollector.class);
-	
-	public List<ResourceGroupVH> fetchResourceGroupDetails(SubscriptionVH subscription) {
+
+
+
+	public List<ResourceGroupVH> collect(SubscriptionVH subscription) {
 		List<ResourceGroupVH> resourceGroupList = new ArrayList<>();
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 		PagedList<ResourceGroup> resourceGroups = azure.resourceGroups().list();
@@ -45,4 +49,14 @@ public class ResourceGroupInventoryCollector {
 		return resourceGroupList;
 	}
 
+
+	@Override
+	public List<? extends AzureVH> collect() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -5,12 +5,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import com.tmobile.pacbot.azure.inventory.vo.MySQLFlexibleVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -18,16 +20,22 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
-public class MySQLFlexibleInventoryCollector {
+public class MySQLFlexibleInventoryCollector implements Collector {
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private static final String serverApiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.DBforMySQL/flexibleServers?api-version=2021-05-01";
     private static final Logger logger = LoggerFactory.getLogger(MySQLFlexibleInventoryCollector.class);
+    private static final String serverApiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.DBforMySQL/flexibleServers?api-version=2021-05-01";
     private static final String configApiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.DBforMySQL/flexibleServers/%s/configurations?api-version=2021-05-01";
 
-    public List<MySQLFlexibleVH> fetchMySQLFlexibleServerDetails(SubscriptionVH subscription)  {
+    @Override
+    public List<? extends AzureVH> collect() {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<MySQLFlexibleVH> collect(SubscriptionVH subscription)  {
         List<MySQLFlexibleVH> mySQLFlexibleVHList = new ArrayList<>();
         String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
         String url = null;
@@ -47,6 +55,7 @@ public class MySQLFlexibleInventoryCollector {
                     HashMap<String, String> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
                     mySQLFlexibleVH.setTags(tagsMap);
                 }
+
                 mySQLFlexibleVH.setRegion(Util.getRegionValue(subscription,serverNames.get(i).getAsJsonObject().get("location").getAsString()));
                 String serverName=serverNames.get(i).getAsJsonObject().get("name").getAsString();
                 String id=serverNames.get(i).getAsJsonObject().get("id").getAsString();
@@ -66,7 +75,6 @@ public class MySQLFlexibleInventoryCollector {
                 for (int j=0;j< value.size();j++)
                 {
                     JsonObject properties=value.get(j).getAsJsonObject().getAsJsonObject("properties");
-
                     String tlsVersion=properties.get("value").getAsString();
                     if(tlsVersion.startsWith("TLS"))
                     {
@@ -79,16 +87,20 @@ public class MySQLFlexibleInventoryCollector {
                         break;
                     }
                 }
+
                 mySQLFlexibleVHList.add(mySQLFlexibleVH);
             }
-
-
-
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         return mySQLFlexibleVHList;
+    }
+
+    @Override
+    public List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+        throw new UnsupportedOperationException();
     }
 }
