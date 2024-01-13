@@ -65,8 +65,7 @@ public class TargetTypesConstants {
     public static final String WEBAPP = "webapp";
     public static final String WORKFLOWS = "workflows";
 
-
-    public static final List<String> TARGET_TYPES = Arrays.asList(
+    public static final List<String> TARGET_TYPES_TO_COLLECT = Arrays.asList(
             ACTIVITY_LOG_ALERT, // done
             AKS,    // done
             BATCH_ACCOUNTS, // done

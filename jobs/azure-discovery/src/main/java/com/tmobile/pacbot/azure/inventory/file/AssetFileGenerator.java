@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -91,7 +90,7 @@ public class AssetFileGenerator {
 
             List<String> longRunningTargetTypeList = new CopyOnWriteArrayList<>();
 
-            for (String targetType : TARGET_TYPES) {
+            for (String targetType : TARGET_TYPES_TO_COLLECT) {
                 executor.execute(() -> {
                     if (!(isTypeInScope(targetType))) {
                         return;
