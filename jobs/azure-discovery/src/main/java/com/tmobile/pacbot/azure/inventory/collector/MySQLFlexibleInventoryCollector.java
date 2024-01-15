@@ -60,7 +60,6 @@ public class MySQLFlexibleInventoryCollector implements Collector {
                 String id = serverNames.get(i).getAsJsonObject().get("id").getAsString();
                 int beginningIndex = id.indexOf("resourceGroups") + 15;
                 String resourceGroupName = (id).substring(beginningIndex, id.indexOf('/', beginningIndex + 2));
-                logger.debug("Resource group name: {}", resourceGroupName);
                 String configUrl = String.format(configApiUrlTemplate,
                         URLEncoder.encode(subscription.getSubscriptionId(),
                                 java.nio.charset.StandardCharsets.UTF_8.toString()),

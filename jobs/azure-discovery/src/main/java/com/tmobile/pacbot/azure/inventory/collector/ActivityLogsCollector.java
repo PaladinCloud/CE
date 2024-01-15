@@ -64,7 +64,6 @@ public final class ActivityLogsCollector implements Collector {
                 logger.info("subscriptionName: {}", subscription.getSubscriptionName());
                 JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
                 JsonObject activityLogObject = responseObj.getAsJsonObject();
-                logger.info("activityLogObject: {}", activityLogObject);
 
                 if (activityLogObject != null) {
                     ActivityLogVH activityLogVH = new ActivityLogVH();

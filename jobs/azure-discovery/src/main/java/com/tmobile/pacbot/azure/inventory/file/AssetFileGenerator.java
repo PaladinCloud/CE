@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
-import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationforPermissionDenied;
+import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationPermissionDenied;
 import static com.tmobile.pacbot.azure.inventory.util.TargetTypesConstants.TARGET_TYPES_TO_COLLECT;
 
 @Component
@@ -82,7 +82,7 @@ public class AssetFileGenerator {
             try {
                 resourceGroupList = resourceGroupInventoryCollector.collect(subscription);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Error fetching resource groups for {}", subscription, e);
             }
             Map<String, Map<String, String>> tagMap = resourceGroupList.stream()
                     .collect(Collectors.toMap(x -> x.getResourceGroupName().toLowerCase(), ResourceGroupVH::getTags));
@@ -101,7 +101,7 @@ public class AssetFileGenerator {
                         FileManager.generateTargetTypeFile(assetDataFactory.getAssetData(subscription, tagMap, targetType), targetType);
                         longRunningTargetTypeList.remove(targetType);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error("Error fetching {} for {}", targetType, subscription, e);
                         Util.eCount.getAndIncrement();
                     }
                 });
@@ -122,7 +122,7 @@ public class AssetFileGenerator {
             log.info("Finished Discovery for sub {}", subscription);
         }
 
-        triggerNotificationforPermissionDenied();
+        triggerNotificationPermissionDenied();
 
         //Below logger message is used by datadog to create alert.
         if (Util.eCount.get() > 0) {

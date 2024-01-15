@@ -8,6 +8,8 @@ import com.tmobile.pacbot.azure.inventory.vo.*;
 import com.tmobile.pacman.commons.azure.clients.AzureCredentialManager;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.Map;
 
 @Component
 public class RegisteredApplicationInventoryCollector implements Collector {
+
+    private static final Logger log = LoggerFactory.getLogger(WorkflowInventoryCollector.class);
 
     // constants for API data
     private static final String VALUE = "value";
@@ -63,10 +67,9 @@ public class RegisteredApplicationInventoryCollector implements Collector {
                 registeredApplicationList.addAll(createRegisteredApplicationInfo(responseObj.getAsJsonArray(VALUE)));
                 url = responseObj.has(NEXT_DATASET) ? responseObj.get(NEXT_DATASET).getAsString() : null;
             } while (!StringUtils.isEmpty(url));
-            System.out.println("Registered Application Collected " + registeredApplicationList.size());
+            log.info("Registered Application Collected {}", registeredApplicationList.size());
         } catch (Exception e) {
-            System.out.println("Error in collecting Registered application list");
-            e.printStackTrace();
+            log.error("Error in collecting Registered application list", e);
         }
 
         return registeredApplicationList;

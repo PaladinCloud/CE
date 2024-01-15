@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
-import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationforPermissionDenied;
+import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationPermissionDenied;
 
 @Component
 public class AzureFetchOrchestrator {
@@ -102,7 +102,7 @@ public class AzureFetchOrchestrator {
             } catch (Exception e) {
                 rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline' WHERE tenant=?", Collections.singletonList(tenant));
                 ErrorManageUtil.uploadError(tenant, "all", "all", e.getMessage());
-                triggerNotificationforPermissionDenied();
+                triggerNotificationPermissionDenied();
             }
             populateTenantsSubscription(tenant, subscriptionList);
         }
