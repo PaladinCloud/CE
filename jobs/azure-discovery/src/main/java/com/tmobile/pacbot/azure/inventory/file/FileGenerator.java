@@ -55,12 +55,12 @@ public class FileGenerator {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static void writeToFile(String filename, String data, boolean appendTo) throws IOException {
-        log.debug("Write to File : {}", filename);
+        log.debug("Writing to file : {}", filename);
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(folderName + File.separator + filename, appendTo))) {
             bw.write(data);
             bw.flush();
         } catch (IOException e) {
-            log.error("Write to File : {} failed", filename, e);
+            log.error("Write to file : {} failed", filename, e);
             throw e;
         }
     }

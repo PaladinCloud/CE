@@ -35,7 +35,7 @@ public class VMInventoryCollector implements Collector {
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
 
-    private static JsonObject getVirtualMachineObject(SubscriptionVH subscription, String accessToken, VirtualMachine virtualMachine, String url) {
+    private static JsonObject getVirtualMachineObject(SubscriptionVH subscription, String accessToken, String url) {
         JsonObject virtualMachineObject = null;
         try {
             String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
@@ -45,6 +45,7 @@ public class VMInventoryCollector implements Collector {
         } catch (Exception e) {
             log.error("Error in fetching VM info from API {}, Error:{} ", url, e.getMessage());
         }
+
         return virtualMachineObject;
     }
 
@@ -76,9 +77,7 @@ public class VMInventoryCollector implements Collector {
                                 java.nio.charset.StandardCharsets.UTF_8.toString()),
                         URLEncoder.encode(virtualMachine.name(),
                                 java.nio.charset.StandardCharsets.UTF_8.toString()));
-                JsonObject virtualMachineObject = getVirtualMachineObject(subscription, accessToken, virtualMachine, url);
-                log.info("virtualMachineObject: {}", virtualMachineObject);
-
+                JsonObject virtualMachineObject = getVirtualMachineObject(subscription, accessToken, url);
 
                 VirtualMachineVH vmVH = new VirtualMachineVH();
                 vmVH.setComputerName(virtualMachine.computerName() == null
@@ -163,17 +162,16 @@ public class VMInventoryCollector implements Collector {
                     vmList.add(vmVH);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("Error Collecting info for {} {} ", virtualMachine.computerName(), e.getMessage());
+                log.error("Error Collecting info for {}", virtualMachine.computerName(), e);
                 Util.eCount.getAndIncrement();
             }
         }
+
         log.info("Target Type : {}  Total: {} ", "virtualmachine", vmList.size());
         return vmList;
     }
 
     private void setVnetInfo(VirtualMachine virtualMachine, VirtualMachineVH vmVH) {
-
         NicIPConfiguration ipConfiguration = virtualMachine.getPrimaryNetworkInterface().primaryIPConfiguration();
 
         vmVH.setVnet(ipConfiguration.networkId());
@@ -184,11 +182,11 @@ public class VMInventoryCollector implements Collector {
 
     private void setOtherVnets(VirtualMachine virtualMachine, VirtualMachineVH vmVH,
                                List<NetworkInterface> networkInterfaces) {
-        String primaryNetworkIntefaceId = virtualMachine.getPrimaryNetworkInterface().id();
+        String primaryNetworkInterfaceId = virtualMachine.getPrimaryNetworkInterface().id();
 
         List<String> nicIds = virtualMachine.networkInterfaceIds();
         List<NetworkInterface> nics = networkInterfaces.stream()
-                .filter(nic -> nicIds.contains(nic.id()) && !primaryNetworkIntefaceId.equals(nic.id()))
+                .filter(nic -> nicIds.contains(nic.id()) && !primaryNetworkInterfaceId.equals(nic.id()))
                 .collect(Collectors.toList());
         List<Map<String, String>> vnetInfoList = new ArrayList<>();
         for (NetworkInterface nic : nics) {
@@ -200,6 +198,7 @@ public class VMInventoryCollector implements Collector {
             vnetInfo.put("subnet", subnet);
             vnetInfoList.add(vnetInfo);
         }
+
         vmVH.setSecondaryNetworks(vnetInfoList);
     }
 
@@ -242,6 +241,7 @@ public class VMInventoryCollector implements Collector {
                 }
             }
         }
+
         vmVH.setNetworkSecurityGroups(nsgList);
     }
 

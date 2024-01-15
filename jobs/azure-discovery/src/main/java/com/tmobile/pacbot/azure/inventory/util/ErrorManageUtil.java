@@ -97,7 +97,6 @@ public class ErrorManageUtil {
         }
     }
 
-
     public static Map<String, Object> formErrorCode() {
         Map<String, Object> errorCode = new HashMap<>();
         errorCode.put("jobName", System.getProperty("jobName"));
@@ -116,20 +115,23 @@ public class ErrorManageUtil {
                 detail.put("account", errorDetail.getKey());
                 details.add(detail);
             }
+
             error.put("details", details);
             errors.add(error);
         }
+
         errorCode.put("errors", errors);
         if (errors.isEmpty()) {
             errorCode.put("status", "Success");
         } else {
             errorCode.put("status", "Partial Success");
         }
+
         log.info("Return Info {}", errorCode);
         return errorCode;
     }
 
-    public static void triggerNotificationforPermissionDenied() {
+    public static void triggerNotificationPermissionDenied() {
         List<PermissionVH> permissionIssue = new ArrayList<>();
         List<String> exceptionList = Arrays.asList("DeniedWithNoValidRBAC", "ForbiddenByFirewall", "AuthorizationFailed", "AuthenticationException");
         for (Map.Entry<String, List<ErrorVH>> entry : errorMap.entrySet()) {
@@ -138,7 +140,7 @@ public class ErrorManageUtil {
             for (ErrorVH errorVH : entry.getValue()) {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
                 if (exceptionPresentInList(errorVH.getException(), exceptionList)) {
-                    log.info("Omit exception :{}", errorVH.getException());
+                    log.info("Omit exception : {}", errorVH.getException());
                     if (permissionIssues != null) {
                         permissionIssues.add(errorVH.getException());
                     } else {
@@ -159,6 +161,7 @@ public class ErrorManageUtil {
                 errorMap.remove(entry.getKey());
             }
         }
+
         NotificationPermissionUtils.triggerNotificationForPermissionDenied(permissionIssue, "Azure");
     }
 

@@ -68,7 +68,7 @@ public class WorkflowInventoryCollector implements Collector {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error fetching Workflow", e);
             Util.eCount.getAndIncrement();
         }
 

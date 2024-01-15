@@ -136,7 +136,7 @@ public class SQLServerInventoryCollector implements Collector {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error in fetching Vulnerability Assessment", e);
             throw new RuntimeException(e);
         }
     }

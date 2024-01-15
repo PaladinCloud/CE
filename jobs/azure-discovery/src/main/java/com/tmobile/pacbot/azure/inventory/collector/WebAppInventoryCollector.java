@@ -46,28 +46,23 @@ public class WebAppInventoryCollector implements Collector {
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
                 if (webApp.ftpsState() != null) {
                     webAppVH.setFtpsState(webApp.ftpsState());
-                    log.info("ftpsState {}", webApp.ftpsState());
                 }
                 if (webApp.minTlsVersion() != null) {
                     webAppVH.setMinTlsVersion(webApp.minTlsVersion().toString());
-                    log.info("minTlsVersion {}", webApp.minTlsVersion());
                 }
                 webAppVH.setAuthEnabled(webApp.getAuthenticationConfig().inner().enabled());
                 webAppVH.setId(webApp.id());
                 webAppVH.setHttpsOnly(webApp.httpsOnly());
                 webAppVH.setClientCertEnabled(webApp.clientCertEnabled());
-                log.info("web app client cert {}", webApp.clientCertEnabled());
                 webAppVH.setTags(webApp.tags());
                 webAppVH.setSystemAssignedManagedServiceIdentityPrincipalId(webApp.systemAssignedManagedServiceIdentityPrincipalId());
                 webAppVH.setName(webApp.name());
                 webAppList.add(webAppVH);
-
-            } catch (DefaultErrorResponseException exception) {
-                log.error(exception.getMessage());
-                ErrorManageUtil.uploadError(webAppVH.getSubscription(), webAppVH.getRegion(), "webapp", exception.getMessage());
+            } catch (DefaultErrorResponseException e) {
+                log.error("Error Collecting Web App info", e);
+                ErrorManageUtil.uploadError(webAppVH.getSubscription(), webAppVH.getRegion(), "webapp", e.getMessage());
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("Error Collecting info for {} ", e.getMessage());
+                log.error("Error Collecting Web App info", e);
                 Util.eCount.getAndIncrement();
             }
         }

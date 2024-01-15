@@ -48,7 +48,7 @@ public class FileManager {
         FileGenerator.folderName = folderName;
         boolean isCreated = new File(folderName).mkdirs();
         if (!isCreated) {
-            log.error(ERROR_PREFIX + "Failed to create file in S3 in path + {}", folderName);
+            log.error(ERROR_PREFIX + "Failed to create file in S3 in path {}", folderName);
             System.exit(1); // We want to exit if the S3 folder is not created
         }
 
@@ -56,7 +56,8 @@ public class FileManager {
             try {
                 FileGenerator.writeToFile(getFilenameFromTargetType(type), InventoryConstants.OPEN_ARRAY, false);
             } catch (IOException e) {
-                e.printStackTrace();    // We want to continue if the file is not created
+                // We want to continue if the file is not created
+                log.error(ERROR_PREFIX + "Failed to initialize write file in S3 in path {}", folderName, e);
             }
         });
     }
@@ -66,7 +67,7 @@ public class FileManager {
             try {
                 FileGenerator.writeToFile(getFilenameFromTargetType(type), InventoryConstants.CLOSE_ARRAY, true);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(ERROR_PREFIX + "Failed to finalize write file in S3 in path {}", FileGenerator.folderName, e);
             }
         });
     }
