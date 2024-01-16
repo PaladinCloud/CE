@@ -19,7 +19,6 @@
 import { Injectable } from '@angular/core';
 import { Observable ,  ReplaySubject } from 'rxjs';
 import { DataCacheService } from './data-cache.service';
-import { REDHAT, CONTRAST } from 'src/app/shared/constants/global'
 import { AssetTypeMapService } from './asset-type-map.service';
 
 @Injectable()
@@ -27,7 +26,6 @@ import { AssetTypeMapService } from './asset-type-map.service';
 export class AssetGroupObservableService {
 
     private assetGroupSubject = new ReplaySubject<string>(0);
-    private actionDisableSubject = new ReplaySubject<boolean>(0);
 
     private updateTriggerStatus;
 
@@ -45,17 +43,12 @@ export class AssetGroupObservableService {
             this.dataCacheService.setCurrentSelectedAssetGroup(groupName);
             this.assetGroupSubject.next(groupName);
             this.assetTypeMapService.fetchAssetTypesForAg(groupName);
-            this.actionDisableSubject.next([REDHAT, CONTRAST].includes(groupName.toLowerCase()))
             this.updateTriggerStatus = true;
         }
     }
 
     getAssetGroup(): Observable<string> {
         return this.assetGroupSubject.asObservable();
-    }
-
-    isActionDisable(): Observable<boolean> {
-        return this.actionDisableSubject.asObservable();
     }
 
 }
