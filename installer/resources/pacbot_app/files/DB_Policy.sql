@@ -3554,6 +3554,7 @@ DELETE IGNORE FROM cf_PolicyParams where policyID='IamAccessKeyRotatedInEvery90D
 DELETE IGNORE FROM cf_PolicyParams where policyID='Network_Security_Group_Flow_Log_retention_more_than_90_days';
 DELETE IGNORE FROM cf_PolicyParams where policyID='Set_Retention_Days_Greater_Than_Ninety';
 DELETE IGNORE FROM cf_PolicyParams where policyID='kms_keys_rotation_period_within_90_days';
+DELETE IGNORE FROM cf_PolicyParams where policyID='CloudWatchEventsForAllAccounts_version-1_CloudWatchEventsForAllAccounts_account';
 
 DELETE IGNORE FROM cf_PolicyTable where policyId='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser';
 DELETE IGNORE FROM cf_PolicyTable where policyId='Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
@@ -3561,6 +3562,7 @@ DELETE IGNORE FROM cf_PolicyTable where policyId='IamAccessKeyRotatedInEvery90Da
 DELETE IGNORE FROM cf_PolicyTable where policyId='Network_Security_Group_Flow_Log_retention_more_than_90_days';
 DELETE IGNORE FROM cf_PolicyTable where policyId='Set_Retention_Days_Greater_Than_Ninety';
 DELETE IGNORE FROM cf_PolicyTable where policyId='kms_keys_rotation_period_within_90_days';
+DELETE IGNORE FROM cf_PolicyTable where policyId='CloudWatchEventsForAllAccounts_version-1_CloudWatchEventsForAllAccounts_account';
 
 UPDATE cf_PolicyTable SET policyDisplayName = 'Integrate CloudTrail to CloudWatch' WHERE policyId ='aws_cloudtrail_trails_not_integrated_with_cloudwatch_logs';
 
