@@ -44,9 +44,8 @@
 }
 
 .filters-chip-menu .fcm-item {
-    padding: 6px 8px 6px 16px;
+    padding: 10px 12px 10px 20px;
     color: #272e35;
-    margin: 4px;
 }
 
 .filters-chip-menu .fcm-item:hover {
