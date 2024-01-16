@@ -4,6 +4,8 @@ import { ErrorHandlingService } from '../../shared/services/error-handling.servi
 import {environment} from '../../../environments/environment';
 import { Observable, ReplaySubject} from 'rxjs';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { API_RESPONSE_ERROR } from 'src/app/shared/constants/global';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +19,7 @@ import { CommonResponseService } from 'src/app/shared/services/common-response.s
     @Inject(HttpService) private httpService: HttpService,
     private errorHandlingService: ErrorHandlingService,
     private commonResponseService: CommonResponseService,
+    private logger: LoggerService,
   ){}
 
   fetchAssetTypes()
@@ -25,7 +28,13 @@ import { CommonResponseService } from 'src/app/shared/services/common-response.s
       const method = environment.getAllAssetTypes.method;
       try {
         this.httpService.getHttpResponse(url, method, {})
-        .subscribe(response => this.assetTypeMapSubject.next(this.mapData(response)))
+        .subscribe(
+          response => this.assetTypeMapSubject.next(this.mapData(response)),
+          error => {
+            this.assetTypesForAgSubject.next();
+            this.logger.log(API_RESPONSE_ERROR, error)
+          }
+        )
       } catch (error) {
           this.errorHandlingService.handleJavascriptError(error);
       }
@@ -36,7 +45,12 @@ import { CommonResponseService } from 'src/app/shared/services/common-response.s
       const { url, method } = environment.targetType;
       this.commonResponseService.getData( url, method, {}, {ag})
         .subscribe(
-          response => this.assetTypesForAgSubject.next(this.mapData(response)));
+          response => this.assetTypesForAgSubject.next(this.mapData(response)),
+          error => {
+            this.assetTypesForAgSubject.next();
+            this.logger.log(API_RESPONSE_ERROR, error)
+          }
+        )
     } catch (error) {
       this.errorHandlingService.handleJavascriptError(error);
     }

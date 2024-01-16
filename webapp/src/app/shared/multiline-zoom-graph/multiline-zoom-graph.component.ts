@@ -313,16 +313,14 @@ export class MultilineZoomGraphComponent implements AfterViewInit, OnChanges {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
-      // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;
       this.init();
-    }, 500);
+    }, 0);
 
     this.windowExpansionService.getExpansionStatus().subscribe((countMap: any) => {
       setTimeout(() => {
       this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
-      // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;
       this.init();
-      }, 500)
+      }, 0)
     });
   }
 

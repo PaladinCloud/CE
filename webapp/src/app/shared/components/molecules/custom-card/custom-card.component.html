@@ -14,6 +14,7 @@
             [appliedFiltersDict]="appliedFiltersDict"
             disableRemoveChip="true"
             (update)="filtersUpdate($event)"
+            (chipDropdownClose)="chipDropdownClose()"
         ></app-table-filter-chip>
         <div *ngIf="showDateDropdown" class="date-dropdown-container">
             <div

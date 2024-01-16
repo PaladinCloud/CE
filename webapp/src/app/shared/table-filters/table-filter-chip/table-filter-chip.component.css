@@ -81,6 +81,7 @@
     flex: 1 0 0;
     background-color: #FEF5F5;
     border-top: 1px solid #fccfcf;
+    border-radius: 0 0 6px 6px;
     font-family: 'mark-pro-medium';
 }
 
@@ -99,4 +100,8 @@
     font-weight: 500;
     line-height: 16px;
     letter-spacing: 0.1px;
+}
+
+.mat-checkbox-disabled {
+    cursor: not-allowed;
 }
