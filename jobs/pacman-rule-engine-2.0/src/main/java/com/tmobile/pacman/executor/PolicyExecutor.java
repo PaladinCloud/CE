@@ -60,7 +60,7 @@ public class PolicyExecutor {
     private Boolean isResourceFilterExists = Boolean.FALSE;
 
     /**  Annotation Publisher *. */
-    AnnotationPublisher annotationPublisher;
+    AnnotationPublisher annotationPublisher = new AnnotationPublisher();
 
     /**
      * The main method.
@@ -150,6 +150,7 @@ public class PolicyExecutor {
                 String policyStatus = policyParam.get(PacmanSdkConstants.STATUS_KEY);
                 if (policyStatus == null || PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(policyStatus)) {
                     logger.info("policy {} is disabled", policyUUID);
+                    annotationPublisher.populateExistingIssuesForType(policyParam);
                     annotationPublisher.closeDanglingIssues(indexName + "_" + policyParam.get(PacmanSdkConstants.TARGET_TYPE), policyParam.get(PacmanSdkConstants.TARGET_TYPE));
                     return;
                 }
@@ -223,7 +224,6 @@ public class PolicyExecutor {
                 policyEngineStats.put("timeTakenToFetchInventory", CommonUtils.getElapseTimeSince(startTime));
                 if (resources.isEmpty()) {
                     logger.info("no resources to evaluate exiting now");
-                    annotationPublisher = new AnnotationPublisher();
                     annotationPublisher.populateExistingIssuesForType(policyParam);
                     annotationPublisher.closeDanglingIssues(indexName + "_" + policyParam.get(PacmanSdkConstants.TARGET_TYPE), policyParam.get(PacmanSdkConstants.TARGET_TYPE));
                     ProgramExitUtils.exitSucessfully();
@@ -435,7 +435,6 @@ public class PolicyExecutor {
         String evalDate = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
         Annotation annotation = null;
-        annotationPublisher = new AnnotationPublisher();
         long exemptionCounter = 0;
         try {
 
