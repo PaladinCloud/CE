@@ -44,6 +44,7 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     @Output() clear = new EventEmitter<string>();
     @Output() update = new EventEmitter<FilterChipUpdateEvent>();
     @Output() filterSearchTextChange = new EventEmitter();
+    @Output() chipDropdownClose = new EventEmitter();
 
     readonly optionsMenuOffsetY = 7;
     readonly maxOptionChars = 30;
@@ -101,6 +102,7 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     closeMenu(){
         this.isOptionsMenuOpen = false;
         this.optionFilterQuery = '';
+        this.chipDropdownClose.emit(null);
     }
 
     sortCheckedOptionsFirst(){

@@ -252,15 +252,15 @@ export class DataCacheService {
     return this.get(key);
   }
 
-  public setAssetTrendGraphFiltersList(list) {
-    const key = 'assetTrendGraphFiltersList';
-    return this.set(key,JSON.stringify(list));
+  public setAssetTrendGraphState(data) {
+    const key = 'assetTrendGraphState';
+    return this.set(key,JSON.stringify(data));
   }
 
-  public getAssetTrendGraphFiltersList() {
-    const key = 'assetTrendGraphFiltersList';
-    const list = this.get(key);
-    return list ? JSON.parse(this.get(key)) : undefined;
+  public getAssetTrendGraphState() {
+    const key = 'assetTrendGraphState';
+    const data = this.get(key);
+    return data ? JSON.parse(this.get(key)) : undefined;
   }
 
   /**
