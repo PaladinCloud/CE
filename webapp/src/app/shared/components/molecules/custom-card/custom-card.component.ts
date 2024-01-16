@@ -65,11 +65,11 @@ export class CustomCardComponent implements OnInit, OnChanges{
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges) {
-    this.appliedFiltersDict = changes?.filters?.currentValue?.listData ?? this.appliedFiltersDict;
-    this.fromDate = changes?.fromDate?.currentValue ?? this.fromDate;
-    this.toDate = changes?.toDate?.currentValue ?? this.toDate;
-    this.minDate = changes?.minDate?.currentValue ?? this.minDate;
-    this.selectedItem = changes?.selectedItem?.currentValue ?? this.selectedItem;
+    if(changes?.filters?.currentValue?.listData) this.appliedFiltersDict = {...changes?.filters?.currentValue?.listData}
+    if(changes?.fromDate?.currentValue) this.fromDate = changes?.fromDate?.currentValue;
+    if(changes?.toDate?.currentValue) this.toDate = changes?.toDate?.currentValue;
+    if(changes?.minDate?.currentValue) this.minDate = changes?.minDate?.currentValue;
+    if(changes?.selectedItem?.currentValue) this.selectedItem = changes?.selectedItem?.currentValue;
   }
 
   switchTabView($event){
@@ -136,10 +136,6 @@ export class CustomCardComponent implements OnInit, OnChanges{
 
   filtersUpdate(e:AssetTypeFilterChangeData){
     this.filterChange.emit(e);
-  }
-
-  chipDropdownClose(){
-    this.onChipDropdownClose.emit()
   }
 
   ngOnDestroy(){
