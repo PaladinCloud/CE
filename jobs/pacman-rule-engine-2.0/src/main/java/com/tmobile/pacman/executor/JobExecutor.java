@@ -119,7 +119,7 @@ public class JobExecutor {
             }
             long endTime = System.nanoTime();
             long timeTakenToExecute = TimeUnit.MINUTES.convert(endTime - startTime, TimeUnit.NANOSECONDS);
-            logger.info("Elapsed time in minutes for evaluation: " + timeTakenToExecute);
+            logger.info("elapsed time in minutes for evaluation: " + timeTakenToExecute);
             startTime = System.nanoTime();
             // process rule evaluations the annotations based on result
             Map<String, String> evalResults = new HashMap<>();
