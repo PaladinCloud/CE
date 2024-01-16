@@ -774,8 +774,8 @@ public class AssetRepositoryImpl implements AssetRepository {
 			ListIterator<String> iterator = recentViewList.listIterator(recentViewList.size());
 			while (iterator.hasPrevious()) {
 				String ag = iterator.previous();
-				String query = "SELECT displayName FROM cf_AssetGroupDetails WHERE groupName = '" + ag + "'";
-				String displayName = rdsRepository.queryForString(query);
+                String query = "SELECT displayName FROM cf_AssetGroupDetails WHERE groupName = '" + ag + "'" + " and isVisible is true";
+                String displayName = rdsRepository.queryForString(query);
 				if (displayName != null) {
 					Map<String, Object> details = Maps.newHashMap();
 					details.put("ag", ag);
