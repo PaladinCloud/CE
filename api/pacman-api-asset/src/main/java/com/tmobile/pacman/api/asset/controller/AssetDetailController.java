@@ -468,33 +468,24 @@ public class AssetDetailController {
                 Util.encodeUrl(resourceId), ag, resourceType);
 
         Map<String, Object> assetSummary = new HashMap<>();
-
         try {
-
             List<Map<String, Object>> attributesList = new ArrayList<>();
-
             Map<String, Object> attribute = new LinkedHashMap<>();
             attribute.put(Constants.NAME, "resourceId");
             attribute.put(Constants.VALUE, resourceId);
             attributesList.add(attribute);
-
             attribute = new LinkedHashMap<>();
             attribute.put(Constants.NAME, "Overall Compliance");
             attribute.put(Constants.VALUE, violationSummary.getData().getCompliance());
             attributesList.add(attribute);
-
             if (Constants.EC2.equals(resourceType)) {
                 attribute = new LinkedHashMap<>();
                 attribute.put(Constants.NAME, "statename");
                 attribute.put(Constants.VALUE, assetService.getEc2StateDetail(ag, resourceId));
                 attributesList.add(attribute);
-
-                attributesList.add(getAverageCPUUtilization(resourceId));
             }
-
             assetSummary.put("resourceId", resourceId);
             assetSummary.put("attributes", attributesList);
-
         } catch (Exception e) {
             LOGGER.error("Error in getEc2ResourceSummary",e);
             assetSummary = new HashMap<>();
