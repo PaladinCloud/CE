@@ -1,5 +1,5 @@
 <mat-card class="panel">
-    <mat-card-header>
+    <mat-card-header *ngIf="card.id !== 3">
         {{ card.header }}
     </mat-card-header>
     <mat-card-content [ngClass]="{'asset-graph':card.id === 3}">

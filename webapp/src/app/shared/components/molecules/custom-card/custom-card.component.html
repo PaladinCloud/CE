@@ -5,7 +5,7 @@
             <app-multi-tab-switcher [tabs]="tabs" [tabSelected]="tabSelected" (switchView)="switchTabView($event)"></app-multi-tab-switcher>
         </div>
         <app-table-filter-chip
-            *ngIf="filters?.list?.length !== 0 && appliedFiltersDict"
+            *ngIf="this.showFilters"
             [category]="filters.category"
             [options]="filters.list"
             [shortFilters]="filters.shortFilters"
