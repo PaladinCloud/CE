@@ -47,6 +47,8 @@ import { SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
 
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
  
+import { CategoryOrderMap, SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
+
 @Component({
   selector: 'app-compliance-dashboard',
   templateUrl: './compliance-dashboard.component.html',
@@ -257,6 +259,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     [DashboardContainerIndex.POLICY_OVERVIEW]: 'Policy Compliance Overview',
   };
   agDomainSubscription: Subscription;
+  selectedOrder: any;
+  sortOrder: any;
+  fieldName: string;
+  fieldType: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -410,6 +416,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
     this.storeState();
+    this.getData();
   }
 
 
@@ -763,7 +770,32 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.getData();
   }
 
-  updateComponent() {
+  updateSortFieldName () {
+    const sortColName = this.headerColName.toLowerCase();
+    this.selectedOrder = this.direction;
+    this.sortOrder = null;
+    this.fieldType = "string";
+    try {
+      let apiColName: any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col] == this.headerColName);
+      if (!apiColName) {
+        apiColName = find(this.filterTypeOptions, {
+          optionName: this.headerColName,
+        })["optionValue"];
+      }
+      this.fieldName = apiColName;
+
+      if (sortColName === "severity") {
+        this.sortOrder = Object.keys(SeverityOrderMap);
+      } else if (sortColName === "category") {
+        this.sortOrder = Object.keys(CategoryOrderMap);
+      }
+    } catch (e) {
+      this.logger.log("error", e);
+      this.headerColName = '';
+    }
+  }
+
+  updateComponent () {
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
@@ -781,6 +813,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   }
 
   updatePoliciesTable () {
+    this.updateSortFieldName();
     if (this.isStatePreserved) {
       this.tableDataLoaded = true;
       this.getFilters();
@@ -938,16 +971,24 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     const filterToBePassed = this.getFilterPayloadForDataAPI();
 
     const filters = { domain: this.selectedDomain };
+    
+    const sortFilter = {
+      fieldName: this.fieldName,
+      fieldType: this.fieldType,
+      order: this.selectedOrder,
+      sortOrder: this.sortOrder
+    }
 
     const payload = {
       ag: this.selectedAssetGroup,
       filter: filters,
       reqFilter: filterToBePassed,
       from: this.bucketNumber * this.paginatorSize,
-      // searchtext: this.searchTxt,
+      sortFilter
     };
 
     this.tableErrorMessage = '';
+    this.tableDataLoaded = false;
     const complianceTableUrl = environment.complianceTable.url;
     const complianceTableMethod = environment.complianceTable.method;
     this.complianceTableSubscription = this.commonResponseService
