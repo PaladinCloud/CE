@@ -95,6 +95,6 @@ public class RedhatNotScanningClusterPolicy extends BasePolicy {
 
     @Override
     public String getHelpText() {
-        return "Checks for the presence of vulnerabilities.";
+        return "Policy for checking clusters that are not scanned by Rad Hat ACS.";
     }
 }
