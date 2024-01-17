@@ -1,13 +1,18 @@
-# Description
+## Description
 
-Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List
+Please include a summary of the changes and the related issues. Please also include relevant motivation and context. List
 any dependencies that are required for this change.
 
-Fixes # (issue)
+### Problem
+
+### Solution
+
+
+## Fixes # (issue if any)
 
 ## Type of change
 
-Please delete options that are not relevant.
+**Please delete options that are not relevant.**
 
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] New feature (non-breaking change which adds functionality)
@@ -15,7 +20,7 @@ Please delete options that are not relevant.
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] This change requires a documentation update
 
-# How Has This Been Tested?
+## How Has This Been Tested?
 
 Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also
 list any relevant details for your test configuration
@@ -23,7 +28,7 @@ list any relevant details for your test configuration
 - [ ] Test A
 - [ ] Test B
 
-# Checklist:
+## Checklist:
 
 - [ ] My code follows the style guidelines of this project
 - [ ] My commit message/PR follows the contribution guidelines of this project
@@ -32,6 +37,6 @@ list any relevant details for your test configuration
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing unit tests pass locally with my changes
 
-# **Other information**:
+## **Other Information**:
 
-List any documentation updates that are needed for the Wiki
+## List any documentation updates that are needed for the Wiki
