@@ -52,8 +52,10 @@ export class CustomCardComponent implements OnInit, OnChanges{
   @Output() switchTabs = new EventEmitter<any>();
   @Output() filterChange = new EventEmitter<AssetTypeFilterChangeData>();
   @Output() onChipDropdownClose =  new EventEmitter();
-  agDomainSubscription: Subscription;
-  appliedFiltersDict:AppliedFilter | undefined;
+  private agDomainSubscription: Subscription;
+  private appliedFiltersDict: AppliedFilter | undefined;
+  showFilters: boolean = false;
+  
 
 
   constructor(private agDomainObservableService:AgDomainObservableService) {
@@ -70,6 +72,7 @@ export class CustomCardComponent implements OnInit, OnChanges{
     if(changes?.toDate?.currentValue) this.toDate = changes?.toDate?.currentValue;
     if(changes?.minDate?.currentValue) this.minDate = changes?.minDate?.currentValue;
     if(changes?.selectedItem?.currentValue) this.selectedItem = changes?.selectedItem?.currentValue;
+    this.updateShowFilters();
   }
 
   switchTabView($event){
@@ -136,6 +139,10 @@ export class CustomCardComponent implements OnInit, OnChanges{
 
   filtersUpdate(e:AssetTypeFilterChangeData){
     this.filterChange.emit(e);
+  }
+
+  private updateShowFilters() {
+    this.showFilters = !!(this.filters?.list?.length !== 0 && this.appliedFiltersDict);
   }
 
   ngOnDestroy(){

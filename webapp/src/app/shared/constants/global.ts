@@ -1,8 +1,3 @@
-// === Asset Groups ===
-
-export const REDHAT = 'redhat';
-export const CONTRAST = 'contrast';
-
 // === Exception Log Messages ===
 
 export const API_RESPONSE_ERROR = 'apiResponseError';
