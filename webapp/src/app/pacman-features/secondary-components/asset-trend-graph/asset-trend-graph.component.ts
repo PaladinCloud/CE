@@ -203,12 +203,12 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
   
 
   // Construct payload for fetching asset trend data
-  private constructPayload(): { ag: string; startDate: string; endDate: string; type?: any } {
+  private constructPayload(): { ag: string; fromDate: string; toDate: string; type?: any } {
     const selectedAssetTypes = this.getSelectedAssetTypes();
     return {
       ag: this.assetGroupName,
-      startDate: this.getFormattedDate(this.fromDate),
-      endDate: this.getFormattedDate(this.toDate),
+      fromDate: this.getFormattedDate(this.fromDate),
+      toDate: this.getFormattedDate(this.toDate),
       type:
         selectedAssetTypes.length !== 0
           ? Object.keys(this.assetTypesList).filter((key) => selectedAssetTypes.includes(this.assetTypesList[key]))
