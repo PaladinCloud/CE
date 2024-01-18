@@ -240,7 +240,7 @@
        }
    }
  
-   async changeFilterType ({ currentFilterType, searchText, filterText, currentQueryParams, filtersToBePassed, type, agAndDomain, updateFilterTags, labelsToExcludeSort, ignoreAttributeName = false }) {
+   async changeFilterType ({ currentFilterType, searchText, filterText, currentQueryParams, filtersToBePassed, type, agAndDomain, updateFilterTags, labelsToExcludeSort, ignoreAttributeName = false, extraPayloadProps = {}}){
     if(!currentFilterType){
       return [{}, []];
     }; 
@@ -279,7 +279,8 @@
        let payload: IFilterPayload = {
          attributeName: ignoreAttributeName ? undefined : currentFilterType["optionValue"]?.replace(".keyword", ""),
          //filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
-         filter: filtersToBePassed
+         filter: filtersToBePassed,
+         ...extraPayloadProps
        };
  
        if(ag && domain){

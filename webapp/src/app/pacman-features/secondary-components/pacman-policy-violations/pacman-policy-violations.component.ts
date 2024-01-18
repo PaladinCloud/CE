@@ -19,6 +19,8 @@
   Input,
   Output,
   EventEmitter,
+  OnChanges,
+  SimpleChanges,
 } from "@angular/core";
 import { Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -38,7 +40,7 @@ import { AssociatedPolicyStatusOrderMap, SeverityOrderMap } from "src/app/shared
   styleUrls: ["./pacman-policy-violations.component.css"],
   providers: [CommonResponseService, AutorefreshService],
 })
-export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
+export class PacmanPolicyViolationsComponent implements OnInit, OnChanges, OnDestroy {
   public somedata: any;
   public outerArr: any;
   public allColumns: any;
@@ -156,8 +158,13 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
       .getAssetGroup()
       .subscribe((assetGroupName) => {
         this.selectedAssetGroup = assetGroupName;
-        this.updateComponent();
       });
+  }
+
+  ngOnChanges (changes: SimpleChanges): void {
+    if (changes.resourceId || changes.resourceType) {
+      this.updateComponent();
+    }
   }
 
   ngOnInit() {
