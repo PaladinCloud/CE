@@ -14,6 +14,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(tokenInterceptor);
+        registry.addInterceptor(tokenInterceptor).addPathPatterns("/accounts", "/accounts/*/create", "/accounts/*/delete",
+                "/policy/enable-disable", "/asset-group-exception/configure", "/asset-group-exception/delete");
     }
 }
