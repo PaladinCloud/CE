@@ -71,7 +71,7 @@
         <div class="table-wrapper" #viewportContainer>
             <!-- table header -->
             <div class="table-header-wrapper">
-                <div class="mat-header-row flex">
+                <div class="mat-header-row flex" [style.width]="totalRows<15?'100%':'calc(100% - 7px)'">
                     <div 
                         class="mat-header-cell mat-sort-header custom-mat-header pointer"
                         (click)="announceSortChange({active:column, direction:headerColName==column&&direction=='asc'?'desc':'asc'})"

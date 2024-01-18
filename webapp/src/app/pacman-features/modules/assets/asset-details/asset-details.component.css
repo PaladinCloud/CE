@@ -166,3 +166,11 @@
 .attributes-content{
   padding: 20px 24px;
 }
+
+.sg-rules-table ::ng-deep .cdk-virtual-scroll-content-wrapper {
+  position: unset;
+}
+
+.sg-rules-table ::ng-deep cdk-virtual-scroll-viewport {
+  display: unset;
+}
