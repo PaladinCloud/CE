@@ -561,13 +561,18 @@ public class AssetListController {
                 || Constants.ONPREMSERVER.equals(filter.get(AssetConstants.FILTER_RES_TYPE));
     }
 
-    @PostMapping(value = "/v1/getAssetFilterValue/{attribute}")
+    @RequestMapping(path = "/v1/getAssetFilterValue/{attribute}", method = RequestMethod.POST)
     public ResponseEntity<Object> getExemptFilterValue(@PathVariable String attribute, @RequestBody FilterRequest request) {
         if (request == null || Strings.isNullOrEmpty(request.getAg())) {
             return ResponseUtils.buildFailureResponse(new Exception("Asset group is Mandatory"));
         }
-        Map<String,Object> response=new HashMap<>();
-        response.put("response",assetService.getAssetExemptedFilterValue(request, attribute));
+        Map<String, Object> response = new HashMap<>();
+        try {
+            response.put("response", assetService.getAssetExemptedFilterValue(request, attribute));
+        } catch (Exception e) {
+            LOGGER.error("Exception in formResponseWithCount ", e);
+            return ResponseUtils.buildFailureResponse(e);
+        }
         return ResponseUtils.buildSucessResponse(response);
     }
 }

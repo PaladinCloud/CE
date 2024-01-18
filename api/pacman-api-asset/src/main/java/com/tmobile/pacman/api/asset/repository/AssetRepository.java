@@ -592,5 +592,5 @@ public interface AssetRepository {
     List<Map<String, Object>> getChildResourceDetailByDocId(String ag, String resourceType, String documentId)
             throws DataException;
 
-    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute);
+    public List<Map<String, String>> getAssetExemptedFilterValue(FilterRequest filter, String attribute) throws Exception;
 }

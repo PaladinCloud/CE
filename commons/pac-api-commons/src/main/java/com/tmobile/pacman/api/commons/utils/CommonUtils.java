@@ -453,12 +453,26 @@ public class CommonUtils {
 	}
 
 	public static String joinListElement(List<String> list) {
-		if(CollectionUtils.isEmpty(list)){
+		if (CollectionUtils.isEmpty(list)) {
 			return "";
 		}
 		return String.join(",", list
 				.stream()
 				.map(name -> ("\"" + name + "\""))
 				.collect(Collectors.toList()));
+	}
+
+	public static String removeKeywordFromAttribute(String attributeName) {
+		if (attributeName.endsWith(".keyword")) {
+			return attributeName.replace(".keyword", "");
+		}
+		return attributeName;
+	}
+
+	public static boolean isEqualToAttribue(String attributeName, String keyName) {
+		if (attributeName.equals(keyName) || attributeName.equals(keyName + ".keyword") || attributeName.equals(removeKeywordFromAttribute(keyName))) {
+			return true;
+		}
+		return false;
 	}
 }
