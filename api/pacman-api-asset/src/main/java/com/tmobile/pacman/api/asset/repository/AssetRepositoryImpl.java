@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.tmobile.pacman.api.asset.AssetConstants;
+import com.tmobile.pacman.api.asset.Utils.AssetUtils;
 import com.tmobile.pacman.api.asset.client.ComplianceServiceClient;
 import com.tmobile.pacman.api.asset.domain.FilterRequest;
 import com.tmobile.pacman.api.asset.domain.PolicyParamResponse;
@@ -67,8 +68,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.tmobile.pacman.api.asset.AssetConstants.FILTER_EXEMPTED;
 import static com.tmobile.pacman.api.commons.Constants.*;
-import static com.tmobile.pacman.api.commons.Constants.TRUE;
 
 /**
  * Implemented class for AssetRepository and all its method
@@ -821,145 +822,189 @@ public class AssetRepositoryImpl implements AssetRepository {
     @SuppressWarnings("rawtypes")
     @Override
     public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, Object> filter, int from, int size,
-            String searchText, Map<String, Object> sortFilter) throws Exception {
+                                                   String searchText, Map<String, Object> sortFilter) throws Exception {
         LOGGER.info("Inside getListAssets");
-        Gson gson = new Gson();
         List<Map<String, Object>> assetDetails = new ArrayList<>();
         List<String> fieldNames = new ArrayList<>();
-        String targetType = "";
+        List<String> policyIds = new ArrayList<>();
         String domain = filter.get(Constants.DOMAIN) == null ? "" : (String) filter.get(Constants.DOMAIN);
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter = new HashMap<>();
+        List<String> mustResourceIds = new ArrayList<>();
+        List<String> mustNotResourceIds = new ArrayList<>();
 
-        Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
-        ArrayList<String> tagList=tagsSet.stream().map(tag->"tags."+tag).collect(Collectors.toCollection(ArrayList::new));
+        List<String> targetTypes = getTargetTypesByAssetGroup(assetGroup, domain, null).stream()
+                .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
 
         Iterator it = filter.entrySet().iterator();
-        Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
-        List<String> exemptedResourceIds=new ArrayList<>();
+        Set<String> mandatoryTagValues = getMandatoryTags(ASSET);
+        List<String> exemptedResourceIds = new ArrayList<>();
         List<String> taggingTargetTypesList = new ArrayList<>();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
-            if(entry.getValue() instanceof String){
+            if (entry.getValue() instanceof String) {
                 addTagToFilter(mustFilter, mandatoryTagValues, entry);
-            }else{
+            } else {
                 addTagToFilter(mustTermsFilter, mandatoryTagValues, entry);
             }
-            if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
-                try{
-                    List<String> targetList = (List<String>) entry.getValue();
-                    targetType = targetList.get(0);
-                }catch(Exception e){
-                    targetType = entry.getValue().toString();
+            if (entry.getKey().equals(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD)) {
+                targetTypes.retainAll((List<String>) entry.getValue());
+            }
+            if (entry.getKey().equals(RESOURCEID + ".keyword")) {
+                mustTermsFilter.put(RESOURCEID_KEYWORD, (List<String>) entry.getValue());
+            } else if (entry.getKey().equals(POLICYID + KEYWORD) || entry.getKey().equals(POLICYID)) {
+                policyIds = (List<String>) entry.getValue();
+                List<Object> targetTypesForPolicy = getTargetTypeByRuleIds(assetGroup, policyIds);
+                targetTypes.retainAll(targetTypesForPolicy);
+            } else if (entry.getKey().equals(AssetConstants.FILTER_COMPLIANT)) {
+                List<String> nonCompliantIds = getNonCompliantAssetsForPolicy(policyIds, assetGroup);
+                String filterCompliant = AssetUtils.fetchInputValFromFilter(entry.getValue());
+                if (filterCompliant.equalsIgnoreCase(FALSE)) {
+                    mustResourceIds = AssetUtils.getMustResourceIdsForAssets(mustResourceIds, nonCompliantIds);
+                    if (CollectionUtils.isEmpty(mustResourceIds)) {
+                        return formGetListResponse(fieldNames, new ArrayList<>(), new ArrayList<>());
+                    }
+                } else if (filterCompliant.equalsIgnoreCase(TRUE)) {
+                    mustNotResourceIds.addAll(nonCompliantIds);
                 }
-            }else{
-                if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED)){
-                    String filterTagged = "";
-                    if(entry.getValue() instanceof String){
-                        filterTagged = entry.getValue().toString();
-                    }
-                    else {
-                        List<String> filterTaggedList = (List<String>) entry.getValue();
-                        filterTagged = filterTaggedList.size()==1?filterTaggedList.get(0):"";
-                    }
-                    List<String> untaggedAssets = getUntaggedAssets(assetGroup);
-                    if(filterTagged.equalsIgnoreCase(AssetConstants.FALSE)){
-                        mustTermsFilter.put("_resourceid.keyword", untaggedAssets);
-                    }
-                    else {
-                        List<Map<String,Object>> targetTypesForTaggingList = rdsRepository.getDataFromPacman("SELECT p.targetType FROM cf_PolicyTable p WHERE p.status = 'ENABLED' AND p.category = '" + Constants.CATEGORY_TAGGING + "'");
-                        taggingTargetTypesList = targetTypesForTaggingList.stream().map(obj -> (String)obj.get("targetType")).collect(Collectors.toList());
-                        if(filterTagged.equalsIgnoreCase(AssetConstants.TRUE)){
-                            if(!untaggedAssets.isEmpty()){
-                                String excludeAssetsString = "{\"must_not\": [\n" +
-                                        "                        {\"terms\":\n" +
-                                        "                            {\n" +
-                                        "                                \"_resourceid.keyword\":[ %s ]\n" +
-                                        "                            }\n" +
-                                        "                        }\n" +
-                                        "                       ]}";
-                                excludeAssetsString = String.format(excludeAssetsString,untaggedAssets.stream().map(obj -> "\""+obj+"\"").collect(Collectors.joining(",")));
-                                Map<String,Object> excludedAssetsMap = gson.fromJson(excludeAssetsString,Map.class);
-                                mustFilter.put("bool",excludedAssetsMap);
-                            }
-                        }
-                    }
-                }
-                else if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
-                    List<Map<String, Object>> masterList;
-                    try {
-                        masterList = getAssetsExempted(assetGroup);
-                        for(Map<String,Object>asset:masterList){
-                            if(asset.containsKey(RESOURCEID)){
-                                Object resourceId=asset.get(RESOURCEID);
-                                exemptedResourceIds.add((String) resourceId);
-                            }
-                        }
-                        if(entry.getValue() instanceof String){
-                            if(((String) entry.getValue()).equalsIgnoreCase(TRUE)){
-                                mustFilter.put((String) entry.getKey(),exemptedResourceIds);
-                            } else{
-                                mustNotFilter.put((String) entry.getKey(),exemptedResourceIds);
-                            }
-                        }
-                        else{
-                            List<String> exemptInp = (List<String>) entry.getValue();
-                            if(exemptInp != null && exemptInp.size() == 1){
-                                if(exemptInp.get(0).equalsIgnoreCase(TRUE)){
-                                    mustFilter.put((String) entry.getKey(),exemptedResourceIds);
-                                } else{
-                                    mustNotFilter.put((String) entry.getKey(),exemptedResourceIds);
-                                }
-                            }
-                        }
+            } else if (((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED)) {
+                String filterTagged = AssetUtils.fetchInputValFromFilter(entry.getValue());
+                List<Map<String, Object>> targetTypesForTaggingList = rdsRepository.getDataFromPacman("SELECT p.targetType FROM cf_PolicyTable p WHERE p.status = 'ENABLED' AND p.category = '" + Constants.CATEGORY_TAGGING + "'");
+                taggingTargetTypesList = targetTypesForTaggingList.stream().map(obj -> (String) obj.get("targetType")).collect(Collectors.toList());
+                targetTypes.retainAll(taggingTargetTypesList);
 
-                    } catch (Exception e){
-                        LOGGER.error("Error in listAssets ",e);
+
+                List<String> untaggedAssets = getUntaggedAssets(assetGroup);
+                if (filterTagged.equalsIgnoreCase(AssetConstants.FALSE)) {
+                    mustResourceIds = AssetUtils.getMustResourceIdsForAssets(mustResourceIds, untaggedAssets);
+                    if (CollectionUtils.isEmpty(mustResourceIds)) {
+                        return formGetListResponse(fieldNames, new ArrayList<>(), new ArrayList<>());
                     }
+                } else if (filterTagged.equalsIgnoreCase(TRUE)) {
+                    mustNotResourceIds.addAll(untaggedAssets);
                 }
-                else if(!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
-                    if(entry.getValue() instanceof String){
-                        mustFilter.put((String) entry.getKey(), entry.getValue());
-                    }else{
-                        mustTermsFilter.put((String) entry.getKey(), entry.getValue());
+            } else if (((String) entry.getKey()).equalsIgnoreCase(EXEMPTED)) {
+                try {
+                    exemptedResourceIds = getAssetsExempted(assetGroup);
+                    String exemptInp = AssetUtils.fetchInputValFromFilter(entry.getValue());
+                    if (!StringUtils.isEmpty(exemptInp) && exemptInp.equalsIgnoreCase(TRUE)) {
+                        mustResourceIds = AssetUtils.getMustResourceIdsForAssets(mustResourceIds, exemptedResourceIds);
+                        if (mustResourceIds == null || mustResourceIds.size() == 0) {
+                            return formGetListResponse(fieldNames, new ArrayList<>(), new ArrayList<>());
+                        }
+                    } else if (!StringUtils.isEmpty(exemptInp) && exemptInp.equalsIgnoreCase(FALSE)) {
+                        mustNotResourceIds.addAll(exemptedResourceIds);
                     }
+                } catch (Exception e) {
+                    LOGGER.error("Error in fetching exempted resourced in listAssets ", e);
+                }
+            } else if (!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
+                if (entry.getValue() instanceof String) {
+                    mustFilter.put((String) entry.getKey(), entry.getValue());
+                } else {
+                    mustTermsFilter.put((String) entry.getKey(), entry.getValue());
                 }
             }
         }
-
-        try {
-            fieldNames = getDisplayFieldsForTargetType("all_list");
-        } catch (Exception e) {
-            LOGGER.error("Error while fetching field names for all targetType in getListAssets" , e);
+        if (!CollectionUtils.isEmpty(mustResourceIds)) {
+            mustTermsFilter.put(DOCID + KEYWORD, mustResourceIds);
         }
+        if (!CollectionUtils.isEmpty(mustNotResourceIds)) {
+            mustNotFilter.put(DOCID + KEYWORD, mustNotResourceIds);
+        }
+        fieldNames = getDisplayFieldsForTargetType("all_list");
 
         try {
-            if (StringUtils.isEmpty(targetType)) {
-                List<String> validTypes = getTargetTypesByAssetGroup(assetGroup, domain, null).stream()
-                        .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
-                if(!taggingTargetTypesList.isEmpty()){
-                    validTypes.retainAll(taggingTargetTypesList);
-                }
-
-                assetDetails = getAssetsByAssetGroupBySize(assetGroup, AssetConstants.ALL, mustFilter, validTypes,
-                        fieldNames, from, size, searchText, sortFilter,mustNotFilter,mustTermsFilter);
-            } else {
-                assetDetails = getAssetsByAssetGroupBySize(assetGroup, targetType, mustFilter, null, fieldNames, from,
-                        size, searchText, sortFilter,mustNotFilter, mustTermsFilter);
-            }
-
+            assetDetails = getAssetsByAssetGroupBySize(assetGroup, mustFilter, targetTypes, fieldNames, from,
+                    size, searchText, sortFilter, mustNotFilter, mustTermsFilter, policyIds);
         } catch (Exception e) {
             LOGGER.error("Error in getListAssets", e);
         }
-        
-        List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, Constants.DOCID, AssetConstants.UNDERSCORE_ENTITY,
+
+        List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, DOCID, AssetConstants.UNDERSCORE_ENTITY,
                 Constants._ID, AssetConstants.UNDERSCORE_LOADDATE, Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
                 AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST, AssetConstants.CREATION_DATE);
-
-        assetDetails = setAccountDetails(assetDetails);
         LOGGER.info("Exiting getListAssets");
-        return formGetListResponse(fieldNames,assetDetails,fieldsToBeSkipped);
+        return formGetListResponse(fieldNames, assetDetails, fieldsToBeSkipped);
+    }
+
+    private List<String> getAssetsExempted(String assetGroup) {
+        LOGGER.info("Inside getListAssetsExempted");
+        List<Map<String, Object>> assetList = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.EXEMPTED);
+        try {
+            assetList = esRepository.getDataFromES(assetGroup, null,
+                    mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+        }
+
+        List<String> exemptedResourceIds = assetList.stream()
+                .filter(obj -> obj.containsKey(DOCID) && obj.get(DOCID) != null)
+                .map(obj -> obj.get(DOCID).toString()).collect(Collectors.toList());
+        return exemptedResourceIds;
+    }
+
+    private List<String> getNonCompliantAssetsForPolicy(List<String> policyIds, String assetGroup) {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
+        if (!CollectionUtils.isEmpty(policyIds)) {
+            mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), policyIds);
+        }
+        List<Map<String, Object>> nonCompliantAssets = new ArrayList<>();
+        Map<String, Long> totalDistributionForIndexAndType = null;
+        try {
+            int totalDocs = (int) esRepository.getTotalDocumentCountForIndexAndType(assetGroup, null, mustFilter, null,
+                    null, null, mustTermsFilter);
+            totalDistributionForIndexAndType = esRepository.getTotalDistributionForIndexAndType(
+                    assetGroup, null, mustFilter, null, null, DOCID + KEYWORD, totalDocs, mustTermsFilter);
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred while fetching no complaint assets ", e);
+        }
+        List<String> nonCompliantresourceIds = totalDistributionForIndexAndType.entrySet().parallelStream()
+                .map(obj -> obj.getKey().toString()).collect(Collectors.toList());
+        return nonCompliantresourceIds;
+    }
+
+    private List<Object> getTargetTypeByRuleIds(String assetGroup, List<String> ruleIds) {
+        LOGGER.info("Getting Target type for policy id : " + ruleIds);
+        List<String> targetTypes = getTargetTypesByAssetGroup(assetGroup, null, null).stream()
+                .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
+        String ttypesTemp;
+        String ruleIdsTemp;
+        String rruleIds = null;
+        String ttypes = null;
+        for (String name : targetTypes) {
+            ttypesTemp = new StringBuilder().append('\'').append(name).append('\'').toString();
+            if (Strings.isNullOrEmpty(ttypes)) {
+                ttypes = ttypesTemp;
+            } else {
+                ttypes = new StringBuilder().append(ttypes).append(",").append(ttypesTemp).toString();
+            }
+        }
+        for (String rule : ruleIds) {
+            ruleIdsTemp = new StringBuilder().append('\'').append(rule).append('\'').toString();
+            if (Strings.isNullOrEmpty(rruleIds)) {
+                rruleIds = ruleIdsTemp;
+            } else {
+                rruleIds = new StringBuilder().append(rruleIds).append(",").append(ruleIdsTemp).toString();
+            }
+        }
+        String ruleIdWithTargetTypeQuery = "SELECT policyId, targetType FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
+                + ttypes + ") and policyId IN (" + rruleIds + ")";
+        List<Map<String, Object>> ruleIdwithTargetTypes = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
+
+        List<Object> targetRets = ruleIdwithTargetTypes.stream().map(s -> s.get(Constants.TARGET_TYPE)).collect(Collectors.toList());
+
+        return targetRets;
     }
 
     private List<String> getUntaggedAssets(String assetGroup) throws Exception {
@@ -972,8 +1017,8 @@ public class AssetRepositoryImpl implements AssetRepository {
         Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
         String mandatoryTagMatchClause = tagsSet.stream().collect(Collectors.joining(" "));
         missingTagsMap.put("missingTags",mandatoryTagMatchClause);
-        List<Map<String, Object>> untaggedAssetList= esRepository.getDataFromES(assetGroup, null, mustFilter,null, null,Arrays.asList(RESOURCEID), null);
-        return untaggedAssetList.stream().map(obj -> (String)obj.get(RESOURCEID)).collect(Collectors.toList());
+        List<Map<String, Object>> untaggedAssetList= esRepository.getDataFromES(assetGroup, null, mustFilter,null, null,Arrays.asList(DOCID), null);
+        return untaggedAssetList.stream().map(obj -> (String)obj.get(DOCID)).collect(Collectors.toList());
     }
 
     private List<Map<String, Object>> setAccountDetails(List<Map<String, Object>> assetDetails){
@@ -1038,7 +1083,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                             (entry.getValue()).equalsIgnoreCase("True")){
                         mustFilter.put(AssetConstants.FILTER_TAGGED, tagList);
                     }
-                    else if((entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
+                    else if((entry.getKey()).equalsIgnoreCase(FILTER_EXEMPTED)){
                         List<Map<String, Object>> masterList;
                         try {
                             masterList = getListAssetsExempted(assetGroup, filter);
@@ -1779,20 +1824,20 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     private List<Map<String, Object>> getAssetsByAssetGroup(String assetGroupName, String type,
-            Map<String, Object> mustFilter, List<String> targetTypes, List<String> fieldNames) {
-        
+                                                            Map<String, Object> mustFilter, List<String> targetTypes, List<String> fieldNames) {
+
         mustFilter.put(Constants.LATEST, Constants.TRUE);
         mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
-        
+
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         if (Constants.EC2.equals(type) || AssetConstants.ALL.equals(type)) {
-            if(mustFilter.containsKey(AssetConstants.FILTER_POLICYID) && 
+            if (mustFilter.containsKey(AssetConstants.FILTER_POLICYID) &&
                     ((mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.CLOUD_QUALYS_RULE) && qualysEnabled)
                             || mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.SSM_AGENT_RULE))) {
-                String policyId= (String) mustFilter.get(AssetConstants.FILTER_POLICYID);
-                PolicyParamResponse discoveredDayRangeParam = complianceServiceClient.getPolicyParam(policyId,DISCOVERED_DAYS_RANGE);
-                String discoverDayRange=discoveredDayRangeParam.getData().getValue();
-                return getLongRunningInstances(assetGroupName, type, fieldNames, discoverDayRange);
+                String policyId = (String) mustFilter.get(AssetConstants.FILTER_POLICYID);
+                PolicyParamResponse discoveredDayRangeParam = complianceServiceClient.getPolicyParam(policyId, DISCOVERED_DAYS_RANGE);
+                String discoverDayRange = discoveredDayRangeParam.getData().getValue();
+                return getLongRunningInstances(assetGroupName, type, fieldNames);
             } else {
                 shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
                 shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPED);
@@ -1800,7 +1845,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             }
         }
         mustFilter.remove(AssetConstants.FILTER_POLICYID);
-        
+
         List<Map<String, Object>> assets = new ArrayList<>();
         try {
             if (AssetConstants.ALL.equals(type)) {
@@ -1834,83 +1879,51 @@ public class AssetRepositoryImpl implements AssetRepository {
         } catch (Exception e) {
             LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
         }
-
         return assets;
     }
-    
-    private List<Map<String,Object>> getLongRunningInstances(String assetGroup, String type, List<String> fieldNames, String discoverDayRange) {
-        
-        List<Map<String,Object>> assetDetails = new ArrayList<>();
-        StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup);
-        urlToQueryBuffer.append("/").append(Constants.SEARCH).append("?scroll=")
-                .append(Constants.ES_PAGE_SCROLL_TTL);
 
-        String urlToQuery = urlToQueryBuffer.toString();
-        String urlToScroll = new StringBuilder(esUrl).append("/").append(Constants.SEARCH).append("/scroll")
-                .toString();
-        StringBuilder requestCount = new StringBuilder("{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"docType.keyword\":\""+type+"\"}},{\"match\":{\"statename\":\"running\"}}],"
-                + "\"should\":[{\"script\":{\"script\":\"LocalDate.parse(doc['firstdiscoveredon.keyword'].value.substring(0,10))"
-                + ".isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays("+discoverDayRange+"))\"}},"
-                + "{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":\"1\"}}}");
-
-        Long totalDocs = getTotalDocCount(assetGroup,  requestCount.toString());
-        StringBuilder requestBody = new StringBuilder("{\"_source\":").append(new Gson().toJson(fieldNames)).append(",").append("\"size\":10000,").
-                append(requestCount.toString().substring(1, requestCount.length()));
-        String request = requestBody.toString();
-        String scrollId = null;
-        if(totalDocs>0){
-            for (int index = 0; index <= (totalDocs / Constants.ES_PAGE_SIZE); index++) {
-                String responseDetails = null;
-                try {
-                    if (!Strings.isNullOrEmpty(scrollId)) {
-                        request = esRepository.buildScrollRequest(scrollId, Constants.ES_PAGE_SCROLL_TTL);
-                        urlToQuery = urlToScroll;
-                    }
-                    responseDetails = PacHttpUtils.doHttpPost(urlToQuery, request);
-                    scrollId = esRepository.processResponseAndSendTheScrollBack(responseDetails, assetDetails);
-                } catch (Exception e) {
-                    LOGGER.error("Error in getListAssetsVulnerable", e);
-                }
-            }
+    private List<Map<String, Object>> getLongRunningInstances(String assetGroup, String type, List<String> fieldNames) {
+        Map<String, Object> mustFilter = new HashMap<>();
+        mustFilter.put(LATEST, TRUE);
+        mustFilter.put("docType.keyword", type);
+        mustFilter.put("statename", "running");
+        List<Map<String, Object>> assetDetails = new ArrayList<>();
+        try {
+            assetDetails = esRepository.getDataFromES(assetGroup, null, mustFilter, null,
+                    null, null, null);
+        } catch (Exception e) {
+            LOGGER.error("Error in getListAssetsVulnerable", e);
         }
         return assetDetails;
     }
 
-    private List<Map<String, Object>> getAssetsByAssetGroupBySize(String assetGroupName, String type,
-                     Map<String, Object> mustFilter, List<String> targetTypes, List<String> fieldNames, int from, int size,
-                     String searchText, Map<String, Object> sortFilter, Map<String, Object> mustNotFilter, Map<String, Object> mustTermsFilter) {
+    private List<Map<String, Object>> getAssetsByAssetGroupBySize(String assetGroupName, Map<String, Object> mustFilter,
+                                                                  List<String> targetTypes, List<String> fieldNames, int from, int size,
+                                                                  String searchText, Map<String, Object> sortFilter,
+                                                                  Map<String, Object> mustNotFilter, Map<String, Object> mustTermsFilter,
+                                                                  List<String> policyIdList) {
         mustFilter.put(Constants.LATEST, Constants.TRUE);
         mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
-        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-        if (Constants.EC2.equals(type)) {
-            shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
-            shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPED);
-            shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPING);
+        List<Map<String, Object>> sortList = new ArrayList<>();
+        if (sortFilter != null) {
+            sortList.add(sortFilter);
         }
-        List<Map<String,Object>> sortList=new ArrayList<>();
-        sortList.add(sortFilter);
         List<Map<String, Object>> assets = new ArrayList<>();
+        List<String> resourceIds = new ArrayList<>();
         try {
-            if (AssetConstants.ALL.equals(type)) {
-                try {
-                    mustTermsFilter.computeIfAbsent(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, val -> targetTypes);
-                    assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, mustNotFilter, null, fieldNames,
-                            from, size, searchText, mustTermsFilter, sortList);
-                } catch (Exception e) {
-                    LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
-                }
-
-            } else {
-                if (Constants.ONPREMSERVER.equalsIgnoreCase(type)) {
-                    fieldNames = getDisplayFieldsForTargetType(type);
-                }
-                assets = esRepository.getSortedDataFromESBySize(assetGroupName, type, mustFilter, mustNotFilter, shouldFilter,
-                        fieldNames, from, size, searchText, null, sortList);
+            if (!policyIdList.isEmpty() && AssetUtils.isQualysPolicy(policyIdList, qualysEnabled)) {
+                resourceIds = getLongRunningInstances(assetGroupName, EC2, fieldNames).
+                        stream().filter(obj -> obj.containsKey(DOCID)).map(obj -> obj.get(DOCID).toString()).collect(Collectors.toList());
             }
+            Map<String, Object> shouldObject = AssetUtils.createShouldObjectForAssetTypeESQuery(targetTypes, policyIdList, resourceIds, qualysEnabled);
+            if (!shouldObject.isEmpty()) {
+                mustFilter.put("bool", shouldObject);
+            }
+            assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, mustNotFilter, null, fieldNames,
+                    from, size, searchText, mustTermsFilter, sortList);
         } catch (Exception e) {
             LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
         }
-
         return assets;
     }
     
@@ -3223,26 +3236,6 @@ public class AssetRepositoryImpl implements AssetRepository {
         return tagKeys;
     }
 
-    private List<Map<String, Object>> getAssetsExempted(String assetGroup)
-    {
-        LOGGER.info("Inside getListAssetsExempted");
-        List<Map<String, Object>> assetList = new ArrayList<>();
-        Map<String, Object> mustFilter = new HashMap<>();
-        Map<String, Object> mustTermsFilter = new HashMap<>();
-        Map<String, Object> mustNotFilter = new HashMap<>();
-        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.EXEMPTED);
-        try {
-            assetList = esRepository.getDataFromES(assetGroup, null,
-                    mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
-            return assetList;
-        } catch (Exception e) {
-            LOGGER.error(AssetConstants.ES_ERROR_MSG, e);
-        }
-        return assetList;
-    }
-
     public List<Map<String, Object>> getChildResourceDetailByDocId(String ag, String resourceType, String documentId)
             throws DataException {
 
@@ -3282,14 +3275,14 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
-    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest request, String attribute){
+    public List<Map<String,String>> getAssetExemptedFilterValue(FilterRequest request, String attribute) throws Exception {
         List<Map<String,String>>  response = new ArrayList<>();
         if(request.getFilter() == null){
             request.setFilter(new HashMap<String, Object>());
         }
-        if(attribute.equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
+        if(attribute.equalsIgnoreCase(FILTER_EXEMPTED)){
             int totalCount = getListAssetsCount(request.getAg(), request.getFilter());
-            request.getFilter().put(AssetConstants.FILTER_EXEMPTED, AssetConstants.TRUE);
+            request.getFilter().put(FILTER_EXEMPTED, AssetConstants.TRUE);
             int exemptAssetCount = getListAssetsCount(request.getAg(), request.getFilter());
             if(exemptAssetCount > 0){
                 Map<String,String> resList = new HashMap<>();
@@ -3325,145 +3318,125 @@ public class AssetRepositoryImpl implements AssetRepository {
         return response;
     }
 
-    public int getListAssetsCount(String assetGroup, Map<String, Object> filter) {
+    public int getListAssetsCount(String assetGroup, Map<String, Object> filter) throws Exception {
         LOGGER.info("Inside getListAssets");
-        Gson gson = new Gson();
         List<Map<String, Object>> assetDetails = new ArrayList<>();
-        String targetType = "";
-        String domain = (String) filter.get(Constants.DOMAIN);
+        List<String> fieldNames = new ArrayList<>();
+        List<String> policyIds = new ArrayList<>();
+        String domain = filter.get(Constants.DOMAIN) == null ? "" : (String) filter.get(Constants.DOMAIN);
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter = new HashMap<>();
+        List<String> mustResourceIds = new ArrayList<>();
+        List<String> mustNotResourceIds = new ArrayList<>();
 
-        Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
-        ArrayList<String> tagList=tagsSet.stream().map(tag->"tags."+tag).collect(Collectors.toCollection(ArrayList::new));
+        List<String> targetTypes = getTargetTypesByAssetGroup(assetGroup, domain, null).stream()
+                .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
 
         Iterator it = filter.entrySet().iterator();
-        Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
-        List<String> exemptedResourceIds=new ArrayList<>();
+        Set<String> mandatoryTagValues = getMandatoryTags(ASSET);
+        List<String> exemptedResourceIds = new ArrayList<>();
         List<String> taggingTargetTypesList = new ArrayList<>();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
-            if(entry.getValue() instanceof String){
+            if (entry.getValue() instanceof String) {
                 addTagToFilter(mustFilter, mandatoryTagValues, entry);
-            }else{
+            } else {
                 addTagToFilter(mustTermsFilter, mandatoryTagValues, entry);
             }
-            if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
-                targetType = entry.getValue().toString();
-            }else{
-                if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_TAGGED)){
-                    String filterTagged = "";
-                    if(entry.getValue() instanceof String){
-                        filterTagged = entry.getValue().toString();
+            if (CommonUtils.isEqualToAttribue(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, (String) entry.getKey())) {
+                targetTypes.retainAll((List<String>) entry.getValue());
+            } else if (CommonUtils.isEqualToAttribue(RESOURCEID, (String) entry.getKey())) {
+                mustTermsFilter.put(RESOURCEID_KEYWORD, (List<String>) entry.getValue());
+            } else if (entry.getKey().equals(POLICYID+KEYWORD) || entry.getKey().equals(POLICYID)) {
+                policyIds = (List<String>) entry.getValue();
+                List<Object> targetTypesForPolicy = getTargetTypeByRuleIds(assetGroup, policyIds);
+                targetTypes.retainAll(targetTypesForPolicy);
+            } else if (CommonUtils.isEqualToAttribue(AssetConstants.FILTER_COMPLIANT, (String) entry.getKey())) {
+                List<String> nonCompliantId = getNonCompliantAssetsForPolicy(policyIds, assetGroup);
+                String filterCompliant = AssetUtils.fetchInputValFromFilter(entry.getValue());
+                if (filterCompliant.equalsIgnoreCase(FALSE)) {
+                    mustResourceIds = AssetUtils.getMustResourceIdsForAssets(mustResourceIds, nonCompliantId);
+                    if (CollectionUtils.isEmpty(mustResourceIds)) {
+                        return 0;
                     }
-                    else {
-                        List<String> filterTaggedList = (List<String>) entry.getValue();
-                        filterTagged = filterTaggedList.size()==1?filterTaggedList.get(0):"";
-                    }
-                    List<String> untaggedAssets = new ArrayList<>();
-                    try{
-                        untaggedAssets = getUntaggedAssets(assetGroup);
-                    }catch(Exception e){
-                        LOGGER.error("Error occured while fetching untagged assets");
-                    }
-
-                    if(filterTagged.equalsIgnoreCase(AssetConstants.FALSE)){
-                        mustTermsFilter.put("_resourceid.keyword", untaggedAssets);
-                    }
-                    else {
-                        List<Map<String,Object>> targetTypesForTaggingList = rdsRepository.getDataFromPacman("SELECT p.targetType FROM cf_PolicyTable p WHERE p.status = 'ENABLED' AND p.category = '" + Constants.CATEGORY_TAGGING + "'");
-                        taggingTargetTypesList = targetTypesForTaggingList.stream().map(obj -> (String)obj.get("targetType")).collect(Collectors.toList());
-                        if(filterTagged.equalsIgnoreCase(AssetConstants.TRUE)){
-                            if(!untaggedAssets.isEmpty()){
-                                String excludeAssetsString = "{\"must_not\": [\n" +
-                                        "                        {\"terms\":\n" +
-                                        "                            {\n" +
-                                        "                                \"_resourceid.keyword\":[ %s ]\n" +
-                                        "                            }\n" +
-                                        "                        }\n" +
-                                        "                       ]}";
-                                excludeAssetsString = String.format(excludeAssetsString,untaggedAssets.stream().map(obj -> "\""+obj+"\"").collect(Collectors.joining(",")));
-                                Map<String,Object> excludedAssetsMap = gson.fromJson(excludeAssetsString,Map.class);
-                                mustFilter.put("bool",excludedAssetsMap);
-                            }
-                        }
-                    }
+                } else if (filterCompliant.equalsIgnoreCase(TRUE)) {
+                    mustNotResourceIds.addAll(nonCompliantId);
                 }
-                else if(((String) entry.getKey()).equalsIgnoreCase(AssetConstants.FILTER_EXEMPTED)){
-                    List<Map<String, Object>> masterList;
-                    try {
-                        masterList = getAssetsExempted(assetGroup);
-                        for(Map<String,Object>asset:masterList){
-                            if(asset.containsKey(RESOURCEID)){
-                                Object resourceId=asset.get(RESOURCEID);
-                                exemptedResourceIds.add((String) resourceId);
-                            }
-                        }
-                        if(((String) entry.getValue()).equalsIgnoreCase(TRUE)){
-                            mustTermsFilter.put(RESOURCEID_KEYWORD,exemptedResourceIds);
-                        } else{
-                            mustNotFilter.put(RESOURCEID_KEYWORD,exemptedResourceIds);
-                        }
-                    } catch (Exception e){
-                        LOGGER.error("Error in listAssets ",e);
-                    }
-                }
-                else if(!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
-                    mustTermsFilter.put((String) entry.getKey()+".keyword", entry.getValue());
-                }
-            }
-        }
-        int assetCount = 0;
-        try {
-            if (StringUtils.isEmpty(targetType)) {
-                List<String> validTypes = getTargetTypesByAssetGroup(assetGroup, domain, null).stream()
-                        .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
-                if(!taggingTargetTypesList.isEmpty()){
-                    validTypes.retainAll(taggingTargetTypesList);
-                }
-                mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, validTypes);
-                assetCount = getAssetsCountByAssetGroupBySize(assetGroup, AssetConstants.ALL, mustFilter, mustTermsFilter,
-                        mustNotFilter);
             } else {
-                assetCount = getAssetsCountByAssetGroupBySize(assetGroup, targetType, mustFilter, mustTermsFilter, mustNotFilter);
+                if (CommonUtils.isEqualToAttribue(AssetConstants.FILTER_TAGGED, (String) entry.getKey())) {
+                    String filterTagged = AssetUtils.fetchInputValFromFilter(entry.getValue());
+                    List<String> untaggedAssets = getUntaggedAssets(assetGroup);
+                    List<Map<String, Object>> targetTypesForTaggingList = rdsRepository.getDataFromPacman("SELECT p.targetType FROM cf_PolicyTable p WHERE p.status = 'ENABLED' AND p.category = '" + Constants.CATEGORY_TAGGING + "'");
+                    taggingTargetTypesList = targetTypesForTaggingList.stream().map(obj -> (String) obj.get("targetType")).collect(Collectors.toList());
+                    targetTypes.retainAll(taggingTargetTypesList);
+                    if (filterTagged.equalsIgnoreCase(FALSE)) {
+                        mustResourceIds = AssetUtils.getMustResourceIdsForAssets(mustResourceIds, untaggedAssets);
+                        if (CollectionUtils.isEmpty(mustResourceIds)) {
+                            return 0;
+                        }
+                    } else if (filterTagged.equalsIgnoreCase(TRUE)) {
+                        mustNotResourceIds.addAll(untaggedAssets);
+                    }
+                } else if (CommonUtils.isEqualToAttribue(FILTER_EXEMPTED, (String) entry.getKey())) {
+                    try {
+                        exemptedResourceIds = getAssetsExempted(assetGroup);
+                        String exemptInp = AssetUtils.fetchInputValFromFilter(entry.getValue());
+                        if (exemptInp.equalsIgnoreCase(TRUE)) {
+                            mustResourceIds = AssetUtils.getMustResourceIdsForAssets(mustResourceIds, exemptedResourceIds);
+                            if (CollectionUtils.isEmpty(mustResourceIds)) {
+                                return 0;
+                            }
+                        } else if (exemptInp.equalsIgnoreCase(FALSE)) {
+                            mustNotResourceIds.addAll(exemptedResourceIds);
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("Error in exempted assets in listAssets ", e);
+                    }
+                } else if (!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
+                    if (entry.getValue() instanceof String) {
+                        mustFilter.put(CommonUtils.convertAttributetoKeyword((String) entry.getKey()), entry.getValue());
+                    } else {
+                        mustTermsFilter.put(CommonUtils.convertAttributetoKeyword((String) entry.getKey()), entry.getValue());
+                    }
+                }
             }
-        } catch (Exception e) {
-            LOGGER.error("Error in getListAssets", e);
         }
+        if (targetTypes.size() == 0) {
+            return 0;
+        }
+        if (!CollectionUtils.isEmpty(mustResourceIds)) {
+            mustTermsFilter.put(DOCID+KEYWORD, mustResourceIds);
+        }
+        if (!CollectionUtils.isEmpty(mustNotResourceIds)) {
+            mustNotFilter.put(DOCID+KEYWORD, mustNotResourceIds);
+        }
+        int assetCount = getAssetsCountByAssetGroupBySize(assetGroup, mustFilter, targetTypes, fieldNames, mustNotFilter, mustTermsFilter, policyIds);
         LOGGER.info("Exiting getListAssets");
         return assetCount;
     }
 
-    private int getAssetsCountByAssetGroupBySize(String assetGroupName, String type, Map<String, Object> mustFilter, Map<String, Object> mustTermsFilter,
-                                                 Map<String, Object> mustNotFilter) {
+    private int getAssetsCountByAssetGroupBySize(String assetGroupName, Map<String, Object> mustFilter, List<String> targetTypes,
+                                                 List<String> fieldNames, Map<String, Object> mustNotFilter, Map<String, Object> mustTermsFilter,
+                                                 List<String> policyIdList) {
+        List<String> resourceIds = new ArrayList<>();
         mustFilter.put(Constants.LATEST, Constants.TRUE);
         mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
-        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-        if (Constants.EC2.equals(type)) {
-            shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
-            shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPED);
-            shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPING);
-        }
-        int totalDocumentCount = 0;
         try {
-            if (AssetConstants.ALL.equals(type)) {
-                try {
-                    totalDocumentCount = (int) esRepository.getTotalDocumentCountForIndexAndType(assetGroupName, null, mustFilter, mustNotFilter, null,
-                            "", mustTermsFilter);
-                } catch (Exception e) {
-                    LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
-                }
-
-            } else {
-                totalDocumentCount = (int) esRepository.getTotalDocumentCountForIndexAndType(assetGroupName, type, mustFilter, mustNotFilter, null,
-                        "", null);
+            if (!policyIdList.isEmpty() && AssetUtils.isQualysPolicy(policyIdList, qualysEnabled)) {
+                resourceIds = getLongRunningInstances(assetGroupName, EC2, fieldNames).
+                        stream().filter(obj -> obj.containsKey(DOCID)).map(obj -> obj.get(DOCID).toString()).collect(Collectors.toList());
             }
+            Map<String, Object> shouldObject = AssetUtils.createShouldObjectForAssetTypeESQuery(targetTypes, policyIdList, resourceIds, qualysEnabled);
+            if (!shouldObject.isEmpty()) {
+                mustFilter.put("bool", shouldObject);
+            }
+            return (int) esRepository.getTotalDocumentCountForIndexAndType(assetGroupName, null, mustFilter, mustNotFilter, null,
+                    "", mustTermsFilter);
         } catch (Exception e) {
             LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
         }
-
-        return totalDocumentCount;
+        return 0;
     }
 
 }
