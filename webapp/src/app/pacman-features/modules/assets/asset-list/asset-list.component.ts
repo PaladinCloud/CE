@@ -169,8 +169,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   ) {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
-    .subscribe(async(assetGroupName) => {
-      await this.getPreservedState();
+    .subscribe((assetGroupName) => {
+      this.getPreservedState();
       this.backButtonRequired =
       this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
       this.selectedAssetGroup = assetGroupName;
@@ -192,7 +192,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     });
   }
 
-  async getPreservedState(){
+  getPreservedState(){
     const state = this.tableStateService.getState(this.saveStateKey) || {};
     this.headerColName = state.headerColName ?? 'Asset ID';
     this.direction = state.direction ?? 'asc';
@@ -201,23 +201,26 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.searchTxt = state?.searchTxt ?? '';
     this.selectedRowId = state?.selectedRowId;
 
-    this.tableDataLoaded = true;
     this.displayedColumns = ['Asset ID', 'Asset Name', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Source'];
     this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
     this.tableScrollTop = state?.tableScrollTop;
 
-    this.isStatePreserved = false;
-    const navDirection = this.workflowService.getNavigationDirection();
+    this.applyPreservedFilters(state);
+  }
 
-    if(navDirection<=0){
+  applyPreservedFilters (state) {
+    this.isStatePreserved = false;
+
+    const updateInfo = this.filterManagementService.applyPreservedFilters(state);
+    if (updateInfo.shouldUpdateFilters) {
       this.filters = state.filters || [];
-      if (state.data && state.data.length > 0) {
-        this.isStatePreserved = true;
-        this.tableData = state.data || [];
-      }
-      await Promise.resolve().then(() => this.getUpdatedUrl());
-    }    
-    
+      this.filterText = updateInfo.filterText;
+    }
+    if (updateInfo.shouldUpdateData) {
+      this.isStatePreserved = true;
+      this.tableData = state.data || [];
+      this.tableDataLoaded = true;
+    }
   }
 
   ngOnInit() {

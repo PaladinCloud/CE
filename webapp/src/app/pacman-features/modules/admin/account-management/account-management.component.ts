@@ -222,28 +222,24 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     this.totalRows = state.totalRows ?? 0;
     this.searchTxt = state?.searchTxt ?? '';
     
-    this.tableData = state?.data || [];
     this.whiteListColumns = state?.whiteListColumns ?? Object.keys(this.columnWidths);
     this.tableScrollTop = state?.tableScrollTop;
     this.selectedRowIndex = state?.selectedRowIndex;
-    this.filters = state?.filters || [];
+    
+    this.applyPreservedFilters(state);
+  }
 
-    if(this.tableData && this.tableData.length>0){   
-      this.tableDataLoaded = true;
-      this.isStatePreserved = true;
-    }else{
-      this.isStatePreserved = false;
-    }
-
-    const navDirection = this.workflowService.getNavigationDirection();
-
-    if(navDirection<=0){
+  applyPreservedFilters (state) {
+    this.isStatePreserved = false;
+    const updateInfo = this.filterManagementService.applyPreservedFilters(state);
+    if (updateInfo.shouldUpdateFilters) {
       this.filters = state.filters || [];
-      if (state.data && state.data.length > 0) {
-        this.isStatePreserved = true;
-        this.tableData = state.data;
-      }
-      Promise.resolve().then(() => this.getUpdatedUrl());
+      this.filterText = updateInfo.filterText;
+    }
+    if (updateInfo.shouldUpdateData) {
+      this.isStatePreserved = true;
+      this.tableData = state.data || [];
+      this.tableDataLoaded = true;
     }
   }
 

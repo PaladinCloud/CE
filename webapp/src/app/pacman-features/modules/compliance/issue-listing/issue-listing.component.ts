@@ -20,6 +20,7 @@ import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
 import { ComponentKeys } from "src/app/shared/constants/component-keys";
+import { FilterManagementService } from "src/app/shared/services/filter-management.service";
 
 @Component({
   selector: "app-issue-listing",
@@ -139,26 +140,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private routerUtilityService: RouterUtilityService,
     private permissions: PermissionGuardService,
     private tableStateService: TableStateService,
-    private assetTypeMapService: AssetTypeMapService
-  ) {
-
-    this.assetGroupSubscription = this.assetGroupObservableService
-    .getAssetGroup()
-    .subscribe(async(assetGroupName) => {
-        // whenever ag is changed, all filters and data are cleared in change-default-asset-group component.
-        await this.getPreservedState();
-        this.backButtonRequired =
-          this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
-        this.selectedAssetGroup = assetGroupName;
-        await this.getFilters();
-      });
-
-    this.domainSubscription = this.domainObservableService
-      .getDomainType()
-      .subscribe((domain) => {
-        this.selectedDomain = domain;
-      });
-  }
+    private assetTypeMapService: AssetTypeMapService,
+    private filterManagementService: FilterManagementService
+  ) { }
 
   getUpdatedColumnWidthsAndNamesMap(){
     const excludedColumnNames = new Set(["Exempted", "Tagged"]);
@@ -186,7 +170,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.columnWidths = { ...this.columnWidths };
   }
 
-  async getPreservedState() {
+  getPreservedState() {
     const state = this.tableStateService.getState(this.saveStateKey) ?? {};
   
     this.headerColName = state.headerColName || 'Severity';
@@ -201,6 +185,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.selectedRowId = state.selectedRowId;
     
 
+    this.applyPreservedFilters(state);
+  }
+  
+  applyPreservedFilters (state) {
     // below code is to apply filters which are in saved state and update the URL (just to keep URL in sync and also getData method is dependent) 
     // overriding of filters is being done in routerParam() method which basically updates filterText
     // based on filterQueryParams and later when getFilterArray is called, they are added to filters array.
@@ -209,24 +197,42 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     // but rather it depends on filterText object which is build on URL queryParams.
 
     this.isStatePreserved = false;
-    const navDirection = this.workflowService.getNavigationDirection();
 
-    if(navDirection<=0){
+    //  below code should run when filter is not available in queryParams
+    const updateInfo = this.filterManagementService.applyPreservedFilters(state);
+    if (updateInfo.shouldUpdateFilters) {
       this.filters = state.filters || [];
-      if(navDirection==0){
-        this.preApplyStatusFilter(state);
-      }else{
-        if (state.data && state.data.length > 0) {
-          this.isStatePreserved = true;
-          this.tableData = state.data;
-        }
-      }
-      await Promise.resolve().then(() => this.getUpdatedUrl());
+      this.filterText = updateInfo.filterText;
+    }
+    if (updateInfo.preApply) {
+      this.preApplyStatusFilter(state);
+    }
+    if (updateInfo.shouldUpdateData) {
+      this.isStatePreserved = true;
+      this.tableData = state.data || [];
     }
   }
-  
 
-  ngOnInit() {
+  ngOnInit () {
+    this.assetGroupSubscription = this.assetGroupObservableService
+    .getAssetGroup()
+    .subscribe(async (assetGroupName) => {
+      // whenever ag is changed, all filters and data are cleared in change-default-asset-group component.
+      this.getPreservedState();
+      this.backButtonRequired =
+        this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+      this.selectedAssetGroup = assetGroupName;
+      await this.getFilters();
+      this.getUpdatedColumnWidthsAndNamesMap();
+      this.storeState();
+    });
+
+    this.domainSubscription = this.domainObservableService
+    .getDomainType()
+    .subscribe((domain) => {
+      this.selectedDomain = domain;
+    });
+    
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
 
     if(breadcrumbInfo){
@@ -452,86 +458,48 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   /*
    * this functin passes query params to filter component to show filter
    */
-  async getFilterArray(removeFilterIfNotPresent=true) {
+  async getFilterArray () {
     try {
-      const dataArray = Object.keys(this.filterText).map(filterKey => {
-      const keyDisplayValue = this.filterTypeOptions.find(option => option.optionValue === filterKey)?.optionName;
-        return {
-          keyDisplayValue,
-          filterkey: filterKey,
-        };
-      });
-      const formattedFilters = dataArray;
-      // const state = this.tableStateService.getState(this.pageTitle) ?? {};
-      // this.filters = state.filters;
+      const filterText = this.filterText;
+      const filterTypeOptions = this.filterTypeOptions;
+      let filters = this.filters;
+
+      const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
+
       for (let i = 0; i < formattedFilters.length; i++) {
-        await this.processFilterItem(formattedFilters[i], removeFilterIfNotPresent);
+        filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i], filters });
+        this.filters = filters;
       }
+
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
 
-  async processFilterItem(formattedFilterItem, removeFilterIfNotPresent){
+  async processAndAddFilterItem ({ formattedFilterItem, filters }) {
 
-    let keyDisplayValue = formattedFilterItem.keyDisplayValue;
-    if(!keyDisplayValue){
-      keyDisplayValue = find(this.filterTypeOptions, {
-        optionValue: formattedFilterItem.filterkey,
-      })["optionName"];
-    }
-
+    const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
     const filterKey = formattedFilterItem.filterkey;
-      
-    const existingFilterObjIndex = this.filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
-    if(this.filters[existingFilterObjIndex]?.filterValue.length > 0){
-      // do nothing when we have existing filter and filterValues > 0
+    const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue || filter.keyDisplayValue === filterKey);
+    let filterObj;
+
+    if (existingFilterObjIndex < 0) {
+      if (!keyDisplayValue) {
+        const validFilterValues = this.filterText[filterKey]?.split(',').map(value => {
+          return { id: value, name: value };
+        })
+        filterObj = this.filterManagementService.createFilterObj(filterKey, filterKey, validFilterValues);
+      } else {
+        // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+        await this.changeFilterType(keyDisplayValue);
+        const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+        filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+      }
+      filters.push(filterObj);
     }
-    else if (existingFilterObjIndex >= 0) {
-      // remove filter chip when 0 selected filter chip is present
-      // if(!removeFilterIfNotPresent){        
-      //   this.filters[existingFilterObjIndex].filterValue = [];
-      //   this.filters[existingFilterObjIndex].value = [];
-      // }else{
-      //   this.filters.splice(existingFilterObjIndex, 1);
-      // }
-    }else{
-      // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
-      await this.changeFilterType(keyDisplayValue);
-      const filterValues = this.filterText[filterKey]?.split(',') || [];
-      const filterTagOptionsForKey = this.filterTagOptions[keyDisplayValue];
-      const filterTagLabelsForKey = this.filterTagLabels[keyDisplayValue];
-
-      
-      const validFilterValues = filterValues
-      .reduce((result, val) => {
-        const valObj = filterTagOptionsForKey?.find(obj => obj.id === val);
-        if (valObj && filterTagLabelsForKey?.includes(valObj.name)) {
-          // here we push valid filter option to validFilterValues array
-          result.push(valObj);
-        }else{
-          // here we also push filter option that is not present in filterTagOptions[key] (i.e, options list) to validFilterValues array
-          // but here, we take id and displayname to be same
-          // this case is to handle when some filter is applied while navigating from other screen and if that filter option is not in the list.
-          result.push({id: val, name:val});
-        }
-        return result;
-      }, []);
-
-      const eachObj = {
-        keyDisplayValue: keyDisplayValue,
-        filterValue: validFilterValues.map(valObj => valObj.name),
-        key: keyDisplayValue,
-        value: validFilterValues.map(valObj => valObj.id),
-        filterkey: filterKey?.trim(),
-        compareKey: filterKey?.toLowerCase().trim(),
-      };
-
-      this.filters.push(eachObj);
-    }
-    this.filters = [...this.filters];
-    
+    filters = [...filters];
+    return filters;
   }
 
   /**
@@ -577,134 +545,62 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.logger.log("error", error);
     }
   }
-
-  async applyFilterTagsData(filterTagsData, value) {
-    if (value.toLowerCase() === "asset type") {
-      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-      filterTagsData.forEach(filterOption => {
-          filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
-      });
-      });
-    }
   
-    this.filterTagOptions[value] = filterTagsData;
-    this.filterTagLabels[value] = filterTagsData.map(option => option.name);
-    
-    this.filterTagLabels[value] = this.filterTagLabels[value].sort((a, b) => a.localeCompare(b));
-  
-    this.filterErrorMessage = this.filterTagLabels[value].length === 0 ? 'noDataAvailable' : '';
-    
-    return this.filterTagOptions[value];
-  }
-  
-  async getFilterTagsData(payload) {
-    return this.issueFilterService.getFilters({}, environment.base + this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL).url, "POST", payload)
-      .toPromise()
-      .then(response => response[0].data.response);
-  }
-  
-  async changeFilterType(value, searchText='') {
-    this.filterErrorMessage = '';
-  
+  async changeFilterType (value, searchText = '') {
     try {
       const currentQueryParams =
         this.routerUtilityService.getQueryParametersFromSnapshot(
           this.router.routerState.snapshot.root
         );
-      this.getFiltersAppliedOrderFromURL(currentQueryParams.filter);
       this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
-      const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
-  
-      const excludedKeys = [
-        this.currentFilterType.optionValue,
-        "domain",
-        "include_exempt",
-        urlObj.params["attribute"],
-        this.currentFilterType["optionValue"]?.replace(".keyword", "")
-      ];
-      
-      const index = this.filterOrder?.indexOf(this.currentFilterType.optionValue?.replace(".keyword", ""));
-      const excludedKeysInUrl = Object.keys(this.filterText).filter(key => urlObj.url.includes(key));
-  
-      let filtersToBePassed = this.getFilterPayloadForDataAPI();
-      filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
-        const normalizedKey = key.replace(".keyword", "");
-        if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) || index>=0) {
-          result[normalizedKey] = filtersToBePassed[key];
-        }
-        return result;
-      }, {});
-      
-      const sortedFiltersToBePassed = this.filterOrder?.slice(0, index)?.reduce((result, key) => {
-        if (filtersToBePassed.hasOwnProperty(key)) {
-          result[key] = filtersToBePassed[key];
-        }
-        return result;
-      }, {});
-  
-      const payload = {
-        type: "issue",
-        attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+      const filterText = this.filterText;
+      const currentFilterType = this.currentFilterType;
+      const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
+      const agAndDomain = {
         ag: this.selectedAssetGroup,
-        domain: this.selectedDomain,
-        searchText,
-        filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
-      };
-  
-      const filterTagsData = await this.getFilterTagsData(payload);
-      await this.applyFilterTagsData(filterTagsData, value);
-  
+        domain: this.selectedDomain
+      }
+
+      const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({ currentFilterType, filterText, filtersToBePassed, type: 'issue', currentQueryParams, agAndDomain, searchText, updateFilterTags, labelsToExcludeSort });
+      this.filterTagOptions[value] = filterTagOptions;
+      this.filterTagLabels[value] = filterTagLabels;
+
+      this.filterTagLabels = { ...this.filterTagLabels };
+
+
     } catch (error) {
-      this.filterErrorMessage = 'apiResponseError';
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
   
+  getUpdateFilterTagsCallback () {
+    const labelsToExcludeSort = [];
+    const updateFilterTags = (filterTagsData, value) => {
+      if (value.toLowerCase() === "asset type") {
+        this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap => {
+          filterTagsData.forEach(filterOption => {
+            filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
+          });
+        });
+      }
+      return filterTagsData;
+    }
+    return [updateFilterTags, labelsToExcludeSort];
+  }
 
-  async changeFilterTags(event) {
+  async changeFilterTags (event) {
     let filterValues = event.filterValue;
-    if(!filterValues){
+    if (!filterValues) {
       return;
     }
-    this.currentFilterType =  find(this.filterTypeOptions, {
-        optionName: event.filterKeyDisplayValue,
-      });
-
-    try {
-      if (this.currentFilterType) {
-        const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
-          return v?v["id"]:value;
-        });
-        this.utils.addOrReplaceElement(
-          this.filters,
-          {
-            keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: filterValues,
-            key: this.currentFilterType.optionName,
-            value: filterTags,
-            filterkey: this.currentFilterType.optionValue.trim(),
-            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
-          },
-          (el) => {
-            return (
-              el.compareKey ===
-              this.currentFilterType.optionValue.toLowerCase().trim()
-            );
-          }
-        );
-      }
-      const index = this.filters.findIndex(filter => filter.keyDisplayValue===this.currentFilterType.optionName);
-      // this.getUpdatedUrl();
-      this.removeFiltersOnRightOfIndex(index);
-      this.getUpdatedUrl();
-      
-      this.updateComponent();
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
+    this.currentFilterType = find(this.filterTypeOptions, {
+      optionName: event.filterKeyDisplayValue,
+    });
+    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    this.getUpdatedUrl();
+    this.updateComponent();
   }
 
   removeFiltersOnRightOfIndex(index: number){
