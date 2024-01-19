@@ -106,7 +106,7 @@ public class UnrestrictedNACLRuleForConfiguredPort extends BasePolicy {
 
 			if (isUnrestrictedNAclRule)
 				return description = "Network Access Control List(NACL) with unrestricted access to server administration port "
-						+ ruleParam.get(PacmanRuleConstants.PORT_TO_CHECK) + " found !!";
+						+ ruleParam.get(PacmanRuleConstants.PORT_TO_CHECK) + " found.";
 		} catch (Exception e) {
 			logger.error("unable to determine", e);
 			throw new RuleExecutionFailedExeption("unable to determine" + e);
