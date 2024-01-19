@@ -1,5 +1,5 @@
 /*******************************************************************************
- *  Copyright 2023 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
+ *  Copyright 2024 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -82,14 +82,14 @@ public class RedhatNotScanningClusterPolicy extends BasePolicy {
                 issue.put(PacmanRuleConstants.VIOLATION_REASON, "Cluster - " + clusterName + " not scanned by redhat acs found");
                 issueList.add(issue);
                 annotation.put("issueDetails", issueList.toString());
-                logger.debug("========RedhatNotScanningClusterPolicy ended with annotation {} : =========", annotation);
+                logger.debug("RedhatNotScanningClusterPolicy ended with annotation : {}", annotation);
                 return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             }
         } catch (Exception e) {
             logger.error("Unable to scan cluster", e);
             throw new RuleExecutionFailedExeption(e.getMessage());
         }
-        logger.debug("========RedhatNotScanningClusterPolicy ended=========");
+        logger.debug("RedhatNotScanningClusterPolicy ended");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
