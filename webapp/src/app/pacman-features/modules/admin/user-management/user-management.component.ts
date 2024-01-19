@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { AdminService } from 'src/app/pacman-features/services/all-admin.service';
@@ -18,6 +18,8 @@ import { TourService } from 'src/app/core/services/tour.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { IColumnNamesMap, IColumnWidthsMap, IFilterObj, IFilterOption, IFilterTagLabelsMap, IFilterTagOptionsMap, IFilterTypeLabel } from 'src/app/shared/table/interfaces/table-props.interface';
+import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+import { find } from 'lodash';
 
 
 @Component({
@@ -25,7 +27,7 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterObj, IFilterOption, IFilterTa
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css']
 })
-export class UserManagementComponent implements OnInit, AfterViewInit {
+export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy {
 
   pageTitle = "Users";
   saveStateKey: String = ComponentKeys.UserManagementList;
@@ -102,7 +104,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     private tableStateService: TableStateService,
     private tourService: TourService,
     private dataCacheService: DataCacheService,
-    public form: FormBuilder
+    private filterManagementService: FilterManagementService,
+    public form: FormBuilder,
   ) { }
   
   ngAfterViewInit(): void {
@@ -113,7 +116,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     this.getPreservedState();
     this.getFilters();
     this.buildForm();
-    this.getRoles();
+    window.onbeforeunload = () => this.storeState();
   }
 
   getPreservedState(){
@@ -125,25 +128,34 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.totalRows = state.totalRows ?? 0;
       this.searchTxt = state?.searchTxt ?? '';
 
-      this.tableData = state?.data ?? [];
       this.whiteListColumns = state?.whiteListColumns ?? ["Email", "Roles", "Status","Actions"];;
       this.tableScrollTop = state?.tableScrollTop;
       this.selectedRowIndex = state?.selectedRowIndex;
 
-      if(this.tableData && this.tableData.length>0){     
-        this.tableDataLoaded = true;   
-        this.isStatePreserved = true;
-      }else{
-        this.isStatePreserved = false;
-      }
+      this.applyPreservedFilters(state);
     }
   }
 
-  updateComponent() {
+  async applyPreservedFilters (state) {
+    this.isStatePreserved = false;
+
+    const updateInfo = this.filterManagementService.applyPreservedFilters(state);
+    if (updateInfo.shouldUpdateFilters) {
+      this.filters = state.filters || [];
+      this.filterText = updateInfo.filterText;
+    }
+    if (updateInfo.shouldUpdateData) {
+      this.isStatePreserved = true;
+      this.tableData = state.data || [];
+      this.tableDataLoaded = true;
+    }
+  }
+
+  updateComponent () {    
     if(this.isStatePreserved){
       this.tableDataLoaded = true;
       this.clearState();
-    }else{
+    } else {      
       this.tableDataLoaded = false;
       this.bucketNumber = 0;
       this.tableData = [];
@@ -178,12 +190,10 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.storeState();
   }
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
-    this.storeState();
   }
 
   public buildForm() {
@@ -358,104 +368,59 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       queryParamsHandling: 'merge',
   });
   }
-  deleteFilters(event?) {
-    try {
-      this.pageNumber = 1;
-      if (!event) {
-        this.filters = [];
-        this.storeState();
-      }else if(event.index && !this.filters[event.index].filterValue){
-        this.filters.splice(event.index, 1);
-        this.storeState();
-      }
-      else {
-        if (event.clearAll) {
-          this.filters = [];
-        } else {
-          this.filters.splice(event.index, 1);
-        }
-        this.storeState();
-        this.getUpdatedUrl();
-        this.updateComponent();
-      }
-    } catch (error) { }
-    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+
+  deleteFilters (event?) {
+    let shouldUpdateComponent = false;
+    [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);
+    if (shouldUpdateComponent) {
+      this.getUpdatedUrl();
+      this.updateComponent();
+    }
   }
   /*
    * this functin passes query params to filter component to show filter
    */
-  getFilterArray() {
-    return new Promise((resolve) => {
-      const filterObjKeys = Object.keys(this.filterText);      
-      const dataArray = [];
-      for (let i = 0; i < filterObjKeys.length; i++) {
-        let obj = {};
-        const keyDisplayValue = _.find(this.filterTypeOptions, {
-          optionValue: filterObjKeys[i],
-        })["optionName"];
-        obj = {
-          keyDisplayValue,
-          filterkey: filterObjKeys[i],
-        };
-        dataArray.push(obj);
-      }
-      
-      const state = this.tableStateService.getState(this.saveStateKey) ?? {};
-      const filters = state?.filters;
-      
-      if(filters){
-        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
-        filters.forEach(filter => {
-          if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
-            dataArray.push({
-              filterkey: filter.filterkey,
-              keyDisplayValue: filter.key
-            });
-          }
-        });
-      }
+  async getFilterArray () {
+    try {
+      const filterText = this.filterText;
+      const filterTypeOptions = this.filterTypeOptions;
+      let filters = this.filters;
 
-      const formattedFilters = dataArray;   
-      if(formattedFilters.length==0){
-        resolve(true);
-      }   
+      const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
+
       for (let i = 0; i < formattedFilters.length; i++) {
-
-        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
-        if(!keyDisplayValue){
-          keyDisplayValue = _.find(this.filterTypeOptions, {
-            optionValue: formattedFilters[i].filterKey,
-          })["optionName"];
-        }
-
-        this.changeFilterType(keyDisplayValue).then(() => {
-          let filterValueObj = _.find(this.filterTagOptions[keyDisplayValue], {
-            id: this.filterText[formattedFilters[i].filterkey],
-          });
-
-          let filterKey = dataArray[i].filterkey;
-          
-          if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
-            const eachObj = {
-              keyDisplayValue: keyDisplayValue,
-              filterValue: filterValueObj?filterValueObj["name"]:undefined,
-              key: keyDisplayValue, // <-- displayKey-- Resource Type
-              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
-              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
-              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-            };
-            this.filters.push(eachObj);            
-          }
-          if(i==formattedFilters.length-1){
-            this.filters = [...this.filters];
-            this.storeState();
-            resolve(true);
-          }
-          
-        })
+        filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i], filters });
+        this.filters = filters;
       }
 
-    })
+    } catch (error) {
+      this.errorHandling.handleJavascriptError(error);
+    }
+  }
+
+  async processAndAddFilterItem ({ formattedFilterItem, filters }) {
+
+    const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
+    const filterKey = formattedFilterItem.filterkey;
+    const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue || filter.keyDisplayValue === filterKey);
+    let filterObj;
+
+    if (existingFilterObjIndex < 0) {
+      if (!keyDisplayValue) {
+        const validFilterValues = this.filterText[filterKey]?.split(',').map(value => {
+          return { id: value, name: value };
+        })
+        filterObj = this.filterManagementService.createFilterObj(filterKey, filterKey, validFilterValues);
+      } else {
+        // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+        await this.changeFilterType(keyDisplayValue);
+        const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+        filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+      }
+      filters.push(filterObj);
+    }
+    filters = [...filters];
+    return filters;
   }
 
   /**
@@ -463,7 +428,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
    * the filter array ,so that filter keynames are changed
    */
 
-  getFilters() {
+  async getFilters() {
     try {
       this.filterTypeLabels.push("Status");
       this.filterTypeOptions.push({
@@ -471,13 +436,11 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         optionValue: 'Status',
         optionURL: undefined
       })
+      this.filterTypeLabels = [...this.filterTypeLabels];
       this.routerParam();
-      this.getFilterArray().then(() => {
-        this.updateComponent();
-      }).catch(e => {
-        this.errorHandling.handleJavascriptError(e);
-        this.updateComponent();
-      });
+      await this.getFilterArray();
+      // await Promise.resolve().then(() => this.getUpdatedUrl());
+      this.getRoles();
     } catch (error) {
       this.errorHandling.handleJavascriptError(error);
     }
@@ -489,7 +452,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         this.currentFilterType = _.find(this.filterTypeOptions, {
           optionName: value,
         });
-        this.storeState();
         if (!this.filterTagOptions[value] || !this.filterTagLabels[value]) {
           if (value.toLowerCase() == "status") {
             this.filterTagLabels[value] = ["Active", "Inactive"];
@@ -514,15 +476,14 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeFilterTags(event) {    
-    this.pageNumber = 1;
+  changeFilterTags (event) {
     let value = event.filterValue;
-    this.currentFilterType =  _.find(this.filterTypeOptions, {
-        optionName: event.filterKeyDisplayValue,
-      });  
+    this.currentFilterType = _.find(this.filterTypeOptions, {
+      optionName: event.filterKeyDisplayValue,
+    });
     try {
       if (this.currentFilterType) {
-        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });   
+        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
         this.utils.addOrReplaceElement(
           this.filters,
           {
@@ -541,7 +502,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
           }
         );
       }
-      this.storeState();
       this.getUpdatedUrl();
       this.updateComponent();
     } catch (error) {
@@ -639,7 +599,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     const rowSelected = event.rowSelected;
     this.selectedRowIndex = event.selectedRowIndex;
 
-    this.storeState();
     this.action = action;
     if(action == "Activate" || action == "Deactivate" || action == "Remove"){
       this.confirmAction(action,rowSelected);
@@ -726,7 +685,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   storeState(data?){
     const state = {
         totalRows: this.totalRows,
-        data: data,
+        data: this.tableData,
         headerColName: this.headerColName,
         direction: this.direction,
         whiteListColumns: this.whiteListColumns,
@@ -852,5 +811,9 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandling.handleJavascriptError(error);
     }
+  }
+
+  ngOnDestroy (): void {
+    this.storeState();
   }
 }

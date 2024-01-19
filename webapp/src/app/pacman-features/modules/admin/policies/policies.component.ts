@@ -371,18 +371,25 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared
      this.totalRows = state.totalRows || 0;
      this.searchTxt = state?.searchTxt || '';
  
-     this.tableDataLoaded = true;
- 
-     this.tableData = state?.data || [];
      this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
      this.tableScrollTop = state?.tableScrollTop;
-     this.filters = state?.filters || [];
      this.selectedRowId = state?.selectedRowId;
-   
-     if(this.tableData && this.tableData.length>0){
+
+     this.applyPreservedFilters(state);
+   }
+
+   applyPreservedFilters (state) {
+     this.isStatePreserved = false;
+
+     const updateInfo = this.filterManagementService.applyPreservedFilters(state);
+     if (updateInfo.shouldUpdateFilters) {
+       this.filters = state.filters || [];
+       this.filterText = updateInfo.filterText;
+     }
+     if (updateInfo.shouldUpdateData) {
        this.isStatePreserved = true;
-     }else{
-       this.isStatePreserved = false;
+       this.tableData = state.data || [];
+       this.tableDataLoaded = true;
      }
    }
  

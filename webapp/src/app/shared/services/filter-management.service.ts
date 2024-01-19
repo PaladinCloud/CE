@@ -25,6 +25,8 @@
  import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
  import { IFilterObj, IFilterOption } from '../table/interfaces/table-props.interface';
  import { find } from 'lodash';
+import { ActivatedRoute, Router } from '@angular/router';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
  
  interface IFilterPayload {
      ag?: string;
@@ -39,11 +41,15 @@
  export class FilterManagementService {
  
      constructor(
-                 private httpService: HttpService,
-                 private utils: UtilsService,
-                 private issueFilterService: IssueFilterService,
-                 private logger: LoggerService,
-                 private refactorFieldsService: RefactorFieldsService) {}
+      private httpService: HttpService,
+      private router: Router,
+      private activatedRoute: ActivatedRoute,
+      private utils: UtilsService,
+      private issueFilterService: IssueFilterService,
+      private logger: LoggerService,
+      private refactorFieldsService: RefactorFieldsService,
+      private workflowService: WorkflowService
+     ) { }
  
      getApplicableFilters(filterId, filterParams = {}) {
  
@@ -131,7 +137,14 @@
           environment.base  
           + this.utils.getParamsFromUrlSnippet(optionUrl).url, "POST", payload)
              .toPromise()
-             .then(response => response[0].data.response);
+           .then(response => {
+             if (response[0].data.response) {
+               return response[0].data.response;
+             } else if (response[0].data.optionList) {
+               return response[0].data.optionList;
+             }
+             return response[0].data;
+             });
      }
  
    // TODO: getting order from url might sometimes lead to inconsistency because
@@ -234,7 +247,7 @@
          }
          const index = filters.findIndex(filter => filter.keyDisplayValue===currentFilterType.optionName);
          this.removeFiltersOnRightOfIndex(filters, index);
-         return filters;
+         return [...filters];
        } catch (error) {
          this.logger.log("error", error);
        }
@@ -352,13 +365,61 @@
      return validFilterValues;
    }
  
-     handleError(error: any): Observable<any> {
-         return observableThrowError(error.message || error);
+    handleError(error: any): Observable<any> {
+        return observableThrowError(error.message || error);
+    }
+
+    massageData(data): any {
+        return data;
+    }
+
+   hasFilterQueryParam () {
+     return this.activatedRoute.snapshot.queryParamMap.get("filter");
+   }
+
+   getUpdatedUrl (filters: any[]) {
+     const filterText = this.utils.arrayToObject(filters, 'filterkey', 'value');
+     const updatedFilterText = this.utils.makeFilterObj(filterText);
+
+     const updatedQueryParams = {
+       filter: updatedFilterText['filter'],
+     };
+
+     const processedFilterText = this.utils.processFilterObj(updatedFilterText);
+
+     this.router.navigate([], {
+       relativeTo: this.activatedRoute,
+       queryParams: updatedQueryParams,
+       queryParamsHandling: 'merge',
+     });
+
+     // Use processedFilterText as needed
+     return processedFilterText;
+   }
+
+   applyPreservedFilters (state) {
+     let shouldUpdateFilters = false;
+     let shouldUpdateData = false;
+     let preApply = false;
+     let filterText;
+     if (!this.hasFilterQueryParam()) {
+       const navDirection = this.workflowService.getNavigationDirection();
+       if (navDirection <= 0) {
+         shouldUpdateFilters = true;
+         if (navDirection == 0) {
+           preApply = true;
+         } else {
+           if (state.data && state.data.length > 0) {
+             shouldUpdateData = true;
+           }
+         }
+         filterText = this.getUpdatedUrl(state.filters);
+       }
      }
- 
-     massageData(data): any {
-         return data;
-     }
+     return {
+       shouldUpdateFilters, shouldUpdateData, filterText, preApply
+     };
+   }
  
  }
  

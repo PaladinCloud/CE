@@ -188,6 +188,8 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
     );
     this.getPreservedState();
     this.getFilters();
+
+    window.onbeforeunload = () => this.storeState();
   }
 
   getFilterPayloadForDataAPI(){
@@ -215,20 +217,26 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.totalRows = state.totalRows ?? 0;
       this.searchTxt = state?.searchTxt ?? '';
       
-      this.tableDataLoaded = true;
-
-      this.tableData = state?.data ?? [];
       this.whiteListColumns = state?.whiteListColumns ?? Object.keys(this.columnWidths);
       this.tableScrollTop = state?.tableScrollTop;
       this.selectedRowIndex = state?.selectedRowIndex;
 
-      this.filters = state?.filters ?? [];
+      this.applyPreservedFilters(state);
+    }
+  }
 
-      if(this.tableData && this.tableData.length>0){        
-        this.isStatePreserved = true;
-      }else{
-        this.isStatePreserved = false;
-      }
+  applyPreservedFilters (state) {
+    this.isStatePreserved = false;
+
+    const updateInfo = this.filterManagementService.applyPreservedFilters(state);
+    if (updateInfo.shouldUpdateFilters) {
+      this.filters = state.filters || [];
+      this.filterText = updateInfo.filterText;
+    }
+    if (updateInfo.shouldUpdateData) {
+      this.isStatePreserved = true;
+      this.tableData = state.data || [];
+      this.tableDataLoaded = true;
     }
   }
 
@@ -236,10 +244,10 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isStatePreserved = false;
   }
 
-  storeState(data?){
+  storeState(){
     const state = {
       totalRows: this.totalRows,
-      data: data,
+      data: this.tableData,
       headerColName: this.headerColName,
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
@@ -254,13 +262,11 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.storeState();
     this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
-    this.storeState();
   }
 
   deleteFilters(event?) {
@@ -270,7 +276,6 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getUpdatedUrl();
       this.updateComponent();
     }
-    this.storeState();
   }
 
   getAssetGroupsDetails(isNextPageCalled?) {
@@ -552,7 +557,6 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
         filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i] , filters});
         this.filters = filters;
       }
-      this.storeState();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -617,9 +621,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
       const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
       const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags, labelsToExcludeSort});
       this.filterTagOptions[value] = filterTagOptions;
-      this.filterTagLabels[value] = filterTagLabels;
-      this.storeState();
-  
+      this.filterTagLabels[value] = filterTagLabels;  
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -659,11 +661,11 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
     this.getUpdatedUrl();
-    this.storeState();
     this.updateComponent();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy () {
+    this.storeState();
     try {
       if(this.filtersDataSubscription){
         this.filtersDataSubscription.unsubscribe();

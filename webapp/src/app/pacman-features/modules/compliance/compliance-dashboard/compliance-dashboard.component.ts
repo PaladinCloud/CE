@@ -45,6 +45,8 @@ import {
 import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 import { SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
 
+import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+ 
 @Component({
   selector: 'app-compliance-dashboard',
   templateUrl: './compliance-dashboard.component.html',
@@ -258,6 +260,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private agDomainObservableService: AgDomainObservableService,
     private commonResponseService: CommonResponseService,
     private dashboardArrangementService: DashboardArrangementService,
     private downloadService: DownloadService,
@@ -274,18 +277,11 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private windowExpansionService: WindowExpansionService,
     private workflowService: WorkflowService,
-    private agDomainObservableService: AgDomainObservableService,
-    private assetTypeMapService: AssetTypeMapService
-  ) {
-    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(async ([assetGroupName, domain]) => {
-      await this.getPreservedState();
-      this.selectedAssetGroup = assetGroupName;
-      this.selectedDomain = domain;
-      this.updateComponent();
-    })
-  }
+    private assetTypeMapService: AssetTypeMapService,
+    private filterManagementService: FilterManagementService
+  ) { }
 
-  async getPreservedState() {
+  getPreservedState () {
     const state = this.tableStateService.getState(this.saveStateKey) ?? {};
 
     this.headerColName = state.headerColName ?? 'Severity';
@@ -293,27 +289,37 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.displayedColumns = ["Policy", "Violations", "Source", "Severity", "Category", "Compliance"];
     // this.bucketNumber = state.bucketNumber ?? 0;
     this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
-    this.complianceTableData = state?.data ?? [];
-    this.tableDataLoaded = true;
     this.searchTxt = state?.searchTxt ?? '';
     this.tableScrollTop = state?.tableScrollTop;
     this.totalRows = state.totalRows ?? 0;
-    this.filters = state?.filters ?? [];
     this.selectedRowId = state?.selectedRowId;
 
-    if (this.complianceTableData && this.complianceTableData.length > 0) {
-      this.isStatePreserved = true;
-    } else {
-      this.isStatePreserved = false;
+    this.applyPreservedFilters(state);
+  }
+
+  applyPreservedFilters (state) {
+    this.isStatePreserved = false;
+    const updateInfo = this.filterManagementService.applyPreservedFilters(state);
+    if (updateInfo.shouldUpdateFilters) {
+      this.filters = state.filters || [];
+      this.filterText = updateInfo.filterText;
     }
-    if (state.filters) {
-      this.filters = state.filters;
-      await Promise.resolve().then(() => this.getUpdatedUrl());
+    if (updateInfo.shouldUpdateData) {
+      this.isStatePreserved = true;
+      this.complianceTableData = state.data || [];
+      this.tableDataLoaded = true;
     }
   }
 
-  ngOnInit() {
+  ngOnInit () {
+    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([assetGroupName, domain]) => {
+      this.getPreservedState();
+      this.selectedAssetGroup = assetGroupName;
+      this.selectedDomain = domain;
+      this.updateComponent();
+    })
 
+    window.onbeforeunload = () => this.storeState();
 
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
 
@@ -406,10 +412,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.storeState();
   }
 
-  handleWhitelistColumnsChange(event) {
-    this.whiteListColumns = event;
-    this.storeState();
-  }
 
   handleFilterTypeSelection() {
     this.storeState();
@@ -424,10 +426,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.isStatePreserved = false;
   }
 
-  storeState(data?) {
-    const state = {
+  storeState(){
+     const state = {
       totalRows: this.totalRows,
-      data: data,
+      data: this.complianceTableData,
       headerColName: this.headerColName,
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
@@ -514,6 +516,15 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.error = true;
   }
 
+  handleWhitelistColumnsChange(event){    
+    this.whiteListColumns = event;
+    this.storeState();    
+  }
+
+  /*
+   * This function gets the urlparameter and queryObj
+   *based on that different apis are being hit with different queryparams
+   */
   routerParam() {
     try {
       // this.filterText saves the queryparam
@@ -538,7 +549,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       this.logger.log("error", error);
     }
   }
-  getUpdatedUrl() {
+  getUpdatedUrl () {
     let updatedQueryParams = {};
     this.filterText = this.utils.arrayToObject(
       this.filters,
@@ -569,102 +580,59 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'merge',
     });
   }
-  deleteFilters(event?) {
-    try {
-      if (!event) {
-        this.filters = [];
-        this.storeState();
-      } else if (event.removeOnlyFilterValue) {
-        this.getUpdatedUrl();
-        this.getData();
-        this.storeState();
-      } else if (event.index && !this.filters[event.index].filterValue) {
-        this.filters.splice(event.index, 1);
-        this.storeState();
-      }
-      else {
-        if (event.clearAll) {
-          this.filters = [];
-        } else {
-          this.filters.splice(event.index, 1);
-        }
-        this.storeState();
-        this.getUpdatedUrl();
-        this.getData();
-      }
-    } catch (error) { }
-    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+  deleteFilters (event?) {
+    let shouldUpdateComponent = false;
+    [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);
+    if (shouldUpdateComponent) {
+      this.getUpdatedUrl();
+      this.getData();
+    }
   }
   /*
    * this functin passes query params to filter component to show filter
    */
-  getFilterArray() {
+  async getFilterArray () {
     try {
-      const filterObjKeys = Object.keys(this.filterText);
-      const dataArray = [];
-      for (let i = 0; i < filterObjKeys.length; i++) {
-        let obj = {};
-        const keyDisplayValue = find(this.filterTypeOptions, {
-          optionValue: filterObjKeys[i],
-        })["optionName"];
-        obj = {
-          keyDisplayValue,
-          filterkey: filterObjKeys[i],
-        };
-        dataArray.push(obj);
-      }
+      const filterText = this.filterText;
+      const filterTypeOptions = this.filterTypeOptions;
+      let filters = this.filters;
 
-      const state = this.tableStateService.getState(this.pageTitle) ?? {};
-      const filters = state?.filters;
+      const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
 
-      if (filters) {
-        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
-        filters.forEach(filter => {
-          if (!dataArrayFilterKeys.includes(filter.keyDisplayValue)) {
-            dataArray.push({
-              filterkey: filter.filterkey,
-              keyDisplayValue: filter.key
-            });
-          }
-        });
-      }
-
-      const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-
-        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
-        if (!keyDisplayValue) {
-          keyDisplayValue = find(this.filterTypeOptions, {
-            optionValue: formattedFilters[i].filterKey,
-          })["optionName"];
-        }
-
-        this.changeFilterType(keyDisplayValue).then(() => {
-          let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
-            id: this.filterText[formattedFilters[i].filterkey],
-          });
-
-          let filterKey = dataArray[i].filterkey;
-
-          if (!this.filters.find(filter => filter.keyDisplayValue == keyDisplayValue)) {
-            const eachObj = {
-              keyDisplayValue: keyDisplayValue,
-              filterValue: filterValueObj ? filterValueObj["name"] : undefined,
-              key: keyDisplayValue, // <-- displayKey-- Resource Type
-              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
-              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
-              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-            };
-            this.filters.push(eachObj);
-            this.filters = [...this.filters];
-            this.storeState();
-          }
-        })
+        filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i], filters });
+        this.filters = filters;
       }
+
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  async processAndAddFilterItem ({ formattedFilterItem, filters }) {
+
+    const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
+    const filterKey = formattedFilterItem.filterkey;
+    const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue || filter.keyDisplayValue === filterKey);
+    let filterObj;
+
+    if (existingFilterObjIndex < 0) {
+      if (!keyDisplayValue) {
+        const validFilterValues = this.filterText[filterKey]?.split(',').map(value => {
+          return { id: value, name: value };
+        })
+        filterObj = this.filterManagementService.createFilterObj(filterKey, filterKey, validFilterValues);
+      } else {
+        // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+        await this.changeFilterType(keyDisplayValue);
+        const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+        filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+      }
+      filters.push(filterObj);
+    }
+    filters = [...filters];
+    return filters;
   }
 
   /**
@@ -674,158 +642,125 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
 
   getFilters() {
     return new Promise((resolve) => {
-      try {
-        this.issueFilterSubscription = this.issueFilterService
-          .getFilters(
-            { filterId: 13, domain: this.selectedDomain },
-            environment.issueFilter.url,
-            environment.issueFilter.method
-          )
-          .subscribe((response) => {
-            this.filterTypeLabels = map(response[0].response, "optionName");
-            resolve(true);
-            this.filterTypeOptions = response[0].response;
-
-            this.filterTypeLabels.sort();
-            this.routerParam();
-            // this.deleteFilters();
-            this.getFilterArray();
-          });
-      } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log("error", error);
-        resolve(false);
-      }
-    });
-  }
-
-  changeFilterType(value) {
-    return new Promise((resolve) => {
-      try {
-        this.currentFilterType = find(this.filterTypeOptions, {
-          optionName: value,
-        });
-
-        const excludedKeys = [
-          "domain",
-          this.currentFilterType.optionValue
-        ]
-        let filtersToBePassed = this.getFilterPayloadForDataAPI();
-        filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
-          const normalizedKey = key.replace(".keyword", "");
-          if ((!excludedKeys.includes(normalizedKey))) {
-            result[normalizedKey] = filtersToBePassed[key];
-          }
-          return result;
-        }, {});
-        const payload = {
-          attributeName: this.currentFilterType["optionValue"]?.replace(".keyword", ""),
-          ag: this.selectedAssetGroup,
-          domain: this.selectedDomain,
-          filter: filtersToBePassed
-        }
-        this.issueFilterSubscription = this.issueFilterService
-          .getFilters(
-            {},
-            environment.base +
-            this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-              .url,
-            "POST",
-            payload
-          )
-          .subscribe((response) => {
-            let filterTagsData: { [key: string]: any }[] = [];
-            if (!response[0].data.optionRange) {
-              filterTagsData = (response[0].data.optionList || []).map(filterTag => {
-                return { id: filterTag, name: filterTag };
-              });
-            }
-            if (value.toLowerCase() == "asset type") {
-              this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap => {
-                filterTagsData.map(filterOption => {
-                  filterOption["name"] = assetTypeMap.get(filterOption["name"]?.toLowerCase()) || filterOption["name"]
-                });
-              });
-            }
-            else if (value.toLowerCase() === "violations" || value.toLowerCase() === "compliance") {
-              const numOfIntervals = 5;
-              const { min, max } = response[0].data.optionRange;
-              const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
-
-              intervals.forEach(interval => {
-                const lb = Math.round(interval.lowerBound);
-                let up = Math.round(interval.upperBound);
-                if (value.toLowerCase() === "compliance" && up === 100) {
-                  up--;
-                }
-                filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
-              });
-              if (value.toLowerCase() === "compliance") {
-                filterTagsData.push({ id: "100-100", name: "100-100" });
-              }
-            }
-            this.filterTagOptions[value] = filterTagsData;
-            if (value == "Compliance" || value == "Violations") {
-              this.filterTagLabels[value] = filterTagsData.map(label => label.name);
-            } else {
-              this.filterTagLabels = {
-                ...this.filterTagLabels,
-                ...{
-                  [value]: map(filterTagsData, 'name').sort((a, b) =>
-                    a.localeCompare(b),
-                  ),
-                },
-              };
-            }
-            resolve(this.filterTagOptions[value]);
-            this.storeState();
-          });
-      } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log("error", error);
-      }
-    });
-  }
-
-  changeFilterTags(event) {
-    const filterValues = event.filterValue;
-
-    this.currentFilterType = find(this.filterTypeOptions, {
-      optionName: event.filterKeyDisplayValue,
-    });
     try {
-      if (this.currentFilterType) {
-        const filterTags = filterValues.map(value => {
-          const v = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value })["id"];
-          return v;
-        });
+      this.issueFilterSubscription = this.issueFilterService
+        .getFilters(
+          { filterId: 13, domain: this.selectedDomain },
+          environment.issueFilter.url,
+          environment.issueFilter.method
+        )
+        .subscribe(async (response) => {
+          this.filterTypeLabels = map(response[0].response, "optionName");
+          resolve(true);
+          this.filterTypeOptions = response[0].response;
 
-        this.utils.addOrReplaceElement(
-          this.filters,
-          {
-            keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: filterValues,
-            key: this.currentFilterType.optionName,
-            value: filterTags,
-            filterkey: this.currentFilterType.optionValue.trim(),
-            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
-          },
-          (el) => {
-            return (
-              el.compareKey ===
-              this.currentFilterType.optionValue.toLowerCase().trim()
-            );
-          }
+          this.filterTypeLabels.sort();
+          this.routerParam();
+          // this.deleteFilters();
+          await this.getFilterArray();
+          await Promise.resolve().then(() => this.getUpdatedUrl());
+        }, error => {
+          this.tableErrorMessage = 'apiResponseError';
+          this.logger.log("error", error);
+        });
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+      resolve(false);
+    }
+    });
+  }
+
+  async changeFilterType (value, searchText = '') {
+    try {
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
         );
+      this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+      const filterText = this.filterText;
+      const currentFilterType = this.currentFilterType;
+      const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
+      const agAndDomain = {
+        ag: this.selectedAssetGroup,
+        domain: this.selectedDomain
       }
-      this.storeState();
-      this.getUpdatedUrl();
-      this.utils.clickClearDropdown();
-      this.getData();
+
+      const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({ currentFilterType, filterText, filtersToBePassed, type: undefined, currentQueryParams, agAndDomain, searchText, updateFilterTags, labelsToExcludeSort });
+      this.filterTagOptions[value] = filterTagOptions;
+      this.filterTagLabels[value] = filterTagLabels;
+
+      this.filterTagLabels = { ...this.filterTagLabels };
+
+
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  getUpdateFilterTagsCallback () {
+    const labelsToExcludeSort = [];
+    const updateFilterTags = (filterTagsData, value) => {
+
+      if (value.toLowerCase() == "asset type") {
+        this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap => {
+          const tagsData = filterTagsData;
+          filterTagsData = [];
+          tagsData.forEach(filterOption => {
+            const obj = {
+              id: filterOption,
+              name: assetTypeMap.get(filterOption?.toLowerCase()) || filterOption
+            };
+            filterTagsData.push(obj);
+          });
+        });
+      }
+      else if (value.toLowerCase() === "violations" || value.toLowerCase() === "compliance") {
+        const numOfIntervals = 5;
+        const { min, max } = filterTagsData.optionRange;
+        const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
+
+        filterTagsData = [];
+        intervals.forEach(interval => {
+          const lb = Math.round(interval.lowerBound);
+          let up = Math.round(interval.upperBound);
+          if (value.toLowerCase() === "compliance" && up === 100) {
+            up--;
+          }
+          filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
+        });
+        if (value.toLowerCase() === "compliance") {
+          filterTagsData.push({ id: "100-100", name: "100-100" });
+        }
+      } else {
+        const tagsData = filterTagsData;
+        filterTagsData = [];
+        tagsData.forEach(filterOption => {
+          const obj = {
+            id: filterOption,
+            name: filterOption
+          };
+          filterTagsData.push(obj);
+        });
+      }
+      return filterTagsData;
+    }
+    return [updateFilterTags, labelsToExcludeSort];
+  }
+
+  async changeFilterTags (event) {
+    let filterValues = event.filterValue;
+    if (!filterValues) {
+      return;
+    }
+    this.currentFilterType = find(this.filterTypeOptions, {
+      optionName: event.filterKeyDisplayValue,
+    });
+    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    this.getUpdatedUrl();
+    this.getData();
   }
 
   updateComponent() {
@@ -841,6 +776,11 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.complianceData = [];
     this.complianceDataError = '';
     this.policyDataError = '';
+    this.updatePoliciesTable();
+    this.getDistributionBySeverity();
+  }
+
+  updatePoliciesTable () {
     if (this.isStatePreserved) {
       this.tableDataLoaded = true;
       this.getFilters();
@@ -856,8 +796,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         this.getData();
       });
     }
-    this.getDistributionBySeverity();
-    this.getComplianceData();
   }
 
   processData(data) {
@@ -1090,7 +1028,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     const data = event.data;
     this.tableScrollTop = event.tableScrollTop;
     this.selectedRowId = event.selectedRowId;
-    this.storeState(data);
+    this.filters = event.filters;
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root,
@@ -1212,7 +1150,8 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
-      if (this.agDomainSubscription) {
+      this.storeState();
+      if(this.agDomainSubscription){
         this.agDomainSubscription.unsubscribe();
       }
       if (this.onFilterChange) {

@@ -157,15 +157,20 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         this.tableScrollTop = state?.tableScrollTop;
 
         this.isTableStatePreserved = false;
-        const navDirection = this.workflowService.getNavigationDirection();
 
-        if(navDirection<=0){
+        this.applyPreservedFilters(state);
+    }
+
+    applyPreservedFilters (state) {
+        const updateInfo = this.filterManagementService.applyPreservedFilters(state);
+        if (updateInfo.shouldUpdateFilters) {
             this.filters = state.filters || [];
-            if (state.data && state.data.length > 0) {
-                this.isTableStatePreserved = true;
-                this.tableData = state.data || [];
-            }
-            Promise.resolve().then(() => this.getUpdatedUrl());
+            this.filterText = updateInfo.filterText;
+        }
+        if (updateInfo.shouldUpdateData) {
+            this.isTableStatePreserved = true;
+            this.tableData = state.data || [];
+            this.tableDataLoaded = true;
         }
     }
 
