@@ -38,6 +38,7 @@ import java.io.File;
 import java.util.stream.Collectors;
 
 import static com.tmobile.cso.pacman.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 /**
  * The Class S3Uploader.
@@ -125,7 +126,7 @@ public class S3Uploader {
             log.info("Transfer completed");
         } catch (Exception e) {
             xferMgr.shutdownNow();
-            log.error(ERROR_PREFIX + "while loading files to S3. ", e);
+            log.error(ERROR_PREFIX + "Loading files to S3 failed" + ENDING_QUOTES, e);
             System.exit(1);
         }
         xferMgr.shutdownNow();
@@ -148,7 +149,7 @@ public class S3Uploader {
                 s3client.copyObject(s3Bucket, key, s3Bucket, to + "/" + fileName);
                 log.debug("    Copy " + fileName + " to backup folder");
             } catch (Exception e) {
-                log.error(ERROR_PREFIX + " while copying " + fileName + " failed.", e);
+                log.error(ERROR_PREFIX + "copying " + fileName + " failed" + ENDING_QUOTES, e);
                 ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
             }
         }
@@ -169,7 +170,7 @@ public class S3Uploader {
             DeleteObjectsResult result = s3client.deleteObjects(multiObjectDeleteRequest);
             log.debug("Files Deleted " + result.getDeletedObjects().stream().map(obj -> obj.getKey()).collect(Collectors.toList()));
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + "while deleting files ", e);
+            log.error(ERROR_PREFIX + "Deleting files failed" + ENDING_QUOTES, e);
             ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
         }
     }

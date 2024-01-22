@@ -587,6 +587,15 @@ public class CommonUtils {
  		}
  		return null;
      }
+
+    public static String buildJobIdFromJson(String json) {
+        JsonElement jsonelement = new JsonParser().parse(json);
+        JsonObject jobject = jsonelement.getAsJsonObject();
+        if (!jobject.isJsonNull()) {
+            return jobject.get("jobUuid").getAsString();
+        }
+        return null;
+    }
      
  
     /**
