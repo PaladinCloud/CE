@@ -34,7 +34,7 @@ import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -487,7 +487,7 @@ public class AnnotationPublisher {
      * @param responseMapList the response map list
      */
     private void processErrors(List<Map<String, Map>> responseMapList, String response) {
-        logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " while publishing the annotation, but no error handler found to handle it. Number of errors is "+responseMapList.size()+" "+ response);
+        logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + ERROR_MESSAGE + "Inside processErrors method, number of errors is "+responseMapList.size()+" "+ response + ENDING_QUOTES);
         // need to implement the error handling here
     }
 

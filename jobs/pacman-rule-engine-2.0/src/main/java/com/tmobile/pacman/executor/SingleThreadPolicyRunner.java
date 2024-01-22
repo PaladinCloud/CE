@@ -39,7 +39,7 @@ import com.tmobile.pacman.util.ReflectionUtils;
 import com.tmobile.pacman.util.PolicyExecutionUtils;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -71,7 +71,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                 executeMethod = ReflectionUtils.findAssociatedMethod(policyObject, "execute");
             } catch (Exception e) {
                 logger.error("Please check the rule class complies to implementation contract, rule key=" + policyKey, e);
-                logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + " execute method not found.");
+                logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE + "Execute method not found" + ENDING_QUOTES);
                 throw e;
             }
         }
@@ -112,8 +112,8 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                         // delta between resource in and result out
                         if(eCount==0){
                             //Below logger message will be used by datadog to create notification in slack.
-                            logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
-                                    ". Error message - " + String.format("unable to evaluate for this resource %s", resource) + "," + e.getMessage());
+                            logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
+                                    String.format("unable to evaluate for this resource %s", resource) + "," + e.getMessage() + ENDING_QUOTES, e);
                         }
                         eCount++;
                         logger.error(String.format("unable to evaluate for this resource %s" , resource), e); // this will be handled as missing evaluation at RuleEcecutor
@@ -180,8 +180,8 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                         e);
                 if(eCount==0){
                     //Below logger message will be used by datadog to create data dog alert.
-                    logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
-                            ". Error message - rule execution for resource " + resource.get("id") + " failed. ", e);
+                    logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
+                            "Rule execution for resource " + resource.get("id") + " failed" + ENDING_QUOTES, e);
                 }
                 eCount++;
             }

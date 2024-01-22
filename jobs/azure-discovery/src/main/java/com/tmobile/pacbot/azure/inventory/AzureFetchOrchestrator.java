@@ -20,6 +20,7 @@ import java.util.*;
 
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
 import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationPermissionDenied;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 @Component
 public class AzureFetchOrchestrator {
@@ -56,7 +57,7 @@ public class AzureFetchOrchestrator {
             List<SubscriptionVH> subscriptions = fetchSubscriptions();
             if (subscriptions.isEmpty()) {
                 if (numberOfAccounts > 0) {
-                    log.error(ERROR_PREFIX + "Not able to connect to any of azure accounts");
+                    log.error(ERROR_PREFIX + "Not able to connect to any of azure accounts" + ENDING_QUOTES);
                     System.exit(1);
                 }
 
@@ -76,7 +77,7 @@ public class AzureFetchOrchestrator {
             s3Uploader.uploadFiles(s3Bucket, s3Data, s3Region, filePath);
             log.info("End : Upload Files to S3");
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + "exception occurred in orchestration", e);
+            log.error(ERROR_PREFIX + "exception occurred in orchestrate method" + ENDING_QUOTES, e);
             System.exit(1);
         }
         return ErrorManageUtil.formErrorCode();

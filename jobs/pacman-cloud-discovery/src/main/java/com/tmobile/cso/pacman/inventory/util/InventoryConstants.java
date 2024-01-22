@@ -33,7 +33,7 @@ public final class InventoryConstants {
     public static final String ACCOUNT_ID = "accountId";
     public static final String ACCOUNT_NAME = "accountName";
     public static final String REGION_GLOBAL = "global";
-    public static final String JOB_NAME = " aws-data-collector-job ";
+    public static final String JOB_NAME = "aws-data-collector-job ";
 
     private InventoryConstants() {
     }
