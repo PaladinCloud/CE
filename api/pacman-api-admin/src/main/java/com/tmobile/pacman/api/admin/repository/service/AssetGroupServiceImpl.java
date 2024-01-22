@@ -794,14 +794,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
 				JsonObject aggs = (JsonObject) responseJson.get("aggregations");
 
-				List<String> targetTypes = new ArrayList<>();
-				JsonObject targetTypeObj = (JsonObject) aggs.get("TargetType");
-				JsonArray targetTypeBuckets = targetTypeObj.get(BUCKETS).getAsJsonArray();
-				for (JsonElement bucket : targetTypeBuckets) {
-					targetTypes.add(bucket.getAsJsonObject().get(KEY).getAsString());
-				}
-				cloudTypeObject.put("TargetType", targetTypes);
-
+				cloudTypeObject.put("TargetType", targetTypesRepository.findValidTypesByDataSource(cloudType));
 
 				List<String> regions = new ArrayList<>();
 				JsonObject regionObj = (JsonObject) aggs.get("Region");

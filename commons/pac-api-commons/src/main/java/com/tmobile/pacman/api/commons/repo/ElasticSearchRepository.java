@@ -1950,7 +1950,6 @@ public class ElasticSearchRepository implements Constants {
 		String body = "{"
 				+ "\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}}"
 				+ ",\"aggs\": {"
-				+ "\"TargetType\": {\"terms\": {\"field\": \"docType.keyword\",\"size\":"+ES_PAGE_SIZE+"}},"
 				+ "\"Id\": {\"terms\": {\"field\": \"" + accountId +".keyword\",\"size\":"+ES_PAGE_SIZE+"}},"
 				+ "\"Region\": {\"terms\": {\"field\": \"region.keyword\",\"size\": "+ES_PAGE_SIZE+"}},";
 

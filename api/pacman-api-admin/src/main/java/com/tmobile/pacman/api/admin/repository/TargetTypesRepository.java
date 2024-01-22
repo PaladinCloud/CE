@@ -71,4 +71,7 @@ public interface TargetTypesRepository extends JpaRepository<TargetTypes, String
 	@Query("SELECT DISTINCT dataSourceName FROM TargetTypes")
 	public Optional<List<String>> findDistinctDataSources();
 
+	@Query("SELECT DISTINCT targetName FROM TargetTypes WHERE dataSourceName = :dataSource AND status not in ('disabled','finding')")
+	public List<String> findValidTypesByDataSource(@Param("dataSource") String dataSource);
+
 }
