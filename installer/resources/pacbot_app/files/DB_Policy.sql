@@ -154,6 +154,36 @@ DELIMITER ;
 CALL alter_cf_policytable_add_columns();
 
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS AddColumnIfNotExists $$
+ CREATE PROCEDURE AddColumnIfNotExists(
+    IN tableName VARCHAR(255),
+    IN columnName VARCHAR(255),
+    IN columnDefinition VARCHAR(255)
+)
+BEGIN
+    DECLARE columnCount INT;
+
+    SELECT COUNT(*)
+    INTO columnCount
+    FROM information_schema.columns
+    WHERE table_name = tableName AND column_name = columnName;
+
+    IF columnCount = 0 THEN
+        SET @alterQuery = CONCAT('ALTER TABLE ', tableName, ' ADD COLUMN ', columnName, ' ', columnDefinition);
+        PREPARE stmt FROM @alterQuery;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        SELECT 'Column added successfully' AS result;
+    ELSE
+        SELECT 'Column already exists' AS result;
+    END IF;
+END $$
+
+DELIMITER ;
+
+CALL AddColumnIfNotExists('cf_PolicyTable', 'enricher', 'VARCHAR(100)');
+
 
 INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc, resolution, resolutionUrl, targetType, assetGroup, alexaKeyword, policyParams, policyFrequency, policyExecutable, policyRestUrl, policyType, policyArn, severity, category, autoFixAvailable, autoFixEnabled, allowList, waitingTime, maxEmailNotification, templateName, templateColumns, fixType, warningMailSubject, fixMailSubject, warningMessage, fixMessage, violationMessage, elapsedTime, userId, createdDate, modifiedDate, status) VALUES ('ACMCertificate_Expiry_For_X_Days_version-1_ACMCertificate_Expiry_acmcertificate','aws_acmcertificate_expiry','ACMCertificate_Expiry','Check the Expiry Status of the ACM Certificate','To comply with Amazon Security Best Practices, remove all expired SSL/TLS certificates managed by AWS Certificate Manager. This prevents accidental deployment of invalid certificates to resources like Elastic Load Balancing, which could cause errors and harm your web application or website\'s reputation.','Rotate the keys before the expiry','https://github.com/PaladinCloud/CE/wiki/AWS-Policy#Check-the-Expiry-status-of-the-ACM-Certificate','acmcertificate','aws','ACMCertificate_Expiry','{\"assetGroup\":\"aws\",\"policyId\":\"ACMCertificate_Expiry_For_X_Days_version-1_ACMCertificate_Expiry_acmcertificate\",\"policyRestUrl\":\"\",\"environmentVariables\":[],\"policyUUID\":\"aws_acmcertificate_expiry\",\"policyType\":\"ManagePolicy\",\"pac_ds\":\"aws\",\"targetType\":\"acmcertificate\",\"params\":[{\"encrypt\":false,\"value\":\"check-for-acm-certificate-expiry\",\"key\":\"policyKey\"},{\"defaultVal\":\"90\",\"encrypt\":false,\"isEdit\":true,\"displayName\":\"Target expiration duration\",\"description\":\"Checks if expiry date is under given number of days\",\"value\":\"90\",\"key\":\"targetExpireDuration\",\"isMandatory\":true},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"autofix\":false,\"alexaKeyword\":\"ACMCertificate_Expiry\"}','0 0 ? * MON *','','','ManagePolicy','arn:aws:events:us-east-1:***REMOVED***:rule/aws_acmcertificate_expiry','high','operations','false','false',NULL,24,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,24,'admin@paladincloud.io','2019-02-18','2023-01-05','ENABLED');
 INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc, resolution, resolutionUrl, targetType, assetGroup, alexaKeyword, policyParams, policyFrequency, policyExecutable, policyRestUrl, policyType, policyArn, severity, category, autoFixAvailable, autoFixEnabled, allowList, waitingTime, maxEmailNotification, templateName, templateColumns, fixType, warningMailSubject, fixMailSubject, warningMessage, fixMessage, violationMessage, elapsedTime, userId, createdDate, modifiedDate, status) VALUES ('AWSAMIUnused_version-1_Unused_ami','aws_ami_unused','Remove unused Amazon Machine Images','Remove unused Amazon Machine Images','Remove unused Amazon Machine Images to lower the cost of monthly AWS bill.','Deregister the image and then delete the associated snapshot','https://github.com/PaladinCloud/CE/wiki/AWS-Policy#remove-unused-amazon-machine-images','ami','aws','AWSUnusedAMI','{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-unused-ami\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"cost\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWSAMIUnused_version-1_Unused_ami\",\"autofix\":false,\"alexaKeyword\":\"AWSUnusedAMI\",\"policyRestUrl\":\"\",\"targetType\":\"ami\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ami_unused\",\"policyType\":\"ManagePolicy\"}','0 0 1/1 * ? *','','','ManagePolicy','arn:aws:events:us-east-1:***REMOVED***:rule/aws_ami_unused','high','cost','false','false',NULL,24,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,24,'','2021-01-17','2021-01-17','ENABLED');
