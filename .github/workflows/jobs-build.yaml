@@ -3,7 +3,7 @@ name: Jobs-Jars
 on:
   push:
     branches:
-      -  dev
+      -  master
       -  release-v*.*.*
     paths:
       - 'jobs/pom.xml'
@@ -22,7 +22,7 @@ on:
       - 'commons/**'
   pull_request:
     branches:
-      -  dev
+      -  master
       -  release-v*.*.*
     paths:
       - 'jobs/pom.xml'
@@ -161,7 +161,7 @@ jobs:
   Push-azure-Dev:
     name: Push azure-discovery to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - AzureBuild
     steps:
@@ -245,7 +245,7 @@ jobs:
   Push-awsrules-Dev:
     name: Push awsrules to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - AwsrulesBuild
     steps:
@@ -329,7 +329,7 @@ jobs:
   Push-Qualys-Dev:
     name: Push qualys to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - QualysBuild
     steps:
@@ -413,7 +413,7 @@ jobs:
   Push-recommendation-Dev:
     name: Push recommendation-enricher to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - RecommendationBuild
     steps:
@@ -460,91 +460,6 @@ jobs:
         run: |
           aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
 
-  GCPBuild:
-    name: GCP-Build
-    runs-on: ubuntu-latest
-    needs:
-      - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.gcp-discovery == 'true'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: running update
-        run: sudo apt update
-      - name: Setup Maven Action
-        uses: s4u/setup-maven-action@v1.2.1
-        with:
-          checkout-fetch-depth: 0
-          java-version: 8
-          java-distribution: temurin
-          maven-version: 3.6.3
-      - name: Building commons jar
-        run: |
-          cd commons
-          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
-      - name: Building Jobs jar
-        run: |
-          cd jobs/gcp-discovery/
-          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
-      - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
-        uses: actions/upload-artifact@v4
-        with:
-          name: jobs-gcp-artifact
-          path: ./dist/jobs
-
-  Push-gcp-Dev:
-    name: Push gcp-discovery to s3 dev
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
-    needs:
-      - GCPBuild
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-gcp-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
-
-  Push-gcp-QA:
-    name: Push gcp-discovery to s3 QA
-    runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSQA'
-    needs:
-      - GCPBuild
-      - extract_version
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for QA account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-gcp-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
-
   Cloud-Discovery-Build:
     name: Cloud-Discovery-Build
     runs-on: ubuntu-latest
@@ -583,7 +498,7 @@ jobs:
   Push-Cloud-Discovery-Dev:
     name: Push Cloud-discovery to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Cloud-Discovery-Build
     steps:
@@ -673,7 +588,7 @@ jobs:
   Push-RuleEngineBuild-Dev:
     name: Push Rule-engine-2.0 to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - RuleEngineBuild
     steps:
@@ -758,7 +673,7 @@ jobs:
   Push-SchedulerBuild-Dev:
     name: Push SchedulerBuild to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - SchedulerBuild
     steps:
@@ -843,7 +758,7 @@ jobs:
   Push-Notification-Dev:
     name: Push Notification to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - NotificationBuild
     steps:
@@ -927,7 +842,7 @@ jobs:
   Push-Tenable-Dev:
     name: Push Tenable to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - TenableBuild
     steps:
@@ -1012,7 +927,7 @@ jobs:
   Push-Aqua-Dev:
     name: Push Aqua to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - AquaBuild
     steps:
@@ -1096,7 +1011,7 @@ jobs:
   Push-Shipper-Dev:
     name: Push Shipper to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/dev'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - ShipperBuild
     steps:
