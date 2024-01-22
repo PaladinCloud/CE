@@ -144,6 +144,8 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                             .getPolicyAttribute(result, policyParam, policyAnnotation, PacmanSdkConstants.POLICY_SEVERITY));
                     result.getAnnotation().put(PacmanSdkConstants.TARGET_TYPE,
                             policyParam.get(PacmanSdkConstants.TARGET_TYPE));
+                    result.getAnnotation().put(PacmanSdkConstants.TARGET_TYPE_DISPLAY_NAME,
+                            policyParam.get(PacmanSdkConstants.TARGET_TYPE_DISPLAY_NAME));
                     result.getAnnotation().put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID));
                     result.getAnnotation().put(PacmanSdkConstants.EXECUTION_ID, executionId);
                     result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
