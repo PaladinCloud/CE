@@ -188,12 +188,6 @@ public class AnnotationPublisher {
         // this is called from rule executor now
         // populateExistingIssuesForType(sampleAnnotation);
         String indexName = ESUtils.buildIndexNameFromAnnotation(sampleAnnotation);
-        String typeIssue = ESUtils.getIssueTypeFromAnnotation(sampleAnnotation);
-        String targetType= sampleAnnotation.get(TARGET_TYPE);
-        List<Map<String, String>> typeList = RDSDBManager.executeQuery("SELECT displayName FROM cf_Target WHERE targetName ='"+targetType+"'");
-        String targetTypeDisplayName="";
-        if(typeList!=null){
-         targetTypeDisplayName=typeList.get(0).get("displayName");}
         sampleAnnotation = null;
         Gson serializer = new GsonBuilder().create();
 
@@ -216,7 +210,6 @@ public class AnnotationPublisher {
             relMap.put("parent", _annotation.get(PacmanSdkConstants.DOC_ID));
             logger.info("printing relations: {}", serializer.toJson(relMap));
             _annotation.put(_annotation.get(TARGET_TYPE) + "_relations", serializer.toJson(relMap));
-            _annotation.put("targetTypeDisplayName",targetTypeDisplayName);
             if (null != issueAttributes) {
                 // now we are using this to modify and post hence remove all ES
                 // specific fields
