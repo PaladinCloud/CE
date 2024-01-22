@@ -3268,3 +3268,12 @@ DELIMITER ;
 CALL update_asset_group_dates_to_use_timestamp();
 
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'Source','pac_ds.keyword','/compliance/v1/filters/attribute');
+
+UPDATE cf_Target SET displayName='Load Balancer' WHERE targetName in ('gcploadbalancer','loadbalancer');
+UPDATE cf_Target SET displayName='Managed Disk' WHERE targetName in ('gcpdisks','disk');
+UPDATE cf_Target SET displayName='MySQL Server' WHERE targetName in ('cloudsql_mysqlserver','mysqlserver');
+UPDATE cf_Target SET displayName='SQL Server' WHERE targetName in ('cloudsql_sqlserver','sqlserver');
+UPDATE cf_Target SET displayName='IAM User' WHERE targetName in ('iamuser','iamusers');
+UPDATE cf_Target SET displayName='KMS Key' WHERE targetName in ('kms','kmskey');
+UPDATE cf_Target SET displayName='Subnet' WHERE targetName in ('subnet','subnets');
+UPDATE cf_Target SET displayName='VM' WHERE targetName in ('virtualmachine','vminstance');
