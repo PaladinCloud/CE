@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 /**
  * The Class InventoryCollectionJob.
@@ -63,7 +64,7 @@ public class AzureDiscoveryJob {
             }
         } catch (Exception e) {
             //below logger is used to create data alert
-            log.error(ERROR_PREFIX + "while fetching config properties", e);
+            log.error(ERROR_PREFIX + "fetching config properties failed" + ENDING_QUOTES, e);
             System.exit(1);
         }
 

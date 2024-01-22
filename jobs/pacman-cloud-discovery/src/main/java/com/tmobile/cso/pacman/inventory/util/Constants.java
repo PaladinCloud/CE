@@ -18,10 +18,11 @@ package com.tmobile.cso.pacman.inventory.util;
 
 import static com.tmobile.cso.pacman.inventory.util.InventoryConstants.JOB_NAME;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ERROR_MESSAGE;
 
 public class Constants {
 
-    public static final String ERROR_PREFIX = DATA_ALERT_ERROR_STRING + "- " + JOB_NAME + " - ";
+    public static final String ERROR_PREFIX = DATA_ALERT_ERROR_STRING + JOB_NAME + ERROR_MESSAGE;
 
     private Constants() {
 

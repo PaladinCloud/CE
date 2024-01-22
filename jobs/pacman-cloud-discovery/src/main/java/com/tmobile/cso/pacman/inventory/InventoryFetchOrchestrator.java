@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.tmobile.cso.pacman.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 /**
  * The Class InventoryFetchOrchestrator.
@@ -102,7 +103,7 @@ public class InventoryFetchOrchestrator {
             log.info("End : Upload Files to S3");
 
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + "Asset Discovery Failed ", e);
+            log.error(ERROR_PREFIX + "Asset Discovery Failed" + ENDING_QUOTES, e);
             System.exit(1);
         }
 

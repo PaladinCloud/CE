@@ -39,22 +39,8 @@ public class InventoryConstants {
      * The Constant BATCH.
      */
     public static final String BATCH = "batch";
-
-    /**
-     * The Constant INVENTORY.
-     */
     public static final String INVENTORY = "azure-discovery";
-
-    /**
-     * The Constant INVENTORY.
-     */
-    public static final String SUBSCRIPTION_ID = "subscriptionId";
-
-    /**
-     * The Constant INVENTORY.
-     */
-    public static final String SUBSCRIPTION_NAME = "subscriptionName";
     public static final String CONFIG_CREDS = "config_creds";
     public static final String REGION_GLOBAL = "global";
-    public static final String JOB_NAME = "azure-data-collector-job";
+    public static final String JOB_NAME = "azure-data-collector-job ";
 }

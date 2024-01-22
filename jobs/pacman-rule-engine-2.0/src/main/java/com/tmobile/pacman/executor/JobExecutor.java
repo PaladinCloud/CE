@@ -40,7 +40,7 @@ import com.tmobile.pacman.util.ProgramExitUtils;
 import com.tmobile.pacman.util.ReflectionUtils;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -94,12 +94,11 @@ public class JobExecutor {
             jobObject = jobClass.newInstance();
             executeMethod = ReflectionUtils.findAssociatedMethod(jobObject, methodName);
         } catch (Exception e) {
-            logger.error("Please check the job class complies to implementation contract", e);
-            logger.error(DATA_ALERT_ERROR_STRING + jobParams);
+            logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildJobIdFromJson(args[0]) + ERROR_MESSAGE + "Please check the job class complies to implementation contract" + ENDING_QUOTES, e);
             ProgramExitUtils.exitWithError();
         }
         if(null==executeMethod){
-            logger.error(DATA_ALERT_ERROR_STRING + "because unable to find execute method." + jobParams);
+            logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildJobIdFromJson(args[0]) + ERROR_MESSAGE + "Unable to find execute method" + ENDING_QUOTES);
             ProgramExitUtils.exitWithError();
         }else
         {
@@ -113,7 +112,7 @@ public class JobExecutor {
                     executeMethod.invoke(jobObject);
                 }
             } catch (Exception e) {
-                logger.error(DATA_ALERT_ERROR_STRING + " because job execution failed.", e);
+                logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildJobIdFromJson(args[0]) + ERROR_MESSAGE + "Job execution failed" + ENDING_QUOTES, e);
                 ProgramExitUtils.exitWithError();
             }
             long endTime = System.nanoTime();

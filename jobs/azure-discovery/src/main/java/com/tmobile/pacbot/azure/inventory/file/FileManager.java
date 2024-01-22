@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 /**
  * The Class FileManager.
@@ -48,7 +49,7 @@ public class FileManager {
         FileGenerator.folderName = folderName;
         boolean isCreated = new File(folderName).mkdirs();
         if (!isCreated) {
-            log.error(ERROR_PREFIX + "Failed to create file in S3 in path {}", folderName);
+            log.error(ERROR_PREFIX + "Failed to create file in S3 in path {}" + ENDING_QUOTES, folderName);
             System.exit(1); // We want to exit if the S3 folder is not created
         }
 
@@ -57,7 +58,7 @@ public class FileManager {
                 FileGenerator.writeToFile(getFilenameFromTargetType(type), InventoryConstants.OPEN_ARRAY, false);
             } catch (IOException e) {
                 // We want to continue if the file is not created
-                log.error(ERROR_PREFIX + "Failed to initialize write file in S3 in path {}", folderName, e);
+                log.error(ERROR_PREFIX + "Failed to initialize write file in S3 in path {}" + ENDING_QUOTES, folderName, e);
             }
         });
     }
@@ -67,7 +68,7 @@ public class FileManager {
             try {
                 FileGenerator.writeToFile(getFilenameFromTargetType(type), InventoryConstants.CLOSE_ARRAY, true);
             } catch (IOException e) {
-                log.error(ERROR_PREFIX + "Failed to finalize write file in S3 in path {}", FileGenerator.folderName, e);
+                log.error(ERROR_PREFIX + "Failed to finalize write file in S3 in path {}" + ENDING_QUOTES, FileGenerator.folderName, e);
             }
         });
     }

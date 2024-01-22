@@ -42,7 +42,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.*;
 
 
 // TODO: Auto-generated Javadoc
@@ -95,7 +95,7 @@ public class PolicyExecutor {
                 logger.info("input source detected as policy, will process policy now.");
                 new PolicyExecutor().run(args, executionId);
             } catch (Exception e) {
-                logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ". ExecutionId is ->" + executionId, e);
+                logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ERROR_MESSAGE + "ExecutionId is ->" + executionId + e.getMessage() + ENDING_QUOTES, e);
             }
         }
     }
@@ -140,7 +140,7 @@ public class PolicyExecutor {
                 try {
                     CommonUtils.doHttpPost(exemptionExpiredUrl, "{}");
                 } catch (Exception e) {
-                    logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyUUID + ". Error message - Failed in closing expired exemption. ", e);
+                    logger.error(DATA_ALERT_ERROR_STRING + policyUUID + ERROR_MESSAGE + "Failed in closing expired exemption" + ENDING_QUOTES, e);
                 }
                 String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
                 policyDetailsUrl += policyUUID;
@@ -155,21 +155,21 @@ public class PolicyExecutor {
                     return;
                 }
                 if (Strings.isNullOrEmpty(policyDetails)) {
-                    logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyUUID + ". Error message - Policy details not found");
+                    logger.error(DATA_ALERT_ERROR_STRING + policyUUID + ERROR_MESSAGE + "Policy details not found" + ENDING_QUOTES);
                     ProgramExitUtils.exitWithError();
                 }
                 policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
                 policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS, mandatoryTags);
                 policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, PacmanSdkConstants.ROLE_PREFIX + PacmanSdkConstants.INTEGRAION_ROLE);
                 if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
-                    logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyUUID + ". Error message - data source is missing in rule configuration.");
+                    logger.error(DATA_ALERT_ERROR_STRING + policyUUID + ERROR_MESSAGE + "Data source is missing in rule configuration" + ENDING_QUOTES);
                     ProgramExitUtils.exitWithError();
                 }
                 logger.debug("policy Param String " + policyParams);
                 logger.debug("target Type :" + policyParam.get(PacmanSdkConstants.TARGET_TYPE));
                 logger.debug("policy Key : " + policyParam.get("policyKey"));
             } else {
-                logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ". Error message - No arguments available for policy execution, unable to identify the policy due to missing arguments.");
+                logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ERROR_MESSAGE + "No arguments available for policy execution, unable to identify the policy due to missing arguments" + ENDING_QUOTES);
                 ProgramExitUtils.exitWithError();
             }
             try {
@@ -229,7 +229,7 @@ public class PolicyExecutor {
                     ProgramExitUtils.exitSucessfully();
                 }
             } catch (Exception e) {
-                logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ". Error message - unable to get inventory for " + indexName + "--" + policyParam.get(PacmanSdkConstants.TARGET_TYPE), e);
+                logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ERROR_MESSAGE + "Unable to get inventory for " + indexName + "--" + policyParam.get(PacmanSdkConstants.TARGET_TYPE) + ENDING_QUOTES, e);
                 policyEngineStats.put("errorMessage", "unable to fetch inventory");
                 policyEngineStats.put("technicalErrorDetails", e.getMessage());
                 ProgramExitUtils.exitWithError();
@@ -266,7 +266,7 @@ public class PolicyExecutor {
             policyEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
             logger.error("exiting now..", e);
             //below error message will be used by datadog to create notification in slack.
-            logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ". Error message - " + e.getMessage());
+            logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ERROR_MESSAGE + e.getMessage() + ENDING_QUOTES);
             ProgramExitUtils.exitWithError();
         }
 
@@ -341,7 +341,7 @@ public class PolicyExecutor {
             }
         } catch (Exception e) {
             policyEngineStats.put("error-while-processing-evaluations", e.getLocalizedMessage());
-            logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ". Error message - error while processing evaluations, " + e.getMessage());
+            logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ERROR_MESSAGE + "Error while processing evaluations- " + e.getMessage() + ENDING_QUOTES, e);
         }
         policyEngineStats.put("timeTakenToProcessEvaluations", CommonUtils.getElapseTimeSince(startTime));
         startTime = System.nanoTime();
@@ -352,7 +352,7 @@ public class PolicyExecutor {
         try {
             ESUtils.publishMetrics(policyEngineStats, type);
         } catch (Exception e) {
-            logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ". Error message - unable to publish metrics, " + e.getMessage());
+            logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ERROR_MESSAGE + "Unable to publish metrics- " + e.getMessage() + ENDING_QUOTES, e);
         }
     }
 

@@ -39,6 +39,7 @@ import java.io.File;
 import java.util.stream.Collectors;
 
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 /**
  * The Class S3Uploader.
@@ -98,7 +99,7 @@ public class S3Uploader {
             copyToBackUp(s3client, s3Bucket, from, to);
             deleteFiles(s3client, s3Bucket, from);
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + "in backUpFiles method", e);
+            log.error(ERROR_PREFIX + "backing up files failed" + ENDING_QUOTES, e);
             Util.eCount.getAndIncrement();
             throw e;
         }
@@ -132,7 +133,7 @@ public class S3Uploader {
             xfer.waitForCompletion();
             log.info("Transfer completed");
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + "while uploading files to S3.", e);
+            log.error(ERROR_PREFIX + "uploading files to S3 failed" + ENDING_QUOTES, e);
             System.exit(1);
         }
 
@@ -156,7 +157,7 @@ public class S3Uploader {
                 s3client.copyObject(s3Bucket, key, s3Bucket, to + "/" + fileName);
                 log.debug("Copy {} to backup folder", fileName);
             } catch (Exception e) {
-                log.error(ERROR_PREFIX + "while copying " + fileName, e);
+                log.error(ERROR_PREFIX + "copying to S3 failed for " + fileName + ENDING_QUOTES, e);
                 ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
             }
         }
@@ -176,7 +177,7 @@ public class S3Uploader {
             DeleteObjectsResult result = s3client.deleteObjects(multiObjectDeleteRequest);
             log.debug("Files Deleted " + result.getDeletedObjects().stream().map(obj -> obj.getKey()).collect(Collectors.toList()));
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + "while deleting files.", e);
+            log.error(ERROR_PREFIX + "deleting files failed" + ENDING_QUOTES, e);
             ErrorManageUtil.uploadError("all", "all", "all", e.getMessage());
         }
     }

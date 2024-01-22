@@ -18,6 +18,7 @@ package com.tmobile.cso.pacman.inventory.file;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.tmobile.cso.pacman.inventory.auth.CredentialProvider;
 import com.tmobile.cso.pacman.inventory.util.*;
+import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.tmobile.cso.pacman.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 
 /**
@@ -82,7 +84,7 @@ public class AssetFileGenerator {
             FileManager.initialise(filePath);
             ErrorManageUtil.initialise();
         } catch (IOException e1) {
-            log.error(ERROR_PREFIX + "while initialising File ", e1);
+            log.error(ERROR_PREFIX + "exception occurred while initialising file" + ENDING_QUOTES, e1);
             System.exit(1);
         }
 
@@ -1240,14 +1242,14 @@ public class AssetFileGenerator {
         ErrorManageUtil.omitOpsAlert();
         if (!ErrorManageUtil.getErrorMap().isEmpty()) {
             //Below logger message is used by datadog to create data alert.
-            log.error(ERROR_PREFIX + "in at least one collector");
+            log.error(ERROR_PREFIX + "At least one collector failed" + ENDING_QUOTES);
         }
 
         try {
             FileManager.finalise();
             ErrorManageUtil.finalise();
         } catch (IOException e) {
-            log.error(ERROR_PREFIX + "while writing data to file", e);
+            log.error(ERROR_PREFIX + "Exception occurred while writing data to file" + ENDING_QUOTES, e);
             System.exit(1);
         }
     }

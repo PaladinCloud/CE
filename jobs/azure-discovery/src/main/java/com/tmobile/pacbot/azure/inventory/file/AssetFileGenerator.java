@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import static com.tmobile.pacbot.azure.inventory.util.Constants.ERROR_PREFIX;
 import static com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil.triggerNotificationPermissionDenied;
 import static com.tmobile.pacbot.azure.inventory.util.TargetTypesConstants.TARGET_TYPES_TO_COLLECT;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 @Component
 public class AssetFileGenerator {
@@ -55,7 +56,7 @@ public class AssetFileGenerator {
         try {
             FileManager.initialise(filePath);
         } catch (Exception e1) {
-            log.error(ERROR_PREFIX + "Failed to create file in S3 in path + " + filePath, e1);
+            log.error(ERROR_PREFIX + "Failed to create file in S3 in path + " + filePath + ENDING_QUOTES, e1);
             System.exit(1);
         }
 
@@ -126,7 +127,7 @@ public class AssetFileGenerator {
 
         //Below logger message is used by datadog to create alert.
         if (Util.eCount.get() > 0) {
-            log.error(ERROR_PREFIX + "for at least one collector. Number of failures detected is " + Util.eCount.get(), new Exception("Error in at least one collector"));
+            log.error(ERROR_PREFIX + "At least one collector failed. Number of failures detected is " + Util.eCount.get() + ENDING_QUOTES, new Exception("Error in at least one collector"));
         }
         if (connectedSubscriptions.isEmpty()) {
             rdsdbManager.executeUpdate("UPDATE cf_AzureTenantSubscription SET subscriptionStatus='offline'", Collections.emptyList());
@@ -137,7 +138,7 @@ public class AssetFileGenerator {
         try {
             FileManager.finalise();
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + "while adding closing bracket to data files", e);
+            log.error(ERROR_PREFIX + "exception occurred while adding closing bracket to data files" + ENDING_QUOTES, e);
             System.exit(1);
         }
     }
