@@ -87,5 +87,7 @@ public final class PacmanSdkConstants {
     public static final String MULTIPLE_VIOLATION_MAPPING = "manyToOneViolationMapping";
 
     //Data dog will create data alert if it finds any logger message starting with below string.
-    public static final String DATA_ALERT_ERROR_STRING = "Error occurred in job ";
+    public static final String DATA_ALERT_ERROR_STRING = "error occurred in job_name:";
+    public static final String ERROR_MESSAGE = " error_message:\"";
+    public static final String ENDING_QUOTES = "\" ";
 }

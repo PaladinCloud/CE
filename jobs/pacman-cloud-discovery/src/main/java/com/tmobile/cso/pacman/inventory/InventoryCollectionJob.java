@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.tmobile.cso.pacman.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 @PacmanJob(methodToexecute = "execute", jobName = "AWS Data Collector", desc = "Job to fetch AWS info and load to s3", priority = 5)
 public class InventoryCollectionJob {
@@ -60,7 +61,7 @@ public class InventoryCollectionJob {
             ConfigUtil.setConfigProperties();
         } catch (Exception e) {
             //below logger is used to create data alert
-            log.error(ERROR_PREFIX + "while fetching config properties");
+            log.error(ERROR_PREFIX + "Fetching config properties failed" + ENDING_QUOTES);
             System.exit(1);
         }
         return InventoryFetchApplication.main(new String[]{});

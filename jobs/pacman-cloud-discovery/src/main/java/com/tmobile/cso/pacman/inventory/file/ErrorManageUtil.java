@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.tmobile.cso.pacman.inventory.util.Constants.ERROR_PREFIX;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
 
 public class ErrorManageUtil {
 
@@ -48,7 +49,7 @@ public class ErrorManageUtil {
         try {
             FileGenerator.writeToFile("aws-loaderror.data", InventoryConstants.OPEN_ARRAY, false);
         } catch (IOException e) {
-            log.error(ERROR_PREFIX + "while initializing aws-loaderror.data", e);
+            log.error(ERROR_PREFIX + "Exception occurred while initializing aws-loaderror.data" + ENDING_QUOTES, e);
         }
     }
 
@@ -56,7 +57,7 @@ public class ErrorManageUtil {
         try {
             FileGenerator.writeToFile("aws-loaderror.data", InventoryConstants.CLOSE_ARRAY, true);
         } catch (IOException e) {
-            log.error(ERROR_PREFIX + "while writing to aws-loaderror.data", e);
+            log.error(ERROR_PREFIX + "Writing to aws-loaderror.data failed" + ENDING_QUOTES, e);
         }
     }
 
@@ -87,7 +88,7 @@ public class ErrorManageUtil {
         try {
             FileManager.generateErrorFile(errorMap);
         } catch (Exception e) {
-            log.error(ERROR_PREFIX + "while writing to aws-loaderror.data", e);
+            log.error(ERROR_PREFIX + "Writing to aws-loaderror.data failed" + ENDING_QUOTES, e);
         }
     }
 
