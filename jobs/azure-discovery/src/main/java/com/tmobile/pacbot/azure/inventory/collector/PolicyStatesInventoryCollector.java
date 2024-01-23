@@ -29,7 +29,7 @@ public class PolicyStatesInventoryCollector implements Collector {
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
     @Autowired
-    private PolicyDefinitionInventoryCollector policyDefinitionInventoryCollector;
+    private Collector policyDefinitionInventoryCollector;
 
     @Override
     public List<? extends AzureVH> collect() {
@@ -37,7 +37,7 @@ public class PolicyStatesInventoryCollector implements Collector {
     }
 
     public List<PolicyStatesVH> collect(SubscriptionVH subscription) {
-        List<PolicyDefinitionVH> policyDefinitionList = policyDefinitionInventoryCollector.collect(subscription);
+        List<PolicyDefinitionVH> policyDefinitionList = (List<PolicyDefinitionVH>) policyDefinitionInventoryCollector.collect(subscription);
 
         List<PolicyStatesVH> policyStatesList = new ArrayList<>();
         String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
