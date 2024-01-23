@@ -15,6 +15,5 @@
 	"contrast_library_critical_vulnerabilities_found",
 	"contrast_library_high_vulnerabilities_found",
 	"contrast_library_medium_vulnerabilities_found",
-	"contrast_library_low_vulnerabilities_found",
-	"red_hat_acs_not_scanning_gcp_gke"
+	"contrast_library_low_vulnerabilities_found"
 ]
