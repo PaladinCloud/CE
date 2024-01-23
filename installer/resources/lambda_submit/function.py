@@ -95,7 +95,9 @@ class SubmitJobLambdaFunction(LambdaFunctionResource):
             'CONFIG_URL': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,inventory/prd/latest",
             'CONFIG_CREDENTIALS': "dXNlcjpwYWNtYW4=",
             'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest",
-            'QUALYS_JOB_DEFINATION': SubmitAndQualysJobDefinition.get_output_attr('arn')
+            'QUALYS_JOB_DEFINATION': SubmitAndQualysJobDefinition.get_output_attr('arn'),
+            'DEFAULT_CONFIG_URL': ApplicationLoadBalancer.get_api_base_url() + "/api/config",
+            'DEFAULT_PASSWORD' : "pacman" 
         }
     }
 
@@ -225,14 +227,12 @@ class RecommendationsCollectorEventRule(CloudWatchEventRuleResource):
     }
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
-
 class RecommendationsCollectorEventRuleLambdaPermission(LambdaPermission):
     statement_id = "AllowExecutionFromRecommendationsCollectorEvent"
     action = "lambda:InvokeFunction"
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = RecommendationsCollectorEventRule.get_output_attr('arn')
-
 
 class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = RecommendationsCollectorEventRule.get_output_attr('name')

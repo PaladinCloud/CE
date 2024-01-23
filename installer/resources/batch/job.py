@@ -1,6 +1,9 @@
 from core.terraform.resources.aws.batch import BatchJobDefinitionResource, BatchJobQueueResource
 from core.providers.aws.boto3.ecs import deregister_task_definition
 from core.config import Settings
+from resources.lambda_submit.policy_sns import PolicyDoneSNS
+from resources.lambda_submit.shipper_sqs import ShipperdoneSQS
+from resources.iam.base_role import BaseRole
 from resources.cognito.userpool import Appcredentials
 from resources.datastore.es import ESDomain
 from resources.batch.env import RuleEngineBatchJobEnv
@@ -41,7 +44,8 @@ class SubmitAndRuleEngineJobDefinition(BatchJobDefinitionResource):
              'value': "https://" + Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"},
             {'name': "POLICY_DETAILS_URL",
              'value': ApplicationLoadBalancer.get_http_url() + "/api/compliance/policy-details-for-policy-engine"},
-            {'name': "AWS_STS_REGIONAL_ENDPOINTS", 'value': "regional"}
+            {'name': "AWS_STS_REGIONAL_ENDPOINTS", 'value': "regional"},
+            {'name': "POLICY_DONE_SNS_TOPIC_ARN","value": PolicyDoneSNS.get_output_attr('arn')}
         ]
     })
 
@@ -94,7 +98,10 @@ class SubmitAndQualysJobDefinition(BatchJobDefinitionResource):
             {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
             {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/config/rule,batch/prd/latest"},
             {'name': "AUTH_API_URL",'value': "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"},
-            {'name': "POLICY_DETAILS_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/compliance/policy-details-for-policy-engine"}
+            {'name': "POLICY_DETAILS_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/compliance/policy-details-for-policy-engine"},
+            {'name': "PALADINCLOUD_RO",'value': BaseRole.get_output_attr('name')},
+            {'name': "REGION",'value':Settings.AWS_REGION},
+            {'name': "SHIPPER_SQS_QUEUE_URL",'value': ShipperdoneSQS.get_output_attr('url')}
         ]
     })
 
