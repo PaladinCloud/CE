@@ -206,8 +206,6 @@ public class PolicyExecutor {
 	                PublishRequest.builder()
 	                        .topicArn(topicArn)
 	                        .message(message)
-	                        .messageDeduplicationId(UUID.randomUUID().toString())
-	                        .messageGroupId(UUID.randomUUID().toString())
 	                        .build());
 
 	        // Print the message ID returned by the publish operation
