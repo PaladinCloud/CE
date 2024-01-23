@@ -98,5 +98,6 @@
 	"VPC_firewall_SSH_port_22_should_not_be_publicly_accessible",
 	"kms_keys_rotation_period_within_90_days",
 	"delete_unused_load_balancer",
-	"delete_unused_vm_disk"
+	"delete_unused_vm_disk",
+	"red_hat_acs_not_scanning_gcp_gke"
 ]
