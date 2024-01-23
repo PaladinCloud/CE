@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.Map;
 import static com.tmobile.pacbot.azure.inventory.util.InventoryConstants.REGION_GLOBAL;
 
 @Component
-@EnableCaching
 public class PolicyDefinitionInventoryCollector implements Collector {
 
     private static final Logger log = LoggerFactory.getLogger(PolicyDefinitionInventoryCollector.class);
