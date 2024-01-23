@@ -24,6 +24,7 @@ package com.tmobile.cloud.awsrules.misc;
 
 import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -77,8 +78,12 @@ public class CheckAWSConfigEnabled extends BasePolicy {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 		String defaultRegion=ruleParam.get("defaultRegion");
 
-		Map<String ,String> localRuleParam=new HashMap<>(ruleParam);
-		localRuleParam.putIfAbsent(PacmanRuleConstants.REGION, defaultRegion);
+		Map<String, String> localRuleParam = new HashMap<>(ruleParam);
+		if (StringUtils.isBlank(localRuleParam.get(PacmanRuleConstants.REGION))
+				|| PacmanRuleConstants.REGION_GLOBAL.equalsIgnoreCase(localRuleParam.get(PacmanRuleConstants.REGION))) {
+			localRuleParam.put(PacmanRuleConstants.REGION, defaultRegion);
+		}
+
 
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
