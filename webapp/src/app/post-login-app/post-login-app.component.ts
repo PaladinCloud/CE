@@ -132,6 +132,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     window.addEventListener('popstate', (event) => {
       this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root,);
     });
+    this.storeUrlBeforeUnload();
     this.haveAdminPageAccess = this.permissions.checkAdminPermission();
     try {
       this.agAndDomainKey = "";
@@ -326,6 +327,12 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     }catch(e){
       this.logger.log("error", e);
     }
+  }
+
+  storeUrlBeforeUnload (): void {
+    window.addEventListener('beforeunload', () => {
+      localStorage.setItem("redirectUrl", location.href);
+    });
   }
 
   ngOnDestroy() {

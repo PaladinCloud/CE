@@ -374,7 +374,7 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
     }
 
    hasFilterQueryParam () {
-     return this.activatedRoute.snapshot.queryParamMap.get("filter");
+     return this.activatedRoute.snapshot.queryParamMap.has("filter");
    }
 
    getUpdatedUrl (filters: any[]) {
@@ -401,7 +401,7 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
      let shouldUpdateFilters = false;
      let shouldUpdateData = false;
      let preApply = false;
-     let filterText;
+     let filterText;     
      if (!this.hasFilterQueryParam()) {
        const navDirection = this.workflowService.getNavigationDirection();
        if (navDirection <= 0) {

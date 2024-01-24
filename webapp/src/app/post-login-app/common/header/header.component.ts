@@ -14,6 +14,7 @@ import { environment } from "../../../../environments/environment";
 import { CommonResponseService } from "src/app/shared/services/common-response.service";
 import { MatDialog } from "@angular/material/dialog";
 import { TourService } from 'src/app/core/services/tour.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 @Component({
     selector: 'app-header',
@@ -48,6 +49,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         private loggerService: LoggerService,
         private matIconRegistry: MatIconRegistry,
         private domSanitizer: DomSanitizer,
+        private utils: UtilsService,
         private tourService: TourService,
         ) {
         const userRoles = this.dataCacheService.getUserDetailsValue().getRoles();
@@ -157,6 +159,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
     }
   logout() {
+      this.utils.storeRedirectUrl();
       this.authenticateService.doLogout();
     }
   
