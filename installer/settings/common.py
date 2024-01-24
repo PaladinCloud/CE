@@ -82,6 +82,7 @@ PROCESS_RESOURCES = {
 }
 
 
+
 LAMBDA_PATH = "V13"
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
 LOG_DIR = os.path.join(BASE_APP_DIR, 'log')
