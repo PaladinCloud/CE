@@ -20,6 +20,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { LoggerService } from './logger.service';
 import { DataCacheService } from '../../core/services/data-cache.service';
 import { CONFIGURATIONS } from '../../../config/configurations';
+import { UtilsService } from './utils.service';
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
@@ -28,6 +29,7 @@ export class AuthGuardService implements CanActivate {
                 private loggerService: LoggerService,
                 private dataStore: DataCacheService,
                 private router: Router,
+                private utils: UtilsService,
                 private activatedRoute: ActivatedRoute) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
@@ -35,8 +37,10 @@ export class AuthGuardService implements CanActivate {
         /* Full url is taken, as redirect function will remove the hostname and just add the pathname */
         const returnUrl = location.href;
         const redirectUrl = location.origin + state.url;
-        if(!redirectUrl.includes("home"))
-            localStorage.setItem("redirectUrl", redirectUrl);
+        if (!redirectUrl.includes("home")) {
+            this.utils.storeRedirectUrl(redirectUrl);
+        }
+            
         if (!this.authService.authenticated) {
             this.loggerService.log('info', 'AuthGuard - Authentication required to access this page');
             // Store the redirect url in cache
