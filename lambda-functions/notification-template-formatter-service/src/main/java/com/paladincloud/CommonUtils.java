@@ -91,8 +91,12 @@ public class CommonUtils {
     }
 
 
-    public static String getTemplateName(String channelName, String action, String notificationType, String exemptionType){
-
+    public static String getTemplateName(String channelName, String action, String notificationType, String exemptionType,String eventName){
+        switch (eventName)
+        {
+            case "Permission denied and misconfiguration":
+                return "permissionAlertEmailTemplate.html";
+        }
         switch(notificationType){
             case "violation":
                 return getViolationTemplateName(channelName,action);
@@ -102,8 +106,6 @@ public class CommonUtils {
                 return getAutofixTemplateName(channelName,action);
             case "policy":
                 return "policyActionEmailTemplate.html";
-            case "permission":
-                return "permissionAlertEmailTemplate.html";
             case "plugin":
                 return "pluginEmailTemplate.html";
         }

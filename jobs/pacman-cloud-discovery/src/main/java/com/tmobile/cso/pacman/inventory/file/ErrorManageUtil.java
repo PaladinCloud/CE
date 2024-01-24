@@ -18,7 +18,7 @@ package com.tmobile.cso.pacman.inventory.file;
 import com.google.api.client.util.Strings;
 import com.tmobile.cso.pacman.inventory.util.InventoryConstants;
 import com.tmobile.pacman.commons.dto.ErrorVH;
-import com.tmobile.pacman.commons.dto.PermissionVH;
+import com.tmobile.pacman.commons.dto.CollectorIssuesVH;
 import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +128,7 @@ public class ErrorManageUtil {
     }
 
     public static void omitOpsAlert() {
-        List<PermissionVH> permissionIssue = new ArrayList<>();
+        List<CollectorIssuesVH> permissionIssue = new ArrayList<>();
         for (Map.Entry<String, List<ErrorVH>> entry : errorMap.entrySet()) {
             List<ErrorVH> errorVHList = entry.getValue();
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
@@ -140,10 +140,10 @@ public class ErrorManageUtil {
             }
 
             if (!assetPermissionMapping.isEmpty()) {
-                PermissionVH permissionVH = new PermissionVH();
-                permissionVH.setAccountNumber(entry.getKey());
-                permissionVH.setAssetPermissionIssues(assetPermissionMapping);
-                permissionIssue.add(permissionVH);
+                CollectorIssuesVH collectorIssuesVH = new CollectorIssuesVH();
+                collectorIssuesVH.setAccountNumber(entry.getKey());
+                collectorIssuesVH.setAssetIssues(assetPermissionMapping);
+                permissionIssue.add(collectorIssuesVH);
             }
 
             if (errorVHList.isEmpty()) {
@@ -165,8 +165,9 @@ public class ErrorManageUtil {
     }
 
     private static void omitPermissionErrors(List<ErrorVH> errorVHList, Map<String, List<String>> assetPermissionMapping, ErrorVH errorVH, List<String> permissionIssues) {
-        List<String> exceptionList = Arrays.asList("AccessDenied", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException", "ValidationError", "AuthorizationError", "UnauthorizedOperation");
-        if (exceptionPresentInList(errorVH.getException(), exceptionList)) {
+        List<String> permissionExceptionList = Arrays.asList("AccessDenied", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException", "ValidationError", "AuthorizationError", "UnauthorizedOperation");
+        List<String> misconfiguredExceptionList = Arrays.asList( "ValidationError");
+        if (exceptionPresentInList(errorVH.getException(), permissionExceptionList)||exceptionPresentInList(errorVH.getException(), misconfiguredExceptionList)) {
             shortenMessageForKMS(errorVH);
             if (permissionIssues != null && !errorVH.getType().equals("phd") && !errorVH.getType().equals("security hub")) {
                 permissionIssues.add(errorVH.getException());
@@ -174,8 +175,15 @@ public class ErrorManageUtil {
                 permissionIssues = new ArrayList<>();
                 permissionIssues.add(errorVH.getException());
             }
-
-            assetPermissionMapping.put(errorVH.getType(), permissionIssues);
+            if(exceptionPresentInList(errorVH.getException(), misconfiguredExceptionList)) {
+                permissionIssues = new ArrayList<>();
+                permissionIssues.add(errorVH.getException());
+                assetPermissionMapping.put("misconfigured "+errorVH.getType(), permissionIssues);
+            }
+            else
+            {
+                assetPermissionMapping.put(errorVH.getType(), permissionIssues);
+            }
             errorVHList.remove(errorVH);
         }
     }

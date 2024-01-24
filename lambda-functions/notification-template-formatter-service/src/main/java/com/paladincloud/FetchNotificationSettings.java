@@ -40,6 +40,7 @@ public class FetchNotificationSettings {
         String notificationType = ((String) requestMap.get("eventCategory")).toLowerCase();
         String subject = (String) requestMap.get("subject");
         String source = (String) requestMap.get("eventSourceName");
+        String eventName = (String) requestMap.get("eventName");
 
         Map<String, Object> messageContentMap = (Map<String, Object>) requestMap.get("payload");
         String action = ((String) messageContentMap.get("action"));
@@ -129,9 +130,9 @@ public class FetchNotificationSettings {
 
                         ClassLoader classLoader = getClass().getClassLoader();
                         LOGGER.info("key - " + channel + " action- " + action + " notificationtype- " + notificationType + " exemptionType- " + exemptionType);
-                        File file = new File(classLoader.getResource(CommonUtils.getTemplateName(channel, action, notificationType, exemptionType)).getFile());
+                        File file = new File(classLoader.getResource(CommonUtils.getTemplateName(channel, action, notificationType, exemptionType,eventName)).getFile());
                         String messageContent = null;
-                        if (!notificationType.equals("permission")) {
+                        if (eventName==null || !eventName.equals("Permission denied and misconfiguration")) {
                             messageContent = buildPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
                         } else {
                             messageContent = buildNotificationPlainTextMail(FileUtils.readFileToString(file, "UTF-8"), messageContentMap, source);
@@ -163,7 +164,7 @@ public class FetchNotificationSettings {
             mailBody = mailBody.replace("${notificationsLink}", messageContentMap.get("notificationsLink").toString());
             StringBuilder buf = new StringBuilder();
             for (Map.Entry<String, Object> permission : messageContentMap.entrySet()) {
-                if (permission.getKey().startsWith("permission")) {
+                if (permission.getKey().startsWith("permission")||permission.getKey().startsWith("misconfigured")) {
                     buf.append("<tr><td class=\"rowkey\">").append(makeKeyReadable(permission.getKey())).append("</td><td>").append(permission.getValue()).append("</td></tr>");
                 }
             }
@@ -175,6 +176,7 @@ public class FetchNotificationSettings {
 
     private String makeKeyReadable(String key) {
         key = key.replace("permission", "Permission ");
+        key = key.replace("misconfigured", "Misconfigured ");
         key = key.replace("Issue", "issue ");
         key = key.replace("For", "for ");
         key = key.replace("In", " in ");

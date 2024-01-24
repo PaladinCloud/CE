@@ -17,7 +17,7 @@ package com.tmobile.pacbot.azure.inventory.util;
 
 import com.tmobile.pacbot.azure.inventory.file.FileGenerator;
 import com.tmobile.pacman.commons.dto.ErrorVH;
-import com.tmobile.pacman.commons.dto.PermissionVH;
+import com.tmobile.pacman.commons.dto.CollectorIssuesVH;
 import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,14 +132,15 @@ public class ErrorManageUtil {
     }
 
     public static void triggerNotificationPermissionDenied() {
-        List<PermissionVH> permissionIssue = new ArrayList<>();
-        List<String> exceptionList = Arrays.asList("DeniedWithNoValidRBAC", "ForbiddenByFirewall", "AuthorizationFailed", "AuthenticationException");
+        List<CollectorIssuesVH> permissionIssue = new ArrayList<>();
+        List<String> exceptionList = Arrays.asList("DeniedWithNoValidRBAC", "ForbiddenByFirewall", "AuthorizationFailed");
+        List<String> misconfiguredExceptionList = Arrays.asList( "AuthenticationException");
         for (Map.Entry<String, List<ErrorVH>> entry : errorMap.entrySet()) {
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
             List<ErrorVH> errorVHList = entry.getValue();
             for (ErrorVH errorVH : entry.getValue()) {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
-                if (exceptionPresentInList(errorVH.getException(), exceptionList)) {
+                if (exceptionPresentInList(errorVH.getException(), exceptionList)||exceptionPresentInList(errorVH.getException(), misconfiguredExceptionList)) {
                     log.info("Omit exception : {}", errorVH.getException());
                     if (permissionIssues != null) {
                         permissionIssues.add(errorVH.getException());
@@ -147,15 +148,23 @@ public class ErrorManageUtil {
                         permissionIssues = new ArrayList<>();
                         permissionIssues.add(errorVH.getException());
                     }
-                    assetPermissionMapping.put(errorVH.getType(), permissionIssues);
+                    if(exceptionPresentInList(errorVH.getException(), misconfiguredExceptionList)) {
+                        permissionIssues = new ArrayList<>();
+                        permissionIssues.add(errorVH.getException());
+                        assetPermissionMapping.put("misconfigured "+errorVH.getType(), permissionIssues);
+                    }
+                    else
+                    {
+                        assetPermissionMapping.put(errorVH.getType(), permissionIssues);
+                    }
                     errorVHList.remove(errorVH);
                 }
             }
             if (!assetPermissionMapping.isEmpty()) {
-                PermissionVH permissionVH = new PermissionVH();
-                permissionVH.setAccountNumber(entry.getKey());
-                permissionVH.setAssetPermissionIssues(assetPermissionMapping);
-                permissionIssue.add(permissionVH);
+                CollectorIssuesVH collectorIssuesVH = new CollectorIssuesVH();
+                collectorIssuesVH.setAccountNumber(entry.getKey());
+                collectorIssuesVH.setAssetIssues(assetPermissionMapping);
+                permissionIssue.add(collectorIssuesVH);
             }
             if (errorVHList.isEmpty()) {
                 errorMap.remove(entry.getKey());
