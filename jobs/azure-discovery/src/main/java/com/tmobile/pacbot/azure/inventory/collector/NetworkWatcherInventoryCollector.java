@@ -18,37 +18,37 @@ import java.util.List;
 
 @Controller
 public class NetworkWatcherInventoryCollector {
+    private static Logger log = LoggerFactory.getLogger(NSGInventoryCollector.class);
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
 
-    private static Logger log = LoggerFactory.getLogger(NSGInventoryCollector.class);
-    public List<NetworkWatcherLogFlowVH> fetchNetworkWatcherLogsBySecurityGroupId(SubscriptionVH subscription, String nsgId){
+    public List<NetworkWatcherLogFlowVH> fetchNetworkWatcherLogsBySecurityGroupId(SubscriptionVH subscription, String nsgId) {
 
-        Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
+        Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
 
         List<NetworkWatcherLogFlowVH> networkWatcherVHList = new ArrayList<>();
-        PagedList<NetworkWatcher> networkWatcherPagedList=	azure.networkWatchers().list();
-         if (networkWatcherPagedList.size() > 0) {
-                for (NetworkWatcher networkWatcher : networkWatcherPagedList) {
-                    NetworkWatcherLogFlowVH networkWatcherLogFlowVHVH=new NetworkWatcherLogFlowVH();
-                    try {
-                        networkWatcherLogFlowVHVH.setEnabled(networkWatcher.getFlowLogSettings(nsgId).enabled());
-                        networkWatcherLogFlowVHVH.setId(networkWatcher.id());
-                        networkWatcherLogFlowVHVH.setName(networkWatcher.name());
-                        networkWatcherLogFlowVHVH.setEnabled(networkWatcher.getFlowLogSettings(nsgId).enabled());
-                        networkWatcherLogFlowVHVH.setRetentionEnabled(networkWatcher.getFlowLogSettings(nsgId).isRetentionEnabled());
-                        networkWatcherLogFlowVHVH.setRetentionInDays(networkWatcher.getFlowLogSettings(nsgId).retentionDays());
-                        log.info("network watcher {}", networkWatcher.getFlowLogSettings(nsgId).networkSecurityGroupId());
-                        networkWatcherVHList.add(networkWatcherLogFlowVHVH);
-                    } catch (CloudException e) {
-
-                    }
-
+        PagedList<NetworkWatcher> networkWatcherPagedList = azure.networkWatchers().list();
+        if (networkWatcherPagedList.size() > 0) {
+            for (NetworkWatcher networkWatcher : networkWatcherPagedList) {
+                NetworkWatcherLogFlowVH networkWatcherLogFlowVHVH = new NetworkWatcherLogFlowVH();
+                try {
+                    networkWatcherLogFlowVHVH.setEnabled(networkWatcher.getFlowLogSettings(nsgId).enabled());
+                    networkWatcherLogFlowVHVH.setId(networkWatcher.id());
+                    networkWatcherLogFlowVHVH.setName(networkWatcher.name());
+                    networkWatcherLogFlowVHVH.setEnabled(networkWatcher.getFlowLogSettings(nsgId).enabled());
+                    networkWatcherLogFlowVHVH.setRetentionEnabled(networkWatcher.getFlowLogSettings(nsgId).isRetentionEnabled());
+                    networkWatcherLogFlowVHVH.setRetentionInDays(networkWatcher.getFlowLogSettings(nsgId).retentionDays());
+                    log.info("network watcher {}", networkWatcher.getFlowLogSettings(nsgId).networkSecurityGroupId());
+                    networkWatcherVHList.add(networkWatcherLogFlowVHVH);
+                } catch (CloudException e) {
 
                 }
+
+
             }
-            return networkWatcherVHList;
         }
+        return networkWatcherVHList;
     }
+}
 
 

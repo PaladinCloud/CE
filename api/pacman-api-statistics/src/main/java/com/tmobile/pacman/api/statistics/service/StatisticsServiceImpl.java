@@ -199,7 +199,6 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
             Map<String, Object> data = new HashMap<>();
             data.put("totalAutoFixesApplied", getAutofixStats().get(0).get(COUNT));
             Long totalAssets = getTotalAssetCount();
-            Long eventsProcessed = getTotalEventProcessed();
             Map<String, Long> violationsMap = getIssueDistribution();
             String targettypes = repository.getTargetTypeForAG(MASTER_ALIAS, null);
             ExecutorService executor = Executors.newCachedThreadPool();
@@ -237,11 +236,9 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
             data.put("numberOfAwsAccounts", totalAccounts);
             // 3.Total Assets Scanned
             data.put("totalNumberOfAssets", totalAssets);
-            // 4.Total Events Processed
-            data.put("numberOfEventsProcessed", eventsProcessed);
-            // 5. No of polices Evaluated from Fre-stats
+            // 4. No of polices Evaluated from Fre-stats
             data.put("numberOfPolicyEvaluations", numberOfPolicyEvaluations);
-            // 6. Auto Fix
+            // 5. Auto Fix
             data.put("numberOfPolicyWithAutoFixesAvailable", numberOfPolicyWithAutoFixesAvailable);
             data.put("numberOfPolicyWithAutoFixesEnabled", numberOfPolicyWithAutoFixesEnabled);
 

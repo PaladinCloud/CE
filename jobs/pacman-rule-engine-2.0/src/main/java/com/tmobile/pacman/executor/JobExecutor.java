@@ -39,6 +39,9 @@ import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ProgramExitUtils;
 import com.tmobile.pacman.util.ReflectionUtils;
 
+import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
+
 // TODO: Auto-generated Javadoc
 /**
  * This class is responsible for firing the execute method of the Job.
@@ -73,9 +76,6 @@ public class JobExecutor {
 
         if (args.length > 0) {
             programArgs = args[0];
-            logger.debug("job Param String " + programArgs);
-            logger.debug("job Param String " + programArgs);
-
             jobParams = CommonUtils.createParamMap(programArgs);
             logger.debug("job Param String " + programArgs);
         } else {
@@ -94,29 +94,31 @@ public class JobExecutor {
             jobObject = jobClass.newInstance();
             executeMethod = ReflectionUtils.findAssociatedMethod(jobObject, methodName);
         } catch (Exception e) {
-            logger.error("Please check the job class complies to implemetation contract", e);
+            logger.error("Please check the job class complies to implementation contract", e);
+            logger.error(DATA_ALERT_ERROR_STRING + jobParams);
             ProgramExitUtils.exitWithError();
         }
         if(null==executeMethod){
-            logger.error("unable to find execute method");
+            logger.error(DATA_ALERT_ERROR_STRING + "because unable to find execute method." + jobParams);
             ProgramExitUtils.exitWithError();
         }else
         {
             long startTime = System.nanoTime();
             // loop through resources and call rule execute method
             try {
-                if (hasArgumentsOtherThenHints(jobParams))
-                    executeMethod.invoke(jobObject, Collections.unmodifiableMap(jobParams)); // let rule not allow modify input
+                if (hasArgumentsOtherThenHints(jobParams)){
+                    executeMethod.invoke(jobObject, Collections.unmodifiableMap(jobParams));
+                }
                 else {
                     executeMethod.invoke(jobObject);
                 }
             } catch (Exception e) {
-                logger.debug("job execution failed", e);
+                logger.error(DATA_ALERT_ERROR_STRING + " because job execution failed.", e);
                 ProgramExitUtils.exitWithError();
             }
             long endTime = System.nanoTime();
             long timeTakenToExecute = TimeUnit.MINUTES.convert(endTime - startTime, TimeUnit.NANOSECONDS);
-            logger.info("Elapsed time in minutes for evaluation: " + timeTakenToExecute);
+            logger.info("elapsed time in minutes for evaluation: " + timeTakenToExecute);
             startTime = System.nanoTime();
             // process rule evaluations the annotations based on result
             Map<String, String> evalResults = new HashMap<>();

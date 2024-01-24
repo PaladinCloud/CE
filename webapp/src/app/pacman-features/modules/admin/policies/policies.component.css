@@ -12,85 +12,11 @@
  * limitations under the License.
  */
 
- .floating-widgets-section {
+.policies-wrapper {
     height: 100%;
-    width: 100%;
 }
 
-.floating-widgets-container {
-    overflow: hidden;
-}
-
-.floating-widgets-container:hover {
-    overflow: auto;
-    overflow: overlay;
-}
-
-.floating-widgets-filter-wrapper {
-    padding: 0em 1.5em 1.5em;
-}
-
-.widget-wrapper {
-    min-height: 17em;
-}
-
-.data-table-desc {
-    margin: 1em 0 0;
-    color: rgb(85, 85, 85);
-}
-
-.admin-widgets-header h1 {
-    text-transform: capitalize;
-}
-
-/* .issue-listing-wrapper ::ng-deep .data-table-wrap {
-    min-height: calc( 100vh - 24em);
-}
-
-.issue-listing-wrapper ::ng-deep .data-table-content {
-    min-height: calc( 100vh - 32em);
-}
-
-.issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
-    max-height: calc(100vh - 35em)
-}
-
-.issue-listing-wrapper ::ng-deep .data-table-wrap.loading {
-    min-height: calc( 100vh - 24em);
-}
-
-.filter-absent.issue-listing-wrapper ::ng-deep .data-table-wrap {
-    min-height: calc(100vh - 20em);
-}
-
-.filter-absent.issue-listing-wrapper ::ng-deep .data-table-content {
-    min-height: calc( 100vh - 28em);
-}
-
-.filter-absent.issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
-    max-height: calc(100vh - 31em)
-} */
-
-.details-bar[_ngcontent-c14] {
-    width: 50em !important;
-}
-
-.submit-btn {
-    height: 36px;
-    border: none;
-    border-radius: 4px;
-    background-color: var(--primary-400);
-    color: #fff;
-    display: inline-block;
-    font: var(--text-body-2);
-    padding: 0.6em 1.5em;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    min-width: 5em;
-    text-align: center;
-}
-
-.submit-btn:hover {
-    background-color: var(--primary-500);
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
+.table-wrapper {
+    position: relative;
+    height: calc(100% - 62px);
 }

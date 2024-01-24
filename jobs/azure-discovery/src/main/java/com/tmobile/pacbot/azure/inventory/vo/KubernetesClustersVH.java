@@ -2,11 +2,13 @@ package com.tmobile.pacbot.azure.inventory.vo;
 
 import java.util.Map;
 
-public class KubernetesClustersVH extends AzureVH{
+public class KubernetesClustersVH extends AzureVH {
     private boolean enableRBAC;
 
     private Map<String, Object> properties;
     private Map<String, String> tags;
+    private boolean isDashBoardEnabled;
+    private String version;
 
     public Map<String, String> getTags() {
         return tags;
@@ -24,8 +26,6 @@ public class KubernetesClustersVH extends AzureVH{
         isDashBoardEnabled = dashBoardEnabled;
     }
 
-    private boolean isDashBoardEnabled;
-
     public String getVersion() {
         return version;
     }
@@ -33,10 +33,6 @@ public class KubernetesClustersVH extends AzureVH{
     public void setVersion(String version) {
         this.version = version;
     }
-
-    private String version;
-
-
 
     public boolean isEnableRBAC() {
         return enableRBAC;

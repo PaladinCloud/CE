@@ -7,77 +7,76 @@ import java.util.Map;
 
 public class SubscriptionVH extends AzureVH {
 
-	@Override
-	public String toString() {
-		return "{ subscriptionName=" + subscriptionName + ", subscriptionId=" + subscriptionId + ", tenant=" + tenant + "}";
-	}
+    private String subscriptionId;
+    private String subscriptionName;
+    private String tenant;
+    private List<StorageAccount> storageAccount;
+    private List<StorageAccountActivityLogVH> storageAccountLogList;
+    private List<RoleDefinitionVH> roleDefinitionList;
+    private Map<String, String> regions;
 
-	private String subscriptionId;
-	private String subscriptionName;
+    @Override
+    public String toString() {
+        return "{ subscriptionName=" + subscriptionName + ", subscriptionId=" + subscriptionId + ", tenant=" + tenant + "}";
+    }
 
-	private String tenant;
+    public Map<String, String> getRegions() {
+        return regions;
+    }
 
-	private List<StorageAccount> storageAccount;
+    public void setRegions(Map<String, String> regions) {
+        this.regions = regions;
+    }
 
-	private List<StorageAccountActivityLogVH>storageAccountLogList;
+    public String getTenant() {
+        return tenant;
+    }
 
-	private List<RoleDefinitionVH>roleDefinitionList;
-	private Map<String,String> regions;
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
+    }
 
-	public Map<String, String> getRegions() {
-		return regions;
-	}
+    public String getSubscriptionId() {
+        return subscriptionId;
+    }
 
-	public void setRegions(Map<String, String> regions) {
-		this.regions = regions;
-	}
+    public void setSubscriptionId(String subscription) {
+        this.subscriptionId = subscription;
+    }
 
-	public String getTenant() {
-		return tenant;
-	}
-	public void setTenant(String tenant) {
-		this.tenant = tenant;
-	}
-	public String getSubscriptionId() {
-		return subscriptionId;
-	}
-	public void setSubscriptionId(String subscription) {
-		this.subscriptionId = subscription;
-	}
+    @Override
+    public String getSubscriptionName() {
+        return subscriptionName;
+    }
 
-	@Override
-	public String getSubscriptionName() {
-		return subscriptionName;
-	}
+    @Override
+    public void setSubscriptionName(String subscriptionName) {
+        this.subscriptionName = subscriptionName;
+    }
 
-	@Override
-	public void setSubscriptionName(String subscriptionName) {
-		this.subscriptionName = subscriptionName;
-	}
+    public List<StorageAccount> getStorageAccount() {
+        return storageAccount;
+    }
 
-	public List<StorageAccount> getStorageAccount() {
-		return storageAccount;
-	}
+    public void setStorageAccount(List<StorageAccount> storageAccount) {
+        this.storageAccount = storageAccount;
+    }
 
-	public void setStorageAccount(List<StorageAccount> storageAccount) {
-		this.storageAccount = storageAccount;
-	}
+    public List<StorageAccountActivityLogVH> getStorageAccountLogList() {
+        return storageAccountLogList;
+    }
 
-	public List<StorageAccountActivityLogVH> getStorageAccountLogList() {
-		return storageAccountLogList;
-	}
+    public void setStorageAccountLogList(List<StorageAccountActivityLogVH> storageAccountLogList) {
+        this.storageAccountLogList = storageAccountLogList;
+    }
 
-	public void setStorageAccountLogList(List<StorageAccountActivityLogVH> storageAccountLogList) {
-		this.storageAccountLogList = storageAccountLogList;
-	}
+    public List<RoleDefinitionVH> getRoleDefinitionList() {
+        return roleDefinitionList;
+    }
 
-	public List<RoleDefinitionVH> getRoleDefinitionList() {
-		return roleDefinitionList;
-	}
-
-	public void setRoleDefinitionList(List<RoleDefinitionVH> roleDefinitionList) {
-		this.roleDefinitionList = roleDefinitionList;
-	}
+    public void setRoleDefinitionList(List<RoleDefinitionVH> roleDefinitionList) {
+        this.roleDefinitionList = roleDefinitionList;
+    }
 
 
 }

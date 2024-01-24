@@ -10,15 +10,15 @@ import { ErrorHandlingService } from '../../../../shared/services/error-handling
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
-import { RefactorFieldsService } from '../../../../shared/services/refactor-fields.service';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
-import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import find from 'lodash/find';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import map from 'lodash/map';
 import { TourService } from 'src/app/core/services/tour.service';
 import { ComponentKeys } from 'src/app/shared/constants/component-keys';
+import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+import { IColumnNamesMap, IColumnWidthsMap } from 'src/app/shared/table/interfaces/table-props.interface';
 
 @Component({
   selector: 'app-account-management',
@@ -55,8 +55,8 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   tableData = [];
   headerColName;
   direction;
-  columnNamesMap = {"accountName": "Account Name","accountId":"Account ID", "assets": "Assets",  "violations": "Violations", "accountStatus": "Status","source":"Source","createdBy": "Created By"};
-  columnWidths = {"Account Name": 1.5, "Account ID": 1.5, "Assets": 0.5, "Violations": 0.5, "Status": 0.5, "Created By": 1};
+  columnNamesMap: IColumnNamesMap = {source: 'Source'};
+  columnWidths: IColumnWidthsMap = {"Account Name": 1.5, "Account ID": 1.5, "Assets": 0.5, "Violations": 0.5, "Status": 0.5, "Created By": 1};
   whiteListColumns;
   tableScrollTop = 0;
   centeredColumns = {
@@ -128,6 +128,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   selectedRowIndex;
   fieldName: any;
   sortOrder: any;
+  columnsAndFiltersToExcludeFromCasing = ['Account Name'];
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -137,19 +138,18 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     private errorHandling: ErrorHandlingService,
     private utils: UtilsService,
     private routerUtilityService: RouterUtilityService,
-    private refactorFieldsService: RefactorFieldsService,
+    private filterManagementService: FilterManagementService,
     private tableStateService: TableStateService,
-    private issueFilterService: IssueFilterService,
     private tourService: TourService,
-    private notificationObservableService: NotificationObservableService) {
-      this.getPreservedState();
-      this.getFilters();
-  }
+    private issueFilterService: IssueFilterService,
+    private notificationObservableService: NotificationObservableService) { }
   ngAfterViewInit(): void {
     this.tourService.setComponentReady();
   }
 
   ngOnInit() {
+    this.getPreservedState();
+    this.getFilters();
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
   }
 
@@ -235,11 +235,16 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
       this.isStatePreserved = false;
     }
 
-    const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
-      if(!isTempFilter){
-        this.filters = state.filters || [];
-        Promise.resolve().then(() => this.getUpdatedUrl());
+    const navDirection = this.workflowService.getNavigationDirection();
+
+    if(navDirection<=0){
+      this.filters = state.filters || [];
+      if (state.data && state.data.length > 0) {
+        this.isStatePreserved = true;
+        this.tableData = state.data;
       }
+      Promise.resolve().then(() => this.getUpdatedUrl());
+    }
   }
 
   storeState(data?){
@@ -264,14 +269,19 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   }
 
   updateSortFieldName(){
-    this.sortOrder = this.direction;
-    let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
-    if(!apiColName){
-      apiColName =  find(this.filterTypeOptions, {
-        optionName: this.headerColName,
-      })["optionValue"];
+    try{
+      this.sortOrder = this.direction;
+      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
+      if(!apiColName){
+        apiColName =  find(this.filterTypeOptions, {
+          optionName: this.headerColName,
+        })["optionValue"];
+      }
+      this.fieldName = apiColName;
+    }catch(e){
+      this.logger.log('sortError', e);
+      this.headerColName = '';
     }
-    this.fieldName = apiColName;
   }
 
    /*
@@ -319,14 +329,11 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
         sortOrder: this.sortOrder
       }
 
-      let filtersToBePassed = {};      
-      Object.keys(this.filterText).map(key => {
-        filtersToBePassed[key] = [this.filterText[key]]
-      })
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
 
       const payload = {
         filter: filtersToBePassed,
-        // sortFilter: sortFilters, // uncomment for server side sort
+        sortFilter: sortFilters,
         page: this.bucketNumber,
         searchtext: this.searchTxt,
         size: this.paginatorSize,
@@ -347,7 +354,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
                 this.totalRows = 0;
               }
               if (data.length > 0) {
-                data = this.massageData(data);
+                data = this.utils.massageTableData(data, this.columnNamesMap);
                 const processData = this.processData(data);
                 if(isNextPageCalled){
                   this.onScrollDataLoader.next(processData)
@@ -370,35 +377,6 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
       this.tableDataLoaded = true;
       this.logger.log('error', error);
     }
-  }
-
-  massageData(data){
-    const refactoredService = this.refactorFieldsService;
-    const columnNamesMap = this.columnNamesMap;
-    const newData = [];
-    data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);
-      let newObj = {};
-      KeysTobeChanged.forEach((element) => {
-        let elementnew;
-        if(columnNamesMap[element]) {
-          elementnew = columnNamesMap[element];
-          newObj = Object.assign(newObj, { [elementnew]: row[element] });
-        }
-        else {
-        elementnew =
-          refactoredService.getDisplayNameForAKey(
-            element.toLocaleLowerCase()
-          ) || element;
-          newObj = Object.assign(newObj, { [elementnew]: row[element] });
-        }
-        // change data value
-        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
-      });
-      // newObj["Actions"] = "";
-      newData.push(newObj);
-    });
-    return newData;
   }
 
   nextPg(e) {
@@ -431,77 +409,44 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
 
   processData(data) {
     try {
-      var innerArr = {};
-      var totalVariablesObj = {};
-      var cellObj = {};
-      let processedData = [];
-      var getData = data;      
-      
-      let cellData;
-      for (var row = 0; row < getData.length; row++) {
-        const keynames = Object.keys(getData[row]);
-        innerArr = {};
-        keynames.forEach(col => {
-          cellData = getData[row][col];
+      return this.utils.processTableData(data, this.tableImageDataMap, (row, col, cellObj) => {
+        if(col.toLowerCase()=="account name"){
           cellObj = {
-            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
-            titleText: cellData, // text to show on hover
-            valueText: cellData?.toLowerCase(),
-            hasPostImage: false,
-            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
-            postImgSrc: "",
-            isChip: "",
-            isMenuBtn: false,
-            properties: "",
-            isLink: false
-            // chipVariant: "", // this value exists if isChip is true,
-            // menuItems: [], // add this if isMenuBtn
+            ...cellObj,
+            imgSrc: this.tableImageDataMap[row["Source"]?.toLowerCase()]?this.tableImageDataMap[row["Source"].toLowerCase()].image:"noImg",
+            isLink: true
+          };
+        }
+        else if (col.toLowerCase() == "actions") {
+          let dropdownItems: Array<String> = ["Delete"];
+          if(row["Account ID"]==this.baseAccountId)
+               dropdownItems = [];
+          cellObj = {
+            ...cellObj,
+            isMenuBtn: true,
+            menuItems: dropdownItems,
+          };
+        } 
+        else if(col.toLowerCase() == "status"){
+          let chipBackgroundColor,chipTextColor;
+          if(row["Status"].toLowerCase() === "configured"){
+            chipBackgroundColor = "#E6F5EC";
+            chipTextColor = "#00923f";
+          }else{
+            chipBackgroundColor = "#F2F3F5";
+            chipTextColor = "#73777D";
           }
-          if(col.toLowerCase()=="account name"){
-            cellObj = {
-              ...cellObj,
-              imgSrc: this.tableImageDataMap[getData[row]["Source"]?.toLowerCase()]?this.tableImageDataMap[getData[row]["Source"].toLowerCase()].image:"noImg",
-              isLink: true
-            };
-          }
-          else if (col.toLowerCase() == "actions") {
-            let dropdownItems: Array<String> = ["Delete"];
-            if(getData[row]["Account ID"]==this.baseAccountId)
-                 dropdownItems = [];
-            cellObj = {
-              ...cellObj,
-              isMenuBtn: true,
-              menuItems: dropdownItems,
-            };
-          } 
-          else if(col.toLowerCase() == "status"){
-            let chipBackgroundColor,chipTextColor;
-            if(getData[row]["Status"].toLowerCase() === "configured"){
-              chipBackgroundColor = "#E6F5EC";
-              chipTextColor = "#00923f";
-            }else{
-              chipBackgroundColor = "#F2F3F5";
-              chipTextColor = "#73777D";
-            }
-            cellObj = {
-              ...cellObj,
-              chipList: getData[row][col].toLowerCase() === "configured"?["Online"]:["Offline"],
-              text: getData[row][col].toLowerCase(),
-              isChip: true,
-              chipBackgroundColor: chipBackgroundColor,
-              chipTextColor: chipTextColor
-            };
-          }
-          innerArr[col] = cellObj;
-          totalVariablesObj[col] = "";
-        });
-        processedData.push(innerArr);
-      }
-      if (processedData.length > getData.length) {
-        var halfLength = processedData.length / 2;
-        processedData = processedData.splice(halfLength);
-      }
-      return processedData;
+          cellObj = {
+            ...cellObj,
+            chipList: row[col].toLowerCase() === "configured"?["Online"]:["Offline"],
+            text: row[col].toLowerCase(),
+            isChip: true,
+            chipBackgroundColor: chipBackgroundColor,
+            chipTextColor: chipTextColor
+          };
+        }
+        return cellObj;
+      });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -536,7 +481,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     this.bucketNumber = 0;
 
     this.storeState();
-    // this.updateComponent(); // uncomment for server side sort
+    this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){
@@ -631,108 +576,57 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
       queryParamsHandling: 'merge',
   });
   }
+
   deleteFilters(event?) {
-    try {
-      if (!event) {
-        this.filters = [];
-        this.storeState();
-      }else if(event.removeOnlyFilterValue){
-        this.getUpdatedUrl();
-        this.updateComponent();
-        this.storeState();
-      }
-      else if(event.index && !this.filters[event.index].filterValue){
-        this.filters.splice(event.index, 1);
-        this.storeState();
-      }
-      else {
-        if (event.clearAll) {
-          this.filters = [];
-        } else {
-          this.filters.splice(event.index, 1);
-        }
-        this.storeState();
-        this.getUpdatedUrl();
-        this.updateComponent();
-      }
-    } catch (error) { 
-      this.logger.log('jsError', 'Error deleting filters')
+    let shouldUpdateComponent = false;
+    [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);      
+    if(shouldUpdateComponent){
+      this.getUpdatedUrl();
+      this.updateComponent();
     }
-    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+    this.storeState();
   }
   /*
    * this functin passes query params to filter component to show filter
    */
-  getFilterArray() {
-    return new Promise((resolve) => {
-      const filterObjKeys = Object.keys(this.filterText);      
-      const dataArray = [];
-      for (let i = 0; i < filterObjKeys.length; i++) {
-        let obj = {};
-        const keyDisplayValue = find(this.filterTypeOptions, {
-          optionValue: filterObjKeys[i],
-        })["optionName"];
-        obj = {
-          keyDisplayValue,
-          filterkey: filterObjKeys[i],
-        };
-        dataArray.push(obj);
-      }      
+  /*
+   * this functin passes query params to filter component to show filter
+   */
+  async getFilterArray() {
+    try {
+      const filterText = this.filterText;
+      const filterTypeOptions = this.filterTypeOptions;
+      let filters = this.filters;
       
-      const state = this.tableStateService.getState(this.saveStateKey) ?? {};
-      const filters = state?.filters;
-      
-      if(filters){
-        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
-        filters.forEach(filter => {
-          if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
-            dataArray.push({
-              filterkey: filter.filterkey,
-              keyDisplayValue: filter.key
-            });
-          }
-        });
-      }
+      const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
 
-      const formattedFilters = dataArray;  
-      if(formattedFilters.length==0){
-        resolve(true);
-      }    
       for (let i = 0; i < formattedFilters.length; i++) {
-
-        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
-        if(!keyDisplayValue){
-          keyDisplayValue = find(this.filterTypeOptions, {
-            optionValue: formattedFilters[i].filterKey,
-          })["optionName"];
-        }
-
-        this.changeFilterType(keyDisplayValue).then(() => {
-          let filterValueObj = find(this.filterTagOptions[keyDisplayValue], {
-            id: this.filterText[formattedFilters[i].filterkey],
-          });
-
-          let filterKey = dataArray[i].filterkey;
-          
-          if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
-            const eachObj = {
-              keyDisplayValue: keyDisplayValue,
-              filterValue: filterValueObj?filterValueObj["name"]:undefined,
-              key: keyDisplayValue, // <-- displayKey-- Resource Type
-              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
-              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
-              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-            };
-            this.filters.push(eachObj);
-          }
-          if(i==formattedFilters.length-1){
-            this.filters = [...this.filters];
-            this.storeState();
-            resolve(true);
-          }           
-        })
+        filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i] , filters});
+        this.filters = filters;
       }
-    })
+      this.storeState();
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+  async processAndAddFilterItem({formattedFilterItem, filters}){
+
+    const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
+    const filterKey = formattedFilterItem.filterkey;
+      
+    const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
+    if(existingFilterObjIndex<0){
+      // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+      await this.changeFilterType(keyDisplayValue);
+      const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+      const filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+
+      filters.push(filterObj);
+    }
+    filters = [...filters];
+    return filters;
   }
 
   /**
@@ -749,21 +643,18 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
           environment.issueFilter.url,
           environment.issueFilter.method
         )
-        .subscribe((response) => {
+        .subscribe(async(response) => {
           this.filterTypeLabels = map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
           this.filterTypeLabels.sort();
+          [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, []);
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
           this.routerParam();
-          // this.deleteFilters();
-          this.getFilterArray().then(() => {
-            this.updateComponent();
-          }).catch(e => {
-            this.logger.log("jsError: ", e);
-            this.updateComponent();
-          });
+          await this.getFilterArray();
+          await Promise.resolve().then(() => this.getUpdatedUrl());
+          this.updateComponent();
         });
     } catch (error) {
       this.filterErrorMessage = 'jsError';
@@ -772,96 +663,78 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
-  changeFilterType(value) {
-    return new Promise((resolve) => {
-      this.filterErrorMessage = '';
+  async changeFilterType(value, searchText='') {  
     try {
-      this.currentFilterType = find(this.filterTypeOptions, {
-        optionName: value,
-      });
-      this.storeState();
-      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
-        const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
-      const queryParams = {
-            ...urlObj.params,
-          }
-        this.filterSubscription = this.issueFilterService
-        .getFilters(
-          queryParams,
-          environment.base +
-          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-            .url,
-          "GET"
-        )
-        .subscribe((response) => {
-          let filtersData;
-          if(value=="Status"){
-            filtersData = response[0].map(item => { return {id: item, name: item=="configured"?"online":item} });
-          }else{
-            filtersData = response[0].map(item => { return {id: item, name: item} });
-          }
-          this.filterTagOptions[value] = filtersData;
-            this.filterTagLabels = {
-              ...this.filterTagLabels,
-              ...{
-                  [value]: map(filtersData, 'name').sort((a, b) =>
-                  {
-                    if(value.toLowerCase()=="assets" || value.toLowerCase()=="violations"){
-                      return a-b;
-                    }else{
-                      return a.localeCompare(b)
-                    }
-                  }
-                  ),
-              },
-            };
-          if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
-          resolve(this.filterTagOptions[value]);
-          this.storeState();
-        });
-      }
-    } catch (error) {
-      this.filterErrorMessage = 'jsError';
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-    });
-  }
-
-  changeFilterTags(event) {
-    let value = event.filterValue;
-    this.currentFilterType =  find(this.filterTypeOptions, {
-        optionName: event.filterKeyDisplayValue,
-      });
-    try {
-      if (this.currentFilterType) {
-        const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
-        this.utils.addOrReplaceElement(
-          this.filters,
-          {
-            keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: value,
-            key: this.currentFilterType.optionName,
-            value: filterTag["id"],
-            filterkey: this.currentFilterType.optionValue.trim(),
-            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
-          },
-          (el) => {
-            return (
-              el.compareKey ===
-              this.currentFilterType.optionValue.toLowerCase().trim()
-            );
-          }
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
         );
-      }
+      this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+      const filterText = this.filterText;
+      const currentFilterType = this.currentFilterType;
+
+      const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
+      const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags, labelsToExcludeSort});
+      this.filterTagOptions[value] = filterTagOptions;
+      this.filterTagLabels[value] = filterTagLabels;
       this.storeState();
-      this.getUpdatedUrl();
-      this.utils.clickClearDropdown();
-      this.updateComponent();
+  
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  getUpdateFilterTagsCallback(){
+    const labelsToExcludeSort = ['assets', 'violations'];
+    const updateFilterTags = (filterTagsData, value) => {      
+      if(value.toLowerCase() === "assets" || value.toLowerCase() === "violations"){
+        const numOfIntervals = 5;
+        const min = filterTagsData.optionRange.min;
+        const max = filterTagsData.optionRange.max;
+        const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
+        filterTagsData = [];
+        intervals.forEach(interval => {
+          const lb = Math.round(interval.lowerBound);
+          const up = Math.round(interval.upperBound);
+          filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
+        });
+      }
+      return filterTagsData;
+    }
+    return [updateFilterTags, labelsToExcludeSort];
+  }
+
+  getFilterPayloadForDataAPI(){
+    const filterToBePassed = {...this.filterText};
+    Object.keys(filterToBePassed).forEach(filterKey => {
+      filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+
+      if(this.columnNamesMap[filterKey]?.toLowerCase()=="assets" || this.columnNamesMap[filterKey]?.toLowerCase()=="violations"){
+        filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
+          const [min, max] = filterVal.split("-");
+          return {min: parseFloat(min), max: parseFloat(max)};
+        })
+      }
+    })
+
+    return filterToBePassed;
+  }
+
+  async changeFilterTags(event) {
+    let filterValues = event.filterValue;
+    if(!filterValues){
+      return;
+    }
+    this.currentFilterType =  find(this.filterTypeOptions, {
+      optionName: event.filterKeyDisplayValue,
+    });
+
+    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    this.getUpdatedUrl();
+    this.storeState();
+    this.updateComponent();
   }
 
   ngOnDestroy() {

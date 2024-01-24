@@ -17,7 +17,7 @@
         <img src="/assets/icons/blue-info.svg">
         <div class="exemption-details-wrapper flex flex-col">
             <span class="body-1 high-emphasis">Exemption Request: {{issueBlocks.policyViolated}}</span>
-            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionRaisedExpiringOn | date : 'medium'}}</mark></span>
+            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionRaisedExpiringOn | date : 'mediumDate'}}</mark></span>
             <div class="button-wrapper" *ngIf="adminAccess">
                 <app-button
                 (onClickInner)="handleRequest('grant')">Exempt</app-button>
@@ -60,7 +60,7 @@
           
         </div>
         <div *ngIf="issueBlocks" class="right-details-container flex flex-col">
-            <div [class.after-click-button]='showOpposite || showOppositeEmail || showOppositeRecommend || showOppositeJira || showOppositeRevoke'
+            <div [class.after-click-button]='showOpposite || showOppositeEmail || showOppositeRecommend || showOppositeRevoke'
                  class="actions-wrapper flex flex-col">
                 <div *ngIf='showRecommendantions' class="recommend-data">
                     <header class="recommend">
@@ -87,16 +87,6 @@
                      class="btn-wrapper-additional-actions">
                     <app-button-icon (onClickInner)="showOtherDivEmail()" [iconSrc]="emailIcon.icon">
                         Email Violation
-                    </app-button-icon>
-                </div>
-                <div *ngIf='GLOBAL_CONFIG.optional.pacmanIssue.CREATE_JIRA_TICKET_FOR_PACMAN_ISSUE && showJiraButton'
-                     class="btn-wrapper-additional-actions jira">
-                    <app-button-icon (onClickInner)="createJira();showOtherDivJira()" *ngIf='showJiraData'
-                                     [iconSrc]="jiraIcon.icon">Create Jira Ticket
-                    </app-button-icon>
-                    <app-button-icon (onClickInner)="showJiraTicket();showOtherDivJira()" *ngIf='!showJiraData'
-                                     [iconSrc]="jiraIcon.icon">View Jira
-                        Ticket
                     </app-button-icon>
                 </div>
                 <div *ngIf="autofixDetails" class="autofix-data">
@@ -161,41 +151,6 @@
                     </div>
                     <div *ngIf='showLoadcompleteRevoke && !checkRevoke' class="success_msg_exception">
                         Successfully Revoked Issue Exemption!
-                    </div>
-                </section>
-            </div>
-            <div [class.after-click-button-opposite]='showOppositeJira' class="actions-wrapper back">
-                <header class="recommend-flip flex-between flex flex-align-center">
-                    <div class="header-text">
-                        Status :
-                    </div>
-                    <div (click)="showOtherDivJira()" [class.showNone]='showJira' class="delete-img">
-                        <img src="../assets/icons/x-icon.svg" style="height: 1.8em;">
-                    </div>
-                </header>
-                <section class="text-wrapper">
-                    <div *ngIf="showOppositeJira" class="circle-container">
-                        <div [class.hideClassComplete]='showLoadcompleteJira && !checkJira && viewJira'
-                             [class.load-complete-failure]='showLoadcompleteJira && checkJira'
-                             [class.load-complete-success]='showLoadcompleteJira && !checkJira'
-                             class="circle-loader">
-                            <div *ngIf='!checkJira && !viewJira' [class.checkmark-show]='showLoadcompleteJira'
-                                 class="checkmark draw"></div>
-                            <div *ngIf='checkJira' [class.crossmark-show]='showLoadcompleteJira'
-                                 class="crossmark draw"></div>
-                        </div>
-                    </div>
-                    <div *ngIf='showLoadcompleteJira && checkJira' class="error_msg_exception">JIRA
-                        ticket not created !
-                    </div>
-                    <div *ngIf='showLoadcompleteJira && !checkJira && !viewJira'
-                         class="success_msg_exception">
-                        Jira ticket created with issueKey {{issueKey}}!
-                    </div>
-                    <div *ngIf='showLoadcompleteJira && !checkJira && viewJira'
-                         class="success_msg_exception">
-                        <img class="ticketImg" src="../assets/images/JIRAissue.png">
-                        <div>Jira ticket was already created with this issueKey {{issueKey}}!</div>
                     </div>
                 </section>
             </div>

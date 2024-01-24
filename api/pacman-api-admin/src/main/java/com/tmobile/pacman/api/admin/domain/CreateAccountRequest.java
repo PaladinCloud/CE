@@ -66,5 +66,12 @@ public class CreateAccountRequest {
     @JsonProperty("environmentName")
     private String contrastEnvironmentName = "eval";
 
+    //checkmarx plugin
+    private String checkmarxRefreshToken;
+    @Builder.Default
+    private String checkmarxClientId = "ast-app";
+    private String checkmarxTenantName;
+    private String checkmarxAccessToken;
+
     private String createdBy;
 }

@@ -12,49 +12,26 @@
  * limitations under the License.
  */
 
- .floating-widgets-section {
-    background-color: var(--background-grey);
+.asset-list-wrapper {
     height: 100%;
-    width: 100%;
-    padding: 24px;
 }
 
-.floating-widgets-container {
-	overflow: hidden;
+.assets-header {
+    padding-bottom: 18px;
 }
 
-.floating-widgets-container:hover {
-    overflow: auto; overflow: overlay;
+.breadcrumb-container{
+    padding-bottom: 18px
 }
 
-.floating-widgets-filter-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.widget-wrapper {
-    min-height: 17em;
-} 
-
-.floating-widgets-section .title-text{
-    padding-bottom: 24px;
-    width: 100%;
-    line-height: 22px;
+.assets-header .title {
     font-size: 2em;
     font-family: var(--text-font-family);
     font-weight: 500;
-    color: var(--text-high-emphasis);
+    padding-bottom: 2px;
 }
 
-.data-table-desc{
-    margin: 1em 0 0;
-    color: rgb(85, 85, 85);
-}
-
- /* css for edge browser */
-@supports (-ms-ime-align: auto) { 
-    .floating-widgets-container {
-        overflow: auto;
-    }
+.table-wrapper {
+    position: relative;
+    height: calc(100% - 62px);
 }

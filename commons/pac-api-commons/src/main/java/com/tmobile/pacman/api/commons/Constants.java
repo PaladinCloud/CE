@@ -84,7 +84,6 @@ public interface Constants {
     String ES_DOC_PARENT_KEY = "_parent";
     String ES_DOC_ROUTING_KEY = "_routing";
     String MESSAGE_KEY = "message";
-    String FAIL_MESSAGE = "failed";
     String STATUS_KEY = "message";
     String STATUS_SUCCESS = "success";
     String DATA_KEY = "data";
@@ -119,17 +118,12 @@ public interface Constants {
     String DOMAINS = "domains";
 
     String GROUP_NAME = "groupName";
-    String COMPLIANCEPERCENT="compliance-percent";
-    String COMPLIANT="compliant";
     String POLICYID = "policyId";
     String OPEN_ISSUES = "openIssues";
-    String EC2_MANDATORY_TAG_RULE = "ec2mandatorytags_version-1_ec2mandatorytags_ec2";
     String EC2_KERNEL_COMPLIANCE_RULE = "cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Rule_ec2";
-    String VULNAR_SEVERITY_LEVEL = "vuln.list.hostAssetVuln.severitylevel";
     String SSL_EXPIRY_RULE = "certificate-expiry-policy_version-1_SSLcertificatesexpirywithin45days_cert";
     String KEY = "key";
     String VALUE = "value";
-    String PARAMS = "params";
     String POLICY_NAME = "policyName";
     String DISPLAY_NAME = "policyDisplayName";
     String ASSETS_SCANNED = "assetsScanned";
@@ -137,11 +131,11 @@ public interface Constants {
     String PASSED = "passed";
     String FAILED = "failed";
     String POLICY_DISPAY_NAME = "policyDisplayName";
-    String POLICY_PARAMS = "policyParams";
     String TARGET_TYPE = "targetType";
     String ISSUE_RESOURCE_ID = "resourceId";
     String ISSUE_EXCEPTION = "issueException";
     String ISSUE_EXEMPTION_REASON = "exemptionReason";
+    String ISSUE_EXEMPTION_EXPIRY_DATE = "exemptionExpiryDate";
     String DELIMITER_UNDERSCORE = "_";
     String DELIMITER_COMMA = ",";
     String RESOURCE_TYPE = "resourcetType";
@@ -167,7 +161,6 @@ public interface Constants {
     String ENABLED = "ENABLED";
     String DISABLED = "DISABLED";
     String DATA_SOURCE = "datasource";
-    String DELIMITER = "*";
     String _ID = "_id";
     String ID = "id";
     String EXEMPTED = "exempted";
@@ -373,14 +366,10 @@ public interface Constants {
     String VPC_ID = "vpcid";
     String SOURCE = "source";
     String ERROR_UNIQUEHOST = "Error in getUniqueHost from ES";
-    String ISSUE_COUNT_PER_RULE_AG = "issuecountPerRuleAG";
     String ASSET_COUNT = "assetCount";
-    String CONTR_PERCENTAGE = "contributionPercentage";
-
     String IS_ASSETS_EXEMPTED = "isAssetsExempted";
     String CONTRIBUTION_PERCENT = "contribution_percent";
     String COMP_PERCENTAGE = "compliancePercentage";
-    String WORKING = "working";
     String EXE_EMAIL_SEND = "Exception in sendTextMail";
     String APP_TAB_DETAILS = "appTableDetails";
     String CRITICAL_ISSUE_COUNT = "criticalIssuesCount";
@@ -454,16 +443,20 @@ public interface Constants {
     String AQUA = "aqua";
     String ISSUE_ID_UI_PATH  = "#pl#compliance#issue-listing#issue-details#".replace("#","/");
     String FIELD_NAME = "fieldName";
-
     String POLICY_DETAILS_UI_PATH  = "#pl#compliance#policy-knowledgebase-details#".replace("#","/");
-
     String ASSET_DETAILS_UI_PATH  =  "#pl#assets#asset-list#".replace("#","/");
 
     String DATA_SOURCE_KEY = "pac_ds";
-
     String RELATIONS = "_relations";
-
     String AUTOFIX_PLANNED = "isAutofixPlanned";
+    String TENABLE = "tenable";
+    String POLICY_COUNT = "policyCount";
+    List<String> RANGE_ATTRIBUTE =  new ArrayList<String>() {{
+        add("LONG");
+        add("INTEGER");
+        add("DOUBLE");
+        add("FLOAT");
+    } };
 
     enum NotificationTypes {
         @SerializedName("exemption")
@@ -473,23 +466,21 @@ public interface Constants {
         @SerializedName("autofix")
         AUTOFIX("autofix"),
         @SerializedName("policy")
-        POLICY("policy");
-
+        POLICY("policy"),
+        @SerializedName("plugin")
+        PLUGIN("plugin");
+        
         String value;
-
         @Override
         public String toString() {
             return super.toString().toLowerCase();
         }
-
         public String getValue() {
             return this.value;
         }
-
         NotificationTypes(String value){
             this.value=value;
         }
-
     }
 
     enum Actions {
@@ -523,12 +514,10 @@ public interface Constants {
     String NOTIFICATION_CATEGEORY_NAME = "eventCategoryName";
     String NOTIFICATION_SOURCE_NAME = "eventSourceName";
     String NOTIFICATION_EVENT_NAME = "eventName";
-
     String AUTOFIX_PLANNED_KEYWORD = "isAutofixPlanned.keyword";
     String TYPE_KEYWORD = "type.keyword";
     String ACTION_ILLEGAL_ARG_ERR_MSG  =  "Action value should be one of the following create_exemption_request," +
             " cancel_exemption_request, approve_exemption_request, revoke_exemption_request";
-    String AVERAGE_AGE = "averageAge";
 
     enum ExemptionActions {
         CREATE_EXEMPTION_REQUEST("create_exemption_request"),
@@ -562,16 +551,8 @@ public interface Constants {
     String FILTER_UNTAGGED = "untagged";
     String FALSE = "false";
     String TARGET_TYPE_DISPLAY_NAME="targetTypeDisplayName";
-
     String USER_POLICY_FILTER = "policyknowledgebase";
-
-    List<String> RANGE_ATTRIBUTE =  new ArrayList<String>() {{
-        add("LONG");
-        add("INTEGER");
-        add("DOUBLE");
-        add("FLOAT");
-    } };
-
     String TENABLE_API_URL = "https://cloud.tenable.com";
     String GROUP_NAME_FOR_ALL_SOURCES_ASSET_GROUP = "all-sources";
+    String TOTAL_VIOLATIONS = "totalViolations";
 }

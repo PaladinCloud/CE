@@ -164,9 +164,9 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupDetails` (
   `groupType` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `createdBy` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `createdUser` varchar(75) COLLATE utf8_bin DEFAULT NULL,
-  `createdDate` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `createdDate` TIMESTAMP COLLATE utf8_bin DEFAULT CURRENT_TIMESTAMP,
   `modifiedUser` varchar(75) COLLATE utf8_bin DEFAULT NULL,
-  `modifiedDate` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `modifiedDate` TIMESTAMP COLLATE utf8_bin DEFAULT CURRENT_TIMESTAMP,
   `description` text COLLATE utf8_bin,
   `aliasQuery` text COLLATE utf8_bin,
   `isVisible` tinyint(1) DEFAULT NULL,
@@ -3266,3 +3266,5 @@ END //
 DELIMITER ;
 
 CALL update_asset_group_dates_to_use_timestamp();
+
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'Source','pac_ds.keyword','/compliance/v1/filters/attribute');

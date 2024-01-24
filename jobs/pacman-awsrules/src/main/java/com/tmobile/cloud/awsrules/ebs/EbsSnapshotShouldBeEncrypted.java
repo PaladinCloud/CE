@@ -121,12 +121,12 @@ public class EbsSnapshotShouldBeEncrypted extends BasePolicy {
 			String encrypted = resourceAttributes.getOrDefault(VOLUME_ATTR_ENCRYPTED,VAL_FALSE);
 			if (isEbsWithEc2Exists && VAL_FALSE.equalsIgnoreCase(encrypted)) {
 				annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
-				annotation.put(PacmanSdkConstants.DESCRIPTION,"Attached EBS Volume with out encrypted found");
+				annotation.put(PacmanSdkConstants.DESCRIPTION,"Attached EBS Volume without encryption found.");
 				annotation.put(PacmanRuleConstants.SEVERITY, severity);
 				annotation.put(PacmanRuleConstants.SUBTYPE, Annotation.Type.RECOMMENDATION.toString());
 				annotation.put(PacmanRuleConstants.CATEGORY, category);
 				
-				issue.put(PacmanRuleConstants.VIOLATION_REASON, "Attached EBS Volume with out encrypted found");
+				issue.put(PacmanRuleConstants.VIOLATION_REASON, "Attached EBS Volume without encryption found.");
 				issueList.add(issue);
 				annotation.put("issueDetails",issueList.toString());
 				logger.debug("========EbsSnapshotShouldBeEncrypted ended with annotation {} :=========",annotation);

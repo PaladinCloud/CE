@@ -134,7 +134,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     displayedColumns: string[];
     searchInColumns = new FormControl();
 
-    allSelected = true;
     totalRecordsAfterFilter = 0;
 
     denominator = 1;
@@ -199,19 +198,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                 this.displayedColumns = Object.keys(this.columnWidths);
             }
 
-            this.allSelected = this.displayedColumns.length === this.whiteListColumns.length;
-
             this.displayedColumns.sort();
-
-            if (this.select) {
-                this.select.options.forEach((item: MatOption) => {
-                    if (this.allSelected || this.whiteListColumns.includes(item.value)) {
-                        item.select();
-                    } else {
-                        item.deselect();
-                    }
-                });
-            }
         }
         if (changes.data || changes.filteredArray) {
             if (changes.data) {

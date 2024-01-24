@@ -21,10 +21,11 @@
     </div>
 
     <div class="relative table-wrapper">
-        <app-table style="height: 100%; width: 100%;" [data]="tableData"
+        <app-table 
+            [data]="tableData"
             [columnWidths]="columnWidths"
             [headerColName]="headerColName" [direction]="direction"
-            [doLocalSearch]="true" [doLocalFilter]="true"
+            [doLocalSearch]="false" [doLocalFilter]="false" [doLocalSort]="false"
             [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
             [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
             [showDownloadBtn]="false" [showFilterBtn]="true" (nextPageCalled)="nextPg($event)"
@@ -36,9 +37,11 @@
             (headerColNameSelected)="handleHeaderColNameSelection($event)"
             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
             (rowSelectEventEmitter)="handleRowClick($event)"
-            (selectedFilter)="handleFilterSelection()"
-            (selectedFilterType)="handleFilterTypeSelection()"
-            (deleteFilters)="deleteFilters($event)">
+            (selectedFilter)="changeFilterTags($event)"
+            (selectedFilterType)="changeFilterType($event)"
+            (deleteFilters)="deleteFilters($event)"
+            [columnsAndFiltersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing"
+            [enableMultiValuedFilter]="true">
         </app-table>
     </div>
 </div>

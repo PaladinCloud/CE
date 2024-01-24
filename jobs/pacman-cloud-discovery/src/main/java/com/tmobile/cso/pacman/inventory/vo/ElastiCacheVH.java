@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,58 +15,81 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.vo;
 
-import java.util.List;
-
 import com.amazonaws.services.elasticache.model.CacheCluster;
 import com.amazonaws.services.elasticache.model.Tag;
 
+import java.util.List;
 
 /**
  * The Class ElastiCacheVH.
  */
 public class ElastiCacheVH {
 
-    /** The cluster. */
+    /**
+     * The cluster.
+     */
     CacheCluster cluster;
-    
-    /** The tags. */
+
+    /**
+     * The tags.
+     */
     List<Tag> tags;
-    
-    /** The cluster name. */
+
+    /**
+     * The cluster name.
+     */
     String clusterName;
-    
-    /** The arn. */
+
+    /**
+     * The arn.
+     */
     String arn;
-    
-    /** The no of nodes. */
+
+    /**
+     * The no of nodes.
+     */
     int noOfNodes;
-    
-    /** The primary or config endpoint. */
+
+    /**
+     * The primary or config endpoint.
+     */
     String primaryOrConfigEndpoint;
-    
-    /** The availability zones. */
+
+    /**
+     * The availability zones.
+     */
     String availabilityZones;
-    
-    /** The description. */
-    String description ;
-    
-    /** The security groups. */
+
+    /**
+     * The description.
+     */
+    String description;
+
+    /**
+     * The security groups.
+     */
     String securityGroups;
-    
-    /** The parameter group. */
+
+    /**
+     * The parameter group.
+     */
     String parameterGroup;
-    
-    /** Subenets associated with the Cache Subnet Group **/
-    
-    List <String> subnets;
-    /** vpc associaged with the cache subnet Group **/
-    
-    String vpc ;
-    
+
+    /**
+     * Subenets associated with the Cache Subnet Group
+     **/
+
+    List<String> subnets;
+    /**
+     * vpc associaged with the cache subnet Group
+     **/
+
+    String vpc;
+
     List<ElastiCacheNodeVH> nodes;
-    
+
     List<String> nodeNames;
-    
+
     /**
      * Gets the arn.
      *
@@ -75,7 +98,7 @@ public class ElastiCacheVH {
     public String getArn() {
         return arn;
     }
-    
+
     /**
      * Sets the arn.
      *
@@ -84,7 +107,7 @@ public class ElastiCacheVH {
     public void setArn(String arn) {
         this.arn = arn;
     }
-    
+
     /**
      * Gets the parameter group.
      *
@@ -93,7 +116,7 @@ public class ElastiCacheVH {
     public String getParameterGroup() {
         return parameterGroup;
     }
-    
+
     /**
      * Sets the parameter group.
      *
@@ -102,7 +125,7 @@ public class ElastiCacheVH {
     public void setParameterGroup(String parameterGroup) {
         this.parameterGroup = parameterGroup;
     }
-    
+
     /**
      * Gets the security groups.
      *
@@ -111,7 +134,7 @@ public class ElastiCacheVH {
     public String getSecurityGroups() {
         return securityGroups;
     }
-    
+
     /**
      * Sets the security groups.
      *
@@ -120,7 +143,7 @@ public class ElastiCacheVH {
     public void setSecurityGroups(String securityGroups) {
         this.securityGroups = securityGroups;
     }
-    
+
     /**
      * Gets the description.
      *
@@ -129,7 +152,7 @@ public class ElastiCacheVH {
     public String getDescription() {
         return description;
     }
-    
+
     /**
      * Sets the description.
      *
@@ -138,7 +161,7 @@ public class ElastiCacheVH {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      * Gets the cluster.
      *
@@ -147,7 +170,7 @@ public class ElastiCacheVH {
     public CacheCluster getCluster() {
         return cluster;
     }
-    
+
     /**
      * Sets the cluster.
      *
@@ -156,7 +179,7 @@ public class ElastiCacheVH {
     public void setCluster(CacheCluster cluster) {
         this.cluster = cluster;
     }
-    
+
     /**
      * Gets the cluster name.
      *
@@ -165,7 +188,7 @@ public class ElastiCacheVH {
     public String getClusterName() {
         return clusterName;
     }
-    
+
     /**
      * Sets the cluster name.
      *
@@ -174,7 +197,7 @@ public class ElastiCacheVH {
     public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
     }
-    
+
     /**
      * Gets the no of nodes.
      *
@@ -183,7 +206,7 @@ public class ElastiCacheVH {
     public int getNoOfNodes() {
         return noOfNodes;
     }
-    
+
     /**
      * Sets the no of nodes.
      *
@@ -192,7 +215,7 @@ public class ElastiCacheVH {
     public void setNoOfNodes(int noOfNodes) {
         this.noOfNodes = noOfNodes;
     }
-    
+
     /**
      * Gets the primary or config endpoint.
      *
@@ -201,7 +224,7 @@ public class ElastiCacheVH {
     public String getPrimaryOrConfigEndpoint() {
         return primaryOrConfigEndpoint;
     }
-    
+
     /**
      * Sets the primary or config endpoint.
      *
@@ -210,7 +233,7 @@ public class ElastiCacheVH {
     public void setPrimaryOrConfigEndpoint(String primaryOrConfigEndpoint) {
         this.primaryOrConfigEndpoint = primaryOrConfigEndpoint;
     }
-    
+
     /**
      * Gets the availability zones.
      *
@@ -219,7 +242,7 @@ public class ElastiCacheVH {
     public String getAvailabilityZones() {
         return availabilityZones;
     }
-    
+
     /**
      * Sets the availability zones.
      *
@@ -228,7 +251,7 @@ public class ElastiCacheVH {
     public void setAvailabilityZones(String availabilityZones) {
         this.availabilityZones = availabilityZones;
     }
-    
+
     /**
      * Gets the tags.
      *
@@ -237,7 +260,7 @@ public class ElastiCacheVH {
     public List<Tag> getTags() {
         return tags;
     }
-    
+
     /**
      * Sets the tags.
      *
@@ -262,21 +285,20 @@ public class ElastiCacheVH {
     public void setVpc(String vpc) {
         this.vpc = vpc;
     }
-    
-	public List<ElastiCacheNodeVH> getNodes() {
-		return nodes;
-	}
 
-	public void setNodes(List<ElastiCacheNodeVH> nodes) {
-		this.nodes = nodes;
-	}
+    public List<ElastiCacheNodeVH> getNodes() {
+        return nodes;
+    }
 
-	public List<String> getNodeNames() {
-		return nodeNames;
-	}
+    public void setNodes(List<ElastiCacheNodeVH> nodes) {
+        this.nodes = nodes;
+    }
 
-	public void setNodeNames(List<String> nodeNames) {
-		this.nodeNames = nodeNames;
-	}
-    
+    public List<String> getNodeNames() {
+        return nodeNames;
+    }
+
+    public void setNodeNames(List<String> nodeNames) {
+        this.nodeNames = nodeNames;
+    }
 }

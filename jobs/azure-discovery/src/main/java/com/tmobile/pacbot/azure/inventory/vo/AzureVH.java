@@ -4,78 +4,79 @@ import com.tmobile.pacbot.azure.inventory.collector.Util;
 
 public class AzureVH {
 
-	private String discoverydate;
-	private String _cloudType = "Azure";
-	private String subscription;
-	private String region;
-	private String subscriptionName;
-	private String resourceGroupName;
-	private String id;
+    private String discoverydate;
+    private String _cloudType = "Azure";
+    private String subscription;
+    private String region;
+    private String subscriptionName;
+    private String resourceGroupName;
+    private String id;
 
 
-	private String name;
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getSubscription() {
-		return subscription;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setSubscription(String subscription) {
-		this.subscription = subscription;
-	}
+    public String getSubscription() {
+        return subscription;
+    }
 
-	public String getRegion() {
-		return region;
-	}
+    public void setSubscription(String subscription) {
+        this.subscription = subscription;
+    }
 
-	public void setRegion(String region) {
-		this.region = region;
-	}
+    public String getRegion() {
+        return region;
+    }
 
-	public String getSubscriptionName() {
-		return subscriptionName;
-	}
+    public void setRegion(String region) {
+        this.region = region;
+    }
 
-	public void setSubscriptionName(String subscriptionName) {
-		this.subscriptionName = subscriptionName;
-	}
+    public String getSubscriptionName() {
+        return subscriptionName;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public void setSubscriptionName(String subscriptionName) {
+        this.subscriptionName = subscriptionName;
+    }
 
-	public void setId(String id) {
-		this.id = Util.removeFirstSlash(id);
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getResourceGroupName() {
-		return resourceGroupName;
-	}
+    public void setId(String id) {
+        this.id = Util.removeFirstSlash(id);
+    }
 
-	public void setResourceGroupName(String resourceGroupName) {
-		this.resourceGroupName = resourceGroupName;
-	}
+    public String getResourceGroupName() {
+        return resourceGroupName;
+    }
 
-	public String getDiscoverydate() {
-		return discoverydate;
-	}
+    public void setResourceGroupName(String resourceGroupName) {
+        this.resourceGroupName = resourceGroupName;
+    }
 
-	public void setDiscoverydate(String discoverydate) {
-		this.discoverydate = discoverydate;
-	}
+    public String getDiscoverydate() {
+        return discoverydate;
+    }
 
-	public String get_cloudType() {
-		return _cloudType;
-	}
+    public void setDiscoverydate(String discoverydate) {
+        this.discoverydate = discoverydate;
+    }
 
-	public void set_cloudType(String _cloudType) {
-		this._cloudType = _cloudType;
-	}
+    public String get_cloudType() {
+        return _cloudType;
+    }
+
+    public void set_cloudType(String _cloudType) {
+        this._cloudType = _cloudType;
+    }
 
 }

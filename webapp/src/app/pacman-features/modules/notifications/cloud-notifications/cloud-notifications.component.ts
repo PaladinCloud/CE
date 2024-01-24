@@ -31,6 +31,7 @@ import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { DatePipe } from '@angular/common';
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
 import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
+import { IColumnNamesMap, IColumnWidthsMap } from 'src/app/shared/table/interfaces/table-props.interface';
 
 @Component({
     selector: 'app-cloud-notifications',
@@ -96,11 +97,11 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     tableScrollTop: any;
     isTableStatePreserved = false;
 
-    columnNamesMap = {
-        eventName: 'Event',
+    columnNamesMap: IColumnNamesMap = {
+        'eventName': 'Event'
     };
 
-    columnWidths = {
+    columnWidths: IColumnWidthsMap = {
         'Event': 2,
     };
 
@@ -138,7 +139,37 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
             this.pageLevel
         );
+    }
 
+    getPreservedState(){
+        const state = this.tableStateService.getState(this.saveStateKey) || {};
+        this.headerColName = state.headerColName || '';
+        this.direction = state.direction || '';
+        this.bucketNumber = state.bucketNumber || 0;
+        this.totalRows = state.totalRows || 0;
+        this.searchTxt = state?.searchTxt || '';
+        this.selectedRowIndex = state?.selectedRowIndex;
+
+        this.tableDataLoaded = true;
+
+        this.displayedColumns = ['Event', 'Type', 'Source', 'Created Date'];
+        this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+        this.tableScrollTop = state?.tableScrollTop;
+
+        this.isTableStatePreserved = false;
+        const navDirection = this.workflowService.getNavigationDirection();
+
+        if(navDirection<=0){
+            this.filters = state.filters || [];
+            if (state.data && state.data.length > 0) {
+                this.isTableStatePreserved = true;
+                this.tableData = state.data;
+            }
+            Promise.resolve().then(() => this.getUpdatedUrl());
+        }
+    }
+
+    ngOnInit() {
         this.agDomainSubscription = this.agDomainObservableService
             .getAgDomain()
             .subscribe(([ag, domain]) => {
@@ -150,41 +181,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                   this.selectedDomain = domain;
                   this.getFilters();
             });
-    }
-
-    getPreservedState(){
-        const state = this.tableStateService.getState(this.saveStateKey) || {};
-        if (state) {
-            this.headerColName = state.headerColName || '';
-            this.direction = state.direction || '';
-            this.bucketNumber = state.bucketNumber || 0;
-            this.totalRows = state.totalRows || 0;
-            this.searchTxt = state?.searchTxt || '';
-            this.selectedRowIndex = state?.selectedRowIndex;
-
-            this.tableDataLoaded = true;
-
-            this.tableData = state?.data || [];
-            this.displayedColumns = ['Event', 'Type', 'Source', 'Created Date'];
-            this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-            this.tableScrollTop = state?.tableScrollTop;
-
-            if (this.tableData && this.tableData.length > 0) {
-                this.isTableStatePreserved = true;
-            } else {
-                this.isTableStatePreserved = false;
-            }
-
-            const isTempFilter = this.activatedRoute.snapshot.queryParamMap.get("tempFilters");
-            if(!isTempFilter && state.filters){
-                this.filters = state.filters;
-                Promise.resolve().then(() => this.getUpdatedUrl());
-            }
-        }
-    }
-
-    ngOnInit() {
-        window.onbeforeunload = () => this.storeState();
     }
 
     /*
@@ -275,7 +271,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     
       async processAndAddFilterItem({formattedFilterItem, filters}){
     
-        const keyDisplayValue = this.getFilterKeyDisplayValue(formattedFilterItem);
+        const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
         const filterKey = formattedFilterItem.filterkey;
           
         const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
@@ -289,16 +285,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
         filters = [...filters];
         return filters;
-      }
-    
-      getFilterKeyDisplayValue(formattedFilterItem){
-        let keyDisplayValue = formattedFilterItem.keyDisplayValue;
-        if(!keyDisplayValue){
-          keyDisplayValue = find(this.filterTypeOptions, {
-            optionValue: formattedFilterItem.filterkey,
-          })["optionName"];
-        }
-        return keyDisplayValue;
       }
 
     /**
@@ -318,9 +304,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     this.filterTypeOptions = response[0].response;
                     this.filterTypeLabels.sort();
 
-                    const columnNamesMap = this.utils.getColumnNamesMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, []);
-                    this.columnNamesMap = {...columnNamesMap, ...this.columnNamesMap}
-                    this.columnWidths = {...this.columnWidths};
+                    [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, []);
                     this.routerParam();
                     this.getFilterArray();
                     this.updateComponent();
@@ -406,10 +390,13 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     updateSortFieldName(){
         try{
             if(!this.headerColName || !this.direction) return;        
-            this.selectedOrder = this.direction;        
-            const apiColName =  find(this.filterTypeOptions, {
-                optionName: this.headerColName,
-            })["optionValue"];
+            this.selectedOrder = this.direction;
+            let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
+            if(!apiColName){
+                apiColName = find(this.filterTypeOptions, {
+                    optionName: this.headerColName,
+                })["optionValue"];
+            }
             this.fieldType = "string";
             this.fieldName = apiColName+'.keyword';
         }catch(e){

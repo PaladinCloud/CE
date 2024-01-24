@@ -1,35 +1,34 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class SecurityAlertsVH extends AzureVH {
-	private String name;
-	private String type;
-	private HashMap<String, Object> propertiesMap;
+    private String name;
+    private String type;
+    private HashMap<String, Object> propertiesMap;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public HashMap<String, Object> getPropertiesMap() {
-		return propertiesMap;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public HashMap<String, Object> getPropertiesMap() {
+        return propertiesMap;
+    }
 
-	public void setPropertiesMap(HashMap<String, Object> propertiesMap) {
-		this.propertiesMap = propertiesMap;
-	}
+    public void setPropertiesMap(HashMap<String, Object> propertiesMap) {
+        this.propertiesMap = propertiesMap;
+    }
 
 }

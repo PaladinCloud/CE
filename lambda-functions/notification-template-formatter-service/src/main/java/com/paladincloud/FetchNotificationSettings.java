@@ -140,7 +140,7 @@ public class FetchNotificationSettings {
                         LOGGER.info("notification message for channel '" + channel + "' is - " + messageContent);
 
 
-                        if (configDetailsMap.containsKey("email")) {
+                        if (configDetailsMap.containsKey("email") && !messageContent.equalsIgnoreCase("Sequence greater than 1")) {
                             PublishRequest request = new PublishRequest(configDetailsMap.get("email"), notificationDetailsStr);
                             PublishResult result = client.publish(request);
                             LOGGER.info("Notification message sent for " + channel + " with id " + result.getMessageId());
@@ -157,16 +157,20 @@ public class FetchNotificationSettings {
     }
 
     private String buildNotificationPlainTextMail(String mailBody, Map<String, Object> messageContentMap, String source) {
-        mailBody = mailBody.replace("${source}", source);
-        mailBody = mailBody.replace("${message}", messageContentMap.get("message").toString());
-        StringBuilder buf = new StringBuilder();
-        for (Map.Entry<String, Object> permission : messageContentMap.entrySet()) {
-            if (permission.getKey().startsWith("permission")) {
-                buf.append("<tr><td class=\"rowkey\">").append(makeKeyReadable(permission.getKey())).append("</td><td>").append(permission.getValue()).append("</td></tr>");
+        if (Integer.parseInt(messageContentMap.get("sequenceNumber").toString()) == 1) {
+            mailBody = mailBody.replace("${source}", source);
+            mailBody = mailBody.replace("${message}", messageContentMap.get("message").toString());
+            mailBody = mailBody.replace("${notificationsLink}", messageContentMap.get("notificationsLink").toString());
+            StringBuilder buf = new StringBuilder();
+            for (Map.Entry<String, Object> permission : messageContentMap.entrySet()) {
+                if (permission.getKey().startsWith("permission")) {
+                    buf.append("<tr><td class=\"rowkey\">").append(makeKeyReadable(permission.getKey())).append("</td><td>").append(permission.getValue()).append("</td></tr>");
+                }
             }
+            mailBody = mailBody.replace("${permissionIssues}", buf.toString());
+            return mailBody;
         }
-        mailBody = mailBody.replace("${permissionIssues}", buf.toString());
-        return mailBody;
+        return "Sequence greater than 1";
     }
 
     private String makeKeyReadable(String key) {

@@ -7,6 +7,7 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.*;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
+import com.tmobile.pacman.api.admin.domain.PluginParameters;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import java.io.IOException;
@@ -138,7 +139,10 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
         String accountId = UUID.randomUUID().toString();
         createAccountInDb(accountId,"Tenable-Connector", TENABLE,accountData.getCreatedBy());
-
+        PluginParameters parameters = PluginParameters.builder().pluginName(Constants.TENABLE)
+                .pluginDisplayName(StringUtils.capitalize(TENABLE)).id(accountId)
+                .createdBy(accountData.getCreatedBy()).build();
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.CREATE);
         updateConfigProperty(TENABLE_ENABLED,TRUE,JOB_SCHEDULER);
         validateResponse = new AccountValidationResponse();
         validateResponse.setValidationStatus(SUCCESS);
@@ -176,7 +180,8 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     }
 
     @Override
-    public AccountValidationResponse deleteAccount(String accountId) {
+    public AccountValidationResponse deleteAccount(PluginParameters parameters) {
+        String accountId = parameters.getId();
         LOGGER.info("Inside deleteAccount method of TenableAccountServiceImpl. AccountId: {}",accountId);
         AccountValidationResponse response=new AccountValidationResponse();
 
@@ -195,6 +200,8 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
         //delete entry from db
         deleteAccountFromDB(accountId);
+        parameters.setPluginDisplayName(StringUtils.capitalize(TENABLE));
+        invokeNotificationAndActivityLogging(parameters, Constants.Actions.DELETE);
         updateConfigProperty(TENABLE_ENABLED,FALSE,JOB_SCHEDULER);
         response.setType(TENABLE);
         response.setAccountId(accountId);

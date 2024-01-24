@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.google.gson.*;
 import com.tmobile.pacman.commons.dao.RDSDBManager;
+import com.tmobile.pacman.executor.PolicyExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,9 @@ import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
+
+import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
+import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -139,18 +143,18 @@ public class AnnotationPublisher {
     /**
      * Populate existing issues for type.
      *
-     * @param ruleParam the rule param
+     * @param policyParam the policy param
      * @throws Exception the exception
      */
-    public void populateExistingIssuesForType(Map<String, String> ruleParam) throws Exception {
+    public void populateExistingIssuesForType(Map<String, String> policyParam) throws Exception {
 
         String esUrl = ESUtils.getEsUrl();
-        String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
-        String indexName = CommonUtils.getIndexNameFromRuleParam(ruleParam);
-        String type = PREFIX_ISSUE+""+ruleParam.get(PacmanSdkConstants.TARGET_TYPE);
+        String policyId = policyParam.get(PacmanSdkConstants.POLICY_ID);
+        String indexName = CommonUtils.getIndexNameFromRuleParam(policyParam);
+        String type = PREFIX_ISSUE+""+policyParam.get(PacmanSdkConstants.TARGET_TYPE);
         Map<String, Object> mustFilter = new HashMap<>();
         String attributeToQuery = ESUtils.convertAttributeToKeyword(PacmanSdkConstants.POLICY_ID); //actual attribute will be  tokenized hence querying on keyword
-        mustFilter.put(attributeToQuery, ruleId);
+        mustFilter.put(attributeToQuery, policyId);
         List<String> fields = new ArrayList<String>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         mustNotFilter.put("issueStatus.keyword", "closed");
@@ -159,7 +163,7 @@ public class AnnotationPublisher {
         shouldFilter.put("type.keyword", "issue");
         Long totalDocs = ESUtils.getTotalDocumentCountForIndexAndType(esUrl, indexName, type, mustFilter, mustNotFilter,
                 shouldFilter);
-        // get all the issues for this ruleId
+        // get all the issues for this policyId
         List<Map<String, String>> existingIssues = ESUtils.getDataFromES(esUrl, indexName.toLowerCase(), type,
                 mustFilter, mustNotFilter, shouldFilter, fields, 0, totalDocs, "_docid");
         existingIssues.stream().forEach(obj -> {
@@ -204,7 +208,7 @@ public class AnnotationPublisher {
             Map<String, Object> relMap = new HashMap<>();
             relMap.put("name", getTypeFromAnnotation(_annotation));
             relMap.put("parent", _annotation.get(PacmanSdkConstants.DOC_ID));
-            logger.info("Printing relations: {}", serializer.toJson(relMap));
+            logger.info("printing relations: {}", serializer.toJson(relMap));
             _annotation.put(_annotation.get(TARGET_TYPE) + "_relations", serializer.toJson(relMap));
             if (null != issueAttributes) {
                 // now we are using this to modify and post hence remove all ES
@@ -251,13 +255,10 @@ public class AnnotationPublisher {
 
             // Convert the updated map object back to JSON string
             String updatedInputStr = gson.toJson(inputObj);
-
-            System.out.println(updatedInputStr);
-
             bulkRequestBody.append(updatedInputStr);
             bulkRequestBody.append("\n");
-            logger.info("************************ Printing Annotation****************** : {}", updatedInputStr);
-            logger.info("************************ Bulk POst url****************** : {}", bulkPostUrl);
+            logger.info("annotation: {}", updatedInputStr);
+            logger.info("bulk post url: {}", bulkPostUrl);
             if (bulkRequestBody.toString().getBytes().length
                     / (1024 * 1024) >= PacmanSdkConstants.ES_MAX_BULK_POST_SIZE) {
                 response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequestBody.toString(),new HashMap<>());
@@ -271,9 +272,8 @@ public class AnnotationPublisher {
         }
         responseList.add(serializer.fromJson(response, Map.class));
         if (responsesHasError(responseList)) {
-            processErrors(responseList);
+            processErrors(responseList,response);
         }
-
     }
 
     /**
@@ -479,9 +479,8 @@ public class AnnotationPublisher {
      *
      * @param responseMapList the response map list
      */
-    private void processErrors(List<Map<String, Map>> responseMapList) {
-        logger.error("some errors occured while publishing the anotation, but no error handler found to handle it",
-                responseMapList);
+    private void processErrors(List<Map<String, Map>> responseMapList, String response) {
+        logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " while publishing the annotation, but no error handler found to handle it. Number of errors is "+responseMapList.size()+" "+ response);
         // need to implement the error handling here
     }
 

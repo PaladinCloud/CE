@@ -17,7 +17,7 @@
  import { environment } from './../../../../../../environments/environment';
  
  import { ActivatedRoute, Router } from '@angular/router';
- import { Subscription } from 'rxjs';
+ import { of, Subject, Subscription } from 'rxjs';
  import find from 'lodash/find';
  import cloneDeep from 'lodash/cloneDeep';
  import { UtilsService } from '../../../../../shared/services/utils.service';
@@ -38,6 +38,7 @@
  import { MatDialog } from '@angular/material/dialog';
  import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
+import { catchError, map, takeUntil } from 'rxjs/operators';
  
  interface ICondition{
      keyList: string[];
@@ -234,6 +235,7 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
    createdBy = "";
    selectedAccountType = "";
    typeList = ["Admin"];
+   destroy$ = new Subject<void>();
    currentTemplateRef : TemplateRef<any>;
    @ViewChild('assetGroupRef') assetGroupRef: TemplateRef<any>;
    @ViewChild('configurationRef') configurationRef: TemplateRef<any>;
@@ -267,6 +269,7 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
    selectedAssetGroup: string = "";
    currentDomain: string = "";
    criteriaDetails: any;
+   sourceMap: { [key: string]: string };
  
    constructor(
      private router: Router,
@@ -283,12 +286,13 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
      private assetTilesService: AssetTilesService,
      public dialog: MatDialog,
      private form: FormBuilder
-   ) {
+   ) { }
+ 
+   async ngOnInit () {
+     await this.buildProviderMap();
      this.routerParam();
      this.updateComponent();
-   }
- 
-   ngOnInit() {
+     
      setTimeout(()=>{
        this.urlToRedirect = this.router.routerState.snapshot.url;
        const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
@@ -314,6 +318,14 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
        assetGroupDesc: ['', [Validators.required,Validators.minLength(6)]],
        selectedAccountType : ['',[Validators.required,this.isValidType.bind(this)]]
      });
+   }
+
+   async buildProviderMap () {
+     const assetGroupsList = await this.getAssetGroupsList();
+     this.sourceMap = assetGroupsList.reduce((map, item) => {
+       map[item.name] = item.displayname;
+       return map;
+     }, {});
    }
  
    isNextButtonDisabled() {
@@ -423,8 +435,8 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
            return !selectedKeyList.includes(key);
      })
      let valueList = [].concat(...this.cloudsData.map(cloud => cloud[selectedKey]));
-     valueList = valueList.map(value=> this.getDisplayName(selectedKey,value));
-     selectedValue = this.getDisplayName(selectedKey,selectedValue);
+     valueList = valueList.map((value) => this.getDisplayName(selectedKey, value));
+     selectedValue = this.getDisplayName(selectedKey, selectedValue);
  
      const condition: ICondition = {
        keyList: newKeyList,
@@ -506,11 +518,25 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
      })
    }
  
-   getDisplayName(selectedKey:string,selectedValue:string){
+   getAssetGroupDisplayName (ag: string): Promise<string> {
+     return this.assetTilesService.getAssetGroupDisplayName(ag)
+       .pipe(
+         takeUntil(this.destroy$),
+         map((agDisplayName: string) => agDisplayName ?? ag),
+         catchError((error) => {
+           console.error('Error occurred: ', error);
+           return of(ag);
+         })
+       )
+       .toPromise();
+   }
+
+   getDisplayName (selectedKey: string, selectedValue: string): string {
      selectedKey = selectedKey.toLowerCase();
-     if(selectedKey == "source"){
-       return DATA_MAPPING[selectedValue.toLowerCase()];
-     } else if(selectedKey == "asset type"){
+
+     if (selectedKey === 'source') {
+       return this.sourceMap[selectedValue] ?? selectedValue;
+     } else if (selectedKey === 'asset type') {
        if(this.assetTypeMap.get(selectedValue))
          return this.assetTypeMap.get(selectedValue);
      }
@@ -520,8 +546,8 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
    getName(selectedKey:string,selectedValue:string){
      selectedKey = selectedKey.toLowerCase();
      if(selectedKey == "source"){
-       const keys = Object.keys(DATA_MAPPING);
-       return keys.find(key => DATA_MAPPING[key]===selectedValue);
+       const keys = Object.keys(this.sourceMap);
+       return keys.find(key => this.sourceMap[key] === selectedValue);
      } else if(selectedKey == "asset type"){
        for (const [key, value] of this.assetTypeMap) {
          if(selectedValue == value){
@@ -545,7 +571,7 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
      }
      this.criterias[criteriaIdx][conditionIdx].selectedKey = selectedKey;
      this.criterias[criteriaIdx][conditionIdx].selectedValue = "";
-     selectedValues = selectedValues.map(value => this.getDisplayName(selectedKey,value));
+     selectedValues = selectedValues.map((value) => this.getDisplayName(selectedKey, value));
      this.criterias[criteriaIdx][conditionIdx].valueList = selectedValues;
      this.criterias = [...this.criterias];
    }
@@ -635,7 +661,23 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
      }
      return null;
    }
- 
+
+   async getAssetGroupsList (): Promise<any[]> {
+     try {
+       const assetGroupsList = this.dataCacheService.getListOfAssetGroups();
+
+       if (!assetGroupsList) {
+         const response: any = await this.assetTilesService.getAssetGroupList().pipe(takeUntil(this.destroy$)).toPromise();
+
+         return response;
+       } else {
+         return JSON.parse(assetGroupsList);
+       }
+     } catch (error) {
+       this.logger.log("jsError", error);
+       return [];
+     }
+   }
  
    getAllAssetGroupNames() {
      this.hideContent = true;
@@ -1430,7 +1472,9 @@ import { ONLY_DIGITS } from 'src/app/shared/constants/regex-constants';
      }
    }
  
-   ngOnDestroy() {
+   ngOnDestroy () {
+     this.destroy$.next();
+     this.destroy$.complete()
      try {
        if (this.routeSubscription) {
          this.routeSubscription.unsubscribe();

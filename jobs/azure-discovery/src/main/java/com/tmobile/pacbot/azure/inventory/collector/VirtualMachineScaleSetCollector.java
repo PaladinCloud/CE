@@ -3,8 +3,12 @@ package com.tmobile.pacbot.azure.inventory.collector;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.SubResource;
 import com.microsoft.azure.management.Azure;
-import com.microsoft.azure.management.compute.*;
+import com.microsoft.azure.management.compute.VirtualMachineScaleSet;
+import com.microsoft.azure.management.compute.VirtualMachineScaleSetIPConfiguration;
+import com.microsoft.azure.management.compute.VirtualMachineScaleSetNetworkConfiguration;
+import com.microsoft.azure.management.compute.VirtualMachineScaleSetVM;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacbot.azure.inventory.vo.VirtualMachineScaleSetVH;
 import org.slf4j.Logger;
@@ -12,34 +16,41 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Component
-public class VirtualMachineScaleSetCollector {
+public class VirtualMachineScaleSetCollector implements Collector {
 
+    private static final Logger log = LoggerFactory.getLogger(VirtualMachineScaleSetCollector.class);
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private static Logger log = LoggerFactory.getLogger(VirtualMachineScaleSetCollector.class);
 
-    public List<VirtualMachineScaleSetVH> fetchVMScaleSetDetails(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+    @Override
+    public List<? extends AzureVH> collect() {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public List<? extends AzureVH> collect(SubscriptionVH subscription) {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<VirtualMachineScaleSetVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
         List<VirtualMachineScaleSetVH> vmssList = new ArrayList<>();
 
         Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
         PagedList<VirtualMachineScaleSet> vmss = azure.virtualMachineScaleSets().list();
-        String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
 
         for (VirtualMachineScaleSet virtualMachineScaleSet : vmss) {
             try {
                 VirtualMachineScaleSetVH virtualMachineScaleSetVH = new VirtualMachineScaleSetVH();
 
                 virtualMachineScaleSetVH.setComputerName(virtualMachineScaleSet.computerNamePrefix() == null
-                        ?virtualMachineScaleSet.computerNamePrefix():virtualMachineScaleSet.name());
+                        ? virtualMachineScaleSet.computerNamePrefix() : virtualMachineScaleSet.name());
                 virtualMachineScaleSetVH.setName(virtualMachineScaleSet.name());
-                virtualMachineScaleSetVH.setRegion(Util.getRegionValue(subscription,virtualMachineScaleSet.regionName()));
+                virtualMachineScaleSetVH.setRegion(Util.getRegionValue(subscription, virtualMachineScaleSet.regionName()));
                 virtualMachineScaleSetVH.setSubscription(subscription.getSubscriptionId());
                 virtualMachineScaleSetVH.setSubscriptionName(subscription.getSubscriptionName());
                 virtualMachineScaleSetVH.setResourceGroupName(virtualMachineScaleSet.resourceGroupName());
@@ -67,8 +78,8 @@ public class VirtualMachineScaleSetCollector {
                     }
                 }
                 vmssList.add(virtualMachineScaleSetVH);
-            }catch(Exception e) {
-                log.error("Error Collecting info for {} {} ",virtualMachineScaleSet.computerNamePrefix(),e.getMessage());
+            } catch (Exception e) {
+                log.error("Error Collecting info for {} {} ", virtualMachineScaleSet.computerNamePrefix(), e.getMessage());
                 Util.eCount.getAndIncrement();
             }
         }

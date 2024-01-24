@@ -3,7 +3,7 @@ package com.tmobile.pacbot.azure.inventory.vo;
 
 import java.util.Set;
 
-public class DiagnosticSettingVH extends AzureVH{
+public class DiagnosticSettingVH extends AzureVH {
     private String name;
 
     private Set<String> enabledCategories;

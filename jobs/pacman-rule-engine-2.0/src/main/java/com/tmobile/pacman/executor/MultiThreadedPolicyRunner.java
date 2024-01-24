@@ -97,14 +97,13 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
             try {
                 policyClass = ReflectionUtils.findAssociateClass(policyKey);
             } catch (Exception e) {
-                LOGGER.error("Please check the rule class complies to implemetation contract, rule key=" + policyKey, e);
+                LOGGER.error("Please check the rule class complies to implementation contract, rule key=" + policyKey, e);
                 executor.shutdown();
                 throw e;
             }
         }
         List<Future<PolicyResult>> results = new ArrayList<Future<PolicyResult>>();
-        LOGGER.info(
-                "----------------------------------------------------scan start------------------------------------------------------------------");
+        LOGGER.info("scan start");
 
         BasePolicy policy = null;
         PacmanPolicy policyAnnotation = null;
@@ -117,7 +116,7 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
         for (Map<String, String> resource : resources) {
             try {
                 Map<String, String> localRuleParam = PolicyExecutionUtils.getLocalPolicyParam(policyParam, resource);
-                LOGGER.debug("Resource-->: " + Joiner.on("#").withKeyValueSeparator("=").join(resource));
+                LOGGER.debug("resource: " + Joiner.on("#").withKeyValueSeparator("=").join(resource));
                 // RuleResult result =
                 // (RuleResult)executeMethod.invoke(ruleObject,
                 // Collections.unmodifiableMap(ruleParam),null); // let rule not

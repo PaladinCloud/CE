@@ -459,7 +459,7 @@ public class ESUtils {
 
         String urlToQuery = url + "/" + dataSource +
                 "/" + "_search";
-        logger.info("Querying ES with URL1: {}", urlToQuery);
+        logger.info("querying ES with URL1: {}", urlToQuery);
         String urlToPIT = url + "/" + "_search";
         List<Map<String, String>> results = new ArrayList<Map<String, String>>();
         // paginate for breaking the response into smaller chunks
@@ -504,8 +504,8 @@ public class ESUtils {
                 String responseDetails;
                 try {
                     String request = serializer.toJson(requestBody);
-                    logger.info("Querying ES with URL2: {}", urlToQuery);
-                    logger.debug("inventory query" + request);
+                    logger.info("querying ES with URL2: {}", urlToQuery);
+                    logger.debug("inventory query " + request);
                     responseDetails = CommonUtils.doHttpPost(urlToQuery, request, new HashMap<>());
                     Map<String, Object> returnObj = processResponseAndSendTheSortObjBack(responseDetails, results);
                     requestBody.put("search_after", returnObj.get("sortArray"));

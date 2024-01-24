@@ -311,11 +311,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     }
 
-    private HashMap<String, Object> getDistributionBySeverity(String query, String assetGroup, String keyName) throws DataException {
-        HashMap<String,Object>result=new HashMap<>();
+
+    public HashMap<String, Object> getDistributionBySeverity(String query, String assetGroup) throws DataException {
+        HashMap<String, Object> requiredMap = new HashMap<>();
         Gson gson = new GsonBuilder().create();
-        String responseDetails = null;
-        StringBuilder requestBody = null;
+        String responseDetails;
+        StringBuilder requestBody;
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/_search");
         requestBody = new StringBuilder(query);
         try {
@@ -323,21 +324,37 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         } catch (Exception e) {
             throw new DataException(e);
         }
-        Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
-        Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
-        Map<String, Object> severity=(Map<String, Object>) aggregations.get("by_severity");
-
-        JsonObject resultJson =  JsonParser.parseString(responseDetails).getAsJsonObject();
-        JsonObject aggsJson = (JsonObject) JsonParser.parseString(resultJson.get(AGGREGATIONS).toString());
-        JsonArray buckets = aggsJson.getAsJsonObject("by_severity").getAsJsonArray(BUCKETS).getAsJsonArray();
-
-        for (JsonElement bucket:buckets) {
-            HashMap<String,String>policyDetails=new HashMap<>();
-            policyDetails.put(keyName,bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
-            policyDetails.put("totalViolations",bucket.getAsJsonObject().get("doc_count").getAsString());
-            result.put(bucket.getAsJsonObject().get("key").getAsString(),policyDetails);
+        Map<String, Object> responseMap = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
+        Optional<List<Map<String, Object>>> distributionListOptional = Optional.ofNullable(responseMap).map(obj -> (Map<String, Object>) obj.get(AGGREGATIONS)).map(obj -> (Map<String, Object>) obj.get("by_severity"))
+                .map(obj -> (List<Map<String, Object>>) obj.get(BUCKETS));
+        if (distributionListOptional.isPresent()) {
+            List<Map<String, Object>> distributionList = distributionListOptional.get();
+            distributionList.stream().forEach(obj -> {
+                Map<String, Object> severityDetailsMap = new HashMap<>();
+                requiredMap.put(obj.get(KEY).toString(), severityDetailsMap);
+                double count = Double.parseDouble(obj.get(DOC_COUNT).toString());
+                severityDetailsMap.put(TOTAL_VIOLATIONS, (int) count);
+                Optional<Double> assetCountOptional = Optional.ofNullable((Map<String, Object>) obj.get(ASSET_COUNT)).map(object -> object.get(VALUE)).map(object -> Double.parseDouble(object.toString()));
+                if (assetCountOptional.isPresent()) {
+                    severityDetailsMap.put(ASSET_COUNT, Math.round(assetCountOptional.get()));
+                }
+                Optional<Double> policyCountOptional = Optional.ofNullable((Map<String, Object>) obj.get(POLICY_COUNT)).map(object -> object.get(VALUE)).map(object -> Double.parseDouble(object.toString()));
+                if (assetCountOptional.isPresent()) {
+                    severityDetailsMap.put(POLICY_COUNT, Math.round(policyCountOptional.get()));
+                }
+            });
         }
-        return result;
+        //Include data for any missing severity.
+        Arrays.asList(CRITICAL, HIGH, MEDIUM, LOW).stream().forEach(str -> {
+            if (!requiredMap.containsKey(str)) {
+                Map<String, Object> severityDetailsMap = new HashMap<>();
+                severityDetailsMap.put(TOTAL_VIOLATIONS, 0);
+                severityDetailsMap.put(POLICY_COUNT, 0);
+                severityDetailsMap.put(ASSET_COUNT, 0);
+                requiredMap.put(str, severityDetailsMap);
+            }
+        });
+        return requiredMap;
     }
 
     private String getOuery(String keyName, List<Object> Policies, String queryAttribute) {
@@ -345,23 +362,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 .collect(Collectors.joining(","));
         String query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}}, {\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\",\"size\":10000},\"aggs\":{\"" + keyName + "\":{\"cardinality\":{\"field\":\"" + queryAttribute + "\"}}}}}}";
         return query;
-    }
-
-    public HashMap<String, Object> getPolicyCountBySeverity(String assetGroup, List<Object> Policies) throws DataException {
-        String keyName = "policyCount";
-        String query = this.getOuery(keyName, Policies, "policyId.keyword");
-        return getDistributionBySeverity(query, assetGroup, keyName);
-    }
-
-    public HashMap<String, Object> getAssetCountBySeverity(String assetGroup, List<Object> Policies) throws DataException {
-        String keyName = "assetCount";
-        String query = this.getOuery(keyName, Policies, "_resourceid.keyword");
-        return getDistributionBySeverity(query, assetGroup, keyName);
-    }
-
-    public HashMap<String, Object> getAverageAge(String assetGroup, List<Object> Policies) throws DataException {
-        String query = this.getOuery(AVERAGE_AGE, Policies, null);
-        return getDistributionBySeverity(query, assetGroup, AVERAGE_AGE);
     }
 
     /*
@@ -903,6 +903,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         fields.add(AUDIT_DATE);
         fields.add(DATA_SOURCE);
         fields.add(CREATED_BY);
+        fields.add(ISSUE_EXEMPTION_EXPIRY_DATE);
+        fields.add(ISSUE_EXEMPTION_REASON);
         try {
             return elasticSearchRepository.getDetailsFromESBySize(datasource, "", mustFilter, null, null, fields, from,
                     size, null, null);
@@ -2230,21 +2232,25 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         return urlToQuery;
     }
-    private  String createAuditTrail(String ds, String type, String status, String id,String createdBy, String _type, Map<String, Object> parentDetMap, String target) {
+
+    private String createAuditTrail(AuditTrailDTO auditTrailDTO) {
         String date = CommonUtils.getCurrentDateStringWithFormat("UTC","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Map<String, Object> auditTrail = new LinkedHashMap<>();
-        auditTrail.put("datasource", ds);
-        if(!StringUtils.isEmpty(_type))
-            auditTrail.put("docType", _type);
-        auditTrail.put("targetType", type);
-        auditTrail.put("annotationid", id);
-        auditTrail.put(Constants.DOCID, id);
-        auditTrail.put("status", status);
+        auditTrail.put("datasource", auditTrailDTO.getAssetGroup());
+        if (!StringUtils.isEmpty(auditTrailDTO.getDocType()))
+            auditTrail.put("docType", auditTrailDTO.getDocType());
+        auditTrail.put("targetType", auditTrailDTO.getTargetType());
+        auditTrail.put("annotationid", auditTrailDTO.getId());
+        auditTrail.put(Constants.DOCID, auditTrailDTO.getId());
+        auditTrail.put("status", auditTrailDTO.getStatus());
         auditTrail.put("auditdate", date);
-        auditTrail.put("createdBy",createdBy);
+        auditTrail.put("createdBy", auditTrailDTO.getCreatedBy());
         auditTrail.put("_auditdate", date.substring(0, date.indexOf('T')));
-        if(parentDetMap != null)
-            auditTrail.put(target+RELATIONS, parentDetMap);
+        if (auditTrailDTO.getParentDetailsMap() != null)
+            auditTrail.put(auditTrailDTO.getTarget() + RELATIONS, auditTrailDTO.getParentDetailsMap());
+        if (auditTrailDTO.getOptionalAuditFields() != null && !auditTrailDTO.getOptionalAuditFields().isEmpty()) {
+            auditTrailDTO.getOptionalAuditFields().forEach(auditTrail::put);
+        }
         String _auditTrail = null;
         try {
             _auditTrail = new ObjectMapper().writeValueAsString(auditTrail);
@@ -2335,11 +2341,26 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         bulkRequest.append(doc + "\n");
                         String _index = dataSource;
                         String _type = targetType + "_audit";
-                        if(!skipAuditTrail)
-                            builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id,issuesException.getCreatedBy(), _type, parentDetMap, target)+"\n");
-                        else
-                            builderRequestAudit.append(String.format(actionTemplateAudit, _index, id));
+                        if(!skipAuditTrail) {
+                            Map<String, String> optionalAuditFields = new HashMap<>(2);
+                            optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(issuesException.getExceptionEndDate()));
+                            optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, issuesException.getExceptionReason());
+                            AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
+                                    .withId(id)
+                                    .withAssetGroup(assetGroup)
+                                    .withTargetType(targetType)
+                                    .withStatus("exempt")
+                                    .withCreatedBy(issuesException.getCreatedBy())
+                                    .withDocType(_type)
+                                    .withTarget(target)
+                                    .withParentDetailsMap(parentDetMap)
+                                    .withOptionalAuditFields(optionalAuditFields)
+                                    .build();
 
+                            builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(auditTrailDTO) + "\n");
+                        } else {
+                            builderRequestAudit.append(String.format(actionTemplateAudit, _index, id));
+                        }
                     }
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
@@ -2487,7 +2508,19 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String _index = dataSource;
                         String _type = targetType + "_audit";
 
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(assetGroup, targetType, "revoked", id,revokedBy, _type, parentDetMap, target)+"\n");
+                        AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
+                                .withId(id)
+                                .withAssetGroup(assetGroup)
+                                .withTargetType(targetType)
+                                .withStatus("revoked")
+                                .withCreatedBy(revokedBy)
+                                .withDocType(_type)
+                                .withTarget(target)
+                                .withParentDetailsMap(parentDetMap)
+                                .withOptionalAuditFields(null)
+                                .build();
+
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(auditTrailDTO) + "\n");
 
                     }
                     i++;
@@ -3016,10 +3049,26 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     bulkRequest.append(String.format(ACTION_TEMPLATE_ISSUE, id, dataSource, routing));
                     bulkRequest.append(doc).append(NEW_LINE);
 
+                    String status = exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST) ? REQUEST_EXEMPT : exemptionRequest.getAction().equals(ExemptionActions.REVOKE_EXEMPTION_REQUEST) ? REVOKE_EXEMPT : exemptionRequest.getAction().equals(ExemptionActions.CANCEL_EXEMPTION_REQUEST) ? DENY_EXEMPT : GRANT_EXEMPT;
+                    String createdBy = exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST) ? exemptionRequest.getApprovedBy() : exemptionRequest.getCreatedBy();
                     String _type = targetType + AUDIT;
-                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id))
-                            .append(createAuditTrail(exemptionRequest.getAssetGroup(), targetType,exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST)?REQUEST_EXEMPT:exemptionRequest.getAction().equals(ExemptionActions.REVOKE_EXEMPTION_REQUEST)?REVOKE_EXEMPT:exemptionRequest.getAction().equals(ExemptionActions.CANCEL_EXEMPTION_REQUEST)?DENY_EXEMPT:GRANT_EXEMPT, id,
-                                    exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST)?exemptionRequest.getApprovedBy():exemptionRequest.getCreatedBy(), _type, parentDetMap, target)+"\n");
+                    Map<String, String> optionalAuditFields = new HashMap<>(2);
+                    optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(exemptionRequest.getExceptionEndDate()));
+                    optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, exemptionRequest.getExceptionReason());
+
+                    AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
+                            .withId(id)
+                            .withAssetGroup(exemptionRequest.getAssetGroup())
+                            .withTargetType(targetType)
+                            .withStatus(status)
+                            .withCreatedBy(createdBy)
+                            .withDocType(_type)
+                            .withTarget(target)
+                            .withParentDetailsMap(parentDetMap)
+                            .withOptionalAuditFields(optionalAuditFields)
+                            .build();
+
+                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id)).append(createAuditTrail(auditTrailDTO) + "\n");
 
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {

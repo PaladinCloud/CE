@@ -146,7 +146,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     openFilterCategory(filterCategory: string) {
         this.isCategoryOptionsMenuOpen = true;
         this.selectedCategory = filterCategory;
-        if(this.dateCategoryList?.includes(this.selectedCategory)){
+        if(this.dateCategoryList?.toString().toLowerCase().includes(this.selectedCategory?.toLowerCase())){
             this.isDateFilter = true;
         }else{
             this.isDateFilter = false;
@@ -211,17 +211,19 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     }
 
     clearFilter(filterCategory: string) {
-        const resettedFilter = Object.keys(this.appliedFiltersDict[filterCategory]).reduce(
-            (acc, next) => {
-                acc[next] = false;
-                return acc;
-            },
-            {},
-        );
-
-        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
-            [filterCategory]: resettedFilter,
-        });
+        if(this.appliedFiltersDict[filterCategory]){
+            const resettedFilter = Object.keys(this.appliedFiltersDict[filterCategory]).reduce(
+                (acc, next) => {
+                    acc[next] = false;
+                    return acc;
+                },
+                {},
+            );
+    
+            this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
+                [filterCategory]: resettedFilter,
+            });
+        }
 
         this.categoryClear.emit(filterCategory);
     }

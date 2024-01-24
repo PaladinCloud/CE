@@ -23,7 +23,7 @@
  import {RefactorFieldsService} from './refactor-fields.service';
  import { map } from 'rxjs/operators';
  import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
- import { IFilterOption } from '../table/interfaces/table-filters.interface';
+ import { IFilterOption } from '../table/interfaces/table-props.interface';
  import { find } from 'lodash';
  
  interface IFilterPayload {
@@ -31,7 +31,7 @@
      domain?: string;
      type?: string;
      attributeName: any;
-     searchText: any;
+     searchText?: any;
      filter: any;
  }
  
@@ -127,7 +127,9 @@
      }
  
      async getFilterTagsData(payload, optionUrl) {
-         return this.issueFilterService.getFilters({}, environment.base + this.utils.getParamsFromUrlSnippet(optionUrl).url, "POST", payload)
+         return this.issueFilterService.getFilters({}, 
+          environment.base  
+          + this.utils.getParamsFromUrlSnippet(optionUrl).url, "POST", payload)
              .toPromise()
              .then(response => response[0].data.response);
      }
@@ -182,8 +184,9 @@
          filters = [];
        } else if (event.removeOnlyFilterValue) {
          filters = this.removeFiltersOnRightOfIndex(filters, event.index);
-       } else if (event.index !== undefined && !filters[event.index].filterValue) {
-         filters.splice(event.index, 1);
+        } else if (event.index !== undefined && !filters[event.index].filterValue) {
+          filters.splice(event.index, 1);
+          shouldUpdateComponent = false;
        } else if (!event.clearAll) {
          filters.splice(event.index, 1);
        } else {
@@ -237,25 +240,31 @@
        }
    }
  
-   async changeFilterType({currentFilterType, searchText, filterText, currentQueryParams, filtersToBePassed, type, agAndDomain, updateFilterTags, labelsToExcludeSort}){
-     const {ag, domain} = agAndDomain;
+   async changeFilterType ({ currentFilterType, searchText, filterText, currentQueryParams, filtersToBePassed, type, agAndDomain, updateFilterTags, labelsToExcludeSort, ignoreAttributeName = false }) {
+    if(!currentFilterType){
+      return [{}, []];
+    }; 
+    const {ag, domain} = agAndDomain;
      const filterOrder = this.getFiltersAppliedOrderFromURL(currentQueryParams.filter);;
      const urlObj = this.utils.getParamsFromUrlSnippet(currentFilterType.optionURL);
        const excludedKeys = [
          currentFilterType.optionValue,
          "domain",
          "include_exempt",
-         urlObj.params["attribute"],
          currentFilterType["optionValue"]?.replace(".keyword", "")
        ];
+
+       if(urlObj.params["attribute"]){
+        excludedKeys.push(urlObj.params["attribute"]);
+       }
        
        const index = filterOrder?.indexOf(currentFilterType.optionValue?.replace(".keyword", ""));
        const excludedKeysInUrl = Object.keys(filterText).filter(key => urlObj.url.includes(key));
    
        filtersToBePassed = Object.keys(filtersToBePassed).reduce((result, key) => {
          const normalizedKey = key.replace(".keyword", "");
-         if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey)) || index>=0) {
-           result[normalizedKey] = filtersToBePassed[key];
+         if ((!excludedKeys.includes(normalizedKey) && !excludedKeysInUrl.includes(normalizedKey))) {
+           result[key] = filtersToBePassed[key];
          }
          return result;
        }, {});
@@ -268,10 +277,9 @@
        }, {});
    
        let payload: IFilterPayload = {
-         type,
-         attributeName: currentFilterType["optionValue"]?.replace(".keyword", ""),
-         searchText,
-         filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
+         attributeName: ignoreAttributeName ? undefined : currentFilterType["optionValue"]?.replace(".keyword", ""),
+         //filter: sortedFiltersToBePassed && index>=0?sortedFiltersToBePassed:filtersToBePassed,
+         filter: filtersToBePassed
        };
  
        if(ag && domain){
@@ -279,6 +287,13 @@
              ...payload,
              ag, domain
          };
+       }
+
+       if(searchText){
+        payload = {
+          ...payload,
+          searchText
+        }
        }
  
        if(type){
@@ -295,7 +310,7 @@
        const filterTagOptions = filterTagsData;
        let filterTagLabels = filterTagsData.map(option => option.name);
  
-       if (!labelsToExcludeSort.includes(currentFilterType.optionName)) {
+       if (!labelsToExcludeSort?.toString().toLowerCase().includes(currentFilterType.optionName.toLowerCase())) {
          filterTagLabels = filterTagLabels.sort((a, b) => a.localeCompare(b));
        }
        return [filterTagOptions, filterTagLabels];

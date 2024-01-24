@@ -15,7 +15,8 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.file;
 
-import com.tmobile.cso.pacman.inventory.InventoryConstants;
+import com.google.api.client.util.Strings;
+import com.tmobile.cso.pacman.inventory.util.InventoryConstants;
 import com.tmobile.pacman.commons.dto.ErrorVH;
 import com.tmobile.pacman.commons.dto.PermissionVH;
 import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
@@ -29,11 +30,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static com.tmobile.cso.pacman.inventory.util.Constants.ERROR_PREFIX;
+
 public class ErrorManageUtil {
 
-    public static final String OMIT_EXCEPTION = "Omit exception :{}";
-    private static Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
-    private static Map<String, List<ErrorVH>> errorMap = new ConcurrentHashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(ErrorManageUtil.class);
+    private static final Map<String, List<ErrorVH>> errorMap = new ConcurrentHashMap<>();
 
     private ErrorManageUtil() {
     }
@@ -46,7 +48,7 @@ public class ErrorManageUtil {
         try {
             FileGenerator.writeToFile("aws-loaderror.data", InventoryConstants.OPEN_ARRAY, false);
         } catch (IOException e) {
-            log.error("Error in Initialise", e);
+            log.error(ERROR_PREFIX + "while initializing aws-loaderror.data", e);
         }
     }
 
@@ -54,7 +56,7 @@ public class ErrorManageUtil {
         try {
             FileGenerator.writeToFile("aws-loaderror.data", InventoryConstants.CLOSE_ARRAY, true);
         } catch (IOException e) {
-            log.error("Error in finalise", e);
+            log.error(ERROR_PREFIX + "while writing to aws-loaderror.data", e);
         }
     }
 
@@ -85,7 +87,7 @@ public class ErrorManageUtil {
         try {
             FileManager.generateErrorFile(errorMap);
         } catch (Exception e) {
-            log.error("Error in writeErrorFile", e);
+            log.error(ERROR_PREFIX + "while writing to aws-loaderror.data", e);
         }
     }
 
@@ -120,6 +122,7 @@ public class ErrorManageUtil {
         } else {
             errorCode.put("status", "Partial Success");
         }
+
         log.info("Return Info {}", errorCode);
         return errorCode;
     }
@@ -131,9 +134,9 @@ public class ErrorManageUtil {
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
             for (ErrorVH errorVH : entry.getValue()) {
                 List<String> permissionIssues = assetPermissionMapping.get(errorVH.getType());
-                omitPermissionErrors(errorVHList, assetPermissionMapping, errorVH, permissionIssues);
                 // omit errors
                 omitErrors(errorVHList, errorVH);
+                omitPermissionErrors(errorVHList, assetPermissionMapping, errorVH, permissionIssues);
             }
 
             if (!assetPermissionMapping.isEmpty()) {
@@ -142,6 +145,7 @@ public class ErrorManageUtil {
                 permissionVH.setAssetPermissionIssues(assetPermissionMapping);
                 permissionIssue.add(permissionVH);
             }
+
             if (errorVHList.isEmpty()) {
                 errorMap.remove(entry.getKey());
             }
@@ -161,7 +165,7 @@ public class ErrorManageUtil {
     }
 
     private static void omitPermissionErrors(List<ErrorVH> errorVHList, Map<String, List<String>> assetPermissionMapping, ErrorVH errorVH, List<String> permissionIssues) {
-        List<String> exceptionList = Arrays.asList("AccessDenied", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException","ValidationError","AuthorizationError","UnauthorizedOperation");
+        List<String> exceptionList = Arrays.asList("AccessDenied", "SubscriptionRequiredException", "AWSSupportException", "Amazon Web Services Premium Support Subscription is required to use this service", "not subscribed to AWS Security Hub", "is not authorized to perform: sts:AssumeRole", "InsufficientPrivilegesException", "ValidationError", "AuthorizationError", "UnauthorizedOperation");
         if (exceptionPresentInList(errorVH.getException(), exceptionList)) {
             shortenMessageForKMS(errorVH);
             if (permissionIssues != null && !errorVH.getType().equals("phd") && !errorVH.getType().equals("security hub")) {
@@ -170,6 +174,7 @@ public class ErrorManageUtil {
                 permissionIssues = new ArrayList<>();
                 permissionIssues.add(errorVH.getException());
             }
+
             assetPermissionMapping.put(errorVH.getType(), permissionIssues);
             errorVHList.remove(errorVH);
         }
@@ -177,8 +182,13 @@ public class ErrorManageUtil {
 
     private static boolean exceptionPresentInList(String errorException, List<String> exceptionList) {
         for (String exception : exceptionList) {
+            if (Strings.isNullOrEmpty(errorException)) {
+                return false;
+            }
+
             if (errorException.contains(exception)) return true;
         }
+
         return false;
     }
 

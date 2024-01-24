@@ -98,7 +98,7 @@
                 <mat-tab-group class="height-100" animationDuration="0ms">
                     <mat-tab label="Inbound Rules">
                         <div class="wrapper sg-rules-table">
-                            <app-table style="height: 100%; width: 100%;"
+                            <app-table 
                                 [data]="inboundRulesData" [columnWidths]="sgRulesColumnWidths"
                                 [whiteListColumns]="sgRulesColumns" [rowSize]="'LG'"
                                 [showAddRemoveCol]="false" [showSearchBar]="false" 
@@ -110,7 +110,7 @@
                     </mat-tab>
                     <mat-tab label="Outbound Rules">
                         <div class="wrapper sg-rules-table">
-                            <app-table style="height: 100%; width: 100%;"
+                            <app-table 
                                 [data]="outboundRulesData" [columnWidths]="sgRulesColumnWidths"
                                 [whiteListColumns]="sgRulesColumns" [rowSize]="'LG'"
                                 [showAddRemoveCol]="false" [showSearchBar]="false"

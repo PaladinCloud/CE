@@ -29,10 +29,10 @@
  import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
  import { ComponentKeys } from "src/app/shared/constants/component-keys";
  import { find, map } from "lodash";
- import { IFilterOption } from "src/app/shared/table/interfaces/table-filters.interface";
  import { FilterManagementService } from "src/app/shared/services/filter-management.service";
  import { CategoryOrderMap, SeverityOrderMap } from "src/app/shared/constants/order-mapping";
  import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
+import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared/table/interfaces/table-props.interface";
  
  @Component({
    selector: "app-admin-policies",
@@ -64,8 +64,8 @@
  
    headerColName: string;
    direction: string;
-   columnNamesMap = {"policyDisplayName": "Policy","targetDisplayName": "Asset Type",  "severity": "Severity", "category":"Category", "status": "Status", "assetGroup":"Source"};
-   columnWidths = {"Policy": 2.5, "Asset Type": 0.7, "Severity": 0.5, "Category": 0.5, "Status": 0.5, "Source":0.5}
+   columnNamesMap: IColumnNamesMap = {"policyDisplayName": "Policy","targetDisplayName": "Asset Type",  "severity": "Severity", "category":"Category", "status": "Status", "assetGroup":"Source"};
+   columnWidths: IColumnWidthsMap = {"Policy": 2.5, "Asset Type": 0.7, "Severity": 0.5, "Category": 0.5, "Status": 0.5, "Source":0.5}
    centeredColumns = {
      Severity: true,
      Category: true,
@@ -302,7 +302,7 @@
  
    async processAndAddFilterItem({formattedFilterItem, filters}){
  
-     const keyDisplayValue = this.getFilterKeyDisplayValue(formattedFilterItem);
+     const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
      const filterKey = formattedFilterItem.filterkey;
        
      const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
@@ -317,17 +317,7 @@
      filters = [...filters];
      return filters;
    }
- 
-   getFilterKeyDisplayValue(formattedFilterItem){
-     let keyDisplayValue = formattedFilterItem.keyDisplayValue;
-     if(!keyDisplayValue){
-       keyDisplayValue = find(this.filterTypeOptions, {
-         optionValue: formattedFilterItem.filterkey,
-       })["optionName"];
-     }
-     return keyDisplayValue;
-   }
- 
+
    getUpdatedUrl() {
      let updatedQueryParams = {};
        this.filterText = this.utils.arrayToObject(

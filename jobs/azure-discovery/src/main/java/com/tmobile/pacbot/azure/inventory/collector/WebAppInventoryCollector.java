@@ -4,8 +4,9 @@ import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.appservice.DefaultErrorResponseException;
 import com.microsoft.azure.management.appservice.WebApp;
-import com.tmobile.pacbot.azure.inventory.ErrorManageUtil;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil;
+import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacbot.azure.inventory.vo.WebAppVH;
 import org.slf4j.Logger;
@@ -15,15 +16,20 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
-public class WebAppInventoryCollector {
+public class WebAppInventoryCollector implements Collector {
+    private static final Logger log = LoggerFactory.getLogger(WebAppInventoryCollector.class);
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
 
-    private static Logger log = LoggerFactory.getLogger(WebAppInventoryCollector.class);
+    @Override
+    public List<? extends AzureVH> collect() {
+        throw new UnsupportedOperationException();
+    }
 
-    public List<WebAppVH> fetchWebAppDetails(SubscriptionVH subscription) {
+    public List<WebAppVH> collect(SubscriptionVH subscription) {
         List<WebAppVH> webAppList = new ArrayList<>();
         Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
         PagedList<WebApp> webApps = azure.webApps().list();
@@ -40,31 +46,32 @@ public class WebAppInventoryCollector {
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
                 if (webApp.ftpsState() != null) {
                     webAppVH.setFtpsState(webApp.ftpsState());
-                    log.info("ftpsState {}", webApp.ftpsState());
                 }
                 if (webApp.minTlsVersion() != null) {
                     webAppVH.setMinTlsVersion(webApp.minTlsVersion().toString());
-                    log.info("minTlsVersion {}", webApp.minTlsVersion());
                 }
                 webAppVH.setAuthEnabled(webApp.getAuthenticationConfig().inner().enabled());
                 webAppVH.setId(webApp.id());
                 webAppVH.setHttpsOnly(webApp.httpsOnly());
                 webAppVH.setClientCertEnabled(webApp.clientCertEnabled());
-                log.info("web app client cert {}", webApp.clientCertEnabled());
                 webAppVH.setTags(webApp.tags());
                 webAppVH.setSystemAssignedManagedServiceIdentityPrincipalId(webApp.systemAssignedManagedServiceIdentityPrincipalId());
                 webAppVH.setName(webApp.name());
                 webAppList.add(webAppVH);
-
-            } catch (DefaultErrorResponseException exception) {
-                log.error(exception.getMessage());
-                ErrorManageUtil.uploadError(webAppVH.getSubscription(), webAppVH.getRegion(), "webapp", exception.getMessage());
+            } catch (DefaultErrorResponseException e) {
+                log.error("Error Collecting Web App info", e);
+                ErrorManageUtil.uploadError(webAppVH.getSubscription(), webAppVH.getRegion(), "webapp", e.getMessage());
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("Error Collecting info for {} ", e.getMessage());
+                log.error("Error Collecting Web App info", e);
                 Util.eCount.getAndIncrement();
             }
         }
+
         return webAppList;
+    }
+
+    @Override
+    public List<? extends AzureVH> collect(SubscriptionVH subscription, Map<String, Map<String, String>> tagMap) {
+        throw new UnsupportedOperationException();
     }
 }

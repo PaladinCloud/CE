@@ -4,10 +4,10 @@ import java.util.List;
 
 public class LaunchTemplateVH {
 
-   private String launchTemplateId;
+    private String launchTemplateId;
     private String launchTemplateName;
     private String imageId;
-    private List<String>securityGroupIds;
+    private List<String> securityGroupIds;
 
     public String getLaunchTemplateId() {
         return launchTemplateId;

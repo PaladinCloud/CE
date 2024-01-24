@@ -15,11 +15,6 @@ public class NetworkWatcherLogFlowVH {
         isRetentionEnabled = retentionEnabled;
     }
 
-    public void setRetentionInDays(Integer retentionInDays) {
-        this.retentionInDays = retentionInDays;
-    }
-
-
     public String getName() {
         return name;
     }
@@ -46,6 +41,10 @@ public class NetworkWatcherLogFlowVH {
 
     public Integer getRetentionInDays() {
         return retentionInDays;
+    }
+
+    public void setRetentionInDays(Integer retentionInDays) {
+        this.retentionInDays = retentionInDays;
     }
 
     public void setRetentionInDays(int retentionInDays) {

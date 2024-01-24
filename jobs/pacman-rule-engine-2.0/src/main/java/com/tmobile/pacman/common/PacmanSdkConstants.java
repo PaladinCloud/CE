@@ -682,5 +682,6 @@ public interface PacmanSdkConstants {
     String ACCOUNT_ID = "accountid";
     String TAGGING_MANDATORY_TAGS = "tagging.mandatoryTags";
     String POLICY_NAME = "policyName";
+    String JOB_NAME = "rule-engine";
     String  TARGET_TYPE_DISPLAY_NAME = "targetTypeDisplayName";
 }

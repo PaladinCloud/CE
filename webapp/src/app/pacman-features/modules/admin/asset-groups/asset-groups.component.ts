@@ -12,26 +12,24 @@
 * limitations under the License.
 */
 
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, TemplateRef, AfterViewInit } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, AfterViewInit } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject, Subscription } from "rxjs";
 import { UtilsService } from "../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
-import { RefactorFieldsService } from "./../../../../shared/services/refactor-fields.service";
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { AdminService } from "../../../services/all-admin.service";
-import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
-import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
-import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
 import { MatDialog } from "@angular/material/dialog";
-import { AssetTilesService } from "src/app/core/services/asset-tiles.service";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import find from "lodash/find";
 import { TourService } from "src/app/core/services/tour.service";
 import { ComponentKeys } from "src/app/shared/constants/component-keys";
+import { FilterManagementService } from "src/app/shared/services/filter-management.service";
+import { map } from "lodash";
+import { IColumnNamesMap, IColumnWidthsMap } from "src/app/shared/table/interfaces/table-props.interface";
 
 @Component({
   selector: "app-asset-groups",
@@ -39,7 +37,7 @@ import { ComponentKeys } from "src/app/shared/constants/component-keys";
   styleUrls: ["./asset-groups.component.css"],
   providers: [LoggerService, ErrorHandlingService, AdminService],
 })
-export class AssetGroupsComponent implements OnInit, AfterViewInit {
+export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
   pageTitle: String = "Asset Groups";
   saveStateKey: String = ComponentKeys.AdminAssetGroupList;
   allAssetGroups: any = [];
@@ -59,8 +57,12 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [];
   whiteListColumns: any = [];
   tableScrollTop: any;
-  columnWidths = {'Name': 1.2, "Type": 1, "Created By": 2, "Number of assets": 1};
-  columnNamesMap = {"displayName": "Name", "type": "Type", "createdBy": "Created By", "assetCount": "Number of assets"};
+  columnWidths: IColumnWidthsMap = {'Name': 1.2, "Type": 1, "Number of assets": 1, "Created By": 2, "Created Date": 1, "Updated Date": 1};
+  columnNamesMap: IColumnNamesMap = {
+    'createdDate': 'Created Date',
+    'updatedDate': 'Updated Date'
+  };
+  columnsAndFiltersToExcludeFromCasing = ["Name", "Type"];
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
@@ -142,19 +144,22 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
   public labels: any;
   FullQueryParams: any;
   queryParamsWithoutFilter: any;
-  private previousUrl: any = "";
   urlToRedirect: any = "";
   private pageLevel = 0;
   public backButtonRequired;
   mandatory: any;
   private routeSubscription: Subscription;
-  private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
-  private downloadSubscription: Subscription;
   assetGroupList: any[];
   @ViewChild("actionRef") actionRef: TemplateRef<any>;
   errorMessage: string;
   selectedRowIndex: any;
+  filtersDataSubscription: Subscription;
+  fieldName: any;
+  fieldType: any;
+  selectedOrder: any;
+  sortOrder: any;
+  dateCategoryList: string[] = [];
 
 
   constructor(
@@ -163,21 +168,14 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
     private utils: UtilsService,
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
-    private ref: ChangeDetectorRef,
-    private refactorFieldsService: RefactorFieldsService,
+    private filterManagementService: FilterManagementService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
-    private notificationObservableService: NotificationObservableService,
     public dialog: MatDialog,
-    private assetTilesService: AssetTilesService,
     private tableStateService: TableStateService,
     private tourService: TourService
-  ) {
-    // this.getFilters();
-    this.getPreservedState();
-    this.updateComponent();
-  }
+  ) {}
   ngAfterViewInit(): void {
     this.tourService.setComponentReady();
   }
@@ -188,6 +186,24 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
+    this.getPreservedState();
+    this.getFilters();
+  }
+
+  getFilterPayloadForDataAPI(){
+    const filterToBePassed = {...this.filterText};
+    Object.keys(filterToBePassed).forEach(filterKey => {
+      filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
+
+      if(this.columnNamesMap[filterKey]?.toLowerCase()=="number of assets"){
+        filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
+          const [min, max] = filterVal.split("-");
+          return {min: parseFloat(min), max: parseFloat(max)};
+        })
+      }
+    })
+
+    return filterToBePassed;
   }
 
   getPreservedState(){
@@ -239,6 +255,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
     this.storeState();
+    this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){
@@ -247,70 +264,39 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
   }
 
   deleteFilters(event?) {
-    try {
-      if (!event) {
-        this.filters = [];
-      } else if (event.clearAll) {
-        this.filters = [];
-      }
-      this.storeState();
-    } catch (error) { }
-  }
-
-  handleFilterSelection(){    
+    let shouldUpdateComponent = false;
+    [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);      
+    if(shouldUpdateComponent){
+      this.getUpdatedUrl();
+      this.updateComponent();
+    }
     this.storeState();
-  }
-
-  handleFilterTypeSelection(){    
-    this.storeState();
-  }
-
-  getFiltersData(data){
-    this.filterTypeLabels = [];
-    this.filterTagLabels = {};
-    this.whiteListColumns.forEach(column => {
-      if(column.toLowerCase()=='number of assets' || column.toLowerCase()=='actions'){
-        return;
-      }
-      let filterTags = [];
-      this.filterTypeLabels.push(column);
-      const set = new Set();
-      data.forEach(row => {
-        if(row[column])
-        set.add(row[column].valueText.toLowerCase());
-      });
-      filterTags = Array.from(set);
-      filterTags.sort();
-      
-      this.filterTagLabels[column] = filterTags;
-    });
-    this.filterTypeLabels.sort();
   }
 
   getAssetGroupsDetails(isNextPageCalled?) {
-    var url = environment.assetGroups.url;
-    var method = environment.assetGroups.method;
+    const url = environment.assetGroups.url;
+    const method = environment.assetGroups.method;
 
-    const filterToBePassed = this.filterText;
-
-    const queryParams = {
-      page: this.pageNumber,
-      searchTerm: this.searchTxt,
-      size: this.paginatorSize,
+    const sortFilters = {
+      fieldName: this.fieldName,
+      fieldType: this.fieldType,
+      order: this.selectedOrder,
+      sortOrder: this.sortOrder
     }
-    
+
     const payload = {
-      ...filterToBePassed,
+      page: this.pageNumber,
+      size: this.paginatorSize,
+      sortFilter: sortFilters,
+      filter:this.getFilterPayloadForDataAPI(),
     };
+
+    const queryParams = {}
 
     if(!isNextPageCalled){
       this.tableDataLoaded = false;
     }
     this.tableErrorMessage = "";
-
-    if (this.searchTxt !== undefined && this.searchTxt !== "") {
-      queryParams["searchTerm"] = this.searchTxt;
-    }
 
     this.adminService.executeHttpAction(url, method, payload, queryParams).subscribe(
       (reponse) => {
@@ -326,7 +312,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
             this.totalPages = data.totalPages;
             this.pageNumber = data.number;
             this.totalRows = data.totalElements;
-            let updatedResponse = this.massageData(data.content);
+            let updatedResponse = this.utils.massageTableData(data.content, this.columnNamesMap);
             this.assetGroupList = updatedResponse;
             const processData = this.processData(updatedResponse);
             if(isNextPageCalled){
@@ -334,7 +320,6 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
             }else{
               this.tableData = processData;
             }
-            this.getFiltersData(this.tableData);
           }
         }
       },
@@ -389,6 +374,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
   */
 
   updateComponent() {
+    this.updateSortFieldName();
     if(this.isStatePreserved){
       this.clearState();
     }else{
@@ -398,6 +384,31 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
       this.errorValue = 0;
       this.showGenericMessage = false;
       this.getAssetGroupsDetails();
+    }
+  }
+
+  updateSortFieldName(){
+    try{
+      this.selectedOrder = this.direction;
+      this.fieldType = "string";
+      if(this.headerColName?.toLowerCase()=='created date'){
+        this.fieldName = 'createdDate'
+      }
+      else if(this.headerColName?.toLowerCase()=='updated date'){
+        this.fieldName = 'modifiedDate';
+      }
+      else{
+        let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
+        if(!apiColName){
+          apiColName =  find(this.filterTypeOptions, {
+            optionName: this.headerColName,
+          })["optionValue"];
+        }
+        this.fieldName = apiColName;
+      }
+    }catch(e){
+      this.logger.log('sortError', e);
+      this.headerColName = '';
     }
   }
 
@@ -411,78 +422,30 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  massageData(data){
-    const refactoredService = this.refactorFieldsService;
-    const columnNamesMap = this.columnNamesMap;
-    const newData = [];
-    data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);      
-      let newObj = {};
-      KeysTobeChanged.forEach((element) => {
-        let elementnew;
-        if(columnNamesMap[element]) {
-          elementnew = columnNamesMap[element];
-          newObj = Object.assign(newObj, { [elementnew]: row[element] });
-        }
-        else {
-        elementnew =
-          refactoredService.getDisplayNameForAKey(
-            element.toLocaleLowerCase()
-          ) || element;
-          newObj = Object.assign(newObj, { [elementnew]: row[element] });
-        }
-        // change data value
-        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
-      });
-      newData.push(newObj);
-    });
-    return newData;
-  }
-
   processData(data) {
     try {
-      var innerArr = {};
-      var totalVariablesObj = {};
-      var cellObj = {};
-      let processedData = [];
-      var getData = data;      
-      const keynames = Object.keys(getData[0]);
-
-      let cellData;
-      for (var row = 0; row < getData.length; row++) {
-        innerArr = {};
-        keynames.forEach(col => {
-          cellData = getData[row][col];
+      return this.utils.processTableData(data, this.tableImageDataMap, (row, col, cellObj) => {
+        if(col.toLowerCase()=="name"){
           cellObj = {
-            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
-            titleText: cellData, // text to show on hover
-            valueText: cellData,
-            hasPostImage: false,
-            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
-            postImgSrc: "",
-            isChip: "",
-            isMenuBtn: false,
-            properties: "",
-            isLink: false
-          }
-         if(col.toLowerCase()=="number of assets"){
-            cellObj = {
-              ...cellObj,
-              isNumber: true
-            };
-          }
-          innerArr[col] = cellObj;
-          totalVariablesObj[col] = "";
-        });
-        processedData.push(innerArr);
-      }
-      if (processedData.length > getData.length) {
-        var halfLength = processedData.length / 2;
-        processedData = processedData.splice(halfLength);
-      }
-      return processedData;
+            ...cellObj,
+            isLink: true
+          };
+        }else if(col.toLowerCase()=="number of assets"){
+          cellObj = {
+            ...cellObj,
+            isNumber: true
+          };
+        }else if(col.toLowerCase()=="updated date" || col.toLowerCase()=="created date"){
+          cellObj = {
+            ...cellObj,
+            isDate: true
+          };
+        }
+        return cellObj;
+      });
+      
     } catch (error) {
-      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
@@ -575,46 +538,43 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
   });
   }
   /*
-  * this functin passes query params to filter component to show filter
-  */
-  getFilterArray() {
+   * this functin passes query params to filter component to show filter
+   */
+  async getFilterArray() {
     try {
-      // let labelsKey = Object.keys(this.labels);
-      const filterObjKeys = Object.keys(this.filterText);
-      const dataArray = [];
-      for (let i = 0; i < filterObjKeys.length; i++) {
-        let obj = {};
-        obj = {
-          name: filterObjKeys[i],
-        };
-        dataArray.push(obj);
-      }
-      const formattedFilters = dataArray;
+      const filterText = this.filterText;
+      const filterTypeOptions = this.filterTypeOptions;
+      let filters = this.filters;
+      
+      const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
+
       for (let i = 0; i < formattedFilters.length; i++) {
-        
-        let keyValue = find(this.filterTypeOptions, {
-          optionValue: formattedFilters[i].name,
-        })["optionName"];
-        
-        this.changeFilterType(keyValue).then(() => {
-            let filterValue = find(this.filterTagOptions[keyValue], {
-              id: this.filterText[filterObjKeys[i]],
-            })["name"];
-          const eachObj = {
-            keyDisplayValue: keyValue,
-            filterValue: filterValue,
-            key: keyValue, // <-- displayKey-- Resource Type
-            value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
-            filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-            compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-          };
-          this.filters.push(eachObj);
-          this.filters = [...this.filters];
-        })
+        filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i] , filters});
+        this.filters = filters;
       }
+      this.storeState();
     } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  async processAndAddFilterItem({formattedFilterItem, filters}){
+
+    const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
+    const filterKey = formattedFilterItem.filterkey;
+      
+    const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
+    if(existingFilterObjIndex<0){
+      // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+      await this.changeFilterType(keyDisplayValue);
+      const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
+      const filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
+
+      filters.push(filterObj);
+    }
+    filters = [...filters];
+    return filters;
   }
 
   /**
@@ -624,84 +584,90 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit {
 
   getFilters() {
     try {
-          this.filterTypeLabels.push("Type");
-          this.filterTypeOptions.push({
-            optionName: 'Type',
-            optionValue: 'type'
-          })
+      this.filtersDataSubscription = this.filterManagementService
+      .getFilters(19)
+        .subscribe(async(filterOptions) => {
+          this.filterTypeOptions = filterOptions;
+          this.filterTypeLabels = map(filterOptions, "optionName");
+          
+          this.filterTypeLabels.sort();
+          [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, []);
           this.routerParam();
-          // this.deleteFilters();
-          this.getFilterArray();
+          await this.getFilterArray();
+          await Promise.resolve().then(() => this.getUpdatedUrl());
           this.updateComponent();
+        });
     } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
 
-  changeFilterType(value) {
-    return new Promise((resolve) => {
+  async changeFilterType(value, searchText='') {  
     try {
-      this.currentFilterType = find(this.filterTypeOptions, {
-        optionName: value,
-      });
-      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
-        if(value.toLowerCase()=="type"){
-        this.filterTagLabels[value] = ["admin", "admin"];
-        this.filterTagOptions[value] = [
-          {
-            id: "admin",
-            name: "admin"
-          }
-        ]
-        resolve(this.filterTagLabels[value]);
-        return;
-      }
-
-      }
-    } catch (error) {
-      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-    }); 
-  }
-
-  changeFilterTags(event) {        
-    let value = event.filterValue;
-    this.currentFilterType =  find(this.filterTypeOptions, {
-        optionName: event.filterKeyDisplayValue,
-      });          
-    try {
-      if (this.currentFilterType) {
-        const filterTag = find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });        
-        this.utils.addOrReplaceElement(
-          this.filters,
-          {
-            keyDisplayValue: event.filterKeyDisplayValue,
-            filterValue: value,
-            key: this.currentFilterType.optionName,
-            value: filterTag["id"],
-            filterkey: this.currentFilterType.optionValue.trim(),
-            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
-          },
-          (el) => {
-            return (
-              el.compareKey ===
-              this.currentFilterType.optionValue.toLowerCase().trim()
-            );
-          }
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
         );
-      }
-      this.getUpdatedUrl();
-      this.utils.clickClearDropdown();
-      this.updateComponent();
+      this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
+      const filtersToBePassed = this.getFilterPayloadForDataAPI();
+      const filterText = this.filterText;
+      const currentFilterType = this.currentFilterType;
+
+      const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
+      const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags, labelsToExcludeSort});
+      this.filterTagOptions[value] = filterTagOptions;
+      this.filterTagLabels[value] = filterTagLabels;
+      this.storeState();
+  
     } catch (error) {
-      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+  }
+
+  getUpdateFilterTagsCallback(){
+    const labelsToExcludeSort = ['number of assets'];
+    const updateFilterTags = (filterTagsData, value) => {      
+      if(value.toLowerCase() === "number of assets"){
+        const numOfIntervals = 5;
+        const min = filterTagsData.optionRange.min;
+        const max = filterTagsData.optionRange.max;
+        const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
+        filterTagsData = [];
+        intervals.forEach(interval => {
+          const lb = Math.round(interval.lowerBound);
+          const up = Math.round(interval.upperBound);
+          filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
+        });
+      }
+      return filterTagsData;
+    }
+    return [updateFilterTags, labelsToExcludeSort];
+  }
+
+  async changeFilterTags(event) {
+    let filterValues = event.filterValue;
+    if(!filterValues){
+      return;
+    }
+    console.log(event);
+    
+    this.currentFilterType =  find(this.filterTypeOptions, {
+      optionName: event.filterKeyDisplayValue,
+    });
+
+    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    this.getUpdatedUrl();
+    this.storeState();
+    this.updateComponent();
   }
 
   ngOnDestroy() {
     try {
+      if(this.filtersDataSubscription){
+        this.filtersDataSubscription.unsubscribe();
+      }
       if (this.routeSubscription) {
         this.routeSubscription.unsubscribe();
       }
