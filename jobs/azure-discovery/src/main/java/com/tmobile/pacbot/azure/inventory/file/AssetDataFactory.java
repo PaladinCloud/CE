@@ -79,7 +79,7 @@ public class AssetDataFactory {
     @Autowired
     PolicyStatesInventoryCollector policyStatesInventoryCollector;
     @Autowired
-    PolicyDefinitionInventoryCollector policyDefinitionInventoryCollector;
+    Collector policyDefinitionInventoryCollector;
     @Autowired
     SitesInventoryCollector sitesInventoryCollector;
     @Autowired
