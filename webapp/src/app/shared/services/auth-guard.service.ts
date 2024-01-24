@@ -36,7 +36,7 @@ export class AuthGuardService implements CanActivate {
         const returnUrl = location.href;
         const redirectUrl = location.origin + state.url;
         if(!redirectUrl.includes("home"))
-        localStorage.setItem("redirectUrl",redirectUrl);
+            localStorage.setItem("redirectUrl", redirectUrl);
         if (!this.authService.authenticated) {
             this.loggerService.log('info', 'AuthGuard - Authentication required to access this page');
             // Store the redirect url in cache
