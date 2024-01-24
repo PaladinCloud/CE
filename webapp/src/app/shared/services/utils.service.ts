@@ -23,6 +23,7 @@ import { DATA_MAPPING } from '../constants/data-mapping';
 import { DatePipe } from '@angular/common';
 import { find } from 'lodash';
 import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from '../table/interfaces/table-props.interface';
+import { REDIRECT_URL_KEY } from '../constants/global';
 
 @Injectable()
 export class UtilsService {
@@ -537,5 +538,9 @@ export class UtilsService {
     mapValuesToArray(map):string[] {
       if(map) return Array.from(map.values());
       else return undefined;
+    }
+    
+    storeRedirectUrl(url?){
+      localStorage.setItem(REDIRECT_URL_KEY, url ?? location.href);
     }
 }

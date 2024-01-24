@@ -33,6 +33,7 @@ import { environment } from "src/environments/environment";
 import { CommonResponseService } from "../shared/services/common-response.service";
 import { ComponentKeys } from "../shared/constants/component-keys";
 import { CONFIGURATIONS } from "src/config/configurations";
+import { UtilsService } from "../shared/services/utils.service";
 
 declare var Offline: any;
 
@@ -116,7 +117,8 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     private notificationObservableService: NotificationObservableService,
     private snackBar: MatSnackBar,
     private commonResponseService: CommonResponseService,
-    private tableStateService: TableStateService
+    private tableStateService: TableStateService,
+    private utils: UtilsService
   ) {
     if (this.pageReloadInterval) {
       this.reloadTimeout = this.setReloadTimeOut(this.pageReloadInterval);
@@ -331,7 +333,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
 
   storeUrlBeforeUnload (): void {
     window.addEventListener('beforeunload', () => {
-      localStorage.setItem("redirectUrl", location.href);
+      this.utils.storeRedirectUrl();
     });
   }
 
