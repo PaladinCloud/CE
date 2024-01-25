@@ -70,7 +70,6 @@
 	"aws_cloudfront_accesslogs",
 	"aws_cloud_trail_enable_log_file_validation",
 	"aws_cloud_trail_encrypt_logs_using_kms",
-	"aws_account_cloud_watch_events",
 	"aws_iamrole_shouldnothave_ec2runinstance_privilege",
 	"aws_ec2_should_not_be_publicly_accessible_with_any_port",
 	"aws_appelb_access_logs",
