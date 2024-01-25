@@ -78,14 +78,12 @@
         <mat-grid-list *ngIf="item === 3" [cols]="breakpoint4" rowHeight="504px">
             <mat-grid-tile style="background-color: var(--background-white)">
                 <app-table
-                    style="height: 100%; width: 100%"
                     (rowSelectEventEmitter)="goToDetails($event)"
                     [data]="complianceTableData"
                     [columnWidths]="columnWidths"
                     [centeredColumns]="centeredColumns"
                     [tableErrorMessage]="tableErrorMessage"
                     [tableDataLoaded]="tableDataLoaded"
-                    [columnsSortFunctionMap]="columnsSortFunctionMap"
                     (headerColNameSelected)="handleHeaderColNameSelection($event)"
                     [headerColName]="headerColName"
                     [direction]="direction"
@@ -114,6 +112,8 @@
                     (deleteFilters)="deleteFilters($event)"
                     [selectedRowId]="selectedRowId"
                     idColumn="Policy ID"
+                    (nextPageCalled)="nextPg($event)"
+                    [onScrollDataLoader]="onScrollDataLoader"
                 >
                 </app-table>
             </mat-grid-tile>

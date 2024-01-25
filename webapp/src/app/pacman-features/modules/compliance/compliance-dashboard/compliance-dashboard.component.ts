@@ -18,7 +18,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { ActivatedRoute, Router } from '@angular/router';
 import find from 'lodash/find';
 import map from 'lodash/map';
-import { Subscription } from 'rxjs';
+ import { Subject, Subscription } from 'rxjs';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
@@ -46,6 +46,8 @@ import { AgDomainObservableService } from 'src/app/core/services/ag-domain-obser
 import { SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
 
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+import { IFilterObj, IFilterOption, IFilterTagLabelsMap, IFilterTagOptionsMap, IFilterTypeLabel } from 'src/app/shared/table/interfaces/table-props.interface';
+import { takeUntil } from 'rxjs/operators';
  
 import { CategoryOrderMap, SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
 
@@ -73,33 +75,27 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   filterArr: any = [];
   filterText;
   queryParamsWithoutFilter;
-  subscriptionToAssetGroup: Subscription;
   selectedAssetGroup: string;
   showingArr: any;
   ruleCatFilter;
   noMinHeight = false;
-  paginatorSize = 20;
+  paginatorSize = 100;
   totalRows = 0;
   bucketNumber = 0;
   searchTxt = '';
   complianceTableData: any = [];
   currentFilterType;
-  filterTypeLabels = [];
-  filterTagLabels = {};
-  filterTypeOptions: any = [];
-  filters: any = [];
-  filterTagOptions: any = [];
-  selectedDomain: any = '';
-  searchPassed = '';
+  filterTypeLabels: IFilterTypeLabel[] = [];
+  filterTagLabels: IFilterTagLabelsMap = {};
+  filterTypeOptions: IFilterOption[] = [];
+  filters: IFilterObj[] = [];
+  filterTagOptions: IFilterTagOptionsMap = {};
+  selectedDomain: string = "";
+  searchPassed = "";
   tableDataLoaded = false;
   showSearchBar = false;
   showAddRemoveCol = false;
-  private onFilterChange: Subscription;
-  private routeSubscription: Subscription;
   private complianceTableSubscription: Subscription;
-  private issueFilterSubscription: Subscription;
-  private activatedRouteSubscription: Subscription;
-  private subscriptionDomain: Subscription;
   public pageLevel = 0;
   dataSubscriber: any;
   policyData: {
@@ -124,8 +120,8 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   tableTitle = 'Policy Compliance Overview';
   tableErrorMessage = '';
   errorMessage = '';
-  headerColName;
-  direction;
+  headerColName: string;
+  direction: string;
   complianceData = [];
   complianceDataError = '';
   breadcrumbArray = [];
@@ -139,7 +135,6 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     policyCategory: 'Category',
   };
   columnWidths = { Policy: 3, Violations: 1, Source: 1, "Asset Type": 1, Severity: 1, Category: 1, Compliance: 1 };
-  selectedRowId: number;
   centeredColumns = {
     Policy: false,
     Violations: true,
@@ -149,98 +144,43 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     Compliance: true,
   };
 
-  columnsSortFunctionMap = {
-    Severity: (a, b, isAsc) => {
-      const severeness = {
-        low: 1,
-        medium: 2,
-        high: 3,
-        critical: 4,
-        default: 5 * (isAsc ? 1 : -1),
-      };
-
-      const ASeverity = a['Severity'].valueText ?? 'default';
-      const BSeverity = b['Severity'].valueText ?? 'default';
-      if (severeness[ASeverity] == severeness[BSeverity]) {
-        return a['Violations'].valueText < b['Violations'].valueText ? 1 : -1;
-      }
-      return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
-    },
-    Category: (a, b, isAsc) => {
-      const priority = {
-        security: 4,
-        operations: 3,
-        cost: 2,
-        tagging: 1,
-        default: 5 * (isAsc ? 1 : -1),
-      };
-
-      const ACategory = a['Category'].valueText ?? 'default';
-      const BCategory = b['Category'].valueText ?? 'default';
-      if (priority[ACategory] == priority[BCategory]) {
-        return a['Violations'] < b['Violations'] ? -1 : 1;
-      }
-      return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
-    },
-    Compliance: (a: string, b: string, isAsc) => {
-      a = a['Compliance'].valueText;
-      b = b['Compliance'].valueText;
-
-      if (a == 'NR') isAsc ? (a = '101%') : (a = '-1%');
-      if (b == 'NR') isAsc ? (b = '101%') : (b = '-1%');
-
-      a = a.substring(0, a.length - 1);
-      b = b.substring(0, b.length - 1);
-
-      const aNum = parseFloat(a);
-      const bNum = parseFloat(b);
-
-      return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
-    },
-    Violations: (a: string, b: string, isAsc) => {
-      a = a['Violations'].valueText;
-      b = b['Violations'].valueText;
-
-      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-    },
-  };
   tableImageDataMap = {
-    security: {
-      image: 'category-security',
-      imageOnly: true,
-    },
-    operations: {
-      image: 'category-operations',
-      imageOnly: true,
-    },
-    cost: {
-      image: 'category-cost',
-      imageOnly: true,
-    },
-    tagging: {
-      image: 'category-tagging',
-      imageOnly: true,
-    },
-    low: {
-      image: 'violations-low-icon',
-      imageOnly: true,
-    },
-    medium: {
-      image: 'violations-medium-icon',
-      imageOnly: true,
-    },
-    high: {
-      image: 'violations-high-icon',
-      imageOnly: true,
-    },
-    critical: {
-      image: 'violations-critical-icon',
-      imageOnly: true,
-    },
-  };
-  state: any = {};
-  whiteListColumns;
-  displayedColumns;
+      security:{
+          image: "category-security",
+          imageOnly: true
+      },
+      operations:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      cost:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      tagging:{
+          image: "category-tagging",
+          imageOnly: true
+      },
+      low: {
+          image: "violations-low-icon",
+          imageOnly: true
+      },
+      medium: {
+          image: "violations-medium-icon",
+          imageOnly: true
+      },
+      high: {
+          image: "violations-high-icon",
+          imageOnly: true
+      },
+      critical: {
+          image: "violations-critical-icon",
+          imageOnly: true
+      },
+  }
+  whiteListColumns: string[];
+  displayedColumns: string[];
+  selectedRowId: string;
 
   totalAssetsCountData = [];
   totalAssetsCountDataError = '';
@@ -263,6 +203,8 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   sortOrder: any;
   fieldName: string;
   fieldType: string;
+  onScrollDataLoader = new Subject();
+  destroy$ = new Subject<void>();
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -318,12 +260,15 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit () {
-    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([assetGroupName, domain]) => {
-      this.getPreservedState();
-      this.selectedAssetGroup = assetGroupName;
-      this.selectedDomain = domain;
-      this.updateComponent();
-    })
+
+    this.agDomainObservableService.getAgDomain()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([assetGroupName, domain]) => {
+        this.getPreservedState();
+        this.selectedAssetGroup = assetGroupName;
+        this.selectedDomain = domain;
+        this.updateComponent();
+      })
 
     window.onbeforeunload = () => this.storeState();
 
@@ -416,7 +361,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
     this.storeState();
-    this.getData();
+    this.updatePoliciesTable();
   }
 
 
@@ -592,7 +537,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);
     if (shouldUpdateComponent) {
       this.getUpdatedUrl();
-      this.getData();
+      this.updatePoliciesTable();
     }
   }
   /*
@@ -650,12 +595,13 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   getFilters() {
     return new Promise((resolve) => {
     try {
-      this.issueFilterSubscription = this.issueFilterService
+      this.issueFilterService
         .getFilters(
           { filterId: 13, domain: this.selectedDomain },
           environment.issueFilter.url,
           environment.issueFilter.method
-        )
+      )
+        .pipe(takeUntil(this.destroy$))
         .subscribe(async (response) => {
           this.filterTypeLabels = map(response[0].response, "optionName");
           resolve(true);
@@ -667,12 +613,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
           await this.getFilterArray();
           await Promise.resolve().then(() => this.getUpdatedUrl());
         }, error => {
-          this.tableErrorMessage = 'apiResponseError';
-          this.logger.log("error", error);
+          this.errorHandling.handleAPIError(error);
         });
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
+      this.errorHandling.handleJavascriptError(error);
       resolve(false);
     }
     });
@@ -767,7 +711,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     });
     this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
     this.getUpdatedUrl();
-    this.getData();
+    this.updatePoliciesTable();
   }
 
   updateSortFieldName () {
@@ -823,6 +767,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       this.tableErrorMessage = '';
       this.errorMessage = '';
       this.tableDataLoaded = false;
+      this.tableScrollTop = 0;
       this.bucketNumber = 0;
       this.complianceTableData = [];
       this.getFilters().then(() => {
@@ -964,7 +909,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     return filterToBePassed;
   }
 
-  getData() {
+  getData (isNextPageCalled = false) {
     if (!this.selectedAssetGroup || !this.selectedDomain) {
       return;
     }
@@ -984,47 +929,65 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       filter: filters,
       reqFilter: filterToBePassed,
       from: this.bucketNumber * this.paginatorSize,
+      size: this.paginatorSize,
       sortFilter
     };
 
     this.tableErrorMessage = '';
-    this.tableDataLoaded = false;
     const complianceTableUrl = environment.complianceTable.url;
     const complianceTableMethod = environment.complianceTable.method;
     this.complianceTableSubscription = this.commonResponseService
-      .getData(complianceTableUrl, complianceTableMethod, payload, {})
-      .subscribe(
-        (response) => {
-          this.totalRows = response.total;
-          try {
-            const updatedResponse = this.massageData(response.data.response);
-            const processedData = this.processData(updatedResponse);
+    .getData(complianceTableUrl, complianceTableMethod, payload, {})
+    .subscribe(
+      (response) => {
+        try {
+          const updatedResponse = this.massageData(response.data.response);
+          const processedData = this.processData(updatedResponse);
+          if (isNextPageCalled) {
+            this.onScrollDataLoader.next(processedData);
+          } else {
             this.complianceTableData = processedData;
             this.tableDataLoaded = true;
             if (this.complianceTableData.length === 0) {
               this.totalRows = 0;
               this.tableErrorMessage = 'noDataAvailable';
             }
-            if (response.hasOwnProperty("total")) {
+            if (response.data.hasOwnProperty("total")) {
               this.totalRows = response.data.total;
             } else {
               this.totalRows = this.complianceTableData.length;
             }
-          } catch (e) {
-            this.tableDataLoaded = true;
-            this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
           }
-        },
-        (error) => {
-          this.tableDataLoaded = true;
-          this.tableErrorMessage = "apiResponseError";
-          this.logger.log("error", error);
+        } catch (e) {
+          this.setError(this.errorHandling.handleJavascriptError(e), isNextPageCalled);
         }
-      );
+      },
+      (error) => {
+        this.setError(this.errorHandling.handleAPIError(error), isNextPageCalled);
+      }
+    );
+  }
+
+  setError (errorType, isNextPageCalled?) {
+    if (!isNextPageCalled) {
+      this.tableErrorMessage = errorType;
+    }
+    this.tableDataLoaded = true;
+  }
+
+  nextPg (e) {
+    try {
+      this.tableScrollTop = e;
+      this.bucketNumber++;
+
+      this.getData(true);
+    } catch (error) {
+      this.errorHandling.handleJavascriptError(error);
+    }
   }
 
   getRouteQueryParameters(): any {
-    this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params) => {
+    this.activatedRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       if (this.selectedAssetGroup && this.selectedDomain) {
         this.updateComponent();
       }
@@ -1192,26 +1155,11 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     try {
       this.storeState();
-      if(this.agDomainSubscription){
-        this.agDomainSubscription.unsubscribe();
-      }
-      if (this.onFilterChange) {
-        this.onFilterChange.unsubscribe();
-      }
-      if (this.routeSubscription) {
-        this.routeSubscription.unsubscribe();
-      }
+      this.destroy$.next();
+      this.destroy$.complete();
+
       if (this.complianceTableSubscription) {
         this.complianceTableSubscription.unsubscribe();
-      }
-      if (this.subscriptionDomain) {
-        this.subscriptionDomain.unsubscribe();
-      }
-      if (this.issueFilterSubscription) {
-        this.issueFilterSubscription.unsubscribe();
-      }
-      if (this.activatedRouteSubscription) {
-        this.activatedRouteSubscription.unsubscribe();
       }
     } catch (error) {
       this.logger.log('error', error);

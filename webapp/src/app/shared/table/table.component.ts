@@ -241,6 +241,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                 this.dataSource.intialCallFlag = true;
                 this.scrollTableToPos(this.initialScrollPosition);
             }
+            this.isDataLoading = false;
         }
         if(changes.tableScrollTop && this.tableScrollTop){
             this.dataSource.intialCallFlag = false;
