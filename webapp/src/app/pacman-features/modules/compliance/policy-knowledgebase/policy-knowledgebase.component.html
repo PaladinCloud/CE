@@ -39,11 +39,12 @@
         <div class="policy-knowledgebase-content">
             <app-table
                 [centeredColumns]="centeredColumns"
-                [columnsSortFunctionMap]="columnsSortFunctionMap"
+                [onScrollDataLoader]="onScrollDataLoader"
                 [columnWidths]="columnWidths"
                 [data]="tableData"
                 [direction]="direction"
                 [doLocalFilter]="false"
+                [doLocalSort]="false"
                 [filteredArray]="filters"
                 [filterTagLabels]="filterTagLabels"
                 [filterTypeLabels]="filterTypeLabels"
@@ -66,12 +67,12 @@
                 (downloadClicked)="handlePopClick($event)"
                 (rowSelectEventEmitter)="goToDetails($event)"
                 (searchCalledEventEmitter)="callNewSearch($event)"
-                (searchInColumnsChanged)="handleSearchInColumnsChange($event)"
                 (headerColNameSelected)="handleHeaderColNameSelection($event)"
                 (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
                 (selectedFilter)="changeFilterTags($event)"
                 (selectedFilterType)="changeFilterType($event)"
                 (deleteFilters)="deleteFilters($event)"
+                (nextPageCalled)="nextPg($event)"
             >
             </app-table>
         </div>

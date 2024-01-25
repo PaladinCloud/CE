@@ -124,7 +124,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
     if(state){
       this.headerColName = state.headerColName ?? 'Email';
       this.direction = state.direction ?? 'asc';
-      this.bucketNumber = state.bucketNumber ?? 0;
+      this.pageNumber = state.pageNumber ?? 1;
       this.totalRows = state.totalRows ?? 0;
       this.searchTxt = state?.searchTxt ?? '';
 
@@ -157,7 +157,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
       this.clearState();
     } else {      
       this.tableDataLoaded = false;
-      this.bucketNumber = 0;
+      this.pageNumber = 1;
+      this.tableScrollTop = 0;
       this.tableData = [];
       this.getUserList();
     }
@@ -689,7 +690,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
         headerColName: this.headerColName,
         direction: this.direction,
         whiteListColumns: this.whiteListColumns,
-        bucketNumber: this.bucketNumber,
+        pageNumber: this.pageNumber,
         searchTxt: this.searchTxt,
         tableScrollTop: this.tableScrollTop,
         filters: this.filters,
