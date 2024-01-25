@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import find from 'lodash/find';
 import map from 'lodash/map';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
 import { TourService } from 'src/app/core/services/tour.service';
@@ -19,6 +19,8 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
 import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+import { IFilterObj, IFilterOption, IFilterTagLabelsMap, IFilterTagOptionsMap, IFilterTypeLabel } from 'src/app/shared/table/interfaces/table-props.interface';
+import { CategoryOrderMap, SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
 
 enum PolicyCategory {
   ALL_POLICIES = 'all policies',
@@ -43,7 +45,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   domainSubscription: Subscription;
   complianceTableSubscription: Subscription;
   issueFilterSubscription: Subscription;
-  agDomainSubscription: Subscription;
   tableDataLoaded = false;
   searchTxt = '';
   breadcrumbPresent;
@@ -63,18 +64,25 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   ];
   errorMessage: any = '';
   currentPageLevel = 0;
-  headerColName;
-  direction;
+  headerColName: string;
+  direction: string;
   showSearchBar = true;
   showAddRemoveCol = true;
   filterText;
   queryParamsWithoutFilter;
-  filters = [];
-  filterTypeLabels = [];
-  filterTagLabels = {};
-  filterTypeOptions: any = [];
-  filterTagOptions = {};
-  currentFilterType;
+  filters: IFilterObj[] = [];
+  filterTypeLabels: IFilterTypeLabel[] = [];
+  filterTagLabels: IFilterTagLabelsMap = {};
+  filterTypeOptions: IFilterOption[] = [];
+  filterTagOptions: IFilterTagOptionsMap = {};
+
+  selectedOrder: string;
+  sortOrder: string[] | null;
+  fieldName: string;
+  fieldType: string;
+  onScrollDataLoader = new Subject();
+  destroy$ = new Subject<void>();
+  
   centeredColumns = {
     Policy: false,
     Source: true,
@@ -82,24 +90,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     Category: true,
     'Asset Type': false,
   };
-  columnWidths = { Policy: 3, Source: 0.5, Severity: 0.75, Category: 0.75, 'Asset Type': 1 };
-  columnNamesMap = { name: 'Policy', provider: 'Source' };
-  columnsSortFunctionMap = {
-    Severity: (a, b, isAsc) => {
-      const severeness = { "low": 1, "medium": 2, "high": 3, "critical": 4, "default": 5 * (isAsc ? 1 : -1) }
-
-      const ASeverity = a["Severity"].valueText ?? "default";
-      const BSeverity = b["Severity"].valueText ?? "default";
-      return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
-    },
-    Category: (a, b, isAsc) => {
-      const priority = { "security": 4, "operations": 3, "cost": 2, "tagging": 1, "default": 5 * (isAsc ? 1 : -1) }
-
-      const ACategory = a["Category"].valueText ?? "default";
-      const BCategory = b["Category"].valueText ?? "default";
-      return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
-    },
-  };
+  columnWidths = { Policy: 2.5, Source: 0.5, Severity: 0.75, Category: 0.75, 'Asset Type': 1};
+  columnNamesMap = { name: 'Policy', provider: 'Source'};
   tableImageDataMap = {
     [PolicyCategory.ALL_POLICIES]: {
       image: 'policy-icon',
@@ -139,15 +131,18 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     },
   }
   state: any = {};
-  whiteListColumns;
+  whiteListColumns: string[];
   selectedRowId: string;
-  displayedColumns;
+  displayedColumns: string[];
   tableScrollTop = 0;
   tableData = [];
   isStatePreserved = false;
   doLocalSearch = true; // should be removed once tiles data is available from backend
   totalRows = 0;
   assetTypeMap: any;
+  agDomainSubscription: Subscription;
+  bucketNumber: number = 0;
+  paginatorSize: number = 100;
 
   constructor(private agDomainObservableService: AgDomainObservableService,
     private router: Router,
@@ -239,14 +234,11 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   handleHeaderColNameSelection(event) {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
+    this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event) {
     this.whiteListColumns = event;
-  }
-
-  handleSearchInColumnsChange(event) {
-    // this.state.searchInColumns = event;
   }
 
   handlePopClick(event) {
@@ -456,10 +448,9 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         this.routerUtilityService.getQueryParametersFromSnapshot(
           this.router.routerState.snapshot.root
         );
-      this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
+      const currentFilterType = find(this.filterTypeOptions, { optionName: value });
       const filtersToBePassed = this.getFilterPayloadForDataAPI();
       const filterText = this.filterText;
-      const currentFilterType = this.currentFilterType;
       const [updateFilterTags, labelsToExcludeSort] = this.getUpdateFilterTagsCallback();
       const agAndDomain = {
         ag: this.selectedAssetGroup,
@@ -515,18 +506,17 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     if (!filterValues) {
       return;
     }
-    this.currentFilterType = find(this.filterTypeOptions, {
+    const currentFilterType = find(this.filterTypeOptions, {
       optionName: event.filterKeyDisplayValue,
     });
-    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, currentFilterType, event);
     this.getUpdatedUrl();
-    this.getData();
+    this.updateComponent();
   }
 
   callNewSearch(searchVal) {
     if (!this.doLocalSearch) {
       this.searchTxt = searchVal;
-      // this.state.searchValue = searchVal;
       this.updateComponent();
     } else {
       this.searchTxt = searchVal;
@@ -537,12 +527,15 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   }
 
-  updateComponent() {
-    if (this.isStatePreserved) {
+  updateComponent () {
+    this.updateSortFieldName();
+    if(this.isStatePreserved){
       this.tableDataLoaded = true;
       this.clearState();
       this.tourService.setComponentReady();
     } else {
+      this.bucketNumber = 0;
+      this.tableScrollTop = 0;
       this.tableDataLoaded = false;
       this.getData();
     }
@@ -633,11 +626,35 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     return filterToBePassed;
   }
 
-  getData() {
-    if (!this.selectedAssetGroup || !this.selectedDomain) {
+  updateSortFieldName () {
+    const sortColName = this.headerColName.toLowerCase();
+    this.selectedOrder = this.direction;
+    this.sortOrder = null;
+    this.fieldType = "string";
+    try {
+      let apiColName: any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col] == this.headerColName);
+      if (!apiColName) {
+        apiColName = find(this.filterTypeOptions, {
+          optionName: this.headerColName,
+        })["optionValue"];
+      }
+      this.fieldName = apiColName;
+
+      if (sortColName === "severity") {
+        this.sortOrder = Object.keys(SeverityOrderMap);
+      } else if (sortColName === "category") {
+        this.sortOrder = Object.keys(CategoryOrderMap);
+      }
+    } catch (e) {
+      this.logger.log("error", e);
+      this.headerColName = '';
+    }
+  }
+
+  getData (isNextPageCalled = false) {
+    if(!this.selectedAssetGroup || !this.selectedDomain){
       return;
     }
-    this.tableDataLoaded = false;
     this.errorMessage = '';
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
@@ -645,23 +662,35 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
     const filters = { domain: this.selectedDomain };
 
+    const sortFilter = {
+      fieldName: this.fieldName,
+      fieldType: this.fieldType,
+      order: this.selectedOrder,
+      sortOrder: this.sortOrder
+    }
+
     const payload = {
       ag: this.selectedAssetGroup,
       filter: filters,
       reqFilter: this.getFilterPayloadForDataAPI(),
-      "includeDisabled": false
+      from: this.bucketNumber * this.paginatorSize,
+      size: this.paginatorSize,
+      sortFilter,
+      "includeDisabled" : false
     };
 
     const complianceTableUrl = environment.complianceTable.url;
     const complianceTableMethod = environment.complianceTable.method;
     this.complianceTableSubscription = this.commonResponseService
-      .getData(complianceTableUrl, complianceTableMethod, payload, {})
-      .subscribe(
-        (response) => {
-          this.totalRows = response.total;
-          try {
-            const updatedResponse = this.utils.massageTableData(response.data.response, this.columnNamesMap);
-            const processedData = this.processData(updatedResponse);
+    .getData(complianceTableUrl, complianceTableMethod, payload, {})
+    .subscribe(
+      (response) => {
+        try {
+          const updatedResponse = this.utils.massageTableData(response.data.response, this.columnNamesMap);
+          const processedData = this.processData(updatedResponse);
+          if (isNextPageCalled) {
+            this.onScrollDataLoader.next(processedData);
+          } else {
             this.tableData = processedData;
             this.getTilesData();
             this.tableDataLoaded = true;
@@ -669,23 +698,29 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
               this.totalRows = 0;
               this.errorMessage = 'noDataAvailable';
             }
-            if (response.hasOwnProperty("total")) {
+            if (response.data.hasOwnProperty("total")) {
               this.totalRows = response.data.total;
             } else {
               this.totalRows = this.tableData.length;
             }
-          } catch (e) {
-            this.tableDataLoaded = true;
-            this.errorMessage = this.errorHandling.handleJavascriptError(e);
           }
-          this.tourService.setComponentReady();
-        },
-        (error) => {
-          this.tableDataLoaded = true;
-          this.errorMessage = "apiResponseError";
-          this.tourService.setComponentReady();
+        } catch (e) {
+          this.setError(this.errorHandling.handleJavascriptError(e), isNextPageCalled);
         }
-      );
+        this.tourService.setComponentReady();
+      },
+      (error) => {
+        this.setError(this.errorHandling.handleAPIError(error), isNextPageCalled);
+        this.tourService.setComponentReady();
+      }
+    );
+  }
+
+  setError (errorType, isNextPageCalled?) {
+    if (!isNextPageCalled) {
+      this.errorMessage = errorType;
+    }
+    this.tableDataLoaded = true;
   }
 
   /*
@@ -736,6 +771,17 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         filterKeyDisplayValue: key,
         filterValue: this.filterTagOptions[key].map(item => item.id),
       })
+    }
+  }
+
+  nextPg (e) {
+    try {
+      this.tableScrollTop = e;
+      this.bucketNumber++;
+
+      this.getData(true);
+    } catch (error) {
+      this.errorHandling.handleJavascriptError(error);
     }
   }
 

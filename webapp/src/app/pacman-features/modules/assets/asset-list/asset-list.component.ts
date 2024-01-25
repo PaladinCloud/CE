@@ -278,6 +278,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
+    this.storeState();
     
   }
 

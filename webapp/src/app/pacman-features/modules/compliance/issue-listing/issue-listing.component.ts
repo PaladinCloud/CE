@@ -117,8 +117,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           imageOnly: true
       },
   }
-  whiteListColumns;
-  displayedColumns;
+  whiteListColumns: string[];
+  displayedColumns: string[];
   tableData = [];
   isStatePreserved = false;
   columnsToExcludeFromCasing = ["Account Name"];
@@ -316,6 +316,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
+    this.storeState();
   }
 
   storeState(){
