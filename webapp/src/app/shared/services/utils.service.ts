@@ -543,4 +543,12 @@ export class UtilsService {
     storeRedirectUrl(url?){
       localStorage.setItem(REDIRECT_URL_KEY, url ?? location.href);
     }
+  
+    getAscendingOrder(orderMap){
+      return Object.keys(orderMap).sort((a, b) => orderMap[b] - orderMap[a]);
+    }
+  
+    getDescendingOrder (orderMap) {
+      return this.getAscendingOrder(orderMap).reverse();
+    }
 }

@@ -21,6 +21,7 @@ import { TableStateService } from "src/app/core/services/table-state.service";
 import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
 import { ComponentKeys } from "src/app/shared/constants/component-keys";
 import { FilterManagementService } from "src/app/shared/services/filter-management.service";
+import { CategoryOrderMap, SeverityOrderMap } from "src/app/shared/constants/order-mapping";
 
 @Component({
   selector: "app-issue-listing",
@@ -275,7 +276,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     if (sortColName === "severity") {
       this.fieldName = "severity.keyword";
       this.fieldType = "number";
-      this.sortOrder = ["low", "medium", "high", "critical"]
+      this.sortOrder = this.utils.getAscendingOrder(SeverityOrderMap);
     } else if (sortColName === "violation id") {
       this.fieldName = "_id";
       this.fieldType = "string";
@@ -285,7 +286,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     } else if (sortColName === "category") {
       this.fieldName = "policyCategory.keyword";
       this.fieldType = "number";
-      this.sortOrder = ["tagging", "cost", "operations", "security"]
+      this.sortOrder = this.utils.getAscendingOrder(CategoryOrderMap);
     } else if (sortColName === "policy") {
       this.fieldType = "number";
       this.fieldName = "policyId.keyword";
