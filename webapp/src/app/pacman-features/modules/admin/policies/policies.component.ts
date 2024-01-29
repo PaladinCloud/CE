@@ -576,7 +576,7 @@ import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from "src/app/shared
      }else if(sortColName=='severity' || sortColName=='category'){
        this.fieldName = sortColName;
        const mapOfOrderMaps = {'severity': SeverityOrderMap, 'category': CategoryOrderMap}
-       this.sortOrder = Object.keys(mapOfOrderMaps[sortColName]).sort((a,b) => SeverityOrderMap[a]-SeverityOrderMap[b]);
+       this.sortOrder = this.utils.getAscendingOrder(mapOfOrderMaps[sortColName]);
      } else{
        try{
          let apiColName =  find(this.filterTypeOptions, {

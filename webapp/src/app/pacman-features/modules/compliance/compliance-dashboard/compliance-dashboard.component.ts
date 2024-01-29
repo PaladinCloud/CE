@@ -720,18 +720,17 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     this.sortOrder = null;
     this.fieldType = "string";
     try {
-      let apiColName: any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col] == this.headerColName);
-      if (!apiColName) {
-        apiColName = find(this.filterTypeOptions, {
-          optionName: this.headerColName,
-        })["optionValue"];
-      }
-      this.fieldName = apiColName;
+        let apiColName: any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col] == this.headerColName);
+        if (!apiColName) {
+          apiColName = find(this.filterTypeOptions, {
+            optionName: this.headerColName,
+          })["optionValue"];
+        }
+        this.fieldName = apiColName;
 
-      if (sortColName === "severity") {
-        this.sortOrder = Object.keys(SeverityOrderMap);
-      } else if (sortColName === "category") {
-        this.sortOrder = Object.keys(CategoryOrderMap);
+      if (sortColName == 'severity' || sortColName == 'category') {
+        const mapOfOrderMaps = { 'severity': SeverityOrderMap, 'category': CategoryOrderMap }
+        this.sortOrder = this.utils.getAscendingOrder(mapOfOrderMaps[sortColName]);
       }
     } catch (e) {
       this.logger.log("error", e);
