@@ -1084,7 +1084,7 @@ html body .offline-ui.offline-ui-down.offline-ui-waiting .offline-ui-retry {
 }
 
 body {
-  background-color: var(--background-grey);
+  background-color: #909090;
 }
 
 .widget-container {

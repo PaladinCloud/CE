@@ -1,158 +1,50 @@
 /*
-*Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License"); You may not use
-* this file except in compliance with the License. A copy of the License is located at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* or in the "license" file accompanying this file. This file is distributed on
-* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
-* implied. See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+ * this file except in compliance with the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+ * implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { fadeInOut } from './../common/animations/animations';
-import { OnPremAuthenticationService } from '../../core/services/onprem-authentication.service';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { UtilsService } from '../../shared/services/utils.service';
-import { CONTENT } from './../../../config/static-content';
-import { AuthService } from '../../core/services/auth.service';
 
-import { CONFIGURATIONS } from './../../../config/configurations';
-import { AdalService } from '../../core/services/adal.service';
-import { AwsCognitoService } from '../../core/services/aws-cognito.service';
-import { HttpService } from 'src/app/shared/services/http-response.service';
-import { LoggerService } from 'src/app/shared/services/logger.service';
-import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { CONFIGURATIONS } from 'src/config/configurations';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css'],
-    animations: [fadeInOut],
-    providers: []
 })
 export class LoginComponent implements OnInit {
-    CLIENT_ID = 'pacman2_api_client';
-    username: string;
-    password: string;
-    throwError = false;
-    showErrorMessage = 'hide';
-    loginPending = false;
-    subscriptionToAssetGroup: Subscription;
-    content;
-    showOnPremLogin = false;
-
-
-    constructor(private authenticationService: OnPremAuthenticationService,
-        private authService: AuthService,
-        private logger: LoggerService,
-        private router: Router,
-        private utilityService: UtilsService,
-        private adalService: AdalService,
-        private onPremAuthentication: OnPremAuthenticationService,
-        private cognitoService: AwsCognitoService,
-        private httpService: HttpService,
-        private dataCacheService:DataCacheService,
-        ) {}
-
-    @Input() menuState: string;
-    @Output() onClose = new EventEmitter();
-
+    constructor(private router: Router) {}
     ngOnInit() {
         // Check if the configuration is valid; if not, navigate to the error page
 
         if (this._verifyConfiguration()) this._init();
-        else window.location.href = 'error';
+        else this.router.navigate(['/error']);
     }
 
-    private _verifyConfiguration(){
-        if(!CONFIGURATIONS.optional.auth.AUTH_TYPE){
+    private _verifyConfiguration() {
+        if (!CONFIGURATIONS.optional.auth.AUTH_TYPE) {
             console.error('AUTH_TYPE is missing in configuration');
-            return false
+            return false;
         }
-        if(!CONFIGURATIONS.optional.auth.cognitoConfig.loginURL){
+        if (!CONFIGURATIONS.optional.auth.cognitoConfig.loginURL) {
             console.error('Login URL is missing in configuration');
-            return false
+            return false;
         }
         return true;
     }
-    private _init(){
+    private _init() {
         // Private method to initialize the application based on the configuration
-        
+
         console.log('Auth type:', CONFIGURATIONS.optional.auth.AUTH_TYPE);
-        if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso') {
-            this.adalService.login();
-        } else if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'cognito') {
-            console.log('Inside Cognito auth')
-            window.location.assign(CONFIGURATIONS.optional.auth.cognitoConfig.loginURL);
-        } else {
-            this.showOnPremLogin = true;
-        }
-        this.content = CONTENT;
-    }
-
-    login() {
-        if (!this.username || !this.password) {
-            this.throwLoginError();
-        } else if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'cognito') {
-            console.log('Inside Cognito auth')
-            window.location.replace(CONFIGURATIONS.optional.auth.cognitoConfig.loginURL);
-        } else {
-            this.loginPending = true;
-            const payload = {
-                clientId: this.CLIENT_ID,
-                username: this.authenticationService.formatUsernameWithoutDomain(this.username),
-                password: this.password
-            };
-
-            this.authService.authenticateUserOnPrem(
-                environment.login.url,
-                environment.login.method,
-                payload, {} )
-                .subscribe(
-                    (result:any) => {
-                        this.loginPending = false;
-                        if (result.success) {
-                            this.takeActionPostLogin(result);
-                        } else {
-                            this.throwLoginError();
-                        }
-                    },
-                    error => {
-                        this.loginPending = false;
-                        this.throwLoginError();
-                    }
-                );
-        }
-    }
-
-    closeSidemenu($event?) {
-        this.router.navigate(['/home']);
-    }
-
-    resetError() {
-        this.showErrorMessage = 'hide';
-        this.throwError = false;
-    }
-
-    throwLoginError() {
-        this.showErrorMessage = 'show';
-        this.throwError = true;
-    }
-
-    takeActionPostLogin(fetchedResult) {
-        // Save user Details in cache
-        this.onPremAuthentication.massageAndStoreUserDetails(fetchedResult);
-        // Post saving user details to cache. Redirect user to dashboard.
-        let defaultAssetGroup = null;
-        if (fetchedResult && fetchedResult.userInfo) {
-            defaultAssetGroup = fetchedResult.userInfo.defaultAssetGroup;
-        }
-        this.authService.redirectPostLogin(defaultAssetGroup);
+        window.location.assign(CONFIGURATIONS.optional.auth.cognitoConfig.loginURL);
     }
 }
