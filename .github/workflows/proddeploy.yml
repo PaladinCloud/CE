@@ -74,11 +74,11 @@ jobs:
               - 'jobs/pacman-data-shipper/**'
             notification-es-logging-service:
               - 'lambda-functions/notification-es-logging-service/**'
-            notification-invoke-service
+            notification-invoke-service:
               - 'lambda-functions/notification-invoke-service/**'
-            notification-send-email-service
+            notification-send-email-service:
               - 'lambda-functions/notification-send-email-service/**'
-            notification-template-formatter-service
+            notification-template-formatter-service:
               - 'lambda-functions/notification-template-formatter-service/**'
             DB_Policy:
               - 'installer/resources/pacbot_app/files/DB_Policy.sql'
@@ -142,7 +142,7 @@ jobs:
   Push-azure-Prod:
     name: Push azure-discovery to s3 Prod
     runs-on: ubuntu-latest 
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - AzureBuild
       - extract_version
@@ -200,7 +200,7 @@ jobs:
   Push-awsrules-Prod:
     name: Push awsrules to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - AwsrulesBuild
       - extract_version
@@ -258,7 +258,7 @@ jobs:
   Push-Qualys-Prod:
     name: Push qualys to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - QualysBuild
       - extract_version
@@ -316,7 +316,7 @@ jobs:
   Push-recommendation-Prod:
     name: Push recommendation-enricher to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - RecommendationBuild
       - extract_version
@@ -374,7 +374,7 @@ jobs:
   Push-gcp-Prod:
     name: Push gcp-discovery to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - GCPBuild
       - extract_version
@@ -433,7 +433,7 @@ jobs:
   Push-Cloud-Discovery-Prod:
     name: Push Cloud-discovery to s3 Prod
     runs-on: ubuntu-latest 
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - Cloud-Discovery-Build
       - extract_version
@@ -496,7 +496,7 @@ jobs:
   Push-RuleEngineBuild-Prod:
     name: Push Rule-engine-2.0 to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - RuleEngineBuild
       - extract_version
@@ -555,7 +555,7 @@ jobs:
   Push-SchedulerBuild-Prod:
     name: Push SchedulerBuild to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - SchedulerBuild
       - extract_version
@@ -614,7 +614,7 @@ jobs:
   Push-Notification-Prod:
     name: Push Notification to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - NotificationBuild
       - extract_version
@@ -672,7 +672,7 @@ jobs:
   Push-Tenable-Prod:
     name: Push Tenable to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - TenableBuild
       - extract_version
@@ -731,7 +731,7 @@ jobs:
   Push-Aqua-Prod:
     name: Push Aqua to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - AquaBuild
       - extract_version
@@ -790,7 +790,7 @@ jobs:
   Push-Shipper-Prod:
     name: Push Shipper to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - ShipperBuild
       - extract_version
@@ -816,18 +816,259 @@ jobs:
     name: Push SQL files to s3 prod
     runs-on: ubuntu-latest
     if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for QA account
+      - name: Configure AWS credentials for PROD account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: sql files to qa S3
         run: |
-          cd installer/resources/pacbot_app/files/
+          cd ./installer/resources/pacbot_app/files/
           aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/sql/
           aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/sql/
+  Es-logging:
+    name: es-logging-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-es-logging-service == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd lambda-functions/notification-es-logging-service/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push' || github.event_name == 'create'
+        uses: actions/upload-artifact@v4
+        with:
+          name: es-logging-artifact
+          path: ./dist/lambda
+
+  Es-logging-PROD:
+    name: Push es log lambda to s3 PROD
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSPROD'
+    needs:
+      - Es-logging
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for PROD account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: es-logging-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/qa/lambda
+
+  Invoke-Service:
+    name: invoke-service-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-invoke-service == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd lambda-functions/notification-invoke-service
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push' || github.event_name == 'create'
+        uses: actions/upload-artifact@v4
+        with:
+          name: invoke-service-artifact
+          path: ./dist/lambda
+
+  InvokeService-PROD:
+    name: Push invoke service lambda to s3 PROD
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSPROD'
+    needs:
+      - Invoke-Service
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for PROD account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: invoke-service-artifact
+          path: ./dist/lambda
+      - name: copy lambda jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/qa/lambda
+
+  Send-Email-Service:
+    name: Send-Email-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-send-email-service == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd lambda-functions/notification-send-email-service
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push' || github.event_name == 'create'
+        uses: actions/upload-artifact@v4
+        with:
+          name: send-email-artifact
+          path: ./dist/lambda
+
+
+  Send-Email-PROD:
+    name: Push send mail lambdato s3 PROD
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSPROD'
+    needs:
+      - Send-Email-Service
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for PROD account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: send-email-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/qa/lambda  
+        
+  Template-formatter-Service:
+    name: Template-formatter-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-template-formatter-service == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd lambda-functions/notification-template-formatter-service
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push' || github.event_name == 'create'
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-formatter-artifact
+          path: ./dist/lambda
+
+ 
+  Template-formatter-PROD:
+    name: Push template formatter to s3 PROD
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSPROD'
+    needs:
+      - Template-formatter-Service
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for PROD account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: template-formatter-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/qa/lambda  

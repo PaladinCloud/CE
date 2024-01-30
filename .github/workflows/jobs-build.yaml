@@ -114,11 +114,11 @@ jobs:
               - 'jobs/pacman-data-shipper/**'
             notification-es-logging-service:
               - 'lambda-functions/notification-es-logging-service/**'
-            notification-invoke-service
+            notification-invoke-service:
               - 'lambda-functions/notification-invoke-service/**'
-            notification-send-email-service
+            notification-send-email-service:
               - 'lambda-functions/notification-send-email-service/**'
-            notification-template-formatter-service
+            notification-template-formatter-service:
               - 'lambda-functions/notification-template-formatter-service/**'
             DB_Policy:
               - 'installer/resources/pacbot_app/files/DB_Policy.sql'
@@ -184,6 +184,7 @@ jobs:
   Push-azure-Dev:
     name: Push azure-discovery to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - AzureBuild
@@ -268,6 +269,7 @@ jobs:
   Push-awsrules-Dev:
     name: Push awsrules to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - AwsrulesBuild
@@ -352,6 +354,7 @@ jobs:
   Push-Qualys-Dev:
     name: Push qualys to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - QualysBuild
@@ -436,6 +439,7 @@ jobs:
   Push-recommendation-Dev:
     name: Push recommendation-enricher to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - RecommendationBuild
@@ -521,6 +525,7 @@ jobs:
   Push-Cloud-Discovery-Dev:
     name: Push Cloud-discovery to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Cloud-Discovery-Build
@@ -612,6 +617,7 @@ jobs:
     name: Push Rule-engine-2.0 to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - RuleEngineBuild
     steps:
@@ -697,6 +703,7 @@ jobs:
     name: Push SchedulerBuild to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - SchedulerBuild
     steps:
@@ -782,6 +789,7 @@ jobs:
     name: Push Notification to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - NotificationBuild
     steps:
@@ -866,6 +874,7 @@ jobs:
     name: Push Tenable to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - TenableBuild
     steps:
@@ -950,6 +959,7 @@ jobs:
     name: Push Aqua to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - AquaBuild
     steps:
@@ -1034,6 +1044,7 @@ jobs:
     name: Push Shipper to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - ShipperBuild
     steps:
@@ -1105,7 +1116,7 @@ jobs:
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Building Jobs jar
         run: |
-          cd jobs/pacman-data-shipper/
+          cd lambda-functions/notification-es-logging-service/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
         if: github.event_name == 'push' || github.event_name == 'create'
@@ -1116,6 +1127,7 @@ jobs:
 
   Es-logging-Dev:
     name: Push es log lambda to s3 dev
+    environment: 'SaaSDEV'
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
@@ -1139,7 +1151,7 @@ jobs:
           aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
 
   Es-logging-QA:
-    name: Push es logging to s3 QA
+    name: Push es log lambda to s3 QA
     runs-on: ubuntu-latest
     if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
     environment: 'SaaSQA'
@@ -1157,7 +1169,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
-        uses: actions/upload-artifact@v4
         with:
           name: es-logging-artifact
           path: ./dist/lambda
@@ -1190,7 +1201,7 @@ jobs:
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Building Jobs jar
         run: |
-          cd jobs/pacman-data-shipper/
+          cd lambda-functions/notification-invoke-service
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
         if: github.event_name == 'push' || github.event_name == 'create'
@@ -1202,6 +1213,7 @@ jobs:
   InvokeService-Dev:
     name: Push invoke service lambda to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Invoke-Service
@@ -1224,7 +1236,7 @@ jobs:
           aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
 
   InvokeService-QA:
-    name: Push invoke service to s3 QA
+    name: Push invoke service lambda to s3 QA
     runs-on: ubuntu-latest
     if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
     environment: 'SaaSQA'
@@ -1274,7 +1286,7 @@ jobs:
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Building Jobs jar
         run: |
-          cd jobs/pacman-data-shipper/
+          cd lambda-functions/notification-send-email-service
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
         if: github.event_name == 'push' || github.event_name == 'create'
@@ -1284,8 +1296,9 @@ jobs:
           path: ./dist/lambda
 
   Send-Email-Dev:
-    name: Push es log lambda to s3 dev
+    name: Push send mail lambda to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Send-Email-Service
@@ -1308,7 +1321,7 @@ jobs:
           aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
 
   Send-Email-QA:
-    name: Push Shipper to s3 QA
+    name: Push send mail lambdato s3 QA
     runs-on: ubuntu-latest
     if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
     environment: 'SaaSQA'
@@ -1334,7 +1347,7 @@ jobs:
           aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda  
         
   Template-formatter-Service:
-    name: Send-Email-Build
+    name: Template-formatter-Build
     runs-on: ubuntu-latest
     needs:
       - filter
@@ -1358,18 +1371,19 @@ jobs:
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Building Jobs jar
         run: |
-          cd jobs/pacman-data-shipper/
+          cd lambda-functions/notification-template-formatter-service
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
         if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
-          name: template-formater-artifact
+          name: template-formatter-artifact
           path: ./dist/lambda
 
   Template-formatter-Dev:
-    name: Push es log lambda to s3 dev
+    name: Push template formatter to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Template-formatter-Service
@@ -1392,7 +1406,7 @@ jobs:
           aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
 
   Template-formatter-QA:
-    name: Push Shipper to s3 QA
+    name: Push template formatter to s3 QA
     runs-on: ubuntu-latest
     if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
     environment: 'SaaSQA'
@@ -1419,7 +1433,8 @@ jobs:
 
   push-sql-Dev:
     name: Push SQL files to s3 dev
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     steps:
       - uses: actions/checkout@v4
@@ -1432,9 +1447,9 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: sql files to dev S3
         run: |
-          cd installer/resources/pacbot_app/files/
-          aws s3 cp --recursive DB_Policy.sql s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/sql/
-          aws s3 cp --recursive DB.sql s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/sql/
+          cd ./installer/resources/pacbot_app/files/
+          aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/sql/
+          aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/sql/
 
   push-sql-Qa:
     name: Push SQL files to s3 qa
@@ -1452,6 +1467,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: sql files to qa S3
         run: |
-          cd installer/resources/pacbot_app/files/
+          cd ./installer/resources/pacbot_app/files/
           aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/sql/
           aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/sql/
