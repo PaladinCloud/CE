@@ -758,6 +758,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   updatePoliciesTable () {
     this.updateSortFieldName();
     if (this.isStatePreserved) {
+      this.clearState();
       this.tableDataLoaded = true;
       this.getFilters();
     } else {
