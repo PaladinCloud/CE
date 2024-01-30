@@ -114,11 +114,11 @@ jobs:
               - 'jobs/pacman-data-shipper/**'
             notification-es-logging-service:
               - 'lambda-functions/notification-es-logging-service/**'
-            notification-invoke-service
+            notification-invoke-service:
               - 'lambda-functions/notification-invoke-service/**'
-            notification-send-email-service
+            notification-send-email-service:
               - 'lambda-functions/notification-send-email-service/**'
-            notification-template-formatter-service
+            notification-template-formatter-service:
               - 'lambda-functions/notification-template-formatter-service/**'
             DB_Policy:
               - 'installer/resources/pacbot_app/files/DB_Policy.sql'
@@ -184,6 +184,7 @@ jobs:
   Push-azure-Dev:
     name: Push azure-discovery to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - AzureBuild
@@ -268,6 +269,7 @@ jobs:
   Push-awsrules-Dev:
     name: Push awsrules to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - AwsrulesBuild
@@ -352,6 +354,7 @@ jobs:
   Push-Qualys-Dev:
     name: Push qualys to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - QualysBuild
@@ -436,6 +439,7 @@ jobs:
   Push-recommendation-Dev:
     name: Push recommendation-enricher to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - RecommendationBuild
@@ -521,6 +525,7 @@ jobs:
   Push-Cloud-Discovery-Dev:
     name: Push Cloud-discovery to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Cloud-Discovery-Build
@@ -612,6 +617,7 @@ jobs:
     name: Push Rule-engine-2.0 to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - RuleEngineBuild
     steps:
@@ -697,6 +703,7 @@ jobs:
     name: Push SchedulerBuild to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - SchedulerBuild
     steps:
@@ -782,6 +789,7 @@ jobs:
     name: Push Notification to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - NotificationBuild
     steps:
@@ -866,6 +874,7 @@ jobs:
     name: Push Tenable to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - TenableBuild
     steps:
@@ -950,6 +959,7 @@ jobs:
     name: Push Aqua to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - AquaBuild
     steps:
@@ -1034,6 +1044,7 @@ jobs:
     name: Push Shipper to s3 dev
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    environment: 'SaaSDEV'
     needs:
       - ShipperBuild
     steps:
@@ -1116,6 +1127,7 @@ jobs:
 
   Es-logging-Dev:
     name: Push es log lambda to s3 dev
+    environment: 'SaaSDEV'
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
@@ -1157,7 +1169,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
-        uses: actions/upload-artifact@v4
         with:
           name: es-logging-artifact
           path: ./dist/lambda
@@ -1202,6 +1213,7 @@ jobs:
   InvokeService-Dev:
     name: Push invoke service lambda to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Invoke-Service
@@ -1286,6 +1298,7 @@ jobs:
   Send-Email-Dev:
     name: Push es log lambda to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Send-Email-Service
@@ -1370,6 +1383,7 @@ jobs:
   Template-formatter-Dev:
     name: Push es log lambda to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     needs:
       - Template-formatter-Service
@@ -1420,6 +1434,7 @@ jobs:
   push-sql-Dev:
     name: Push SQL files to s3 dev
     runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
     if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
     steps:
       - uses: actions/checkout@v4

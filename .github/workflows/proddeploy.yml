@@ -74,11 +74,11 @@ jobs:
               - 'jobs/pacman-data-shipper/**'
             notification-es-logging-service:
               - 'lambda-functions/notification-es-logging-service/**'
-            notification-invoke-service
+            notification-invoke-service:
               - 'lambda-functions/notification-invoke-service/**'
-            notification-send-email-service
+            notification-send-email-service:
               - 'lambda-functions/notification-send-email-service/**'
-            notification-template-formatter-service
+            notification-template-formatter-service:
               - 'lambda-functions/notification-template-formatter-service/**'
             DB_Policy:
               - 'installer/resources/pacbot_app/files/DB_Policy.sql'
@@ -142,7 +142,7 @@ jobs:
   Push-azure-Prod:
     name: Push azure-discovery to s3 Prod
     runs-on: ubuntu-latest 
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - AzureBuild
       - extract_version
@@ -200,7 +200,7 @@ jobs:
   Push-awsrules-Prod:
     name: Push awsrules to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - AwsrulesBuild
       - extract_version
@@ -258,7 +258,7 @@ jobs:
   Push-Qualys-Prod:
     name: Push qualys to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - QualysBuild
       - extract_version
@@ -316,7 +316,7 @@ jobs:
   Push-recommendation-Prod:
     name: Push recommendation-enricher to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - RecommendationBuild
       - extract_version
@@ -374,7 +374,7 @@ jobs:
   Push-gcp-Prod:
     name: Push gcp-discovery to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - GCPBuild
       - extract_version
@@ -433,7 +433,7 @@ jobs:
   Push-Cloud-Discovery-Prod:
     name: Push Cloud-discovery to s3 Prod
     runs-on: ubuntu-latest 
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - Cloud-Discovery-Build
       - extract_version
@@ -496,7 +496,7 @@ jobs:
   Push-RuleEngineBuild-Prod:
     name: Push Rule-engine-2.0 to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - RuleEngineBuild
       - extract_version
@@ -555,7 +555,7 @@ jobs:
   Push-SchedulerBuild-Prod:
     name: Push SchedulerBuild to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - SchedulerBuild
       - extract_version
@@ -614,7 +614,7 @@ jobs:
   Push-Notification-Prod:
     name: Push Notification to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - NotificationBuild
       - extract_version
@@ -672,7 +672,7 @@ jobs:
   Push-Tenable-Prod:
     name: Push Tenable to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - TenableBuild
       - extract_version
@@ -731,7 +731,7 @@ jobs:
   Push-Aqua-Prod:
     name: Push Aqua to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - AquaBuild
       - extract_version
@@ -790,7 +790,7 @@ jobs:
   Push-Shipper-Prod:
     name: Push Shipper to s3 Prod
     runs-on: ubuntu-latest
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     needs:
       - ShipperBuild
       - extract_version
@@ -816,7 +816,7 @@ jobs:
     name: Push SQL files to s3 prod
     runs-on: ubuntu-latest
     if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
-    environment: 'SaaSprod'
+    environment: 'SaaSPROD'
     steps:
       - uses: actions/checkout@v4
         with:
