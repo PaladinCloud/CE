@@ -18,17 +18,16 @@ package com.tmobile.pacman.commons.dto;
 import java.util.List;
 import java.util.Map;
 
-public class PermissionVH {
-    Map<String, List<String>> assetPermissionIssues;
+public class CollectorIssuesVH {
+    Map<String, List<String>> assetIssues;
     String accountNumber;
 
-
-    public Map<String, List<String>> getAssetPermissionIssues() {
-        return assetPermissionIssues;
+    public Map<String, List<String>> getAssetIssues() {
+        return assetIssues;
     }
 
-    public void setAssetPermissionIssues(Map<String, List<String>> assetPermissionIssues) {
-        this.assetPermissionIssues = assetPermissionIssues;
+    public void setAssetIssues(Map<String, List<String>> assetIssues) {
+        this.assetIssues = assetIssues;
     }
 
     public String getAccountNumber() {

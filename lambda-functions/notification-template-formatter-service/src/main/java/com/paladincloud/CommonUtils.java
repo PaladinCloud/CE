@@ -9,39 +9,37 @@ import static com.paladincloud.Constants.REVOKE_EXEMPTION_REQUEST;
 
 public class CommonUtils {
 
-    private static String getViolationTemplateName(String channelName, String action){
-        String templateName="";
-        if("create".equalsIgnoreCase(action)){
-            switch(channelName){
+    private static String getViolationTemplateName(String channelName, String action) {
+        String templateName = "";
+        if ("create".equalsIgnoreCase(action)) {
+            switch (channelName) {
                 case "slack":
-                    templateName= "openViolationsSlackTemplate.html";
+                    templateName = "openViolationsSlackTemplate.html";
                     break;
                 case "jira":
-                    templateName= "openViolationsJiraTemplate.html";
+                    templateName = "openViolationsJiraTemplate.html";
                     break;
                 default:
-                    templateName= "openViolationsEmailTemplate.html";
+                    templateName = "openViolationsEmailTemplate.html";
                     break;
             }
-        }
-        else{
-            switch(channelName){
+        } else {
+            switch (channelName) {
                 case "jira":
-                    templateName= "closeViolationsJiraTemplate.html";
+                    templateName = "closeViolationsJiraTemplate.html";
                     break;
                 default:
-                    templateName= "closeViolationsEmailTemplate.html";
+                    templateName = "closeViolationsEmailTemplate.html";
                     break;
             }
         }
         return templateName;
     }
 
-    private static String getExemptionTemplateName(String channelName, String action, String exemptionType){
-        if("sticky".equalsIgnoreCase(exemptionType)){
-            return getStickyExTemplateName(channelName,action);
-        }
-        else{
+    private static String getExemptionTemplateName(String channelName, String action, String exemptionType) {
+        if ("sticky".equalsIgnoreCase(exemptionType)) {
+            return getStickyExTemplateName(channelName, action);
+        } else {
             return getIndividualExTemplateName(action);
         }
     }
@@ -65,25 +63,23 @@ public class CommonUtils {
     }
 
     private static String getStickyExTemplateName(String channelName, String action) {
-        String templateName="";
-        if("create".equalsIgnoreCase(action)){
-            switch(channelName){
+        String templateName = "";
+        if ("create".equalsIgnoreCase(action)) {
+            switch (channelName) {
                 default:
-                    templateName= "createStickyExEmailTemplate.html";
+                    templateName = "createStickyExEmailTemplate.html";
                     break;
             }
-        }
-        else if("update".equalsIgnoreCase(action)){
-            switch(channelName){
+        } else if ("update".equalsIgnoreCase(action)) {
+            switch (channelName) {
                 default:
-                    templateName= "updateStickyExEmailTemplate.html";
+                    templateName = "updateStickyExEmailTemplate.html";
                     break;
             }
-        }
-        else{
-            switch(channelName){
+        } else {
+            switch (channelName) {
                 default:
-                    templateName= "deleteStickyExEmailTemplate.html";
+                    templateName = "deleteStickyExEmailTemplate.html";
                     break;
             }
         }
@@ -91,19 +87,20 @@ public class CommonUtils {
     }
 
 
-    public static String getTemplateName(String channelName, String action, String notificationType, String exemptionType){
-
-        switch(notificationType){
+    public static String getTemplateName(String channelName, String action, String notificationType, String exemptionType,String eventName) {
+        switch (eventName) {
+            case "Permission denied and misconfiguration":
+                return "permissionAlertEmailTemplate.html";
+        }
+        switch (notificationType) {
             case "violation":
-                return getViolationTemplateName(channelName,action);
+                return getViolationTemplateName(channelName, action);
             case "exemption":
-                return getExemptionTemplateName(channelName,action,exemptionType);
+                return getExemptionTemplateName(channelName, action, exemptionType);
             case "autofix":
-                return getAutofixTemplateName(channelName,action);
+                return getAutofixTemplateName(channelName, action);
             case "policy":
                 return "policyActionEmailTemplate.html";
-            case "permission":
-                return "permissionAlertEmailTemplate.html";
             case "plugin":
                 return "pluginEmailTemplate.html";
         }
@@ -112,16 +109,14 @@ public class CommonUtils {
 
     private static String getAutofixTemplateName(String channelName, String action) {
         String templateName = "";
-        switch(channelName){
+        switch (channelName) {
             case "email":
-                if(Constants.AutoFixAction.AUTOFIX_ACTION_EMAIL.toString().equalsIgnoreCase(action)) {
-                    templateName= "autofixWarningNotification.html";
-                }
-                else if(Constants.AutoFixAction.AUTOFIX_ACTION_FIX.toString().equalsIgnoreCase(action)) {
-                    templateName= "autofixAppliedNotification.html";
-                }
-                else if(Constants.AutoFixAction.AUTOFIX_ACTION_EXEMPTED.toString().equalsIgnoreCase(action)) {
-                    templateName= "autofixExemptedForViolation.html";
+                if (Constants.AutoFixAction.AUTOFIX_ACTION_EMAIL.toString().equalsIgnoreCase(action)) {
+                    templateName = "autofixWarningNotification.html";
+                } else if (Constants.AutoFixAction.AUTOFIX_ACTION_FIX.toString().equalsIgnoreCase(action)) {
+                    templateName = "autofixAppliedNotification.html";
+                } else if (Constants.AutoFixAction.AUTOFIX_ACTION_EXEMPTED.toString().equalsIgnoreCase(action)) {
+                    templateName = "autofixExemptedForViolation.html";
                 }
                 break;
         }

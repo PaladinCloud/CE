@@ -18,7 +18,7 @@ package com.tmobile.pacman.commons.utils;
 import com.google.gson.Gson;
 import com.tmobile.pacman.commons.dto.NotificationBaseRequest;
 import com.tmobile.pacman.commons.dto.PaladinAccessToken;
-import com.tmobile.pacman.commons.dto.PermissionVH;
+import com.tmobile.pacman.commons.dto.CollectorIssuesVH;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,19 +27,19 @@ import java.util.*;
 
 public class NotificationPermissionUtils {
     private static final String NOTIFICATION_URL = "notification.lambda.function.url";
-    static String SUBJECT = "Insufficient permissions";
-    static String opsEventName = "Permission denied for %s";
+    static String SUBJECT = "Insufficient permissions and Misconfigurations";
+    static String opsEventName = "Permission denied and misconfiguration";
     static int numberOfPermissionIssuesPerEmail = 40;
     private static PaladinAccessToken accessToken;
     static String notificationsLink = System.getProperty("pacman.host") + "/pl/notifications/notifications-list";
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationPermissionUtils.class);
 
-    public static void triggerNotificationForPermissionDenied(List<PermissionVH> permissionVHList, String cloudType) {
+    public static void triggerNotificationForPermissionDenied(List<CollectorIssuesVH> collectorIssuesVHList, String cloudType) {
         try {
             Gson gson = new Gson();
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
-            if (!permissionVHList.isEmpty()) {
-                notificationDetailsList = getPermissionNotificationRequest(cloudType, permissionVHList);
+            if (!collectorIssuesVHList.isEmpty()) {
+                notificationDetailsList = getPermissionNotificationRequest(cloudType, collectorIssuesVHList);
             }
             if (!notificationDetailsList.isEmpty()) {
                 String notificationDetailsStr = gson.toJson(notificationDetailsList);
@@ -55,24 +55,28 @@ public class NotificationPermissionUtils {
 
     private static NotificationBaseRequest getNotificationBaseRequest(JSONObject payload, String cloudType) {
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
-        notificationBaseRequest.setEventCategory(Constants.NotificationTypes.PERMISSION);
+        notificationBaseRequest.setEventCategory(Constants.NotificationTypes.PLUGIN);
         notificationBaseRequest.setSubject(SUBJECT);
-        notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.PERMISSION.getValue());
-        notificationBaseRequest.setEventName(String.format(String.format(opsEventName, cloudType)));
-        notificationBaseRequest.setEventDescription(String.format(String.format(opsEventName, cloudType)));
+        notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.PLUGIN.getValue());
+        notificationBaseRequest.setEventName(opsEventName);
+        notificationBaseRequest.setEventDescription(opsEventName);
         notificationBaseRequest.setEventSourceName(cloudType);
         notificationBaseRequest.setPayload(payload);
         return notificationBaseRequest;
     }
 
-    private static List<NotificationBaseRequest> getPermissionNotificationRequest(String cloudType, List<PermissionVH> permissionVHList) {
+    private static List<NotificationBaseRequest> getPermissionNotificationRequest(String cloudType, List<CollectorIssuesVH> collectorIssuesVHList) {
         int numberOfPermissionIssues = 0;
         List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
         JSONObject payload = new JSONObject();
-        for (PermissionVH permissionVH : permissionVHList) {
-            for (Map.Entry<String, List<String>> assetPermission : permissionVH.getAssetPermissionIssues().entrySet()) {
+        for (CollectorIssuesVH collectorIssuesVH : collectorIssuesVHList) {
+            for (Map.Entry<String, List<String>> assetPermission : collectorIssuesVH.getAssetIssues().entrySet()) {
                 numberOfPermissionIssues++;
-                payload.put("permissionIssueFor" + assetPermission.getKey().toUpperCase() + "InAccount" + permissionVH.getAccountNumber(), assetPermission.toString());
+                if (assetPermission.getKey().startsWith("misconfigured")) {
+                    payload.put(assetPermission.getKey() + "InAccount" + collectorIssuesVH.getAccountNumber(), assetPermission.toString());
+                } else {
+                    payload.put("permissionIssueFor" + assetPermission.getKey().toUpperCase() + "InAccount" + collectorIssuesVH.getAccountNumber(), assetPermission.toString());
+                }
                 if (numberOfPermissionIssues % numberOfPermissionIssuesPerEmail == 0) {
                     payload.put("cloudType", cloudType);
                     payload.put("message", "Unable to collect data due to missing permission");
