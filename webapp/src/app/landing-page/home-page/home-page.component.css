@@ -29,12 +29,7 @@
     text-align: center;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-p {
+.loading-msg {
     margin: 0;
     font-family: 'mark-pro-medium';
     font-size: 14px;
