@@ -32,6 +32,12 @@ jobs:
       pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher }}
       pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper }}
       pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher }}
+      notification-es-logging-service: ${{ steps.filter.outputs.notification-es-logging-service }}
+      notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service }}
+      notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service }}
+      notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service }}
+      DB_Policy: ${{ steps.filter.outputs.DB_Policy }}
+      DB: ${{ steps.filter.outputs.DB }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -66,6 +72,18 @@ jobs:
               - 'jobs/pacman-aqua-enricher/**' 
             pacman-data-shipper:
               - 'jobs/pacman-data-shipper/**'
+            notification-es-logging-service:
+              - 'lambda-functions/notification-es-logging-service/**'
+            notification-invoke-service
+              - 'lambda-functions/notification-invoke-service/**'
+            notification-send-email-service
+              - 'lambda-functions/notification-send-email-service/**'
+            notification-template-formatter-service
+              - 'lambda-functions/notification-template-formatter-service/**'
+            DB_Policy:
+              - 'installer/resources/pacbot_app/files/DB_Policy.sql'
+            DB:
+              - 'installer/resources/pacbot_app/files/DB.sql'
 
   extract_version:
     name : extract_version
@@ -121,8 +139,8 @@ jobs:
           name: jobs-azure-artifact
           path: ./dist/jobs
 
-  Push-azure-PROD:
-    name: Push azure-discovery to s3 PROD
+  Push-azure-Prod:
+    name: Push azure-discovery to s3 Prod
     runs-on: ubuntu-latest 
     environment: 'SaaSprod'
     needs:
@@ -132,7 +150,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -144,7 +162,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/PROD/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
   AwsrulesBuild:
     name: Awsrules-Build
@@ -179,8 +197,8 @@ jobs:
           name: jobs-awsrules-artifact
           path: ./dist/jobs
 
-  Push-awsrules-PROD:
-    name: Push awsrules to s3 PROD
+  Push-awsrules-Prod:
+    name: Push awsrules to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -190,7 +208,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -202,7 +220,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/PROD/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
   QualysBuild:
     name: qualys-Build
@@ -237,8 +255,8 @@ jobs:
           name: jobs-qualys-artifact
           path: ./dist/jobs
 
-  Push-Qualys-PROD:
-    name: Push qualys to s3 PROD
+  Push-Qualys-Prod:
+    name: Push qualys to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -248,7 +266,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -260,7 +278,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/PROD/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
   RecommendationBuild:
     name: Recommendation-Build
@@ -295,8 +313,8 @@ jobs:
           name: jobs-recommendation-artifact
           path: ./dist/jobs
 
-  Push-recommendation-PROD:
-    name: Push recommendation-enricher to s3 PROD
+  Push-recommendation-Prod:
+    name: Push recommendation-enricher to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -306,7 +324,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -318,7 +336,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/PROD/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
   GCPBuild:
     name: GCP-Build
@@ -353,8 +371,8 @@ jobs:
           name: jobs-gcp-artifact
           path: ./dist/jobs
 
-  Push-gcp-PROD:
-    name: Push gcp-discovery to s3 PROD
+  Push-gcp-Prod:
+    name: Push gcp-discovery to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -364,7 +382,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -376,7 +394,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
   Cloud-Discovery-Build:
     name: Cloud-Discovery-Build
@@ -412,8 +430,8 @@ jobs:
           name: jobs-cloud-artifact
           path: ./dist/jobs
 
-  Push-Cloud-Discovery-PROD:
-    name: Push Cloud-discovery to s3 PROD
+  Push-Cloud-Discovery-Prod:
+    name: Push Cloud-discovery to s3 Prod
     runs-on: ubuntu-latest 
     environment: 'SaaSprod'
     needs:
@@ -423,7 +441,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -435,7 +453,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
 
   RuleEngineBuild:
@@ -475,8 +493,8 @@ jobs:
           name: jobs-RE2.0-artifact
           path: ./dist/jobs
 
-  Push-RuleEngineBuild-PROD:
-    name: Push Rule-engine-2.0 to s3 PROD
+  Push-RuleEngineBuild-Prod:
+    name: Push Rule-engine-2.0 to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -486,7 +504,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -498,7 +516,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
 
   SchedulerBuild:
@@ -534,8 +552,8 @@ jobs:
           name: jobs-scheduler-artifact
           path: ./dist/jobs
 
-  Push-SchedulerBuild-PROD:
-    name: Push SchedulerBuild to s3 PROD
+  Push-SchedulerBuild-Prod:
+    name: Push SchedulerBuild to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -545,7 +563,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -557,7 +575,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/api
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/api
 
   NotificationBuild:
     name: Notification-Build
@@ -593,8 +611,8 @@ jobs:
           name: jobs-notification-artifact
           path: ./dist/jobs
 
-  Push-Notification-PROD:
-    name: Push Notification to s3 PROD
+  Push-Notification-Prod:
+    name: Push Notification to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -604,7 +622,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -616,7 +634,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
   TenableBuild:
     name: Tenable-Build
@@ -651,8 +669,8 @@ jobs:
           name: jobs-Tenable-artifact
           path: ./dist/jobs
 
-  Push-Tenable-PROD:
-    name: Push Tenable to s3 PROD
+  Push-Tenable-Prod:
+    name: Push Tenable to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -662,7 +680,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -674,7 +692,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
 
   AquaBuild:
@@ -710,8 +728,8 @@ jobs:
           name: jobs-aqua-artifact
           path: ./dist/jobs
 
-  Push-Aqua-PROD:
-    name: Push Aqua to s3 PROD
+  Push-Aqua-Prod:
+    name: Push Aqua to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -721,7 +739,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -733,7 +751,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
 
 
   ShipperBuild:
@@ -769,8 +787,8 @@ jobs:
           name: jobs-shipper-artifact
           path: ./dist/jobs
 
-  Push-Shipper-PROD:
-    name: Push Shipper to s3 PROD
+  Push-Shipper-Prod:
+    name: Push Shipper to s3 Prod
     runs-on: ubuntu-latest
     environment: 'SaaSprod'
     needs:
@@ -780,7 +798,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure AWS credentials for PROD account
+      - name: Configure AWS credentials for Prod account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
@@ -792,4 +810,24 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+
+  push-sql-prod:
+    name: Push SQL files to s3 prod
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSprod'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: sql files to qa S3
+        run: |
+          cd installer/resources/pacbot_app/files/
+          aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/sql/
+          aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/sql/

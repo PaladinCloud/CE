@@ -1,4 +1,4 @@
-name: Jobs-Jars
+name: CE-Dev-S3
 
 on:
   push:
@@ -20,6 +20,8 @@ on:
       - 'jobs/pacman-aqua-enricher/**' 
       - 'jobs/pacman-data-shipper/**' 
       - 'commons/**'
+      - 'installer/resources/pacbot_app/files/DB_Policy.sql'
+      - 'installer/resources/pacbot_app/files/DB.sql'
   pull_request:
     branches:
       -  master
@@ -39,6 +41,8 @@ on:
       - 'jobs/pacman-aqua-enricher/**' 
       - 'jobs/pacman-data-shipper/**' 
       - 'commons/**'
+      - 'installer/resources/pacbot_app/files/DB_Policy.sql'
+      - 'installer/resources/pacbot_app/files/DB.sql'
   create:
     branches:
       - release-v*.*.*
@@ -67,6 +71,13 @@ jobs:
       pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher }}
       pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper }}
       pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher }}
+      notification-es-logging-service: ${{ steps.filter.outputs.notification-es-logging-service }}
+      notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service }}
+      notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service }}
+      notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service }}
+      DB_Policy: ${{ steps.filter.outputs.DB_Policy }}
+      DB: ${{ steps.filter.outputs.DB }}
+
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -101,6 +112,18 @@ jobs:
               - 'jobs/pacman-aqua-enricher/**' 
             pacman-data-shipper:
               - 'jobs/pacman-data-shipper/**'
+            notification-es-logging-service:
+              - 'lambda-functions/notification-es-logging-service/**'
+            notification-invoke-service
+              - 'lambda-functions/notification-invoke-service/**'
+            notification-send-email-service
+              - 'lambda-functions/notification-send-email-service/**'
+            notification-template-formatter-service
+              - 'lambda-functions/notification-template-formatter-service/**'
+            DB_Policy:
+              - 'installer/resources/pacbot_app/files/DB_Policy.sql'
+            DB:
+              - 'installer/resources/pacbot_app/files/DB.sql'
 
   extract_version:
     name : extract_version
@@ -206,7 +229,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
   AwsrulesBuild:
     name: Awsrules-Build
@@ -290,7 +313,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
   QualysBuild:
     name: qualys-Build
@@ -374,7 +397,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
   RecommendationBuild:
     name: Recommendation-Build
@@ -458,7 +481,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/QA/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
   Cloud-Discovery-Build:
     name: Cloud-Discovery-Build
@@ -543,7 +566,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
 
   RuleEngineBuild:
@@ -633,7 +656,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
 
   SchedulerBuild:
@@ -718,7 +741,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/api
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/api
 
   NotificationBuild:
     name: Notification-Build
@@ -803,7 +826,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
   TenableBuild:
     name: Tenable-Build
@@ -887,8 +910,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
-
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
   AquaBuild:
     name: Aqua-Build
@@ -972,7 +994,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
 
   ShipperBuild:
     name: Shipper-Build
@@ -1056,4 +1078,380 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/dev/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+        
+  Es-logging:
+    name: es-logging-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-es-logging-service == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-data-shipper/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push' || github.event_name == 'create'
+        uses: actions/upload-artifact@v4
+        with:
+          name: es-logging-artifact
+          path: ./dist/lambda
+
+  Es-logging-Dev:
+    name: Push es log lambda to s3 dev
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    needs:
+      - Es-logging
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: es-logging-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
+
+  Es-logging-QA:
+    name: Push es logging to s3 QA
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSQA'
+    needs:
+      - Es-logging
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        uses: actions/upload-artifact@v4
+        with:
+          name: es-logging-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda
+
+  Invoke-Service:
+    name: invoke-service-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-invoke-service == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-data-shipper/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push' || github.event_name == 'create'
+        uses: actions/upload-artifact@v4
+        with:
+          name: invoke-service-artifact
+          path: ./dist/lambda
+
+  InvokeService-Dev:
+    name: Push invoke service lambda to s3 dev
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    needs:
+      - Invoke-Service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: invoke-service-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
+
+  InvokeService-QA:
+    name: Push invoke service to s3 QA
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSQA'
+    needs:
+      - Invoke-Service
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: invoke-service-artifact
+          path: ./dist/lambda
+      - name: copy lambda jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda
+
+  Send-Email-Service:
+    name: Send-Email-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-send-email-service == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-data-shipper/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push' || github.event_name == 'create'
+        uses: actions/upload-artifact@v4
+        with:
+          name: send-email-artifact
+          path: ./dist/lambda
+
+  Send-Email-Dev:
+    name: Push es log lambda to s3 dev
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    needs:
+      - Send-Email-Service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: send-email-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
+
+  Send-Email-QA:
+    name: Push Shipper to s3 QA
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSQA'
+    needs:
+      - Send-Email-Service
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: send-email-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda  
+        
+  Template-formatter-Service:
+    name: Send-Email-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-template-formatter-service == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.2.1
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-data-shipper/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        if: github.event_name == 'push' || github.event_name == 'create'
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-formater-artifact
+          path: ./dist/lambda
+
+  Template-formatter-Dev:
+    name: Push es log lambda to s3 dev
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    needs:
+      - Template-formatter-Service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: template-formatter-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
+
+  Template-formatter-QA:
+    name: Push Shipper to s3 QA
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSQA'
+    needs:
+      - Template-formatter-Service
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: template-formatter-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda  
+
+  push-sql-Dev:
+    name: Push SQL files to s3 dev
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: sql files to dev S3
+        run: |
+          cd installer/resources/pacbot_app/files/
+          aws s3 cp --recursive DB_Policy.sql s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/sql/
+          aws s3 cp --recursive DB.sql s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/sql/
+
+  push-sql-Qa:
+    name: Push SQL files to s3 qa
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSQA'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: sql files to qa S3
+        run: |
+          cd installer/resources/pacbot_app/files/
+          aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/sql/
+          aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/sql/
