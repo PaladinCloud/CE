@@ -12,21 +12,51 @@
  * limitations under the License.
  */
 
-.overlay-state-con {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 13;
+.loading-screen {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, rgb(204, 220, 236) 0%, transparent 40%, white 80%);
+    background-size: closest-side 10%, 50% 100%;
 }
 
-.overlay-state {
-    height: 100%;
-    cursor: default;
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
-.wait-message {
-    font-family: var(--text-light-font-family);
-    font-size: 1.5em;
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+p {
+    margin: 0;
+    font-family: 'mark-pro-medium';
+    font-size: 14px;
+    font-weight: normal;
+    margin-top: 16px;
+}
+
+@keyframes opacityAnimation {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.animated-svg {
+    animation: opacityAnimation infinite 8s; /* You can adjust the duration as needed */
+    -webkit-animation: opacityAnimation infinite 8s; /* Safari and Chrome */
+    -moz-animation: opacityAnimation infinite 8s; /* Firefox */
+    -o-animation: opacityAnimation infinite 8s; /* Opera */
 }
