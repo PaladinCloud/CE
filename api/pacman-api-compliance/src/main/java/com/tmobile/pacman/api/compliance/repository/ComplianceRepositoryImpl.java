@@ -103,6 +103,8 @@ import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 import com.tmobile.pacman.api.compliance.service.NotificationService;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
  * The Class ComplianceRepositoryImpl.
  */
@@ -2342,9 +2344,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String _index = dataSource;
                         String _type = targetType + "_audit";
                         if(!skipAuditTrail) {
-                            Map<String, String> optionalAuditFields = new HashMap<>(2);
-                            optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(issuesException.getExceptionEndDate()));
-                            optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, issuesException.getExceptionReason());
+                            Map<String, String> optionalAuditFields = Collections.emptyMap();
+                            if (issuesException.getExceptionEndDate() != null) {
+                                optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(issuesException.getExceptionEndDate()));
+                            }
+                            if (isNotBlank(issuesException.getExceptionReason())) {
+                                optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, issuesException.getExceptionReason());
+                            }
                             AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
                                     .withId(id)
                                     .withAssetGroup(assetGroup)
@@ -2354,7 +2360,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                                     .withDocType(_type)
                                     .withTarget(target)
                                     .withParentDetailsMap(parentDetMap)
-                                    .withOptionalAuditFields(optionalAuditFields)
+                                    .withOptionalAuditFields(optionalAuditFields.isEmpty() ? null : optionalAuditFields)
                                     .build();
 
                             builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(auditTrailDTO) + "\n");
