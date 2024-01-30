@@ -44,8 +44,8 @@ public final class Constants {
         VIOLATION("violation"),
         @SerializedName("autofix")
         AUTOFIX("autofix"),
-        @SerializedName("permission")
-        PERMISSION("permission");
+        @SerializedName("plugin")
+        PLUGIN("plugin");
 
         String value;
 

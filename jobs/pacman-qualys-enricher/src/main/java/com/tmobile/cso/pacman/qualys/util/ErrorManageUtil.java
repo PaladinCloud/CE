@@ -1,7 +1,7 @@
 package com.tmobile.cso.pacman.qualys.util;
 
 import com.tmobile.cso.pacman.qualys.Constants;
-import com.tmobile.pacman.commons.dto.PermissionVH;
+import com.tmobile.pacman.commons.dto.CollectorIssuesVH;
 import com.tmobile.pacman.commons.utils.NotificationPermissionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class ErrorManageUtil implements Constants{
 
     private static void omitOpsAlert(List<Map<String, String>> errorList) {
         List<Map<String, String>> copyErrorList=new ArrayList<>(errorList);
-        List<PermissionVH> permissionIssue = new ArrayList<>();
+        List<CollectorIssuesVH> permissionIssue = new ArrayList<>();
         Map<String, List<String>> assetPermissionMapping = new HashMap<>();
         for(Map<String, String> error:copyErrorList)
         {
@@ -68,10 +68,10 @@ public class ErrorManageUtil implements Constants{
             }
         }
         if (!assetPermissionMapping.isEmpty()) {
-            PermissionVH permissionVH = new PermissionVH();
-            permissionVH.setAccountNumber("Qualys");
-            permissionVH.setAssetPermissionIssues(assetPermissionMapping);
-            permissionIssue.add(permissionVH);
+            CollectorIssuesVH collectorIssuesVH = new CollectorIssuesVH();
+            collectorIssuesVH.setAccountNumber("Qualys");
+            collectorIssuesVH.setAssetIssues(assetPermissionMapping);
+            permissionIssue.add(collectorIssuesVH);
         }
         NotificationPermissionUtils.triggerNotificationForPermissionDenied(permissionIssue,"Qualys");
     }
