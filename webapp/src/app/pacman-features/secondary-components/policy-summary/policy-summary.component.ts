@@ -132,7 +132,7 @@
                  'filter': { 'policyId.keyword': this.ruleID, 'domain': this.selectedDomain},
                  'from': 0,
                  'searchtext': '',
-                 'size': 0
+                 'size': 1
                  };
  
              const policySummaryUrl = environment.policySummary.url;

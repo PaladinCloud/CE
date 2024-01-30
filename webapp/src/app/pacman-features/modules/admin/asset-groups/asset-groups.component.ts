@@ -653,7 +653,6 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
     if(!filterValues){
       return;
     }
-    console.log(event);
     
     this.currentFilterType =  find(this.filterTypeOptions, {
       optionName: event.filterKeyDisplayValue,
