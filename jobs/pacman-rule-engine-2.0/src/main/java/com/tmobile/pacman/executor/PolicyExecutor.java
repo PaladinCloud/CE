@@ -250,7 +250,7 @@ public class PolicyExecutor {
             logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME + " with job id " + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) +
                     "data source is missing, will not be able to figure out the target index to post the policy evaluvation, please check policy configuration");
             logger.error("exiting now..");
-            ProgramExitUtils.exitWithError();
+            return;
         }
 
         logger.debug("target Type :" + policyParam.get(PacmanSdkConstants.TARGET_TYPE));
@@ -321,7 +321,7 @@ public class PolicyExecutor {
                     + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY)
                     + "Exception occurred for policy with policyId:" + policyParam.get(PacmanSdkConstants.POLICY_ID));
             logger.error("exiting now.." + e);
-            ProgramExitUtils.exitWithError();
+            return;
         }
 
         // if resources size is not equals to number of evaluations then we have
