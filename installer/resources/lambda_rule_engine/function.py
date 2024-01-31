@@ -27,9 +27,11 @@ class RuleEngineLambdaFunction(LambdaFunctionResource):
             'JOB_QUEUE': RuleEngineJobQueue.get_input_attr('name'),
             'JOB_DEFINITION': SubmitAndRuleEngineJobDefinition.get_output_attr('arn'),
             'CONFIG_CREDENTIALS': "dXNlcjpwYWNtYW4=",
-            'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule,batch/prd/latest",
+            'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/application/prd/latest",
             'CONFIG_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest",
-            'POLICY_DETAILS_URL' : ApplicationLoadBalancer.get_http_url() + "/api/compliance/policy-details-for-policy-engine"
+            'POLICY_DETAILS_URL' : ApplicationLoadBalancer.get_http_url() + "/api/compliance/policy-details-for-policy-engine",
+            'AUTH_API_URL': "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
+            'COMPLIANCE_URL': ApplicationLoadBalancer.get_http_url() + "/api/compliance" 
         }
     }
 
