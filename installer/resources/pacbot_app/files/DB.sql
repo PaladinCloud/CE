@@ -3278,3 +3278,10 @@ UPDATE cf_Target SET displayName='IAM User' WHERE targetName in ('iamuser','iamu
 UPDATE cf_Target SET displayName='KMS Key' WHERE targetName in ('kms','kmskey');
 UPDATE cf_Target SET displayName='Subnet' WHERE targetName in ('subnet','subnets');
 UPDATE cf_Target SET displayName='VM' WHERE targetName in ('virtualmachine','vminstance');
+
+CREATE TABLE IF NOT EXISTS `cf_AssetGroupSecurity` (
+  `groupId` varchar(75) COLLATE utf8_bin NOT NULL,
+  `securityGroup` varchar(75) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`groupId`,`securityGroup`),
+  CONSTRAINT `AssetGroupSecurity_AssetGroupDetails_FK` FOREIGN KEY (`groupId`) REFERENCES `cf_AssetGroupDetails` (`groupId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
