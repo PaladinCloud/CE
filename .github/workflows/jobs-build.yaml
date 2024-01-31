@@ -3,7 +3,7 @@ name: CE-Dev-S3
 on:
   push:
     branches:
-      -  master
+      -  chore/workflow_update
       -  release-v*.*.*
     paths:
       - 'jobs/pom.xml'
@@ -185,7 +185,7 @@ jobs:
     name: Push azure-discovery to s3 dev
     runs-on: ubuntu-latest
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - AzureBuild
     steps:
@@ -270,7 +270,7 @@ jobs:
     name: Push awsrules to s3 dev
     runs-on: ubuntu-latest
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - AwsrulesBuild
     steps:
@@ -355,7 +355,7 @@ jobs:
     name: Push qualys to s3 dev
     runs-on: ubuntu-latest
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - QualysBuild
     steps:
@@ -440,7 +440,7 @@ jobs:
     name: Push recommendation-enricher to s3 dev
     runs-on: ubuntu-latest
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - RecommendationBuild
     steps:
@@ -526,7 +526,7 @@ jobs:
     name: Push Cloud-discovery to s3 dev
     runs-on: ubuntu-latest
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - Cloud-Discovery-Build
     steps:
@@ -616,7 +616,7 @@ jobs:
   Push-RuleEngineBuild-Dev:
     name: Push Rule-engine-2.0 to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     environment: 'SaaSDEV'
     needs:
       - RuleEngineBuild
@@ -702,7 +702,7 @@ jobs:
   Push-SchedulerBuild-Dev:
     name: Push SchedulerBuild to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     environment: 'SaaSDEV'
     needs:
       - SchedulerBuild
@@ -788,7 +788,7 @@ jobs:
   Push-Notification-Dev:
     name: Push Notification to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     environment: 'SaaSDEV'
     needs:
       - NotificationBuild
@@ -873,7 +873,7 @@ jobs:
   Push-Tenable-Dev:
     name: Push Tenable to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     environment: 'SaaSDEV'
     needs:
       - TenableBuild
@@ -958,7 +958,7 @@ jobs:
   Push-Aqua-Dev:
     name: Push Aqua to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     environment: 'SaaSDEV'
     needs:
       - AquaBuild
@@ -1043,7 +1043,7 @@ jobs:
   Push-Shipper-Dev:
     name: Push Shipper to s3 dev
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     environment: 'SaaSDEV'
     needs:
       - ShipperBuild
@@ -1129,7 +1129,7 @@ jobs:
     name: Push es log lambda to s3 dev
     environment: 'SaaSDEV'
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - Es-logging
     steps:
@@ -1214,7 +1214,7 @@ jobs:
     name: Push invoke service lambda to s3 dev
     runs-on: ubuntu-latest
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - Invoke-Service
     steps:
@@ -1299,7 +1299,7 @@ jobs:
     name: Push es log lambda to s3 dev
     runs-on: ubuntu-latest
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - Send-Email-Service
     steps:
@@ -1384,7 +1384,7 @@ jobs:
     name: Push es log lambda to s3 dev
     runs-on: ubuntu-latest
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     needs:
       - Template-formatter-Service
     steps:
@@ -1433,9 +1433,9 @@ jobs:
 
   push-sql-Dev:
     name: Push SQL files to s3 dev
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  
     environment: 'SaaSDEV'
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/chore/workflow_update'))
     steps:
       - uses: actions/checkout@v4
         with:
