@@ -558,4 +558,5 @@ public interface Constants {
     String DOCID_KEYWORD_FIELD_NAME =  "_docid.keyword";
     String ASSET = "asset";
     String TOTAL_ASSETS = "totalassets";
+    String CLOSED_DATE = "closeddate";
 }

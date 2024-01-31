@@ -1583,7 +1583,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     policyViolationByIssueId.get(POLICY_CATEGORY).toString(), resourceId,
                     policyViolated, policyDescription, policyViolationByIssueId.get(ISSUE_REASON).toString(),
                     policyViolationByIssueId.get(CREATED_DATE).toString(), policyViolationByIssueId.get(MODIFIED_DATE)
-                    .toString(), policyId, pac_ds, violationList, vulnerabilityList, exemption);
+                    .toString(), policyId, pac_ds, violationList, vulnerabilityList,
+                    exemption, policyViolationByIssueId.get(AGE).toString());
+
         } else {
             throw new ServiceException(NO_DATA_FOUND);
         }
