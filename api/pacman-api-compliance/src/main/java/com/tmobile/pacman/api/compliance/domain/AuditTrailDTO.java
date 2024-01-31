@@ -6,7 +6,7 @@ import lombok.Value;
 import java.util.Map;
 
 @Value
-@Builder(setterPrefix = "with", toBuilder = true)
+@Builder(setterPrefix = "with", toBuilder = true, builderClassName = "Builder")
 public class AuditTrailDTO {
 
     String id;
