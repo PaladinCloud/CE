@@ -103,8 +103,6 @@ import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 import com.tmobile.pacman.api.compliance.service.NotificationService;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 /**
  * The Class ComplianceRepositoryImpl.
  */
@@ -2344,13 +2342,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String _index = dataSource;
                         String _type = targetType + "_audit";
                         if(!skipAuditTrail) {
-                            Map<String, String> optionalAuditFields = Collections.emptyMap();
-                            if (issuesException.getExceptionEndDate() != null) {
-                                optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(issuesException.getExceptionEndDate()));
-                            }
-                            if (isNotBlank(issuesException.getExceptionReason())) {
-                                optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, issuesException.getExceptionReason());
-                            }
+                            Map<String, String> optionalAuditFields = new HashMap<>(2);
+                            optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(issuesException.getExceptionEndDate()));
+                            optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, issuesException.getExceptionReason());
                             AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
                                     .withId(id)
                                     .withAssetGroup(assetGroup)
@@ -2360,7 +2354,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                                     .withDocType(_type)
                                     .withTarget(target)
                                     .withParentDetailsMap(parentDetMap)
-                                    .withOptionalAuditFields(optionalAuditFields.isEmpty() ? null : optionalAuditFields)
+                                    .withOptionalAuditFields(optionalAuditFields)
                                     .build();
 
                             builderRequestAudit.append(String.format(actionTemplateAudit, _index, id)).append(createAuditTrail(auditTrailDTO) + "\n");
@@ -2959,6 +2953,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     }
                     Date today = new Date();
                     String currentDate = sdf.format(today);
+                    AuditTrailDTO.Builder auditTrailDTOBuilder = AuditTrailDTO.builder();
                     if (exemptionRequest.getAction().toString()
                             .equalsIgnoreCase(Actions.REVOKE_EXEMPTION_REQUEST.toString()) &&
                             String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
@@ -2987,6 +2982,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                                 sdf.format(exemptionRequest.getExceptionEndDate()));
                         partialDocument.put(Constants.EXEMPTION_RAISED_BY, exemptionRequest.getCreatedBy());
                         partialDocument.put(Constants.EXEMPTION_RAISED_ON, currentDate);
+
+                        Map<String, String> optionalAuditFields = new HashMap<>(2);
+                        optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(exemptionRequest.getExceptionEndDate()));
+                        optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, exemptionRequest.getExceptionReason());
+                        auditTrailDTOBuilder.withOptionalAuditFields(optionalAuditFields);
                     } else if (exemptionRequest.getAction().toString()
                             .equalsIgnoreCase(Actions.CANCEL_EXEMPTION_REQUEST.toString()) &&
                             String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
@@ -3017,6 +3017,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         issuesExemption.setExceptionGrantedDate(today);
                         issuesExemption.setIssueIds(exemptionRequest.getIssueIds());
                         approvedIssuesExemptionMap.put(id, issuesExemption);
+
+                        Map<String, String> optionalAuditFields = new HashMap<>(2);
+                        optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(exemptionRequest.getExceptionEndDate()));
+                        optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, exemptionRequest.getExceptionReason());
+                        auditTrailDTOBuilder.withOptionalAuditFields(optionalAuditFields);
                     } else {
                         failedIssueIds.add(id);
                         exemptionReasons.put(id, UNABLE_TO_PERFORM_MSG +
@@ -3058,11 +3063,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     String status = exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST) ? REQUEST_EXEMPT : exemptionRequest.getAction().equals(ExemptionActions.REVOKE_EXEMPTION_REQUEST) ? REVOKE_EXEMPT : exemptionRequest.getAction().equals(ExemptionActions.CANCEL_EXEMPTION_REQUEST) ? DENY_EXEMPT : GRANT_EXEMPT;
                     String createdBy = exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST) ? exemptionRequest.getApprovedBy() : exemptionRequest.getCreatedBy();
                     String _type = targetType + AUDIT;
-                    Map<String, String> optionalAuditFields = new HashMap<>(2);
-                    optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(exemptionRequest.getExceptionEndDate()));
-                    optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, exemptionRequest.getExceptionReason());
 
-                    AuditTrailDTO auditTrailDTO = AuditTrailDTO.builder()
+                    auditTrailDTOBuilder
                             .withId(id)
                             .withAssetGroup(exemptionRequest.getAssetGroup())
                             .withTargetType(targetType)
@@ -3070,11 +3072,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                             .withCreatedBy(createdBy)
                             .withDocType(_type)
                             .withTarget(target)
-                            .withParentDetailsMap(parentDetMap)
-                            .withOptionalAuditFields(optionalAuditFields)
-                            .build();
+                            .withParentDetailsMap(parentDetMap);
 
-                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id)).append(createAuditTrail(auditTrailDTO) + "\n");
+                    builderRequestAudit.append(String.format(ACTION_TEMPLATE_AUDIT, dataSource, id)).append(createAuditTrail(auditTrailDTOBuilder.build()) + "\n");
 
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
