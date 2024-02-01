@@ -234,16 +234,17 @@
                                                     : element[column].text
                                             "
                                         >
-                                            <img
-                                                *ngIf="element[column].imgSrc"
-                                                [class.noImg]="element[column].imgSrc === 'noImg'"
+                                            <img *ngIf="element[column].imgSrc === 'noImg'" [class.noImg]="element[column].imgSrc === 'noImg'" src="" alt="">
+                                            <svg-icon
+                                                *ngIf="element[column].imgSrc !== 'noImg'"
+                                                [svgStyle]="{ 'width.px':24, 'height.px':16, 'vertical-align':'bottom'}"
                                                 class="cell-img"
-                                                src="/assets/icons/{{ element[column].imgSrc }}.svg"
+                                                [name]="element[column].imgSrc"
                                                 [title]="
                                                     element[column].imageTitleText ??
                                                     element[column].titleText
-                                                "
-                                            />
+                                                ">
+                                            </svg-icon>
                                             <span
                                                 *ngIf="
                                                     !element[column].isDate &&

@@ -130,9 +130,11 @@ import { IssueFilterService } from '../pacman-features/services/issue-filter.ser
 import { DateRangeFormatterPipe } from './table-filters/pipes/date-range-formatter.pipe';
 import { AssetTrendGraphComponent } from '../pacman-features/secondary-components/asset-trend-graph/asset-trend-graph.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 @NgModule({
-    imports: [
+  imports: [
+        AngularSvgIconModule.forRoot(),
         ScrollingModule,
         MatCheckboxModule,
         AgGridModule,
