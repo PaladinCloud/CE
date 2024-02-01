@@ -34,6 +34,7 @@ import { CommonResponseService } from "../shared/services/common-response.servic
 import { ComponentKeys } from "../shared/constants/component-keys";
 import { CONFIGURATIONS } from "src/config/configurations";
 import { UtilsService } from "../shared/services/utils.service";
+import { ImageCacheService } from "../core/services/image-cache.service";
 
 declare var Offline: any;
 
@@ -118,7 +119,8 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private commonResponseService: CommonResponseService,
     private tableStateService: TableStateService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private imageCacheService: ImageCacheService
   ) {
     if (this.pageReloadInterval) {
       this.reloadTimeout = this.setReloadTimeOut(this.pageReloadInterval);
@@ -188,6 +190,8 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
         .subscribe((theme) => {
           this.theme = theme;
         });
+      
+      this.imageCacheService.preLoadImages();
     } catch (error) {
       this.logger.log("error", error);
     }
