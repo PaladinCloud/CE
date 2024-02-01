@@ -182,9 +182,10 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
 
         if(maxIndex==1){
             this.treemapData = [{
-                x: this.awsResources[0].displayName,
+                x: this.awsResources[0].displayName || this.awsResources[0].type,
                 y: 1
             }]
+            this.buildTreeMap();
             return;
         }
         for (let i = 0; i < maxIndex; i++) {
@@ -192,7 +193,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
                 x: this.awsResources[i].displayName,
                 y: this.awsResources[i].count,
             };
-            obj.x = this.awsResources[i].displayName.split(' ');
+            obj.x = this.awsResources[i].displayName?.split(' ') || this.awsResources[i].type;
             this.treemapData.push(obj);
         }
 
@@ -215,30 +216,32 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         const filteredTreemapData = this.treemapData.filter(dataPoint => dataPoint.y !== 0);
 
         // Find the minimum and maximum values within the scaled data
-        minDataValue = filteredTreemapData[0].y;
-        maxDataValue = filteredTreemapData[filteredTreemapData.length - 1].y;
+        if (filteredTreemapData.length) {
+            minDataValue = filteredTreemapData[0].y;
+            maxDataValue = filteredTreemapData[filteredTreemapData.length - 1].y;
 
-        // Calculate the difference between the maximum and minimum scaled values
-        const valueRange = (maxDataValue - minDataValue) / this.colors.length;
+            // Calculate the difference between the maximum and minimum scaled values
+            const valueRange = (maxDataValue - minDataValue) / this.colors.length;
 
-        // Initialize variables to track the range and color for each value range
-        let fromValue = minDataValue;
-        let toValue = minDataValue + valueRange;
+            // Initialize variables to track the range and color for each value range
+            let fromValue = minDataValue;
+            let toValue = minDataValue + valueRange;
 
-        // Generate color ranges based on the number of colors available
-        for (let i = 0; i < this.colors.length; i++) {
-            this.colorRanges.push({
-                from: fromValue,
-                to: toValue,
-                color: this.colors[i],
-            });
+            // Generate color ranges based on the number of colors available
+            for (let i = 0; i < this.colors.length; i++) {
+                this.colorRanges.push({
+                    from: fromValue,
+                    to: toValue,
+                    color: this.colors[i],
+                });
 
-            fromValue = toValue;
-            toValue = toValue + valueRange;
+                fromValue = toValue;
+                toValue = toValue + valueRange;
 
-            // Ensure the last color range covers the entire remaining value range
-            if (i === this.colors.length - 2) {
-                toValue = maxDataValue;
+                // Ensure the last color range covers the entire remaining value range
+                if (i === this.colors.length - 2) {
+                    toValue = maxDataValue;
+                }
             }
         }
         
