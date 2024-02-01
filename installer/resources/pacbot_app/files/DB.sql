@@ -1108,7 +1108,7 @@ INSERT IGNORE INTO `cf_Datasource` (dataSourceId,dataSourceName,dataSourceDesc,c
 
 /*Insert Data Asset Group to necessary tables*/
 
-INSERT IGNORE INTO cf_AssetGroupDetails (groupId,groupName,dataSource,displayName,groupType,createdBy,createdUser,createdDate,modifiedUser,modifiedDate,description,aliasQuery,isVisible) VALUES ('201','aws','aws','AWS','admin','Cloud Security','','','pacman','03/26/2018 23:00','Asset Group to segregate all data related to aws.','',true);
+INSERT IGNORE INTO cf_AssetGroupDetails (groupId,groupName,dataSource,displayName,groupType,createdBy,createdUser,createdDate,modifiedUser,modifiedDate,description,aliasQuery,isVisible) VALUES ('201','aws','aws','AWS','admin','Cloud Security','',now(),'pacman',now(),'Asset Group to segregate all data related to aws.','',true);
 
 /*Insert Target data in required table*/
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('subscription','Subscription','Azure subscription','','azure','{"key":"id","id":"id",\"name\":\"name\"}','enabled','admin',concat(@eshost,':',@esport,'/azure_subscription'),'2022-06-23','2022-06-23','Infra & Platforms');
