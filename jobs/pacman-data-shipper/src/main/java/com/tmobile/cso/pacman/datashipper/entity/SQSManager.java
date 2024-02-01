@@ -27,6 +27,8 @@ import com.tmobile.cso.pacman.datashipper.dto.JobSchedulerSQSMessageBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
+
 public class SQSManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(SQSManager.class);
 
@@ -45,7 +47,7 @@ public class SQSManager {
         JobSchedulerSQSMessageBody sqsMessageBody = generateSQSMessage(pluginName, tenantId);
         try {
             String sqsMessage = objectMapper.writeValueAsString(sqsMessageBody);
-            sendMessage(sqsMessage, tenantId);
+            sendMessage(sqsMessage);
         } catch (Exception e) {
             LOGGER.error("Unable to send SQS message", e);
         }
@@ -55,12 +57,12 @@ public class SQSManager {
         return new JobSchedulerSQSMessageBody(pluginName + "-policy-job", tenantID, pluginName);
     }
 
-    private void sendMessage(String messageBody, String tenantID) {
+    private void sendMessage(String messageBody) {
         String queueUrl = System.getenv("SHIPPER_SQS_QUEUE_URL");
         SendMessageRequest request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withMessageBody(messageBody)
-                .withMessageGroupId(tenantID);
+                .withMessageGroupId(UUID.randomUUID().toString());
         try {
             AmazonSQS sqs = generateSQSClient();
             // Send the message to the queue
