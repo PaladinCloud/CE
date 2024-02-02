@@ -39,7 +39,6 @@
         <developerConnection>scm:git:ssh://github.com/PaladinCloud/CE.git</developerConnection>
         <url>https://github.com/PaladinCloud/CE/tree/master</url>
     </scm>
-
 	<modules>
 		<module>pacman-cloud-discovery</module>
 		<module>pacman-data-shipper</module>
@@ -54,7 +53,5 @@
         <module>job-scheduler</module>
 		<module>pacman-tenable-enricher</module>
 	</modules>
-
+	
 </project>
-
-
