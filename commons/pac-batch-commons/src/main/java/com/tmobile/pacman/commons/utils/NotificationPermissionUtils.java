@@ -29,7 +29,7 @@ public class NotificationPermissionUtils {
     private static final String NOTIFICATION_URL = "notification.lambda.function.url";
     static String SUBJECT = "Insufficient permissions and Misconfigurations";
     static String opsEventName = "Permission denied and misconfiguration";
-    static int numberOfPermissionIssuesPerEmail = 40;
+    static int numberOfPermissionIssuesPerEmail = 10;
     private static PaladinAccessToken accessToken;
     static String notificationsLink = System.getProperty("pacman.host") + "/pl/notifications/notifications-list";
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationPermissionUtils.class);
