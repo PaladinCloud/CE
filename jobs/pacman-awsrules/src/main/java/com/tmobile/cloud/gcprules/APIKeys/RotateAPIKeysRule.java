@@ -96,7 +96,7 @@ public class RotateAPIKeysRule extends BasePolicy {
             logger.info("hit array size {}", hitsJsonArray.size());
             JsonObject apiKeys = (JsonObject) ((JsonObject) hitsJsonArray.get(0)).get(PacmanRuleConstants.SOURCE);
             String createdDateStr = apiKeys.get("createdDate").getAsString();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z");
             Date date = simpleDateFormat.parse(createdDateStr);
             if (TimeUnit.DAYS.convert(new Date().getTime() - date.getTime(), TimeUnit.MILLISECONDS) <= 90) {
                 validationResult = true;

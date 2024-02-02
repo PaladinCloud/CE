@@ -404,6 +404,7 @@ public class ESManager implements Constants {
                 StringBuilder payLoad = new StringBuilder(_payLoad);
                 payLoad.append("\"dynamic\": true,");
                 payLoad.append("\"properties\": {");
+                payLoad.append("\"createdDate\": {\"type\": \"date\",\"format\": \"yyyy-MM-dd HH:mm:00Z||yyyy-MM-dd HH:mm:ss.SSSSSS||strict_date_optional_time||epoch_millis\"},");
                 payLoad.append("\"" + _type + "_relations" + "\": {");
                 payLoad.append("\"type\": \"join\",");
                 payLoad.append("\"relations\": {");
