@@ -215,6 +215,9 @@ public class PolicyExecutor {
                 PublishRequest.builder()
                         .topicArn(topicArn)
                         .message(message)
+                        //@Todo replace with tenant id
+                        .messageGroupId("POLICY_ENGINE")
+                        .messageDeduplicationId(UUID.randomUUID().toString())
                         .build());
 
         // Print the message ID returned by the publish operation
