@@ -46,8 +46,12 @@
                 <div class="flex flex-align-center table-right-items">
                  
                     <div class="table-count-info">
-                        {{ (totalRecordsAfterFilter === 0 ? dataSource?.matTableDataSource.data?.length : totalRecordsAfterFilter) ?? 0 | number }}
-                        Results
+                        <ng-container>
+                            <span>{{ (totalRecordsAfterFilter === 0 ? dataSource?.matTableDataSource.data?.length : totalRecordsAfterFilter)
+                                | number }}</span>
+                            <span *ngIf="hasMoreData">+</span>
+                            Results
+                        </ng-container>
                     </div>
                     <app-table-options
                         *ngIf="showDownloadBtn || showAddRemoveCol"

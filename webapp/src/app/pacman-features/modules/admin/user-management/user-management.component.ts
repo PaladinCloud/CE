@@ -729,10 +729,10 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
 
     try{
       this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
-      (response) => {
+        (response) => {
         this.showLoader = false;
-        if (response.length > 0) {
-          const tableData = response[0];
+          if (response.length > 0) {          
+          const tableData = response[0].users;
           this.tableDataLoaded = true;
           const updatedResponse = this.massageData(tableData);
           const processedData = this.processData(updatedResponse);
@@ -752,11 +752,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
               this.totalRows = this.totalRows + tableData.length;
             }
           }
-          if (tableData.length < this.paginatorSize) {
-            this.hasMoreDataToLoad = false;
-          } else {
-            this.hasMoreDataToLoad = true;
-          }
+          this.hasMoreDataToLoad = response[0].nextRequestNeeded;
         }
       },
       (error) => {
