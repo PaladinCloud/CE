@@ -1,0 +1,56 @@
+name: Check-DELETE-Statements
+
+on:
+  pull_request:
+    paths:
+      - '**.sql'
+
+jobs:
+  check-sql:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # fetch the entire history
+
+      - name: Check for DELETE statements in commit
+        id: check
+        run: |
+          CHANGED_SQL_FILES=$(git diff --name-only HEAD^ HEAD | grep '\.sql$')
+          for FILE in $CHANGED_SQL_FILES
+          do
+            ADDED_LINES=$(git diff HEAD^ HEAD -- $FILE | grep '^+' | grep -v '++')
+            if echo "$ADDED_LINES" | grep -q 'DELETE'
+            then
+              echo "::set-output name=delete_found::true"
+              break
+            fi
+          done
+
+      - name: Request review and comment on PR
+        if: steps.check.outputs.delete_found == 'true'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            let reviewers = ['santhosh-challa', 'arunpaladin'];
+            const prOwner = context.payload.pull_request.user.login;
+
+            if (prOwner === 'santhosh-challa' || prOwner === 'arunpaladin') {
+              reviewers = reviewers.filter(reviewer => reviewer !== prOwner);
+            }
+
+            github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              reviewers: reviewers
+            })
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ DELETE statement found in the changes of SQL files. Requesting review from @santhosh and @arun.'
+            })
