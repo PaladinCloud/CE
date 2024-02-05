@@ -377,4 +377,5 @@
 
   .mat-sort-header-container {
       font-family: 'mark-pro';
+      overflow: hidden;
   }
