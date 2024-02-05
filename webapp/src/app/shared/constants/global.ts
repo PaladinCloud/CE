@@ -46,7 +46,5 @@ export const WAIT_FOR_DATA = 'waitForData';
 
 export const REDIRECT_URL_KEY = 'redirectUrl';
 
-export const REDIRECT_URL_KEY = 'redirectUrl';
-
 // Make constants readonly
 Object.freeze(module.exports);

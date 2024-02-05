@@ -43,7 +43,6 @@ import {
   DashboardContainerIndex,
 } from '../services/dashboard-arrangement.service';
 import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
-import { SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
 
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
 import { IFilterObj, IFilterOption, IFilterTagLabelsMap, IFilterTagOptionsMap, IFilterTypeLabel } from 'src/app/shared/table/interfaces/table-props.interface';
@@ -133,6 +132,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     provider: 'Source',
     severity: 'Severity',
     policyCategory: 'Category',
+    "compliance_percent": "Compliance"
   };
   columnWidths = { Policy: 3, Violations: 1, Source: 1, "Asset Type": 1, Severity: 1, Category: 1, Compliance: 1 };
   centeredColumns = {
@@ -652,7 +652,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
   }
 
   getUpdateFilterTagsCallback () {
-    const labelsToExcludeSort = [];
+    const labelsToExcludeSort = ['compliance', 'violations'];
     const updateFilterTags = (filterTagsData, value) => {
 
       if (value.toLowerCase() == "asset type") {
@@ -677,7 +677,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         intervals.forEach(interval => {
           const lb = Math.round(interval.lowerBound);
           let up = Math.round(interval.upperBound);
-          if (value.toLowerCase() === "compliance" && up === 100) {
+          if (value.toLowerCase() === "compliance" && up === 100 && lb !== up) {
             up--;
           }
           filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
@@ -716,17 +716,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
 
   updateSortFieldName () {
     const sortColName = this.headerColName.toLowerCase();
-    this.selectedOrder = this.direction;
     this.sortOrder = null;
     this.fieldType = "string";
     try {
-        let apiColName: any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col] == this.headerColName);
-        if (!apiColName) {
-          apiColName = find(this.filterTypeOptions, {
-            optionName: this.headerColName,
-          })["optionValue"];
-        }
-        this.fieldName = apiColName;
+      this.fieldName = this.getSortFieldName(this.headerColName);
 
       if (sortColName == 'severity' || sortColName == 'category') {
         const mapOfOrderMaps = { 'severity': SeverityOrderMap, 'category': CategoryOrderMap }
@@ -734,8 +727,21 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       }
     } catch (e) {
       this.logger.log("error", e);
-      this.headerColName = '';
+      this.headerColName = 'Severity';
+      this.direction = 'desc';
+      this.sortOrder = this.utils.getAscendingOrder(SeverityOrderMap);
+      this.fieldName = this.getSortFieldName(this.headerColName);
     }
+  }
+
+  getSortFieldName (colName) {
+    let apiColName: any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col] == colName);
+    if (!apiColName) {
+      apiColName = find(this.filterTypeOptions, {
+        optionName: colName,
+      })["optionValue"];
+    }
+    return apiColName;
   }
 
   updateComponent () {
@@ -920,7 +926,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     const sortFilter = {
       fieldName: this.fieldName,
       fieldType: this.fieldType,
-      order: this.selectedOrder,
+      order: this.direction,
       sortOrder: this.sortOrder
     }
 
