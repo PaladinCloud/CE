@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0  # fetch the entire history
 
@@ -34,9 +34,24 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
+            # Request review from specific users
+            let reviewers = ['santhosh-challa', 'arunpaladin'];
+            const prOwner = context.payload.pull_request.user.login;
+
+            if (prOwner === 'santhosh-challa' || prOwner === 'arunpaladin') {
+              reviewers = reviewers.filter(reviewer => reviewer !== prOwner);
+            }
+            # Request review from the remaining reviewers
+            github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              reviewers: reviewers
+            })
+            # Comment on the PR
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ DELETE statement found in the changes of SQL files. Requesting review from @santhosh and @arun.'
+              body: '⚠️ DELETE statement found in the changes of SQL files. Requesting review from ' + reviewers.join(' and ') + '.'
             })
