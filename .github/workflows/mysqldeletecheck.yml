@@ -15,30 +15,34 @@ jobs:
         with:
           fetch-depth: 0  # fetch the entire history
 
-      - name: Check for DELETE statements in changed files
+      - name: Check for DELETE statements in commit
         id: check
         run: |
-          FILES=$(git diff --name-only HEAD HEAD~1)
-          for FILE in $FILES
+          CHANGED_SQL_FILES=$(git diff --name-only HEAD^ HEAD | grep '\.sql$')
+          for FILE in $CHANGED_SQL_FILES
           do
-            if [[ $FILE == *.sql ]]
+            ADDED_LINES=$(git diff HEAD^ HEAD -- $FILE | grep '^+' | grep -v '++')
+            if echo "$ADDED_LINES" | grep -q 'DELETE'
             then
-              if grep -q 'DELETE' "$FILE"
-              then
-                echo "::set-output name=delete_found::true"
-                break
-              fi
+              echo "::set-output name=delete_found::true"
+              break
             fi
           done
 
-      - name: Comment on PR
+      - name: Request review and comment on PR
         if: steps.check.outputs.delete_found == 'true'
         uses: actions/github-script@v5
         with:
           script: |
-            github.issues.createComment({
+            github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              reviewers: ['santhosh-challa', 'rnithinpaladin']
+            })
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ DELETE statement found in SQL files.'
+              body: '⚠️ DELETE statement found in the changes of SQL files. Requesting review from @santhosh and @arun.'
             })
