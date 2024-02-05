@@ -56,6 +56,7 @@ jobs:
   filter:
     name: filters
     runs-on: ubuntu-latest
+    if: (github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/release-v'))
     outputs:
       pom: ${{ steps.filter.outputs.pom }}
       commons: ${{ steps.filter.outputs.commons }}
@@ -209,7 +210,7 @@ jobs:
   Push-azure-QA:
     name: Push azure-discovery to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - AzureBuild
@@ -294,7 +295,7 @@ jobs:
   Push-awsrules-QA:
     name: Push awsrules to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - AwsrulesBuild
@@ -379,7 +380,7 @@ jobs:
   Push-Qualys-QA:
     name: Push qualys to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - QualysBuild
@@ -464,7 +465,7 @@ jobs:
   Push-recommendation-QA:
     name: Push recommendation-enricher to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - RecommendationBuild
@@ -550,7 +551,7 @@ jobs:
   Push-Cloud-Discovery-QA:
     name: Push Cloud-discovery to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - Cloud-Discovery-Build
@@ -641,7 +642,7 @@ jobs:
   Push-RuleEngineBuild-QA:
     name: Push Rule-engine-2.0 to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - RuleEngineBuild
@@ -727,7 +728,7 @@ jobs:
   Push-SchedulerBuild-QA:
     name: Push SchedulerBuild to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - SchedulerBuild
@@ -755,7 +756,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true' || needs.filters.output.pacman-cloud-notifications == 'true'
+    if: needs.filter.outputs.pom == 'true' || needs.filters.output.pacman-cloud-notifications == 'true' || needs.filter.outputs.pom == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -813,7 +814,7 @@ jobs:
   Push-Notification-QA:
     name: Push Notification to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - NotificationBuild
@@ -898,7 +899,7 @@ jobs:
   Push-Tenable-QA:
     name: Push Tenable to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - TenableBuild
@@ -983,7 +984,7 @@ jobs:
   Push-Aqua-QA:
     name: Push Aqua to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - AquaBuild
@@ -1068,7 +1069,7 @@ jobs:
   Push-Shipper-QA:
     name: Push Shipper to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - ShipperBuild
@@ -1096,7 +1097,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-es-logging-service == 'true'
+    if: needs.filters.output.notification-es-logging-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1153,7 +1154,7 @@ jobs:
   Es-logging-QA:
     name: Push es log lambda to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - Es-logging
@@ -1181,7 +1182,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-invoke-service == 'true'
+    if: needs.filters.output.notification-invoke-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1238,7 +1239,7 @@ jobs:
   InvokeService-QA:
     name: Push invoke service lambda to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - Invoke-Service
@@ -1266,7 +1267,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.output.notification-send-email-service == 'true'
+    if: needs.filters.output.notification-send-email-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1323,7 +1324,7 @@ jobs:
   Send-Email-QA:
     name: Push send mail lambdato s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - Send-Email-Service
@@ -1408,7 +1409,7 @@ jobs:
   Template-formatter-QA:
     name: Push template formatter to s3 QA
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     needs:
       - Template-formatter-Service
@@ -1454,7 +1455,7 @@ jobs:
   push-sql-Qa:
     name: Push SQL files to s3 qa
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    if: (github.event_name == 'push' || github.event_name == 'create') && (startsWith(github.ref, 'refs/heads/release-v'))
     environment: 'SaaSQA'
     steps:
       - uses: actions/checkout@v4
