@@ -836,7 +836,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.notification-es-logging-service == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.notification-es-logging-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -896,7 +896,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.notification-invoke-service == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.notification-invoke-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -956,7 +956,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.notification-send-email-service == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.notification-send-email-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1017,7 +1017,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.notification-template-formatter-service == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.notification-template-formatter-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
