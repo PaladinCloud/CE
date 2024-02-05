@@ -206,7 +206,7 @@ export class AuthService {
         });
     }
 
-    async redirectPostLogin(defaultAssetGroup?: string) {
+    async redirectPostLogin (defaultAssetGroup?: string) {
         let redirectUrl = decodeURIComponent(this.redirectUrl);
 
         if (redirectUrl && redirectUrl !== '') {
@@ -232,8 +232,8 @@ export class AuthService {
                     queryParams = savedUrlObj.params;
                     queryParams['domain'] = newAg['domains'][0];
                 }
-                redirectUrl = savedUrlObj.url;
-                redirectUrl = new URL(redirectUrl).pathname;
+                queryParams = this.removeEmptyStringKeys(queryParams);
+                redirectUrl = new URL(savedUrlObj.url).pathname;
 
                 this.router
                     .navigate([redirectUrl], {
@@ -257,6 +257,12 @@ export class AuthService {
         } else {
             this.redirectToPostLoginDefault(defaultAssetGroup);
         }
+    }
+
+    removeEmptyStringKeys (obj: { [key: string]: any }): { [key: string]: any } {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([key, value]) => key !== '')
+        );
     }
 
     private redirectToPostLoginDefault(defaultAssetGroup: string) {
