@@ -149,7 +149,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.azure-discovery == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.azure-discovery == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -234,7 +234,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.pacman-awsrules == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-awsrules == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -319,7 +319,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.pacman-qualys-enricher == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-qualys-enricher == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -404,7 +404,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.recommendation-enricher == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.recommendation-enricher == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -489,7 +489,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.pacman-cloud-discovery == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-cloud-discovery == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -576,7 +576,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.pacman-rule-engine == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-rule-engine == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -667,7 +667,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.job-scheduler == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.job-scheduler == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -752,7 +752,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true' || needs.filters.outputs.pacman-cloud-notifications == 'true' || needs.filter.outputs.pom == 'true'
+    if: needs.filter.outputs.pom == 'true' || needs.filter.outputs.pacman-cloud-notifications == 'true' || needs.filter.outputs.pom == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -838,7 +838,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.pacman-tenable-enricher == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-tenable-enricher == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -923,7 +923,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.pacman-aqua-enricher == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-aqua-enricher == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1008,7 +1008,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.pacman-data-shipper == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-data-shipper == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1093,7 +1093,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filters.outputs.notification-es-logging-service == 'true'
+    if: needs.filter.outputs.notification-es-logging-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1178,7 +1178,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filters.outputs.notification-invoke-service == 'true'
+    if: needs.filter.outputs.notification-invoke-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1263,7 +1263,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filters.outputs.notification-send-email-service == 'true'
+    if: needs.filter.outputs.notification-send-email-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1348,7 +1348,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filters.outputs.notification-template-formatter-service == 'true'
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.notification-template-formatter-service == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
