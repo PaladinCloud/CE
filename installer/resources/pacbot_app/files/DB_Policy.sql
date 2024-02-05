@@ -3550,3 +3550,5 @@ DELETE IGNORE FROM cf_PolicyTable where policyId='Ec2WithPublicAccessNetBIOSPort
 DELETE IGNORE FROM cf_PolicyTable where policyId='Ec2WithPublicAccessNonWebPorts80_version-1_Ec2WithPublicAccessNonWebPort80_ec2';
 DELETE IGNORE FROM cf_PolicyTable where policyId='Ec2WithPublicAccessPort8080_version-1_Ec2WithPublicAccessPort8080_ec2';
 DELETE IGNORE FROM cf_PolicyTable where policyId='EC2WithPublicIPAccess_version-1_Ec2WithPublicAccess_ec2';
+DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
+DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
