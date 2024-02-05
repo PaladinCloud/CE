@@ -1,0 +1,44 @@
+name: Check SQL files for DELETE statements
+
+on:
+  pull_request:
+    paths:
+      - '**.sql'
+
+jobs:
+  check-sql:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # fetch the entire history
+
+      - name: Check for DELETE statements in changed files
+        id: check
+        run: |
+          FILES=$(git diff --name-only HEAD HEAD~1)
+          for FILE in $FILES
+          do
+            if [[ $FILE == *.sql ]]
+            then
+              if grep -q 'DELETE' "$FILE"
+              then
+                echo "::set-output name=delete_found::true"
+                break
+              fi
+            fi
+          done
+
+      - name: Comment on PR
+        if: steps.check.outputs.delete_found == 'true'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ DELETE statement found in SQL files.'
+            })
