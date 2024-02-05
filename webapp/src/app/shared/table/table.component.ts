@@ -149,6 +149,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     rowHeight = 36;
     offset: number;
+    tooltipMessageMap = {}
     private whitelistColumnsChange = new Subject<any>();
     private readonly initialScrollPosition = 2;
 
@@ -284,6 +285,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    displayToolTip(column:string){
+        return this.tooltipMessageMap[column] ?? column;
     }
 
     updateDenominator(){

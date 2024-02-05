@@ -79,6 +79,7 @@
                         aria-sort="descending" 
                         [class.flex-center]="centeredColumns[column]"
                         [style.flex-basis.%]="(100 * columnWidths[column]/denominator)"
+                        [title]="displayToolTip(column)"
                         *ngFor="let column of whiteListColumns" 
                     >
                         <div
