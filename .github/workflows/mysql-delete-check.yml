@@ -54,3 +54,15 @@ jobs:
               repo: context.repo.repo,
               body: '⚠️ DELETE statement found in the changes of SQL files. Requesting review from @santhosh and @arun.'
             })
+
+      - name: Add label
+        if: steps.check.outputs.delete_found == 'true'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['delete-statement-found']
+            })
