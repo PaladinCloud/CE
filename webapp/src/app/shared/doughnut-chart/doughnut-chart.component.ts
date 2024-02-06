@@ -173,9 +173,11 @@ export class DoughnutChartComponent implements OnInit, OnChanges {
               .append('g');
           }
 
-          this.pie = d3Shape.pie().sort(null)
-            .startAngle(1.1 * Math.PI)
-            .endAngle(3.1 * Math.PI)
+          this.pie = d3Shape
+            .pie()
+            .sort(null)
+            .startAngle(0)
+            .endAngle(2 * Math.PI)
             .value(function (d) { return +d; });
 
           // -------- defines the inner and outer radious--------//

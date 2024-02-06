@@ -1,9 +1,10 @@
 .switch-wrapper{
     display: flex;
-    background-color: var(--background-white);
+    background-color: var(--interaction-neutral-subtle-normal);
     padding: 4px;
     border-radius: 4px;
     margin-left: auto;
+    border: 1px solid var(--border-normal);
 }
 
 .switch-wrapper ::ng-deep .mat-button-wrapper{
@@ -15,7 +16,8 @@
 }
 
 .isSelected{
-    background-color: #F1F6FF;
+    background-color: var(--background-white);
+    box-shadow: 0px 1px 2px 0px #1018280F, 0px 1px 3px 0px #1018281A;
 }
 
 .isSelected img{

@@ -48,7 +48,7 @@ mat-card-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 20px 24px 0;
+    padding: 0 24px;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -91,7 +91,7 @@ mat-card-actions button {
 .chart {
     height: 100%;
     width: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .chart-wrapper {
@@ -132,4 +132,8 @@ mat-card-actions img {
 
 .date-selection-trigger {
     margin-right: 150px;
+}
+
+.graph-chart-cont{
+    flex: 1;
 }

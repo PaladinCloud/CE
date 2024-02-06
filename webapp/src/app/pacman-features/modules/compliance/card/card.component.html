@@ -12,7 +12,7 @@
                 (navigateTo)="navigateToViolationsByCategory($event)"
             ></app-progress-bar-chart>
         </div>
-        <div class="chart" *ngIf="card.id === 2">
+        <div class="chart flex" *ngIf="card.id === 2">
             <div [class.loader]="!data && dataError === ''"></div>
             <app-error-message *ngIf="dataError" [selectedValue]="dataError"></app-error-message>
             <div class="graph-chart-cont relative" id="dashboardDoughnut">
