@@ -22,7 +22,7 @@ jobs:
           for FILE in $CHANGED_SQL_FILES
           do
             ADDED_LINES=$(git diff HEAD^ HEAD -- $FILE | grep '^+' | grep -v '++')
-            if echo "$ADDED_LINES" | grep -q 'DELETE'
+            if echo "$ADDED_LINES" | grep -iq 'DELETE'
             then
               echo "::set-output name=delete_found::true"
               break
@@ -53,4 +53,16 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: '⚠️ DELETE statement found in the changes of SQL files. Requesting review from @santhosh and @arun.'
+            })
+
+      - name: Add label
+        if: steps.check.outputs.delete_found == 'true'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['delete-statement-found']
             })
