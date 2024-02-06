@@ -22,7 +22,7 @@ jobs:
           for FILE in $CHANGED_SQL_FILES
           do
             ADDED_LINES=$(git diff HEAD^ HEAD -- $FILE | grep '^+' | grep -v '++')
-            if echo "$ADDED_LINES" | grep -q 'DELETE'
+            if echo "$ADDED_LINES" | grep -iq 'DELETE'
             then
               echo "::set-output name=delete_found::true"
               break

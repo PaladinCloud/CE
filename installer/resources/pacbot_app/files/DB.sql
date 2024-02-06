@@ -3278,3 +3278,5 @@ UPDATE cf_Target SET displayName='IAM User' WHERE targetName in ('iamuser','iamu
 UPDATE cf_Target SET displayName='KMS Key' WHERE targetName in ('kms','kmskey');
 UPDATE cf_Target SET displayName='Subnet' WHERE targetName in ('subnet','subnets');
 UPDATE cf_Target SET displayName='VM' WHERE targetName in ('virtualmachine','vminstance');
+
+delete from pac_v2_ui_options where filterId=12 and optionValue in ("assets", "violations");
