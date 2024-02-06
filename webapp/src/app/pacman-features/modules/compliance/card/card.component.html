@@ -3,7 +3,7 @@
         {{ card.header }}
     </mat-card-header>
     <mat-card-content [ngClass]="{'asset-graph':card.id === 3}">
-        <div class="chart" *ngIf="card.id === 1">
+        <div class="chart flex flex-align-center" *ngIf="card.id === 1">
             <div [class.loader]="data.length === 0 && dataError === ''"></div>
             <app-error-message *ngIf="dataError" [selectedValue]="dataError"></app-error-message>
             <app-progress-bar-chart
