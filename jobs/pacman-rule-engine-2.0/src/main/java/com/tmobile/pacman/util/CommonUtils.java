@@ -1265,43 +1265,4 @@ public class CommonUtils {
             throw exception;
         }
     }
-
-    public static List<Map<String, String>> extractListOfMaps(String jsonString) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // Read the JSON string into a JsonNode
-        JsonNode rootNode = objectMapper.readTree(jsonString);
-
-        // Check if "message" is "success"
-        if (rootNode.has("message") && "success".equals(rootNode.get("message").asText())) {
-            // Extract "data" array
-            JsonNode dataArray = rootNode.get("data");
-
-            // Convert JsonNode to List<Map<String, Object>>
-            return convertJsonNodeToList(dataArray);
-        } else {
-            // Return an empty list if "message" is not "success"
-            return new ArrayList<>();
-        }
-    }
-
-    public static List<Map<String, String>> convertJsonNodeToList(JsonNode dataArray) {
-        List<Map<String, String>> resultList = new ArrayList<>();
-
-        // Iterate over the JSON array
-        for (JsonNode jsonNode : dataArray) {
-            Map<String, String> resultMap = convertJsonNodeToMap(jsonNode);
-            resultList.add(resultMap);
-        }
-
-        return resultList;
-    }
-
-    public static Map<String, String> convertJsonNodeToMap(JsonNode jsonNode) {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // Convert JsonNode to Map
-        return objectMapper.convertValue(jsonNode, Map.class);
-    }
-
 }
