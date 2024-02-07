@@ -132,6 +132,7 @@ import { AssetTrendGraphComponent } from '../pacman-features/secondary-component
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { IsImagePresentPipe } from './table/pipes/is-image-present.pipe';
+import { ResultCountPipe } from './table/pipes/result-count.pipe';
 
 @NgModule({
   imports: [
@@ -243,7 +244,8 @@ import { IsImagePresentPipe } from './table/pipes/is-image-present.pipe';
         WidgetSectionStarterComponent,
         CellDataCasePipe,
         DateRangeFormatterPipe,
-        AssetTrendGraphComponent
+        AssetTrendGraphComponent,
+        ResultCountPipe
     ],
     exports: [
         CellDataCasePipe,
