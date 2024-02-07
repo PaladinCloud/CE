@@ -101,7 +101,8 @@ public class Main implements Constants {
             errorList.add(errorMap);
             LOGGER.error("Error while updating stats", e);
         }
-        SQSManager.getInstance().sendSQSMessage(ds, tenantId);
+        String sqsMessageID = SQSManager.getInstance().sendSQSMessage(ds, tenantId);
+        LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
         return status;

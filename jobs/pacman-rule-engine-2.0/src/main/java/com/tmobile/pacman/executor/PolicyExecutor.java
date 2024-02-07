@@ -86,9 +86,10 @@ public class PolicyExecutor {
     private static final int POLICY_THREAD_POOL_SIZE = 50;
     private static final String POLICY_DONE_SNS_TOPIC_ARN = "POLICY_DONE_SNS_TOPIC_ARN";
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     public PolicyExecutor (String jsonString) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode =  objectMapper.readTree(jsonString);
             source = jsonNode.get(PacmanSdkConstants.SOURCE).asText();
             targetType = jsonNode.get(PacmanSdkConstants.TARGET_TYPE).asText();
@@ -149,7 +150,7 @@ public class PolicyExecutor {
         String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
         try {
             String jsonResponse = CommonUtils.doHttpPost(policyDetailsUrl, requestJson);
-            policyWiseParamsList = CommonUtils.extractListOfMaps(jsonResponse);
+            policyWiseParamsList = convertJsonToListOfMap(jsonResponse);
         } catch (Exception e) {
             logger.error("failed in getting Policy list for  {}", requestJson);
             logger.error(DATA_ALERT_ERROR_STRING + JOB_NAME +  "failed in getting Policy list for " + requestJson);
@@ -189,7 +190,6 @@ public class PolicyExecutor {
         exemptionExpiredUrl += policyUUID;
         try {
             String response = CommonUtils.doHttpPost(exemptionExpiredUrl, "{}");
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(response);
             if (rootNode.has("message") && "success".equals(rootNode.get("message").asText())) {
                 return rootNode.at("/data/policyStatus").asText();
@@ -230,7 +230,7 @@ public class PolicyExecutor {
     /**
      * Run.
      *
-     * @param args the args
+     * @param policyParam the policy parameters
      * @param executionId the execution id
      * @throws InstantiationException the instantiation exception
      * @throws IllegalAccessException the illegal access exception
@@ -764,6 +764,25 @@ public class PolicyExecutor {
         public void setExemptionExpiryDate(String exemptionExpiryDate) {
             this.exemptionExpiryDate = exemptionExpiryDate;
         }
+    }
+
+    private static List<Map<String, String>> convertJsonToListOfMap(String jsonString) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(jsonString);
+        if (rootNode.has("message") && "success".equals(rootNode.get("message").asText())) {
+            JsonNode dataArray = rootNode.get("data");
+            return convertJsonNodeToList(dataArray);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private static List<Map<String, String>> convertJsonNodeToList(JsonNode dataArray) {
+        List<Map<String, String>> resultList = new ArrayList<>();
+        for (JsonNode jsonNode : dataArray) {
+            Map<String, String> resultMap = objectMapper.convertValue(jsonNode, Map.class);
+            resultList.add(resultMap);
+        }
+        return resultList;
     }
 
 }

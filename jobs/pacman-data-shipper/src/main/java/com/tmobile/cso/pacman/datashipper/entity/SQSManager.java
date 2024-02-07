@@ -42,22 +42,22 @@ public class SQSManager {
         return InstanceHolder.instance;
     }
 
-
-    public void sendSQSMessage(String pluginName, String tenantId) {
+    public String sendSQSMessage(String pluginName, String tenantId) {
         JobSchedulerSQSMessageBody sqsMessageBody = generateSQSMessage(pluginName, tenantId);
         try {
             String sqsMessage = objectMapper.writeValueAsString(sqsMessageBody);
-            sendMessage(sqsMessage);
+            return sendMessage(sqsMessage);
         } catch (Exception e) {
             LOGGER.error("Unable to send SQS message", e);
         }
+        return null;
     }
 
     private JobSchedulerSQSMessageBody generateSQSMessage(String pluginName, String tenantID) {
         return new JobSchedulerSQSMessageBody(pluginName + "-policy-job", tenantID, pluginName);
     }
 
-    private void sendMessage(String messageBody) {
+    private String sendMessage(String messageBody) {
         String queueUrl = System.getenv("SHIPPER_SQS_QUEUE_URL");
         SendMessageRequest request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
@@ -69,12 +69,13 @@ public class SQSManager {
             if (sqs != null) {
                 SendMessageResult result = sqs.sendMessage(request);
                 LOGGER.debug("Message sent with message ID: " + result.getMessageId());
-                return;
+                return result.getMessageId();
             }
             LOGGER.error("Unable to send message");
         } catch (Exception e) {
             LOGGER.error("Error sending message: " + e.getMessage());
         }
+        return null;
     }
 
     private AmazonSQS generateSQSClient() {
