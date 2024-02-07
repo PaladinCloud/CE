@@ -1,3 +1,7 @@
+:host{
+    flex: 1;
+}
+
 .label {
     display: flex;
     flex-direction: row;

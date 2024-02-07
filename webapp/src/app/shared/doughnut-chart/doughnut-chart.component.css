@@ -44,19 +44,20 @@
     font-size: var(--text-body-2-font-size);
     line-height: 20px;
     color: #2E2C34;
-    flex: none;
-    flex-grow: 1;
+    flex: 1;
 }
 
 .graph-legend-cont {
+    flex: 1;
     margin: 1em;
-    justify-content: center;
     flex-wrap: wrap;
 }
 
+.donut-container-statsDoughnut .graph-legend-cont{
+    margin: 2em 1em;
+}
+
 .legend-text-count {
-    width: 38px;
-    height: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
     font-family: var(--text-medium-font-family);
@@ -66,9 +67,8 @@
     line-height: 20px;
     text-align: right;
     color: #2E2C34;
-    flex: none;
+    flex: 1;
     order: 0;
-    flex-grow: 0;
 }
 
 .legend-each {
@@ -80,10 +80,15 @@
     text-overflow: ellipsis;
     display: flex;
     align-items: center;
+    border-bottom: 1px solid var(--border-normal);
 }
 
 .graph-outer-container {
     text-align: center;
+}
+
+.statisticsDoughnutChart .graph-outer-container{
+    margin-bottom: 16px;
 }
 
 .showFlex {

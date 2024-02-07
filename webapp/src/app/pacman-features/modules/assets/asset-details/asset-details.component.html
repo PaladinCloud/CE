@@ -36,7 +36,7 @@
                             <div class="graph-chart-cont relative" id="statsDoughnut">
                               <app-doughnut-chart *ngIf="violationErrorMessage=='' && policyData?.totalCount"
                                 [chartContId]="'statsDoughnut'"
-                                [displayLegendText]="false"
+                                [displayLegendText]="true"
                                 [flexTrue]="true"
                                 [graphData]="policyData"
                                 [graphHeight]="widgetHeight"
