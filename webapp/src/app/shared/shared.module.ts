@@ -131,6 +131,7 @@ import { DateRangeFormatterPipe } from './table-filters/pipes/date-range-formatt
 import { AssetTrendGraphComponent } from '../pacman-features/secondary-components/asset-trend-graph/asset-trend-graph.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { IsImagePresentPipe } from './table/pipes/is-image-present.pipe';
 
 @NgModule({
   imports: [
@@ -164,7 +165,8 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
         RouterModule,
         SelectDropDownModule,
     ],
-    declarations: [
+  declarations: [
+        IsImagePresentPipe,
         AgGridTableComponent,
         AssetSummarySearchFilterPipe,
         BackNavigationComponent,

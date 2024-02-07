@@ -22,6 +22,7 @@ import { debounceTime, filter, map, pairwise, takeUntil, throttleTime } from 'rx
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { OptionChange } from '../table-filters/table-filters.component';
 import { TableDataSource } from './table-data-source';
+import { IRowObj } from './interfaces/table-props.interface';
 
 export interface FilterItem {
     filterValue?: string[] | string | undefined;
@@ -52,7 +53,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     get columnWidths() {
         return this._columnWidths;
     }
-    @Input() data = [];
+    @Input() data: IRowObj[] = [];
     @Input() direction: SortDirection;
     @Input() areAllFiltersEnabled = false;
     @Input() enableMultiValuedFilter = false;
@@ -641,13 +642,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             const elementB = b[this.headerColName];
 
             if (!isNaN(parseFloat(elementA?.valueText)) && !isNaN(parseFloat(elementB?.valueText))) {
-                if (
-                    typeof elementA.valueText == 'number' ||
-                    typeof elementB.valueText == 'number'
-                ) {
-                    return (elementA.valueText - elementB.valueText) * (isAsc ? 1 : -1);
-                }
-
                 return (
                     (parseFloat(elementA.valueText) - parseFloat(elementB.valueText)) *
                     (isAsc ? 1 : -1)

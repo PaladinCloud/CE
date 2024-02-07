@@ -15,9 +15,6 @@ export class ImageCacheService {
       const url = '/assets/icons/' + icon + '.svg';
       this.iconReg.loadSvg(url, icon).toPromise();
     });
-
     await Promise.all(promises);
-
   }
-
 }
