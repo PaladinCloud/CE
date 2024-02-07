@@ -731,7 +731,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
       this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
         (response) => {
         this.showLoader = false;
-          if (response.length > 0) {          
+          if (response.length > 0) {
           const tableData = response[0].users;
           this.tableDataLoaded = true;
           const updatedResponse = this.massageData(tableData);

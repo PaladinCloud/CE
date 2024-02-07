@@ -47,8 +47,7 @@
                  
                     <div class="table-count-info">
                         <ng-container>
-                            <span>{{ (totalRecordsAfterFilter === 0 ? dataSource?.matTableDataSource.data?.length : totalRecordsAfterFilter)
-                                | number }}</span>
+                            <span>{{ totalRecordsAfterFilter | resultCount: dataSource }}</span>
                             <span *ngIf="hasMoreData">+</span>
                             Results
                         </ng-container>
