@@ -234,16 +234,13 @@
                                                     : element[column].text
                                             "
                                         >
-                                            <img *ngIf="element[column].imgSrc === 'noImg'" [class.noImg]="element[column].imgSrc === 'noImg'" src="" alt="">
+                                            <img *ngIf="!(element[column] | isImagePresent)" class="no-img" src="" [alt]="element[column].imageTitleText" />
                                             <svg-icon
-                                                *ngIf="element[column].imgSrc !== 'noImg'"
-                                                [svgStyle]="{ 'width.px':24, 'height.px':16, 'vertical-align':'bottom'}"
-                                                class="cell-img"
+                                                *ngIf="(element[column] | isImagePresent)"
+                                                svgClass="cell-img"
                                                 [name]="element[column].imgSrc"
-                                                [title]="
-                                                    element[column].imageTitleText ??
-                                                    element[column].titleText
-                                                ">
+                                                [title]="element[column].imageTitleText"
+                                                >
                                             </svg-icon>
                                             <span
                                                 *ngIf="

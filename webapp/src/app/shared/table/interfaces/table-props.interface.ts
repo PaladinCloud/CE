@@ -30,3 +30,26 @@ export interface IFilterObj {
    filterkey: string;
    compareKey: string;
 }
+
+export interface ICellObj {
+   text: string;
+   titleText: string;
+   valueText: string;
+   hasPostImage: boolean;
+   imgSrc: string;
+   postImgSrc: string;
+   isChip: boolean;
+   chipList?: string[];
+   chipBackgroundColor?: string;
+   chipTextColor?: string;
+   isMenuBtn: boolean;
+   properties?: string;
+   isLink: boolean;
+   imageTitleText?: string;
+   isDate: boolean;
+   menuItems?: string[];
+}
+
+export interface IRowObj {
+   [key: string]: ICellObj;
+}

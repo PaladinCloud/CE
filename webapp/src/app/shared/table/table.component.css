@@ -12,7 +12,7 @@
     height: calc(100% - 30px);
 }
 
-.noImg {
+.no-img {
     height: 16px;
     width: 24px;
     opacity: 0;

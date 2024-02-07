@@ -9,6 +9,7 @@ import {
   startWith,
   takeUntil,
 } from 'rxjs/operators';
+import { IRowObj } from './interfaces/table-props.interface';
 
 @Injectable()
 export class TableDataSource extends DataSource<any> implements OnDestroy{
@@ -19,7 +20,7 @@ export class TableDataSource extends DataSource<any> implements OnDestroy{
   
   intialCallFlag = true;
   // Create MatTableDataSource so we can have all sort,filter bells and whistles
-  matTableDataSource: MatTableDataSource<any> = new MatTableDataSource();
+  matTableDataSource: MatTableDataSource<IRowObj> = new MatTableDataSource();
 
   // Expose dataStream to simulate VirtualForOf.dataStream
   dataStream = this.matTableDataSource.connect().asObservable();
