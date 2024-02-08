@@ -131,7 +131,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 
 	@Override
 	public Page<AssetGroupView> getAllAssetGroupDetails(PluginRequestBody requestBody, final String searchTerm, int page, int size) {
-		StringBuilder query = new StringBuilder("SELECT * FROM cf_AssetGroupDetails ag WHERE LOWER(ag.groupType) <> 'user' ");
+		StringBuilder query = new StringBuilder("SELECT * FROM cf_AssetGroupDetails ag WHERE LOWER(ag.groupType) <> 'user' and isVisible='1'");
 		StringBuilder whereQuery = new StringBuilder("");
 		if (requestBody != null && !requestBody.getFilter().isEmpty()) {
 			for (var entry : requestBody.getFilter().entrySet()) {
