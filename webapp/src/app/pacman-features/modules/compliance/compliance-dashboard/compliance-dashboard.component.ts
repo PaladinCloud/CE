@@ -47,6 +47,7 @@ import { AgDomainObservableService } from 'src/app/core/services/ag-domain-obser
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
 import { IFilterObj, IFilterOption, IFilterTagLabelsMap, IFilterTagOptionsMap, IFilterTypeLabel } from 'src/app/shared/table/interfaces/table-props.interface';
 import { takeUntil } from 'rxjs/operators';
+import { COMPLIANCE_LABEL, VIOLATIONS_LABEL } from 'src/app/shared/constants/global';
  
 import { CategoryOrderMap, SeverityOrderMap } from 'src/app/shared/constants/order-mapping';
 
@@ -668,23 +669,8 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
           });
         });
       }
-      else if (value.toLowerCase() === "violations" || value.toLowerCase() === "compliance") {
-        const numOfIntervals = 5;
-        const { min, max } = filterTagsData.optionRange;
-        const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
-
-        filterTagsData = [];
-        intervals.forEach(interval => {
-          const lb = Math.round(interval.lowerBound);
-          let up = Math.round(interval.upperBound);
-          if (value.toLowerCase() === "compliance" && up === 100 && lb !== up) {
-            up--;
-          }
-          filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
-        });
-        if (value.toLowerCase() === "compliance") {
-          filterTagsData.push({ id: "100-100", name: "100-100" });
-        }
+      else if (value === VIOLATIONS_LABEL || value === COMPLIANCE_LABEL) {
+        filterTagsData = this.filterManagementService.getRangeFilterOptions(filterTagsData, value === COMPLIANCE_LABEL);
       } else {
         const tagsData = filterTagsData;
         filterTagsData = [];
