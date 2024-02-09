@@ -1168,7 +1168,7 @@ public class FileManager {
         String fieldNames;
         String keys;
         fieldNames = "Id`Name`Description`CreatedDate`Version";
-        keys = "discoverydate`accountid`accountname`region`id`name`description`createddate`version";
+        keys = "discoverydate`accountid`accountname`region`id`name`description`createdTime`version";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-api.data", keys);
     }
 
