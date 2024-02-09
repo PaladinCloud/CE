@@ -15,32 +15,55 @@ permissions:
   contents: read  
   pull-requests: read
 
-jobs:
+# job to tcheck if the branch is a release branch
+jobs:     
+  check_branch:
+    name: Check Branch
+    runs-on: ubuntu-latest
+    outputs:
+      is_release: ${{ steps.check_branch.outputs.is_release }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Check if the branch is a release branch
+        id: check_branch
+        run: |
+          branch_name="${{ github.ref }}"
+          if [[ $branch_name =~ ^refs/heads/release-(.+)$ ]]; then
+            echo "::set-output name=is_release::true"
+          else
+            echo "::set-output name=is_release::false"
+          fi
+      - name: Display Version
+        run: |
+          is_release="${{ steps.check_branch.outputs.is_release }}"
+          echo " It is an release branch: $is_release"
   filter:
     name: filters
     runs-on: ubuntu-latest
+    needs:
+      - check_branch
     outputs:
-      pom: ${{ steps.filter.outputs.pom || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      commons: ${{ steps.filter.outputs.commons || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      azure-discovery: ${{ steps.filter.outputs.azure-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-awsrules: ${{ steps.filter.outputs.pacman-awsrules || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      recommendation-enricher: ${{ steps.filter.outputs.recommendation-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      gcp-discovery: ${{ steps.filter.outputs.gcp-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-cloud-discovery: ${{ steps.filter.outputs.pacman-cloud-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-rule-engine: ${{ steps.filter.outputs.pacman-rule-engine || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      job-scheduler: ${{ steps.filter.outputs.job-scheduler || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-cloud-notifications: ${{ steps.filter.outputs.pacman-cloud-notifications || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-tenable-enricher: ${{ steps.filter.outputs.pacman-tenable-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      notification-es-logging-service: ${{ steps.filter.outputs.notification-es-logging-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      DB_Policy: ${{ steps.filter.outputs.DB_Policy || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      DB: ${{ steps.filter.outputs.DB || (startsWith(github.ref, 'refs/heads/release-v')) }}
-
+      pom: ${{ steps.filter.outputs.pom }}
+      commons: ${{ steps.filter.outputs.commons }}
+      azure-discovery: ${{ steps.filter.outputs.azure-discovery }}
+      pacman-awsrules: ${{ steps.filter.outputs.pacman-awsrules }}
+      recommendation-enricher: ${{ steps.filter.outputs.recommendation-enricher }}
+      gcp-discovery: ${{ steps.filter.outputs.gcp-discovery }}
+      pacman-cloud-discovery: ${{ steps.filter.outputs.pacman-cloud-discovery }}
+      pacman-rule-engine: ${{ steps.filter.outputs.pacman-rule-engine }}
+      job-scheduler: ${{ steps.filter.outputs.job-scheduler }}
+      pacman-cloud-notifications: ${{ steps.filter.outputs.pacman-cloud-notifications }}
+      pacman-tenable-enricher: ${{ steps.filter.outputs.pacman-tenable-enricher }}
+      pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher }}
+      pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper }}
+      pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher }}
+      notification-es-logging-service: ${{ steps.filter.outputs.notification-es-logging-service }}
+      notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service }}
+      notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service }}
+      notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service }}
+      DB_Policy: ${{ steps.filter.outputs.DB_Policy }}
+      DB: ${{ steps.filter.outputs.DB }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -115,7 +138,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.azure-discovery == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.azure-discovery == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -200,7 +224,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-awsrules == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-awsrules == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -285,7 +310,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-qualys-enricher == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-qualys-enricher == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -370,7 +396,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.recommendation-enricher == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.recommendation-enricher == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -455,12 +482,12 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-cloud-discovery == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-cloud-discovery == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: running update
         run: sudo apt update
       - name: Setup Maven Action
@@ -542,12 +569,12 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-rule-engine == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-rule-engine == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: running update
         run: sudo apt update
       - name: Setup Maven Action
@@ -633,7 +660,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.job-scheduler == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.job-scheduler == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -718,7 +746,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true' || needs.filter.outputs.pacman-cloud-notifications == 'true' || needs.filter.outputs.pom == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true' || needs.filter.outputs.pacman-cloud-notifications == 'true' || needs.filter.outputs.pom == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -804,7 +833,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-tenable-enricher == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-tenable-enricher == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -889,7 +919,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-aqua-enricher == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-aqua-enricher == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -974,7 +1005,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-data-shipper == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-data-shipper == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1059,7 +1091,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.notification-es-logging-service == 'true'
+      - check_branch
+    if: needs.filter.outputs.notification-es-logging-service == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1144,7 +1177,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.notification-invoke-service == 'true'
+      - check_branch
+    if: needs.filter.outputs.notification-invoke-service == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1229,7 +1263,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.notification-send-email-service == 'true'
+      - check_branch
+    if: needs.filter.outputs.notification-send-email-service == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1314,7 +1349,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.notification-template-formatter-service == 'true'
+      - check_branch
+    if: needs.filter.outputs.notification-template-formatter-service == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
