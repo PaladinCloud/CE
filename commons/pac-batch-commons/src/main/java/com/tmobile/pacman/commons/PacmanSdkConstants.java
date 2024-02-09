@@ -90,4 +90,5 @@ public final class PacmanSdkConstants {
     public static final String DATA_ALERT_ERROR_STRING = "error occurred in job_name:";
     public static final String ERROR_MESSAGE = " error_message:\"";
     public static final String ENDING_QUOTES = "\" ";
+    public static final String ENRICHER_SQS_QUEUE_URL = "ENRICHER_SQS_QUEUE_URL";
 }

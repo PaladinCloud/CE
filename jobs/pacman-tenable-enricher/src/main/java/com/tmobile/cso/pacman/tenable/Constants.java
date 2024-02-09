@@ -28,9 +28,11 @@ public class Constants {
     public static final String CONFIG_CREDS = "config_creds";
     public static final String X_API_KEYS_HEADER_NAME = "X-ApiKeys";
     public static final String USER_AGENT_HEADER_NAME = "User-Agent";
+    public static final String ENRICHER_TENABLE = "tenable";
 
     private Constants() {
         throw new IllegalStateException("Constants is a utility class");
     }
+
 
 }

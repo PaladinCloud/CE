@@ -25,6 +25,9 @@ import com.tmobile.cso.pacman.aqua.jobs.AquaFunctionVulnerabilityDataImporter;
 import com.tmobile.cso.pacman.aqua.jobs.AquaImageVulnerabilityDataImporter;
 import com.tmobile.cso.pacman.aqua.jobs.AquaVMVulnerabilityDataImporter;
 import com.tmobile.cso.pacman.aqua.util.ErrorManageUtil;
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.aws.sqs.SQSManager;
+import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +81,15 @@ public class Main {
                 break;
             default:
                 log.info("Job hint is not supplied.");
+                return errorInfo;
         }
 
+        SQSManager sqsManager = SQSManager.getInstance();
+        sqsManager.setSqsUrl(System.getenv(PacmanSdkConstants.ENRICHER_SQS_QUEUE_URL));
+        String tenantId = System.getenv("TENANT_ID");
+        JobDoneMessage jobDoneMessage = new JobDoneMessage(jobHint+"Collector-Job",null,tenantId,Constants.ENRICHER_AQUA);
+        String sqsMessageID  = sqsManager.sendSQSMessage(jobDoneMessage);
+        log.debug("Aqua done SQS message ID: {}", sqsMessageID);
         return errorInfo;
     }
 

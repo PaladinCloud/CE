@@ -20,6 +20,8 @@ import com.tmobile.cso.pacman.datashipper.entity.*;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.ErrorManageUtil;
+import com.tmobile.pacman.commons.aws.sqs.SQSManager;
+import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +103,10 @@ public class Main implements Constants {
             errorList.add(errorMap);
             LOGGER.error("Error while updating stats", e);
         }
-        String sqsMessageID = SQSManager.getInstance().sendSQSMessage(ds, tenantId);
+        SQSManager sqsManager = SQSManager.getInstance();
+        sqsManager.setSqsUrl(System.getenv("SHIPPER_SQS_QUEUE_URL"));
+        JobDoneMessage jobDoneMessage = new JobDoneMessage(ds+"-Shipper-Job",ds,tenantId,null);
+        String sqsMessageID  = sqsManager.sendSQSMessage(jobDoneMessage);
         LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
