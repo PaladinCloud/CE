@@ -15,32 +15,55 @@ permissions:
   contents: read  
   pull-requests: read
 
-jobs:
+# job to tcheck if the branch is a release branch
+jobs:     
+  check_branch:
+    name: Check Branch
+    runs-on: ubuntu-latest
+    outputs:
+      is_release: ${{ steps.check_branch.outputs.is_release }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Check if the branch is a release branch
+        id: check_branch
+        run: |
+          branch_name="${{ github.ref }}"
+          if [[ $branch_name =~ ^refs/heads/release-(.+)$ ]]; then
+            echo "::set-output name=is_release::true"
+          else
+            echo "::set-output name=is_release::false"
+          fi
+      - name: Display is_release
+        run: |
+          is_release="${{ steps.check_branch.outputs.is_release }}"
+          echo " It is an release branch: $is_release"
   filter:
     name: filters
     runs-on: ubuntu-latest
+    needs:
+      - check_branch
     outputs:
-      pom: ${{ steps.filter.outputs.pom || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      commons: ${{ steps.filter.outputs.commons || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      azure-discovery: ${{ steps.filter.outputs.azure-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-awsrules: ${{ steps.filter.outputs.pacman-awsrules || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      recommendation-enricher: ${{ steps.filter.outputs.recommendation-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      gcp-discovery: ${{ steps.filter.outputs.gcp-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-cloud-discovery: ${{ steps.filter.outputs.pacman-cloud-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-rule-engine: ${{ steps.filter.outputs.pacman-rule-engine || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      job-scheduler: ${{ steps.filter.outputs.job-scheduler || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-cloud-notifications: ${{ steps.filter.outputs.pacman-cloud-notifications || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-tenable-enricher: ${{ steps.filter.outputs.pacman-tenable-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      notification-es-logging-service: ${{ steps.filter.outputs.notification-es-logging-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      DB_Policy: ${{ steps.filter.outputs.DB_Policy || (startsWith(github.ref, 'refs/heads/release-v')) }}
-      DB: ${{ steps.filter.outputs.DB || (startsWith(github.ref, 'refs/heads/release-v')) }}
-
+      pom: ${{ steps.filter.outputs.pom }}
+      commons: ${{ steps.filter.outputs.commons }}
+      azure-discovery: ${{ steps.filter.outputs.azure-discovery }}
+      pacman-awsrules: ${{ steps.filter.outputs.pacman-awsrules }}
+      recommendation-enricher: ${{ steps.filter.outputs.recommendation-enricher }}
+      gcp-discovery: ${{ steps.filter.outputs.gcp-discovery }}
+      pacman-cloud-discovery: ${{ steps.filter.outputs.pacman-cloud-discovery }}
+      pacman-rule-engine: ${{ steps.filter.outputs.pacman-rule-engine }}
+      job-scheduler: ${{ steps.filter.outputs.job-scheduler }}
+      pacman-cloud-notifications: ${{ steps.filter.outputs.pacman-cloud-notifications }}
+      pacman-tenable-enricher: ${{ steps.filter.outputs.pacman-tenable-enricher }}
+      pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher }}
+      pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper }}
+      pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher }}
+      notification-es-logging-service: ${{ steps.filter.outputs.notification-es-logging-service }}
+      notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service }}
+      notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service }}
+      notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service }}
+      DB_Policy: ${{ steps.filter.outputs.DB_Policy }}
+      DB: ${{ steps.filter.outputs.DB }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -91,7 +114,9 @@ jobs:
   extract_version:
     name : extract_version
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v')     
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v')
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}   
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -115,7 +140,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.azure-discovery == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.azure-discovery == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -193,14 +219,15 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
   AwsrulesBuild:
     name: Awsrules-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-awsrules == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-awsrules == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -278,14 +305,15 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
   QualysBuild:
     name: qualys-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-qualys-enricher == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-qualys-enricher == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -363,14 +391,15 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
   RecommendationBuild:
     name: Recommendation-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.recommendation-enricher == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.recommendation-enricher == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -448,19 +477,19 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
   Cloud-Discovery-Build:
     name: Cloud-Discovery-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-cloud-discovery == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-cloud-discovery == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: running update
         run: sudo apt update
       - name: Setup Maven Action
@@ -534,20 +563,19 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
-
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
   RuleEngineBuild:
     name: Rule-engine-2.0-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-rule-engine == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-rule-engine == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: running update
         run: sudo apt update
       - name: Setup Maven Action
@@ -625,7 +653,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
 
   SchedulerBuild:
@@ -633,7 +661,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.job-scheduler == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.job-scheduler == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -711,14 +740,15 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/api
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/api
 
   NotificationBuild:
     name: Notification-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true' || needs.filter.outputs.pacman-cloud-notifications == 'true' || needs.filter.outputs.pom == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true' || needs.filter.outputs.pacman-cloud-notifications == 'true' || needs.filter.outputs.pom == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -797,14 +827,15 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
   TenableBuild:
     name: Tenable-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-tenable-enricher == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-tenable-enricher == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -882,14 +913,15 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
   AquaBuild:
     name: Aqua-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-aqua-enricher == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-aqua-enricher == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -967,14 +999,15 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
 
   ShipperBuild:
     name: Shipper-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-data-shipper == 'true'
+      - check_branch
+    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.pacman-data-shipper == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1052,14 +1085,15 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/jobs
         
   Es-logging:
     name: es-logging-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.notification-es-logging-service == 'true'
+      - check_branch
+    if: needs.filter.outputs.notification-es-logging-service == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1137,14 +1171,15 @@ jobs:
           path: ./dist/lambda
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/lambda
 
   Invoke-Service:
     name: invoke-service-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.notification-invoke-service == 'true'
+      - check_branch
+    if: needs.filter.outputs.notification-invoke-service == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1222,14 +1257,15 @@ jobs:
           path: ./dist/lambda
       - name: copy lambda jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/lambda
 
   Send-Email-Service:
     name: Send-Email-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.notification-send-email-service == 'true'
+      - check_branch
+    if: needs.filter.outputs.notification-send-email-service == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1307,14 +1343,15 @@ jobs:
           path: ./dist/lambda
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda  
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/lambda  
         
   Template-formatter-Service:
     name: Template-formatter-Build
     runs-on: ubuntu-latest
     needs:
       - filter
-    if: needs.filter.outputs.pom == 'true'  || needs.filter.outputs.commons == 'true'  || needs.filter.outputs.notification-template-formatter-service == 'true'
+      - check_branch
+    if: needs.filter.outputs.notification-template-formatter-service == 'true' || needs.check_branch.outputs.is_release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1392,7 +1429,7 @@ jobs:
           path: ./dist/lambda
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/lambda  
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/lambda  
 
   push-sql-Dev:
     name: Push SQL files to s3 dev
@@ -1417,6 +1454,8 @@ jobs:
   push-sql-Qa:
     name: Push SQL files to s3 qa
     runs-on: ubuntu-latest
+    needs:
+      - extract_version
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
     environment: 'SaaSQA'
     steps:
@@ -1431,5 +1470,5 @@ jobs:
       - name: sql files to qa S3
         run: |
           cd ./installer/resources/pacbot_app/files/
-          aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/sql/
-          aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_QA }}/${{ steps.extract_version.outputs.version }}/qa/sql/
+          aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/sql/
+          aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/sql/
