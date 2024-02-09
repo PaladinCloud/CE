@@ -101,7 +101,7 @@ public class VMInstanceWithPublicAccess extends BasePolicy {
                     issue.put(PacmanRuleConstants.VIOLATION_REASON, "VM instance with public IP found");
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
-                    logger.debug("========EC2WithPublicIPAccess ended with an annotation {} : =========", annotation);
+                    logger.debug("VMWithPublicIPAccess ended with an annotation {} :", annotation);
                     return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
 

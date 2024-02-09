@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package com.tmobile.cso.pacman.datashipper.entity;
+package com.tmobile.pacman.commons.aws.sqs;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
@@ -22,8 +22,8 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
-import com.tmobile.cso.pacman.datashipper.dto.JobSchedulerSQSMessageBody;
+import com.tmobile.pacman.commons.aws.CredentialProvider;
+import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +34,8 @@ public class SQSManager {
 
     private final ObjectMapper objectMapper;
 
+    private String sqsUrl;
+
     private SQSManager() {
         objectMapper = new ObjectMapper();
     }
@@ -42,10 +44,13 @@ public class SQSManager {
         return InstanceHolder.instance;
     }
 
-    public String sendSQSMessage(String pluginName, String tenantId) {
-        JobSchedulerSQSMessageBody sqsMessageBody = generateSQSMessage(pluginName, tenantId);
+    public void setSqsUrl(String url) {
+        this.sqsUrl = url;
+    }
+
+    public String sendSQSMessage(JobDoneMessage jobDoneMessage) {
         try {
-            String sqsMessage = objectMapper.writeValueAsString(sqsMessageBody);
+            String sqsMessage = objectMapper.writeValueAsString(jobDoneMessage);
             return sendMessage(sqsMessage);
         } catch (Exception e) {
             LOGGER.error("Unable to send SQS message", e);
@@ -53,14 +58,12 @@ public class SQSManager {
         return null;
     }
 
-    private JobSchedulerSQSMessageBody generateSQSMessage(String pluginName, String tenantID) {
-        return new JobSchedulerSQSMessageBody(pluginName + "-policy-job", tenantID, pluginName);
-    }
+
 
     private String sendMessage(String messageBody) {
-        String queueUrl = System.getenv("SHIPPER_SQS_QUEUE_URL");
+
         SendMessageRequest request = new SendMessageRequest()
-                .withQueueUrl(queueUrl)
+                .withQueueUrl(this.sqsUrl)
                 .withMessageBody(messageBody)
                 .withMessageGroupId(UUID.randomUUID().toString());
         try {

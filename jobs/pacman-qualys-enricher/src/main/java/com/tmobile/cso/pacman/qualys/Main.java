@@ -11,6 +11,9 @@ import javax.naming.NamingException;
 import com.tmobile.cso.pacman.qualys.jobs.HostAssetDataImporter;
 import com.tmobile.cso.pacman.qualys.jobs.KBDataImporter;
 import com.tmobile.cso.pacman.qualys.util.ErrorManageUtil;
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.aws.sqs.SQSManager;
+import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,7 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
     private static Logger log = LoggerFactory.getLogger(Main.class);
+    private static final String JOB_HINT = "job_hint";
     /**
      * The main method.
      *
@@ -60,7 +64,7 @@ public class Main {
               return ErrorManageUtil.formErrorCode(errorList);
 		}
         
-        String jobHint = params.get("job_hint");
+        String jobHint = params.get(JOB_HINT);
         switch (jobHint) {
         case "qualys":
             errorInfo =  new HostAssetDataImporter().execute();
@@ -78,6 +82,13 @@ public class Main {
                 Map<String, Object> err = (Map<String, Object>) error;
                 log.error("inside main, error - {}, exception - {}", err.get("error"), err.get("exception"));
             });
+        } else {
+            SQSManager sqsManager = SQSManager.getInstance();
+            sqsManager.setSqsUrl(System.getenv(PacmanSdkConstants.ENRICHER_SQS_QUEUE_URL));
+            String tenantId = System.getenv("TENANT_ID");
+            JobDoneMessage jobDoneMessage = new JobDoneMessage(params.get(JOB_HINT)+"Collector-Job",null,tenantId,Constants.ENRICHER_QUALYS);
+            String sqsMessageID  = sqsManager.sendSQSMessage(jobDoneMessage);
+            log.debug("qualys done SQS message ID: {}", sqsMessageID);
         }
         return  errorInfo;
     }
