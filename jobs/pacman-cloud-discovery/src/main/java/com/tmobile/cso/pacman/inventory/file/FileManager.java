@@ -1168,7 +1168,7 @@ public class FileManager {
         String fieldNames;
         String keys;
         fieldNames = "Id`Name`Description`CreatedDate`Version";
-        keys = "discoverydate`accountid`accountname`region`id`name`description`createddate`version";
+        keys = "discoverydate`accountid`accountname`region`id`name`description`createdTime`version";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-api.data", keys);
     }
 
@@ -1266,7 +1266,7 @@ public class FileManager {
 
         fieldNames = "replicationInstanceArn`replicationInstanceIdentifier`availabilityZone`multiAZ`kmsKeyId`publiclyAccessible";
         keys = "discoverydate`accountid`accountname`region`replicationinstancearn`replicationinstanceid`availabilityzone`multiaz`kmskeyid`publiclyAccessible";
-        FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-dms.data", keys);
+        FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-fileInfoMap.data", keys);
 
     }
 
@@ -1824,7 +1824,7 @@ public class FileManager {
         String keys;
         fieldNames = "cloudtrailName`securityTopicARN`securityTopicEndpoint";
         keys = "discoverydate`accountid`accountname`region`cloudtrailname`securitytopicarn`securitytopicendpoint";
-        FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-account.data", keys);
+        FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-fileInfoMap.data", keys);
     }
 
     /**
@@ -1864,7 +1864,7 @@ public class FileManager {
     /**
      * Generate CloudWatch fileInfoMap files.
      *
-     * @param fileInfoMap cloudwatch log and filter map
+     * @param cloudwatch log and filter map
      */
     public static void generateCloudWatchLogsFiles(Map<String, List<CloudWatchLogsVH>> fileInfoMap) {
         String fieldNames;
