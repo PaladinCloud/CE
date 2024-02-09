@@ -433,7 +433,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     try {
       const dataValue = [];
       let totalCount = 0;
-      for (const [key, value] of Object.entries(SeverityOrderMap)) {        
+      for (const key of this.utils.getDescendingOrder(SeverityOrderMap)) {
         const count = distributionBySeverity[key].totalViolations;
         dataValue.push(count);
         totalCount += +count;
@@ -444,7 +444,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         this.policyData = {
           color: ["#D14938", "#F58F6F", "#F5B66F", "#506EA7"],
           data: dataValue,
-          legend: ["Critical", "High", "Medium", "Low"],
+          legend: this.utils.getDescendingOrder(SeverityOrderMap),
           legendTextcolor: "#000",
           totalCount: totalCount,
           link: true,
