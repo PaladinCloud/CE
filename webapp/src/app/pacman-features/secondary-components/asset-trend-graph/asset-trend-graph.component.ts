@@ -7,6 +7,7 @@ import { ASSET_TREND, ASSET_TYPE, TOTAL_ASSETS } from 'src/app/shared/constants/
 import {
     ALL_TIME,
     API_RESPONSE_ERROR,
+    CUSTOM,
     ERROR,
     NO_DATA_AVAILABLE,
     WAIT_FOR_DATA,
@@ -144,7 +145,14 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
             };
             this.assetTypeFilters.listData[TOTAL_ASSETS] = true;
         } else {
-            const { toDate, fromDate, graphInterval, assetTypeList } = retrieveState;
+            let { toDate } = retrieveState;
+            const {fromDate, graphInterval, assetTypeList } = retrieveState;
+
+            if(graphInterval !== CUSTOM){
+                // If the Graph Interval is not set to CUSTOM, 
+                // then the 'toDate' value should always reflect the latest date, considering time zone nuances."
+                toDate = new Date();
+            }
             this.savedState = {
                 assetTypeList,
                 fromDate,

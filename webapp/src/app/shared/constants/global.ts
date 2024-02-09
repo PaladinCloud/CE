@@ -40,8 +40,9 @@ export const TAGGING = 'tagging';
 export const TABLE_DIRECTION_ASC = 'asc';
 export const TABLE_DIRECTION_DESC = 'desc';
 
-// === Common Labels for graph ===
+// === Common Labels for graph and filters ===
 export const ALL_TIME = 'All time';
+export const CUSTOM = 'Custom';
 export const WAIT_FOR_DATA = 'waitForData';
 
 export const REDIRECT_URL_KEY = 'redirectUrl';
