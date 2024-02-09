@@ -5,44 +5,10 @@ on:
     branches:
       -  master
       -  release-v*.*.*
-    paths:
-      - 'jobs/pom.xml'
-      - 'jobs/azure-discovery/**'       
-      - 'jobs/pacman-awsrules/**'
-      - 'jobs/pacman-qualys-enricher/**' 
-      - 'jobs/recommendation-enricher/**' 
-      - 'jobs/gcp-discovery/**' 
-      - 'jobs/pacman-cloud-discovery/**'       
-      - 'jobs/pacman-rule-engine-2.0/**' 
-      - 'jobs/job-scheduler/**'          
-      - 'jobs/pacman-cloud-notifications/**'   
-      - 'jobs/pacman-tenable-enricher/**' 
-      - 'jobs/pacman-aqua-enricher/**' 
-      - 'jobs/pacman-data-shipper/**' 
-      - 'commons/**'
-      - 'installer/resources/pacbot_app/files/DB_Policy.sql'
-      - 'installer/resources/pacbot_app/files/DB.sql'
   pull_request:
     branches:
       -  master
       -  release-v*.*.*
-    paths:
-      - 'jobs/pom.xml'
-      - 'jobs/azure-discovery/**'       
-      - 'jobs/pacman-awsrules/**'           
-      - 'jobs/pacman-qualys-enricher/**' 
-      - 'jobs/recommendation-enricher/**' 
-      - 'jobs/gcp-discovery/**' 
-      - 'jobs/pacman-cloud-discovery/**'       
-      - 'jobs/pacman-rule-engine-2.0/**' 
-      - 'jobs/job-scheduler/**'          
-      - 'jobs/pacman-cloud-notifications/**'   
-      - 'jobs/pacman-tenable-enricher/**' 
-      - 'jobs/pacman-aqua-enricher/**' 
-      - 'jobs/pacman-data-shipper/**' 
-      - 'commons/**'
-      - 'installer/resources/pacbot_app/files/DB_Policy.sql'
-      - 'installer/resources/pacbot_app/files/DB.sql'
 
 permissions:
   id-token: write
@@ -54,26 +20,26 @@ jobs:
     name: filters
     runs-on: ubuntu-latest
     outputs:
-      pom: ${{ steps.filter.outputs.pom }}
-      commons: ${{ steps.filter.outputs.commons }}
-      azure-discovery: ${{ steps.filter.outputs.azure-discovery }}
-      pacman-awsrules: ${{ steps.filter.outputs.pacman-awsrules }}
-      recommendation-enricher: ${{ steps.filter.outputs.recommendation-enricher }}
-      gcp-discovery: ${{ steps.filter.outputs.gcp-discovery }}
-      pacman-cloud-discovery: ${{ steps.filter.outputs.pacman-cloud-discovery }}
-      pacman-rule-engine: ${{ steps.filter.outputs.pacman-rule-engine }}
-      job-scheduler: ${{ steps.filter.outputs.job-scheduler }}
-      pacman-cloud-notifications: ${{ steps.filter.outputs.pacman-cloud-notifications }}
-      pacman-tenable-enricher: ${{ steps.filter.outputs.pacman-tenable-enricher }}
-      pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher }}
-      pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper }}
-      pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher }}
-      notification-es-logging-service: ${{ steps.filter.outputs.notification-es-logging-service }}
-      notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service }}
-      notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service }}
-      notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service }}
-      DB_Policy: ${{ steps.filter.outputs.DB_Policy }}
-      DB: ${{ steps.filter.outputs.DB }}
+      pom: ${{ steps.filter.outputs.pom || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      commons: ${{ steps.filter.outputs.commons || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      azure-discovery: ${{ steps.filter.outputs.azure-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      pacman-awsrules: ${{ steps.filter.outputs.pacman-awsrules || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      recommendation-enricher: ${{ steps.filter.outputs.recommendation-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      gcp-discovery: ${{ steps.filter.outputs.gcp-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      pacman-cloud-discovery: ${{ steps.filter.outputs.pacman-cloud-discovery || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      pacman-rule-engine: ${{ steps.filter.outputs.pacman-rule-engine || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      job-scheduler: ${{ steps.filter.outputs.job-scheduler || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      pacman-cloud-notifications: ${{ steps.filter.outputs.pacman-cloud-notifications || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      pacman-tenable-enricher: ${{ steps.filter.outputs.pacman-tenable-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      pacman-aqua-enricher: ${{ steps.filter.outputs.pacman-aqua-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      pacman-data-shipper: ${{ steps.filter.outputs.pacman-data-shipper || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      pacman-qualys-enricher: ${{ steps.filter.outputs.pacman-qualys-enricher || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      notification-es-logging-service: ${{ steps.filter.outputs.notification-es-logging-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      DB_Policy: ${{ steps.filter.outputs.DB_Policy || (startsWith(github.ref, 'refs/heads/release-v')) }}
+      DB: ${{ steps.filter.outputs.DB || (startsWith(github.ref, 'refs/heads/release-v')) }}
 
     steps:
       - uses: actions/checkout@v4
