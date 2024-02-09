@@ -421,7 +421,7 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
      };
    }
 
-   getRangeFilterOptions (filterTagsData, addLastOptionSeparate = false) {
+   getRangeFilterOptions (filterTagsData, isRangePercentage = false) {
      const numOfIntervals = 5;
      const { min, max } = filterTagsData.optionRange;
      const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
@@ -432,12 +432,14 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
        const lb = Math.round(interval.lowerBound);
        let up = Math.round(interval.upperBound);
        includeLastOption = up === 100;
-       if (addLastOptionSeparate && up === 100 && lb !== up) {
+       if (isRangePercentage && up === 100 && lb !== up) {
          up--;
        }
-       filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
+       if (!(isRangePercentage && lb===100)) {
+         filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
+       }
      });
-     if (addLastOptionSeparate && includeLastOption) {
+     if (isRangePercentage && includeLastOption) {
        filterTagsData.push({ id: "100-100", name: "100-100" });
      }
      return filterTagsData;
