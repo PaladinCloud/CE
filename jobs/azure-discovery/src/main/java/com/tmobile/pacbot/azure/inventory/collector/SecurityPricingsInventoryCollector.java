@@ -2,6 +2,7 @@ package com.tmobile.pacbot.azure.inventory.collector;
 
 import com.google.gson.*;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.util.ErrorManageUtil;
 import com.tmobile.pacbot.azure.inventory.vo.AzureVH;
 import com.tmobile.pacbot.azure.inventory.vo.SecurityPricingsVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
@@ -37,7 +38,6 @@ public class SecurityPricingsInventoryCollector implements Collector {
 
         List<SecurityPricingsVH> securityPricingsList = new ArrayList<SecurityPricingsVH>();
         String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
-
         String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()));
         try {
             String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
@@ -63,7 +63,10 @@ public class SecurityPricingsInventoryCollector implements Collector {
             }
         } catch (Exception e) {
             log.error("Error collecting Security Pricings", e);
-            Util.eCount.getAndIncrement();
+            ErrorManageUtil.uploadError(subscription.getSubscriptionId(), "all", "securitypricings", e.getMessage());
+            if (!e.getMessage().contains("Please register to Microsoft.Security in order to view your security status")) {
+                Util.eCount.getAndIncrement();
+            }
         }
 
         log.info("Target Type : {}  Total: {} ", "Security Pricings", securityPricingsList.size());
