@@ -85,6 +85,7 @@ public class NotificationUtils {
         request.setDescription(annotation.get(PacmanSdkConstants.DESCRIPTION));
         request.setScanTime(CommonUtils.getCurrentDateStringWithFormat(
                 PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.NOTIFICATION_EMAIL_DATE_FORMAT));
+        request.setAccountId(annotation.get(ACCOUNT_ID));
 
         //populate tags information into additionalInfo field.
         Map<String,String> tagsKeyAndValueMap = new HashMap<>();
@@ -115,6 +116,7 @@ public class NotificationUtils {
             autofixNotificationRequest.setSeverity(policyParam.get("severity").toUpperCase());
             autofixNotificationRequest.setWaitingTime(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
             autofixNotificationRequest.setIssueId(annotation.get(PacmanSdkConstants.ANNOTATION_PK));
+            autofixNotificationRequest.setAccountId(annotation.get(ACCOUNT_ID));
 
             //populate tags information into additionalInfo field.
             Map<String,String> tagsKeyAndValueMap = new HashMap<>();
@@ -209,6 +211,7 @@ public class NotificationUtils {
                 autofixNotificationRequest.setWaitingTime(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
                 autofixNotificationRequest.setIssueId(autofixAnnotation.get(ANNOTATION_PK));
                 autofixNotificationRequest.setAction(AutoFixAction.AUTOFIX_ACTION_FIX);
+                autofixNotificationRequest.setAccountId(autofixAnnotation.get(ACCOUNT_ID));
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern(NOTIFICATION_TIME_FORMAT);
                 LocalDateTime presentTime = LocalDateTime.now(Clock.systemUTC());
                 String discoveredOn = autofixAnnotation.get(CREATED_DATE);

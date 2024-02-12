@@ -14,6 +14,7 @@ public class PolicyViolationNotificationRequest {
     private String policyNameLink;
     private String description;
     private String scanTime;
+    private String accountId;
     private Constants.Actions action;
     private Map<String,Object> additionalInfo=new HashMap<>();
 
@@ -94,5 +95,13 @@ public class PolicyViolationNotificationRequest {
 
     public void setAction(Constants.Actions action) {
         this.action = action;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 }
