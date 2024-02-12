@@ -52,16 +52,16 @@ public class APIKeysInventoryCollector {
                 }
                 apiKeysVH.setApiTargetList(service);
 
-               HashMap<String,Object>serverKeyRestrictions=new HashMap<>();
+                HashMap<String, Object> serverKeyRestrictions = new HashMap<>();
 
-               keys.getRestrictions().getServerKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
-                   serverKeyRestrictions.put(fieldDescriptor.getName(),o);
-                   logger.info( " getServerKeyRestrictions {}",o);
+                keys.getRestrictions().getServerKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
+                    serverKeyRestrictions.put(fieldDescriptor.getName(), o);
+                    logger.info(" getServerKeyRestrictions {}", o);
 
-               });
-               restriction.put("serverKeyRestrictions",serverKeyRestrictions);
+                });
+                restriction.put("serverKeyRestrictions", serverKeyRestrictions);
 
-               HashMap<String,Object>browserKeyRestrictions=new HashMap<>();
+                HashMap<String, Object> browserKeyRestrictions = new HashMap<>();
 
                 keys.getRestrictions().getBrowserKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
                     browserKeyRestrictions.put(fieldDescriptor.getName(), o);
@@ -76,18 +76,18 @@ public class APIKeysInventoryCollector {
                     androidKeyRestrictions.put(fieldDescriptor.getName(), o);
                     logger.info(" androidKeyRestrictions {}", o);
 
-               });
-               restriction.put("androidKeyRestrictions",androidKeyRestrictions);
+                });
+                restriction.put("androidKeyRestrictions", androidKeyRestrictions);
 
-               HashMap<String,Object>iosKeyRestrictions=new HashMap<>();
+                HashMap<String, Object> iosKeyRestrictions = new HashMap<>();
 
-               keys.getRestrictions().getIosKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
-                   iosKeyRestrictions.put(fieldDescriptor.getName(),o);
-                   logger.info( " iosKeyRestrictions {}",o);
+                keys.getRestrictions().getIosKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
+                    iosKeyRestrictions.put(fieldDescriptor.getName(), o);
+                    logger.info(" iosKeyRestrictions {}", o);
 
-               });
-               restriction.put("iosKeyRestrictions",iosKeyRestrictions);
-           }
+                });
+                restriction.put("iosKeyRestrictions", iosKeyRestrictions);
+            }
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
             apiKeysVH.setCreatedTime(dateFormat.format(new Date(keys.getCreateTime().getSeconds() * 1000)));
@@ -100,4 +100,4 @@ public class APIKeysInventoryCollector {
         return apiKeysVHList;
     }
 
-    }
+}
