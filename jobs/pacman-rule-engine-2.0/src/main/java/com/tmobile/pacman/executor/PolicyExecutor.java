@@ -108,7 +108,7 @@ public class PolicyExecutor {
         setSystemProperties();
         logger.debug("received input: " + args[0]);
         logger.info("input source detected as policy, will process policy now.");
-        // "{ \"source\": \"aws\", \"targetType\": "ec2", \"enricher\": \"\",
+        // "{ \"source\": \"aws\", \"targetType\": "ec2", \"enricherSource\": \"\",
         // \"policyUUID\":[\"aws_ami_unused\"] }";
         PolicyExecutor policyExecutor = new PolicyExecutor(args[0]);
         policyExecutor.setResourcesList();
