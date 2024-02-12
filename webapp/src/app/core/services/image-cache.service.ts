@@ -10,11 +10,16 @@ export class ImageCacheService {
     private iconReg: SvgIconRegistryService
   ) { }
 
-  async preLoadImages (): Promise<void> {
-    const promises = imagesToPreLoad.map(async (icon) => {
-      const url = '/assets/icons/' + icon + '.svg';
-      this.iconReg.loadSvg(url, icon).toPromise();
+  preLoadImages () {
+    imagesToPreLoad.map((icon) => {
+      this.loadIcon(icon);
     });
-    await Promise.all(promises);
+  }
+
+  loadIcon (icon, path = '/assets/icons', extension = 'svg') {
+      this.iconReg.getSvgByName(icon).subscribe(() => { }, error => {
+        const url = `${path}/${icon}.${extension}`;        
+        this.iconReg.loadSvg(url, icon);
+      })
   }
 }

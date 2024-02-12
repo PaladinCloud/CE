@@ -23,7 +23,8 @@ import { DATA_MAPPING } from '../constants/data-mapping';
 import { DatePipe } from '@angular/common';
 import { find } from 'lodash';
 import { IColumnNamesMap, IColumnWidthsMap, IFilterOption } from '../table/interfaces/table-props.interface';
-import { REDIRECT_URL_KEY } from '../constants/global';
+import { JS_ERROR, REDIRECT_URL_KEY } from '../constants/global';
+import { ImageCacheService } from 'src/app/core/services/image-cache.service';
 
 @Injectable()
 export class UtilsService {
@@ -31,7 +32,8 @@ export class UtilsService {
   constructor(
               private datePipe: DatePipe,
               private logger: LoggerService,
-              private refactorFieldsService: RefactorFieldsService
+              private refactorFieldsService: RefactorFieldsService,
+              private imageCacheService: ImageCacheService
             ) {}
 
   setTimeoutPromise(milliseconds) {
@@ -142,7 +144,17 @@ export class UtilsService {
     return newData;
   }
 
-  processTableData(data,tableImageDataMap={}, transformCallback?) {
+  loadIcons (tableImageDataMap) {
+    try {
+      const icons = Object.keys(tableImageDataMap).map(key => tableImageDataMap[key].image);
+      icons.forEach(icon => this.imageCacheService.loadIcon(icon));
+    } catch (e) {
+      this.logger.log(JS_ERROR, e);
+    }
+  }
+
+  processTableData (data, tableImageDataMap = {}, transformCallback?) {
+    this.loadIcons(tableImageDataMap);
     try {
       const processedData = [];
       
