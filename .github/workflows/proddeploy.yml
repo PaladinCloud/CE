@@ -16,6 +16,8 @@ jobs:
   extract_version:
     name : extract_version
     if : contains('["rnithinpaladin","santhosh-challa","plyubich"]', github.actor)
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}   
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -60,7 +62,6 @@ jobs:
           cd jobs/azure-discovery/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-azure-artifact
@@ -89,7 +90,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   AwsrulesBuild:
     name: Awsrules-Build
@@ -116,7 +117,6 @@ jobs:
           cd jobs/pacman-awsrules/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create' 
         uses: actions/upload-artifact@v4
         with:
           name: jobs-awsrules-artifact
@@ -145,7 +145,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   QualysBuild:
     name: qualys-Build
@@ -172,7 +172,6 @@ jobs:
           cd jobs/pacman-qualys-enricher/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create' 
         uses: actions/upload-artifact@v4
         with:
           name: jobs-qualys-artifact
@@ -201,7 +200,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   RecommendationBuild:
     name: Recommendation-Build
@@ -228,7 +227,6 @@ jobs:
           cd jobs/recommendation-enricher/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create' 
         uses: actions/upload-artifact@v4
         with:
           name: jobs-recommendation-artifact
@@ -257,7 +255,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   GCPBuild:
     name: GCP-Build
@@ -284,7 +282,6 @@ jobs:
           cd jobs/gcp-discovery/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-gcp-artifact
@@ -312,7 +309,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   Cloud-Discovery-Build:
     name: Cloud-Discovery-Build
@@ -321,7 +318,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: running update
         run: sudo apt update
       - name: Setup Maven Action
@@ -340,7 +336,6 @@ jobs:
           cd jobs/pacman-cloud-discovery/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-cloud-artifact
@@ -369,8 +364,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
-
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   RuleEngineBuild:
     name: Rule-engine-2.0-Build
@@ -401,7 +395,6 @@ jobs:
           cd jobs/pacman-rule-engine-2.0/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-RE2.0-artifact
@@ -430,8 +423,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
-
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   SchedulerBuild:
     name: Scheduler-Build
@@ -458,7 +450,6 @@ jobs:
           cd jobs/job-scheduler/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-scheduler-artifact
@@ -487,7 +478,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/api
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/api
 
   NotificationBuild:
     name: Notification-Build
@@ -496,7 +487,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: running update
         run: sudo apt update
       - name: Setup Maven Action
@@ -515,7 +505,6 @@ jobs:
           cd jobs/pacman-cloud-notifications/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-notification-artifact
@@ -544,7 +533,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   TenableBuild:
     name: Tenable-Build
@@ -571,7 +560,6 @@ jobs:
           cd jobs/pacman-tenable-enricher/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-Tenable-artifact
@@ -600,7 +588,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   AquaBuild:
     name: Aqua-Build
@@ -627,7 +615,6 @@ jobs:
           cd jobs/pacman-aqua-enricher/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-aqua-artifact
@@ -656,7 +643,7 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   ShipperBuild:
     name: Shipper-Build
@@ -683,7 +670,6 @@ jobs:
           cd jobs/pacman-data-shipper/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: jobs-shipper-artifact
@@ -712,12 +698,11 @@ jobs:
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/jobs
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
   push-sql-prod:
     name: Push SQL files to s3 prod
     runs-on: ubuntu-latest
-    if:  github.event_name == 'create' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
     environment: 'SaaSPROD'
     steps:
       - uses: actions/checkout@v4
@@ -731,8 +716,8 @@ jobs:
       - name: sql files to prod S3
         run: |
           cd ./installer/resources/pacbot_app/files/
-          aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/sql/
-          aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/sql/
+          aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/sql/
+          aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/sql/
   Es-logging:
     name: es-logging-Build
     runs-on: ubuntu-latest
@@ -758,7 +743,6 @@ jobs:
           cd lambda-functions/notification-es-logging-service/
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: es-logging-artifact
@@ -787,7 +771,7 @@ jobs:
           path: ./dist/lambda
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/lambda
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/lambda
 
   Invoke-Service:
     name: invoke-service-Build
@@ -814,7 +798,6 @@ jobs:
           cd lambda-functions/notification-invoke-service
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: invoke-service-artifact
@@ -843,7 +826,7 @@ jobs:
           path: ./dist/lambda
       - name: copy lambda jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/lambda
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/lambda
 
   Send-Email-Service:
     name: Send-Email-Build
@@ -870,7 +853,6 @@ jobs:
           cd lambda-functions/notification-send-email-service
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: send-email-artifact
@@ -899,7 +881,7 @@ jobs:
           path: ./dist/lambda
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/lambda  
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/lambda  
         
   Template-formatter-Service:
     name: Template-formatter-Build
@@ -926,7 +908,6 @@ jobs:
           cd lambda-functions/notification-template-formatter-service
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
       - name: Upload Jobs artifact
-        if: github.event_name == 'push' || github.event_name == 'create'
         uses: actions/upload-artifact@v4
         with:
           name: template-formatter-artifact
@@ -955,4 +936,4 @@ jobs:
           path: ./dist/lambda
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ steps.extract_version.outputs.version }}/prod/lambda  
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/lambda  
