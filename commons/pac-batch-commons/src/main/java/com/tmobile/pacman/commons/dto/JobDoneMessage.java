@@ -20,7 +20,7 @@ public class JobDoneMessage {
     private String jobName;
     private String paladinCloudTenantId;
     private String source;
-    private String enricher;
+    private String enricherSource;
 
     public String getJobName() {
         return jobName;
@@ -46,19 +46,19 @@ public class JobDoneMessage {
         this.source = source;
     }
 
-    public String getEnricher() {
-        return enricher;
+    public String getEnricherSource() {
+        return enricherSource;
     }
 
-    public void setEnricher(String enricher) {
-        this.enricher = enricher;
+    public void setEnricherSource(String enricherSource) {
+        this.enricherSource = enricherSource;
     }
 
-    public JobDoneMessage (String jobName, String paladinCloudTenantId, String source, String enricher) {
+    public JobDoneMessage (String jobName, String paladinCloudTenantId, String source, String enricherSource) {
         this.jobName = jobName;
         this.paladinCloudTenantId = paladinCloudTenantId;
         this.source = source;
-        this.enricher = enricher;
+        this.enricherSource = enricherSource;
     }
 
 
