@@ -105,7 +105,7 @@ public class Main implements Constants {
         }
         SQSManager sqsManager = SQSManager.getInstance();
         sqsManager.setSqsUrl(System.getenv("SHIPPER_SQS_QUEUE_URL"));
-        JobDoneMessage jobDoneMessage = new JobDoneMessage(ds+"-Shipper-Job",ds,tenantId,null);
+        JobDoneMessage jobDoneMessage = new JobDoneMessage(ds+"-Shipper-Job",tenantId,ds,null);
         String sqsMessageID  = sqsManager.sendSQSMessage(jobDoneMessage);
         LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);

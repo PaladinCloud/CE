@@ -75,7 +75,7 @@ public class Main {
                 SQSManager sqsManager = SQSManager.getInstance();
                 sqsManager.setSqsUrl(System.getenv(PacmanSdkConstants.ENRICHER_SQS_QUEUE_URL));
                 String tenantId = System.getenv("TENANT_ID");
-                JobDoneMessage jobDoneMessage = new JobDoneMessage(jobHint+"Collector-Job",null,tenantId,Constants.ENRICHER_TENABLE);
+                JobDoneMessage jobDoneMessage = new JobDoneMessage(jobHint+"Collector-Job",tenantId,null,Constants.ENRICHER_TENABLE);
                 String sqsMessageID  = sqsManager.sendSQSMessage(jobDoneMessage);
                 log.debug("tenable done SQS message ID: {}", sqsMessageID);
                 log.info("Job executed successfully");

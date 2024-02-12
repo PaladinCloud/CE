@@ -87,7 +87,7 @@ public class Main {
         SQSManager sqsManager = SQSManager.getInstance();
         sqsManager.setSqsUrl(System.getenv(PacmanSdkConstants.ENRICHER_SQS_QUEUE_URL));
         String tenantId = System.getenv("TENANT_ID");
-        JobDoneMessage jobDoneMessage = new JobDoneMessage(jobHint+"Collector-Job",null,tenantId,Constants.ENRICHER_AQUA);
+        JobDoneMessage jobDoneMessage = new JobDoneMessage(jobHint+"Collector-Job",tenantId,null,Constants.ENRICHER_AQUA);
         String sqsMessageID  = sqsManager.sendSQSMessage(jobDoneMessage);
         log.debug("Aqua done SQS message ID: {}", sqsMessageID);
         return errorInfo;
