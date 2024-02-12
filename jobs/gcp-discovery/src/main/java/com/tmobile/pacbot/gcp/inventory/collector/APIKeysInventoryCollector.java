@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
@@ -23,33 +24,33 @@ public class APIKeysInventoryCollector {
     private static final Logger logger = LoggerFactory.getLogger(APIKeysInventoryCollector.class);
 
     public List<APIKeysVH> fetchApiKeys(ProjectVH projectVH) throws Exception {
-        String parent = "projects/"+projectVH.getProjectId()+"/locations/global";
+        String parent = "projects/" + projectVH.getProjectId() + "/locations/global";
 
-      logger.info("services ******** {}",gcpCredentialsProvider.getApiKeysService(projectVH.getProjectId()).listKeys(parent));
-     ApiKeysClient.ListKeysPagedResponse apiKeys=  gcpCredentialsProvider.getApiKeysService(projectVH.getProjectId()).listKeys(parent);
-       List<APIKeysVH> apiKeysVHList=new ArrayList<>();
-       for (Key keys:apiKeys.iterateAll() ){
-           logger.info("keys list ******** {}",keys.getDisplayName());
+        logger.info("services ******** {}", gcpCredentialsProvider.getApiKeysService(projectVH.getProjectId()).listKeys(parent));
+        ApiKeysClient.ListKeysPagedResponse apiKeys = gcpCredentialsProvider.getApiKeysService(projectVH.getProjectId()).listKeys(parent);
+        List<APIKeysVH> apiKeysVHList = new ArrayList<>();
+        for (Key keys : apiKeys.iterateAll()) {
+            logger.info("keys list ******** {}", keys.getDisplayName());
 
-            APIKeysVH apiKeysVH=new APIKeysVH();
+            APIKeysVH apiKeysVH = new APIKeysVH();
             apiKeysVH.setId(keys.getUid());
             apiKeysVH.setName(keys.getName());
             apiKeysVH.setDisplayName(keys.getDisplayName());
             apiKeysVH.setRegion("global");
             apiKeysVH.setProjectId(projectVH.getProjectId());
             apiKeysVH.setProjectName(projectVH.getProjectName());
-            HashMap<String, Object> restriction=new HashMap<>();
+            HashMap<String, Object> restriction = new HashMap<>();
 
-           if(!keys.getRestrictions().getAllFields().isEmpty()){
+            if (!keys.getRestrictions().getAllFields().isEmpty()) {
 
 
-               List<String>service=new ArrayList<>();
-               List<ApiTarget>apiTargets=keys.getRestrictions().getApiTargetsList();
-               for(ApiTarget apiTarget:apiTargets){
-                   service.add(apiTarget.getService());
-                   logger.info("apiKey{}",apiTarget.getService());
-               }
-               apiKeysVH.setApiTargetList(service);
+                List<String> service = new ArrayList<>();
+                List<ApiTarget> apiTargets = keys.getRestrictions().getApiTargetsList();
+                for (ApiTarget apiTarget : apiTargets) {
+                    service.add(apiTarget.getService());
+                    logger.info("apiKey{}", apiTarget.getService());
+                }
+                apiKeysVH.setApiTargetList(service);
 
                HashMap<String,Object>serverKeyRestrictions=new HashMap<>();
 
@@ -62,18 +63,18 @@ public class APIKeysInventoryCollector {
 
                HashMap<String,Object>browserKeyRestrictions=new HashMap<>();
 
-               keys.getRestrictions().getBrowserKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
-                   browserKeyRestrictions.put(fieldDescriptor.getName(),o);
-                   logger.info( fieldDescriptor.getName(),o);
+                keys.getRestrictions().getBrowserKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
+                    browserKeyRestrictions.put(fieldDescriptor.getName(), o);
+                    logger.info(fieldDescriptor.getName(), o);
 
-               });
-               restriction.put("browserKeyRestrictions",browserKeyRestrictions);
+                });
+                restriction.put("browserKeyRestrictions", browserKeyRestrictions);
 
-               HashMap<String,Object>androidKeyRestrictions=new HashMap<>();
+                HashMap<String, Object> androidKeyRestrictions = new HashMap<>();
 
-               keys.getRestrictions().getAndroidKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
-                   androidKeyRestrictions.put(fieldDescriptor.getName(),o);
-                   logger.info( " androidKeyRestrictions {}",o);
+                keys.getRestrictions().getAndroidKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
+                    androidKeyRestrictions.put(fieldDescriptor.getName(), o);
+                    logger.info(" androidKeyRestrictions {}", o);
 
                });
                restriction.put("androidKeyRestrictions",androidKeyRestrictions);
@@ -88,13 +89,14 @@ public class APIKeysInventoryCollector {
                restriction.put("iosKeyRestrictions",iosKeyRestrictions);
            }
 
-           apiKeysVH.setCreatedDate(new Date(keys.getCreateTime().getSeconds()*1000).toString());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
+            apiKeysVH.setCreatedTime(dateFormat.format(new Date(keys.getCreateTime().getSeconds() * 1000)));
 
             apiKeysVH.setRestrictions(restriction);
             apiKeysVHList.add(apiKeysVH);
 
 
-       }
+        }
         return apiKeysVHList;
     }
 

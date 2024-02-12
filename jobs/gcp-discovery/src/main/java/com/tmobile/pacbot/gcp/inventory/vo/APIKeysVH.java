@@ -8,7 +8,7 @@ public class APIKeysVH extends GCPVH{
     private String id;
     private String name;
     private String displayName;
-    private String createdDate;
+    private String createdTime;
     private HashMap<String,Object>restrictions;
     private List<String> apiTargetList;
 
@@ -39,12 +39,12 @@ public class APIKeysVH extends GCPVH{
         this.displayName = displayName;
     }
 
-    public String getCreatedDate() {
-        return createdDate;
+    public String getCreatedTime() {
+        return createdTime;
     }
 
-    public void setCreatedDate(String createdDate) {
-        this.createdDate = createdDate;
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
     }
 
     public HashMap<String, Object> getRestrictions() {
