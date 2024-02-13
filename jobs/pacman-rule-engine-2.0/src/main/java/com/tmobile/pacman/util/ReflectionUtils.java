@@ -21,6 +21,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -41,6 +45,10 @@ public class ReflectionUtils {
     
     /** The Constant logger. */
     private static final Logger logger = LoggerFactory.getLogger(ReflectionUtils.class);
+    private static Reflections reflections = new Reflections("com.tmobile");
+    private static ConcurrentMap<String, Class<?>> policyClassCache = new ConcurrentHashMap<>();
+    private static ConcurrentMap<String, Class<?>> policyFixClassCache = new ConcurrentHashMap<>();
+    private static Lock lock = new ReentrantLock();
     
 
     /**
@@ -48,23 +56,32 @@ public class ReflectionUtils {
      *
      * @param policyKey the policy key
      * @return the class
-     * @throws InstantiationException the instantiation exception
-     * @throws IllegalAccessException the illegal access exception
      * @throws ClassNotFoundException the class not found exception
      */
     public static Class<?> findAssociateClass(String policyKey)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        Reflections reflections = new Reflections("com.tmobile");
-        Set<Class<?>> allPolicies = reflections.getTypesAnnotatedWith(PacmanPolicy.class);
-        for (Class<?> policyClass : allPolicies) {
-            PacmanPolicy policy = policyClass.getAnnotation(PacmanPolicy.class);
-            if (policy.key().equals(policyKey)) {
+            throws ClassNotFoundException {
+        Class<?> policyClass = policyClassCache.get(policyKey);
+        if (policyClass != null) {
+            return policyClass;
+        }
+        lock.lock();
+        try {
+            policyClass = policyClassCache.get(policyKey);
+            if (policyClass != null) {
                 return policyClass;
             }
+            Set<Class<?>> allPolicies = reflections.getTypesAnnotatedWith(PacmanPolicy.class);
+            for (Class<?> cls : allPolicies) {
+                PacmanPolicy policy = cls.getAnnotation(PacmanPolicy.class);
+                if (policy.key().equals(policyKey)) {
+                    policyClassCache.put(policyKey, cls);
+                    return cls;
+                }
+            }
+        } finally {
+            lock.unlock();
         }
-        // if code reached here , this means no class found associated to this
-        // key
-        throw new ClassNotFoundException("cannot find class associated to policy");
+        throw new ClassNotFoundException("Cannot find class associated with policy "+policyKey);
     }
 
     /**
@@ -72,23 +89,32 @@ public class ReflectionUtils {
      *
      * @param policyKey the policy key
      * @return the class
-     * @throws InstantiationException the instantiation exception
-     * @throws IllegalAccessException the illegal access exception
      * @throws ClassNotFoundException the class not found exception
      */
     public static Class<?> findFixClass(String policyKey)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        Reflections reflections = new Reflections("com.tmobile");
-        Set<Class<?>> allPolicies = reflections.getTypesAnnotatedWith(PacmanFix.class);
-        for (Class<?> policyClass : allPolicies) {
-            PacmanFix policy = policyClass.getAnnotation(PacmanFix.class);
-            if (policy.key().equals(policyKey)) {
+            throws  ClassNotFoundException {
+        Class<?> policyClass = policyFixClassCache.get(policyKey);
+        if (policyClass != null) {
+            return policyClass;
+        }
+        lock.lock();
+        try {
+            policyClass = policyFixClassCache.get(policyKey);
+            if (policyClass != null) {
                 return policyClass;
             }
+            Set<Class<?>> allPolicies = reflections.getTypesAnnotatedWith(PacmanFix.class);
+            for (Class<?> cls : allPolicies) {
+                PacmanFix policy = cls.getAnnotation(PacmanFix.class);
+                if (policy.key().equals(policyKey)) {
+                    policyFixClassCache.put(policyKey, cls);
+                    return cls;
+                }
+            }
+        } finally {
+            lock.unlock();
         }
-        // if code reached here , this means no class found associated to this
-        // key
-        throw new ClassNotFoundException("cannot find class associated to policy");
+        throw new ClassNotFoundException("Cannot find class associated with policy "+policyKey);
     }
 
     /**
