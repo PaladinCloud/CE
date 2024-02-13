@@ -44,7 +44,7 @@ public class SQSManager {
     public String sendSQSMessage(JobDoneMessage jobDoneMessage, String url) {
         try {
             String sqsMessage = objectMapper.writeValueAsString(jobDoneMessage);
-            return sendMessage(sqsMessage,url);
+            return sendMessage(sqsMessage, url);
         } catch (Exception e) {
             LOGGER.error("Unable to send SQS message", e);
         }
