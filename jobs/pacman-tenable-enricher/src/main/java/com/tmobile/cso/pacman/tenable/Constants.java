@@ -34,5 +34,4 @@ public class Constants {
         throw new IllegalStateException("Constants is a utility class");
     }
 
-
 }
