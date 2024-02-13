@@ -141,7 +141,7 @@ public class EntityManager implements Constants {
                 Map<String, Map<String, String>> currentInfo = ESManager.getExistingInfo(indexName, type, filters);
                 LOGGER.info("Existing no of docs : {}", currentInfo.size());
 
-                List<Map<String, Object>> entities = fetchEntitiyInfoFromS3(datasource, type, errorList);
+                List<Map<String, Object>> entities = fetchEntityInfoFromS3(datasource, type, errorList);
                 List<Map<String, String>> tags = fetchTagsForEntitiesFromS3(datasource, type);
 
                 LOGGER.info("Fetched from S3");
@@ -203,14 +203,15 @@ public class EntityManager implements Constants {
         return tags;
     }
 
-    private List<Map<String, Object>> fetchEntitiyInfoFromS3(String datasource, String type, List<Map<String, String>> errorList) {
+    private List<Map<String, Object>> fetchEntityInfoFromS3(String datasource, String type, List<Map<String, String>> errorList) {
         List<Map<String, Object>> entities = new ArrayList<>();
+        String path = dataPath + "/" + datasource + "-" + type + ".data";
         try {
-            entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, dataPath + "/" + datasource + "-" + type + ".data");
+            entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, path);
         } catch (Exception e) {
             LOGGER.error("Exception in collecting data for {}", type, e);
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put(ERROR, "Exception in collecting data for " + type);
+            errorMap.put(ERROR, "Exception in collecting data for " + type + " from " + path);
             errorMap.put(ERROR_TYPE, WARN);
             errorMap.put(EXCEPTION, e.getMessage());
             errorList.add(errorMap);
@@ -264,8 +265,9 @@ public class EntityManager implements Constants {
             } else if (entityInfo.containsKey("projectId")) {
                 entityInfo.put("accountid", entityInfo.get("projectId"));
             }
-            //For GCP CQ Collector accountName will be fetched from RDS using accountId
-            if ("gcp".equalsIgnoreCase(dataSource)) {
+            // For GCP CQ Collector accountName will be fetched from RDS using accountId
+            // Only if not being set earlier
+            if ("gcp".equalsIgnoreCase(dataSource) && !entityInfo.containsKey("accountname")) {
                 String projectId = String.valueOf(entityInfo.get("projectId"));
                 if (null != projectId && !projectId.isEmpty()) {
                     boolean isAccountIdAlreadyExists = accountIdNameMap.containsKey(projectId);

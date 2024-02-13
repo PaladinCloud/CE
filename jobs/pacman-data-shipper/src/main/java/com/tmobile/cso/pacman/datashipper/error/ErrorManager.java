@@ -93,7 +93,7 @@ public abstract class ErrorManager implements Constants {
                     inventoryErrors = objectMapper.readValue(reader.lines().collect(Collectors.joining("\n")), new TypeReference<List<Map<String, String>>>() {
                     });
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOGGER.error("Exception in collecting inventory error data", e);
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put(ERROR, "Exception in collecting inventory error data");
@@ -109,7 +109,7 @@ public abstract class ErrorManager implements Constants {
     /**
      * Gets the error info.
      *
-     * @param errorList  the error list
+     * @param errorList the error list
      * @return the error info
      */
     public Map<String, List<Map<String, String>>> getErrorInfo(List<Map<String, String>> errorList) {
