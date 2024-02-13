@@ -104,9 +104,8 @@ public class Main implements Constants {
             LOGGER.error("Error while updating stats", e);
         }
         SQSManager sqsManager = SQSManager.getInstance();
-        sqsManager.setSqsUrl(System.getenv("SHIPPER_SQS_QUEUE_URL"));
-        JobDoneMessage jobDoneMessage = new JobDoneMessage(ds+"-Shipper-Job",tenantId,ds,null);
-        String sqsMessageID  = sqsManager.sendSQSMessage(jobDoneMessage);
+        JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId, ds, null);
+        String sqsMessageID = sqsManager.sendSQSMessage(jobDoneMessage, System.getenv("SHIPPER_SQS_QUEUE_URL"));
         LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);

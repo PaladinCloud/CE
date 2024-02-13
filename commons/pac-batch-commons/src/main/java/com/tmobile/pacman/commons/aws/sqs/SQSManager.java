@@ -31,10 +31,7 @@ import java.util.UUID;
 
 public class SQSManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(SQSManager.class);
-
     private final ObjectMapper objectMapper;
-
-    private String sqsUrl;
 
     private SQSManager() {
         objectMapper = new ObjectMapper();
@@ -44,26 +41,19 @@ public class SQSManager {
         return InstanceHolder.instance;
     }
 
-    public void setSqsUrl(String url) {
-        this.sqsUrl = url;
-    }
-
-    public String sendSQSMessage(JobDoneMessage jobDoneMessage) {
+    public String sendSQSMessage(JobDoneMessage jobDoneMessage, String url) {
         try {
             String sqsMessage = objectMapper.writeValueAsString(jobDoneMessage);
-            return sendMessage(sqsMessage);
+            return sendMessage(sqsMessage,url);
         } catch (Exception e) {
             LOGGER.error("Unable to send SQS message", e);
         }
         return null;
     }
-
-
-
-    private String sendMessage(String messageBody) {
+    private String sendMessage(String messageBody, String url) {
 
         SendMessageRequest request = new SendMessageRequest()
-                .withQueueUrl(this.sqsUrl)
+                .withQueueUrl(url)
                 .withMessageBody(messageBody)
                 .withMessageGroupId(UUID.randomUUID().toString());
         try {
