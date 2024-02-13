@@ -1247,7 +1247,7 @@ INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('launchtemplate','EC2 Launch Template','AWS EC2 Launch Template','Compute','aws','{"key":"accountid,region,launchTemplateId","id":"launchTemplateId","name":"launchTemplateName"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_launchtemplate/launchtemplate'),'2022-05-06','2022-05-06','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('gcpdisks','Managed Disks (Gcp)','GCP Disks','security','gcp','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/gcp_gcpdisks/gcpdisks'),'2022-12-5','2022-12-5','Infra & Platforms');
 
-DELETE FROM `cf_Target` WHERE targetType ='cloudfunctiongen1' AND dataSourceName = 'gcp';
+DELETE FROM `cf_Target` WHERE targetName ='cloudfunctiongen1' AND dataSourceName = 'gcp';
 
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11501','201','ec2','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11502','201','s3','all','all');
