@@ -99,7 +99,7 @@ public class ViolationAssociationManager {
 				obj.put(type + "_relations", relMap);
 			});
 			LOGGER.info("Collected : {}", entities.size());
-			ESManager.uploadData(indexName, entities, dataSource);
+			ESManager.uploadData(indexName, entities);
 			ESManager.deleteOldDocuments(indexName, docType, "_loaddate.keyword", loaddate);
 			String auditDocType = "issue_" + type + "_audit";
 			List<Map<String, Object>> auditLogEntites = createAuditLog(dataSource, type, entities);

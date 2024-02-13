@@ -115,7 +115,7 @@ public class EntityManager implements Constants {
         Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
         Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
         String type = "";
-        LOGGER.info("*** Start Colleting Entity Info ***");
+        LOGGER.info("Start Collecting Entity Info");
         List<String> filters = new ArrayList<>(Collections.singletonList("_docid"));
 
         // Preserve attributes from current asset data if exists
@@ -125,7 +125,7 @@ public class EntityManager implements Constants {
         }
 
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
-        ViolationAssociationManager violationAssociatManager = new ViolationAssociationManager();
+        ViolationAssociationManager violationAssociationManager = new ViolationAssociationManager();
         while (itr.hasNext()) {
             try {
                 Map.Entry<String, String> entry = itr.next();
@@ -165,7 +165,7 @@ public class EntityManager implements Constants {
                     stats.putAll(uploadInfo);
                     stats.put("errorUpdates", errUpdateInfo);
                     errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
-                    errorList.addAll(violationAssociatManager.uploadViolationInfo(datasource, type));
+                    errorList.addAll(violationAssociationManager.uploadViolationInfo(datasource, type));
 
                 } else {
                     Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
@@ -189,7 +189,7 @@ public class EntityManager implements Constants {
             }
 
         }
-        LOGGER.info("*** End Colleting Entity Info ***");
+        LOGGER.info("End Collecting Entity Info");
         return errorList;
     }
 
@@ -209,7 +209,7 @@ public class EntityManager implements Constants {
         try {
             entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, path);
         } catch (Exception e) {
-            LOGGER.error("Exception in collecting data for {}", type, e);
+            LOGGER.error("Exception in collecting data for {} from {}", type, path, e);
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put(ERROR, "Exception in collecting data for " + type + " from " + path);
             errorMap.put(ERROR_TYPE, WARN);

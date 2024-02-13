@@ -60,13 +60,18 @@ public class ExternalPolicies {
      * @param dataSource the data source
      */
     public void uploadPolicyDefinition(String dataSource) {
-        LOGGER.info("Started upload policy definition for {}", dataSource);
+        LOGGER.info("Started upload external policies definition for {}", dataSource);
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(
                 new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account, s3Role))).withRegion(s3Region).build();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             String filePrefix = dataSource + "-policy";
+
+            if (!s3Client.doesObjectExist(bucketName, dataPath + "/" + filePrefix + ".data")) {
+                LOGGER.info("No external policies to upload");
+                return;
+            }
 
             List<Map<String, Object>> entities = new ArrayList<>();
             S3Object entitiesData = s3Client.getObject(new GetObjectRequest(bucketName, dataPath + "/" + filePrefix + ".data"));
