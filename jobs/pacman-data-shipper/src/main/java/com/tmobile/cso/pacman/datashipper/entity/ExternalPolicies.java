@@ -60,7 +60,7 @@ public class ExternalPolicies {
      * @param dataSource the data source
      */
     public void uploadPolicyDefinition(String dataSource) {
-        LOGGER.info("Started upload external policies definition for {}", dataSource);
+        LOGGER.info("Started upload policies definition for {}", dataSource);
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(
                 new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account, s3Role))).withRegion(s3Region).build();
         ObjectMapper objectMapper = new ObjectMapper();

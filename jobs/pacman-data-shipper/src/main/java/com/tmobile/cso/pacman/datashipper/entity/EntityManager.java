@@ -265,8 +265,7 @@ public class EntityManager implements Constants {
             } else if (entityInfo.containsKey("projectId")) {
                 entityInfo.put("accountid", entityInfo.get("projectId"));
             }
-            // For GCP CQ Collector accountName will be fetched from RDS using accountId
-            // Only if not being set earlier
+            // For CQ Collector accountName will be fetched from RDS using accountId only if not being set earlier
             if ("gcp".equalsIgnoreCase(dataSource) && !entityInfo.containsKey("accountname")) {
                 String projectId = String.valueOf(entityInfo.get("projectId"));
                 if (null != projectId && !projectId.isEmpty()) {
