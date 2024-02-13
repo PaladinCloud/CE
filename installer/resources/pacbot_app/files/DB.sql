@@ -1244,9 +1244,10 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`categor
 
 
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunction','GCP Cloud Functions','GCP cloud functions','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunction'),'2023-01-10','2023-01-10','Infra & Platforms');
-INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunctiongen1','GCP Cloud Functions Generation 1','GCP cloud functions Generation 1','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunctiongen1'),'2023-01-10','2023-01-10','Infra & Platforms');
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('launchtemplate','EC2 Launch Template','AWS EC2 Launch Template','Compute','aws','{"key":"accountid,region,launchTemplateId","id":"launchTemplateId","name":"launchTemplateName"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_launchtemplate/launchtemplate'),'2022-05-06','2022-05-06','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('gcpdisks','Managed Disks (Gcp)','GCP Disks','security','gcp','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/gcp_gcpdisks/gcpdisks'),'2022-12-5','2022-12-5','Infra & Platforms');
+
+DELETE FROM `cf_Target` WHERE targetType ='cloudfunctiongen1' AND dataSourceName = 'gcp';
 
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11501','201','ec2','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11502','201','s3','all','all');
@@ -1381,12 +1382,12 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 
 
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (`id_`, groupId, targetType, attributeName, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f00','e0008397-f74e-4deb-9066-10bdf11202ae','cloudfunction','all','all');
-INSERT IGNORE INTO cf_AssetGroupTargetDetails (`id_`, groupId, targetType, attributeName, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f01','e0008397-f74e-4deb-9066-10bdf11202ae','cloudfunctiongen1','all','all');
 
 delete from `cf_AssetGroupTargetDetails` where targetType ='ecs';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policydefinitions';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policyevaluationresults';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'vaultsrbac';
+DELETE FROM `cf_AssetGroupTargetDetails` WHERE targetType = 'cloudfunctiongen1';
 
 /*Insert Domain in required table*/
 
