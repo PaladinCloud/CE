@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.tmobile.pacman.commons.dto;
 
-
 public class JobDoneMessage {
     private String jobName;
     private String paladinCloudTenantId;
@@ -60,8 +59,4 @@ public class JobDoneMessage {
         this.source = source;
         this.enricherSource = enricherSource;
     }
-
-
-
-
 }
