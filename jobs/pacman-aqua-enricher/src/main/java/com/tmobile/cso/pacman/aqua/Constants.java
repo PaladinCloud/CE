@@ -26,5 +26,5 @@ public class Constants {
     public static final String SOURCE = "source";
     public static final String NAME = "name";
     public static final String CONFIG_CREDS = "config_creds";
-
+    public static final String ENRICHER_AQUA = "aqua";
 }

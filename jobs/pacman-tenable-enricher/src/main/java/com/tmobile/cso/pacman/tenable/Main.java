@@ -17,6 +17,9 @@ package com.tmobile.cso.pacman.tenable;
 
 import com.tmobile.cso.pacman.tenable.jobs.TenableVMVulnerabilityDataImporter;
 import com.tmobile.cso.pacman.tenable.util.ErrorManageUtil;
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.aws.sqs.SQSManager;
+import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +72,13 @@ public class Main {
             if (!errorInfo.isEmpty() && errorInfo.get("errors") != null && ((List<Map<String, Object>>) errorInfo.get("errors")).size() > 0) {
                 log.error("Job executed with some errors -> {}", errorInfo);
             } else {
+                SQSManager sqsManager = SQSManager.getInstance();
+                String tenantId = System.getenv("TENANT_ID");
+                JobDoneMessage jobDoneMessage = new JobDoneMessage(jobHint + "Collector-Job", tenantId,
+                        null, Constants.ENRICHER_TENABLE);
+                String sqsMessageID = sqsManager.sendSQSMessage(jobDoneMessage,
+                        System.getenv(PacmanSdkConstants.ENRICHER_SQS_QUEUE_URL));
+                log.debug("tenable done SQS message ID: {}", sqsMessageID);
                 log.info("Job executed successfully");
             }
         } else {

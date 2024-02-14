@@ -52,4 +52,5 @@ public interface Constants {
     String CONFIG_CREDS = "config_creds";
 
     String DOC_TYPE="docType";
+    String ENRICHER_QUALYS = "qualys";
 }

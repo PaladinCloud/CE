@@ -20,6 +20,8 @@ import com.tmobile.cso.pacman.datashipper.entity.*;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.ErrorManageUtil;
+import com.tmobile.pacman.commons.aws.sqs.SQSManager;
+import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +68,7 @@ public class Main implements Constants {
             return ErrorManageUtil.formErrorCode(jobName, errorList);
         }
         String ds = params.get("datasource");
+        String tenantId = params.get("tenant_id");
         ESManager.configureIndexAndTypes(ds, errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
         ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
@@ -100,6 +103,10 @@ public class Main implements Constants {
             errorList.add(errorMap);
             LOGGER.error("Error while updating stats", e);
         }
+        SQSManager sqsManager = SQSManager.getInstance();
+        JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId, ds, null);
+        String sqsMessageID = sqsManager.sendSQSMessage(jobDoneMessage, System.getenv("SHIPPER_SQS_QUEUE_URL"));
+        LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
         return status;

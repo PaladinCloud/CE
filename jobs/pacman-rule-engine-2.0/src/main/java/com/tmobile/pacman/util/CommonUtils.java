@@ -76,6 +76,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -1264,6 +1265,4 @@ public class CommonUtils {
             throw exception;
         }
     }
-
-
 }
