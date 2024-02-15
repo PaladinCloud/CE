@@ -87,9 +87,7 @@ public class AssetFileGenerator {
 	RDSDBManager rdsdbManager;
 
 	/*@Autowired
-	CloudFunctionCollector cloudFunctionCollector;
-	@Autowired
-	CloudFunctionGen1Collector cloudFunctionGen1Collector;*/
+	CloudFunctionCollector cloudFunctionCollector;*/
 
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
@@ -339,17 +337,6 @@ public class AssetFileGenerator {
 					Util.errorCount.getAndIncrement();
 				}
 			});
-			/*executor.execute(() -> {
-				if (!(isTypeInScope("cloudfunctiongen1"))) {
-					return;
-				}
-				try {
-					FileManager.generateCloudFunctionGen1File(cloudFunctionGen1Collector.fetchCloudFunctionInventory(project));
-				} catch (Exception e) {
-					log.error("Error occured in generating data file for cloud functions gen1 {} ", e.getMessage());
-				}
-			});*/
-
 
 			executor.shutdown();
 

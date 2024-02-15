@@ -69,7 +69,6 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-apikeys.data", "[", false);
         FileGenerator.writeToFile("gcp-gcpdisks.data", "[", false);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION, "[", false);
-        FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION_GEN1, "[", false);
     }
 
     public static void finalise() throws IOException {
@@ -96,8 +95,6 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-apikeys.data", "]", true);
         FileGenerator.writeToFile("gcp-gcpdisks.data", "]", true);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION, "]", true);
-        FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION_GEN1, "]", true);
-
     }
 
     public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -184,9 +181,5 @@ public class FileManager {
     }
     public static void generateCloudFunctionFile(List<CloudFunctionVH> fetchCloudFunctionInventory) {
         FileGenerator.generateJson(fetchCloudFunctionInventory, DataFileNamesConstants.CLOUD_FUNCTION);
-    }
-
-    public static void generateCloudFunctionGen1File(List<CloudFunctionVH> fetchCloudFunctionInventory) {
-        FileGenerator.generateJson(fetchCloudFunctionInventory, DataFileNamesConstants.CLOUD_FUNCTION_GEN1);
     }
 }
