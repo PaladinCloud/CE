@@ -704,6 +704,8 @@ jobs:
     name: Push SQL files to s3 prod
     runs-on: ubuntu-latest
     environment: 'SaaSPROD'
+    needs:
+      - extract_version
     steps:
       - uses: actions/checkout@v4
         with:
@@ -718,6 +720,7 @@ jobs:
           cd ./installer/resources/pacbot_app/files/
           aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/sql/
           aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/sql/
+          
   Es-logging:
     name: es-logging-Build
     runs-on: ubuntu-latest
