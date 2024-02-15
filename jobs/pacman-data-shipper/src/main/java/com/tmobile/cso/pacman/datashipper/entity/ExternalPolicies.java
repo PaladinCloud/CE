@@ -68,6 +68,11 @@ public class ExternalPolicies {
         try {
             String filePrefix = dataSource + "-policy";
 
+            if (!s3Client.doesObjectExist(bucketName, dataPath + "/" + filePrefix + ".data")) {
+                LOGGER.info("No policy to upload");
+                return;
+            }
+
             List<Map<String, Object>> entities = new ArrayList<>();
             S3Object entitiesData = s3Client.getObject(new GetObjectRequest(bucketName, dataPath + "/" + filePrefix + ".data"));
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(entitiesData.getObjectContent()))) {

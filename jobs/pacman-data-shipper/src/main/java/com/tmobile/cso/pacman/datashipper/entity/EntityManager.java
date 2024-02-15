@@ -115,7 +115,7 @@ public class EntityManager implements Constants {
         Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
         Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
         String type = "";
-        LOGGER.info("*** Start Colleting Entity Info ***");
+        LOGGER.info("Start Collecting Entity Info");
         List<String> filters = new ArrayList<>(Collections.singletonList("_docid"));
 
         // Preserve attributes from current asset data if exists
@@ -125,7 +125,7 @@ public class EntityManager implements Constants {
         }
 
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
-        ViolationAssociationManager violationAssociatManager = new ViolationAssociationManager();
+        ViolationAssociationManager violationAssociationManager = new ViolationAssociationManager();
         while (itr.hasNext()) {
             try {
                 Map.Entry<String, String> entry = itr.next();
@@ -141,7 +141,7 @@ public class EntityManager implements Constants {
                 Map<String, Map<String, String>> currentInfo = ESManager.getExistingInfo(indexName, type, filters);
                 LOGGER.info("Existing no of docs : {}", currentInfo.size());
 
-                List<Map<String, Object>> entities = fetchEntitiyInfoFromS3(datasource, type, errorList);
+                List<Map<String, Object>> entities = fetchEntityInfoFromS3(datasource, type, errorList);
                 List<Map<String, String>> tags = fetchTagsForEntitiesFromS3(datasource, type);
 
                 LOGGER.info("Fetched from S3");
@@ -165,7 +165,7 @@ public class EntityManager implements Constants {
                     stats.putAll(uploadInfo);
                     stats.put("errorUpdates", errUpdateInfo);
                     errorList.addAll(childTypeManager.uploadAssociationInfo(datasource, type));
-                    errorList.addAll(violationAssociatManager.uploadViolationInfo(datasource, type));
+                    errorList.addAll(violationAssociationManager.uploadViolationInfo(datasource, type));
 
                 } else {
                     Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
@@ -189,7 +189,7 @@ public class EntityManager implements Constants {
             }
 
         }
-        LOGGER.info("*** End Colleting Entity Info ***");
+        LOGGER.info("End Collecting Entity Info");
         return errorList;
     }
 
@@ -203,14 +203,15 @@ public class EntityManager implements Constants {
         return tags;
     }
 
-    private List<Map<String, Object>> fetchEntitiyInfoFromS3(String datasource, String type, List<Map<String, String>> errorList) {
+    private List<Map<String, Object>> fetchEntityInfoFromS3(String datasource, String type, List<Map<String, String>> errorList) {
         List<Map<String, Object>> entities = new ArrayList<>();
+        String path = dataPath + "/" + datasource + "-" + type + ".data";
         try {
-            entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, dataPath + "/" + datasource + "-" + type + ".data");
+            entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, path);
         } catch (Exception e) {
-            LOGGER.error("Exception in collecting data for {}", type, e);
+            LOGGER.error("Exception in collecting data for {} from {}", type, path, e);
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put(ERROR, "Exception in collecting data for " + type);
+            errorMap.put(ERROR, "Exception in collecting data for " + type + " from " + path);
             errorMap.put(ERROR_TYPE, WARN);
             errorMap.put(EXCEPTION, e.getMessage());
             errorList.add(errorMap);
@@ -264,8 +265,8 @@ public class EntityManager implements Constants {
             } else if (entityInfo.containsKey("projectId")) {
                 entityInfo.put("accountid", entityInfo.get("projectId"));
             }
-            //For GCP CQ Collector accountName will be fetched from RDS using accountId
-            if ("gcp".equalsIgnoreCase(dataSource)) {
+            // For CQ Collector accountName will be fetched from RDS using accountId only if not being set earlier
+            if ("gcp".equalsIgnoreCase(dataSource) && !entityInfo.containsKey("accountname")) {
                 String projectId = String.valueOf(entityInfo.get("projectId"));
                 if (null != projectId && !projectId.isEmpty()) {
                     boolean isAccountIdAlreadyExists = accountIdNameMap.containsKey(projectId);

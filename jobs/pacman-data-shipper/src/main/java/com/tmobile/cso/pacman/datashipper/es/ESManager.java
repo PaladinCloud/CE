@@ -98,12 +98,12 @@ public class ESManager implements Constants {
         List<String> errors = new ArrayList<>();
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\" } }%n";
 
-        LOGGER.info("*********UPLOADING*** {}:::{}", type, index);
+        LOGGER.info("Uploading {}:::{}", type, index);
 
         String keys = ConfigManager.getKeyForType(index, type);
         String[] _keys = keys.split(",");
         if (null != docs && !docs.isEmpty()) {
-            LOGGER.info("*********# of docs *** {}", docs.size());
+            LOGGER.info("# of docs {}", docs.size());
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
             for (Map<String, Object> doc : docs) {
@@ -188,7 +188,7 @@ public class ESManager implements Constants {
                 LOGGER.error(responseStr);
             }
         } catch (ParseException | IOException e) {
-            LOGGER.error("Error in uploading data", e);
+            LOGGER.error("Error uploading data", e);
         }
     }
 
@@ -201,7 +201,7 @@ public class ESManager implements Constants {
         try {
             Response refrehsResponse = invokeAPI("POST", index + "/" + "_refresh", null);
             if (refrehsResponse != null && HttpStatus.SC_OK != refrehsResponse.getStatusLine().getStatusCode()) {
-                LOGGER.error("Refreshing index %s failed", index, refrehsResponse);
+                LOGGER.error("Refreshing index {} failed", index);
             }
         } catch (IOException e) {
             LOGGER.error("Error in refresh ", e);
@@ -210,7 +210,7 @@ public class ESManager implements Constants {
     }
 
     /**
-     * Method not used by the entity upload.But to append data to speific index
+     * Method not used by the entity upload. But to append data to specific index
      *
      * @param index   the index
      * @param type    the type
@@ -225,8 +225,9 @@ public class ESManager implements Constants {
         if (refresh) {
             endpoint = endpoint + "?refresh=true";
         }
-        LOGGER.info("*********UPLOADING*** {}", type);
+
         if (null != docs && !docs.isEmpty()) {
+            LOGGER.info("Uploading {}:::{}", type, index);
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
             for (Map<String, Object> doc : docs) {
@@ -705,7 +706,7 @@ public class ESManager implements Constants {
      */
     public static void uploadData(String index, String parentType, String type, List<Map<String, Object>> docs, String[] key, String dataSource) {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"routing\" : \"%s\" } }";
-        LOGGER.info("*********UPLOADING*** {}:::{}", type, index);
+        LOGGER.info("Uploading {}:::{}", type, index);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
@@ -733,9 +734,9 @@ public class ESManager implements Constants {
         }
     }
 
-    public static void uploadData(String index, List<Map<String, Object>> docs, String dataSource) {
+    public static void uploadData(String index, List<Map<String, Object>> docs) {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }";
-        LOGGER.info("*********UPLOADING*** {}:::{}", index);
+        LOGGER.info("Uploading into index {}", index);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
@@ -763,7 +764,7 @@ public class ESManager implements Constants {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }";
         long dateInMillSec = new Date().getTime();
 
-        LOGGER.info("*********UPLOADING*** {}:::{}", index);
+        LOGGER.info("Uploading audit log {}", index);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
