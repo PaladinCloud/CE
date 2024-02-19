@@ -17,6 +17,7 @@ public class AutofixNotificationRequest {
     private String policyNameLink;
     private String issueIdLink;
     private String resourceIdLink;
+    private String accountId;
     private Map<String,Object> additionalInfo=new HashMap<>();
 
     public Map<String, Object> getAdditionalInfo() {
@@ -115,6 +116,14 @@ public class AutofixNotificationRequest {
 
     public void setDiscoveredOn(String discoveredOn) {
         this.discoveredOn = discoveredOn;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
 }
