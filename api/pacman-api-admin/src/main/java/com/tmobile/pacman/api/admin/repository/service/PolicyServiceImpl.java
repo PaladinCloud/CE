@@ -1,41 +1,5 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
-import static com.tmobile.pacman.api.admin.common.AdminConstants.CLOUDWATCH_RULE_DISABLE_FAILURE;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.CLOUDWATCH_RULE_ENABLE_FAILURE;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER_AT;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER_DOT_REGEX;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.EMAIL_REGEX_PATTERN;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.INVALID_USER_ATTRIBUTES;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
-import static com.tmobile.pacman.api.admin.util.AdminUtils.addDays;
-import static com.tmobile.pacman.api.commons.Constants.*;
-
-import java.nio.ByteBuffer;
-import java.text.ParseException;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
-
-import com.google.common.base.Strings;
-import com.tmobile.pacman.api.admin.domain.*;
-import com.tmobile.pacman.api.admin.repository.*;
-import com.tmobile.pacman.api.admin.repository.model.*;
-import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
-import com.tmobile.pacman.api.commons.utils.ListRequest;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.amazonaws.services.cloudwatchevents.model.DisableRuleRequest;
 import com.amazonaws.services.cloudwatchevents.model.DisableRuleResult;
 import com.amazonaws.services.cloudwatchevents.model.EnableRuleRequest;
@@ -56,16 +20,73 @@ import com.amazonaws.services.lambda.model.InvokeResult;
 import com.amazonaws.services.lambda.model.ResourceNotFoundException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
+import com.tmobile.pacman.api.admin.domain.CognitoUserResponse;
+import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.EnableDisablePolicy;
+import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
+import com.tmobile.pacman.api.admin.repository.AccountsRepository;
+import com.tmobile.pacman.api.admin.repository.PolicyCategoryRepository;
+import com.tmobile.pacman.api.admin.repository.PolicyExemptionRepository;
+import com.tmobile.pacman.api.admin.repository.PolicyParamsRepository;
+import com.tmobile.pacman.api.admin.repository.PolicyRepository;
+import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
+import com.tmobile.pacman.api.admin.repository.model.Policy;
+import com.tmobile.pacman.api.admin.repository.model.PolicyCategory;
+import com.tmobile.pacman.api.admin.repository.model.PolicyExemption;
+import com.tmobile.pacman.api.admin.repository.model.PolicyParamDetails;
+import com.tmobile.pacman.api.admin.repository.model.PolicyParams;
 import com.tmobile.pacman.api.admin.service.AmazonClientBuilderService;
 import com.tmobile.pacman.api.admin.service.AmazonCognitoConnector;
 import com.tmobile.pacman.api.admin.service.AwsS3BucketService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
+import com.tmobile.pacman.api.commons.utils.ListRequest;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.transaction.Transactional;
+import java.nio.ByteBuffer;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static com.tmobile.pacman.api.admin.common.AdminConstants.CLOUDWATCH_RULE_DISABLE_FAILURE;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.CLOUDWATCH_RULE_ENABLE_FAILURE;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER_AT;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.DELIMITER_DOT_REGEX;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.EMAIL_REGEX_PATTERN;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.INVALID_USER_ATTRIBUTES;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
+import static com.tmobile.pacman.api.admin.util.AdminUtils.addDays;
+import static com.tmobile.pacman.api.commons.Constants.CATEGORY;
+import static com.tmobile.pacman.api.commons.Constants.ORDER;
+import static com.tmobile.pacman.api.commons.Constants.SEVERITY;
 
 /**
  * Rule Service Implementations
@@ -377,21 +398,20 @@ public class PolicyServiceImpl implements PolicyService {
 	}
 
 	@Override
-	public String enablePolicyForExpiredExemption(String policyUUID) throws PacManException {
+	public Map<String, String> enablePolicyForExpiredExemption(String policyUUID) throws PacManException {
 		Policy existingPolicy = policyRepository.findPoicyTableByPolicyUUID(policyUUID);
+		Map<String, String> policyStatus = new HashMap<>();
 		if (existingPolicy != null) {
-			String policyId = existingPolicy.getPolicyId();
-			existingPolicy.setStatus(AdminConstants.ENABLED_CAPS);
 			PolicyExemption policyExemption = null;
-				List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndStatusOpen(existingPolicy.getPolicyId(), new Date());
-				if (policyExemptionList != null && policyExemptionList.size() > 0) {
-					policyExemption = policyExemptionList.get(0);
-					policyExemption.setStatus(AdminConstants.STATUS_CLOSE);
-					updatePolicyStatus(existingPolicy,policyExemption);
-					return String.format(AdminConstants.POLICY_ENABLE_SUCCESS, policyId);
-				}
-				return String.format(AdminConstants.POLICY_EXEMPTION_ID_NOT_EXITS, policyId);
-			
+			List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndStatusOpen(existingPolicy.getPolicyId(), new Date());
+			if (policyExemptionList != null && policyExemptionList.size() > 0) {
+				policyExemption = policyExemptionList.get(0);
+				policyExemption.setStatus(AdminConstants.STATUS_CLOSE);
+				existingPolicy.setStatus(AdminConstants.ENABLED_CAPS);
+				updatePolicyStatus(existingPolicy, policyExemption);
+			}
+			policyStatus.put("policyStatus", existingPolicy.getStatus());
+			return policyStatus;
 		} else {
 			throw new PacManException(String.format(AdminConstants.POLICY_ID_NOT_EXITS, policyUUID));
 		}

@@ -1,21 +1,18 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.tmobile.pacman.api.admin.domain.PluginRequestBody;
-import com.tmobile.pacman.api.commons.utils.ListRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
 import com.tmobile.pacman.api.admin.domain.EnableDisablePolicy;
 import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.model.Policy;
 import com.tmobile.pacman.api.admin.repository.model.PolicyCategory;
+import com.tmobile.pacman.api.commons.utils.ListRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Policy Service Functionalities
@@ -179,7 +176,7 @@ public interface PolicyService {
      * @return Success or Failure response
      * @throws PacManException
      */
-	public String enablePolicyForExpiredExemption( final String policyId)throws PacManException;
+	Map<String, String> enablePolicyForExpiredExemption(final String policyId) throws PacManException;
 
 	List<Map<String,Object>> getAdminPoliciesByFilterCriteria(ListRequest requestBody);
 

@@ -15,7 +15,11 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
+import com.tmobile.pacman.api.compliance.domain.PolicyRequestPrams;
 import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Interface PolicyTableService.
@@ -46,5 +50,11 @@ public interface PolicyTableService {
      */
     public PolicyTable getPolicyDetailsWithExemption(String ag, String policyId);
 
+    List<Map<String, String>> getPolicyDetails(PolicyRequestPrams engineParams) throws Exception;
 
+    PolicyRequestPrams getAssetTypeByPolicyUUID(String policyUUID);
+
+    List<PolicyRequestPrams> getAssetTypesBySource(String source);
+
+    List<PolicyRequestPrams> getAssetTypesByEnricherSource(String enricherSource);
 }

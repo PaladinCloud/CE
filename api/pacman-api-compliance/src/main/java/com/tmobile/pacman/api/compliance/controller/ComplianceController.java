@@ -20,7 +20,23 @@ import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
 import com.tmobile.pacman.api.commons.utils.ThreadLocalUtil;
-import com.tmobile.pacman.api.compliance.domain.*;
+import com.tmobile.pacman.api.compliance.domain.APIRequest;
+import com.tmobile.pacman.api.compliance.domain.DitributionDTO;
+import com.tmobile.pacman.api.compliance.domain.ExemptionRequest;
+import com.tmobile.pacman.api.compliance.domain.IssueAuditLogRequest;
+import com.tmobile.pacman.api.compliance.domain.IssueResponse;
+import com.tmobile.pacman.api.compliance.domain.IssuesException;
+import com.tmobile.pacman.api.compliance.domain.KernelVersion;
+import com.tmobile.pacman.api.compliance.domain.OutputDTO;
+import com.tmobile.pacman.api.compliance.domain.PolicyDescription;
+import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
+import com.tmobile.pacman.api.compliance.domain.PolicyRequestPrams;
+import com.tmobile.pacman.api.compliance.domain.PolicyViolationDetails;
+import com.tmobile.pacman.api.compliance.domain.Request;
+import com.tmobile.pacman.api.compliance.domain.ResourceTypeResponse;
+import com.tmobile.pacman.api.compliance.domain.ResponseData;
+import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
+import com.tmobile.pacman.api.compliance.domain.RevokeIssuesException;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
 import com.tmobile.pacman.api.compliance.service.PolicyTableService;
 import io.swagger.annotations.ApiOperation;
@@ -38,11 +54,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.TimeZone;
 
 /**
  * The Class ComplianceController.
@@ -839,6 +865,79 @@ public class ComplianceController implements Constants {
             @ApiParam(value = "provide valid policy UUID", required = true) @RequestParam(defaultValue = "", name = "policyUUID", required = true) String policyUUID) {
         try {
             return ResponseUtils.buildSucessResponse(policyTableService.getPolicyTableByPolicyUUID(policyUUID));
+        } catch (Exception exception) {
+            log.error("Unexpected error occurred!!", exception);
+            return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+        }
+    }
+
+    /**
+     * API to get policy by UUID
+     *
+     * @param requestParams
+     * @return Policies details
+     * @author
+     */
+    @ApiOperation(httpMethod = "POST", value = "API to get policy details for policy engine", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/policy-details", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getPolicyDetailsList(
+            @ApiParam(value = "provide valid policy request", required = true) @RequestBody(required = true) PolicyRequestPrams requestParams) {
+        if (requestParams.getSource() == null || "".equals(requestParams.getSource())
+                || requestParams.getTargetType() == null || "".equals(requestParams.getTargetType())) {
+            return ResponseUtils.buildFailureResponse(new Exception("Both Source and Target Type are mandatory"));
+        }
+        try {
+            return ResponseUtils.buildSucessResponse(policyTableService.getPolicyDetails(requestParams));
+        } catch (Exception exception) {
+            log.error("Unexpected error occurred!!", exception);
+            return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+        }
+    }
+
+    /**
+     * API to get policy engine params by source and enricherSource
+     *
+     * @param source         - source of policies
+     * @param enricherSource - enricherSource of policies
+     * @return List of Asset Types
+     */
+    @ApiOperation(httpMethod = "GET", value = "API to get policy by source", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/asset-types-by-source", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getAssetTypesBySource(
+            @ApiParam(value = "provide valid source") @RequestParam(name = "source", required = false) String source,
+            @ApiParam(value = "provide valid enricherSource") @RequestParam(name = "enricherSource", required = false) String enricherSource) {
+        try {
+            if (source != null && !source.isEmpty()) {
+                return ResponseUtils.buildSucessResponse(policyTableService.getAssetTypesBySource(source));
+            } else if (enricherSource != null && !enricherSource.isEmpty()) {
+                return ResponseUtils.buildSucessResponse(policyTableService.getAssetTypesByEnricherSource(enricherSource));
+            } else {
+                log.error("Invalid Input");
+                return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), "Invalid Input");
+            }
+        } catch (Exception exception) {
+            log.error("Unexpected error occurred!!", exception);
+            return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+        }
+    }
+
+    /**
+     * API to get policy engine params by UUID
+     *
+     * @param policyUUID - valid policy UUID
+     * @return Asset Type
+     */
+    @ApiOperation(httpMethod = "GET", value = "API to get policy by UUID", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/asset-type-by-uuid", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getAssetTypeByPolicyUUID(
+            @ApiParam(value = "provide valid policy UUID") @RequestParam(name = "policyUUID", required = false) String policyUUID) {
+        try {
+            if (policyUUID != null && !policyUUID.isEmpty()) {
+                return ResponseUtils.buildSucessResponse(policyTableService.getAssetTypeByPolicyUUID(policyUUID));
+            } else {
+                log.error("Invalid Input");
+                return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), "Invalid Input");
+            }
         } catch (Exception exception) {
             log.error("Unexpected error occurred!!", exception);
             return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
