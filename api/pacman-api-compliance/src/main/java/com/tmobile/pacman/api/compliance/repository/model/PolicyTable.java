@@ -51,6 +51,7 @@ public class PolicyTable {
 	private String fixMessage;
 	private String violationMessage;
 	private Integer elapsedTime;
+	private String enricherSource;
 	@Transient
 	private String disableDesc;
 	
@@ -294,6 +295,11 @@ public class PolicyTable {
 	public void setDisableDesc(String disableDesc) {
 		this.disableDesc = disableDesc;
 	}
-	
+	public String getEnricherSource() {
+		return enricherSource;
+	}
+	public void setEnricherSource(String enricherSource) {
+		this.enricherSource = enricherSource;
+	}
 	
 }

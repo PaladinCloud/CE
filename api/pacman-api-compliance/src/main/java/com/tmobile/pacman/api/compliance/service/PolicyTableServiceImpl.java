@@ -15,29 +15,31 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.DataException;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import com.tmobile.pacman.api.compliance.domain.PolicyRequestPrams;
+import com.tmobile.pacman.api.compliance.repository.PolicyExemptionRepository;
 import com.tmobile.pacman.api.compliance.repository.PolicyParamsRepository;
+import com.tmobile.pacman.api.compliance.repository.PolicyTableRepository;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyExemption;
 import com.tmobile.pacman.api.compliance.repository.model.PolicyParams;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.tmobile.pacman.api.commons.Constants;
-import com.tmobile.pacman.api.compliance.repository.PolicyExemptionRepository;
-import com.tmobile.pacman.api.compliance.repository.PolicyTableRepository;
-import com.tmobile.pacman.api.compliance.repository.model.PolicyExemption;
-import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.tmobile.pacman.api.compliance.util.CommonUtil.generatePolicyParamJson;
 import static com.tmobile.pacman.api.compliance.util.CommonUtil.getStringDate;
@@ -199,5 +201,95 @@ public class PolicyTableServiceImpl implements PolicyTableService, Constants {
 			}
 		}
 		return new HashMap<>();
+    }
+
+    public List<Map<String, String>> getPolicyDetails(PolicyRequestPrams requestPrams) throws Exception {
+        List<Map<String, String>> policyDetailList;
+        if (requestPrams.getSource() == null || "".equals(requestPrams.getSource())
+                || requestPrams.getTargetType() == null || "".equals(requestPrams.getTargetType())) {
+            throw new Exception("Both Source and Target Type are mandatory");
+        }
+        if (requestPrams.getPolicyUUIDs() != null && requestPrams.getPolicyUUIDs().size() > 0) {
+            policyDetailList = policyTableRepository.findPolicyPolicyUUIDs(requestPrams.getPolicyUUIDs());
+        } else if (requestPrams.getEnricherSource() != null && !"".equals(requestPrams.getEnricherSource())) {
+            policyDetailList = policyTableRepository.findPolicyBySourceAndTargetTypeAndEnricherSource(requestPrams.getSource(), requestPrams.getTargetType(), requestPrams.getEnricherSource());
+        } else {
+            policyDetailList = policyTableRepository.findPolicyBySourceAndTargetType(requestPrams.getSource(), requestPrams.getTargetType());
+        }
+        // add policy params to policy details.
+        List<Map<String, String>> resultPolicyList = new ArrayList<>();
+        policyDetailList.forEach(policy -> {
+            Map<String, String> updatedPolicy = new HashMap<>(policy);
+            Optional<List<PolicyParams>> policyParams = policyParamsRepository.findByPolicyId(policy.get("policyId"));
+            if (policyParams.isPresent()) {
+                List<PolicyParams> paramList = policyParams.get();
+                paramList.forEach(param -> {
+                    updatedPolicy.put(param.getKey(), param.getValue() != null ? param.getValue() : param.getDefaultVal());
+                });
+            }
+            resultPolicyList.add(updatedPolicy);
+        });
+
+        return resultPolicyList;
+    }
+
+    @Override
+    public PolicyRequestPrams getAssetTypeByPolicyUUID(String policyUUID) {
+        Optional<PolicyTable> optionalPolicyDetails = policyTableRepository.findByPolicyUUID(policyUUID);
+        if (optionalPolicyDetails.isPresent()) {
+            PolicyTable policyDetails = optionalPolicyDetails.get();
+            return convertPolicyDetailsToPolicyEngineParams(Collections.singletonList(policyDetails));
+        }
+        return new PolicyRequestPrams();
+    }
+
+    @Override
+    public List<PolicyRequestPrams> getAssetTypesBySource(String source) {
+        List<PolicyTable> policies = policyTableRepository.findByAssetGroup(source);
+        return getPolicyEngineParamsForPolices(policies);
+    }
+
+    @Override
+    public List<PolicyRequestPrams> getAssetTypesByEnricherSource(String enricherSource) {
+        List<PolicyTable> policies = policyTableRepository.findByEnricherSource(enricherSource);
+        List<PolicyRequestPrams> policyEngineParamsForPolices = getPolicyEngineParamsForPolices(policies);
+        policyEngineParamsForPolices.forEach(param -> {
+            param.setEnricherSource(enricherSource);
+        });
+        return policyEngineParamsForPolices;
+    }
+
+    private List<PolicyRequestPrams> getPolicyEngineParamsForPolices(List<PolicyTable> policies) {
+        List<PolicyRequestPrams> allParams = new ArrayList<>();
+        Map<String, List<PolicyTable>> policiesGroupedByTargetType = new HashMap<>();
+        if (policies.isEmpty()) {
+            return allParams;
+        }
+        policies.forEach(policy -> {
+            policiesGroupedByTargetType.computeIfAbsent(policy.getTargetType(), p -> new ArrayList<>()).add(policy);
+        });
+        policiesGroupedByTargetType.forEach((targetType, group) -> {
+            PolicyRequestPrams convertedParams = convertPolicyDetailsToPolicyEngineParams(group);
+            if (convertedParams != null) {
+                convertedParams.setPolicyUUIDs(new ArrayList<>());
+                allParams.add(convertedParams);
+            }
+        });
+        return allParams;
+    }
+
+    private PolicyRequestPrams convertPolicyDetailsToPolicyEngineParams(List<PolicyTable> policies) {
+        PolicyRequestPrams params = new PolicyRequestPrams();
+        if (policies.isEmpty()) {
+            return null;
+        }
+        params.setSource(policies.get(0).getAssetGroup());
+        params.setTargetType(policies.get(0).getTargetType());
+        List<String> policyUUIDs = new ArrayList<>();
+        policies.forEach(policy -> {
+            policyUUIDs.add(policy.getPolicyUUID());
+        });
+        params.setPolicyUUIDs(policyUUIDs);
+        return params;
     }
 }
