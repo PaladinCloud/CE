@@ -9,7 +9,6 @@ service:
     auth: ${PACMAN_HOST_NAME}/api/auth
     admin: ${PACMAN_HOST_NAME}/api/admin
     notifications: ${PACMAN_HOST_NAME}/api/notifications
-    vulnerability: ${PACMAN_HOST_NAME}/api/vulnerability
       
 endpoints:
   refresh:
@@ -29,7 +28,7 @@ application:
       domains: all
                  
 monitoring:
-  contextRootNames: asset,compliance,statistics,auth,admin,notifications,vulnerability
+  contextRootNames: asset,compliance,statistics,auth,admin,notifications
 
 auth: 
   active: db
@@ -67,9 +66,6 @@ api:
     version: 2.0
   - name: Notification Service
     url: ${PACMAN_HOST_NAME:http://localhost:8080}/api/notifications/v2/api-docs
-    version: 2.0
-  - name: Vulnerability Service
-    url: ${PACMAN_HOST_NAME:http://localhost:8080}/api/vulnerability/v2/api-docs
     version: 2.0
       
 tagging:
