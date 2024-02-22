@@ -3278,3 +3278,4 @@ UPDATE cf_Target SET displayName='IAM User' WHERE targetName in ('iamuser','iamu
 UPDATE cf_Target SET displayName='KMS Key' WHERE targetName in ('kms','kmskey');
 UPDATE cf_Target SET displayName='Subnet' WHERE targetName in ('subnet','subnets');
 UPDATE cf_Target SET displayName='VM' WHERE targetName in ('virtualmachine','vminstance');
+UPDATE cf_Target SET displayName = 'Environment', endpoint = concat(@eshost,':',@esport,'/checkmarx_environment') WHERE dataSourceName in ('checkmarx');
