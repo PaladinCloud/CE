@@ -17,7 +17,10 @@
     </div>
     <div class="overall-distribution">
         <div class="distribution-content">
-            <div class="chart" [class.expanded]="!isCollapsed" #widgetContainer>
+            <div *ngIf="errorMessage">
+            <app-error-message [selectedValue]="errorMessage"></app-error-message>
+            </div>
+            <div *ngIf="!errorMessage" class="chart" [class.expanded]="!isCollapsed" #widgetContainer>
                 <apx-chart
                     [series]="chartOptions.series"
                     [chart]="chartOptions.chart"

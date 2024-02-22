@@ -129,6 +129,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   fieldName: any;
   sortOrder: any;
   columnsAndFiltersToExcludeFromCasing = ['Account Name'];
+  dateCategoryList: string[] = ['Created Date'];
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -565,6 +566,8 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
      * api is again called with the updated filter
      */
     this.filterText = this.utils.processFilterObj(this.filterText);
+    console.log('filterText:', this.filterText);
+    
 
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
@@ -703,11 +706,15 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   }
 
   getFilterPayloadForDataAPI(){
-    const filterToBePassed = {...this.filterText};
-    Object.keys(filterToBePassed).forEach(filterKey => {
+    const filterToBePassed = { ...this.filterText };
+    Object.keys(filterToBePassed).forEach(filterKey => {      
       filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-
-      if(this.columnNamesMap[filterKey]?.toLowerCase()=="assets" || this.columnNamesMap[filterKey]?.toLowerCase()=="violations"){
+      
+      if (this.dateCategoryList.includes(this.columnNamesMap[filterKey])) {
+        const [fromDate, toDate] = filterToBePassed[filterKey][0].split(" - ");        
+        const dateRangeString = `${this.utils.getFormattedDate(fromDate, false, "z")} - ${this.utils.getFormattedDate(toDate, true, "z")}`;
+        filterToBePassed[filterKey] = [dateRangeString];
+      }else if(this.columnNamesMap[filterKey]?.toLowerCase()=="assets" || this.columnNamesMap[filterKey]?.toLowerCase()=="violations"){
         filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
           const [min, max] = filterVal.split("-");
           return {min: parseFloat(min), max: parseFloat(max)};
@@ -718,16 +725,19 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     return filterToBePassed;
   }
 
-  async changeFilterTags(event) {
-    let filterValues = event.filterValue;
+  async changeFilterTags (event) {
+    const filterValues = event.filterValue;
+    const filterKeyDisplayValue = event.filterKeyDisplayValue;
     if(!filterValues){
       return;
     }
     this.currentFilterType =  find(this.filterTypeOptions, {
-      optionName: event.filterKeyDisplayValue,
+      optionName: filterKeyDisplayValue,
     });
 
-    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    if (!this.dateCategoryList.includes(filterKeyDisplayValue)) {
+      this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    }
     this.getUpdatedUrl();
     this.storeState();
     this.updateComponent();

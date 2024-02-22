@@ -563,4 +563,21 @@ export class UtilsService {
     getDescendingOrder (orderMap) {
       return this.getAscendingOrder(orderMap).reverse();
     }
+  
+  getFormattedDate (dateString: string, isEndDate: boolean = false, offsetToAppend="+0000"): string {
+    const localDate = new Date(dateString);
+
+    if (isEndDate) {
+      localDate.setHours(23, 59, 59);
+    } else {
+      localDate.setMinutes(localDate.getMinutes() + localDate.getTimezoneOffset());
+    }
+    localDate.setMinutes(localDate.getMinutes() + localDate.getTimezoneOffset());
+
+    const datePipe = new DatePipe('en-US');
+
+    const formattedDate = offsetToAppend === "z" ? datePipe.transform(localDate, 'yyyy-MM-ddTHH:mm:ss') : datePipe.transform(localDate, 'yyyy-MM-dd HH:mm:ss');
+
+    return formattedDate + offsetToAppend;
+  }
 }

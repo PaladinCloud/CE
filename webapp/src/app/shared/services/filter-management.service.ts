@@ -423,7 +423,12 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
 
    getRangeFilterOptions (filterTagsData, isRangePercentage = false) {
      const numOfIntervals = 5;
-     const { min, max } = filterTagsData.optionRange;
+     let { min, max } = filterTagsData.optionRange;
+     let includeNR = false;
+     if (min === -1) {
+       min = 0;
+       includeNR = true;
+     }
      const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
 
      filterTagsData = [];
@@ -441,6 +446,9 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
      });
      if (isRangePercentage && includeLastOption) {
        filterTagsData.push({ id: "100-100", name: "100-100" });
+     }
+     if (includeNR) {
+       filterTagsData.push({ id: "NR", name: "NR" });
      }
      return filterTagsData;
    }

@@ -893,7 +893,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       if (filterKey == "failed" || filterKey == "compliance_percent") {
         filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
           const [min, max] = filterVal.split("-");
-          return { min, max }
+          if (!min || min == "NR") {
+            return {min: -1, max: -1};
+          }
+          return { min, max };
         })
       }
     })

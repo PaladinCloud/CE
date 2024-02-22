@@ -242,7 +242,7 @@
                                                 *ngIf="(element[column] | isImagePresent)"
                                                 svgClass="cell-img"
                                                 [name]="element[column].imgSrc"
-                                                [title]="element[column].imageTitleText"
+                                                [title]="element[column].imageTitleText || element[column].titleText"
                                                 >
                                             </svg-icon>
                                             <span

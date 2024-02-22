@@ -21,7 +21,7 @@
                             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
                             [selectedRowIndex]="selectedRowIndex" [onScrollDataLoader]="onScrollDataLoader"
                             (nextPageCalled)="nextPg($event)"
-                            [columnsAndFiltersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing"
+                            [columnsAndFiltersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing" [dateCategoryList]="dateCategoryList"
                             [enableMultiValuedFilter]="true">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
