@@ -483,7 +483,7 @@ CALL alter_cf_Accounts_table_add_createdBy_createdTime_if_not_exists();
 
 /* Insert one account */
 
-insert ignore into cf_Accounts values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''),concat(@CUSTOMER_NAME,''),'dateTime');
+insert ignore into cf_Accounts (`accountName`,`accountId`,`assets`,`violations`,`accountStatus`,`platform`,`createdBy`,`createdTime`) values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''),concat(@CUSTOMER_NAME,''),'dateTime');
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_target_table_add_display_name_if_not_exists $$
@@ -3278,3 +3278,34 @@ UPDATE cf_Target SET displayName='IAM User' WHERE targetName in ('iamuser','iamu
 UPDATE cf_Target SET displayName='KMS Key' WHERE targetName in ('kms','kmskey');
 UPDATE cf_Target SET displayName='Subnet' WHERE targetName in ('subnet','subnets');
 UPDATE cf_Target SET displayName='VM' WHERE targetName in ('virtualmachine','vminstance');
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS AddColumnIfNotExists $$
+ CREATE PROCEDURE AddColumnIfNotExists(
+    IN tableName VARCHAR(255),
+    IN columnName VARCHAR(255),
+    IN columnDefinition VARCHAR(255)
+)
+BEGIN
+    DECLARE columnCount INT;
+
+    SELECT COUNT(*)
+    INTO columnCount
+    FROM information_schema.columns
+    WHERE table_name = tableName AND column_name = columnName;
+
+    IF columnCount = 0 THEN
+        SET @alterQuery = CONCAT('ALTER TABLE ', tableName, ' ADD COLUMN ', columnName, ' ', columnDefinition);
+        PREPARE stmt FROM @alterQuery;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        SELECT 'Column added successfully' AS result;
+    ELSE
+        SELECT 'Column already exists' AS result;
+    END IF;
+END $$
+
+DELIMITER ;
+
+CALL AddColumnIfNotExists('cf_Accounts', 'updatedTime', 'TIMESTAMP');
+CALL AddColumnIfNotExists('cf_Accounts', 'updatedBy', 'VARCHAR(150)');
