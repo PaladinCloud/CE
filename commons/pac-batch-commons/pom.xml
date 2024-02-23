@@ -77,8 +77,8 @@
       <artifactId>aws-java-sdk-ec2</artifactId>
     </dependency>
     <dependency>
-      <artifactId>aws-java-sdk-cloudwatch</artifactId>
       <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-cloudwatch</artifactId>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-elasticloadbalancing -->
     <dependency>
@@ -86,8 +86,8 @@
       <artifactId>aws-java-sdk-elasticloadbalancing</artifactId>
     </dependency>
     <dependency>
-      <artifactId>aws-java-sdk-elasticloadbalancingv2</artifactId>
       <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-elasticloadbalancingv2</artifactId>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
     <dependency>
@@ -105,40 +105,44 @@
       <artifactId>aws-java-sdk-sts</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-iam</artifactId>
-      <groupId>com.amazonaws</groupId>
     </dependency>
     <dependency>
+      <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-config</artifactId>
-      <groupId>com.amazonaws</groupId>
     </dependency>
     <dependency>
+      <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-lambda</artifactId>
-      <groupId>com.amazonaws</groupId>
     </dependency>
     <dependency>
+      <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-api-gateway</artifactId>
-      <groupId>com.amazonaws</groupId>
     </dependency>
     <dependency>
+      <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-dynamodb</artifactId>
-      <groupId>com.amazonaws</groupId>
     </dependency>
     <dependency>
-      <artifactId>aws-java-sdk-cloudtrail</artifactId>
       <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-cloudtrail</artifactId>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-elasticsearch -->
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-elasticsearch</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-sqs</artifactId>
+      <version>1.12.472</version>
+    </dependency>
 
     <!-- GCP -->
-    <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     <dependency>
-      <artifactId>google-cloud-compute</artifactId>
       <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-compute</artifactId>
       <version>1.8.1</version>
     </dependency>
     <dependency>
@@ -205,58 +209,17 @@
       <scope>compile</scope>
     </dependency>
 
-
-    <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
-    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.9.10</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.2.3</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.2.9</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.1</version>
-    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>5.3.22</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.28</version>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-sqs</artifactId>
-      <version>1.12.472</version>
     </dependency>
   </dependencies>
   <build>
