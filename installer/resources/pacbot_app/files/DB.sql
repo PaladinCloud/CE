@@ -2911,8 +2911,8 @@ DELIMITER ;
 CALL alter_pac_v2_ui_options_table();
 
 update pac_v2_ui_options set optionType = "String" where filterId=13;
-update pac_v2_ui_options set optionType = "Double" where optionName="Compliance" and filterId=13;
-update pac_v2_ui_options set optionType = "Long" where optionName="Violations" and filterId=13;
+update pac_v2_ui_options set optionType = "Integer" where optionName="Compliance" and filterId=13;
+update pac_v2_ui_options set optionType = "Integer" where optionName="Violations" and filterId=13;
 
 
 update cf_Target set targetConfig='{\"key\":\"accountid,region,targetgrouparn\",\"id\":\"targetgroupname\"}' where targetName='targetgroup';
