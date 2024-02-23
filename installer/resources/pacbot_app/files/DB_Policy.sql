@@ -154,35 +154,6 @@ END $$
 DELIMITER ;
 CALL alter_cf_policytable_add_columns();
 
-
-DELIMITER $$
-DROP PROCEDURE IF EXISTS AddColumnIfNotExists $$
- CREATE PROCEDURE AddColumnIfNotExists(
-    IN tableName VARCHAR(255),
-    IN columnName VARCHAR(255),
-    IN columnDefinition VARCHAR(255)
-)
-BEGIN
-    DECLARE columnCount INT;
-
-    SELECT COUNT(*)
-    INTO columnCount
-    FROM information_schema.columns
-    WHERE table_name = tableName AND column_name = columnName;
-
-    IF columnCount = 0 THEN
-        SET @alterQuery = CONCAT('ALTER TABLE ', tableName, ' ADD COLUMN ', columnName, ' ', columnDefinition);
-        PREPARE stmt FROM @alterQuery;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-        SELECT 'Column added successfully' AS result;
-    ELSE
-        SELECT 'Column already exists' AS result;
-    END IF;
-END $$
-
-DELIMITER ;
-
 CALL AddColumnIfNotExists('cf_PolicyTable', 'enricherSource', 'VARCHAR(100)');
 
 

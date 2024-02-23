@@ -257,60 +257,7 @@ jobs:
         run: |
           aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
 
-  GCPBuild:
-    name: GCP-Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: running update
-        run: sudo apt update
-      - name: Setup Maven Action
-        uses: s4u/setup-maven-action@v1.2.1
-        with:
-          checkout-fetch-depth: 0
-          java-version: 8
-          java-distribution: temurin
-          maven-version: 3.6.3
-      - name: Building commons jar
-        run: |
-          cd commons
-          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
-      - name: Building Jobs jar
-        run: |
-          cd jobs/gcp-discovery/
-          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
-      - name: Upload Jobs artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: jobs-gcp-artifact
-          path: ./dist/jobs
-  Push-gcp-Prod:
-    name: Push gcp-discovery to s3 Prod
-    runs-on: ubuntu-latest
-    environment: 'SaaSPROD'
-    needs:
-      - GCPBuild
-      - extract_version
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure AWS credentials for Prod account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_PROD }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Download Jobs artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jobs-gcp-artifact
-          path: ./dist/jobs
-      - name: copy Jobs jars to S3 
-        run: |
-          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_PROD }}/${{ needs.extract_version.outputs.version }}/prod/jobs
-
+  
   Cloud-Discovery-Build:
     name: Cloud-Discovery-Build
     runs-on: ubuntu-latest
@@ -694,7 +641,7 @@ jobs:
       - name: Download Jobs artifact
         uses: actions/download-artifact@v4
         with:
-          name: jobs-aqua-artifact
+          name: jobs-shipper-artifact
           path: ./dist/jobs
       - name: copy Jobs jars to S3 
         run: |

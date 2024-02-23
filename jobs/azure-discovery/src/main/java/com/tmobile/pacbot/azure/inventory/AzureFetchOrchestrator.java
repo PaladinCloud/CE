@@ -57,8 +57,7 @@ public class AzureFetchOrchestrator {
             List<SubscriptionVH> subscriptions = fetchSubscriptions();
             if (subscriptions.isEmpty()) {
                 if (numberOfAccounts > 0) {
-                    log.error(ERROR_PREFIX + "Not able to connect to any of azure accounts" + ENDING_QUOTES);
-                    System.exit(1);
+                    log.info("Not able to connect to any of azure accounts");
                 }
 
                 ErrorManageUtil.uploadError("all", "all", "all", "Error fetching subscription Info ");
