@@ -385,6 +385,7 @@ export class AssetGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
     }else{
       this.searchTxt = "";
       this.bucketNumber = 0;
+      this.pageNumber = 0;
       this.tableDataLoaded = false;
       this.errorValue = 0;
       this.showGenericMessage = false;

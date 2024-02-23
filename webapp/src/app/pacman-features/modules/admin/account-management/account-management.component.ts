@@ -712,8 +712,8 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
       
       if (this.dateCategoryList.includes(this.columnNamesMap[filterKey])) {
         const [fromDate, toDate] = filterToBePassed[filterKey][0].split(" - ");        
-        const dateRangeString = `${this.utils.getFormattedDate(fromDate, false, "z")} - ${this.utils.getFormattedDate(toDate, true, "z")}`;
-        filterToBePassed[filterKey] = [dateRangeString];
+        const dateRange = [this.utils.getFormattedDate(fromDate, false, "z") , this.utils.getFormattedDate(toDate, true, "z")];
+        filterToBePassed[filterKey] = dateRange;
       }else if(this.columnNamesMap[filterKey]?.toLowerCase()=="assets" || this.columnNamesMap[filterKey]?.toLowerCase()=="violations"){
         filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
           const [min, max] = filterVal.split("-");
