@@ -440,7 +440,7 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
        if (isRangePercentage && up === 100 && lb !== up) {
          up--;
        }
-       if (!(isRangePercentage && lb===100)) {
+       if (!((isRangePercentage && lb===100) || up===-1)) {
          filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
        }
      });

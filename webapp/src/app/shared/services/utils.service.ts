@@ -580,7 +580,10 @@ export class UtilsService {
 
     const datePipe = new DatePipe('en-US');
 
-    const formattedDate = offsetToAppend === "z" ? datePipe.transform(localDate, 'yyyy-MM-ddTHH:mm:ss') : datePipe.transform(localDate, 'yyyy-MM-dd HH:mm:ss');
+    let formattedDate = datePipe.transform(localDate, 'yyyy-MM-dd HH:mm:ss');
+    if (offsetToAppend === "z") {
+      formattedDate = datePipe.transform(localDate, 'yyyy-MM-ddTHH:mm:ss');
+    }
 
     return formattedDate + offsetToAppend;
   }
