@@ -126,21 +126,6 @@ public class AssetGroupStatsCollector implements Constants {
 
         executor.execute(() -> {
             try {
-                uploadAssetGroupVulnCompliance(assetGroups);
-            } catch (Exception e) {
-                log.error("Exception in uploadAssetGroupVulnCompliance ", e);
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put(ERROR, "Exception in uploadAssetGroupVulnCompliance");
-                errorMap.put(ERROR_TYPE, WARN);
-                errorMap.put(EXCEPTION, e.getMessage());
-                synchronized (errorList) {
-                    errorList.add(errorMap);
-                }
-            }
-        });
-
-        executor.execute(() -> {
-            try {
                 uploadAssetListCountStats(assetGroups);
             } catch (Exception e) {
                 log.error("Exception in uploadAssetListCountStats ", e);
@@ -358,40 +343,6 @@ public class AssetGroupStatsCollector implements Constants {
 
         ESManager.uploadData(AG_STATS, "issues", docs, "@id", false);
         log.info("End collecting  issues");
-    }
-
-    /**
-     * Upload asset group vuln compliance.
-     *
-     * @param assetGroups the asset groups
-     * @throws Exception the exception
-     */
-    public void uploadAssetGroupVulnCompliance(List<String> assetGroups) {
-        log.info("Start collecting vuln compliance");
-        List<Map<String, Object>> docs = new ArrayList<>();
-        for (String ag : assetGroups) {
-            try {
-                Map<String, Object> doc = AssetGroupUtil.fetchVulnSummary(ag);
-                if (!doc.isEmpty()) {
-                    doc.put("ag", ag);
-                    doc.put("date", CURR_DATE);
-                    doc.put("@id", Util.getUniqueID(ag + CURR_DATE + "vulncompliance"));
-                    docs.add(doc);
-                }
-            } catch (Exception e) {
-                log.error("Exception in uploadAssetGroupVulnCompliance", e);
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put(ERROR, "Exception in uploadAssetGroupVulnCompliance for Asset Group" + ag);
-                errorMap.put(ERROR_TYPE, WARN);
-                errorMap.put(EXCEPTION, e.getMessage());
-                synchronized (errorList) {
-                    errorList.add(errorMap);
-                }
-            }
-        }
-
-        ESManager.uploadData(AG_STATS, "vulncompliance", docs, "@id", false);
-        log.info("End collecting vuln compliance");
     }
 
     public void uploadAssetListCountStats(List<String> assetGroups) {

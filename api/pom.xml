@@ -49,7 +49,6 @@
 		<module>pacman-api-notifications</module>
 		<module>pacman-api-statistics</module>
 		<module>pacman-api-auth</module>
-		<module>pacman-api-vulnerability</module>
 	</modules>
 
 </project>
