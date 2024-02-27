@@ -140,8 +140,8 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   selectedRowIndex;
   fieldName: any;
   sortOrder: any;
-  columnsAndFiltersToExcludeFromCasing = ['Account Name'];
-  dateCategoryList: string[] = ['Created Date'];
+  columnsAndFiltersToExcludeFromCasing = [TABLE_COLUMN_NAMES.ACCOUNT_NAME];
+  dateCategoryList: string[] = [TABLE_COLUMN_NAMES.CREATED_DATE];
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -582,7 +582,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
      * Finally after changing URL Link
      * api is again called with the updated filter
      */
-    this.filterText = this.utils.processFilterObj(this.filterText);    
+    this.filterText = this.utils.processFilterObj(this.filterText);
 
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
@@ -721,14 +721,14 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
 
   getFilterPayloadForDataAPI(){
     const filterToBePassed = { ...this.filterText };
-    Object.keys(filterToBePassed).forEach(filterKey => {      
+    Object.keys(filterToBePassed).forEach(filterKey => {
       filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
       
       if (this.dateCategoryList.includes(this.columnNamesMap[filterKey])) {
         const [fromDate, toDate] = filterToBePassed[filterKey][0].split(" - ");        
         const dateRange = [this.utils.getFormattedDate(fromDate, false, "z") , this.utils.getFormattedDate(toDate, true, "z")];
         filterToBePassed[filterKey] = dateRange;
-      }else if(this.columnNamesMap[filterKey]?.toLowerCase()=="assets" || this.columnNamesMap[filterKey]?.toLowerCase()=="violations"){
+      }else if(this.columnNamesMap[filterKey]===TABLE_COLUMN_NAMES.ASSETS || this.columnNamesMap[filterKey]===TABLE_COLUMN_NAMES.VIOLATIONS){
         filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
           const [min, max] = filterVal.split("-");
           return {min: parseFloat(min), max: parseFloat(max)};

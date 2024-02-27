@@ -36,7 +36,7 @@ import { Subscription } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
-import { API_RESPONSE_ERROR } from 'src/app/shared/constants/global';
+import { API_RESPONSE_ERROR, NO_DATA_AVAILABLE } from 'src/app/shared/constants/global';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 
@@ -182,7 +182,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         const maxIndex = this.awsResources.length;
 
         if (maxIndex == 0) {
-            this.errorMessage = 'noDataAvailable';
+            this.errorMessage = NO_DATA_AVAILABLE;
             return;
         }
         if(maxIndex==1){
@@ -351,7 +351,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         this.resourceTypeSelectionSubscription = this.awsResourceTypeSelectionService
             .getAllAwsResources()
             .subscribe(
-                (allAwsResources) => {                    
+                (allAwsResources) => {
                     this.filteredResources = [];
                     this.treemapData = [];
                     this.awsResources = allAwsResources;

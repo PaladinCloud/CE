@@ -424,33 +424,29 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
    getRangeFilterOptions (filterTagsData, isRangePercentage = false) {
      const numOfIntervals = 5;
      let { min, max } = filterTagsData.optionRange;
-     let includeNR = false;
-     if (min === -1) {
-       min = 0;
-       includeNR = true;
-     }
-     const intervals = this.utils.generateIntervals(min, max, numOfIntervals);
-
-     filterTagsData = [];
+     let includeNR = min === -1;
+     const intervals = this.utils.generateIntervals(min === -1 ? 0 : min, max, numOfIntervals);
+     const filterTags = [];
      let includeLastOption = false;
      intervals.forEach(interval => {
        const lb = Math.round(interval.lowerBound);
        let up = Math.round(interval.upperBound);
-       includeLastOption = up === 100;
+       includeLastOption = isRangePercentage && up === 100;
        if (isRangePercentage && up === 100 && lb !== up) {
          up--;
        }
-       if (!((isRangePercentage && lb===100) || up===-1)) {
-         filterTagsData.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
+       if (!(isRangePercentage && lb === 100) && up !== -1) {
+         filterTags.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
        }
      });
-     if (isRangePercentage && includeLastOption) {
-       filterTagsData.push({ id: "100-100", name: "100-100" });
+     if (includeLastOption) {
+       filterTags.push({ id: '100-100', name: '100-100' });
      }
      if (includeNR) {
-       filterTagsData.push({ id: "NR", name: "NR" });
+       filterTags.push({ id: 'NR', name: 'NR' });
      }
-     return filterTagsData;
+
+     return filterTags;
    }
  
  }
