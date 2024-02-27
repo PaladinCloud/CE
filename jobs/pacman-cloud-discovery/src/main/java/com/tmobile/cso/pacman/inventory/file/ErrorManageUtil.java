@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.file;
 
-import com.google.api.client.util.Strings;
 import com.tmobile.cso.pacman.inventory.util.InventoryConstants;
 import com.tmobile.pacman.commons.dto.ErrorVH;
 import com.tmobile.pacman.commons.dto.CollectorIssuesVH;
@@ -189,7 +188,7 @@ public class ErrorManageUtil {
 
     private static boolean exceptionPresentInList(String errorException, List<String> exceptionList) {
         for (String exception : exceptionList) {
-            if (Strings.isNullOrEmpty(errorException)) {
+            if (errorException == null || errorException.length() == 0) {
                 return false;
             }
 

@@ -14,7 +14,6 @@ import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
 import com.tmobile.pacman.util.CloudUtils;
 import com.tmobile.pacman.util.CommonUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.util.*;

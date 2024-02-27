@@ -165,6 +165,16 @@
       <artifactId>aws-lambda-java-core</artifactId>
       <version>1.2.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>oauth2-oidc-sdk</artifactId>
+      <version>9.4</version>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.microsoft.azure</groupId>-->
+<!--      <artifactId>azure</artifactId>-->
+<!--      <version>1.41.3</version>-->
+<!--    </dependency>-->
   </dependencies>
   <build>
     <plugins>

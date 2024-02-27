@@ -31,14 +31,12 @@
       <artifactId>spring-context</artifactId>
       <version>4.3.8.RELEASE</version>
     </dependency>
-
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
       <version>1.6.4</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-mockito</artifactId>
@@ -262,6 +260,23 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-workspaces</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-efs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-redshift</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-elasticsearch</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
     </dependency>
   </dependencies>
   <build>
