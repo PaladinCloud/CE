@@ -41,7 +41,6 @@ public class AssetGroupUtil {
 
     public static final String ASSET_SVC_BASE_URL = API_URL + "/asset/v1";
     public static final String COMPLIANCE_SVC_BASE_URL = API_URL + "/compliance/v1";
-    public static final String VULNERABILITY_SVC_BASE_URL = API_URL+ "/vulnerability/v1";
     public static final Map<String, Integer> categoryWeightageMap = new HashMap<>();
 
     private AssetGroupUtil() {
@@ -201,28 +200,6 @@ public class AssetGroupUtil {
         }
 
         return ruleInfoList;
-    }
-
-    /**
-     * Fetch vulnerability summary.
-     *
-     * @param ag the ag
-     * @return the map
-     */
-    public static Map<String, Object> fetchVulnSummary(String ag) throws Exception {
-        Map<String, Object> vulnSummary = new HashMap<>();
-        String url = VULNERABILITY_SVC_BASE_URL + "/vulnerabilites?ag=" + ag;
-        String vulnSummaryResponse = HttpUtil.get(url, AuthManager.getToken());
-        JsonObject vulnSummaryJson = new JsonParser().parse(vulnSummaryResponse).getAsJsonObject();
-        JsonObject vulnJsonObj = vulnSummaryJson.get("data").getAsJsonObject().get(OUTPUT).getAsJsonObject();
-        long total = vulnJsonObj.get("hosts").getAsLong();
-        long noncompliant = vulnJsonObj.get("totalVulnerableAssets").getAsLong();
-
-        vulnSummary.put(TOTAL, total);
-        vulnSummary.put(NON_COMPLIANT, noncompliant);
-        vulnSummary.put(COMPLIANT, total - noncompliant);
-
-        return vulnSummary;
     }
 
     /**

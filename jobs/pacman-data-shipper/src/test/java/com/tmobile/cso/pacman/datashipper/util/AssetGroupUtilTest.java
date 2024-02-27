@@ -185,22 +185,6 @@ public class AssetGroupUtilTest {
     }
 
     @Test
-    public void testFetchVulnerabilitySummary() throws Exception {
-        String vulnSummaryJson = "{\"data\":{\"output\":{\"hosts\":7192,\"vulnerabilities\":132285,\"totalVulnerableAssets\":5815}},\"message\":\"success\"}";
-        when(HttpUtil.get(anyString(), anyString())).thenReturn(vulnSummaryJson);
-        Map<String, Object> vulnSummary = AssetGroupUtil.fetchVulnSummary(anyString());
-
-        assertThat(vulnSummary.get("total"), is(7192L));
-    }
-
-    @Test(expected = Exception.class)
-    public void testFetchVulnerabilitySummaryException() throws Exception {
-        String vulnSummaryJson = "{\"data1\":{\"output\":{\"hosts\":7192,\"vulnerabilities\":132285,\"totalVulnerableAssets\":5815}},\"message\":\"success\"}";
-        when(HttpUtil.get(anyString(), anyString())).thenReturn(vulnSummaryJson);
-        AssetGroupUtil.fetchVulnSummary(anyString());
-    }
-
-    @Test
     public void testFetchTaggingSummary() throws Exception {
         String tagSummaryJson = "{\"data\":{\"output\":{\"assets\":124704,\"untagged\":49384,\"tagged\":75320,\"compliance\":60}},\"message\":\"success\"}";
         when(HttpUtil.get(anyString(), anyString())).thenReturn(tagSummaryJson);
