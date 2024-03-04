@@ -134,7 +134,7 @@ public class PolicyExecutor {
                         policyExecutor.run(policyParam, executionId);
                     }
                 } catch (Exception e) {
-                    logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(args[0]) + ERROR_MESSAGE +
+                    logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
                             "ExecutionId is ->" + executionId + e.getMessage() + ENDING_QUOTES, e);
                 }
             });
