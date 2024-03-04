@@ -225,6 +225,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   sortColName: any;
   violationModifiedDate: any;
   hasCurrentUserRequested: boolean;
+  disableExemption: boolean = false;
 
   @HostListener('document:click', ['$event']) handleClick(event) {
     try {
@@ -430,6 +431,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                       footer: this.issueBlocks.status,
                       img: statusIcon
                     };
+                    this.disableExemptionOnCloseStatus(this.issueBlocks?.status);
                     this.issueTopblocks.push(obj);
                   }
                   this.violationReason = this.issueBlocks.violationReason;
@@ -1365,6 +1367,11 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     this.sortColName = event.headerColName;
     this.direction = event.direction;
   }
+
+  private disableExemptionOnCloseStatus(status:string){
+    if(status === 'closed') this.disableExemption =true;
+  }
+
 
   ngOnDestroy() {
     try {

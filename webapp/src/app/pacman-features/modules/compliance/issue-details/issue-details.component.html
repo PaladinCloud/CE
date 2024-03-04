@@ -77,9 +77,9 @@
                     Additional Actions
                 </header>
                 <div class="btn-wrapper-additional-actions">
-                    <app-button-icon [class.isDisabled]="issueAssetGroup=='redhat'" (onClickInner)="showOtherDiv()" *ngIf="!exceptionAdded && exemptionDetails.status != 'requested'"> {{addExemption}}
+                    <app-button-icon [disabled]="disableExemption" [class.isDisabled]="disableExemption" (onClickInner)="showOtherDiv()" *ngIf="!exceptionAdded && exemptionDetails.status != 'requested'"> {{addExemption}}
                     </app-button-icon>
-                    <app-button-icon [class.isDisabled]="issueAssetGroup=='redhat'" (onClickInner)="showOtherDivRevoke();revokeException()"
+                    <app-button-icon [disabled]="disableExemption" [class.isDisabled]="disableExemption" (onClickInner)="showOtherDivRevoke();revokeException()"
                                      *ngIf="(exceptionAdded && adminAccess) || (!adminAccess && exemptionDetails.status == 'requested' && hasCurrentUserRequested)"> {{revokeExemption}}
                     </app-button-icon>
                 </div>
