@@ -179,7 +179,13 @@ public class PolicyServiceImpl implements PolicyService {
 			PolicyExemption policyExemption = policyExemptionList.get(0);
 			String createdByName=policyExemption.getCreatedBy();
 			String[] parts=createdByName.split(",");
-			createdByName=(parts.length == 2 && parts[0].equals(parts[1]))? parts[0]:parts[0] +" "+parts[1];
+			if (parts.length > 1) {
+				if (parts[0].trim().equals(parts[1].trim())) {
+					createdByName = parts[0].trim();
+				} else {
+					createdByName = parts[0].trim() + " " + parts[1].trim();
+				}
+			}
 			policy.setDisableDesc(String.format(AdminConstants.POLICY_DISABLE_DESCRIPTION,
 					createdByName, AdminUtils.getStringDate(DATE_FORMAT,
 							addDays(policyExemption.getExpireDate(), 1))));
