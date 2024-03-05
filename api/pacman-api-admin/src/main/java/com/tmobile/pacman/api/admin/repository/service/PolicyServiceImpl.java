@@ -553,12 +553,16 @@ public class PolicyServiceImpl implements PolicyService {
 				if(policyDetails.getPolicyParams() != null && 
 						policyDetails.getPolicyParams().indexOf(AdminConstants.AUTO_FIX_KEY) >= 0) {
 					updatePolicyDetails.setAutoFixAvailable("true");
+					updatePolicyDetails.setWaitingTime(policyDetails.getWaitingTime());
+					updatePolicyDetails.setMaxEmailNotification(policyDetails.getMaxEmailNotification());
+					updatePolicyDetails.setElapsedTime(policyDetails.getElapsedTime());
 				} else {
 					updatePolicyDetails.setAutoFixAvailable("false");
+					updatePolicyDetails.setWaitingTime(24);
+					updatePolicyDetails.setMaxEmailNotification(1);
+					updatePolicyDetails.setElapsedTime(24);
 				}
 				updatePolicyDetails.setAllowList(policyDetails.getAllowList());
-				updatePolicyDetails.setWaitingTime(policyDetails.getWaitingTime());
-				updatePolicyDetails.setMaxEmailNotification(policyDetails.getMaxEmailNotification());
 				updatePolicyDetails.setTemplateName(policyDetails.getTemplateName());
 				updatePolicyDetails.setTemplateColumns(policyDetails.getTemplateColumns());
 				updatePolicyDetails.setFixType(policyDetails.getFixType());
@@ -567,7 +571,6 @@ public class PolicyServiceImpl implements PolicyService {
 				updatePolicyDetails.setFixMailSubject(policyDetails.getFixMailSubject());
 				updatePolicyDetails.setFixMessage(policyDetails.getFixMessage());
 				updatePolicyDetails.setViolationMessage(policyDetails.getViolationMessage());
-				updatePolicyDetails.setElapsedTime(policyDetails.getElapsedTime());
 				if (AdminConstants.MANAGED_POLICY_TYPE.equalsIgnoreCase(policyDetails.getPolicyType()))
 				{
 					updateCustomEventBridgeRule(updatePolicyDetails);
