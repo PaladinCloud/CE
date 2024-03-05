@@ -1,5 +1,5 @@
 from core.terraform.resources.aws.rds import RDSResource, RDSOptionGroupResource, RDSParameterGroupResource, RDSSubnetGroupResource
-from resources.vpc.security_group import InfraSecurityGroupResource
+from resources.vpc.security_group import InfraRdsSecurityGroupResource
 from core.providers.aws.boto3.iam import create_iam_service_linked_role
 from core.config import Settings
 from core.log import SysLog
@@ -35,7 +35,7 @@ class MySQLDatabase(RDSResource):
     parameter_group_name = DBParameterGroup.get_input_attr('name')
     option_group_name = DBOptionGroup.get_input_attr('name')
     db_subnet_group_name = DBSubnetGroup.get_input_attr('name')
-    vpc_security_group_ids = [InfraSecurityGroupResource.get_output_attr('id')]
+    vpc_security_group_ids = [InfraRdsSecurityGroupResource.get_output_attr('id')]
     skip_final_snapshot = True
     apply_immediately = True
 
