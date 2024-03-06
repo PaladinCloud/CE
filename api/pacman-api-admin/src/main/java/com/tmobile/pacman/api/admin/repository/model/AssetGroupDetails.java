@@ -15,23 +15,14 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.repository.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import java.sql.Timestamp;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * AssetGroupDetails Model Class
@@ -55,6 +46,9 @@ public class AssetGroupDetails {
 	private String description;
 	private String aliasQuery;
 	private Boolean isVisible;
+
+	@Transient
+	private int totalCount;
 
 	@JsonManagedReference
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "assetGroup", cascade = CascadeType.ALL)
@@ -191,5 +185,13 @@ public class AssetGroupDetails {
 
 	public void setVisible(Boolean visible) {
 		isVisible = visible;
+	}
+
+	public int getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
 	}
 }
