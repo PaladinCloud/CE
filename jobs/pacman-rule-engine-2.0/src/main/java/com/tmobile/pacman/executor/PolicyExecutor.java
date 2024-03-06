@@ -62,8 +62,6 @@ import software.amazon.awssdk.services.sns.model.PublishRequest;
 import software.amazon.awssdk.services.sns.model.PublishResponse;
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.ENDING_QUOTES;
-import static com.tmobile.pacman.commons.PacmanSdkConstants.ERROR_MESSAGE;
 
 
 // TODO: Auto-generated Javadoc
@@ -95,8 +93,7 @@ public class PolicyExecutor {
             source = jsonNode.get(PacmanSdkConstants.SOURCE).asText();
             targetType = jsonNode.get(PacmanSdkConstants.TARGET_TYPE).asText();
         } catch (Exception e) {
-            logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(jsonString) + ERROR_MESSAGE +
-                    "error in getting Policy arguments  ->" + jsonString + ENDING_QUOTES, e);
+            logger.error("error in getting Policy arguments -> " + jsonString, e);
         }
     }
 
@@ -108,6 +105,7 @@ public class PolicyExecutor {
      */
     public static void main(String[] args) {
         setSystemProperties();
+        MDC.put("jobName", JOB_NAME);
         logger.debug("received input: " + args[0]);
         logger.info("input source detected as policy, will process policy now.");
         // "{ \"source\": \"aws\", \"targetType\": "ec2", \"enricherSource\": \"\",
@@ -122,6 +120,8 @@ public class PolicyExecutor {
             //String status = "ENABLED";
             executor.execute(() -> {
                 try {
+                    MDC.put("executionId", executionId);
+                    MDC.put("jobName", policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY));
                     if (policyExecutor.resources.isEmpty()
                             || PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(status)) {
                         AnnotationPublisher annotationPublisher = new AnnotationPublisher();
@@ -134,8 +134,7 @@ public class PolicyExecutor {
                         policyExecutor.run(policyParam, executionId);
                     }
                 } catch (Exception e) {
-                    logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
-                            "ExecutionId is ->" + executionId + e.getMessage() + ENDING_QUOTES, e);
+                    logger.error(e.getMessage(), e);
                 }
             });
 
@@ -144,6 +143,7 @@ public class PolicyExecutor {
         while (!executor.isTerminated()) {
         }
         policyDoneSNS(args[0]);
+        MDC.clear();
         ProgramExitUtils.exitSucessfully();
     }
 
@@ -153,8 +153,7 @@ public class PolicyExecutor {
             String jsonResponse = CommonUtils.doHttpPost(policyDetailsUrl, requestJson);
             policyWiseParamsList = convertJsonToListOfMap(jsonResponse);
         } catch (Exception e) {
-            logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(requestJson) + ERROR_MESSAGE +
-                    "failed in getting Policy list for  {}" + ENDING_QUOTES, requestJson, e);
+            logger.error("failed in getting Policy list for {}", requestJson, e);
         }
     }
 
@@ -165,8 +164,7 @@ public class PolicyExecutor {
             logger.debug("got resources for evaluvation, total resources: " + resources.size());
             logger.debug("timeTakenToFetchInventory {}", CommonUtils.getElapseTimeSince(startTime));
         } catch (Exception e) {
-            logger.error(DATA_ALERT_ERROR_STRING + CommonUtils.buildPolicyUUIDFromJson(requestJson) + ERROR_MESSAGE +
-                    "unable to get inventory for " + this.source + ENDING_QUOTES, requestJson, e);
+            logger.error("unable to get inventory for {} with request {}", this.source, requestJson, e);
             ProgramExitUtils.exitWithError();
         }
 
@@ -197,8 +195,7 @@ public class PolicyExecutor {
                 return rootNode.at("/data/policyStatus").asText();
             }
         } catch (Exception e) {
-            logger.error(DATA_ALERT_ERROR_STRING + policyUUID + ERROR_MESSAGE + "Failed in closing expired exemption" +
-                    ENDING_QUOTES, e);
+            logger.error("Failed in closing expired exemption", e);
         }
         return PacmanSdkConstants.POLICY_STATUS_DISABLED;
     }
@@ -253,10 +250,9 @@ public class PolicyExecutor {
         policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, PacmanSdkConstants.ROLE_PREFIX +
                 PacmanSdkConstants.INTEGRAION_ROLE);
         if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
-            logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
-                    "data source is missing, will not be able to figure out the target index to post the policy " +
-                    "evaluation, please check policy configuration" + ENDING_QUOTES);
-            logger.error("exiting now..");
+            logger.error("data source is missing, will not be able to figure out the target index to post the policy " +
+                    "evaluation, please check policy configuration");
+            logger.info("exiting now..");
             return;
         }
 
@@ -323,9 +319,8 @@ public class PolicyExecutor {
         } catch (Exception e) {
             String msg = "error occurred while executing";
             policyEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
-            logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
-                    msg + policyParam.get(PacmanSdkConstants.POLICY_ID) + ENDING_QUOTES, e);
-            logger.error("exiting now..");
+            logger.error(msg, e);
+            logger.info("exiting now..");
             return;
         }
 
@@ -342,8 +337,7 @@ public class PolicyExecutor {
                 if (notifyPolicyOwner(policyParam.get(PacmanSdkConstants.POLICY_CONTACT), message)) {
                     logger.trace(String.format("message sent to %s", policyParam.get(PacmanSdkConstants.POLICY_CONTACT)));
                 } else {
-                    logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
-                            String.format("unable to send message to %s", policyParam.get(PacmanSdkConstants.POLICY_CONTACT)) + ENDING_QUOTES);
+                    logger.error("unable to send message to {}", policyParam.get(PacmanSdkConstants.POLICY_CONTACT));
                 }
             }
 
@@ -394,16 +388,14 @@ public class PolicyExecutor {
                                 individuallyExemptedIssues));
                     }
                 } catch (Exception e) {
-                    logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
-                            "unable to signal auto fix manager" + ENDING_QUOTES, e);
+                    logger.error("unable to signal auto fix manager", e);
                 }
             } else {
                 logger.info("no evaluations to process");
             }
         } catch (Exception e) {
             policyEngineStats.put("error-while-processing-evaluations", e.getLocalizedMessage());
-            logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
-                    "error while processing evaluations" + ENDING_QUOTES, e);
+            logger.error("error while processing evaluations", e);
             errorWhileProcessing = true;
         }
         policyEngineStats.put("timeTakenToProcessEvaluations", CommonUtils.getElapseTimeSince(startTime));
@@ -415,8 +407,7 @@ public class PolicyExecutor {
         try{
             ESUtils.publishMetrics(policyEngineStats,type);
         }catch(Exception e) {
-            logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
-                    "unable to publish metrics" + ENDING_QUOTES, e);
+            logger.error("unable to publish metrics", e);
         }
         /*
          * if (!errorWhileProcessing) ProgramExitUtils.exitSucessfully(); else
@@ -511,8 +502,7 @@ public class PolicyExecutor {
 
             metrics.put("individual-exception-count-for-this-policy", individuallyExcemptedIssues.size());
         } catch (Exception e) {
-            logger.error(DATA_ALERT_ERROR_STRING + policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY) + ERROR_MESSAGE +
-                    "unable to fetch exceptions" + ENDING_QUOTES, e);
+            logger.error("unable to fetch exceptions", e);
         }
         Status status;
         int issueFoundCounter = 0;
