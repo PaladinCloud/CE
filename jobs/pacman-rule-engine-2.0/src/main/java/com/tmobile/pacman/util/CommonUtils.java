@@ -584,7 +584,7 @@ public class CommonUtils {
  		JsonElement jsonelement = new JsonParser().parse(json);
  		JsonObject jobject = jsonelement.getAsJsonObject();
  		if (!jobject.isJsonNull()) {
- 			return jobject.get("policyUUID").getAsString();
+ 			return jobject.get("policyUUIDs").getAsString();
  		}
  		return null;
      }
