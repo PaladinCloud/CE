@@ -347,24 +347,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
       }
 
-
-    getFormattedDate(dateString: string, isEndDate: boolean = false): string {
-        const localDate = new Date(dateString);
-    
-        if (isEndDate) {
-            localDate.setHours(23, 59, 59);
-        } else {
-            localDate.setMinutes(localDate.getMinutes() + localDate.getTimezoneOffset());
-        }
-        localDate.setMinutes(localDate.getMinutes() + localDate.getTimezoneOffset());
-    
-        const datePipe = new DatePipe('en-US');
-    
-        const formattedDate = datePipe.transform(localDate, 'yyyy-MM-dd HH:mm:ss');
-    
-        return formattedDate+"+0000";
-    }
-
     async changeFilterTags(event) {
         let filterValues = event.filterValue;
         if(!filterValues){
@@ -582,7 +564,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             if(filterKey=='_loaddate'){
 
                 const [fromDate, toDate] = filterToBePassed[filterKey].split(" - ");
-                const dateRangeString = `${this.getFormattedDate(fromDate)} - ${this.getFormattedDate(toDate, true)}`;
+                const dateRangeString = `${this.utils.getFormattedDate(fromDate)} - ${this.utils.getFormattedDate(toDate, true)}`;
                 filterToBePassed[filterKey] = dateRangeString;
             }
             filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");

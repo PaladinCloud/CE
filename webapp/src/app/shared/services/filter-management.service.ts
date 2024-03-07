@@ -420,6 +420,34 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
        shouldUpdateFilters, shouldUpdateData, filterText, preApply
      };
    }
+
+   getRangeFilterOptions (filterTagsData, isRangePercentage = false) {
+     const numOfIntervals = 5;
+     let { min, max } = filterTagsData.optionRange;
+     let includeNR = min === -1;
+     const intervals = this.utils.generateIntervals(min === -1 ? 0 : min, max, numOfIntervals);
+     const filterTags = [];
+     let includeLastOption = false;
+     intervals.forEach(interval => {
+       const lb = Math.round(interval.lowerBound);
+       let up = Math.round(interval.upperBound);
+       includeLastOption = isRangePercentage && up === 100;
+       if (isRangePercentage && up === 100 && lb !== up) {
+         up--;
+       }
+       if (!(isRangePercentage && lb === 100) && up !== -1) {
+         filterTags.push({ id: `${lb}-${up}`, name: `${lb}-${up}` });
+       }
+     });
+     if (includeLastOption) {
+       filterTags.push({ id: '100-100', name: '100-100' });
+     }
+     if (includeNR) {
+       filterTags.push({ id: 'NR', name: 'NR' });
+     }
+
+     return filterTags;
+   }
  
  }
  

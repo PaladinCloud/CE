@@ -36,6 +36,7 @@ import { Subscription } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
+import { API_RESPONSE_ERROR, NO_DATA_AVAILABLE } from 'src/app/shared/constants/global';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 
@@ -180,6 +181,10 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         this.awsResources.sort((a: any, b: any) => a.count - b.count);
         const maxIndex = this.awsResources.length;
 
+        if (maxIndex == 0) {
+            this.errorMessage = NO_DATA_AVAILABLE;
+            return;
+        }
         if(maxIndex==1){
             this.treemapData = [{
                 x: this.awsResources[0].displayName || this.awsResources[0].type,
@@ -357,7 +362,8 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
                     this.massageData();
                 },
                 (error) => {
-                    this.logger.log('error', error);
+                    this.logger.log(API_RESPONSE_ERROR, error);
+                    this.errorMessage = API_RESPONSE_ERROR;                    
                 },
             );
     }

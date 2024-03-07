@@ -191,6 +191,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
+    this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){

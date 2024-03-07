@@ -512,7 +512,7 @@ export class UtilsService {
       return this.datePipe.transform(new Date(date).toUTCString(), this.utcDateFormat);
     }
 
-    generateIntervals(min, max, numOfIntervals) : {lowerBound: number, upperBound: number}[]{
+    generateIntervals(min, max, numOfIntervals, isInclusive=false) : {lowerBound: number, upperBound: number}[]{
       if (numOfIntervals <= 0) {
         return []; // No intervals to generate
       }
@@ -529,7 +529,11 @@ export class UtilsService {
         const lowerBound = min + i * intervalSize;
         const upperBound = i === numOfIntervals - 1 ? max : min + (i + 1) * intervalSize - 1;
     
-        intervals.push({ lowerBound, upperBound });
+        if (isInclusive) {
+          intervals.push({ lowerBound: lowerBound-1, upperBound: upperBound })
+        } else {
+          intervals.push({ lowerBound, upperBound });
+        }
       }
     
       return intervals;
@@ -563,4 +567,24 @@ export class UtilsService {
     getDescendingOrder (orderMap) {
       return this.getAscendingOrder(orderMap).reverse();
     }
+  
+  getFormattedDate (dateString: string, isEndDate: boolean = false, offsetToAppend="+0000"): string {
+    const localDate = new Date(dateString);
+
+    if (isEndDate) {
+      localDate.setHours(23, 59, 59);
+    } else {
+      localDate.setMinutes(localDate.getMinutes() + localDate.getTimezoneOffset());
+    }
+    localDate.setMinutes(localDate.getMinutes() + localDate.getTimezoneOffset());
+
+    const datePipe = new DatePipe('en-US');
+
+    let formattedDate = datePipe.transform(localDate, 'yyyy-MM-dd HH:mm:ss');
+    if (offsetToAppend === "z") {
+      formattedDate = datePipe.transform(localDate, 'yyyy-MM-ddTHH:mm:ss');
+    }
+
+    return formattedDate + offsetToAppend;
+  }
 }

@@ -20,6 +20,18 @@ import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
 import { IColumnNamesMap, IColumnWidthsMap } from 'src/app/shared/table/interfaces/table-props.interface';
 
+enum TABLE_COLUMN_NAMES {
+  ACCOUNT_NAME = 'Account Name',
+  ACCOUNT_ID = 'Account ID',
+  ASSETS = 'Assets',
+  VIOLATIONS = 'Violations',
+  STATUS = 'Status',
+  CREATED_BY = 'Created By',
+  CREATED_DATE = 'Created Date',
+  ACTIONS = 'Actions',
+  SOURCE = 'Source'
+}
+
 @Component({
   selector: 'app-account-management',
   templateUrl: './account-management.component.html',
@@ -55,8 +67,8 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   tableData = [];
   headerColName;
   direction;
-  columnNamesMap: IColumnNamesMap = {source: 'Source'};
-  columnWidths: IColumnWidthsMap = {"Account Name": 1.5, "Account ID": 1.5, "Assets": 0.5, "Violations": 0.5, "Status": 0.5, "Created By": 1};
+  columnNamesMap: IColumnNamesMap = { source: TABLE_COLUMN_NAMES.SOURCE };
+  columnWidths: IColumnWidthsMap = { [TABLE_COLUMN_NAMES.ACCOUNT_NAME]: 1.5, [TABLE_COLUMN_NAMES.ACCOUNT_ID]: 1.5, [TABLE_COLUMN_NAMES.ASSETS]: 0.5, [TABLE_COLUMN_NAMES.VIOLATIONS]: 0.5, [TABLE_COLUMN_NAMES.STATUS]: 0.5, [TABLE_COLUMN_NAMES.CREATED_BY]: 1, [TABLE_COLUMN_NAMES.CREATED_DATE]: 1 };
   whiteListColumns;
   tableScrollTop = 0;
   centeredColumns = {
@@ -128,7 +140,8 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   selectedRowIndex;
   fieldName: any;
   sortOrder: any;
-  columnsAndFiltersToExcludeFromCasing = ['Account Name'];
+  columnsAndFiltersToExcludeFromCasing = [TABLE_COLUMN_NAMES.ACCOUNT_NAME];
+  dateCategoryList: string[] = [TABLE_COLUMN_NAMES.CREATED_DATE];
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -406,39 +419,44 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   processData(data) {
     try {
       return this.utils.processTableData(data, this.tableImageDataMap, (row, col, cellObj) => {
-        if(col.toLowerCase()=="account name"){
+        if (col === TABLE_COLUMN_NAMES.ACCOUNT_NAME) {
           cellObj = {
             ...cellObj,
-            imgSrc: this.tableImageDataMap[row["Source"]?.toLowerCase()]?this.tableImageDataMap[row["Source"].toLowerCase()].image:"noImg",
+            imgSrc: this.tableImageDataMap[row[TABLE_COLUMN_NAMES.SOURCE]?.toLowerCase()] ? this.tableImageDataMap[row[TABLE_COLUMN_NAMES.SOURCE].toLowerCase()].image : "noImg",
             isLink: true
           };
         }
-        else if (col.toLowerCase() == "actions") {
+        else if (col === TABLE_COLUMN_NAMES.ACTIONS) {
           let dropdownItems: Array<String> = ["Delete"];
-          if(row["Account ID"]==this.baseAccountId)
-               dropdownItems = [];
+          if (row[TABLE_COLUMN_NAMES.ACCOUNT_ID] === this.baseAccountId)
+            dropdownItems = [];
           cellObj = {
             ...cellObj,
             isMenuBtn: true,
             menuItems: dropdownItems,
           };
-        } 
-        else if(col.toLowerCase() == "status"){
-          let chipBackgroundColor,chipTextColor;
-          if(row["Status"].toLowerCase() === "configured"){
+        }
+        else if (col === TABLE_COLUMN_NAMES.STATUS) {
+          let chipBackgroundColor, chipTextColor;
+          if (row[TABLE_COLUMN_NAMES.STATUS].toLowerCase() === "configured") {
             chipBackgroundColor = "#E6F5EC";
             chipTextColor = "#00923f";
-          }else{
+          } else {
             chipBackgroundColor = "#F2F3F5";
             chipTextColor = "#73777D";
           }
           cellObj = {
             ...cellObj,
-            chipList: row[col].toLowerCase() === "configured"?["Online"]:["Offline"],
+            chipList: row[col].toLowerCase() === "configured" ? ["Online"] : ["Offline"],
             text: row[col].toLowerCase(),
             isChip: true,
             chipBackgroundColor: chipBackgroundColor,
             chipTextColor: chipTextColor
+          };
+        } else if (col === TABLE_COLUMN_NAMES.CREATED_DATE) {
+          cellObj = {
+            ...cellObj,
+            isDate: true
           };
         }
         return cellObj;
@@ -643,7 +661,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
           this.filterTypeLabels = map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
           this.filterTypeLabels.sort();
-          [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, []);
+          [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, [TABLE_COLUMN_NAMES.SOURCE]);
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
@@ -677,8 +695,7 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
       this.storeState();
   
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
+      this.errorHandling.handleJavascriptError(error);
     }
   }
 
@@ -703,11 +720,15 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
   }
 
   getFilterPayloadForDataAPI(){
-    const filterToBePassed = {...this.filterText};
+    const filterToBePassed = { ...this.filterText };
     Object.keys(filterToBePassed).forEach(filterKey => {
       filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-
-      if(this.columnNamesMap[filterKey]?.toLowerCase()=="assets" || this.columnNamesMap[filterKey]?.toLowerCase()=="violations"){
+      
+      if (this.dateCategoryList.includes(this.columnNamesMap[filterKey])) {
+        const [fromDate, toDate] = filterToBePassed[filterKey][0].split(" - ");        
+        const dateRange = [this.utils.getFormattedDate(fromDate, false, "z") , this.utils.getFormattedDate(toDate, true, "z")];
+        filterToBePassed[filterKey] = dateRange;
+      }else if(this.columnNamesMap[filterKey]===TABLE_COLUMN_NAMES.ASSETS || this.columnNamesMap[filterKey]===TABLE_COLUMN_NAMES.VIOLATIONS){
         filterToBePassed[filterKey] = filterToBePassed[filterKey].map(filterVal => {
           const [min, max] = filterVal.split("-");
           return {min: parseFloat(min), max: parseFloat(max)};
@@ -718,16 +739,19 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
     return filterToBePassed;
   }
 
-  async changeFilterTags(event) {
-    let filterValues = event.filterValue;
+  async changeFilterTags (event) {
+    const filterValues = event.filterValue;
+    const filterKeyDisplayValue = event.filterKeyDisplayValue;
     if(!filterValues){
       return;
     }
     this.currentFilterType =  find(this.filterTypeOptions, {
-      optionName: event.filterKeyDisplayValue,
+      optionName: filterKeyDisplayValue,
     });
 
-    this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    if (!this.dateCategoryList.includes(filterKeyDisplayValue)) {
+      this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+    }
     this.getUpdatedUrl();
     this.storeState();
     this.updateComponent();

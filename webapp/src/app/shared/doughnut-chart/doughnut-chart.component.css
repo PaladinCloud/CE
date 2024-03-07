@@ -37,6 +37,7 @@
 }
 
 .legend-text {
+    text-transform: capitalize;
     height: 20px;
     font-family: var(--text-medium-font-family);
     font-style: var(--text-font-style);
