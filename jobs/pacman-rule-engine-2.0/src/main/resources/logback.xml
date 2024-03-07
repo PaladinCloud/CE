@@ -1,13 +1,22 @@
 <configuration>
 
-<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %X{executionId} [%thread] %-5level %logger{36} - %msg%n
-			</Pattern>
-		</layout>
-	</appender>
-	
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} %X{executionId} [%thread] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="CUSTOM_ERROR_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %X{executionId} [%thread] %-5level %logger{36}.%M - error occurred in job_name:%X{jobName} error_message:"%msg"%n</Pattern>
+        </encoder>
+    </appender>
+
     <root level="ERROR">
         <appender-ref ref="STDOUT"/>
     </root>
@@ -16,5 +25,9 @@
         <!-- <appender-ref ref="ELASTIC"/> -->
         <appender-ref ref="STDOUT"/>
     </logger>
-    
-   </configuration> 
+
+    <logger name="com.tmobile.pacman.executor.PolicyExecutor" level="ERROR" additivity="false">
+        <appender-ref ref="CUSTOM_ERROR_APPENDER"/>
+    </logger>
+
+</configuration>
