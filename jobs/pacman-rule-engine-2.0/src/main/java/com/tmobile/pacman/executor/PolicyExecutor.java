@@ -93,7 +93,7 @@ public class PolicyExecutor {
             source = jsonNode.get(PacmanSdkConstants.SOURCE).asText();
             targetType = jsonNode.get(PacmanSdkConstants.TARGET_TYPE).asText();
         } catch (Exception e) {
-            logger.error("error in getting Policy arguments -> " + jsonString, e);
+            logger.error("error in getting Policy arguments -> {}", jsonString, e);
         }
     }
 
@@ -250,9 +250,7 @@ public class PolicyExecutor {
         policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, PacmanSdkConstants.ROLE_PREFIX +
                 PacmanSdkConstants.INTEGRAION_ROLE);
         if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
-            logger.error("data source is missing, will not be able to figure out the target index to post the policy " +
-                    "evaluation, please check policy configuration");
-            logger.info("exiting now..");
+            logger.error("Exiting due to error -> data source missing in configuration, unable to post policy");
             return;
         }
 
@@ -319,8 +317,7 @@ public class PolicyExecutor {
         } catch (Exception e) {
             String msg = "error occurred while executing";
             policyEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
-            logger.error(msg, e);
-            logger.info("exiting now..");
+            logger.error("Exiting due to error -> {}", msg, e);
             return;
         }
 
