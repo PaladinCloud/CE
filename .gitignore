@@ -1,3 +1,6 @@
+# intellij idea
+*.iml
+
 ### Eclipse ###
 **/.DS_Store
 .metadata
