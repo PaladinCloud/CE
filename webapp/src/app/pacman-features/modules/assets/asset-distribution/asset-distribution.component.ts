@@ -192,9 +192,14 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         this.awsResources.sort((a: any, b: any) => a.count - b.count);
         const maxIndex = this.awsResources.length;
 
-        if (maxIndex == 0) {
+        const nonZeroAssetCount = this.awsResources.filter(
+            (resource) => resource.count > 0,
+        )?.length;
+        if (maxIndex === 0 || nonZeroAssetCount === 0) {
             this.errorMessage = NO_DATA_AVAILABLE;
             return;
+        } else {
+            this.errorMessage = '';
         }
         if (maxIndex == 1) {
             this.treemapData = [
