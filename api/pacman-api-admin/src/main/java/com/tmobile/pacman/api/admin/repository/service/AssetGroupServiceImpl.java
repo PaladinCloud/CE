@@ -55,6 +55,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
 import java.time.Clock;
@@ -63,15 +64,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_ALIAS_DELETION_FAILED;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_CREATION_SUCCESS;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_DELETE_FAILED;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_DELETE_SUCCESS;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_NOT_EXITS;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_UPDATION_SUCCESS;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.DATE_FORMAT;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.ES_ALIASES_PATH;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.*;
 import static com.tmobile.pacman.api.commons.Constants.GROUP_NAME_FOR_ALL_SOURCES_ASSET_GROUP;
 
 /**
@@ -131,7 +124,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 
 	@Override
 	public Page<AssetGroupView> getAllAssetGroupDetails(PluginRequestBody requestBody, final String searchTerm, int page, int size) {
-		StringBuilder query = new StringBuilder("SELECT * FROM cf_AssetGroupDetails ag WHERE LOWER(ag.groupType) <> 'user' and isVisible='1'");
+		StringBuilder query = new StringBuilder("SELECT count(*) OVER() AS totalCount, ag.* FROM cf_AssetGroupDetails ag WHERE LOWER(ag.groupType) <> 'user' and isVisible='1'");
 		StringBuilder whereQuery = new StringBuilder("");
 		if (requestBody != null && !requestBody.getFilter().isEmpty()) {
 			for (var entry : requestBody.getFilter().entrySet()) {
@@ -154,7 +147,9 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			AssetGroupDetails assetGroupDetails = mapper.convertValue(map, AssetGroupDetails.class);
 			assetGroupDetailsList.add(assetGroupDetails);
 		});
-		return buildAssetGroupView(assetGroupDetailsList, (List<Map<String, Object>>) requestBody.getFilter().get("assetCount"), requestBody.getSortFilter());
+		int totalAssetGroups = CollectionUtils.isEmpty(assetGroupDetailsList) ? 0 : assetGroupDetailsList.get(0).getTotalCount();
+		List<AssetGroupView> allAssetGroups = buildAssetGroupView(assetGroupDetailsList, (List<Map<String, Object>>) requestBody.getFilter().get("assetCount"), requestBody.getSortFilter());
+		return new PageImpl<>(allAssetGroups, PageRequest.of(page, size > 0 ? size : assetGroupDetailsList.size()), totalAssetGroups);
 	}
 
 	public Map<String, Object> getAllAssetGroupDetailsFilterValues(PluginRequestBody requestBody) {
@@ -186,7 +181,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		return responseMap;
 	}
 
-	private Page<AssetGroupView> buildAssetGroupView(List<AssetGroupDetails> allAssetGroups, List<Map<String, Object>> filterMap, Map<String, String> sortFilter) {
+	private List<AssetGroupView> buildAssetGroupView(List<AssetGroupDetails> allAssetGroups, List<Map<String, Object>> filterMap, Map<String, String> sortFilter) {
 		List<AssetGroupView> allAssetGroupList = Lists.newArrayList();
 		List<AssetGroupDetails> assetGrpsList = allAssetGroups.stream().filter(assetGroup -> (!StringUtils.isEmpty(assetGroup.getGroupType()) &&
 				!assetGroup.getGroupType().equalsIgnoreCase("stakeholder"))).collect(Collectors.toList());
@@ -220,7 +215,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				return Long.compare(b.getAssetCount(), a.getAssetCount());
 			});
 		}
-		return new PageImpl<>(allAssetGroupList);
+		return allAssetGroupList;
 	}
 
 	private Page<AssetGroupView> buildAssetGroupView(final Page<AssetGroupDetails> allAssetGroups, Map<String, String> filterMap) {
