@@ -21,12 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringJoiner;
+import java.util.*;
 import java.sql.Date;
 
 public class RDSDBManager {
@@ -39,7 +34,7 @@ public class RDSDBManager {
     private static final String DB_URL = System.getProperty("spring.datasource.url");
     private static final String DB_USER_NAME = System.getProperty("spring.datasource.username");
     private static final String DB_PASSWORD = System.getProperty("spring.datasource.password");
-
+    private static  final Set<String> excludeStatusUpdate = new HashSet<>(Arrays.asList("checkmarx"));//Paladin  Controlling status for Checkmarx
     private RDSDBManager() {
     }
 
@@ -98,7 +93,7 @@ public class RDSDBManager {
         return 0;
     }
 
-    public static void insertNewPolicy(List<PolicyTable> policyList) {
+    public static void insertNewPolicy(String datasource,List<PolicyTable> policyList) {
         String strQuery = "INSERT INTO cf_PolicyTable (" +
                 "policyId, " +              // 1
                 "policyUUID, " +            // 2
@@ -128,10 +123,11 @@ public class RDSDBManager {
                 "policyType=VALUES(policyType), " +
                 "severity=VALUES(severity), " +
                 "category=VALUES(category), " +
-                "status=VALUES(status), " +
                 "policyFrequency=VALUES(policyFrequency), " +
                 "resolutionUrl=VALUES(resolutionUrl)";
-
+        if (!excludeStatusUpdate.contains(datasource.toLowerCase())) {
+            strQuery += ", status = VALUES(status)";
+        }
         String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
                 + "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
         String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());

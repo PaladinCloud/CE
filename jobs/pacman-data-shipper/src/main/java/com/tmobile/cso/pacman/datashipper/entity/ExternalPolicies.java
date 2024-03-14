@@ -88,7 +88,7 @@ public class ExternalPolicies {
                 policyList.add(policy);
             }
 
-            RDSDBManager.insertNewPolicy(policyList);
+            RDSDBManager.insertNewPolicy(dataSource,policyList);
         } catch (Exception e) {
             LOGGER.error("policy upload exception", e);
         }
