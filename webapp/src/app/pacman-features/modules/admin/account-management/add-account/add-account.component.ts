@@ -268,6 +268,7 @@ export class AddAccountComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         this.buildForm();
+        this.sortAccountsList();
         this.CloudformationTemplateUrl =
             CONFIGURATIONS.optional.auth.cognitoConfig.CloudformationTemplateUrl;
         const featureFlags = CONFIGURATIONS.optional.general.featureFlags;
@@ -301,6 +302,14 @@ export class AddAccountComponent implements OnInit, AfterViewInit {
     getImageName() {
         const imageName = this.selectedAccount.replace(/\s/g, '').toLowerCase();
         return imageName;
+    }
+
+    sortAccountsList() {
+        this.accountsList = this.accountsList.sort((a, b) =>
+            this.comingSoonPluginList.includes(a.name.toLowerCase())
+                ? 1
+                : a.name.localeCompare(b.name),
+        );
     }
 
     toggleSteps() {
