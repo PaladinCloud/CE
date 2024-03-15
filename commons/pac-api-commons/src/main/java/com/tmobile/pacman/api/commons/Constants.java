@@ -165,10 +165,11 @@ public interface Constants {
     String ID = "id";
     String EXEMPTED = "exempted";
     String EXEMPT = "exempt";
-    String REQUEST_EXEMPT = "request exemption";
-    String REVOKE_EXEMPT = "revoke request";
-    String DENY_EXEMPT = "deny request";
-    String GRANT_EXEMPT = "grant request";
+    String REQUEST_EXEMPTION = "Request Exemption";
+    String REQUEST_CANCELED = "Request Canceled";
+    String REQUEST_DENIED = "Request Denied";
+    String EXEMPTION_GRANTED= "Exemption Granted";
+    String EXEMPTION_REVOKED= "Exemption Revoked";
     String MODIFIED_DATE = "modifiedDate";
     String PAC_DS = "pac_ds";
     String POLICY_VIOLATION = "#violation";

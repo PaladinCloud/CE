@@ -2349,7 +2349,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                                     .withId(id)
                                     .withAssetGroup(assetGroup)
                                     .withTargetType(targetType)
-                                    .withStatus("exempt")
+                                    .withStatus(EXEMPTION_GRANTED)
                                     .withCreatedBy(issuesException.getCreatedBy())
                                     .withDocType(_type)
                                     .withTarget(target)
@@ -2512,7 +2512,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                                 .withId(id)
                                 .withAssetGroup(assetGroup)
                                 .withTargetType(targetType)
-                                .withStatus("revoked")
+                                .withStatus(EXEMPTION_REVOKED)
                                 .withCreatedBy(revokedBy)
                                 .withDocType(_type)
                                 .withTarget(target)
@@ -2953,6 +2953,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     }
                     Date today = new Date();
                     String currentDate = sdf.format(today);
+                    String auditLogStatus = null;
                     AuditTrailDTO.Builder auditTrailDTOBuilder = AuditTrailDTO.builder();
                     if (exemptionRequest.getAction().toString()
                             .equalsIgnoreCase(Actions.REVOKE_EXEMPTION_REQUEST.toString()) &&
@@ -2965,7 +2966,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         partialDocument.put(STATUS, EXEMPTION_REQUEST_REVOKED);
                         partialDocument.put(EXEMPTION_REQUEST_REVOKED_BY, exemptionRequest.getCreatedBy());
                         partialDocument.put(EXEMPTION_REQUEST_REVOKED_ON, currentDate);
-
+                        auditLogStatus = REQUEST_CANCELED;
                     } else if (exemptionRequest.getAction().toString()
                             .equalsIgnoreCase(Actions.CREATE_EXEMPTION_REQUEST.toString()) &&
                             !String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
@@ -2987,6 +2988,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(exemptionRequest.getExceptionEndDate()));
                         optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, exemptionRequest.getExceptionReason());
                         auditTrailDTOBuilder.withOptionalAuditFields(optionalAuditFields);
+                        auditLogStatus = REQUEST_EXEMPTION;
                     } else if (exemptionRequest.getAction().toString()
                             .equalsIgnoreCase(Actions.CANCEL_EXEMPTION_REQUEST.toString()) &&
                             String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
@@ -2998,6 +3000,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         partialDocument.put(STATUS, EXEMPTION_REQUEST_CANCELLED);
                         partialDocument.put(EXEMPTION_REQUEST_CANCELLED_BY, exemptionRequest.getCreatedBy());
                         partialDocument.put(EXEMPTION_REQUEST_CANCELLED_ON, currentDate);
+                        auditLogStatus = REQUEST_DENIED;
                     } else if (exemptionRequest.getAction().toString()
                             .equalsIgnoreCase(Actions.APPROVE_EXEMPTION_REQUEST.toString()) &&
                             String.valueOf(issueDetail.get(STATUS)).equalsIgnoreCase(EXEMPTION_REQUEST_RAISED)) {
@@ -3022,6 +3025,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         optionalAuditFields.put(Constants.ISSUE_EXEMPTION_EXPIRY_DATE, sdf.format(exemptionRequest.getExceptionEndDate()));
                         optionalAuditFields.put(Constants.ISSUE_EXEMPTION_REASON, exemptionRequest.getExceptionReason());
                         auditTrailDTOBuilder.withOptionalAuditFields(optionalAuditFields);
+                        auditLogStatus = EXEMPTION_GRANTED;
                     } else {
                         failedIssueIds.add(id);
                         exemptionReasons.put(id, UNABLE_TO_PERFORM_MSG +
@@ -3060,7 +3064,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     bulkRequest.append(String.format(ACTION_TEMPLATE_ISSUE, id, dataSource, routing));
                     bulkRequest.append(doc).append(NEW_LINE);
 
-                    String status = exemptionRequest.getAction().equals(ExemptionActions.CREATE_EXEMPTION_REQUEST) ? REQUEST_EXEMPT : exemptionRequest.getAction().equals(ExemptionActions.REVOKE_EXEMPTION_REQUEST) ? REVOKE_EXEMPT : exemptionRequest.getAction().equals(ExemptionActions.CANCEL_EXEMPTION_REQUEST) ? DENY_EXEMPT : GRANT_EXEMPT;
                     String createdBy = exemptionRequest.getAction().equals(ExemptionActions.APPROVE_EXEMPTION_REQUEST) ? exemptionRequest.getApprovedBy() : exemptionRequest.getCreatedBy();
                     String _type = targetType + AUDIT;
 
@@ -3068,7 +3071,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                             .withId(id)
                             .withAssetGroup(exemptionRequest.getAssetGroup())
                             .withTargetType(targetType)
-                            .withStatus(status)
+                            .withStatus(auditLogStatus)
                             .withCreatedBy(createdBy)
                             .withDocType(_type)
                             .withTarget(target)
