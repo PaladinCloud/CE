@@ -444,7 +444,6 @@ public class AnnotationPublisher {
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
             issueToClose.put(PacmanSdkConstants.MODIFIED_DATE, CommonUtils
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
-            issueToClose.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
             bulkRequestBody.append(String.format(bulkIndexRequestTemplate, _index, issue.get(PacmanSdkConstants.DOC_ID),
                      issueWithId.getKey()));
             bulkRequestBody.append( BULK_UPDATE_REQUEST_BODY_PREFIX +serializer.toJson(issueToClose)+BULK_UPDATE_REQUEST_BODY_SUFFIX );

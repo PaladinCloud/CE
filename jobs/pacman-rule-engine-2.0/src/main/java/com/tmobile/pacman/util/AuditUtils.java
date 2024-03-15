@@ -46,7 +46,7 @@ public class AuditUtils {
      * @param annotations the annotations
      * @param status the status
      */
-    public static void postAuditTrail(List<Annotation> annotations, String status) {
+    public static void postAuditTrail(List<Annotation> annotations, Map<String, Map<String, String>> existingIssues) {
         String esUrl = ESUtils.getEsUrl();
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\" } }%n";
         StringBuilder requestBody = new StringBuilder();
@@ -60,8 +60,15 @@ public class AuditUtils {
             String _index = datasource + "_" + type;
             String _type = "issue_" + type + "_audit";
 
+            /** preAuditStatus will audit history/reason for the actual status, and can be either 'Request Expired' or 'Exemption Expired' **/
+            String preAuditStatus = getPreAuditStatus(annotation, existingIssues.get(_id));
+            if(preAuditStatus != null) {
+                requestBody.append(String.format(actionTemplate, _index, _id))
+                        .append(createAuditTrail(datasource, type, preAuditStatus, _id) + "\n");
+            }
+
             requestBody.append(String.format(actionTemplate, _index, _id))
-                    .append(createAuditTrail(datasource, type, status, _id) + "\n");
+                    .append(createAuditTrail(datasource, type, annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY), _id) + "\n");
             try {
                 if (requestBody.toString().getBytes("UTF-8").length >= 5 * 1024 * 1024) { // 5
                                                                                           // MB
@@ -85,6 +92,19 @@ public class AuditUtils {
             }
         }
 
+    }
+
+    /** get the status which led to the actual audit status **/
+    private static String getPreAuditStatus(Annotation annotation, Map<String, String> originalIssue) {
+        if (PacmanSdkConstants.EXEMPTION_REQUEST_RAISED.equalsIgnoreCase(originalIssue.get(PacmanSdkConstants.STATUS_KEY))
+                && PacmanSdkConstants.EXEMPTION_REQUEST_CANCELLED.equalsIgnoreCase(annotation.get(PacmanSdkConstants.STATUS_KEY))) {
+            return PacmanSdkConstants.REQUEST_EXPIRED;
+        }
+        if (PacmanSdkConstants.STATUS_EXEMPTED.equalsIgnoreCase(originalIssue.get(ISSUE_STATUS_KEY))
+                && PacmanSdkConstants.STATUS_OPEN.equalsIgnoreCase(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
+            return PacmanSdkConstants.EXEMPTION_EXPIRED;
+        }
+        return null;
     }
 
     /**
@@ -115,6 +135,7 @@ public class AuditUtils {
         auditTrail.put(PacmanSdkConstants.STATUS_KEY, status);
         auditTrail.put(PacmanSdkConstants.AUDIT_DATE, date);
         auditTrail.put(PacmanSdkConstants._AUDIT_DATE, date.substring(0, date.indexOf('T')));
+        auditTrail.put(CREATED_BY, SYSTEM);
         String _auditTrail = null;
         try {
             _auditTrail = new ObjectMapper().writeValueAsString(auditTrail);

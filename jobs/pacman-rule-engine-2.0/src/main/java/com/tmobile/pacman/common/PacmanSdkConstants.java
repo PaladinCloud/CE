@@ -684,4 +684,13 @@ public interface PacmanSdkConstants {
     String POLICY_NAME = "policyName";
     String JOB_NAME = "rule-engine";
     String TARGET_TYPE_DISPLAY_NAME = "targetTypeDisplayName";
+    String EXEMPTION_REQUEST_RAISED = "requested";
+    String EXEMPTION_REQUEST_CANCELLED = "cancelled";
+    String EXEMPTION_RAISED_EXPIRING_ON = "exemption-raised-expiring-on";
+    String EXEMPTION_REQUEST_CANCELLED_BY = "exemption-request-cancelled-by";
+    String EXEMPTION_REQUEST_CANCELLED_ON = "exemption-request-cancelled-on";
+    String REQUEST_EXPIRED = "Request Expired";
+    String EXEMPTION_EXPIRED = "Exemption Expired";
+    String SYSTEM = "System";
+    String CREATED_BY = "createdBy";
 }
