@@ -24,6 +24,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.sql.Date;
+import java.util.stream.Collectors;
 
 public class RDSDBManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
@@ -35,10 +36,10 @@ public class RDSDBManager {
     private static final String DB_URL = System.getProperty("spring.datasource.url");
     private static final String DB_USER_NAME = System.getProperty("spring.datasource.username");
     private static final String DB_PASSWORD = System.getProperty("spring.datasource.password");
-
     private static final String conditionalUpdateStatus = "`status` = CASE " +
             "WHEN VALUES(status) IS NOT NULL AND VALUES(status) != '' THEN VALUES(status) " + // Update status if provided in the incoming values
             "ELSE `status` END";
+    private static final Map<String, Set<String>> policyIdCacheMap = new HashMap<>();//cache the policyIds when first time plugin executed for better performance than using sql
 
     private RDSDBManager() {
     }
@@ -99,7 +100,7 @@ public class RDSDBManager {
     }
 
     public static void insertNewPolicy(String datasource, List<PolicyTable> policyList) {
-        boolean hasPluginBeenExecutedBefore = !isFirstTimePluginExecuted(datasource);
+        boolean hasPluginBeenExecutedBefore = !isFirstTimePluginExecuted(datasource,policyList);
         String strQuery = "INSERT INTO cf_PolicyTable (" +
                 "policyId, " +              // 1
                 "policyUUID, " +            // 2
@@ -115,7 +116,7 @@ public class RDSDBManager {
                 "status, " +                // 12
                 "policyFrequency, " +       // 13
                 "userId, " +                // 14
-                "createdDate, " +           // 15 (Corrected from 14)
+                "createdDate, " +           // 15
                 "resolutionUrl" +           // 16
                 ") " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -152,7 +153,7 @@ public class RDSDBManager {
                     preparedStatement.setString(9, EXTERNAL_POLICY);                                                           // Type
                     preparedStatement.setString(10, policy.getSeverity());
                     preparedStatement.setString(11, policy.getCategory());
-                    preparedStatement.setString(12, hasStatus(policy.getStatus()) ? policy.getStatus() :(hasPluginBeenExecutedBefore?(isPolicyNew(policy.getPolicyId())? "DISABLED":"ENABLED"): "ENABLED"));
+                    preparedStatement.setString(12, determinePolicyStatus(policy, hasPluginBeenExecutedBefore));
                     preparedStatement.setString(13, DEFAULT_POLICY_FREQUENCY);
                     preparedStatement.setString(14, ADMIN_MAIL_ID);
                     preparedStatement.setString(15, createDate);
@@ -162,7 +163,6 @@ public class RDSDBManager {
                     LOGGER.error("sql prepared statement error", e);
                 }
             });
-
             int[] insertCounts = preparedStatement.executeBatch();
             LOGGER.info("Rows inserted: {}", insertCounts.length);
         } catch (Exception ex) {
@@ -208,7 +208,13 @@ public class RDSDBManager {
             LOGGER.error("Error Executing Query", e);
         }
     }
-    public static boolean isFirstTimePluginExecuted(String dataSource) {
+
+    public static boolean isFirstTimePluginExecuted(String dataSource, List<PolicyTable> policyList) {
+        if (!policyIdCacheMap.containsKey(dataSource)) {
+            //Using below approach for better performance than querying DB for each policy to determine if it is new
+            Set<String> policyIds = policyList.stream().map(PolicyTable::getPolicyId).collect(Collectors.toSet());
+            policyIdCacheMap.put(dataSource.toLowerCase(), policyIds);
+        }
         String recordsCountQuery = "SELECT COUNT(*) AS count FROM cf_PolicyTable WHERE assetGroup = ?";
         try (Connection conn = getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(recordsCountQuery)) {
@@ -219,17 +225,22 @@ public class RDSDBManager {
         }
         return false;
     }
-    public static boolean isPolicyNew(String policyId){
-        String recordsCountQuery = "SELECT COUNT(*) AS count FROM cf_PolicyTable WHERE policyId = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(recordsCountQuery)) {
-            preparedStatement.setString(1, policyId);
-            return executeCountQuery(preparedStatement) == 0;
-        } catch (SQLException sqlException) {
-            LOGGER.error("Error executing query", sqlException);
+
+    private static String determinePolicyStatus(PolicyTable policy, boolean hasPluginBeenExecutedBefore) {
+        if (hasStatus(policy.getStatus())) { //Case 1 : When Policy has Status (Contrast) use that
+            return policy.getStatus();
         }
-        return false;
+        if (hasPluginBeenExecutedBefore) { //Case 2 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin has been executed before
+            return isPolicyNew(policy) ? "DISABLED" : "ENABLED"; //Case 2.a : If Policy is new, set status to DISABLED else ENABLED
+        }
+        return "ENABLED";   //Case 3 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin is being executed for the first time
     }
+
+    public static boolean isPolicyNew(PolicyTable policy) {
+        Set<String> policyIds = policyIdCacheMap.get(policy.getAssetgroup().toLowerCase());
+        return policyIds.stream().noneMatch(policy.getPolicyId()::equals);
+    }
+
     private static int executeCountQuery(PreparedStatement preparedStatement) throws SQLException {
         try (ResultSet rs = preparedStatement.executeQuery()) {
             if (rs.next()) {
@@ -238,6 +249,7 @@ public class RDSDBManager {
         }
         return 0;
     }
+
     private static boolean hasStatus(String policyStatus) {
         return !StringUtils.isNullOrEmpty(policyStatus);
     }
