@@ -237,7 +237,7 @@ public class RDSDBManager {
     }
 
     public static boolean isPolicyNew(PolicyTable policy) {
-        return policyIdsSet.contains(policy.getPolicyId());
+        return !policyIdsSet.contains(policy.getPolicyId());
     }
 
     private static int executeCountQuery(PreparedStatement preparedStatement) throws SQLException {
