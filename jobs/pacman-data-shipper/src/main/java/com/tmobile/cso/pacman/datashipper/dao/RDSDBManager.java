@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.dao;
 
+import com.amazonaws.util.StringUtils;
 import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,11 @@ public class RDSDBManager {
     private static final String DB_URL = System.getProperty("spring.datasource.url");
     private static final String DB_USER_NAME = System.getProperty("spring.datasource.username");
     private static final String DB_PASSWORD = System.getProperty("spring.datasource.password");
-    private static  final Set<String> excludeStatusUpdate = new HashSet<>(Arrays.asList("checkmarx"));//Paladin  Controlling status for Checkmarx
+
+    private static final String conditionalUpdateStatus = "`status` = CASE " +
+            "WHEN VALUES(status) IS NOT NULL AND VALUES(status) != '' THEN VALUES(status) " + // Update status if provided in the incoming values
+            "ELSE `status` END";
+
     private RDSDBManager() {
     }
 
@@ -93,7 +98,8 @@ public class RDSDBManager {
         return 0;
     }
 
-    public static void insertNewPolicy(String datasource,List<PolicyTable> policyList) {
+    public static void insertNewPolicy(String datasource, List<PolicyTable> policyList) {
+        boolean hasPluginBeenExecutedBefore = !isFirstTimePluginExecuted(datasource);
         String strQuery = "INSERT INTO cf_PolicyTable (" +
                 "policyId, " +              // 1
                 "policyUUID, " +            // 2
@@ -109,7 +115,7 @@ public class RDSDBManager {
                 "status, " +                // 12
                 "policyFrequency, " +       // 13
                 "userId, " +                // 14
-                "createdDate, " +           // 14
+                "createdDate, " +           // 15 (Corrected from 14)
                 "resolutionUrl" +           // 16
                 ") " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -124,10 +130,9 @@ public class RDSDBManager {
                 "severity=VALUES(severity), " +
                 "category=VALUES(category), " +
                 "policyFrequency=VALUES(policyFrequency), " +
-                "resolutionUrl=VALUES(resolutionUrl)";
-        if (!excludeStatusUpdate.contains(datasource.toLowerCase())) {
-            strQuery += ", status = VALUES(status)";
-        }
+                "resolutionUrl=VALUES(resolutionUrl), "+
+                conditionalUpdateStatus
+               ;
         String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
                 + "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
         String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
@@ -147,7 +152,7 @@ public class RDSDBManager {
                     preparedStatement.setString(9, EXTERNAL_POLICY);                                                           // Type
                     preparedStatement.setString(10, policy.getSeverity());
                     preparedStatement.setString(11, policy.getCategory());
-                    preparedStatement.setString(12, policy.getStatus());
+                    preparedStatement.setString(12, hasStatus(policy.getStatus()) ? policy.getStatus() :(hasPluginBeenExecutedBefore?(isPolicyNew(policy.getPolicyId())? "DISABLED":"ENABLED"): "ENABLED"));
                     preparedStatement.setString(13, DEFAULT_POLICY_FREQUENCY);
                     preparedStatement.setString(14, ADMIN_MAIL_ID);
                     preparedStatement.setString(15, createDate);
@@ -165,7 +170,7 @@ public class RDSDBManager {
         }
     }
 
-    public static List<String> executeStringQuery(String query) {
+       public static List<String> executeStringQuery(String query) {
         List<String> results = new ArrayList<>();
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
@@ -202,5 +207,38 @@ public class RDSDBManager {
         } catch (SQLException e) {
             LOGGER.error("Error Executing Query", e);
         }
+    }
+    public static boolean isFirstTimePluginExecuted(String dataSource) {
+        String recordsCountQuery = "SELECT COUNT(*) AS count FROM cf_PolicyTable WHERE assetGroup = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(recordsCountQuery)) {
+            preparedStatement.setString(1, dataSource);
+            return executeCountQuery(preparedStatement) == 0;
+        } catch (SQLException sqlException) {
+            LOGGER.error("Error executing query", sqlException);
+        }
+        return false;
+    }
+    public static boolean isPolicyNew(String policyId){
+        String recordsCountQuery = "SELECT COUNT(*) AS count FROM cf_PolicyTable WHERE policyId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(recordsCountQuery)) {
+            preparedStatement.setString(1, policyId);
+            return executeCountQuery(preparedStatement) == 0;
+        } catch (SQLException sqlException) {
+            LOGGER.error("Error executing query", sqlException);
+        }
+        return false;
+    }
+    private static int executeCountQuery(PreparedStatement preparedStatement) throws SQLException {
+        try (ResultSet rs = preparedStatement.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        }
+        return 0;
+    }
+    private static boolean hasStatus(String policyStatus) {
+        return !StringUtils.isNullOrEmpty(policyStatus);
     }
 }
