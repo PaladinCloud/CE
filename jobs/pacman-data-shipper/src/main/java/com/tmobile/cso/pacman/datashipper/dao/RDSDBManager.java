@@ -39,8 +39,7 @@ public class RDSDBManager {
     private static final String conditionalUpdateStatus = "`status` = CASE " +
             "WHEN VALUES(status) IS NOT NULL AND VALUES(status) != '' THEN VALUES(status) " + // Update status if provided in the incoming values
             "ELSE `status` END";
-    private static final Map<String, Set<String>> policyIdCacheMap = new HashMap<>();//cache the policyIds when first time plugin executed for better performance than using sql
-
+    private static final Set<String> policyIdsSet = new HashSet<>();
     private RDSDBManager() {
     }
 
@@ -101,6 +100,7 @@ public class RDSDBManager {
 
     public static void insertNewPolicy(String datasource, List<PolicyTable> policyList) {
         boolean hasPluginBeenExecutedBefore = !isFirstTimePluginExecuted(datasource,policyList);
+        cachePolicies(datasource); //cache existing policies for better performance optimization
         String strQuery = "INSERT INTO cf_PolicyTable (" +
                 "policyId, " +              // 1
                 "policyUUID, " +            // 2
@@ -170,7 +170,12 @@ public class RDSDBManager {
         }
     }
 
-       public static List<String> executeStringQuery(String query) {
+    private static void cachePolicies(String datasource) {
+     List<String> policyIds =   executeStringQuery("SELECT policyId FROM cf_PolicyTable WHERE assetGroup = '" + datasource + "'");
+     policyIds.stream().forEach(policyId -> policyIdsSet.add(policyId));
+    }
+
+    public static List<String> executeStringQuery(String query) {
         List<String> results = new ArrayList<>();
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
@@ -210,11 +215,6 @@ public class RDSDBManager {
     }
 
     public static boolean isFirstTimePluginExecuted(String dataSource, List<PolicyTable> policyList) {
-        if (!policyIdCacheMap.containsKey(dataSource)) {
-            //Using below approach for better performance than querying DB for each policy to determine if it is new
-            Set<String> policyIds = policyList.stream().map(PolicyTable::getPolicyId).collect(Collectors.toSet());
-            policyIdCacheMap.put(dataSource.toLowerCase(), policyIds);
-        }
         String recordsCountQuery = "SELECT COUNT(*) AS count FROM cf_PolicyTable WHERE assetGroup = ?";
         try (Connection conn = getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(recordsCountQuery)) {
@@ -231,14 +231,13 @@ public class RDSDBManager {
             return policy.getStatus();
         }
         if (hasPluginBeenExecutedBefore) { //Case 2 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin has been executed before
-            return isPolicyNew(policy) ? "DISABLED" : "ENABLED"; //Case 2.a : If Policy is new, set status to DISABLED else ENABLED
+            return isPolicyNew(policy)? "DISABLED":"";//Case 2.a : If Policy is new, set status to DISABLED .IGNORE UPDATE operation
         }
         return "ENABLED";   //Case 3 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin is being executed for the first time
     }
 
     public static boolean isPolicyNew(PolicyTable policy) {
-        Set<String> policyIds = policyIdCacheMap.get(policy.getAssetgroup().toLowerCase());
-        return policyIds.stream().noneMatch(policy.getPolicyId()::equals);
+        return policyIdsSet.contains(policy.getPolicyId());
     }
 
     private static int executeCountQuery(PreparedStatement preparedStatement) throws SQLException {
