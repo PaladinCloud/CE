@@ -131,7 +131,7 @@ public class RDSDBManager {
                 "policyFrequency=VALUES(policyFrequency), " +
                 "resolutionUrl=VALUES(resolutionUrl), "+
                 conditionalUpdateStatus
-               ;
+                ;
         String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
                 + "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
         String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
@@ -167,10 +167,14 @@ public class RDSDBManager {
             LOGGER.error("Error Executing Query", ex);
         }
     }
-
+    /**
+     * Cache policies.
+     * This method caches the existing policies for the given datasource only once first time at initial execution
+     * @param datasource the datasource
+     */
     private static void cachePolicies(String datasource) {
-     List<String> policyIds =   executeStringQuery("SELECT policyId FROM cf_PolicyTable WHERE assetGroup = '" + datasource + "'");
-     policyIds.stream().forEach(policyId -> policyIdsSet.add(policyId));
+        List<String> policyIds =   executeStringQuery("SELECT policyId FROM cf_PolicyTable WHERE assetGroup = '" + datasource + "'");
+        policyIds.stream().forEach(policyId -> policyIdsSet.add(policyId));
     }
 
     public static List<String> executeStringQuery(String query) {
@@ -239,13 +243,13 @@ public class RDSDBManager {
      * @return
      */
     private static String determinePolicyStatus(PolicyTable policy, boolean isPluginAlreadyExists) {
-        if (!StringUtils.isNullOrEmpty(policy.getStatus())) { //Case 1 : When Policy has Status (Contrast) use that
+        if (!StringUtils.isNullOrEmpty(policy.getStatus())) { //Case 1 : When Policy has Status  use that
             return policy.getStatus();
         }
-        if (isPluginAlreadyExists) { //Case 2 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin Already Exists
+        if (isPluginAlreadyExists) { //Case 2 : When Policy Status is NULL  and Plugin Already Exists
             return isPolicyNew(policy) ? "DISABLED" : "";//Case 2.a : If Policy is new, set status to "DISABLED".Else IGNORE
         }
-        return "ENABLED";   //Case 3 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin is being executed for the first time
+        return "ENABLED";   //Case 3 : When Policy Status is NULL and Plugin is being executed for the first time
     }
 
     public static boolean isPolicyNew(PolicyTable policy) {
