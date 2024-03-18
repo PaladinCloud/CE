@@ -23,8 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.sql.Date;
-import java.util.stream.Collectors;
 
 public class RDSDBManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
@@ -99,7 +97,7 @@ public class RDSDBManager {
     }
 
     public static void insertNewPolicy(String datasource, List<PolicyTable> policyList) {
-        boolean hasPluginBeenExecutedBefore = !isFirstTimePluginExecuted(datasource,policyList);
+        boolean isPluginAlreadyExists = pluginExists(datasource);
         cachePolicies(datasource); //cache existing policies for better performance optimization
         String strQuery = "INSERT INTO cf_PolicyTable (" +
                 "policyId, " +              // 1
@@ -153,7 +151,7 @@ public class RDSDBManager {
                     preparedStatement.setString(9, EXTERNAL_POLICY);                                                           // Type
                     preparedStatement.setString(10, policy.getSeverity());
                     preparedStatement.setString(11, policy.getCategory());
-                    preparedStatement.setString(12, determinePolicyStatus(policy, hasPluginBeenExecutedBefore));
+                    preparedStatement.setString(12, determinePolicyStatus(policy, isPluginAlreadyExists));
                     preparedStatement.setString(13, DEFAULT_POLICY_FREQUENCY);
                     preparedStatement.setString(14, ADMIN_MAIL_ID);
                     preparedStatement.setString(15, createDate);
@@ -214,24 +212,38 @@ public class RDSDBManager {
         }
     }
 
-    public static boolean isFirstTimePluginExecuted(String dataSource, List<PolicyTable> policyList) {
+    /**
+     * Checks if a plugin exists in the database.
+     *
+     * @param dataSource
+     * @return
+     */
+
+    public static boolean pluginExists(String dataSource) {
         String recordsCountQuery = "SELECT COUNT(*) AS count FROM cf_PolicyTable WHERE assetGroup = ?";
         try (Connection conn = getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(recordsCountQuery)) {
             preparedStatement.setString(1, dataSource);
-            return executeCountQuery(preparedStatement) == 0;
+            return executeCountQuery(preparedStatement) > 0;
         } catch (SQLException sqlException) {
             LOGGER.error("Error executing query", sqlException);
         }
         return false;
     }
 
-    private static String determinePolicyStatus(PolicyTable policy, boolean hasPluginBeenExecutedBefore) {
-        if (hasStatus(policy.getStatus())) { //Case 1 : When Policy has Status (Contrast) use that
+    /**
+     * Determines the status of the policy based on the existing status and the plugin existence.
+     *
+     * @param policy
+     * @param isPluginAlreadyExists
+     * @return
+     */
+    private static String determinePolicyStatus(PolicyTable policy, boolean isPluginAlreadyExists) {
+        if (!StringUtils.isNullOrEmpty(policy.getStatus())) { //Case 1 : When Policy has Status (Contrast) use that
             return policy.getStatus();
         }
-        if (hasPluginBeenExecutedBefore) { //Case 2 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin has been executed before
-            return isPolicyNew(policy)? "DISABLED":"";//Case 2.a : If Policy is new, set status to DISABLED .IGNORE UPDATE operation
+        if (isPluginAlreadyExists) { //Case 2 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin Already Exists
+            return isPolicyNew(policy) ? "DISABLED" : "";//Case 2.a : If Policy is new, set status to "DISABLED".Else IGNORE
         }
         return "ENABLED";   //Case 3 : When Policy Status is NULL (Checkmarx/Wiz) and Plugin is being executed for the first time
     }
@@ -249,7 +261,4 @@ public class RDSDBManager {
         return 0;
     }
 
-    private static boolean hasStatus(String policyStatus) {
-        return !StringUtils.isNullOrEmpty(policyStatus);
-    }
 }
