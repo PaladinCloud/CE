@@ -179,7 +179,13 @@ public class PolicyServiceImpl implements PolicyService {
 			PolicyExemption policyExemption = policyExemptionList.get(0);
 			String createdByName=policyExemption.getCreatedBy();
 			String[] parts=createdByName.split(",");
-			createdByName=(parts.length == 2 && parts[0].equals(parts[1]))? parts[0]:parts[0] +" "+parts[1];
+			if (parts.length > 1) {
+				if (parts[0].trim().equals(parts[1].trim())) {
+					createdByName = parts[0].trim();
+				} else {
+					createdByName = parts[0].trim() + " " + parts[1].trim();
+				}
+			}
 			policy.setDisableDesc(String.format(AdminConstants.POLICY_DISABLE_DESCRIPTION,
 					createdByName, AdminUtils.getStringDate(DATE_FORMAT,
 							addDays(policyExemption.getExpireDate(), 1))));
@@ -547,12 +553,16 @@ public class PolicyServiceImpl implements PolicyService {
 				if(policyDetails.getPolicyParams() != null && 
 						policyDetails.getPolicyParams().indexOf(AdminConstants.AUTO_FIX_KEY) >= 0) {
 					updatePolicyDetails.setAutoFixAvailable("true");
+					updatePolicyDetails.setWaitingTime(policyDetails.getWaitingTime());
+					updatePolicyDetails.setMaxEmailNotification(policyDetails.getMaxEmailNotification());
+					updatePolicyDetails.setElapsedTime(policyDetails.getElapsedTime());
 				} else {
 					updatePolicyDetails.setAutoFixAvailable("false");
+					updatePolicyDetails.setWaitingTime(24);
+					updatePolicyDetails.setMaxEmailNotification(1);
+					updatePolicyDetails.setElapsedTime(24);
 				}
 				updatePolicyDetails.setAllowList(policyDetails.getAllowList());
-				updatePolicyDetails.setWaitingTime(policyDetails.getWaitingTime());
-				updatePolicyDetails.setMaxEmailNotification(policyDetails.getMaxEmailNotification());
 				updatePolicyDetails.setTemplateName(policyDetails.getTemplateName());
 				updatePolicyDetails.setTemplateColumns(policyDetails.getTemplateColumns());
 				updatePolicyDetails.setFixType(policyDetails.getFixType());
@@ -561,7 +571,6 @@ public class PolicyServiceImpl implements PolicyService {
 				updatePolicyDetails.setFixMailSubject(policyDetails.getFixMailSubject());
 				updatePolicyDetails.setFixMessage(policyDetails.getFixMessage());
 				updatePolicyDetails.setViolationMessage(policyDetails.getViolationMessage());
-				updatePolicyDetails.setElapsedTime(policyDetails.getElapsedTime());
 				if (AdminConstants.MANAGED_POLICY_TYPE.equalsIgnoreCase(policyDetails.getPolicyType()))
 				{
 					updateCustomEventBridgeRule(updatePolicyDetails);

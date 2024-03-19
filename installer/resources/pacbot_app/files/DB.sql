@@ -3108,6 +3108,8 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Assets','assets','/admin/accounts/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Violations','violations','/admin/accounts/filters/attribute');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Created By','createdBy','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Created Date','createdTime','/admin/accounts/filters/attribute');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (18,'Source','platform','/admin/accounts/filters/attribute');
 
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (19,'admin-asset-groups') ON DUPLICATE KEY UPDATE filterName='admin-asset-groups';
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Name','displayName','/admin/asset-group/filter');
@@ -3310,3 +3312,35 @@ DELIMITER ;
 
 CALL AddColumnIfNotExists('cf_Accounts', 'updatedTime', 'TIMESTAMP');
 CALL AddColumnIfNotExists('cf_Accounts', 'updatedBy', 'VARCHAR(150)');
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_AssetGroupDetails_alter_user_length $$
+CREATE PROCEDURE alter_cf_AssetGroupDetails_alter_user_length()
+BEGIN
+    DECLARE createdUsercolumnLength INT;
+    DECLARE modifiedUsercolumnLength INT;
+
+    SELECT CHARACTER_MAXIMUM_LENGTH
+    INTO createdUsercolumnLength
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE table_name = 'cf_AssetGroupDetails'
+    AND table_schema = 'pacmandata'
+    AND column_name = 'createdUser';
+
+    IF createdUsercolumnLength = 75 THEN
+        ALTER TABLE cf_AssetGroupDetails MODIFY COLUMN createdUser VARCHAR(200);
+    END IF;
+
+    SELECT CHARACTER_MAXIMUM_LENGTH
+    INTO modifiedUsercolumnLength
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE table_name = 'cf_AssetGroupDetails'
+    AND table_schema = 'pacmandata'
+    AND column_name = 'modifiedUser';
+
+    IF modifiedUsercolumnLength = 75 THEN
+        ALTER TABLE cf_AssetGroupDetails MODIFY COLUMN modifiedUser VARCHAR(200);
+    END IF;
+END $$
+DELIMITER ;
+CALL alter_cf_AssetGroupDetails_alter_user_length();

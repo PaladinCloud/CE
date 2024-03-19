@@ -51,20 +51,29 @@ public interface PolicyTableRepository extends
 
 
     @Query(value = "select policyId,policyDisplayName,policyUUID,policyName,policyType,assetGroup,assetGroup as 'pac_ds',targetType,severity,p.category,"
-            + " p.category as 'policyCategory',autoFixEnabled as 'autofix',waitingTime, elapsedTime,"
-            + " p.status,maxEmailNotification,riskScore, t.displayName as 'targetTypeDisplayName'"
+            + " p.category as 'policyCategory',autoFixEnabled as 'autofix',"
+            + " case when autoFixEnabled = 'true' then CONVERT(maxEmailNotification, SIGNED)  else 1 end as maxEmailNotification, "
+            + " case when autoFixEnabled = 'true' then CONVERT(waitingTime, SIGNED)  else 24 end as waitingTime, "
+            + " case when autoFixEnabled = 'true' then CONVERT(elapsedTime, SIGNED)  else 24 end as elapsedTime,"
+            + " p.status,riskScore, t.displayName as 'targetTypeDisplayName' "
             + " from cf_PolicyTable p join cf_Target t on p.targetType=t.targetName  where assetgroup=:source and targettype=:targetType and enricherSource is null and policyType <> 'External';", nativeQuery = true)
     public List<Map<String, String>> findPolicyBySourceAndTargetType(final String source, final String targetType);
 
     @Query(value = "select policyId,policyDisplayName,policyUUID,policyName,policyType,assetGroup,assetGroup as 'pac_ds',targetType,severity,p.category,"
-            + " p.category as 'policyCategory',autoFixEnabled as 'autofix',waitingTime, elapsedTime, "
-            + " p.status,maxEmailNotification,riskScore, t.displayName as 'targetTypeDisplayName' "
+            + " p.category as 'policyCategory',autoFixEnabled as 'autofix',"
+            + " case when autoFixEnabled = 'true' then CONVERT(maxEmailNotification, SIGNED)  else 1 end as maxEmailNotification, "
+            + " case when autoFixEnabled = 'true' then CONVERT(waitingTime, SIGNED)  else 24 end as waitingTime, "
+            + " case when autoFixEnabled = 'true' then CONVERT(elapsedTime, SIGNED)  else 24 end as elapsedTime,"
+            + " p.status,riskScore, t.displayName as 'targetTypeDisplayName' "
             + " from cf_PolicyTable p join cf_Target t on p.targetType=t.targetName  where assetgroup=:source and targettype=:targetType and enricherSource= :enricherSource and policyType <> 'External' ;", nativeQuery = true)
     public List<Map<String, String>> findPolicyBySourceAndTargetTypeAndEnricherSource(final String source, final String targetType, final String enricherSource);
 
     @Query(value = "select policyId,policyDisplayName,policyUUID,policyName,policyType,assetGroup,assetGroup as 'pac_ds',targetType,severity,p.category,"
-            + " p.category as 'policyCategory',autoFixEnabled as 'autofix',waitingTime, elapsedTime, "
-            + " p.status,maxEmailNotification,riskScore, t.displayName as 'targetTypeDisplayName' "
+            + " p.category as 'policyCategory',autoFixEnabled as 'autofix',"
+            + " case when autoFixEnabled = 'true' then CONVERT(maxEmailNotification, SIGNED)  else 1 end as maxEmailNotification, "
+            + " case when autoFixEnabled = 'true' then CONVERT(waitingTime, SIGNED)  else 24 end as waitingTime, "
+            + " case when autoFixEnabled = 'true' then CONVERT(elapsedTime, SIGNED)  else 24 end as elapsedTime,"
+            + " p.status,riskScore, t.displayName as 'targetTypeDisplayName' "
             + " from cf_PolicyTable p join cf_Target t on p.targetType=t.targetName  where  policyType <> 'External' and policyUUID IN  :policyUUIDs  ;", nativeQuery = true)
     public List<Map<String, String>> findPolicyPolicyUUIDs(final List<String> policyUUIDs);
 
