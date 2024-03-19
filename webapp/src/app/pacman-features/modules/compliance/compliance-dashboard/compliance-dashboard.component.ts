@@ -440,7 +440,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
       }
       this.fetchedViolations = true;
       this.policyDataError = '';
-      if (dataValue.length > 0) {
+      if (dataValue.length > 0 && totalCount > 0) {
         this.policyData = {
           color: ["#D14938", "#F58F6F", "#F5B66F", "#506EA7"],
           data: dataValue,
