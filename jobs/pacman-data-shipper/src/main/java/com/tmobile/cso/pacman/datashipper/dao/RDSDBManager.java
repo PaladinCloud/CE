@@ -15,19 +15,14 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.dao;
 
+import com.amazonaws.util.StringUtils;
 import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringJoiner;
-import java.sql.Date;
+import java.util.*;
 
 public class RDSDBManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(RDSDBManager.class);
@@ -39,7 +34,10 @@ public class RDSDBManager {
     private static final String DB_URL = System.getProperty("spring.datasource.url");
     private static final String DB_USER_NAME = System.getProperty("spring.datasource.username");
     private static final String DB_PASSWORD = System.getProperty("spring.datasource.password");
-
+    private static final String conditionalUpdateStatus = "`status` = CASE " +
+            "WHEN VALUES(status) IS NOT NULL AND VALUES(status) != '' THEN VALUES(status) " + // Update status if provided in the incoming values
+            "ELSE `status` END";
+    private static final Set<String> policyIdsSet = new HashSet<>();
     private RDSDBManager() {
     }
 
@@ -98,7 +96,9 @@ public class RDSDBManager {
         return 0;
     }
 
-    public static void insertNewPolicy(List<PolicyTable> policyList) {
+    public static void insertNewPolicy(String datasource, List<PolicyTable> policyList) {
+        boolean isPluginAlreadyExists = pluginExists(datasource);
+        cachePolicies(datasource); //cache existing policies for better performance optimization
         String strQuery = "INSERT INTO cf_PolicyTable (" +
                 "policyId, " +              // 1
                 "policyUUID, " +            // 2
@@ -114,7 +114,7 @@ public class RDSDBManager {
                 "status, " +                // 12
                 "policyFrequency, " +       // 13
                 "userId, " +                // 14
-                "createdDate, " +           // 14
+                "createdDate, " +           // 15
                 "resolutionUrl" +           // 16
                 ") " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -128,10 +128,10 @@ public class RDSDBManager {
                 "policyType=VALUES(policyType), " +
                 "severity=VALUES(severity), " +
                 "category=VALUES(category), " +
-                "status=VALUES(status), " +
                 "policyFrequency=VALUES(policyFrequency), " +
-                "resolutionUrl=VALUES(resolutionUrl)";
-
+                "resolutionUrl=VALUES(resolutionUrl), "+
+                conditionalUpdateStatus
+                ;
         String policyParams = "{\"params\":[{\"encrypt\":false,\"value\":\"%s\",\"key\":\"severity\"},"
                 + "{\"encrypt\":false,\"value\":\"%s\",\"key\":\"policyCategory\"}]}";
         String createDate = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
@@ -151,7 +151,7 @@ public class RDSDBManager {
                     preparedStatement.setString(9, EXTERNAL_POLICY);                                                           // Type
                     preparedStatement.setString(10, policy.getSeverity());
                     preparedStatement.setString(11, policy.getCategory());
-                    preparedStatement.setString(12, policy.getStatus());
+                    preparedStatement.setString(12, determinePolicyStatus(policy, isPluginAlreadyExists));
                     preparedStatement.setString(13, DEFAULT_POLICY_FREQUENCY);
                     preparedStatement.setString(14, ADMIN_MAIL_ID);
                     preparedStatement.setString(15, createDate);
@@ -161,12 +161,20 @@ public class RDSDBManager {
                     LOGGER.error("sql prepared statement error", e);
                 }
             });
-
             int[] insertCounts = preparedStatement.executeBatch();
             LOGGER.info("Rows inserted: {}", insertCounts.length);
         } catch (Exception ex) {
             LOGGER.error("Error Executing Query", ex);
         }
+    }
+    /**
+     * Cache policies.
+     * This method caches the existing policies for the given datasource only once first time at initial execution
+     * @param datasource the datasource
+     */
+    private static void cachePolicies(String datasource) {
+        List<String> policyIds =   executeStringQuery("SELECT policyId FROM cf_PolicyTable WHERE assetGroup = '" + datasource + "'");
+        policyIds.stream().forEach(policyId -> policyIdsSet.add(policyId));
     }
 
     public static List<String> executeStringQuery(String query) {
@@ -207,4 +215,54 @@ public class RDSDBManager {
             LOGGER.error("Error Executing Query", e);
         }
     }
+
+    /**
+     * Checks if a plugin exists in the database.
+     *
+     * @param dataSource
+     * @return
+     */
+
+    public static boolean pluginExists(String dataSource) {
+        String recordsCountQuery = "SELECT COUNT(*) AS count FROM cf_PolicyTable WHERE assetGroup = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(recordsCountQuery)) {
+            preparedStatement.setString(1, dataSource);
+            return executeCountQuery(preparedStatement) > 0;
+        } catch (SQLException sqlException) {
+            LOGGER.error("Error executing query", sqlException);
+        }
+        return false;
+    }
+
+    /**
+     * Determines the status of the policy based on the existing status and the plugin existence.
+     *
+     * @param policy
+     * @param isPluginAlreadyExists
+     * @return
+     */
+    private static String determinePolicyStatus(PolicyTable policy, boolean isPluginAlreadyExists) {
+        if (!StringUtils.isNullOrEmpty(policy.getStatus())) { //Case 1 : When Policy has Status  use that
+            return policy.getStatus();
+        }
+        if (isPluginAlreadyExists) { //Case 2 : When Policy Status is NULL  and Plugin Already Exists
+            return isPolicyNew(policy) ? "DISABLED" : "";//Case 2.a : If Policy is new, set status to "DISABLED".Else IGNORE
+        }
+        return "ENABLED";   //Case 3 : When Policy Status is NULL and Plugin is being executed for the first time
+    }
+
+    public static boolean isPolicyNew(PolicyTable policy) {
+        return !policyIdsSet.contains(policy.getPolicyId());
+    }
+
+    private static int executeCountQuery(PreparedStatement preparedStatement) throws SQLException {
+        try (ResultSet rs = preparedStatement.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        }
+        return 0;
+    }
+
 }
