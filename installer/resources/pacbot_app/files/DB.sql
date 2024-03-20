@@ -3050,8 +3050,8 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 delete from pac_config_properties where cfkey = 'shipper.attributes.to.preserve';
  INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
   VALUES ('shipper.attributes.to.preserve','firstdiscoveredon','batch','prd','latest',NULL,NULL,NULL,NULL);
-
-
+ 
+ 
  INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
  VALUES('deployment','Deployment','Compute','redhat','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',
  concat(@eshost,':',@esport,'/redhat_deployment'),'2023-08-07','2023-08-07','Infra & Platforms','Deployment');
