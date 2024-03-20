@@ -483,7 +483,7 @@ CALL alter_cf_Accounts_table_add_createdBy_createdTime_if_not_exists();
 
 /* Insert one account */
 
-insert ignore into cf_Accounts (`accountName`,`accountId`,`assets`,`violations`,`accountStatus`,`platform`,`createdBy`,`createdTime`) values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''),concat(@CUSTOMER_NAME,''),NOW());
+insert ignore into cf_Accounts (`accountName`,`accountId`,`assets`,`violations`,`accountStatus`,`platform`,`createdBy`,`createdTime`) values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''),concat(@CUSTOMER_NAME,''),'dateTime');
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_target_table_add_display_name_if_not_exists $$
@@ -2911,8 +2911,8 @@ DELIMITER ;
 CALL alter_pac_v2_ui_options_table();
 
 update pac_v2_ui_options set optionType = "String" where filterId=13;
-update pac_v2_ui_options set optionType = "Integer" where optionName="Compliance" and filterId=13;
-update pac_v2_ui_options set optionType = "Integer" where optionName="Violations" and filterId=13;
+update pac_v2_ui_options set optionType = "Double" where optionName="Compliance" and filterId=13;
+update pac_v2_ui_options set optionType = "Long" where optionName="Violations" and filterId=13;
 
 
 update cf_Target set targetConfig='{\"key\":\"accountid,region,targetgrouparn\",\"id\":\"targetgroupname\"}' where targetName='targetgroup';
