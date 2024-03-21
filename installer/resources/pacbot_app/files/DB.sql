@@ -2746,7 +2746,7 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `categ
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('mysqlflexible','My SQL Flexible Server','Azure mysqlflexible','','azure','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_mysqlflexible/mysqlflexible'),'2019-09-05','2022-09-05','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('diagnosticsetting','Diagnostic Setting','Azure diagnosticsetting','','azure','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_diagnosticsetting/diagnosticsetting'),'2019-09-26','2022-09-26','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('vaultsrbac','Vaults with role base access control','Azure vaultsrbac','','azure','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_vaultsrbac/vaultsrbac'),'2019-11-10','2022-11-10','Infra & Platforms');
-INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('environment','Dast Assets','Running Instance','','checkmarx','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/checkmarx_environment/environment'), curdate(),curdate(),'Infra & Platforms');
+INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('environment','Dast Assets','Running Instance','Environment','checkmarx','{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}','enabled','admin@paladincloud.io',concat(@eshost,':',@esport,'/checkmarx_environment/environment'), curdate(),curdate(),'Infra & Platforms');
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('recommendation.categories','fault_tolerance, cost_optimizing, security, performance','application','prd','latest','admin@pacbot.org','09/06/2019 06:07:43','','');
 
 /* Update DisplayName  to TargetName if the value is null in Target table */
@@ -3281,7 +3281,7 @@ UPDATE cf_Target SET displayName='KMS Key' WHERE targetName in ('kms','kmskey');
 UPDATE cf_Target SET displayName='Subnet' WHERE targetName in ('subnet','subnets');
 UPDATE cf_Target SET displayName='VM' WHERE targetName in ('virtualmachine','vminstance');
 UPDATE cf_Target SET displayName = 'Environment', endpoint = concat(@eshost,':',@esport,'/checkmarx_environment') WHERE dataSourceName in ('checkmarx') AND targetName = 'environment';
-
+UPDATE cf_Target SET category = 'Environment',targetConfig = '{"key":"id","id":"id","name":"name"}',userId ='admin@paladincloud.io'  WHERE dataSourceName  ='checkmarx' AND targetName = 'environment';
 DELIMITER $$
 DROP PROCEDURE IF EXISTS AddColumnIfNotExists $$
  CREATE PROCEDURE AddColumnIfNotExists(
