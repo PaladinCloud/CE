@@ -1244,9 +1244,10 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`categor
 
 
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunction','GCP Cloud Functions','GCP cloud functions','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunction'),'2023-01-10','2023-01-10','Infra & Platforms');
-INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunctiongen1','GCP Cloud Functions Generation 1','GCP cloud functions Generation 1','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunctiongen1'),'2023-01-10','2023-01-10','Infra & Platforms');
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('launchtemplate','EC2 Launch Template','AWS EC2 Launch Template','Compute','aws','{"key":"accountid,region,launchTemplateId","id":"launchTemplateId","name":"launchTemplateName"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_launchtemplate/launchtemplate'),'2022-05-06','2022-05-06','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('gcpdisks','Managed Disks (Gcp)','GCP Disks','security','gcp','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/gcp_gcpdisks/gcpdisks'),'2022-12-5','2022-12-5','Infra & Platforms');
+
+DELETE FROM `cf_Target` WHERE targetName ='cloudfunctiongen1' AND dataSourceName = 'gcp';
 
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11501','201','ec2','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11502','201','s3','all','all');
@@ -1377,22 +1378,17 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('25e615a5-e7d3-444e-95a3-2dedaef0890e','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_apikeys','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('9b942f42-4bd0-4911-8fd3-a1661f0cbc97','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_loadbalancers','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('48df4f33-62c9-42c6-8fb0-0bc69bad3e37','e0008397-f74e-4deb-9066-10bdf11202ae','gcpdisks','all','all');
-
-
-
-INSERT IGNORE INTO cf_AssetGroupTargetDetails (`id_`, groupId, targetType, attributeName, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f00','e0008397-f74e-4deb-9066-10bdf11202ae','cloudfunction','all','all');
-INSERT IGNORE INTO cf_AssetGroupTargetDetails (`id_`, groupId, targetType, attributeName, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f01','e0008397-f74e-4deb-9066-10bdf11202ae','cloudfunctiongen1','all','all');
+INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f00','e0008397-f74e-4deb-9066-10bdf11202ae','cloudfunction','all','all');
 
 delete from `cf_AssetGroupTargetDetails` where targetType ='ecs';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policydefinitions';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policyevaluationresults';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'vaultsrbac';
+DELETE FROM `cf_AssetGroupTargetDetails` WHERE targetType = 'cloudfunctiongen1';
 
 /*Insert Domain in required table*/
 
 INSERT IGNORE INTO cf_Domain (domainName,domainDesc,config,createdDate,modifiedDate,userId) VALUES ('Infra & Platforms','Domain for Infra & Platforms','{}',{d '2018-04-09'},{d '2018-08-03'},'user123');
-
-
 
 /* Auth Related data */
 INSERT IGNORE INTO `oauth_client_details`(`client_id`,`resource_ids`,`client_secret`,`scope`,`authorized_grant_types`,`web_server_redirect_uri`,`authorities`,`access_token_validity`,`refresh_token_validity`,`additional_information`,`autoapprove`) values ('22e14922-87d7-4ee4-a470-da0bb10d45d3',NULL,'$2a$10$Is6r80wW65hKHUq6Wa8B6O3BLKqGOb5McDGbJUwVwfVvyeJBCf7ta','resource-access','implicit,authorization_code,refresh_token,password,client_credentials',NULL,'ROLE_CLIENT,ROLE_USER',NULL,NULL,NULL,'');

@@ -31,7 +31,6 @@
 	"Enable_Compute_Engine_using_instance_level_SSH_keys",
 	"Enable_Confidential_Computing_for_Compute_Instance",
 	"Enable_HTTPS_For_LoadBalancer",
-	"Enable_Https_For_Cloudfunc",
 	"Enable_Integrity_Monitoring_For_Node_Pool",
 	"Enable_Log_connections_for_Postgres_Server_DB_Instances",
 	"Enable_Log_disconnections_for_Postgres_Server_DB_Instances",
