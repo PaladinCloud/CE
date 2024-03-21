@@ -3281,7 +3281,7 @@ UPDATE cf_Target SET displayName='KMS Key' WHERE targetName in ('kms','kmskey');
 UPDATE cf_Target SET displayName='Subnet' WHERE targetName in ('subnet','subnets');
 UPDATE cf_Target SET displayName='VM' WHERE targetName in ('virtualmachine','vminstance');
 UPDATE cf_Target SET displayName = 'Environment', endpoint = concat(@eshost,':',@esport,'/checkmarx_environment') WHERE dataSourceName in ('checkmarx') AND targetName = 'environment';
-
+UPDATE cf_Target SET category = 'Environment',targetConfig = '{"key":"id","id":"id","name":"name"}',userId ='admin@paladincloud.io'  WHERE dataSourceName  ='checkmarx' AND targetName = 'environment';
 DELIMITER $$
 DROP PROCEDURE IF EXISTS AddColumnIfNotExists $$
  CREATE PROCEDURE AddColumnIfNotExists(
