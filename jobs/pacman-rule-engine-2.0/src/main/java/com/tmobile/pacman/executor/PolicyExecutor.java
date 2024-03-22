@@ -18,20 +18,6 @@
 package com.tmobile.pacman.executor;
 
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
@@ -48,18 +34,23 @@ import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
 import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
-import com.tmobile.pacman.util.AuditUtils;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
-import com.tmobile.pacman.util.NotificationUtils;
-import com.tmobile.pacman.util.PolicyExecutionUtils;
-import com.tmobile.pacman.util.ProgramExitUtils;
-
+import com.tmobile.pacman.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
 import software.amazon.awssdk.services.sns.model.PublishResponse;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
@@ -84,6 +75,8 @@ public class PolicyExecutor {
     private List<Map<String, String>> policyWiseParamsList = new ArrayList<>();
     private static final int POLICY_THREAD_POOL_SIZE = 50;
     private static final String POLICY_DONE_SNS_TOPIC_ARN = "POLICY_DONE_SNS_TOPIC_ARN";
+    private static final String YYYY_MM_DD = "yyyy-MM-dd";
+    private static final String UTC = "UTC";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -490,6 +483,8 @@ public class PolicyExecutor {
         metrics.put("totalResourcesEvalauted", evaluations.size());
         String evalDate = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
+        SimpleDateFormat sdf = new SimpleDateFormat(YYYY_MM_DD, Locale.US);
+        sdf.setTimeZone(TimeZone.getTimeZone(UTC));
         Annotation annotation = null;
         AnnotationPublisher annotationPublisher = new AnnotationPublisher();
         long exemptionCounter = 0;
@@ -506,8 +501,16 @@ public class PolicyExecutor {
         //Pre populate the existing issues
         annotationPublisher.populateExistingIssuesForType(policyParam);
 
+        /** collect previous status of issues to determine audit statuses **/
+        Map<String, Map<String, String>> originalIssueStatuses = new HashMap<>(evaluations.size());
         for (PolicyResult result : evaluations) {
             annotation = result.getAnnotation();
+            String _id = CommonUtils.getUniqueAnnotationId(annotation);
+            Map<String, String> originalIssue = annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey().get(_id);
+            Map<String, String> issueStauses = new HashMap<>(2);
+            issueStauses.put(PacmanSdkConstants.STATUS_KEY, originalIssue.get(PacmanSdkConstants.STATUS_KEY));
+            issueStauses.put(PacmanSdkConstants.ISSUE_STATUS_KEY, originalIssue.get(PacmanSdkConstants.ISSUE_STATUS_KEY));
+            originalIssueStatuses.put(_id, issueStauses);
             if (PacmanSdkConstants.STATUS_SUCCESS.equals(result.getStatus())) {
                 annotation.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, result.getDesc());
                 annotationPublisher.submitToClose(annotation);
@@ -525,6 +528,14 @@ public class PolicyExecutor {
                         annotation.put(PacmanSdkConstants.EXEMPTION_EXPIRING_ON, status.getExemptionExpiryDate());
                         annotation.put(PacmanSdkConstants.REASON_TO_EXEMPT_KEY, status.getReason());
                         annotation.put(PacmanSdkConstants.EXEMPTION_ID, status.getExceptionId());
+                    }
+
+                    /** close expired exemption request made by user **/
+                    if (originalIssue.get(PacmanSdkConstants.STATUS_KEY).equalsIgnoreCase(PacmanSdkConstants.EXEMPTION_REQUEST_RAISED)
+                            && LocalDate.now().compareTo(LocalDate.parse(originalIssue.get(PacmanSdkConstants.EXEMPTION_RAISED_EXPIRING_ON))) > 0) {
+                        annotation.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.EXEMPTION_REQUEST_CANCELLED);
+                        annotation.put(PacmanSdkConstants.EXEMPTION_REQUEST_CANCELLED_BY, PacmanSdkConstants.SYSTEM);
+                        annotation.put(PacmanSdkConstants.EXEMPTION_REQUEST_CANCELLED_ON, sdf.format(new Date()));
                     }
                 }
                 if (PacmanSdkConstants.STATUS_UNKNOWN.equals(result.getStatus())) {
@@ -571,14 +582,20 @@ public class PolicyExecutor {
         annotationPublisher.publish();
         metrics.put("total-issues-found", issueFoundCounter);
         List<Annotation> closedIssues = annotationPublisher.processClosureEx();
-        NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getBulkUploadBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
+        List<Annotation> bulkUploadAnnotations = annotationPublisher.getBulkUploadBucket();
+        NotificationUtils.triggerNotificationsForViolations(bulkUploadAnnotations, annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
         NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
 
         Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation);
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
-        AuditUtils.postAuditTrail(annotationPublisher.getBulkUploadBucket(), PacmanSdkConstants.STATUS_OPEN);
-        AuditUtils.postAuditTrail(closedIssues, PacmanSdkConstants.STATUS_CLOSE);
+        List<Annotation> allIssues = new ArrayList<>(bulkUploadAnnotations.size() + closedIssues.size());
+        allIssues.addAll(bulkUploadAnnotations);
+        allIssues.addAll(closedIssues);
+
+        /** Audit open and closed issues together. Audit status will be the actual issue status. This will set correct issue status for exempted and unknown issues in audit log **/
+        AuditUtils.postAuditTrail(allIssues, originalIssueStatuses);
+
         return metrics;
     }
 
