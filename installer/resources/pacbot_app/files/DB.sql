@@ -3344,3 +3344,5 @@ BEGIN
 END $$
 DELIMITER ;
 CALL alter_cf_AssetGroupDetails_alter_user_length();
+
+UPDATE cf_Target SET displayName='PostgreSQL' WHERE targetName in ('cloudsql_postgres','postgresql');
