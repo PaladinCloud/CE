@@ -4,7 +4,6 @@ import { AssetDashboardComponent } from './asset-dashboard/asset-dashboard.compo
 import { AssetDetailsComponent } from './asset-details/asset-details.component';
 import { AssetDistributionComponent } from './asset-distribution/asset-distribution.component';
 import { AssetListComponent } from './asset-list/asset-list.component';
-import { AwsNotificationsComponent } from './aws-notifications/aws-notifications.component';
 import { OnpremAssetsComponent } from './onprem-assets/onprem-assets.component';
 
 export const ASSETS_ROUTES = [
@@ -48,13 +47,5 @@ export const ASSETS_ROUTES = [
             title: 'Update Asset Data',
             roles: ['ROLE_ONPREM_ADMIN'],
         },
-    },
-    {
-        path: 'asset-list/:resourceType/:resourceId/aws-notifications',
-        component: AwsNotificationsComponent,
-        data: {
-            title: 'Aws Notifications List',
-        },
-        canActivate: [AuthGuardService],
     },
 ];

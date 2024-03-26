@@ -45,7 +45,6 @@ import { ButtonIconComponent } from './button-icon/button-icon.component';
 import { ButtonComponent } from './button/button.component';
 import { CanvasSidePanelComponent } from './canvas-side-panel/canvas-side-panel.component';
 import { CheckBoxBtnComponent } from './check-box-btn/check-box-btn.component';
-import { CommonPageTemplateComponent } from './common-page-template/common-page-template.component';
 import { ChipComponent } from './components/atoms/chip/chip.component';
 import { TextComponent } from './components/atoms/text/text.component';
 import { CustomButtonComponent } from './components/molecules/custom-button/custom-button.component';
@@ -179,7 +178,6 @@ import { ResultCountPipe } from './table/pipes/result-count.pipe';
         CanvasSidePanelComponent,
         CheckBoxBtnComponent,
         ChipComponent,
-        CommonPageTemplateComponent,
         ConfigHistoryDropdownComponent,
         ConfirmationBoxComponent,
         ContentSliderComponent,

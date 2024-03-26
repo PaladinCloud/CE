@@ -39,11 +39,8 @@ import { PacmanPolicyViolationsComponent } from './../../secondary-components/pa
 import { AssetListComponent } from './asset-list/asset-list.component';
 import { AttributeComponent } from './../../secondary-components/attribute/attribute.component';
 import { AccessGroupsComponent } from './../../secondary-components/access-groups/access-groups.component';
-import { HostVulnerabilitiesComponent } from './../../secondary-components/host-vulnerabilities/host-vulnerabilities.component';
-import { InstalledSoftwaresComponent } from './../../secondary-components/installed-softwares/installed-softwares.component';
 import { OnpremAssetsComponent } from './onprem-assets/onprem-assets.component';
 import { AgGridModule } from 'ag-grid-angular';
-import { AwsNotificationsComponent } from './aws-notifications/aws-notifications.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -87,10 +84,7 @@ import { MatMenuModule } from '@angular/material/menu';
         AssetListComponent,
         AttributeComponent,
         AccessGroupsComponent,
-        HostVulnerabilitiesComponent,
-        InstalledSoftwaresComponent,
         OnpremAssetsComponent,
-        AwsNotificationsComponent,
     ],
     providers: [FetchResourcesService],
 })
