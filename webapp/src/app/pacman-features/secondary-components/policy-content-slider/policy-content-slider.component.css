@@ -12,11 +12,10 @@
  * limitations under the License.
  */
 
-.policy-cont-slider-wrapper{
+.policy-cont-slider-wrapper {
     min-height: 6em;
-    
 }
-.policy-cont-slider-wrapper.wrapper-shadow{
+.policy-cont-slider-wrapper.wrapper-shadow {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
     border: solid 1px #d6e2f1;
 }

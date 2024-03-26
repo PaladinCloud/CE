@@ -1,4 +1,4 @@
-.switch-wrapper{
+.switch-wrapper {
     display: flex;
     background-color: var(--interaction-neutral-subtle-normal);
     padding: 4px;
@@ -7,7 +7,7 @@
     border: 1px solid var(--border-normal);
 }
 
-.switch-wrapper ::ng-deep .mat-button-wrapper{
+.switch-wrapper ::ng-deep .mat-button-wrapper {
     display: flex;
     gap: 6px;
     padding: 4px 0px;
@@ -15,15 +15,17 @@
     color: var(--text-medium-emphasis);
 }
 
-.isSelected{
+.isSelected {
     background-color: var(--background-white);
-    box-shadow: 0px 1px 2px 0px #1018280F, 0px 1px 3px 0px #1018281A;
+    box-shadow:
+        0px 1px 2px 0px #1018280f,
+        0px 1px 3px 0px #1018281a;
 }
 
-.isSelected img{
+.isSelected img {
     filter: invert(47%) sepia(18%) saturate(2804%) hue-rotate(186deg) brightness(80%) contrast(97%);
 }
 
-.switch-wrapper ::ng-deep .mat-button{
+.switch-wrapper ::ng-deep .mat-button {
     padding: 0px 8px !important;
 }

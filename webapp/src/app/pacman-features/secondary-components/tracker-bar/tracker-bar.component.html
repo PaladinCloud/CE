@@ -12,15 +12,40 @@
  * limitations under the License.
  -->
 
- <div class="loading_bar flex" *ngIf="barHeight">
-    <div class="total_issues_bar" [ngStyle]="{'width': 'calc(' + widthValue +  '%)'}" [class.rightBorder]="borderSet" [class.transition_block]="transit">
-        <div class="left-count-value flex " [ngClass]="{'left-count-value':!lessWidthLeft,'left-count-tooltip':lessWidthLeft,'show-now':ShowLabel ,'link-text-secondary pointer':ShowLabel}" (click)="tagValue > 0 && instructParentToNavigate('tagged')">{{tagValue}}
-            <p>{{valueType1}}</p>
+<div class="loading_bar flex" *ngIf="barHeight">
+    <div
+        class="total_issues_bar"
+        [ngStyle]="{ width: 'calc(' + widthValue + '%)' }"
+        [class.rightBorder]="borderSet"
+        [class.transition_block]="transit"
+    >
+        <div
+            class="left-count-value flex"
+            [ngClass]="{
+                'left-count-value': !lessWidthLeft,
+                'left-count-tooltip': lessWidthLeft,
+                'show-now': ShowLabel,
+                'link-text-secondary pointer': ShowLabel
+            }"
+            (click)="tagValue > 0 && instructParentToNavigate('tagged')"
+        >
+            {{ tagValue }}
+            <p>{{ valueType1 }}</p>
         </div>
     </div>
-    <div class="loading_bar_right  flex" [ngStyle]="{'width': 'calc(100% - ' + widthValue +  '%)'}">
-        <div class="right-count-value flex " [ngClass]="{'right-count-value':!lessWidthRight,'right-count-tooltip':lessWidthRight,'show-now':ShowLabel,'link-text-secondary pointer':ShowLabel}" (click)="tagValue > 0 && instructParentToNavigate('untagged')">{{untagValue}}
-            <p>{{valueType2}}</p>
+    <div class="loading_bar_right flex" [ngStyle]="{ width: 'calc(100% - ' + widthValue + '%)' }">
+        <div
+            class="right-count-value flex"
+            [ngClass]="{
+                'right-count-value': !lessWidthRight,
+                'right-count-tooltip': lessWidthRight,
+                'show-now': ShowLabel,
+                'link-text-secondary pointer': ShowLabel
+            }"
+            (click)="tagValue > 0 && instructParentToNavigate('untagged')"
+        >
+            {{ untagValue }}
+            <p>{{ valueType2 }}</p>
         </div>
     </div>
 </div>

@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -16,19 +16,16 @@
 declare module 'adal-angular' {
     export function inject(config: adal.Config): adal.AuthenticationContext;
 
-    export class adal{
-        
-    }
+    export class adal {}
 }
 
 declare var AuthenticationContext: adal.AuthenticationContextStatic;
 declare var Logging: adal.Logging;
 
 declare namespace adal {
-
     /**
-     * 
-     * 
+     *
+     *
      * @interface Config
      */
     interface Config {
@@ -36,7 +33,7 @@ declare namespace adal {
         clientId: string;
         redirectUri?: string;
         instance?: string;
-        endpoints?: any;  // If you need to send CORS api requests.
+        endpoints?: any; // If you need to send CORS api requests.
         popUp?: boolean;
         localLoginUrl?: string;
         displayCall?: (urlNavigate: string) => any;
@@ -52,8 +49,8 @@ declare namespace adal {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @interface User
      */
     interface User {
@@ -65,8 +62,8 @@ declare namespace adal {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @interface RequestInfo
      */
     interface RequestInfo {
@@ -78,8 +75,8 @@ declare namespace adal {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @interface Logging
      */
     interface Logging {
@@ -88,20 +85,20 @@ declare namespace adal {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @enum {number}
      */
     enum LoggingLevel {
         ERROR = 0,
         WARNING = 1,
         INFO = 2,
-        VERBOSE = 3
+        VERBOSE = 3,
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @interface AuthenticationContextStatic
      */
     interface AuthenticationContextStatic {
@@ -109,19 +106,18 @@ declare namespace adal {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @interface AuthenticationContext
      */
     interface AuthenticationContext {
-
         // Additional items for Angular 4
         CONSTANTS: any;
 
         REQUEST_TYPE: {
-            LOGIN: string,
-            RENEW_TOKEN: string,
-            UNKNOWN: string
+            LOGIN: string;
+            RENEW_TOKEN: string;
+            UNKNOWN: string;
         };
 
         // Methods
@@ -159,7 +155,11 @@ declare namespace adal {
          */
         getCachedUser(): User;
 
-        registerCallback(expectedState: string, resource: string, callback: (message: string, token: string) => any): void;
+        registerCallback(
+            expectedState: string,
+            resource: string,
+            callback: (message: string, token: string) => any,
+        ): void;
 
         /**
          * Acquire token from cache if not expired and available. Acquires token from iframe if expired.
@@ -228,7 +228,7 @@ declare namespace adal {
         getResourceForEndpoint(endpoint: string): string;
 
         /**
-         * Handles redirection after login operation. 
+         * Handles redirection after login operation.
          * Gets access token from url and saves token to the (local/session) storage
          * or saves error in case unsuccessful login.
          */
@@ -240,12 +240,11 @@ declare namespace adal {
         info(message: string): void;
         verbose(message: string): void;
     }
-
 }
 
 /**
- * 
- * 
+ *
+ *
  * @interface Window
  */
 interface Window {

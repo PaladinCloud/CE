@@ -19,12 +19,12 @@
     min-height: 25.83em;
 }
 
-.header-wrapper{
+.header-wrapper {
     padding: 16px;
     border-bottom: 1px solid var(--border-200);
 }
 
-#PolicyTrend{
+#PolicyTrend {
     padding: 14px 8px;
 }
 

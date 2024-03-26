@@ -11,45 +11,44 @@ import { HttpService } from 'src/app/shared/services/http-response.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
-import { ToastObservableService as SharedToastObservableService  } from 'src/app/shared/services/toast-observable.service';
+import { ToastObservableService as SharedToastObservableService } from 'src/app/shared/services/toast-observable.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { ToastNotificationComponent } from 'src/app/shared/toast-notification/toast-notification.component';
 
 import { ConfigManagementComponent } from './config-management.component';
 
 describe('ConfigManagementComponent', () => {
-  let component: ConfigManagementComponent;
-  let fixture: ComponentFixture<ConfigManagementComponent>;
+    let component: ConfigManagementComponent;
+    let fixture: ComponentFixture<ConfigManagementComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [ ConfigManagementComponent, ToastNotificationComponent ],
-      providers: [
-        CommonResponseService,
-        DataCacheService,
-        ErrorHandlingService,
-        FormService,
-        HttpService,
-        LoggerService,
-        UtilsService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        SharedToastObservableService,
-        ToastObservableService,
-        WorkflowService,
-      ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [ConfigManagementComponent, ToastNotificationComponent],
+            providers: [
+                CommonResponseService,
+                DataCacheService,
+                ErrorHandlingService,
+                FormService,
+                HttpService,
+                LoggerService,
+                UtilsService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                SharedToastObservableService,
+                ToastObservableService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ConfigManagementComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ConfigManagementComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

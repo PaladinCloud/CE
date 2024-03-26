@@ -1,32 +1,49 @@
 <div class="user-management-page-wrapper">
     <div class="page-header">
         <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
-        <app-custom-button buttonType="flat" [label]="'Add User'"
-        (click)="createEditUser(false)">
-    </app-custom-button>
+        <app-custom-button buttonType="flat" [label]="'Add User'" (click)="createEditUser(false)">
+        </app-custom-button>
     </div>
     <div class="data-table-container">
         <section>
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-table  [data]="tableData" [columnWidths]="columnWidths"
-                            [headerColName]="headerColName" [direction]="direction" (headerColNameSelected)="handleHeaderColNameSelection($event)"
-                            (actionSelected)="onSelectAction($event)" [doLocalSearch]="true"
-                            [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
-                            [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
-                            [showDownloadBtn]="false" [showFilterBtn]="true"
-                            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded"
-                            [rowClickable]="false" [tableErrorMessage]="tableErrorMessage"
+                        <app-table
+                            [data]="tableData"
+                            [columnWidths]="columnWidths"
+                            [headerColName]="headerColName"
+                            [direction]="direction"
+                            (headerColNameSelected)="handleHeaderColNameSelection($event)"
+                            (actionSelected)="onSelectAction($event)"
+                            [doLocalSearch]="true"
+                            [whiteListColumns]="whiteListColumns"
+                            (searchCalledEventEmitter)="callNewSearch($event)"
+                            [searchQuery]="searchTxt"
+                            [showSearchBar]="true"
+                            [showMoreMenu]="true"
+                            [showDownloadBtn]="false"
+                            [showFilterBtn]="true"
+                            [totalRows]="totalRows"
+                            [tableScrollTop]="tableScrollTop"
+                            [tableDataLoaded]="tableDataLoaded"
+                            [rowClickable]="false"
+                            [tableErrorMessage]="tableErrorMessage"
                             [onScrollDataLoader]="onScrollDataLoader"
                             (nextPageCalled)="nextPage($event)"
                             [hasMoreData]="hasMoreDataToLoad"
-                            (selectedFilterType)='changeFilterType($event)'
-                            (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
-                            [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
-                            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)" [showAddRemoveCol]="true">
+                            (selectedFilterType)="changeFilterType($event)"
+                            (selectedFilter)="changeFilterTags($event)"
+                            [filteredArray]="filters"
+                            [filterTypeLabels]="filterTypeLabels"
+                            [filterTagLabels]="filterTagLabels"
+                            (deleteFilters)="deleteFilters($event)"
+                            [filterTypeOptions]="filterTypeOptions"
+                            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                            [showAddRemoveCol]="true"
+                        >
                         </app-table>
-                        <div class="data-table-desc">{{dataTableDesc}}</div>
+                        <div class="data-table-desc">{{ dataTableDesc }}</div>
                     </div>
                 </li>
             </ul>
@@ -34,34 +51,65 @@
     </div>
 </div>
 
-
 <ng-template #createEditUserRef>
     <div class="dialog-body">
         <form class="form-wrapper" [formGroup]="userForm">
-                <app-input-field [parentForm]="userForm" formControlName="emailID" label="Email ID" 
-                placeholder="Enter User Email" [(value)]="emailID" [height] = "'30px'" type="email"
-                [formErrors]="userFormErrors" [isRequired]="true" [isDisabled]="action=='Edit'">
+            <app-input-field
+                [parentForm]="userForm"
+                formControlName="emailID"
+                label="Email ID"
+                placeholder="Enter User Email"
+                [(value)]="emailID"
+                [height]="'30px'"
+                type="email"
+                [formErrors]="userFormErrors"
+                [isRequired]="true"
+                [isDisabled]="action == 'Edit'"
+            >
+            </app-input-field>
+            <div class="names-wrapper flex flex-align-center gap-12" *ngIf="action != 'Edit'">
+                <app-input-field
+                    [parentForm]="userForm"
+                    formControlName="firstName"
+                    [label]="'First Name'"
+                    placeholder="Enter First Name"
+                    [(value)]="firstName"
+                    [height]="'30px'"
+                    [formErrors]="userFormErrors"
+                    [isRequired]="true"
+                >
                 </app-input-field>
-                <div class="names-wrapper flex flex-align-center gap-12" *ngIf="action!='Edit'">
-                    <app-input-field [parentForm]="userForm" formControlName="firstName" [label]="'First Name'" 
-                                    placeholder="Enter First Name" [(value)]="firstName" [height] = "'30px'"
-                                    [formErrors]="userFormErrors" [isRequired]="true">
-                    </app-input-field>
-                    <app-input-field [parentForm]="userForm" formControlName="lastName" [label]="'Last Name'" 
-                    placeholder="Enter Last Name" [(value)]="lastName" [height] = "'30px'"
-                    [formErrors]="userFormErrors" [isRequired]="true">
-                    </app-input-field>
-                </div>
+                <app-input-field
+                    [parentForm]="userForm"
+                    formControlName="lastName"
+                    [label]="'Last Name'"
+                    placeholder="Enter Last Name"
+                    [(value)]="lastName"
+                    [height]="'30px'"
+                    [formErrors]="userFormErrors"
+                    [isRequired]="true"
+                >
+                </app-input-field>
+            </div>
         </form>
-        <app-dropdown [items]="userRoles" placeholder="Role" [isChipListEnabled]="true" 
-        [nonRemovableChips]="nonRemovableChips" [selectedList]="selectedRoles" [disableOptions]=true
-        (applyClick)="onRolesChange($event)" (selected)="onRolesChange($event)"></app-dropdown>
+        <app-dropdown
+            [items]="userRoles"
+            placeholder="Role"
+            [isChipListEnabled]="true"
+            [nonRemovableChips]="nonRemovableChips"
+            [selectedList]="selectedRoles"
+            [disableOptions]="true"
+            (applyClick)="onRolesChange($event)"
+            (selected)="onRolesChange($event)"
+        ></app-dropdown>
     </div>
 </ng-template>
 
 <ng-template #actionRef>
     <div class="dialog-body">
-       <span class="dialog-body-header">{{action}} User</span>
-       <span class="dialog-body-content">Are you really sure you want to {{action.toLowerCase()}} "{{emailID}}"?</span>
+        <span class="dialog-body-header">{{ action }} User</span>
+        <span class="dialog-body-content"
+            >Are you really sure you want to {{ action.toLowerCase() }} "{{ emailID }}"?</span
+        >
     </div>
 </ng-template>

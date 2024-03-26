@@ -20,7 +20,6 @@ import { Subscription } from 'rxjs';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
-
 import { FilterManagementService } from '../../../../../shared/services/filter-management.service';
 import { WorkflowService } from '../../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
@@ -30,572 +29,601 @@ import { UploadFileService } from '../../../../services/upload-file-service';
 import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
 
 @Component({
-  selector: 'app-admin-create-job-execution-manager',
-  templateUrl: './create-job-execution-manager.component.html',
-  styleUrls: ['./create-job-execution-manager.component.css'],
-  providers: [
-    LoggerService,
-    ErrorHandlingService,
-    UploadFileService,
-    AdminService
-  ]
+    selector: 'app-admin-create-job-execution-manager',
+    templateUrl: './create-job-execution-manager.component.html',
+    styleUrls: ['./create-job-execution-manager.component.css'],
+    providers: [LoggerService, ErrorHandlingService, UploadFileService, AdminService],
 })
 export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
-  pageTitle = 'Create Job Execution Manager';
-  allJobNames = [];
-  breadcrumbArray = ['Job Execution Manager'];
-  breadcrumbLinks = ['job-execution-manager'];
-  breadcrumbPresent;
-  outerArr = [];
-  dataLoaded = false;
-  errorMessage;
-  isCreate;
-  showingArr = ['policyName', 'policyId', 'policyDesc'];
-  allColumns = [];
-  totalRows = 0;
-  currentBucket = [];
-  bucketNumber = 0;
-  firstPaginator = 1;
-  lastPaginator;
-  currentPointer = 0;
-  seekdata = false;
-  showLoader = true;
-  jobDetailsLoader = true;
-  hideContent = false;
-  contentHidden = false;
-  allMonthDays = [];
-  allEnvironments = [];
-  allJobParams = [];
-  loadingContent = '';
-  isJobCreationUpdationFailed = false;
-  isJobCreationUpdationSuccess = false;
-  jobLoaderFailure = false;
+    pageTitle = 'Create Job Execution Manager';
+    allJobNames = [];
+    breadcrumbArray = ['Job Execution Manager'];
+    breadcrumbLinks = ['job-execution-manager'];
+    breadcrumbPresent;
+    outerArr = [];
+    dataLoaded = false;
+    errorMessage;
+    isCreate;
+    showingArr = ['policyName', 'policyId', 'policyDesc'];
+    allColumns = [];
+    totalRows = 0;
+    currentBucket = [];
+    bucketNumber = 0;
+    firstPaginator = 1;
+    lastPaginator;
+    currentPointer = 0;
+    seekdata = false;
+    showLoader = true;
+    jobDetailsLoader = true;
+    hideContent = false;
+    contentHidden = false;
+    allMonthDays = [];
+    allEnvironments = [];
+    allJobParams = [];
+    loadingContent = '';
+    isJobCreationUpdationFailed = false;
+    isJobCreationUpdationSuccess = false;
+    jobLoaderFailure = false;
 
-  paginatorSize = 25;
-  isLastPage;
-  isFirstPage;
-  totalPages;
-  pageNumber = 0;
+    paginatorSize = 25;
+    isLastPage;
+    isFirstPage;
+    totalPages;
+    pageNumber = 0;
 
-  allJobParamKeys = [];
-  allEnvParamKeys = [];
-  searchTxt = '';
-  dataTableData = [];
-  initVals = [];
-  tableDataLoaded = false;
-  filters = [];
-  searchCriteria;
-  filterText = {};
-  errorValue = 0;
-  showGenericMessage = false;
-  dataTableDesc = '';
-  urlID = '';
+    allJobParamKeys = [];
+    allEnvParamKeys = [];
+    searchTxt = '';
+    dataTableData = [];
+    initVals = [];
+    tableDataLoaded = false;
+    filters = [];
+    searchCriteria;
+    filterText = {};
+    errorValue = 0;
+    showGenericMessage = false;
+    dataTableDesc = '';
+    urlID = '';
 
-  FullQueryParams;
-  queryParamsWithoutFilter;
-  urlToRedirect = '';
-  mandatory;
-  parametersInput = { jobKey: '', jobValue: '', envKey: '', envValue: '' };
-  allFrequencies = ['Daily', 'Hourly', 'Minutes', 'Monthly', 'Weekly', 'Yearly'];
-  allMonths = [
-    { text: 'January', id: 1 },
-    { text: 'February', id: 2 },
-    { text: 'March', id: 3 },
-    { text: 'April', id: 4 },
-    { text: 'May', id: 5 },
-    { text: 'June', id: 6 },
-    { text: 'July', id: 7 },
-    { text: 'August', id: 8 },
-    { text: 'September', id: 9 },
-    { text: 'October', id: 10 },
-    { text: 'November', id: 11 },
-    { text: 'December', id: 12 }
-  ];
-  isAlexaKeywordValid = -1;
-  jobJarFile;
-  currentFileUpload: File;
-  selectedFiles: FileList;
-  jobLoader = false;
-  isJobSuccess = false;
-  isJobFailed = false;
-  isJobNameValid = -1;
-  jobNames = [];
+    FullQueryParams;
+    queryParamsWithoutFilter;
+    urlToRedirect = '';
+    mandatory;
+    parametersInput = { jobKey: '', jobValue: '', envKey: '', envValue: '' };
+    allFrequencies = ['Daily', 'Hourly', 'Minutes', 'Monthly', 'Weekly', 'Yearly'];
+    allMonths = [
+        { text: 'January', id: 1 },
+        { text: 'February', id: 2 },
+        { text: 'March', id: 3 },
+        { text: 'April', id: 4 },
+        { text: 'May', id: 5 },
+        { text: 'June', id: 6 },
+        { text: 'July', id: 7 },
+        { text: 'August', id: 8 },
+        { text: 'September', id: 9 },
+        { text: 'October', id: 10 },
+        { text: 'November', id: 11 },
+        { text: 'December', id: 12 },
+    ];
+    isAlexaKeywordValid = -1;
+    jobJarFile;
+    currentFileUpload: File;
+    selectedFiles: FileList;
+    jobLoader = false;
+    isJobSuccess = false;
+    isJobFailed = false;
+    isJobNameValid = -1;
+    jobNames = [];
 
-  jobType = 'jar';
-  selectedFrequency = '';
-  jobJarFileName = '';
+    jobType = 'jar';
+    selectedFrequency = '';
+    jobJarFileName = '';
 
-  isFilterRquiredOnPage = false;
-  appliedFilters = {
-    queryParamsWithoutFilter: {}, /* Stores the query parameter ibject without filter */
-    pageLevelAppliedFilters: {} /* Stores the query parameter ibject without filter */
-  };
-  filterArray = []; /* Stores the page applied filter array */
+    isFilterRquiredOnPage = false;
+    appliedFilters = {
+        queryParamsWithoutFilter: {} /* Stores the query parameter ibject without filter */,
+        pageLevelAppliedFilters: {} /* Stores the query parameter ibject without filter */,
+    };
+    filterArray = []; /* Stores the page applied filter array */
 
-  public labels;
-  private previousUrl = '';
-  private pageLevel = 0;
-  public backButtonRequired;
-  private routeSubscription: Subscription;
-  private getKeywords: Subscription;
-  private previousUrlSubscription: Subscription;
-  private downloadSubscription: Subscription;
-  selectedMonth: any;
-  selectedMonthId: number;
-  frequencyDay: any;
-  frequencyMonth: any;
-  weekName: any;
-  jobFrequencyModeValue: any;
-  jobDesc:string = '';
-  jobName:string = '';
+    public labels;
+    private previousUrl = '';
+    private pageLevel = 0;
+    public backButtonRequired;
+    private routeSubscription: Subscription;
+    private getKeywords: Subscription;
+    private previousUrlSubscription: Subscription;
+    private downloadSubscription: Subscription;
+    selectedMonth: any;
+    selectedMonthId: number;
+    frequencyDay: any;
+    frequencyMonth: any;
+    weekName: any;
+    jobFrequencyModeValue: any;
+    jobDesc: string = '';
+    jobName: string = '';
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private utils: UtilsService,
-    private logger: LoggerService,
-    private errorHandling: ErrorHandlingService,
-    private uploadService: UploadFileService,
-    private filterManagementService: FilterManagementService,
-    private workflowService: WorkflowService,
-    private routerUtilityService: RouterUtilityService,
-    private adminService: AdminService
-  ) {
-    /* Check route parameter */
-    this.routeSubscription = this.activatedRoute.params.subscribe(params => {
-      // Fetch the required params from this object.
-    });
-    this.routerParam();
-    this.updateComponent();
-  }
-
-  ngOnInit() {
-    this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
-    if(breadcrumbInfo){
-      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
-      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
-    }
-    this.breadcrumbPresent = 'Create Job Execution Manager';
-    this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
-      this.pageLevel
-    );
-  }
-
-  nextPage() {
-    try {
-      if (!this.isLastPage) {
-        this.pageNumber++;
-        this.showLoader = true;
-        // this.getPolicyDetails();
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  prevPage() {
-    try {
-      if (!this.isFirstPage) {
-        this.pageNumber--;
-        this.showLoader = true;
-        // this.getPolicyDetails();
-      }
-
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  onSelectFrequencyDay(frequencyDay: any) {
-    this.frequencyDay = frequencyDay;
-  }
-
-  createNewJob(form: NgForm) {
-    this.hideContent = true;
-    this.jobLoader = true;
-    const newRuleModel = this.buildCreateJobModel(form.value);
-  }
-  private buildCreateJobModel(jobForm) {
-    const newJobModel = Object();
-    this.jobName = jobForm.jobName;
-    newJobModel.jobName = jobForm.jobName;
-    newJobModel.jobDesc = jobForm.jobDesc;
-    newJobModel.jobFrequency = this.buildRuleFrequencyCronJob(this.selectedFrequency);
-    newJobModel.jobType = jobForm.jobType;
-    newJobModel.jobParams = this.buildJobParams();
-    newJobModel.jobExecutable = this.jobJarFileName;
-    newJobModel.isFileChanged = true;
-
-
-    const url = environment.createJob.url;
-    const method = environment.createJob.method;
-    this.currentFileUpload = this.selectedFiles.item(0);
-    this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, newJobModel).subscribe(event => {
-      this.jobLoader = false;
-      this.isJobSuccess = true;
-    },
-      error => {
-        this.isJobFailed = true;
-        this.showGenericMessage = true;
-        this.errorValue = -1;
-        this.outerArr = [];
-        this.dataLoaded = true;
-        this.seekdata = true;
-        this.errorMessage = 'apiResponseError';
-        this.showLoader = false;
-        this.jobLoader = false;
-      });
-    // this.selectedFiles = undefined
-  }
-
-  private buildJobParams() {
-    const jobParms = Object();
-    jobParms.params = this.allJobParams;
-    jobParms.environmentVariables = this.allEnvironments;
-    return JSON.stringify(jobParms);
-  }
-
-  private getRuleRestUrl(jobForm) {
-    const jobType = jobForm.jobType;
-    if (jobType === 'Serverless') {
-      return jobForm.jobRestUrl;
-    } else {
-      return '';
-    }
-  }
-
-  private buildRuleFrequencyCronJob(selectedFrequency) {
-    const selectedFrequencyType = selectedFrequency;
-    const cronDetails = Object();
-    cronDetails.interval = selectedFrequencyType;
-    if (selectedFrequencyType === 'Yearly') {
-      cronDetails.day = this.frequencyDay;
-      cronDetails.month = this.selectedMonthId;
-    } else if (selectedFrequencyType === 'Monthly') {
-      cronDetails.duration = this.frequencyMonth;
-      cronDetails.day = this.frequencyDay;
-    } else if (selectedFrequencyType === 'Weekly') {
-      cronDetails.week = this.weekName;
-    } else {
-      cronDetails.duration = this.jobFrequencyModeValue;
+    constructor(
+        private activatedRoute: ActivatedRoute,
+        private router: Router,
+        private utils: UtilsService,
+        private logger: LoggerService,
+        private errorHandling: ErrorHandlingService,
+        private uploadService: UploadFileService,
+        private filterManagementService: FilterManagementService,
+        private workflowService: WorkflowService,
+        private routerUtilityService: RouterUtilityService,
+        private adminService: AdminService,
+    ) {
+        /* Check route parameter */
+        this.routeSubscription = this.activatedRoute.params.subscribe((params) => {
+            // Fetch the required params from this object.
+        });
+        this.routerParam();
+        this.updateComponent();
     }
 
-    return this.generateExpression(cronDetails);
-  }
+    ngOnInit() {
+        this.urlToRedirect = this.router.routerState.snapshot.url;
+        const breadcrumbInfo = this.workflowService.getDetailsFromStorage()['level0'];
 
-  private generateExpression(cronDetails) {
-
-    const getCronExpression = function (cronObjIns) {
-      if (cronObjIns === undefined || cronObjIns === null) {
-        return undefined;
-      } else {
-        const cronObjFields = ['minutes', 'hours', 'dayOfMonth', 'month', 'dayOfWeek', 'year'];
-        let cronExpression = cronObjIns.minutes;
-        for (let index = 1; index < cronObjFields.length; index++) {
-          cronExpression = cronExpression + ' ' + cronObjIns[cronObjFields[index]];
+        if (breadcrumbInfo) {
+            this.breadcrumbArray = breadcrumbInfo.map((item) => item.title);
+            this.breadcrumbLinks = breadcrumbInfo.map((item) => item.url);
         }
-        return cronExpression;
-      }
-    };
-
-    const isValid = function (cronValidity) {
-      if (cronValidity.minutes && cronValidity.hours && cronValidity.dayOfMonth && cronValidity.month && cronValidity.dayOfWeek && cronValidity.year) {
-        return true;
-      }
-      return false;
-    };
-
-    let cronObj = {};
-    if (cronDetails.interval === 'Minutes') {
-      cronObj = {
-        minutes: '0/' + cronDetails.duration,
-        hours: '*',
-        dayOfMonth: '*',
-        month: '*',
-        dayOfWeek: '?',
-        year: '*'
-      };
-    } else if (cronDetails.interval === 'Hourly') {
-      cronObj = {
-        minutes: '0',
-        hours: '0/' + cronDetails.duration,
-        dayOfMonth: '*',
-        month: '*',
-        dayOfWeek: '?',
-        year: '*'
-      };
-    } else if (cronDetails.interval === 'Daily') {
-      cronObj = {
-        minutes: '0',
-        hours: '0',
-        dayOfMonth: '1/' + cronDetails.duration,
-        month: '*',
-        dayOfWeek: '?',
-        year: '*'
-      };
-    } else if (cronDetails.interval === 'Weekly') {
-      cronObj = {
-        minutes: '0',
-        hours: '0',
-        dayOfMonth: '?',
-        month: '*',
-        dayOfWeek: cronDetails.week,
-        year: '*'
-      };
-    } else if (cronDetails.interval === 'Monthly') {
-      cronObj = {
-        minutes: '0',
-        hours: '0',
-        dayOfMonth: cronDetails.day,
-        month: '1/' + cronDetails.duration,
-        dayOfWeek: '?',
-        year: '*'
-      };
-    } else if (cronDetails.interval === 'Yearly') {
-      cronObj = {
-        minutes: '0',
-        hours: '0',
-        dayOfMonth: cronDetails.day,
-        month: cronDetails.month,
-        dayOfWeek: '?',
-        year: '*'
-      };
+        this.breadcrumbPresent = 'Create Job Execution Manager';
+        this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
     }
-    return getCronExpression(cronObj);
-  }
 
-  onJarFileChange(event) {
-    this.selectedFiles = event.target.files;
-    this.jobJarFileName = this.selectedFiles[0].name;
-    const extension = this.jobJarFileName.substring(this.jobJarFileName.lastIndexOf('.') + 1);
-    if (extension !== 'jar') {
-      this.removeJarFileName();
+    nextPage() {
+        try {
+            if (!this.isLastPage) {
+                this.pageNumber++;
+                this.showLoader = true;
+                // this.getPolicyDetails();
+            }
+        } catch (error) {
+            this.errorMessage = this.errorHandling.handleJavascriptError(error);
+            this.logger.log('error', error);
+        }
     }
-  }
 
-  removeJarFileName() {
-    this.jobJarFileName = '';
-    this.jobJarFile = '';
-  }
-
-  closeErrorMessage() {
-    this.isJobFailed = false;
-    this.hideContent = false;
-  }
-
-  openJarFileBrowser(event) {
-    const element: HTMLElement = document.getElementById('selectJarFile') as HTMLElement;
-    element.click();
-  }
-
-
-  isJobNameAvailable(jobNameKeyword) {
-    if (jobNameKeyword.trim().length < 5) {
-      this.isJobNameValid = -1;
-    } else {
-      const isKeywordExits = this.jobNames.findIndex(item => jobNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());
-      if (isKeywordExits === -1) {
-        this.isJobNameValid = 1;
-      } else {
-        this.isJobNameValid = 0;
-      }
+    prevPage() {
+        try {
+            if (!this.isFirstPage) {
+                this.pageNumber--;
+                this.showLoader = true;
+                // this.getPolicyDetails();
+            }
+        } catch (error) {
+            this.errorMessage = this.errorHandling.handleJavascriptError(error);
+            this.logger.log('error', error);
+        }
     }
-  }
 
-  addEnvironmentParameters(parametersInput: any, isEncrypted: any) {
-    if (parametersInput.envKey.trim() !== '' && parametersInput.envValue.trim() !== '') {
-      this.allEnvironments.push({ name: parametersInput.envKey.trim(), value: parametersInput.envValue.trim(), encrypt: isEncrypted.checked });
-      this.allEnvParamKeys.push(parametersInput.envKey.trim());
-      parametersInput.envKey = '';
-      parametersInput.envValue = '';
-      isEncrypted.checked = false;
+    onSelectFrequencyDay(frequencyDay: any) {
+        this.frequencyDay = frequencyDay;
     }
-  }
 
-  addJobParameters(parametersInput: any, isEncrypted: any) {
-    if (parametersInput.jobKey.trim() !== '' && parametersInput.jobValue.trim() !== '') {
-      this.allJobParams.push({ key: parametersInput.jobKey.trim(), value: parametersInput.jobValue.trim(), encrypt: isEncrypted.checked });
-      this.allJobParamKeys.push(parametersInput.jobKey.trim());
-      parametersInput.jobKey = '';
-      parametersInput.jobValue = '';
-      isEncrypted.checked = false;
+    createNewJob(form: NgForm) {
+        this.hideContent = true;
+        this.jobLoader = true;
+        const newRuleModel = this.buildCreateJobModel(form.value);
     }
-  }
+    private buildCreateJobModel(jobForm) {
+        const newJobModel = Object();
+        this.jobName = jobForm.jobName;
+        newJobModel.jobName = jobForm.jobName;
+        newJobModel.jobDesc = jobForm.jobDesc;
+        newJobModel.jobFrequency = this.buildRuleFrequencyCronJob(this.selectedFrequency);
+        newJobModel.jobType = jobForm.jobType;
+        newJobModel.jobParams = this.buildJobParams();
+        newJobModel.jobExecutable = this.jobJarFileName;
+        newJobModel.isFileChanged = true;
 
-  removeJobParameters(index: number): void {
-    this.allJobParamKeys.splice(index, 1);
-    this.allJobParams.splice(index, 1);
-  }
+        const url = environment.createJob.url;
+        const method = environment.createJob.method;
+        this.currentFileUpload = this.selectedFiles.item(0);
+        this.uploadService
+            .pushFileToStorage(url, method, this.currentFileUpload, newJobModel)
+            .subscribe(
+                (event) => {
+                    this.jobLoader = false;
+                    this.isJobSuccess = true;
+                },
+                (error) => {
+                    this.isJobFailed = true;
+                    this.showGenericMessage = true;
+                    this.errorValue = -1;
+                    this.outerArr = [];
+                    this.dataLoaded = true;
+                    this.seekdata = true;
+                    this.errorMessage = 'apiResponseError';
+                    this.showLoader = false;
+                    this.jobLoader = false;
+                },
+            );
+        // this.selectedFiles = undefined
+    }
 
-  removeEnvironmentParameters(index: number): void {
-    this.allEnvParamKeys.splice(index, 1);
-    this.allEnvironments.splice(index, 1);
-  }
+    private buildJobParams() {
+        const jobParms = Object();
+        jobParms.params = this.allJobParams;
+        jobParms.environmentVariables = this.allEnvironments;
+        return JSON.stringify(jobParms);
+    }
 
-  getAllJobNames() {
-    this.contentHidden = true;
-    this.jobLoader = false;
-    this.jobDetailsLoader = true;
-    this.loadingContent = 'loading';
-    this.isJobCreationUpdationFailed = false;
-    this.isJobCreationUpdationSuccess = false;
-    const url = environment.allJobIdList.url;
-    const method = environment.allJobIdList.method;
-    this.adminService.executeHttpAction(url, method, {}, { jobName: this.jobName }).subscribe(reponse => {
-      this.jobDetailsLoader = false;
-      this.contentHidden = false;
-      this.jobNames = reponse[0];
-    },
-      error => {
-        this.jobDetailsLoader = false;
-        this.jobLoaderFailure = true;
+    private getRuleRestUrl(jobForm) {
+        const jobType = jobForm.jobType;
+        if (jobType === 'Serverless') {
+            return jobForm.jobRestUrl;
+        } else {
+            return '';
+        }
+    }
+
+    private buildRuleFrequencyCronJob(selectedFrequency) {
+        const selectedFrequencyType = selectedFrequency;
+        const cronDetails = Object();
+        cronDetails.interval = selectedFrequencyType;
+        if (selectedFrequencyType === 'Yearly') {
+            cronDetails.day = this.frequencyDay;
+            cronDetails.month = this.selectedMonthId;
+        } else if (selectedFrequencyType === 'Monthly') {
+            cronDetails.duration = this.frequencyMonth;
+            cronDetails.day = this.frequencyDay;
+        } else if (selectedFrequencyType === 'Weekly') {
+            cronDetails.week = this.weekName;
+        } else {
+            cronDetails.duration = this.jobFrequencyModeValue;
+        }
+
+        return this.generateExpression(cronDetails);
+    }
+
+    private generateExpression(cronDetails) {
+        const getCronExpression = function (cronObjIns) {
+            if (cronObjIns === undefined || cronObjIns === null) {
+                return undefined;
+            } else {
+                const cronObjFields = [
+                    'minutes',
+                    'hours',
+                    'dayOfMonth',
+                    'month',
+                    'dayOfWeek',
+                    'year',
+                ];
+                let cronExpression = cronObjIns.minutes;
+                for (let index = 1; index < cronObjFields.length; index++) {
+                    cronExpression = cronExpression + ' ' + cronObjIns[cronObjFields[index]];
+                }
+                return cronExpression;
+            }
+        };
+
+        const isValid = function (cronValidity) {
+            if (
+                cronValidity.minutes &&
+                cronValidity.hours &&
+                cronValidity.dayOfMonth &&
+                cronValidity.month &&
+                cronValidity.dayOfWeek &&
+                cronValidity.year
+            ) {
+                return true;
+            }
+            return false;
+        };
+
+        let cronObj = {};
+        if (cronDetails.interval === 'Minutes') {
+            cronObj = {
+                minutes: '0/' + cronDetails.duration,
+                hours: '*',
+                dayOfMonth: '*',
+                month: '*',
+                dayOfWeek: '?',
+                year: '*',
+            };
+        } else if (cronDetails.interval === 'Hourly') {
+            cronObj = {
+                minutes: '0',
+                hours: '0/' + cronDetails.duration,
+                dayOfMonth: '*',
+                month: '*',
+                dayOfWeek: '?',
+                year: '*',
+            };
+        } else if (cronDetails.interval === 'Daily') {
+            cronObj = {
+                minutes: '0',
+                hours: '0',
+                dayOfMonth: '1/' + cronDetails.duration,
+                month: '*',
+                dayOfWeek: '?',
+                year: '*',
+            };
+        } else if (cronDetails.interval === 'Weekly') {
+            cronObj = {
+                minutes: '0',
+                hours: '0',
+                dayOfMonth: '?',
+                month: '*',
+                dayOfWeek: cronDetails.week,
+                year: '*',
+            };
+        } else if (cronDetails.interval === 'Monthly') {
+            cronObj = {
+                minutes: '0',
+                hours: '0',
+                dayOfMonth: cronDetails.day,
+                month: '1/' + cronDetails.duration,
+                dayOfWeek: '?',
+                year: '*',
+            };
+        } else if (cronDetails.interval === 'Yearly') {
+            cronObj = {
+                minutes: '0',
+                hours: '0',
+                dayOfMonth: cronDetails.day,
+                month: cronDetails.month,
+                dayOfWeek: '?',
+                year: '*',
+            };
+        }
+        return getCronExpression(cronObj);
+    }
+
+    onJarFileChange(event) {
+        this.selectedFiles = event.target.files;
+        this.jobJarFileName = this.selectedFiles[0].name;
+        const extension = this.jobJarFileName.substring(this.jobJarFileName.lastIndexOf('.') + 1);
+        if (extension !== 'jar') {
+            this.removeJarFileName();
+        }
+    }
+
+    removeJarFileName() {
+        this.jobJarFileName = '';
+        this.jobJarFile = '';
+    }
+
+    closeErrorMessage() {
+        this.isJobFailed = false;
+        this.hideContent = false;
+    }
+
+    openJarFileBrowser(event) {
+        const element: HTMLElement = document.getElementById('selectJarFile') as HTMLElement;
+        element.click();
+    }
+
+    isJobNameAvailable(jobNameKeyword) {
+        if (jobNameKeyword.trim().length < 5) {
+            this.isJobNameValid = -1;
+        } else {
+            const isKeywordExits = this.jobNames.findIndex(
+                (item) => jobNameKeyword.trim().toLowerCase() === item.trim().toLowerCase(),
+            );
+            if (isKeywordExits === -1) {
+                this.isJobNameValid = 1;
+            } else {
+                this.isJobNameValid = 0;
+            }
+        }
+    }
+
+    addEnvironmentParameters(parametersInput: any, isEncrypted: any) {
+        if (parametersInput.envKey.trim() !== '' && parametersInput.envValue.trim() !== '') {
+            this.allEnvironments.push({
+                name: parametersInput.envKey.trim(),
+                value: parametersInput.envValue.trim(),
+                encrypt: isEncrypted.checked,
+            });
+            this.allEnvParamKeys.push(parametersInput.envKey.trim());
+            parametersInput.envKey = '';
+            parametersInput.envValue = '';
+            isEncrypted.checked = false;
+        }
+    }
+
+    addJobParameters(parametersInput: any, isEncrypted: any) {
+        if (parametersInput.jobKey.trim() !== '' && parametersInput.jobValue.trim() !== '') {
+            this.allJobParams.push({
+                key: parametersInput.jobKey.trim(),
+                value: parametersInput.jobValue.trim(),
+                encrypt: isEncrypted.checked,
+            });
+            this.allJobParamKeys.push(parametersInput.jobKey.trim());
+            parametersInput.jobKey = '';
+            parametersInput.jobValue = '';
+            isEncrypted.checked = false;
+        }
+    }
+
+    removeJobParameters(index: number): void {
+        this.allJobParamKeys.splice(index, 1);
+        this.allJobParams.splice(index, 1);
+    }
+
+    removeEnvironmentParameters(index: number): void {
+        this.allEnvParamKeys.splice(index, 1);
+        this.allEnvironments.splice(index, 1);
+    }
+
+    getAllJobNames() {
+        this.contentHidden = true;
+        this.jobLoader = false;
+        this.jobDetailsLoader = true;
         this.loadingContent = 'loading';
-      });
-  }
-
-  onSelectFrequency(frequencyType) {
-    this.selectedFrequency = frequencyType;
-  }
-
-  onSelectFrequencyMonth(selectedMonth) {
-    const monthDays: any = [];
-    let monthId = 0;
-    for (let id = 0; id < this.allMonths.length; id++) {
-      if (this.allMonths[id].text == selectedMonth) {
-        monthId = id;
-      }
+        this.isJobCreationUpdationFailed = false;
+        this.isJobCreationUpdationSuccess = false;
+        const url = environment.allJobIdList.url;
+        const method = environment.allJobIdList.method;
+        this.adminService.executeHttpAction(url, method, {}, { jobName: this.jobName }).subscribe(
+            (reponse) => {
+                this.jobDetailsLoader = false;
+                this.contentHidden = false;
+                this.jobNames = reponse[0];
+            },
+            (error) => {
+                this.jobDetailsLoader = false;
+                this.jobLoaderFailure = true;
+                this.loadingContent = 'loading';
+            },
+        );
     }
-    this.selectedMonthId = monthId;
-    const daysCount = this.getNumberOfDays(monthId);
-    for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
-      monthDays.push({ id: dayNo, text: dayNo.toString() });
+
+    onSelectFrequency(frequencyType) {
+        this.selectedFrequency = frequencyType;
     }
-    this.allMonthDays = monthDays;
-  }
 
-
-  private getNumberOfDays = function (monthId) {
-    const year = new Date().getFullYear();
-    const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-
-    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
-  };
-
-  /*
-    * This function gets the urlparameter and queryObj
-    *based on that different apis are being hit with different queryparams
-    */
-  routerParam() {
-    try {
-
-      const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
-
-      if (currentQueryParams) {
-
-        this.appliedFilters.queryParamsWithoutFilter = JSON.parse(JSON.stringify(currentQueryParams));
-        delete this.appliedFilters.queryParamsWithoutFilter['filter'];
-
-        this.appliedFilters.pageLevelAppliedFilters = this.utils.processFilterObj(currentQueryParams);
-
-        this.filterArray = this.filterManagementService.getFilterArray(this.appliedFilters.pageLevelAppliedFilters);
-      }
-    } catch (error) {
-      this.errorMessage = 'jsError';
-      this.logger.log('error', error);
+    onSelectFrequencyMonth(selectedMonth) {
+        const monthDays: any = [];
+        let monthId = 0;
+        for (let id = 0; id < this.allMonths.length; id++) {
+            if (this.allMonths[id].text == selectedMonth) {
+                monthId = id;
+            }
+        }
+        this.selectedMonthId = monthId;
+        const daysCount = this.getNumberOfDays(monthId);
+        for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
+            monthDays.push({ id: dayNo, text: dayNo.toString() });
+        }
+        this.allMonthDays = monthDays;
     }
-  }
 
-  updateUrlWithNewFilters(filterArr) {
-    this.appliedFilters.pageLevelAppliedFilters = this.utils.arrayToObject(
-      this.filterArray,
-      'filterkey',
-      'value'
-    ); // <-- TO update the queryparam which is passed in the filter of the api
-    this.appliedFilters.pageLevelAppliedFilters = this.utils.makeFilterObj(this.appliedFilters.pageLevelAppliedFilters);
+    private getNumberOfDays = function (monthId) {
+        const year = new Date().getFullYear();
+        const isLeap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 
-    /**
-     * To change the url
-     * with the deleted filter value along with the other existing paramter(ex-->tv:true)
-     */
-
-    const updatedFilters = Object.assign(
-      this.appliedFilters.pageLevelAppliedFilters,
-      this.appliedFilters.queryParamsWithoutFilter
-    );
+        return [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
+    };
 
     /*
+     * This function gets the urlparameter and queryObj
+     *based on that different apis are being hit with different queryparams
+     */
+    routerParam() {
+        try {
+            const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(
+                this.router.routerState.snapshot.root,
+            );
+
+            if (currentQueryParams) {
+                this.appliedFilters.queryParamsWithoutFilter = JSON.parse(
+                    JSON.stringify(currentQueryParams),
+                );
+                delete this.appliedFilters.queryParamsWithoutFilter['filter'];
+
+                this.appliedFilters.pageLevelAppliedFilters =
+                    this.utils.processFilterObj(currentQueryParams);
+
+                this.filterArray = this.filterManagementService.getFilterArray(
+                    this.appliedFilters.pageLevelAppliedFilters,
+                );
+            }
+        } catch (error) {
+            this.errorMessage = 'jsError';
+            this.logger.log('error', error);
+        }
+    }
+
+    updateUrlWithNewFilters(filterArr) {
+        this.appliedFilters.pageLevelAppliedFilters = this.utils.arrayToObject(
+            this.filterArray,
+            'filterkey',
+            'value',
+        ); // <-- TO update the queryparam which is passed in the filter of the api
+        this.appliedFilters.pageLevelAppliedFilters = this.utils.makeFilterObj(
+            this.appliedFilters.pageLevelAppliedFilters,
+        );
+
+        /**
+         * To change the url
+         * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+         */
+
+        const updatedFilters = Object.assign(
+            this.appliedFilters.pageLevelAppliedFilters,
+            this.appliedFilters.queryParamsWithoutFilter,
+        );
+
+        /*
      Update url with new filters
      */
 
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: updatedFilters
-    }).then(success => {
-      this.routerParam();
-    });
-  }
+        this.router
+            .navigate([], {
+                relativeTo: this.activatedRoute,
+                queryParams: updatedFilters,
+            })
+            .then((success) => {
+                this.routerParam();
+            });
+    }
 
-  /**
-   * This function get calls the keyword service before initializing
-   * the filter array ,so that filter keynames are changed
-   */
+    /**
+     * This function get calls the keyword service before initializing
+     * the filter array ,so that filter keynames are changed
+     */
 
-  updateComponent() {
-    this.outerArr = [];
-    this.searchTxt = '';
-    this.currentBucket = [];
-    this.bucketNumber = 0;
-    this.firstPaginator = 1;
-    this.showLoader = true;
-    this.jobDetailsLoader = true;
-    this.currentPointer = 0;
-    this.dataTableData = [];
-    this.tableDataLoaded = false;
-    this.dataLoaded = false;
-    this.seekdata = false;
-    this.errorValue = 0;
-    this.showGenericMessage = false;
-    this.getAllJobNames();
-  }
+    updateComponent() {
+        this.outerArr = [];
+        this.searchTxt = '';
+        this.currentBucket = [];
+        this.bucketNumber = 0;
+        this.firstPaginator = 1;
+        this.showLoader = true;
+        this.jobDetailsLoader = true;
+        this.currentPointer = 0;
+        this.dataTableData = [];
+        this.tableDataLoaded = false;
+        this.dataLoaded = false;
+        this.seekdata = false;
+        this.errorValue = 0;
+        this.showGenericMessage = false;
+        this.getAllJobNames();
+    }
 
-  navigateBack() {
-    this.router.navigate(['../'], {
-      relativeTo: this.activatedRoute,
-      queryParamsHandling: 'merge',
-      queryParams: {
-      }
-    });
-  }
+    navigateBack() {
+        this.router.navigate(['../'], {
+            relativeTo: this.activatedRoute,
+            queryParamsHandling: 'merge',
+            queryParams: {},
+        });
+    }
 
-  goToCreatePolicy() {
-    try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
-      this.router.navigate(['../create-edit-policy'], {
-        relativeTo: this.activatedRoute,
-        queryParamsHandling: 'merge',
-        queryParams: {
+    goToCreatePolicy() {
+        try {
+            this.workflowService.addRouterSnapshotToLevel(
+                this.router.routerState.snapshot.root,
+                0,
+                this.pageTitle,
+            );
+            this.router.navigate(['../create-edit-policy'], {
+                relativeTo: this.activatedRoute,
+                queryParamsHandling: 'merge',
+                queryParams: {},
+            });
+        } catch (error) {
+            this.errorMessage = this.errorHandling.handleJavascriptError(error);
+            this.logger.log('error', error);
         }
-      });
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
     }
-  }
 
-  ngOnDestroy() {
-    try {
-      if (this.routeSubscription) {
-        this.routeSubscription.unsubscribe();
-      }
-      if (this.previousUrlSubscription) {
-        this.previousUrlSubscription.unsubscribe();
-      }
-    } catch (error) {
-      this.logger.log('error', '--- Error while unsubscribing ---');
+    ngOnDestroy() {
+        try {
+            if (this.routeSubscription) {
+                this.routeSubscription.unsubscribe();
+            }
+            if (this.previousUrlSubscription) {
+                this.previousUrlSubscription.unsubscribe();
+            }
+        } catch (error) {
+            this.logger.log('error', '--- Error while unsubscribing ---');
+        }
     }
-  }
 }

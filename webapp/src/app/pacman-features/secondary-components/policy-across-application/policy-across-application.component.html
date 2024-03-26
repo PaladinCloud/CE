@@ -12,48 +12,79 @@
  * limitations under the License.
  -->
 
- <div class="vulnerability-across-app-outer-wrapper relative">
-<section class="appblock" *ngIf = "showAsset">
-  <div class="sub-head">
-      <app-title-burger-head [subHeadTitle] = "'Distribution across application'"></app-title-burger-head>
-  </div>
-  <div class="relative vul-across-app-wrapper">
-      <div class=' flex-col relative vul-across-app-inner-wrapper' *ngIf='dataComing && !showLoader'>
-          <div class="search-wrapper">
-              <app-search-bar (searchQuery)='getappSearch($event)' [placeHolderText]="placeHolderTextasset"></app-search-bar>
-          </div>
-          <div class="vul-app-wrapper">
-              <app-list-table [tableData]="apiAppData"
-                              [tableHeaderData]="tableHeaderData"
-                              [orderByProperty]="{ property: 'Totalcount', direction: -1 }"
-                              [searchText]="returnedSearchapp" (error)="getErrorValues($event)" (navigatePage)="navigatePage($event)"></app-list-table>
-          </div>
-      </div>
-    </div>
-</section>
-<section  class = "envblock"  *ngIf = "showEnv">
-    <div class="sub-head">
-        <app-title-burger-head [subHeadTitle] = "'Distribution across environments'"></app-title-burger-head>
-    </div>
-    <div class="relative vul-across-app-wrapper">
-        <div class=' flex-col relative vul-across-app-inner-wrapper' *ngIf='dataComing && !showLoader'>
-            <div class="search-wrapper">
-                <app-search-bar (searchQuery)='getenvSearch($event)' [placeHolderText]="placeHolderTextenv"></app-search-bar>
-            </div>
-            <div class="vul-app-wrapper">
-                <app-list-table [tableData]="apiEnvData"
-                                [tableHeaderData]="tableHeaderData"
-                                [orderByConfig]="{propertyKey: 'AppDetails', countKey: 'count', direction: 'desc'}"
-                                [searchText]="returnedSearchenv" (error)="getErrorValues($event)" (navigatePage)="navigatePageEnv($event)"></app-list-table>
+<div class="vulnerability-across-app-outer-wrapper relative">
+    <section class="appblock" *ngIf="showAsset">
+        <div class="sub-head">
+            <app-title-burger-head
+                [subHeadTitle]="'Distribution across application'"
+            ></app-title-burger-head>
+        </div>
+        <div class="relative vul-across-app-wrapper">
+            <div
+                class="flex-col relative vul-across-app-inner-wrapper"
+                *ngIf="dataComing && !showLoader"
+            >
+                <div class="search-wrapper">
+                    <app-search-bar
+                        (searchQuery)="getappSearch($event)"
+                        [placeHolderText]="placeHolderTextasset"
+                    ></app-search-bar>
+                </div>
+                <div class="vul-app-wrapper">
+                    <app-list-table
+                        [tableData]="apiAppData"
+                        [tableHeaderData]="tableHeaderData"
+                        [orderByProperty]="{ property: 'Totalcount', direction: -1 }"
+                        [searchText]="returnedSearchapp"
+                        (error)="getErrorValues($event)"
+                        (navigatePage)="navigatePage($event)"
+                    ></app-list-table>
+                </div>
             </div>
         </div>
-    </div>
-</section>
- 
-  <article class='center error_handling' *ngIf="!dataComing">
+    </section>
+    <section class="envblock" *ngIf="showEnv">
+        <div class="sub-head">
+            <app-title-burger-head
+                [subHeadTitle]="'Distribution across environments'"
+            ></app-title-burger-head>
+        </div>
+        <div class="relative vul-across-app-wrapper">
+            <div
+                class="flex-col relative vul-across-app-inner-wrapper"
+                *ngIf="dataComing && !showLoader"
+            >
+                <div class="search-wrapper">
+                    <app-search-bar
+                        (searchQuery)="getenvSearch($event)"
+                        [placeHolderText]="placeHolderTextenv"
+                    ></app-search-bar>
+                </div>
+                <div class="vul-app-wrapper">
+                    <app-list-table
+                        [tableData]="apiEnvData"
+                        [tableHeaderData]="tableHeaderData"
+                        [orderByConfig]="{
+                            propertyKey: 'AppDetails',
+                            countKey: 'count',
+                            direction: 'desc'
+                        }"
+                        [searchText]="returnedSearchenv"
+                        (error)="getErrorValues($event)"
+                        (navigatePage)="navigatePageEnv($event)"
+                    ></app-list-table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <article class="center error_handling" *ngIf="!dataComing">
         <div class="error_msg">
-            <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+            <app-error-message
+                *ngIf="seekdata == true"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
         </div>
     </article>
-    <div *ngIf='showLoader' class="loader"></div>
+    <div *ngIf="showLoader" class="loader"></div>
 </div>

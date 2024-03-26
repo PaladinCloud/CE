@@ -1,157 +1,250 @@
 <div class="alert-banner" *ngIf="!status">
-    <img  style="height: 16px;width: 16px;" src="../../../../../assets/icons/alert.svg">
-    <span class="banner-text body-2 medium-emphasis" title="{{disableDescription}}">{{disableDescription}}</span>
+    <img style="height: 16px; width: 16px" src="../../../../../assets/icons/alert.svg" />
+    <span class="banner-text body-2 medium-emphasis" title="{{ disableDescription }}">{{
+        disableDescription
+    }}</span>
 </div>
 <div class="page-layout create-edit-policy" [class.has-banner]="!status">
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
-            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <app-breadcrumb
+            *ngIf="breadcrumbLinks.length > 0"
+            [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray"
+            [breadcrumbPresent]="breadcrumbPresent"
+        ></app-breadcrumb>
     </div>
-    <div class="header" style="padding-bottom: 24px;">
-        <h6>{{policyDisplayName}}</h6>
+    <div class="header" style="padding-bottom: 24px">
+        <h6>{{ policyDisplayName }}</h6>
         <div class="button-wrapper">
-          <button class="button disable-btn"
-          (click)="disablePolicy()" *ngIf="status">Disable Policy</button>
-          <button class="button enable-btn"
-          (click)="enablePolicy()" *ngIf="!status">Enable Policy</button>
+            <button class="button disable-btn" (click)="disablePolicy()" *ngIf="status">
+                Disable Policy
+            </button>
+            <button class="button enable-btn" (click)="enablePolicy()" *ngIf="!status">
+                Enable Policy
+            </button>
         </div>
-  </div>
+    </div>
     <div class="right-wrapper">
-            <div class="details-wrapper">
-                <div class="details-header flex flex-around">
-                    <div class="details-header-text">
-                        Policy Details
-                    </div>
-                    <div class="button-wrapper">
-                        <button class="button submit-btn" [disabled]="isUpdateDisabled()"
-                        [class.disabled-button]="isUpdateDisabled()" 
-                        (click)="onSubmit()">Save</button>
-                        <!-- <button class="button cancel-btn" 
+        <div class="details-wrapper">
+            <div class="details-header flex flex-around">
+                <div class="details-header-text">Policy Details</div>
+                <div class="button-wrapper">
+                    <button
+                        class="button submit-btn"
+                        [disabled]="isUpdateDisabled()"
+                        [class.disabled-button]="isUpdateDisabled()"
+                        (click)="onSubmit()"
+                    >
+                        Save
+                    </button>
+                    <!-- <button class="button cancel-btn" 
                             (click)="onReset()" [disabled]="!enableUpdate" [class.disabled-button]="!enableUpdate">Cancel</button> -->
+                </div>
+            </div>
+            <div class="details-content-wrapper">
+                <div class="description-wrapper">
+                    <span class="desc-header">Description</span>
+                    <span class="desc">{{ description }}</span>
+                </div>
+                <a class="resolution-wrapper" target="_blank" href="{{ resolutionUrl }}">
+                    <span class="resolution-link">More info</span>
+                    <img
+                        style="height: 14px; width: 12px"
+                        src="../../../../../assets/icons/right-arrow-icon.svg"
+                    />
+                </a>
+                <div class="description-wrapper">
+                    <span class="desc-header">Asset Type</span>
+                    <span class="desc">{{ selectedAssetType }}</span>
+                </div>
+                <div class="dropdown-wrapper">
+                    <div class="dropdown">
+                        <app-dropdown
+                            [class.isDisabled]="selectedAssetGroup == 'redhat'"
+                            [required]="isRequired"
+                            [optionImage]="true"
+                            [items]="policySeverities"
+                            placeholder="Severity"
+                            [selectedItem]="selectedSeverity"
+                            name="severity"
+                            (selected)="onSelectSeverity($event)"
+                        >
+                        </app-dropdown>
+                    </div>
+                    <div class="dropdown">
+                        <app-dropdown
+                            [class.isDisabled]="selectedAssetGroup == 'redhat'"
+                            [required]="isRequired"
+                            [optionImage]="true"
+                            [items]="policyCategories"
+                            placeholder="Category"
+                            [selectedItem]="selectedCategory"
+                            name="category"
+                            (selected)="onSelectCategory($event)"
+                        >
+                        </app-dropdown>
                     </div>
                 </div>
-                <div class="details-content-wrapper">
-                    <div class="description-wrapper">
-                        <span class="desc-header">Description</span>
-                        <span class="desc">{{description}}</span>
-                    </div>
-                    <a class="resolution-wrapper" target="_blank" href="{{resolutionUrl}}">
-                        <span class="resolution-link">More info</span>
-                        <img  style="height: 14px;width: 12px;" src="../../../../../assets/icons/right-arrow-icon.svg">
-                    </a>    
-                    <div class="description-wrapper">
-                        <span class="desc-header">Asset Type</span>
-                        <span class="desc">{{selectedAssetType}}</span>
-                    </div>
-                    <div class="dropdown-wrapper">
-                        <div class="dropdown">
-                            <app-dropdown [class.isDisabled]="selectedAssetGroup == 'redhat'" [required]="isRequired" [optionImage]="true"
-                                [items]="policySeverities" placeholder="Severity"
-                                [selectedItem]="selectedSeverity" name="severity"
-                                (selected)="onSelectSeverity($event)">
-                            </app-dropdown>
-                        </div>
-                        <div class="dropdown">
-                            <app-dropdown [class.isDisabled]="selectedAssetGroup == 'redhat'" [required]="isRequired" [optionImage]="true"
-                                [items]="policyCategories" placeholder="Category"
-                                [selectedItem]="selectedCategory" name="category"
-                                (selected)="onSelectCategory($event)">
-                            </app-dropdown>
-                        </div>
-                    </div>
-                    <form #policyForm="ngForm" class="form-wrapper">
-                        <div class="attributes-wrapper" *ngIf="hasEditableParams>0">
-                            <div class="divide-content">
-                                <span class="subtitle-2">Policy Parameters</span>
-                                 <div class="parameters-wrapper">
-                                    <div class="parameter-wrapper" *ngFor="let param of paramsList;let i=index" [class.hide]="!param.isEdit">
-                                            <div class="input-wrapper" [class.isDisabled]="selectedAssetGroup == 'redhat'">
-                                                <mat-form-field appearance="outline">
-                                                    <mat-label>{{param.displayName}}</mat-label>
-                                                    <input autocomplete="off" matInput [name]="param.key" [required]="param.isMandatory"
-                                                        (ngModelChange)="onValueChange($event)"  [(ngModel)]="param.value">
-                                                </mat-form-field>
-                                                <div class="info-img">
-                                                    <img src="../../../assets/icons/info-circle.svg" [matTooltip]="param.description" matTooltipPosition="right">
-                                                </div>
-                                            </div>
+                <form #policyForm="ngForm" class="form-wrapper">
+                    <div class="attributes-wrapper" *ngIf="hasEditableParams > 0">
+                        <div class="divide-content">
+                            <span class="subtitle-2">Policy Parameters</span>
+                            <div class="parameters-wrapper">
+                                <div
+                                    class="parameter-wrapper"
+                                    *ngFor="let param of paramsList; let i = index"
+                                    [class.hide]="!param.isEdit"
+                                >
+                                    <div
+                                        class="input-wrapper"
+                                        [class.isDisabled]="selectedAssetGroup == 'redhat'"
+                                    >
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>{{ param.displayName }}</mat-label>
+                                            <input
+                                                autocomplete="off"
+                                                matInput
+                                                [name]="param.key"
+                                                [required]="param.isMandatory"
+                                                (ngModelChange)="onValueChange($event)"
+                                                [(ngModel)]="param.value"
+                                            />
+                                        </mat-form-field>
+                                        <div class="info-img">
+                                            <img
+                                                src="../../../assets/icons/info-circle.svg"
+                                                [matTooltip]="param.description"
+                                                matTooltipPosition="right"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="attributes-wrapper" *ngIf="isAutofixAvailable">
+                        <div class="divide-content">
+                            <div class="header">
+                                <span class="subtitle-2">Autofix</span>
+                                <div class="status-wrapper">
+                                    <span class="body-1">Enabled</span>
+                                    <mat-slide-toggle
+                                        [disabled]="selectedAssetGroup == 'redhat' || !status"
+                                        [checked]="isAutofixEnabled"
+                                        (change)="toggleAutofix($event)"
+                                    ></mat-slide-toggle>
+                                </div>
                             </div>
-                            <div class="attributes-wrapper" *ngIf="isAutofixAvailable">
-                                <div class="divide-content">
-                                    <div class="header">
-                                        <span class="subtitle-2">Autofix</span>
-                                        <div class="status-wrapper">
-                                          <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle [disabled]="selectedAssetGroup == 'redhat' || !status" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
-                                        </div>
-                                     </div>
-                                  <div class="autofix-wrapper">
-                                    <app-dropdown [items]="accountList" placeholder="Accounts" [isChipListEnabled]="true" [class.isDisabled]="!status || !isAutofixEnabled"
-                                    [selectedList]="selectedAccounts" (selected)="onAccountsChange($event)"></app-dropdown>
-                                    <div class="header">
-                                        <span class="subtitle-2">Warning Notification</span>
-                                        <div class="status-wrapper">
-                                          <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle  [disabled]="!isAutofixEnabled || !status" [checked]="warningNotification" (change)="toggleWarningNotification($event)"></mat-slide-toggle>
-                                        </div>
-                                      </div>
-                                     <div class="notifications-wrapper">
-                                            <div class="parameters-wrapper">
-                                                 <form class="parameters-wrapper" [formGroup]="notificationsForm">
-                                                    <div class="parameter-wrapper">
-                                                        <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled || !status">
-                                                            <app-input-field [parentForm]="notificationsForm" formControlName="waitingTime" [label]="'Duration'" 
-                                                            placeholder="Enter only digits" [(value)]="waitingTime" [shouldApplyNumericDirective]="true" 
-                                                            [formErrors]="notificationFormErrors" [description]="waitingTimeTooltipText" [isRequired]="true" 
-                                                            (ngModelChange)="onValueChange($event)"></app-input-field>
-                                                        </div>
-                                                        </div>
-                                                        <div class="parameter-wrapper">
-                                                        <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification || !status">
-                                                            <app-input-field [parentForm]="notificationsForm" formControlName="maxEmailNotification" [label]="'Count'" 
-                                                            placeholder="Enter only digits" [(value)]="maxEmailNotification" [shouldApplyNumericDirective]="true"
-                                                            [description]="countTooltipText"  [formErrors]="notificationFormErrors" [isRequired]="true" 
-                                                            (ngModelChange)="onValueChange($event)"></app-input-field>
-                                                        </div>
-                                                    </div>
-                                                 </form>
-                                              </div>
-                                        </div>
+                            <div class="autofix-wrapper">
+                                <app-dropdown
+                                    [items]="accountList"
+                                    placeholder="Accounts"
+                                    [isChipListEnabled]="true"
+                                    [class.isDisabled]="!status || !isAutofixEnabled"
+                                    [selectedList]="selectedAccounts"
+                                    (selected)="onAccountsChange($event)"
+                                ></app-dropdown>
+                                <div class="header">
+                                    <span class="subtitle-2">Warning Notification</span>
+                                    <div class="status-wrapper">
+                                        <span class="body-1">Enabled</span>
+                                        <mat-slide-toggle
+                                            [disabled]="!isAutofixEnabled || !status"
+                                            [checked]="warningNotification"
+                                            (change)="toggleWarningNotification($event)"
+                                        ></mat-slide-toggle>
+                                    </div>
+                                </div>
+                                <div class="notifications-wrapper">
+                                    <div class="parameters-wrapper">
+                                        <form
+                                            class="parameters-wrapper"
+                                            [formGroup]="notificationsForm"
+                                        >
+                                            <div class="parameter-wrapper">
+                                                <div
+                                                    class="input-wrapper"
+                                                    [class.isDisabled]="
+                                                        !isAutofixEnabled || !status
+                                                    "
+                                                >
+                                                    <app-input-field
+                                                        [parentForm]="notificationsForm"
+                                                        formControlName="waitingTime"
+                                                        [label]="'Duration'"
+                                                        placeholder="Enter only digits"
+                                                        [(value)]="waitingTime"
+                                                        [shouldApplyNumericDirective]="true"
+                                                        [formErrors]="notificationFormErrors"
+                                                        [description]="waitingTimeTooltipText"
+                                                        [isRequired]="true"
+                                                        (ngModelChange)="onValueChange($event)"
+                                                    ></app-input-field>
+                                                </div>
+                                            </div>
+                                            <div class="parameter-wrapper">
+                                                <div
+                                                    class="input-wrapper"
+                                                    [class.isDisabled]="
+                                                        !isAutofixEnabled ||
+                                                        !warningNotification ||
+                                                        !status
+                                                    "
+                                                >
+                                                    <app-input-field
+                                                        [parentForm]="notificationsForm"
+                                                        formControlName="maxEmailNotification"
+                                                        [label]="'Count'"
+                                                        placeholder="Enter only digits"
+                                                        [(value)]="maxEmailNotification"
+                                                        [shouldApplyNumericDirective]="true"
+                                                        [description]="countTooltipText"
+                                                        [formErrors]="notificationFormErrors"
+                                                        [isRequired]="true"
+                                                        (ngModelChange)="onValueChange($event)"
+                                                    ></app-input-field>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
+                </form>
             </div>
-            <div class="details-footer">
-            </div>
+            <div class="details-footer"></div>
         </div>
+    </div>
+
+    <ng-template #disablePolicyRef>
+        <form [formGroup]="disablePolicyForm" class="form-wrapper">
+            <div class="disable-policy mat-body-wrapper flex flex-col gap-20">
+                <div class="reason-wrapper flex flex-col gap-8">
+                    <app-input-field
+                        [parentForm]="disablePolicyForm"
+                        formControlName="reason"
+                        label="Reason"
+                        placeholder="Enter valid Reason"
+                        [(value)]="reason"
+                        [formErrors]="disablePolicyFormErrors"
+                        [isRequired]="true"
+                        type="textarea"
+                        height="56px"
+                        (ngModelChange)="onValueChange($event)"
+                    >
+                    </app-input-field>
+                </div>
+                <div class="date-wrapper flex flex-col gap-8">
+                    <span class="expiry-header">Expiry Date</span>
+                    <app-date-dropdown
+                        [date]="expiryDate"
+                        [minDate]="currentDate"
+                        [dataForm]="'user'"
+                        (dataSent)="getDateData($event)"
+                    ></app-date-dropdown>
+                </div>
+            </div>
+        </form>
+    </ng-template>
 </div>
-
-
-<ng-template #disablePolicyRef>
-    <form [formGroup]="disablePolicyForm" class="form-wrapper">
-        <div class="disable-policy mat-body-wrapper flex flex-col gap-20">
-            <div class="reason-wrapper flex flex-col gap-8">
-                <app-input-field 
-                            [parentForm]="disablePolicyForm"
-                            formControlName="reason"
-                            label='Reason'
-                            placeholder="Enter valid Reason"
-                            [(value)]="reason"
-                            [formErrors]="disablePolicyFormErrors" 
-                            [isRequired]="true"
-                            type="textarea"
-                            height="56px"
-                            (ngModelChange)="onValueChange($event)">
-                </app-input-field>
-            </div>
-            <div class="date-wrapper flex flex-col gap-8">
-                <span class="expiry-header">Expiry Date</span>
-                <app-date-dropdown [date]="expiryDate" [minDate]="currentDate" [dataForm]="'user'" (dataSent)='getDateData($event)'></app-date-dropdown>
-            </div>
-        </div>
-    </form>
-</ng-template>

@@ -12,23 +12,27 @@
  * limitations under the License.
  -->
 
- <div class="recommendation-wrapper">
+<div class="recommendation-wrapper">
     <header>
-        <div class='flex container'>
-            <div class="imageIcon"><img style="height: 1.7em;" src='assets/icons/lightbulb.svg'></div>
-            <div class='sub-head-title capitalize'>Recommendation</div>
+        <div class="flex container">
+            <div class="imageIcon">
+                <img style="height: 1.7em" src="assets/icons/lightbulb.svg" />
+            </div>
+            <div class="sub-head-title capitalize">Recommendation</div>
         </div>
     </header>
-    <div class="recommend-details flex"> 
+    <div class="recommend-details flex">
         <ul>
-            <li class="recommend-details-wrapper" *ngFor='let val of recommendData'>
-                <div class="title">{{val.title}}</div>
-                <div class="desc">{{val.description}}</div>
-                <div class="metricName">Metric Name:
-                    <div class="Name">{{val.metricName}}</div>
+            <li class="recommend-details-wrapper" *ngFor="let val of recommendData">
+                <div class="title">{{ val.title }}</div>
+                <div class="desc">{{ val.description }}</div>
+                <div class="metricName">
+                    Metric Name:
+                    <div class="Name">{{ val.metricName }}</div>
                 </div>
-                <div class="metricVal">Metric Value:
-                    <div class="Value">{{val.metricValue}}</div>
+                <div class="metricVal">
+                    Metric Value:
+                    <div class="Value">{{ val.metricValue }}</div>
                 </div>
             </li>
         </ul>

@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -26,66 +26,62 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { EnableDisableRuleComponent } from './enable-disable-rule.component';
 
 class StubRouterUtilityService {
-  getFullUrlFromSnapshopt() {
-    return 'https://example.com';
-  }
-
-  getQueryParametersFromSnapshot() {
-    return {
-      action: 'action',
-      policyId: 'policyId',
-      ag: 'ag',
-      domain: 'domain',
+    getFullUrlFromSnapshopt() {
+        return 'https://example.com';
     }
-  }
+
+    getQueryParametersFromSnapshot() {
+        return {
+            action: 'action',
+            policyId: 'policyId',
+            ag: 'ag',
+            domain: 'domain',
+        };
+    }
 }
 
 class StubWorkflowService {
-  checkIfFlowExistsCurrently() {
-    return false;
-  }
-  goBackToLastOpenedPageAndUpdateLevel() {
-  }
+    checkIfFlowExistsCurrently() {
+        return false;
+    }
+    goBackToLastOpenedPageAndUpdateLevel() {}
 }
 
 describe('EnableDisableRuleComponent', () => {
-  let component: EnableDisableRuleComponent;
-  let fixture: ComponentFixture<EnableDisableRuleComponent>;
+    let component: EnableDisableRuleComponent;
+    let fixture: ComponentFixture<EnableDisableRuleComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [ EnableDisableRuleComponent ],
-      providers: [
-        DataCacheService,
-        ErrorHandlingService,
-        LoggerService,
-        HttpService,
-        RefactorFieldsService,
-        {
-          provide: RouterUtilityService,
-          useClass: StubRouterUtilityService,
-        },
-        UtilsService,
-        { provide: WorkflowService,
-          useClass: StubWorkflowService,
-        },
-      ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [EnableDisableRuleComponent],
+            providers: [
+                DataCacheService,
+                ErrorHandlingService,
+                LoggerService,
+                HttpService,
+                RefactorFieldsService,
+                {
+                    provide: RouterUtilityService,
+                    useClass: StubRouterUtilityService,
+                },
+                UtilsService,
+                { provide: WorkflowService, useClass: StubWorkflowService },
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EnableDisableRuleComponent);
-    component = fixture.componentInstance;
-    // component.FullQueryParams = {
-    //   action: 'action',
-    //   policyId: 'policyId',
-    // }
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EnableDisableRuleComponent);
+        component = fixture.componentInstance;
+        // component.FullQueryParams = {
+        //   action: 'action',
+        //   policyId: 'policyId',
+        // }
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

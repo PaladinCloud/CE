@@ -12,15 +12,25 @@
  * limitations under the License.
  -->
 
- <div #taggingAssetsOverviewContainer class="issue-trend-wrapper">
-  <div class='multiline-brush-zoom-container'>
-      <div class="sub-header">
-          <app-title-burger-head [subHeadTitle]="'Trend of total and compliant assets'"></app-title-burger-head>
-      </div>
-      <div *ngIf="dataLoaded" id="taggingAssetsOverview">
-        <app-multiline-brush-zoom [id]="'taggingAssetsOverview'" [showArea]="false" (error)="setError($event)" [showLegend]="true" [yAxisLabel]="'Assets'" [graphWidth]="graphWidth" [graphLinesData]="graphData"></app-multiline-brush-zoom>
-      </div>      
-      <div class="loader" *ngIf='!dataLoaded && !error'></div>
-      <app-error-message *ngIf='error' [selectedValue]="errorMessage"></app-error-message>
-  </div>
+<div #taggingAssetsOverviewContainer class="issue-trend-wrapper">
+    <div class="multiline-brush-zoom-container">
+        <div class="sub-header">
+            <app-title-burger-head
+                [subHeadTitle]="'Trend of total and compliant assets'"
+            ></app-title-burger-head>
+        </div>
+        <div *ngIf="dataLoaded" id="taggingAssetsOverview">
+            <app-multiline-brush-zoom
+                [id]="'taggingAssetsOverview'"
+                [showArea]="false"
+                (error)="setError($event)"
+                [showLegend]="true"
+                [yAxisLabel]="'Assets'"
+                [graphWidth]="graphWidth"
+                [graphLinesData]="graphData"
+            ></app-multiline-brush-zoom>
+        </div>
+        <div class="loader" *ngIf="!dataLoaded && !error"></div>
+        <app-error-message *ngIf="error" [selectedValue]="errorMessage"></app-error-message>
+    </div>
 </div>

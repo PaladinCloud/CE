@@ -12,15 +12,15 @@
  * limitations under the License.
  */
 
-.graph-container{
+.graph-container {
     flex-grow: 1;
     -webkit-box-flex: 1;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
     text-align: center;
 }
 
-#bar-graph{
+#bar-graph {
     position: relative;
     z-index: 2;
 }
@@ -29,7 +29,7 @@
     left: 11px;
     top: 50%;
     transform: rotate(-90deg);
-    color: #02629D;
+    color: #02629d;
     font-family: var(--text-medium-font-family);
     letter-spacing: 0.5px;
     font-size: 0.83em;
@@ -46,7 +46,7 @@
     z-index: 0;
 }
 
-.svg-content-responsive{
+.svg-content-responsive {
     display: inline-block;
     position: absolute;
 }

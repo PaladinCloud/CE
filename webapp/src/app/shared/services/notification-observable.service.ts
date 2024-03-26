@@ -2,19 +2,18 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class NotificationObservableService {
+    private subject = new Subject();
 
-  private subject = new Subject;
-
-    postMessage (msg: String, duration , category? , image?) {
+    postMessage(msg: String, duration, category?, image?) {
         if (msg) {
             const obj = {
-                'msg': msg,
-                'duration': duration,
-                'category' : category,
-                'image': image
+                msg: msg,
+                duration: duration,
+                category: category,
+                image: image,
             };
             this.subject.next(obj);
         }

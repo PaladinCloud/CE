@@ -29,54 +29,49 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { PolicyViolationsListComponent } from './policy-violations-list.component';
 
 describe('PolicyViolationsListComponent', () => {
-  let component: PolicyViolationsListComponent;
-  let fixture: ComponentFixture<PolicyViolationsListComponent>;
+    let component: PolicyViolationsListComponent;
+    let fixture: ComponentFixture<PolicyViolationsListComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AgGridModule,
-        FormsModule,
-        RouterTestingModule,
-      ],
-      declarations: [
-        PolicyViolationsListComponent,
-        AgGridTableComponent,
-        BreadcrumbComponent,
-        GenericPageFilterComponent,
-        NgxSelectDropdownComponent,
-        SearchableDropdownComponent,
-        TextComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        DomainTypeObservableService,
-        DownloadService,
-        ErrorHandlingService,
-        FilterManagementService,
-        HttpService,
-        IssueListingService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        ToastObservableService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, AgGridModule, FormsModule, RouterTestingModule],
+            declarations: [
+                PolicyViolationsListComponent,
+                AgGridTableComponent,
+                BreadcrumbComponent,
+                GenericPageFilterComponent,
+                NgxSelectDropdownComponent,
+                SearchableDropdownComponent,
+                TextComponent,
+                TitleBurgerHeadComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                DomainTypeObservableService,
+                DownloadService,
+                ErrorHandlingService,
+                FilterManagementService,
+                HttpService,
+                IssueListingService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                ToastObservableService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PolicyViolationsListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PolicyViolationsListComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

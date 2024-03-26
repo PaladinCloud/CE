@@ -12,15 +12,26 @@
  * limitations under the License.
  -->
 
- <div #vulnerabilitiesComplianceOverviewContainer class="issue-trend-wrapper">
-  <div class='multiline-brush-zoom-container'>
-      <div class="sub-header">
-          <app-title-burger-head [subHeadTitle]="'Vulnerabilities Compliance Trend'"></app-title-burger-head>
-      </div>
-      <div *ngIf="dataLoaded" id="vulnerabilitiesComplianceOverview">
-        <app-multiline-brush-zoom [id]="'vulnerabilitiesComplianceOverview'" [singlePercentLine]="singlePercentLine" [showArea]="showArea" (error)="setError($event)" [showLegend]="showGraphLegend" [yAxisLabel]="yAxisLabel" [graphWidth]="graphWidth" [graphLinesData]="graphData"></app-multiline-brush-zoom>
-      </div>      
-      <div class="loader" *ngIf='!dataLoaded && !error'></div>
-      <app-error-message *ngIf='error' [selectedValue]="errorMessage"></app-error-message>
-  </div>
+<div #vulnerabilitiesComplianceOverviewContainer class="issue-trend-wrapper">
+    <div class="multiline-brush-zoom-container">
+        <div class="sub-header">
+            <app-title-burger-head
+                [subHeadTitle]="'Vulnerabilities Compliance Trend'"
+            ></app-title-burger-head>
+        </div>
+        <div *ngIf="dataLoaded" id="vulnerabilitiesComplianceOverview">
+            <app-multiline-brush-zoom
+                [id]="'vulnerabilitiesComplianceOverview'"
+                [singlePercentLine]="singlePercentLine"
+                [showArea]="showArea"
+                (error)="setError($event)"
+                [showLegend]="showGraphLegend"
+                [yAxisLabel]="yAxisLabel"
+                [graphWidth]="graphWidth"
+                [graphLinesData]="graphData"
+            ></app-multiline-brush-zoom>
+        </div>
+        <div class="loader" *ngIf="!dataLoaded && !error"></div>
+        <app-error-message *ngIf="error" [selectedValue]="errorMessage"></app-error-message>
+    </div>
 </div>

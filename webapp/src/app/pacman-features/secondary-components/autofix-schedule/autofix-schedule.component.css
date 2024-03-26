@@ -27,7 +27,7 @@
 }
 
 .plan-circle.completed {
-    background: #57C17C;
+    background: #57c17c;
 }
 
 .plan-separator {
@@ -83,7 +83,7 @@
     font-size: 1.3em;
     font-weight: 600;
     line-height: 1.3;
-    padding: .3em 0;
+    padding: 0.3em 0;
 }
 
 .green-track {

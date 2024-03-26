@@ -21,7 +21,14 @@ import { TourService } from 'src/app/core/services/tour.service';
 
 // Constants for error handling
 import { API_RESPONSE_ERROR, JS_ERROR } from 'src/app/shared/constants/global';
-import { ASSET_TYPE, EXEMPT_ASSETS, EXEMPT_ASSET_TYPES, TAGGED_ASSETS, TOTAL_ASSETS, UNTAGGED_ASSETS } from 'src/app/shared/constants/asset-trend-graph';
+import {
+    ASSET_TYPE,
+    EXEMPT_ASSETS,
+    EXEMPT_ASSET_TYPES,
+    TAGGED_ASSETS,
+    TOTAL_ASSETS,
+    UNTAGGED_ASSETS,
+} from 'src/app/shared/constants/asset-trend-graph';
 
 @Component({
     selector: 'app-asset-dashboard',
@@ -49,10 +56,12 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
                 count: 0,
                 image: 'total-assets-icon',
             },
-            subContent: [{
-                title: ASSET_TYPE,
-                count: 0,
-            }],
+            subContent: [
+                {
+                    title: ASSET_TYPE,
+                    count: 0,
+                },
+            ],
         },
         {
             mainContent: {
@@ -60,10 +69,12 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
                 count: 0,
                 image: 'exempted-assets-icon',
             },
-            subContent: [{
-                title: EXEMPT_ASSET_TYPES,
-                count: 0,
-            }],
+            subContent: [
+                {
+                    title: EXEMPT_ASSET_TYPES,
+                    count: 0,
+                },
+            ],
         },
         {
             mainContent: {
@@ -71,10 +82,12 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
                 count: 0,
                 image: 'category-tagging',
             },
-            subContent: [{
-                title: TAGGED_ASSETS,
-                count: 0,
-            }],
+            subContent: [
+                {
+                    title: TAGGED_ASSETS,
+                    count: 0,
+                },
+            ],
         },
     ];
 
@@ -109,13 +122,14 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Method to fetch data for untagged assets
     getAssetsTileData() {
-        const queryParams = {'ag': this.assetGroupName}
-        const {url, method} = environment.taggingSummary;
+        const queryParams = { ag: this.assetGroupName };
+        const { url, method } = environment.taggingSummary;
         try {
-            this.commonResponseService.getData(url, method, {}, queryParams)
+            this.commonResponseService
+                .getData(url, method, {}, queryParams)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
-                    response => {
+                    (response) => {
                         try {
                             this.tiles[2].mainContent.count = response.output.untagged;
                             this.tiles[2].subContent[0].count = response.output.tagged;
@@ -123,7 +137,8 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
                             this.logger.log(JS_ERROR, e);
                         }
                     },
-                    error => this.logger.log(API_RESPONSE_ERROR, error));
+                    (error) => this.logger.log(API_RESPONSE_ERROR, error),
+                );
         } catch (error) {
             this.logger.log(JS_ERROR, error);
         }
@@ -137,11 +152,12 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             this.pageTitle,
         );
         const tempQueryParam = {
-            "tempFilters": true
-        }
+            tempFilters: true,
+        };
         if (data == 'Exempt Assets' || data == 'Exempt Asset Types') {
             const queryParams = {
-                filter: 'exempted=true', ...tempQueryParam
+                filter: 'exempted=true',
+                ...tempQueryParam,
             };
             this.router.navigate(['pl/assets/asset-list'], {
                 queryParams: queryParams,
@@ -149,18 +165,18 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             });
         } else if (data == 'Total Assets') {
             this.router.navigate(['pl/assets/asset-list'], {
-                queryParams: {...tempQueryParam},
+                queryParams: { ...tempQueryParam },
                 queryParamsHandling: 'merge',
             });
         } else if (data == 'Asset Types') {
             this.router.navigate(['pl/assets/asset-distribution'], {
-                queryParams: {...tempQueryParam},
+                queryParams: { ...tempQueryParam },
                 queryParamsHandling: 'merge',
             });
         } else if (data == 'Tagged Assets' || data == 'UnTagged Assets') {
             const queryParams = {
                 filter: data == 'Tagged Assets' ? 'tagged=true' : 'tagged=false',
-                ...tempQueryParam
+                ...tempQueryParam,
             };
             this.router.navigate(['pl/assets/asset-list'], {
                 queryParams: queryParams,
@@ -171,11 +187,12 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Method to fetch the count of exempted assets
     getExemtedAssetsCount() {
-        const { url, method} = environment.exemptedAssetCount;
-        const queryParams = { ag: this.assetGroupName};
+        const { url, method } = environment.exemptedAssetCount;
+        const queryParams = { ag: this.assetGroupName };
 
         try {
-            this.commonResponseService.getData(url, method, {}, queryParams)
+            this.commonResponseService
+                .getData(url, method, {}, queryParams)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe((response) => {
                     this.tiles[1].mainContent.count = response.totalassets || 0;
@@ -195,8 +212,10 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
             this.fetchResourcesService.getResourceTypesAndCount(queryParams);
 
             this.awsResourceTypeSelectionService.getAssetTypeCount().subscribe((asset) => {
-                this.tiles[0].mainContent.count = asset[TOTAL_ASSETS.toLowerCase().replace(/\s/g, '')];
-                this.tiles[0].subContent[0].count = asset[ASSET_TYPE.toLowerCase().replace(/\s/g, '')];
+                this.tiles[0].mainContent.count =
+                    asset[TOTAL_ASSETS.toLowerCase().replace(/\s/g, '')];
+                this.tiles[0].subContent[0].count =
+                    asset[ASSET_TYPE.toLowerCase().replace(/\s/g, '')];
             });
         } catch (error) {
             this.logger.log(JS_ERROR, error);
@@ -205,7 +224,8 @@ export class AssetDashboardComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Method to get the selected asset group
     getAssetGroup() {
-        this.assetGroupObservableService.getAssetGroup()
+        this.assetGroupObservableService
+            .getAssetGroup()
             .pipe(takeUntil(this.destroy$))
             .subscribe((assetGroupName) => {
                 this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(

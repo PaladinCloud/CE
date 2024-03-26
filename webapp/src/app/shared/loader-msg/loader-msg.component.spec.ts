@@ -4,24 +4,23 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { LoaderMsgComponent } from './loader-msg.component';
 
 describe('LoaderMsgComponent', () => {
-  let component: LoaderMsgComponent;
-  let fixture: ComponentFixture<LoaderMsgComponent>;
+    let component: LoaderMsgComponent;
+    let fixture: ComponentFixture<LoaderMsgComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [ RouterTestingModule ],
-      declarations: [ LoaderMsgComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule],
+            declarations: [LoaderMsgComponent],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LoaderMsgComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(LoaderMsgComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

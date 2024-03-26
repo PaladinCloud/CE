@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
- <div #statisticsContainer class="statistics-container flex flex-col">
+<div #statisticsContainer class="statistics-container flex flex-col">
     <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
     <div *ngIf="!errorMessage" class="stats-tiles-container">
         <img id="watermark" src="/assets/icons/paladin-logo.svg" hidden />
@@ -22,7 +22,7 @@
                 <div class="header-text">{{ appName }}&nbsp;Statistics</div>
 
                 <div class="stats-date flex titlecase">
-                    {{ currentDate | date : 'MMMM y' }}
+                    {{ currentDate | date: 'MMMM y' }}
                 </div>
 
                 <button
@@ -35,10 +35,7 @@
                 </button>
             </div>
 
-            <div
-                class="company-logo"
-                [style.background-image]="'url('+companyIcon+')'"
-            ></div>
+            <div class="company-logo" [style.background-image]="'url(' + companyIcon + ')'"></div>
         </div>
 
         <div class="total-violations flex flex-col flex-align-center gap-16">

@@ -20,21 +20,25 @@ import { DataCacheService } from './data-cache.service';
 
 @Injectable()
 export class PermissionGuardService implements CanActivate {
-    constructor(private dataCacheService: DataCacheService,
-        private router: Router) { }
+    constructor(
+        private dataCacheService: DataCacheService,
+        private router: Router,
+    ) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-
         // this will be passed from the route config
         const urlPermissions = route.data.capabilities;
         const userRoles = this.dataCacheService.getUserDetailsValue().getRoles();
         const userPermissions = this.dataCacheService.getRoleCapabilities();
-        console.log("User permissions: ", userPermissions);
-        console.log("urlPermissions", urlPermissions);
-        const canUserAccess = this.checkUserPermissionToAccessThisUrl(urlPermissions, userPermissions);
+        console.log('User permissions: ', userPermissions);
+        console.log('urlPermissions', urlPermissions);
+        const canUserAccess = this.checkUserPermissionToAccessThisUrl(
+            urlPermissions,
+            userPermissions,
+        );
         //window.alert("canUserAccess" + canUserAccess);
         if (!canUserAccess) {
-            localStorage.removeItem("redirectUrl")
+            localStorage.removeItem('redirectUrl');
             this.router.navigate(['/home']);
             return false;
         }
@@ -42,11 +46,11 @@ export class PermissionGuardService implements CanActivate {
     }
 
     checkUserPermissionToAccessThisUrl(urlPermissions, userRoles) {
-        if ((urlPermissions === 'undefined' || urlPermissions.length == 0)) {
+        if (urlPermissions === 'undefined' || urlPermissions.length == 0) {
             //default permission, no specific role capability is required
             return true;
         } else {
-            return urlPermissions.some(role => userRoles.includes(role));
+            return urlPermissions.some((role) => userRoles.includes(role));
         }
     }
 

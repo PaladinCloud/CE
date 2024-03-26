@@ -31,7 +31,7 @@
 }
 
 .form-input input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px #E0E1E2 inset;
+    -webkit-box-shadow: 0 0 0 1000px #e0e1e2 inset;
 }
 
 .form-input label {
@@ -44,7 +44,6 @@
     top: -1em;
     z-index: -1;
 }
-
 
 .underline {
     width: 100%;

@@ -1,4 +1,3 @@
-
 <app-custom-card
     [card]="card"
     [fromDate]="fromDate"
@@ -9,9 +8,12 @@
     [filters]="assetTypeFilters"
     (filterChange)="onFilterChange($event)"
     (onChipDropdownClose)="onChipDropdownClose()"
->   
-    <div [class.loader]="assetsTrendData.length==0 && assetsTrendError==''"></div>
-    <app-error-message *ngIf="assetsTrendError" [selectedValue]="assetsTrendError"></app-error-message>
+>
+    <div [class.loader]="assetsTrendData.length == 0 && assetsTrendError == ''"></div>
+    <app-error-message
+        *ngIf="assetsTrendError"
+        [selectedValue]="assetsTrendError"
+    ></app-error-message>
     <app-multiline-zoom-graph
         *ngIf="assetsTrendData.length !== 0 && assetsTrendError === ''"
         [id]="'AssetsSummaryTrend'"

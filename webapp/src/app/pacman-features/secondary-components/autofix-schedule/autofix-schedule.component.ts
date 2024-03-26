@@ -10,50 +10,53 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 import { Component, OnInit, Input } from '@angular/core';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 
 @Component({
-  selector: 'app-autofix-schedule',
-  templateUrl: './autofix-schedule.component.html',
-  styleUrls: ['./autofix-schedule.component.css']
+    selector: 'app-autofix-schedule',
+    templateUrl: './autofix-schedule.component.html',
+    styleUrls: ['./autofix-schedule.component.css'],
 })
-
 export class AutofixScheduleComponent implements OnInit {
+    constructor(private utils: UtilsService) {}
 
-  constructor(private utils: UtilsService) { }
+    @Input() autofixData;
+    transformVal = -1;
 
-  @Input() autofixData;
-  transformVal = -1;
-
-  ngOnInit() {
-    this.autofixData.planItems.forEach(plan => {
-      plan.plannedActionTime = this.utils.calculateDateAndTime(
-        plan.plannedActionTime, true
-      )
-    });
-    if (this.autofixData && this.autofixData.planItems && this.autofixData.planItems.length > 1
-      && new Date().getTime()
-      >= new Date(this.autofixData.planItems[0].plannedActionTime).getTime()
-      && new Date().getTime()
-      <= new Date(this.autofixData.planItems[this.autofixData.planItems.length - 1].plannedActionTime).getTime()
-    ) {
-      this.transformVal = 0;
-      setTimeout(() => {
-        this.transformVal = (
-          ( new Date().getTime()
-          - new Date(this.autofixData.planItems[0].plannedActionTime).getTime()
-          )
-          * (this.autofixData.planItems.length - 1)
-          * 150
-        )
-        / (
-          new Date( this.autofixData.planItems[this.autofixData.planItems.length - 1].plannedActionTime ).getTime()
-          - new Date( this.autofixData.planItems[0].plannedActionTime ).getTime()
-        );
-      }, 100);
+    ngOnInit() {
+        this.autofixData.planItems.forEach((plan) => {
+            plan.plannedActionTime = this.utils.calculateDateAndTime(plan.plannedActionTime, true);
+        });
+        if (
+            this.autofixData &&
+            this.autofixData.planItems &&
+            this.autofixData.planItems.length > 1 &&
+            new Date().getTime() >=
+                new Date(this.autofixData.planItems[0].plannedActionTime).getTime() &&
+            new Date().getTime() <=
+                new Date(
+                    this.autofixData.planItems[
+                        this.autofixData.planItems.length - 1
+                    ].plannedActionTime,
+                ).getTime()
+        ) {
+            this.transformVal = 0;
+            setTimeout(() => {
+                this.transformVal =
+                    ((new Date().getTime() -
+                        new Date(this.autofixData.planItems[0].plannedActionTime).getTime()) *
+                        (this.autofixData.planItems.length - 1) *
+                        150) /
+                    (new Date(
+                        this.autofixData.planItems[
+                            this.autofixData.planItems.length - 1
+                        ].plannedActionTime,
+                    ).getTime() -
+                        new Date(this.autofixData.planItems[0].plannedActionTime).getTime());
+            }, 100);
+        }
     }
-  }
 }

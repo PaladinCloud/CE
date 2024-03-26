@@ -17,17 +17,16 @@
  * @desc allow numbers only, this directive is used to allow input field to allow only numbers.
  * @author Nidhish Krishnan (Nidhish)
  */
- import { Directive, HostListener, Input } from '@angular/core';
+import { Directive, HostListener, Input } from '@angular/core';
 
 @Directive({
-    selector: '[appOnlyNumber]'
+    selector: '[appOnlyNumber]',
 })
 export class OnlyNumberDirective {
-
     @Input('appOnlyNumber') shouldApply: boolean = true;
 
     @HostListener('paste', ['$event']) onPaste(event: ClipboardEvent) {
-        if(!this.shouldApply){
+        if (!this.shouldApply) {
             return;
         }
         const content: string = event.clipboardData.getData('Text');
@@ -49,25 +48,24 @@ export class OnlyNumberDirective {
             return;
         }
         const charCode = event.which || event.keyCode;
-        const isCtrlV = (event.ctrlKey || event.metaKey) && (charCode === 86); // Check for Ctrl+V (paste)
+        const isCtrlV = (event.ctrlKey || event.metaKey) && charCode === 86; // Check for Ctrl+V (paste)
         if (
-          (event.shiftKey && charCode === 187) || // Allow '+' when shift key is pressed
-          (!event.shiftKey && charCode >= 48 && charCode <= 57) || // Allow numbers
-          (charCode >= 96 && charCode <= 105) || // Allow numpad numbers
-          charCode === 8 || // Allow backspace
-          charCode === 9 || // Allow tab
-          charCode === 13 || // Allow enter
-          charCode === 37 || // Allow left arrow
-          charCode === 39 || // Allow right arrow
-          charCode === 46 || // Allow delete
-          isCtrlV || // Allow Ctrl+V (paste)
-          (event.ctrlKey && charCode === 65) || // Allow 'Ctrl+A' (select all)
-          (event.ctrlKey && charCode === 67) || // Allow 'Ctrl+C' (copy)
-          (event.ctrlKey && charCode === 88) // Allow 'Ctrl+X' (cut)
+            (event.shiftKey && charCode === 187) || // Allow '+' when shift key is pressed
+            (!event.shiftKey && charCode >= 48 && charCode <= 57) || // Allow numbers
+            (charCode >= 96 && charCode <= 105) || // Allow numpad numbers
+            charCode === 8 || // Allow backspace
+            charCode === 9 || // Allow tab
+            charCode === 13 || // Allow enter
+            charCode === 37 || // Allow left arrow
+            charCode === 39 || // Allow right arrow
+            charCode === 46 || // Allow delete
+            isCtrlV || // Allow Ctrl+V (paste)
+            (event.ctrlKey && charCode === 65) || // Allow 'Ctrl+A' (select all)
+            (event.ctrlKey && charCode === 67) || // Allow 'Ctrl+C' (copy)
+            (event.ctrlKey && charCode === 88) // Allow 'Ctrl+X' (cut)
         ) {
-          return;
+            return;
         }
         event.preventDefault();
     }
 }
-

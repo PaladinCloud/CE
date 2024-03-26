@@ -1,5 +1,5 @@
-<div class="text-with-icon flex flex-row flex-align-center" [ngStyle]="{gap: gap + 'px'}">
-    <img *ngIf="preImagePath" [src]="preImagePath">
+<div class="text-with-icon flex flex-row flex-align-center" [ngStyle]="{ gap: gap + 'px' }">
+    <img *ngIf="preImagePath" [src]="preImagePath" />
     <app-text [text]="text" [classNames]="textVariant"></app-text>
-    <img *ngIf="postImagePath" [src]="postImagePath">
+    <img *ngIf="postImagePath" [src]="postImagePath" />
 </div>

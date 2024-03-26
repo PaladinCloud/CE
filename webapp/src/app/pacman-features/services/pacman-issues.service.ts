@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -17,7 +17,7 @@
  */
 import { Observable, of } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import { HttpHeaders, HttpRequest } from "@angular/common/http";
+import { HttpHeaders, HttpRequest } from '@angular/common/http';
 
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
@@ -27,7 +27,8 @@ import { catchError, map } from 'rxjs/operators';
 export class PacmanIssuesService {
     constructor(
         private httpService: HttpService,
-        private errorHandling: ErrorHandlingService) { }
+        private errorHandling: ErrorHandlingService,
+    ) {}
 
     criticalValue: any;
     highValue: any;
@@ -46,18 +47,20 @@ export class PacmanIssuesService {
     headers: any = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     getData(queryParams, pacmanIssuesUrl, pacmanIssuesMethod): Observable<any> {
-
         const url = pacmanIssuesUrl;
         const method = pacmanIssuesMethod;
         const payload = {};
 
         try {
-            return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                .pipe(map(response => {
+            return this.httpService
+                .getHttpResponse(url, method, payload, queryParams)
+                .pipe(
+                    map((response) => {
                         this.dataCheck(response);
                         return this.massageData(response);
-                }))
-                .pipe(catchError(error => of(error)));
+                    }),
+                )
+                .pipe(catchError((error) => of(error)));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -85,7 +88,8 @@ export class PacmanIssuesService {
             this.checkKey = this.keys[i];
             switch (this.checkKey) {
                 case 'critical':
-                    this.criticalValue = data[`distribution`].distribution_by_severity[this.checkKey];
+                    this.criticalValue =
+                        data[`distribution`].distribution_by_severity[this.checkKey];
                     break;
                 case 'high':
                     this.highValue = data[`distribution`].distribution_by_severity[this.checkKey];
@@ -119,33 +123,37 @@ export class PacmanIssuesService {
         this.totalIssues = data[`distribution`].total_issues;
         this.valuePercent = (this.criticalValue / this.totalIssues) * 100;
         const catArr = [];
-        for (let i = 0; i < Object.keys(data[`distribution`].policyCategory_percentage).length; i++) {
+        for (
+            let i = 0;
+            i < Object.keys(data[`distribution`].policyCategory_percentage).length;
+            i++
+        ) {
             const catObj = {};
             catObj[Object.keys(data[`distribution`].policyCategory_percentage)[i]] =
                 data[`distribution`].policyCategory_percentage[
-                Object.keys(data[`distribution`].policyCategory_percentage)[i]
+                    Object.keys(data[`distribution`].policyCategory_percentage)[i]
                 ];
             catArr.push(catObj);
         }
 
         this.pacman_data = {
-            'totalIssues': data[`distribution`].total_issues,
-            'severity': [
+            totalIssues: data[`distribution`].total_issues,
+            severity: [
                 {
-                    'critical': this.criticalValue
+                    critical: this.criticalValue,
                 },
                 {
-                    'high': this.highValue
+                    high: this.highValue,
                 },
                 {
-                    'medium': this.mediumValue
+                    medium: this.mediumValue,
                 },
                 {
-                    'low': this.lowValue
-                }
+                    low: this.lowValue,
+                },
             ],
-            'category': catArr,
-            'valuePercent': this.valuePercent
+            category: catArr,
+            valuePercent: this.valuePercent,
         };
         return this.pacman_data;
     }

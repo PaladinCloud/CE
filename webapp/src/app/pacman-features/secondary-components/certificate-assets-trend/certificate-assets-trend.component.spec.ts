@@ -12,65 +12,60 @@
  * limitations under the License.
  */
 
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import {
-  async,
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-} from "@angular/core/testing";
-import { RouterTestingModule } from "@angular/router/testing";
-import { AssetGroupObservableService } from "src/app/core/services/asset-group-observable.service";
-import { DataCacheService } from "src/app/core/services/data-cache.service";
-import { WorkflowService } from "src/app/core/services/workflow.service";
-import { ErrorMessageComponent } from "src/app/shared/error-message/error-message.component";
-import { ErrorHandlingService } from "src/app/shared/services/error-handling.service";
-import { HttpService } from "src/app/shared/services/http-response.service";
-import { LoggerService } from "src/app/shared/services/logger.service";
-import { RefactorFieldsService } from "src/app/shared/services/refactor-fields.service";
-import { RouterUtilityService } from "src/app/shared/services/router-utility.service";
-import { UtilsService } from "src/app/shared/services/utils.service";
-import { TitleBurgerHeadComponent } from "src/app/shared/title-burger-head/title-burger-head.component";
-import { SelectComplianceDropdown } from "../../services/select-compliance-dropdown.service";
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { ErrorMessageComponent } from 'src/app/shared/error-message/error-message.component';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title-burger-head.component';
+import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
 
-import { CertificateAssetsTrendComponent } from "./certificate-assets-trend.component";
+import { CertificateAssetsTrendComponent } from './certificate-assets-trend.component';
 
-describe("CertificateAssetsTrendComponent", () => {
-  let component: CertificateAssetsTrendComponent;
-  let fixture: ComponentFixture<CertificateAssetsTrendComponent>;
+describe('CertificateAssetsTrendComponent', () => {
+    let component: CertificateAssetsTrendComponent;
+    let fixture: ComponentFixture<CertificateAssetsTrendComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [
-        CertificateAssetsTrendComponent,
-        ErrorMessageComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        SelectComplianceDropdown,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [
+                CertificateAssetsTrendComponent,
+                ErrorMessageComponent,
+                TitleBurgerHeadComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                SelectComplianceDropdown,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CertificateAssetsTrendComponent);
-    component = fixture.componentInstance;
-    fakeAsync(() => {
-      fixture.detectChanges();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CertificateAssetsTrendComponent);
+        component = fixture.componentInstance;
+        fakeAsync(() => {
+            fixture.detectChanges();
+        });
     });
-  });
 
-  it("should create", () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

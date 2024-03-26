@@ -12,14 +12,22 @@
  * limitations under the License.
  -->
 
- <section class="mr-asset-type-wrapper flex flex-align-baseline flex-start " [ngClass]="{'pointer' : link && assetValue>0}">
+<section
+    class="mr-asset-type-wrapper flex flex-align-baseline flex-start"
+    [ngClass]="{ pointer: link && assetValue > 0 }"
+>
     <div class="mr-asset-img">
-        <img src={{imgLocation}}>
+        <img src="{{ imgLocation }}" />
     </div>
-    <div class="mr-asset-info-wrapper " [ngClass]="{'link-text' : link && assetValue>0}">
+    <div class="mr-asset-info-wrapper" [ngClass]="{ 'link-text': link && assetValue > 0 }">
         <div class="mr-asset-value-wrapper">
-            <div class="mr-asset-value ilb" [ngClass]="{'underline-link-num' : link && assetValue>0}">{{assetValue}}</div>
+            <div
+                class="mr-asset-value ilb"
+                [ngClass]="{ 'underline-link-num': link && assetValue > 0 }"
+            >
+                {{ assetValue }}
+            </div>
         </div>
-        <p class="mr-asset-type">{{assetName}}</p>
+        <p class="mr-asset-type">{{ assetName }}</p>
     </div>
 </section>

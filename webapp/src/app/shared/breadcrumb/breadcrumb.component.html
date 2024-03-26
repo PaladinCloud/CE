@@ -11,17 +11,22 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
- 
- <section class="breadcrumb-wrapper">
-	<ul class="listing-wrapper flex">
-		<li class="breadcrumb-container flex flex-align-center" *ngFor="let data of breadcrumbArray; let i = index">
-			<div class="breadcrumb" (click)="navigateRespective(i)">
-				<span [class]="breadcrumbLinks?'body-2 primary-500':'body-2 low-emphasis'">{{ data }}</span>
-			</div>
-			<img src="/assets/icons/Path.svg">
-		</li>
-		<li class="breadcrumb-present flex flex-align-center">
-			<app-text [text]="breadcrumbPresent" [classNames]="'body-2'"></app-text>
-		</li>
-	</ul>
+
+<section class="breadcrumb-wrapper">
+    <ul class="listing-wrapper flex">
+        <li
+            class="breadcrumb-container flex flex-align-center"
+            *ngFor="let data of breadcrumbArray; let i = index"
+        >
+            <div class="breadcrumb" (click)="navigateRespective(i)">
+                <span [class]="breadcrumbLinks ? 'body-2 primary-500' : 'body-2 low-emphasis'">{{
+                    data
+                }}</span>
+            </div>
+            <img src="/assets/icons/Path.svg" />
+        </li>
+        <li class="breadcrumb-present flex flex-align-center">
+            <app-text [text]="breadcrumbPresent" [classNames]="'body-2'"></app-text>
+        </li>
+    </ul>
 </section>

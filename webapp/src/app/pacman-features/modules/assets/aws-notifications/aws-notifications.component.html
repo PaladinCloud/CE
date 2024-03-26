@@ -12,30 +12,59 @@
  * limitations under the License.
  -->
 
- <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
-    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px;">
-    <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [asset]="true" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+<div
+    class="floating-widgets-section flex flex-col issue-listing-wrapper"
+    [class.filter-absent]="filters.length == 0"
+>
+    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px">
+        <app-breadcrumb
+            [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray"
+            [asset]="true"
+            [breadcrumbPresent]="breadcrumbPresent"
+        ></app-breadcrumb>
     </div>
-  <div class="floating-widgets-header flex flex-between">
-      <div>
-          <!-- <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg"> -->
-          <h6 class="title-text">{{pageTitle}}</h6>
-      </div>
-  </div>
-  <div class='floating-widgets-filter-wrapper' *ngIf='filters.length'>
-      <app-filtered-selector (deleteAllFilters)="deleteFilters($event)" (deleteFilter)="deleteFilters($event)" [(filteredArray)]="filters"></app-filtered-selector>
-  </div>
-  <div class="floating-widgets-container">
-      <section>
-          <ul>
-              <li class="widget-wrapper relative flex flex-col">
-                  <div class="flex flex-col full-height flex-grow data-table-container">
-                      <app-data-table [searchTextValues]=searchTxt [showGenericMessage]='showGenericMessage' [errorValue]='errorValue' 
-                      [parentName]="'awsNotificationMessage'" [showingArr]='showingArr' [outerArr]='outerArr' [searchableHeader]='true' [allColumns]='allColumns' [dataHead]="'AWS Notifications'" [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)' (previousPageCalled)='prevPg()' (nextPageCalled)='nextPg()' (searchTriggerred)='callNewSearch()'>
-                      </app-data-table>
-                  </div>
-              </li>
-          </ul>
-      </section>
-  </div>
+    <div class="floating-widgets-header flex flex-between">
+        <div>
+            <!-- <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg"> -->
+            <h6 class="title-text">{{ pageTitle }}</h6>
+        </div>
+    </div>
+    <div class="floating-widgets-filter-wrapper" *ngIf="filters.length">
+        <app-filtered-selector
+            (deleteAllFilters)="deleteFilters($event)"
+            (deleteFilter)="deleteFilters($event)"
+            [(filteredArray)]="filters"
+        ></app-filtered-selector>
+    </div>
+    <div class="floating-widgets-container">
+        <section>
+            <ul>
+                <li class="widget-wrapper relative flex flex-col">
+                    <div class="flex flex-col full-height flex-grow data-table-container">
+                        <app-data-table
+                            [searchTextValues]="searchTxt"
+                            [showGenericMessage]="showGenericMessage"
+                            [errorValue]="errorValue"
+                            [parentName]="'awsNotificationMessage'"
+                            [showingArr]="showingArr"
+                            [outerArr]="outerArr"
+                            [searchableHeader]="true"
+                            [allColumns]="allColumns"
+                            [dataHead]="'AWS Notifications'"
+                            [firstPaginator]="firstPaginator"
+                            [lastPaginator]="lastPaginator"
+                            [totalRows]="totalRows"
+                            [currentPointer]="currentPointer"
+                            (searchRowTxt)="searchCalled($event)"
+                            (previousPageCalled)="prevPg()"
+                            (nextPageCalled)="nextPg()"
+                            (searchTriggerred)="callNewSearch()"
+                        >
+                        </app-data-table>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
 </div>

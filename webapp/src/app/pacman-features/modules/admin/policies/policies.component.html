@@ -12,31 +12,59 @@
  * limitations under the License.
  -->
 
- <div class="policies-wrapper flex flex-col padding-28 gap-24">
+<div class="policies-wrapper flex flex-col padding-28 gap-24">
     <div class="">
         <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
     </div>
     <div class="table-wrapper">
-        <app-table (rowSelectEventEmitter)="handleRowClick($event)"
-            (actionSelected)="goToDetails($event)" [data]="tableData" [columnWidths]="columnWidths"
-            (headerColNameSelected)="handleHeaderColNameSelection($event)" [headerColName]="headerColName"
-            [direction]="direction" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
-            [searchQuery]="searchTxt" [tableErrorMessage]='errorMessage' [showAddRemoveCol]="true" [showFilterBtn]="true"
-            [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows" [tableScrollTop]="tableScrollTop"
-            [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap" [rowClickable]="true"
-            [doLocalFilter]="false" [doLocalSearch]="false" [doLocalSort]="false" [centeredColumns]="centeredColumns"
-            [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters"
-            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)" (selectedFilter)="changeFilterTags($event)"
-            (selectedFilterType)="changeFilterType($event)" (deleteFilters)="deleteFilters($event)"
-            [selectedRowId]="selectedRowId" idColumn="Policy ID" [enableMultiValuedFilter]="true"
-            [filterTypeOptions]="filterTypeOptions" (nextPageCalled)="nextPage($event)">
+        <app-table
+            (rowSelectEventEmitter)="handleRowClick($event)"
+            (actionSelected)="goToDetails($event)"
+            [data]="tableData"
+            [columnWidths]="columnWidths"
+            (headerColNameSelected)="handleHeaderColNameSelection($event)"
+            [headerColName]="headerColName"
+            [direction]="direction"
+            [whiteListColumns]="whiteListColumns"
+            (searchCalledEventEmitter)="callNewSearch($event)"
+            [searchQuery]="searchTxt"
+            [tableErrorMessage]="errorMessage"
+            [showAddRemoveCol]="true"
+            [showFilterBtn]="true"
+            [onScrollDataLoader]="onScrollDataLoader"
+            [totalRows]="totalRows"
+            [tableScrollTop]="tableScrollTop"
+            [tableDataLoaded]="tableDataLoaded"
+            [columnsSortFunctionMap]="columnsSortFunctionMap"
+            [rowClickable]="true"
+            [doLocalFilter]="false"
+            [doLocalSearch]="false"
+            [doLocalSort]="false"
+            [centeredColumns]="centeredColumns"
+            [filterTypeLabels]="filterTypeLabels"
+            [filterTagLabels]="filterTagLabels"
+            [filteredArray]="filters"
+            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+            (selectedFilter)="changeFilterTags($event)"
+            (selectedFilterType)="changeFilterType($event)"
+            (deleteFilters)="deleteFilters($event)"
+            [selectedRowId]="selectedRowId"
+            idColumn="Policy ID"
+            [enableMultiValuedFilter]="true"
+            [filterTypeOptions]="filterTypeOptions"
+            (nextPageCalled)="nextPage($event)"
+        >
         </app-table>
     </div>
 </div>
 
 <ng-template #enableOrDisablePolicyRef>
     <div class="dialog-body">
-       <span class="dialog-body-header">{{action}}</span>
-       <span class="dialog-body-content">Are you really sure you want to {{action.toLowerCase()}} "{{selectedRowTitle}}"?</span>
+        <span class="dialog-body-header">{{ action }}</span>
+        <span class="dialog-body-content"
+            >Are you really sure you want to {{ action.toLowerCase() }} "{{
+                selectedRowTitle
+            }}"?</span
+        >
     </div>
 </ng-template>

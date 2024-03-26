@@ -12,26 +12,26 @@
  * limitations under the License.
  */
 
-.sub-head{
+.sub-head {
     background-color: #dce3e9;
 }
-.progress-tile-wrapper{
+.progress-tile-wrapper {
     text-align: center;
     /* padding: .5em; */
 }
-.progress-num{
+.progress-num {
     font-size: 2.1em;
-    margin-bottom: .2em;
+    margin-bottom: 0.2em;
     display: inline-block;
 }
-.app-type{
+.app-type {
     max-width: 100%;
     font-size: 1em;
     margin-bottom: 1em;
     /* cursor: pointer; */
     padding-bottom: 2px;
 }
-.progress-bar-left{
+.progress-bar-left {
     min-width: 5%;
     height: 0.5em;
     display: inline-block;
@@ -41,16 +41,16 @@
     border-bottom-left-radius: 1em;
     border: 1px solid #cecece4f;
 }
-.progress-bar-right{
+.progress-bar-right {
     min-width: 5%;
-    background-color: #F89257;
+    background-color: #f89257;
     height: 0.5em;
     display: inline-block;
     border-top-right-radius: 1em;
     border-bottom-right-radius: 1em;
     border: 1px solid #cecece4f;
 }
-.progress-barleft-value{
+.progress-barleft-value {
     left: 0;
     bottom: 0;
     transform: translateY(150%);
@@ -59,7 +59,7 @@
     font-size: 1em;
     font-family: var(--text-medium-font-family);
 }
-.progress-barright-value{
+.progress-barright-value {
     position: absolute;
     right: 0;
     bottom: 0;

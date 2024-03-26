@@ -29,7 +29,7 @@ import { PropValueLinkDirective } from './prop-value-link.directive';
         PropValueLinkDirective,
         RedhatAcsNotificationComponent,
         SeverityPipe,
-        PropTitleCasePipe
+        PropTitleCasePipe,
     ],
     imports: [CommonModule, SharedModule, NotificationsRoutingModule, NgxJsonViewerModule],
 })

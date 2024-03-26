@@ -12,13 +12,36 @@
  * limitations under the License.
  -->
 
- <section class="progress-tile-wrapper" [ngClass]="{'pointer' : appNum > 0 && bardata.link}">
-    <div class="progress-num" [ngStyle]="{'color': zeroValueColor}" (click)="appNum > 0 && instructParentToNavigate(appName)" [ngClass]="{'link-text underline-link-num' : appNum >0 && bardata.link}">{{appNum}}</div>
-    <div class="app-type nowrap-ellipsis" title={{appName}} >{{appName}}</div>
+<section class="progress-tile-wrapper" [ngClass]="{ pointer: appNum > 0 && bardata.link }">
+    <div
+        class="progress-num"
+        [ngStyle]="{ color: zeroValueColor }"
+        (click)="appNum > 0 && instructParentToNavigate(appName)"
+        [ngClass]="{ 'link-text underline-link-num': appNum > 0 && bardata.link }"
+    >
+        {{ appNum }}
+    </div>
+    <div class="app-type nowrap-ellipsis" title="{{ appName }}">{{ appName }}</div>
     <div class="progress-bar-wrapper relative flex" *ngIf="showBar">
-        <div class="progress-bar-left" [ngStyle]="{'flex-grow': flexleftvalue ,'background-color': barColor[0] }"></div>
-        <div class="progress-bar-right" [ngStyle]="{'flex-grow': flexrightvalue , 'background-color': barColor[1] }"></div>
-        <div class="progress-barleft-value" [ngStyle]="{'flex-grow': flexrightvalue , 'color': barColor[0] }">{{leftBarValue}}</div>
-        <div class="progress-barright-value" [ngStyle]="{'flex-grow': flexrightvalue , 'color': barColor[1] }">{{rightBarValue}}</div>
+        <div
+            class="progress-bar-left"
+            [ngStyle]="{ 'flex-grow': flexleftvalue, 'background-color': barColor[0] }"
+        ></div>
+        <div
+            class="progress-bar-right"
+            [ngStyle]="{ 'flex-grow': flexrightvalue, 'background-color': barColor[1] }"
+        ></div>
+        <div
+            class="progress-barleft-value"
+            [ngStyle]="{ 'flex-grow': flexrightvalue, color: barColor[0] }"
+        >
+            {{ leftBarValue }}
+        </div>
+        <div
+            class="progress-barright-value"
+            [ngStyle]="{ 'flex-grow': flexrightvalue, color: barColor[1] }"
+        >
+            {{ rightBarValue }}
+        </div>
     </div>
 </section>

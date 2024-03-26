@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -15,24 +15,22 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-recommendation',
-  templateUrl: './recommendation.component.html',
-  styleUrls: ['./recommendation.component.css']
+    selector: 'app-recommendation',
+    templateUrl: './recommendation.component.html',
+    styleUrls: ['./recommendation.component.css'],
 })
 export class RecommendationComponent implements OnInit, OnChanges {
+    @Input() recommendationData: any;
+    @Input() selectedResource: any;
+    public recommendData: any;
 
-  @Input() recommendationData: any;
-  @Input() selectedResource: any;
-  public recommendData: any;
+    constructor() {}
 
-  constructor() { }
+    ngOnInit() {
+        this.getData(this.recommendationData);
+    }
 
-  ngOnInit() {
-    this.getData(this.recommendationData);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-
+    ngOnChanges(changes: SimpleChanges) {
         const ResourceChange = changes['selectedResource'];
         if (ResourceChange) {
             const cur = JSON.stringify(ResourceChange.currentValue);
@@ -43,8 +41,7 @@ export class RecommendationComponent implements OnInit, OnChanges {
         }
     }
 
-  getData(data): any {
-    this.recommendData = data;
-  }
-
+    getData(data): any {
+        this.recommendData = data;
+    }
 }

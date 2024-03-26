@@ -12,19 +12,39 @@
  * limitations under the License.
  -->
 
- <div class="total-tag-compliance-wrapper">
+<div class="total-tag-compliance-wrapper">
     <div class="sub-heading">
-      <app-title-burger-head [subHeadTitle]="'Total Tag Compliance'"></app-title-burger-head>
+        <app-title-burger-head [subHeadTitle]="'Total Tag Compliance'"></app-title-burger-head>
     </div>
-    <div class='flex cg-container-parent flex-align-center flex-center'>
-      <app-multi-band-donut [colorData]="['#26ba9d', '#645ec5', '#3c5079', '#289cf7', '#f2425f']" [colorTransData]="['rgba(38,186,157,0.2)', 'rgba(100,94,197,0.2)', 'rgba(60,80,121,0.2)', 'rgba(40,156,247,0.2)' , 'rgba(242,66,95,0.2)']" [donutData]="complianceData" [overallPercentage]="overallPercentage" [loaded]="loaded" *ngIf="!seekdata && contValue"></app-multi-band-donut>      
+    <div class="flex cg-container-parent flex-align-center flex-center">
+        <app-multi-band-donut
+            [colorData]="['#26ba9d', '#645ec5', '#3c5079', '#289cf7', '#f2425f']"
+            [colorTransData]="[
+                'rgba(38,186,157,0.2)',
+                'rgba(100,94,197,0.2)',
+                'rgba(60,80,121,0.2)',
+                'rgba(40,156,247,0.2)',
+                'rgba(242,66,95,0.2)'
+            ]"
+            [donutData]="complianceData"
+            [overallPercentage]="overallPercentage"
+            [loaded]="loaded"
+            *ngIf="!seekdata && contValue"
+        ></app-multi-band-donut>
     </div>
     <div class="tag-compliance-details">
-        <app-list-table *ngIf="contValue && loaded && !seekdata" [tableData]="complianceTableData"
-        [tableHeaderData]="complianceTableHeaderData" [disableLinks]="true"></app-list-table>
-    </div>    
-    <div class="error_msg">
-        <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+        <app-list-table
+            *ngIf="contValue && loaded && !seekdata"
+            [tableData]="complianceTableData"
+            [tableHeaderData]="complianceTableHeaderData"
+            [disableLinks]="true"
+        ></app-list-table>
     </div>
-    <div class="loader" *ngIf='!contValue'></div>
+    <div class="error_msg">
+        <app-error-message
+            *ngIf="seekdata == true"
+            [selectedValue]="errorMessage"
+        ></app-error-message>
+    </div>
+    <div class="loader" *ngIf="!contValue"></div>
 </div>

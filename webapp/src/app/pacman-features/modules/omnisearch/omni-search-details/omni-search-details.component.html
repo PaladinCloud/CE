@@ -12,118 +12,265 @@
  * limitations under the License.
  -->
 
- <section class="search-details-wrapper flex flex-col">
+<section class="search-details-wrapper flex flex-col">
     <!-- <div class="relative">
         <app-searchbar-dropdown [showTerminatedCheckBox]="true" [dropDownSelectedValue]="searchboxValueSelected" [displaySearchDropDown]="true" [displaySearchDropDown]="false" [dropdownData]="dropdownData" [searchboxPlaceHolder]="'Search By Keyword'" (navigatePage)="searchCalled($event)" [searchboxValueSelected]="searchText"></app-searchbar-dropdown>
     </div> -->
     <div class="search-details-filter-wrapper relative">
         <div class="filter-outer-wrapper pointer">
-            <app-main-filter [searchClickedToGetFilter]="filterDataIsRequested" (filterOpenEvent)="isfilterOpen($event)" [filterDataChange]="filterData" (filterOptionClicked)="filterOptionClicked($event)" [hideFilter]="hideFilter"></app-main-filter>
+            <app-main-filter
+                [searchClickedToGetFilter]="filterDataIsRequested"
+                (filterOpenEvent)="isfilterOpen($event)"
+                [filterDataChange]="filterData"
+                (filterOptionClicked)="filterOptionClicked($event)"
+                [hideFilter]="hideFilter"
+            ></app-main-filter>
         </div>
         <!-- search cards are shown here-->
         <div class="search-results-outer-wrapper relative">
-            <div class="omni-search-filter-overlay" *ngIf='showOverlay'></div>
-            <section class="search-results-wrapper flex" *ngIf='dataComing && !showLoader' infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [scrollWindow]="false" [immediateCheck]="true">
+            <div class="omni-search-filter-overlay" *ngIf="showOverlay"></div>
+            <section
+                class="search-results-wrapper flex"
+                *ngIf="dataComing && !showLoader"
+                infiniteScroll
+                [infiniteScrollDistance]="2"
+                [infiniteScrollThrottle]="50"
+                (scrolled)="onScroll()"
+                [scrollWindow]="false"
+                [immediateCheck]="true"
+            >
                 <div class="pagination-wrapper absolute">
                     <div class="loader" *ngIf="infiniteScrollCalled == true"></div>
-                    <div class="absolute search-result-count" *ngIf='dataComing && !showLoader && !infiniteScrollCalled'>Showing {{numOfCardShown | number}} of {{totalNumOfCards | number}} Results</div>
+                    <div
+                        class="absolute search-result-count"
+                        *ngIf="dataComing && !showLoader && !infiniteScrollCalled"
+                    >
+                        Showing {{ numOfCardShown | number }} of
+                        {{ totalNumOfCards | number }} Results
+                    </div>
                 </div>
                 <div
                     class="search-card-each pointer flex flex-col relative"
                     *ngFor="let searchCard of searchResultsData; let i = index"
                     (click)="navigateTo(searchCard)"
                 >
-                    <div class='upper-section-wrapper flex flex-col flex-grow'>
-                    <div class="hover-element flex">
-                        <p class="search-card-name nowrap-ellipsis" *ngIf="searchCard._id">
-                            <span *ngIf="(searchCard.searchCategory | lowercase) == 'assets'">Asset Id:</span>
-                            <span *ngIf="(searchCard.searchCategory | lowercase) == 'policy violations'">Violation Id:</span>
-                            <span *ngIf="(searchCard.searchCategory | lowercase) == 'vulnerabilities'">Qid:</span>
-                            <span title='{{searchCard._id}}'>{{searchCard._id}}</span>
-                        </p>
-                        <div class="copy-icon"><app-copy-element [CopyElement]="searchCard._id" [iconSize]="'10px'"></app-copy-element></div>
+                    <div class="upper-section-wrapper flex flex-col flex-grow">
+                        <div class="hover-element flex">
+                            <p class="search-card-name nowrap-ellipsis" *ngIf="searchCard._id">
+                                <span *ngIf="(searchCard.searchCategory | lowercase) == 'assets'"
+                                    >Asset Id:</span
+                                >
+                                <span
+                                    *ngIf="
+                                        (searchCard.searchCategory | lowercase) ==
+                                        'policy violations'
+                                    "
+                                    >Violation Id:</span
+                                >
+                                <span
+                                    *ngIf="
+                                        (searchCard.searchCategory | lowercase) == 'vulnerabilities'
+                                    "
+                                    >Qid:</span
+                                >
+                                <span title="{{ searchCard._id }}">{{ searchCard._id }}</span>
+                            </p>
+                            <div class="copy-icon">
+                                <app-copy-element
+                                    [CopyElement]="searchCard._id"
+                                    [iconSize]="'10px'"
+                                ></app-copy-element>
+                            </div>
+                        </div>
+                        <img
+                            class="arrow-icon arrow-icon-search-card relative"
+                            style="height: 1em"
+                            src="assets/icons/right-arrow.svg"
+                        />
+                        <div
+                            class="seach-card-desc-bottom search-card-middle-section flex flex-column"
+                        >
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard.accountname"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Account Name: </span>
+                                    <span class="font-color" title="{{ searchCard.accountname }}">{{
+                                        searchCard.accountname
+                                    }}</span>
+                                </span>
+                                <span class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard.accountname"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard._entitytype"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Entity Type:</span>
+                                    <span class="font-color" title="{{ searchCard._entitytype }}">{{
+                                        searchCard._entitytype
+                                    }}</span>
+                                </span>
+                                <span class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard._entitytype"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard.severity"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Severity:</span>
+                                    <span class="font-color" title="{{ searchCard.severity }}">{{
+                                        searchCard.severity
+                                    }}</span>
+                                </span>
+                                <span class="font-color" class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard.severity"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard.category"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Category:</span>
+                                    <span class="font-color" title="{{ searchCard.category }}">{{
+                                        searchCard.category
+                                    }}</span>
+                                </span>
+                                <span class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard.category"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard.vulntype"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Type:</span>
+                                    <span class="font-color" title="{{ searchCard.vulntype }}">{{
+                                        searchCard.vulntype
+                                    }}</span>
+                                </span>
+                                <span class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard.vulntype"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard._resourceid"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Asset Id:</span>
+                                    <span class="font-color" title="{{ searchCard._resourceid }}">{{
+                                        searchCard._resourceid
+                                    }}</span>
+                                </span>
+                                <span class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard._resourceid"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                        </div>
+                        <div
+                            class="seach-card-desc-bottom search-card-bottom-section flex flex-column"
+                        >
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard['tags.Application']"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Application:</span>
+                                    <span class="font-color">{{
+                                        searchCard['tags.Application']
+                                    }}</span>
+                                </span>
+                                <span class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard['tags.Application']"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard['tags.Environment']"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Environment:</span>
+                                    <span class="font-color">{{
+                                        searchCard['tags.Environment']
+                                    }}</span>
+                                </span>
+                                <span class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard['tags.Environment']"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                            <p
+                                class="search-card-type hover-element flex flex-align-center"
+                                *ngIf="searchCard['tags.Name']"
+                            >
+                                <span class="nowrap-ellipsis text-element">
+                                    <span>Name:</span>
+                                    <span class="font-color">{{ searchCard['tags.Name'] }}</span>
+                                </span>
+                                <span class="copy-icon"
+                                    ><app-copy-element
+                                        [CopyElement]="searchCard['tags.Name']"
+                                        [iconSize]="'10px'"
+                                    ></app-copy-element
+                                ></span>
+                            </p>
+                        </div>
                     </div>
-                    <img class="arrow-icon arrow-icon-search-card relative" style="height: 1em;" src="assets/icons/right-arrow.svg">
-                    <div class="seach-card-desc-bottom search-card-middle-section flex flex-column">
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard.accountname">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Account Name: </span>
-                                <span class="font-color" title="{{searchCard.accountname}}">{{searchCard.accountname}}</span>
-                            </span>
-                            <span class="copy-icon"><app-copy-element [CopyElement]="searchCard.accountname" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard._entitytype">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Entity Type:</span>
-                                <span class="font-color" title="{{searchCard._entitytype}}">{{searchCard._entitytype}}</span>
-                            </span>
-                            <span  class="copy-icon"><app-copy-element [CopyElement]="searchCard._entitytype" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard.severity">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Severity:</span>
-                                <span class="font-color" title="{{searchCard.severity}}">{{searchCard.severity}}</span>
-                            </span>
-                            <span class="font-color" class="copy-icon"><app-copy-element [CopyElement]="searchCard.severity" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard.category">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Category:</span>
-                                <span class="font-color" title="{{searchCard.category}}">{{searchCard.category}}</span>
-                            </span>
-                            <span class="copy-icon"><app-copy-element [CopyElement]="searchCard.category" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard.vulntype">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Type:</span>
-                                <span class="font-color" title="{{searchCard.vulntype}}">{{searchCard.vulntype}}</span>
-                            </span>
-                            <span class="copy-icon"><app-copy-element [CopyElement]="searchCard.vulntype" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard._resourceid">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Asset Id:</span>
-                                <span class="font-color" title="{{searchCard._resourceid}}">{{searchCard._resourceid}}</span>
-                            </span>
-                            <span class="copy-icon"><app-copy-element [CopyElement]="searchCard._resourceid" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
+                    <div class="flex flex-row flex-between">
+                        <div
+                            class="search-card-category pointer nowrap-ellipsis left-card"
+                            *ngIf="searchCard['searchCategory']"
+                        >
+                            {{ searchCard.searchCategory }}
+                        </div>
                     </div>
-                    <div class="seach-card-desc-bottom search-card-bottom-section flex flex-column">
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard['tags.Application']">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Application:</span>
-                                <span  class="font-color">{{searchCard['tags.Application']}}</span>
-                            </span>
-                            <span class="copy-icon"><app-copy-element [CopyElement]="searchCard['tags.Application']" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard['tags.Environment']">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Environment:</span>
-                                <span class="font-color">{{searchCard['tags.Environment']}}</span>
-                            </span>
-                            <span class="copy-icon"><app-copy-element [CopyElement]="searchCard['tags.Environment']" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
-                        <p class="search-card-type hover-element flex flex-align-center" *ngIf="searchCard['tags.Name']">
-                            <span class="nowrap-ellipsis text-element">
-                                <span>Name:</span>
-                                <span class="font-color">{{searchCard['tags.Name']}}</span>
-                            </span>
-                            <span class="copy-icon"><app-copy-element [CopyElement]="searchCard['tags.Name']" [iconSize]="'10px'"></app-copy-element></span>
-                        </p>
-                    </div>
-                    </div>
-                    <div class='flex flex-row flex-between'>
-                        <div class="search-card-category pointer nowrap-ellipsis left-card" *ngIf="searchCard['searchCategory']">{{searchCard.searchCategory}}</div>
-                     </div>
-                    <img *ngIf="searchCard['imagePath']" class="search-card-targettype-icon absolute" src="{{searchCard['imagePath']}}">
+                    <img
+                        *ngIf="searchCard['imagePath']"
+                        class="search-card-targettype-icon absolute"
+                        src="{{ searchCard['imagePath'] }}"
+                    />
                 </div>
             </section>
-            <article class='center error_handling' *ngIf="!dataComing">
+            <article class="center error_handling" *ngIf="!dataComing">
                 <div class="error_msg">
-                    <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+                    <app-error-message
+                        *ngIf="seekdata == true"
+                        [selectedValue]="errorMessage"
+                    ></app-error-message>
                 </div>
             </article>
         </div>
-        <div *ngIf='showLoader' class="loader"></div>
+        <div *ngIf="showLoader" class="loader"></div>
     </div>
 </section>

@@ -12,21 +12,30 @@
  * limitations under the License.
  -->
 
- <div class="tagging-across-target-type-wrapper">
+<div class="tagging-across-target-type-wrapper">
     <div class="sub-header">
-      <app-title-burger-head [subHeadTitle]="'Tagging Across Target Types'"></app-title-burger-head>
+        <app-title-burger-head
+            [subHeadTitle]="'Tagging Across Target Types'"
+        ></app-title-burger-head>
     </div>
     <div class="tiles-wrapper">
-      <div class='container-parent flex' *ngIf="!loading && !error">
-          <ul>
-              <li *ngFor="let data of taggingSummary">
-                  <app-target-type-tagging-tile [awsResourceDetails]="data" class="flex" (navigatePage)="navigatePage($event)"></app-target-type-tagging-tile>
-              </li>
-          </ul>                  
-      </div>    
-      <div class="error_msg">
-        <app-error-message *ngIf='error && !loading' [selectedValue]="errorMessage"></app-error-message>
-      </div>
-      <div class="loader" *ngIf='loading'></div>
-    </div>    
+        <div class="container-parent flex" *ngIf="!loading && !error">
+            <ul>
+                <li *ngFor="let data of taggingSummary">
+                    <app-target-type-tagging-tile
+                        [awsResourceDetails]="data"
+                        class="flex"
+                        (navigatePage)="navigatePage($event)"
+                    ></app-target-type-tagging-tile>
+                </li>
+            </ul>
+        </div>
+        <div class="error_msg">
+            <app-error-message
+                *ngIf="error && !loading"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
+        </div>
+        <div class="loader" *ngIf="loading"></div>
+    </div>
 </div>

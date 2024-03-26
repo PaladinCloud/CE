@@ -12,43 +12,65 @@
  * limitations under the License.
  -->
 
- <div class="asset-details-wrapper" [class.height100]='assetDetailsState<1'>
-    <section class="details-section-content" *ngIf='detailsVal && assetDetailsState > 0'>
+<div class="asset-details-wrapper" [class.height100]="assetDetailsState < 1">
+    <section class="details-section-content" *ngIf="detailsVal && assetDetailsState > 0">
         <article class="basic-desc">
-            <div class="asset-name" [ngStyle]="{ 'text-transform': 'capitalize' }">{{getDisplayName(detailsVal.displayname)}}</div>
-            <div *ngIf='detailsVal.description' class="desc-title">{{detailsVal.description}}</div>
-            <div *ngIf='!detailsVal.description' class="description desc-title">Select this asset group to fetch data under this asset group</div>
+            <div class="asset-name" [ngStyle]="{ 'text-transform': 'capitalize' }">
+                {{ getDisplayName(detailsVal.displayname) }}
+            </div>
+            <div *ngIf="detailsVal.description" class="desc-title">
+                {{ detailsVal.description }}
+            </div>
+            <div *ngIf="!detailsVal.description" class="description desc-title">
+                Select this asset group to fetch data under this asset group
+            </div>
         </article>
         <article class="detail-desc">
             <div class="desc-detail flex">
                 <div class="keyword">Assets</div>
-                <div class="key-value pointer" [class.link-text-secondary]='detailsVal.assetcount > 0' (click)="detailsVal.assetcount > 0 && instructParentToNavigate('total asset', detailsVal)">{{detailsVal.assetcount | number}}</div>
+                <div
+                    class="key-value pointer"
+                    [class.link-text-secondary]="detailsVal.assetcount > 0"
+                    (click)="
+                        detailsVal.assetcount > 0 &&
+                            instructParentToNavigate('total asset', detailsVal)
+                    "
+                >
+                    {{ detailsVal.assetcount | number }}
+                </div>
             </div>
             <div class="desc-detail flex">
                 <div class="keyword">Accounts</div>
-                <div class="key-value" [class.link-text-secondary]='detailsVal.accountCount > 0'>{{detailsVal.accountCount | number}}</div>
+                <div class="key-value" [class.link-text-secondary]="detailsVal.accountCount > 0">
+                    {{ detailsVal.accountCount | number }}
+                </div>
             </div>
             <div class="desc-detail flex">
                 <div class="keyword">Policies</div>
-                <div class="key-value" [class.link-text-secondary]='detailsVal.policyCount > 0'>{{detailsVal.policyCount | number}}</div>
+                <div class="key-value" [class.link-text-secondary]="detailsVal.policyCount > 0">
+                    {{ detailsVal.policyCount | number }}
+                </div>
             </div>
             <div class="desc-detail flex">
                 <div class="keyword">Source(s)</div>
                 <div class="key-value">
-                    <span *ngFor='let val of provider; let i = index; '>{{val}}<span *ngIf='i !== (provider.length - 1)'>, </span>
+                    <span *ngFor="let val of provider; let i = index"
+                        >{{ val }}<span *ngIf="i !== provider.length - 1">, </span>
                     </span>
                 </div>
             </div>
             <div class="desc-detail flex">
                 <div class="keyword">Group Type</div>
-                <div class="key-value">{{detailsVal.type}}</div>
+                <div class="key-value">{{ detailsVal.type }}</div>
             </div>
             <div class="desc-detail flex">
                 <div class="keyword">Created By</div>
-                <div class="key-value">{{detailsVal.createdby}}</div>
+                <div class="key-value">{{ detailsVal.createdby }}</div>
             </div>
         </article>
-        <div class='loader' *ngIf='assetDetailsState == 0'></div>
-        <div class='error-msg' *ngIf='assetDetailsState < 0'>Unable to fetch asset group details! </div>
+        <div class="loader" *ngIf="assetDetailsState == 0"></div>
+        <div class="error-msg" *ngIf="assetDetailsState < 0">
+            Unable to fetch asset group details!
+        </div>
     </section>
 </div>

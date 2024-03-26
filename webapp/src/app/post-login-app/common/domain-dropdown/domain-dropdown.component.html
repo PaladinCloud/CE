@@ -12,9 +12,14 @@
  * limitations under the License.
  -->
 
- <ul class="mr-user-dropdown-wrapper" *ngIf='dropdownData.length'>
-    <li class="mr-each-desc pointer flex flex-start flex-align-center" [class.dropdown-selected-active] = "applyActive === eachdropdownData" (click) = "applyActive = eachdropdownData ; sendClickedValue(eachdropdownData, i)"  *ngFor = "let eachdropdownData of dropdownData;let i = index ">
-        <div class="dropdown-select-box" ></div>
-        <a class="capitalize pointer" >{{eachdropdownData}}</a>
+<ul class="mr-user-dropdown-wrapper" *ngIf="dropdownData.length">
+    <li
+        class="mr-each-desc pointer flex flex-start flex-align-center"
+        [class.dropdown-selected-active]="applyActive === eachdropdownData"
+        (click)="applyActive = eachdropdownData; sendClickedValue(eachdropdownData, i)"
+        *ngFor="let eachdropdownData of dropdownData; let i = index"
+    >
+        <div class="dropdown-select-box"></div>
+        <a class="capitalize pointer">{{ eachdropdownData }}</a>
     </li>
 </ul>

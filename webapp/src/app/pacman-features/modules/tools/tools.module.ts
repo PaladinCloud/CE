@@ -12,14 +12,14 @@
  * limitations under the License.
  */
 
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { SharedModule } from "../../../shared/shared.module";
-import { ToolsLandingPageComponent } from "./tools-landing-page/tools-landing-page.component";
-import { ToolsRoutingModule } from "./tools-routing.module";
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SharedModule } from '../../../shared/shared.module';
+import { ToolsLandingPageComponent } from './tools-landing-page/tools-landing-page.component';
+import { ToolsRoutingModule } from './tools-routing.module';
 
 @NgModule({
-  imports: [CommonModule, SharedModule, ToolsRoutingModule],
-  declarations: [ToolsLandingPageComponent],
+    imports: [CommonModule, SharedModule, ToolsRoutingModule],
+    declarations: [ToolsLandingPageComponent],
 })
-export class ToolsModule { }
+export class ToolsModule {}

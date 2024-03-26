@@ -9,30 +9,30 @@ import { UtilsService } from '../services/utils.service';
 import { CopyElementComponent } from './copy-element.component';
 
 describe('CopyElementComponent', () => {
-  let component: CopyElementComponent;
-  let fixture: ComponentFixture<CopyElementComponent>;
+    let component: CopyElementComponent;
+    let fixture: ComponentFixture<CopyElementComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CopyElementComponent ],
-      providers: [
-        CopyElementService,
-        ErrorHandlingService,
-        LoggerService,
-        RefactorFieldsService,
-        ToastObservableService,
-        UtilsService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [CopyElementComponent],
+            providers: [
+                CopyElementService,
+                ErrorHandlingService,
+                LoggerService,
+                RefactorFieldsService,
+                ToastObservableService,
+                UtilsService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CopyElementComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CopyElementComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

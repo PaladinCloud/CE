@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -29,32 +29,25 @@ import { TopGlowTravellerComponent } from './common/top-glow-traveller/top-glow-
 import { AwsCognitoService } from '../core/services/aws-cognito.service';
 import { ErrorComponent } from './error/error.component';
 
-
-
 @NgModule({
-  imports: [
-    CommonModule, LandingPageRoutingModule, SharedModule
-  ],
-  declarations: [
-    HomePageComponent,
-    LoginComponent,
-    FeatureComponent,
-    PulseBallComponent,
-    GlowTravellerComponent,
-    LandingPageHeaderComponent,
-    LandingDiamondComponent,
-    TopGlowTravellerComponent,
-    ErrorComponent
-  ],
-  providers: [
-    AwsCognitoService
-  ]
+    imports: [CommonModule, LandingPageRoutingModule, SharedModule],
+    declarations: [
+        HomePageComponent,
+        LoginComponent,
+        FeatureComponent,
+        PulseBallComponent,
+        GlowTravellerComponent,
+        LandingPageHeaderComponent,
+        LandingDiamondComponent,
+        TopGlowTravellerComponent,
+        ErrorComponent,
+    ],
+    providers: [AwsCognitoService],
 })
 export class LandingPageModule {
-  constructor(@Optional() @SkipSelf() parentModule: LandingPageModule) {
-    if (parentModule) {
-      throw new Error(
-        'LandingPageModule is already loaded. Import it in the AppModule only');
+    constructor(@Optional() @SkipSelf() parentModule: LandingPageModule) {
+        if (parentModule) {
+            throw new Error('LandingPageModule is already loaded. Import it in the AppModule only');
+        }
     }
-  }
 }

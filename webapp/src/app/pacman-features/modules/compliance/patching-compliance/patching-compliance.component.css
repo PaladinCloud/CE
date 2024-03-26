@@ -18,12 +18,9 @@
     font-size: 1em;
 }
 
-
 .floating-widgets-filter-wrapper {
     padding: 0em 1.5em 1.5em;
 }
-
-
 
 /* Left side section */
 
@@ -89,7 +86,7 @@
 }
 
 .mat-form-field-infix {
-    border-top: none!important;
+    border-top: none !important;
 }
 
 .floating-widgets-container {
@@ -103,7 +100,6 @@
     box-sizing: border-box;
     opacity: 1;
 }
-
 
 .title-text {
     display: inline-block;

@@ -18,16 +18,13 @@
  * @author Puneet Baser
  */
 
-
 import { Injectable } from '@angular/core';
-import {ActivatedRouteSnapshot, Params, Router} from '@angular/router';
-import {LoggerService} from './logger.service';
-import {COMMON_PAGES} from '../../../config/domain-mapping';
-
+import { ActivatedRouteSnapshot, Params, Router } from '@angular/router';
+import { LoggerService } from './logger.service';
+import { COMMON_PAGES } from '../../../config/domain-mapping';
 
 @Injectable()
 export class RouterUtilityService {
-
     constructor(private loggerService: LoggerService) {}
 
     public getDeepestPageTitle(routeSnapshot: ActivatedRouteSnapshot) {
@@ -50,7 +47,7 @@ export class RouterUtilityService {
         const urlSegment = this.getDeepestPageUrl(routeSnapshot);
 
         let urlPath = '';
-        urlSegment.forEach(function(pathObj){
+        urlSegment.forEach(function (pathObj) {
             urlPath += pathObj.path + '/';
         });
         urlPath = urlPath.slice(0, -1);
@@ -61,7 +58,9 @@ export class RouterUtilityService {
     public getPageUrlSegmentFromSnapshot(routerSnapshot: ActivatedRouteSnapshot) {
         let urlSegment = routerSnapshot.url;
         if (routerSnapshot.firstChild) {
-            urlSegment = urlSegment.concat(this.getPageUrlSegmentFromSnapshot(routerSnapshot.firstChild));
+            urlSegment = urlSegment.concat(
+                this.getPageUrlSegmentFromSnapshot(routerSnapshot.firstChild),
+            );
         }
 
         return urlSegment;
@@ -70,7 +69,7 @@ export class RouterUtilityService {
     public getFullUrlFromSnapshopt(routerSnapshopt: ActivatedRouteSnapshot) {
         const url = this.getPageUrlSegmentFromSnapshot(routerSnapshopt);
         let urlPath = '';
-        url.forEach(function(pathObj){
+        url.forEach(function (pathObj) {
             urlPath += pathObj.path + '/';
         });
         urlPath = urlPath.slice(0, -1);
@@ -81,23 +80,23 @@ export class RouterUtilityService {
     public getQueryParametersFromSnapshot(routerSnapshopt: ActivatedRouteSnapshot) {
         let queryParams = routerSnapshopt.queryParams;
         if (routerSnapshopt.firstChild) {
-            queryParams = this.getQueryParametersFromSnapshot(routerSnapshopt.firstChild) || queryParams;
+            queryParams =
+                this.getQueryParametersFromSnapshot(routerSnapshopt.firstChild) || queryParams;
         }
         return queryParams;
     }
 
     public getQueryParams(routerSnapshot: ActivatedRouteSnapshot) {
-        return  routerSnapshot.queryParams;
+        return routerSnapshot.queryParams;
     }
 
     public getLandingPageInAModule(moduleName) {
-
         const landingPageModuleMapping = {
-            'compliance': 'pl/compliance/compliance-dashboard',
-            'assets': 'pl/assets/asset-dashboard',
-            'tools': 'pl/tools/tools-landing',
-            'omnisearch': 'pl/omnisearch/omni-search-page',
-            'admin': 'pl/admin/policies'
+            compliance: 'pl/compliance/compliance-dashboard',
+            assets: 'pl/assets/asset-dashboard',
+            tools: 'pl/tools/tools-landing',
+            omnisearch: 'pl/omnisearch/omni-search-page',
+            admin: 'pl/admin/policies',
         };
 
         return landingPageModuleMapping[moduleName];
@@ -128,7 +127,9 @@ export class RouterUtilityService {
 
     public getpageTitle(routerSnapshot: ActivatedRouteSnapshot) {
         const children = routerSnapshot.children;
-        let title = routerSnapshot.data ? routerSnapshot.data['pageTitle'] || routerSnapshot.data['title'] : '';
+        let title = routerSnapshot.data
+            ? routerSnapshot.data['pageTitle'] || routerSnapshot.data['title']
+            : '';
         if (children.length > 0) {
             const index = children.length - 1;
             const child = children[index];
@@ -140,11 +141,13 @@ export class RouterUtilityService {
     public checkIfCurrentRouteBelongsToCommonPages(route) {
         let index = -1;
 
-        for ( let i = 0; i < COMMON_PAGES.length; i++) {
+        for (let i = 0; i < COMMON_PAGES.length; i++) {
             const eachRoute = COMMON_PAGES[i];
             index = route.indexOf(eachRoute);
 
-            if (index >= 0) { return true; }
+            if (index >= 0) {
+                return true;
+            }
         }
         return false;
     }
@@ -156,15 +159,17 @@ export class RouterUtilityService {
         const outlet = routerSnapshot.outlet;
 
         urlSegmentDetails.push({
-            'urlSegment': urlSegment,
-            'outlet': outlet
+            urlSegment: urlSegment,
+            outlet: outlet,
         });
 
         const children = routerSnapshot.children;
         if (children) {
-            for (let i = 0; i < children.length; i++ ) {
+            for (let i = 0; i < children.length; i++) {
                 const child = children[i];
-                urlSegmentDetails = urlSegmentDetails.concat(this.getFullPageUrlSegmentFromSnapshot(child));
+                urlSegmentDetails = urlSegmentDetails.concat(
+                    this.getFullPageUrlSegmentFromSnapshot(child),
+                );
             }
         }
 

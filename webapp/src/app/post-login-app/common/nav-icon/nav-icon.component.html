@@ -12,15 +12,18 @@
  * limitations under the License.
  -->
 
- 
-<a class="icon-wrapper" (click)="navigateToModule(moduleName, agAndDomain)" [class.active]="router.isActive('/pl/'+moduleName, false)"
-[class.omni-background]="router.isActive('/pl/omnisearch/omni-search-page', false)">
-    <div class="icon-border"  *ngIf= "!router.isActive('/pl/'+moduleName, false)">
-        <img class="icon" width="16px" src={{iconImage}} />    
+<a
+    class="icon-wrapper"
+    (click)="navigateToModule(moduleName, agAndDomain)"
+    [class.active]="router.isActive('/pl/' + moduleName, false)"
+    [class.omni-background]="router.isActive('/pl/omnisearch/omni-search-page', false)"
+>
+    <div class="icon-border" *ngIf="!router.isActive('/pl/' + moduleName, false)">
+        <img class="icon" width="16px" src="{{ iconImage }}" />
     </div>
-    <div class="icon-border" *ngIf= "router.isActive('/pl/'+moduleName, false)" >
-        <img class="icon" width="16px" src={{activeIconImage}} />
+    <div class="icon-border" *ngIf="router.isActive('/pl/' + moduleName, false)">
+        <img class="icon" width="16px" src="{{ activeIconImage }}" />
     </div>
-    <div class="module-name" *ngIf="moduleName !== 'omnisearch'">{{moduleName}}</div>
-    <div class="module-name text-transform-none" *ngIf="moduleName === 'omnisearch'">Search</div>        
+    <div class="module-name" *ngIf="moduleName !== 'omnisearch'">{{ moduleName }}</div>
+    <div class="module-name text-transform-none" *ngIf="moduleName === 'omnisearch'">Search</div>
 </a>

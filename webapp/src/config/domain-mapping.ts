@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import {THEMES} from './themes';
+import { THEMES } from './themes';
 
 export const COMMON_PAGES = [
     'compliance-dashboard',
@@ -24,185 +24,182 @@ export const COMMON_PAGES = [
     'asset-dashboard',
     'asset-list',
     'tools-landing',
-    'omni-search-page'
+    'omni-search-page',
 ];
 
-export const  DOMAIN_MAPPING = [
+export const DOMAIN_MAPPING = [
     {
-        'theme': THEMES.default,
-        'dashboards': [
+        theme: THEMES.default,
+        dashboards: [
             {
-                'moduleName': 'compliance',
-                'dashboards': [
+                moduleName: 'compliance',
+                dashboards: [
                     {
-                        'route': 'compliance-dashboard',
-                        'sequence': 0
+                        route: 'compliance-dashboard',
+                        sequence: 0,
                     },
                     {
-                        'route': 'issue-listing',
-                        'sequence': 1
+                        route: 'issue-listing',
+                        sequence: 1,
                     },
                     {
-                        'route': 'policy-knowledgebase',
-                        'sequence': 2
+                        route: 'policy-knowledgebase',
+                        sequence: 2,
                     },
                     {
-                        'route': 'recommendations',
-                        'sequence': 3,
-                        'groupBy': 'compliance-dashboard'
+                        route: 'recommendations',
+                        sequence: 3,
+                        groupBy: 'compliance-dashboard',
                     },
                     {
-                        'route': 'vulnerabilities-compliance',
-                        'sequence': 4,
-                        'groupBy': 'compliance-dashboard'
+                        route: 'vulnerabilities-compliance',
+                        sequence: 4,
+                        groupBy: 'compliance-dashboard',
                     },
-                ]
+                ],
             },
             {
-                'moduleName': 'assets',
-                'dashboards': [
+                moduleName: 'assets',
+                dashboards: [
                     {
-                        'route': 'asset-dashboard',
-                        'sequence': 0
+                        route: 'asset-dashboard',
+                        sequence: 0,
                     },
                     {
-                        'route': 'asset-list',
-                        'sequence': 1
-                    }
-                ]
+                        route: 'asset-list',
+                        sequence: 1,
+                    },
+                ],
             },
             {
-                'moduleName': 'tools',
-                'dashboards': [
+                moduleName: 'tools',
+                dashboards: [
                     {
-                        'route': 'tools-landing',
-                        'sequence': 0
-                    }
-                ]
+                        route: 'tools-landing',
+                        sequence: 0,
+                    },
+                ],
             },
             {
-                'moduleName': 'omnisearch',
-                'dashboards': [
+                moduleName: 'omnisearch',
+                dashboards: [
                     {
-                        'route': 'omni-search-page',
-                        'sequence': 0
+                        route: 'omni-search-page',
+                        sequence: 0,
                     },
                     {
-                        'route': 'omni-search-details',
-                        'sequence': 1
-                    }
-                ]
+                        route: 'omni-search-details',
+                        sequence: 1,
+                    },
+                ],
             },
             {
-                'moduleName': 'admin',
-                'dashboards': [
+                moduleName: 'admin',
+                dashboards: [
                     {
-                        'route': 'policies',
-                        'sequence': 0
+                        route: 'policies',
+                        sequence: 0,
                     },
                     {
-                        'route': 'rules',
-                        'sequence': 1
+                        route: 'rules',
+                        sequence: 1,
                     },
                     {
-                        'route': 'job-execution-manager',
-                        'sequence': 2
+                        route: 'job-execution-manager',
+                        sequence: 2,
                     },
                     {
-                        'route': 'domains',
-                        'sequence': 3
+                        route: 'domains',
+                        sequence: 3,
                     },
                     {
-                        'route': 'target-types',
-                        'sequence': 4
+                        route: 'target-types',
+                        sequence: 4,
                     },
                     {
-                        'route': 'asset-groups',
-                        'sequence': 5
+                        route: 'asset-groups',
+                        sequence: 5,
                     },
                     {
-                        'route': 'sticky-exceptions',
-                        'sequence': 6
+                        route: 'sticky-exceptions',
+                        sequence: 6,
                     },
                     {
-                        'route': 'roles',
-                        'sequence': 7
+                        route: 'roles',
+                        sequence: 7,
                     },
                     {
-                        'route': 'user-management',
-                        'sequence': 8
+                        route: 'user-management',
+                        sequence: 8,
                     },
                     {
-                        'route': 'config-management',
-                        'sequence': 9
+                        route: 'config-management',
+                        sequence: 9,
                     },
                     {
-                        'route': 'account-management',
-                        'sequence': 10
+                        route: 'account-management',
+                        sequence: 10,
                     },
-                 /* {
+                    /* {
                         'route': 'plugin-management',
                         'sequence': 9
                     }*/
                     {
-                        'route': 'system-management',
-                        'sequence': 11
-                    }
-                ]
-            }
+                        route: 'system-management',
+                        sequence: 11,
+                    },
+                ],
+            },
         ],
-        'domain': ''
+        domain: '',
     },
     {
-        'theme': THEMES.default,
-        'dashboards': [
+        theme: THEMES.default,
+        dashboards: [
             {
-                'moduleName': 'compliance',
-                'dashboards': [
+                moduleName: 'compliance',
+                dashboards: [
                     {
-                        'route': 'tagging-compliance',
-                        'sequence': 2
+                        route: 'tagging-compliance',
+                        sequence: 2,
                     },
                     {
-                        'route': 'health-notifications',
-                        'sequence': 3,
-                        'cloudSpecific': true
-                    }
-                ]
+                        route: 'health-notifications',
+                        sequence: 3,
+                        cloudSpecific: true,
+                    },
+                ],
             },
             {
-                'moduleName': 'assets',
-                'dashboards': [
-                ]
-            }
+                moduleName: 'assets',
+                dashboards: [],
+            },
         ],
-        'domain': 'Infra & Platforms'
+        domain: 'Infra & Platforms',
     },
     {
-        'theme': THEMES.theme1,
-        'dashboards': [
+        theme: THEMES.theme1,
+        dashboards: [
             {
-                'moduleName': 'compliance',
-                'dashboards': [
-
-                ]
-            }
+                moduleName: 'compliance',
+                dashboards: [],
+            },
         ],
-        'domain': 'SOX'
+        domain: 'SOX',
     },
     {
-        'theme': THEMES.theme2,
-        'dashboards': [
+        theme: THEMES.theme2,
+        dashboards: [
             {
-                'moduleName': 'compliance',
-                'dashboards': [
+                moduleName: 'compliance',
+                dashboards: [
                     {
-                        'route': 'dev-standard-dashboard',
-                        'sequence': 2
-                    }
-                ]
-            }
+                        route: 'dev-standard-dashboard',
+                        sequence: 2,
+                    },
+                ],
+            },
         ],
-        'domain': 'Dev Standards'
-    }
+        domain: 'Dev Standards',
+    },
 ];

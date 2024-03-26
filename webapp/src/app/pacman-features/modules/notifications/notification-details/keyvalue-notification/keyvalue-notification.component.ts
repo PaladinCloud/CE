@@ -14,18 +14,20 @@ export class KeyvalueNotificationComponent implements OnInit {
     @Input() title = '';
     windowHostName = '';
 
-    constructor(private router: Router,
+    constructor(
+        private router: Router,
         private logger: LoggerService,
         private workflowService: WorkflowService,
         private utils: UtilsService,
-        private activatedRoute: ActivatedRoute) {
-            this.windowHostName = window.location.origin;
-        }
+        private activatedRoute: ActivatedRoute,
+    ) {
+        this.windowHostName = window.location.origin;
+    }
 
     ngOnInit(): void {}
 
     navigateTo(link: string) {
-        try{
+        try {
             if (!link || !link.includes(this.windowHostName)) {
                 return;
             }
@@ -34,15 +36,16 @@ export class KeyvalueNotificationComponent implements OnInit {
             this.workflowService.addRouterSnapshotToLevel(
                 this.router.routerState.snapshot.root,
                 0,
-                "Notification Details",
+                'Notification Details',
             );
-            const parts = urlObj.url.replace(this.windowHostName, "").split('/');
-            const urlToNavigate = parts.slice(0, 5).join('/') + '/' + encodeURIComponent(parts.slice(5).join('/'));
-            
+            const parts = urlObj.url.replace(this.windowHostName, '').split('/');
+            const urlToNavigate =
+                parts.slice(0, 5).join('/') + '/' + encodeURIComponent(parts.slice(5).join('/'));
+
             this.router
-                .navigate(["../../.." + urlToNavigate], {
+                .navigate(['../../..' + urlToNavigate], {
                     relativeTo: this.activatedRoute,
-                    queryParamsHandling: "merge"
+                    queryParamsHandling: 'merge',
                 })
                 .then((response) => {
                     this.logger.log('info', 'Successfully navigated to details page: ' + response);
@@ -50,8 +53,8 @@ export class KeyvalueNotificationComponent implements OnInit {
                 .catch((error) => {
                     this.logger.log('error', 'Error in navigation - ' + error);
                 });
-        }catch(e){
-            this.logger.log("jsError", e);
+        } catch (e) {
+            this.logger.log('jsError', e);
         }
     }
 
@@ -59,7 +62,7 @@ export class KeyvalueNotificationComponent implements OnInit {
         return typeof item.value === 'object' || Array.isArray(item.value);
     }
 
-    isStringDate (str: string) {
+    isStringDate(str: string) {
         if (!isNaN(Number(str))) {
             return false;
         }

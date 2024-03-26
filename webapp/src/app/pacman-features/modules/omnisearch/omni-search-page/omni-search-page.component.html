@@ -12,14 +12,28 @@
  * limitations under the License.
  -->
 
- <section class="search-wrapper relative">
-    <div class="search-center-container flex flex-center flex-align-center"  *ngIf='dataComing && !showLoader'>
-        <app-searchbar-dropdown  [showTerminatedCheckBox] = "false"  [dropDownSelectedValue] = "dropdownData[0]" [displaySearchDropDown] = "true" [dropdownData] = "dropdownData" [searchboxPlaceHolder] = "'Search By Keyword'" (navigatePage) = "navigatePage($event)" [searchboxValueSelected] = "''"></app-searchbar-dropdown>
+<section class="search-wrapper relative">
+    <div
+        class="search-center-container flex flex-center flex-align-center"
+        *ngIf="dataComing && !showLoader"
+    >
+        <app-searchbar-dropdown
+            [showTerminatedCheckBox]="false"
+            [dropDownSelectedValue]="dropdownData[0]"
+            [displaySearchDropDown]="true"
+            [dropdownData]="dropdownData"
+            [searchboxPlaceHolder]="'Search By Keyword'"
+            (navigatePage)="navigatePage($event)"
+            [searchboxValueSelected]="''"
+        ></app-searchbar-dropdown>
     </div>
-    <article class='center error_handling' *ngIf="!dataComing">
+    <article class="center error_handling" *ngIf="!dataComing">
         <div class="error_msg">
-            <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+            <app-error-message
+                *ngIf="seekdata == true"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
         </div>
     </article>
-    <div *ngIf='showLoader' class="loader"></div>
+    <div *ngIf="showLoader" class="loader"></div>
 </section>

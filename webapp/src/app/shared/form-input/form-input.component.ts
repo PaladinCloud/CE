@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -22,29 +22,36 @@ import { changeTextColor, changeUnderlineColor } from './../animations/animation
     styleUrls: ['./form-input.component.css'],
     animations: [
         trigger('labelFocus', [
-            state('focused', style({
-                'font-size': '.9em',
-                'transform': 'translateY(-1.8em)'
-            })),
+            state(
+                'focused',
+                style({
+                    'font-size': '.9em',
+                    transform: 'translateY(-1.8em)',
+                }),
+            ),
             transition('* <=> focused', animate('400ms ease-in-out')),
         ]),
         trigger('underlineFocus', [
-            state('focused', style({
-                width: '100%'
-            })),
-            state('error', style({
-                width: '100%',
-                'border-color': '#336cc9'
-            })),
+            state(
+                'focused',
+                style({
+                    width: '100%',
+                }),
+            ),
+            state(
+                'error',
+                style({
+                    width: '100%',
+                    'border-color': '#336cc9',
+                }),
+            ),
             transition('* <=> focused', animate('400ms ease-in-out')),
-            transition('* <=> error', animate('400ms ease-in-out'))
-
+            transition('* <=> error', animate('400ms ease-in-out')),
         ]),
         changeTextColor,
-        changeUnderlineColor
-    ]
+        changeUnderlineColor,
+    ],
 })
-
 export class FormInputComponent {
     animationLabelState: string;
     animationUnderlineState: string;

@@ -81,13 +81,13 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Input() tableTitle: string;
     @Input() totalRows = 0;
     @Input() whiteListColumns: string[] = [];
-    @Input() set filteredArray(filterItems: FilterItem[]){
-        filterItems?.forEach(filterItem => {
-            if(typeof filterItem.value == "string" && typeof filterItem.filterValue == "string"){
-                filterItem.value = filterItem.value?.split(",");
-                filterItem.filterValue = filterItem.filterValue?.split(",");
+    @Input() set filteredArray(filterItems: FilterItem[]) {
+        filterItems?.forEach((filterItem) => {
+            if (typeof filterItem.value == 'string' && typeof filterItem.filterValue == 'string') {
+                filterItem.value = filterItem.value?.split(',');
+                filterItem.filterValue = filterItem.filterValue?.split(',');
             }
-        })
+        });
         this._filteredArray = filterItems;
     }
     get filteredArray() {
@@ -150,58 +150,67 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     rowHeight = 36;
     offset: number;
-    tooltipMessageMap = {}
+    tooltipMessageMap = {};
     private whitelistColumnsChange = new Subject<any>();
     private readonly initialScrollPosition = 2;
 
     private _columnWidths: { [key: string]: number } = {};
     private sortByColumn = {
         severity: (a, b, isAsc) => {
-            const severeness = { low: 1, medium: 2, high: 3, critical: 4, default: 5 * (isAsc ? 1 : -1) };
-      
-            const ASeverity = a["Severity"].valueText?.toLowerCase()??"default";
-            const BSeverity = b["Severity"].valueText?.toLowerCase()??"default";
-            
+            const severeness = {
+                low: 1,
+                medium: 2,
+                high: 3,
+                critical: 4,
+                default: 5 * (isAsc ? 1 : -1),
+            };
+
+            const ASeverity = a['Severity'].valueText?.toLowerCase() ?? 'default';
+            const BSeverity = b['Severity'].valueText?.toLowerCase() ?? 'default';
+
             return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
-          },
-          category: (a, b, isAsc) => {
-            const priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
-      
-            const ACategory = a["Category"].valueText??"default";
-            const BCategory = b["Category"].valueText??"default";
-            if(priority[ACategory] == priority[BCategory]){
-              return a['Violations']<b['Violations'] ? -1: 1
+        },
+        category: (a, b, isAsc) => {
+            const priority = {
+                security: 4,
+                operations: 3,
+                cost: 2,
+                tagging: 1,
+                default: 5 * (isAsc ? 1 : -1),
+            };
+
+            const ACategory = a['Category'].valueText ?? 'default';
+            const BCategory = b['Category'].valueText ?? 'default';
+            if (priority[ACategory] == priority[BCategory]) {
+                return a['Violations'] < b['Violations'] ? -1 : 1;
             }
             return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
-          },
-    }
+        },
+    };
 
-    constructor(
-        private ngZone: NgZone,
-        ) {
+    constructor(private ngZone: NgZone) {
         this.dataSource = new TableDataSource(this.ngZone);
         this.mainDataSource = new TableDataSource(this.ngZone);
     }
 
-    scrollTableToPos (scrollPos) {
+    scrollTableToPos(scrollPos) {
         this.viewport.scrollToOffset(scrollPos);
     }
 
     ngOnInit(): void {
         this.whitelistColumnsChange
-        .pipe(takeUntil(this.destroy$), debounceTime(300))
-        .subscribe((selectedColumns) => {
+            .pipe(takeUntil(this.destroy$), debounceTime(300))
+            .subscribe((selectedColumns) => {
                 this.whiteListColumns = Object.keys(this.columnWidths).filter((c) =>
-                selectedColumns.includes(c),
-            );
-            this.whiteListColumnsChanged();
-        });
+                    selectedColumns.includes(c),
+                );
+                this.whiteListColumnsChanged();
+            });
         this.dataSource.attach(this.viewport);
 
-      this.viewport.renderedRangeStream.pipe(takeUntil(this.destroy$)).subscribe(range => {
-        this.offset = range.start * -this.rowHeight;
-      });
-
+        this.viewport.renderedRangeStream.pipe(takeUntil(this.destroy$)).subscribe((range) => {
+            this.offset = range.start * -this.rowHeight;
+        });
 
         if (this.onScrollDataLoader) {
             this.onScrollDataLoader.pipe(takeUntil(this.destroy$)).subscribe((data) => {
@@ -213,10 +222,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
                 }
             });
         }
-
     }
 
-    ngOnChanges(changes: SimpleChanges): void {    
+    ngOnChanges(changes: SimpleChanges): void {
         if (this.customTable) {
             if (!this.tableDataLoaded) {
                 this.tableScrollTop = 0;
@@ -244,10 +252,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             }
             this.isDataLoading = false;
         }
-        if(changes.tableScrollTop && this.tableScrollTop){
+        if (changes.tableScrollTop && this.tableScrollTop) {
             this.dataSource.intialCallFlag = false;
         }
-        if(changes.totalRows){
+        if (changes.totalRows) {
             this.totalRecordsAfterFilter = this.totalRows;
         }
         // below lines will cause UI driven (filter or sort) tables to render all the records when new column is added/removed.
@@ -259,29 +267,36 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             this.filterAndSort();
         }
 
-        if(changes.whiteListColumns){
-            this.updateDenominator();          
+        if (changes.whiteListColumns) {
+            this.updateDenominator();
         }
     }
 
     ngAfterViewInit(): void {
         if (this.tableScrollTop) {
-            this.scrollTableToPos(this.tableScrollTop);        
+            this.scrollTableToPos(this.tableScrollTop);
         }
 
-        this.viewport.elementScrolled().pipe(
-            map(() => this.viewport.measureScrollOffset("bottom")),
-            pairwise(),
-            filter(([y1, y2]) => (y2<y1) && (y2<1000)),
-            throttleTime(200),
-            takeUntil(this.destroy$)
-          ).subscribe(() => {
-            this.selectedRowIndex = -1;                        
-            if((this.data.length < this.totalRows || this.hasMoreData) && !this.isDataLoading && this.tableDataLoaded){
-                this.isDataLoading = true;
-                this.nextPageCalled.emit(this.offset);
-            }
-          })
+        this.viewport
+            .elementScrolled()
+            .pipe(
+                map(() => this.viewport.measureScrollOffset('bottom')),
+                pairwise(),
+                filter(([y1, y2]) => y2 < y1 && y2 < 1000),
+                throttleTime(200),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => {
+                this.selectedRowIndex = -1;
+                if (
+                    (this.data.length < this.totalRows || this.hasMoreData) &&
+                    !this.isDataLoading &&
+                    this.tableDataLoaded
+                ) {
+                    this.isDataLoading = true;
+                    this.nextPageCalled.emit(this.offset);
+                }
+            });
     }
 
     ngOnDestroy(): void {
@@ -289,12 +304,15 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.destroy$.complete();
     }
 
-    displayToolTip(column:string){
+    displayToolTip(column: string) {
         return this.tooltipMessageMap[column] ?? column;
     }
 
-    updateDenominator(){
-        this.denominator = this.whiteListColumns.reduce((acc,next) => acc+=this.columnWidths[next], 0); 
+    updateDenominator() {
+        this.denominator = this.whiteListColumns.reduce(
+            (acc, next) => (acc += this.columnWidths[next]),
+            0,
+        );
     }
 
     filterAndSort() {
@@ -323,7 +341,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             return;
         }
         const rowsToAddToOffset = 5;
-        const heightToAddToOffset = (i>rowsToAddToOffset?i-rowsToAddToOffset:i) * this.rowHeight;
+        const heightToAddToOffset =
+            (i > rowsToAddToOffset ? i - rowsToAddToOffset : i) * this.rowHeight;
         const event = {
             tableScrollTop: -this.offset + heightToAddToOffset,
             rowSelected: row,
@@ -332,11 +351,11 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             filters: this.filteredArray,
             searchTxt: this.searchQuery,
             selectedRowIndex: i,
-            selectedRowId: row[this.idColumn]?.valueText
+            selectedRowId: row[this.idColumn]?.valueText,
         };
         this.ngZone.run(() => {
             this.rowSelectEventEmitter.emit(event);
-        })
+        });
     }
 
     handleAction(element, action: string, i: number) {
@@ -352,7 +371,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.whitelistColumnsChange.next(selectedColumns);
     }
 
-
     selectFilterCategory(category: string) {
         if (this.filteredArray.some((i) => i.keyDisplayValue === category)) {
             this.handleFilterTagsDropdownOpen(category);
@@ -363,7 +381,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             filterValue: undefined,
         });
         const filteredArrayKeys = this.filteredArray.map((item) => item.keyDisplayValue);
-        const index = filteredArrayKeys.indexOf(category)>=0?filteredArrayKeys.indexOf(category):this.filteredArray.length-1;
+        const index =
+            filteredArrayKeys.indexOf(category) >= 0
+                ? filteredArrayKeys.indexOf(category)
+                : this.filteredArray.length - 1;
         this.onSelectFilterType(category, index);
     }
 
@@ -384,7 +405,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
         const appliedFilterTags = event.appliedFilterTags;
 
-        if(appliedFilterTags.length==0){
+        if (appliedFilterTags.length == 0) {
             this.removeOnlyFilterValue(index);
             return;
         }
@@ -414,7 +435,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             this.filteredArray = [...this.filteredArray, filterItem];
             index = this.filteredArray.length - 1;
         } else {
-            this.filteredArray[index].filterValue = this.filteredArray[index].value = appliedFilterTags;
+            this.filteredArray[index].filterValue = this.filteredArray[index].value =
+                appliedFilterTags;
         }
 
         if (this.doLocalFilter) {
@@ -424,7 +446,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.selectedFilter.emit({
             index,
             filterKeyDisplayValue: event.category,
-            filterValue: this.enableMultiValuedFilter?event.appliedFilterTags:event.appliedFilterTags[0],
+            filterValue: this.enableMultiValuedFilter
+                ? event.appliedFilterTags
+                : event.appliedFilterTags[0],
         });
     }
 
@@ -464,7 +488,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.selectedFilter.emit(event);
     }
 
-    handleFilterTagsDropdownOpen(e){
+    handleFilterTagsDropdownOpen(e) {
         this.selectedFilterType.emit(e);
     }
 
@@ -495,7 +519,9 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     removeFilterCategory(filterCategory: string) {
-        const index = this.filteredArray.map(filter => filter.keyDisplayValue).indexOf(filterCategory);
+        const index = this.filteredArray
+            .map((filter) => filter.keyDisplayValue)
+            .indexOf(filterCategory);
         if (this.doLocalFilter) {
             this.filteredArray.splice(index, 1);
             this.filterAndSort();
@@ -518,46 +544,53 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
     customFilter() {
         this.tableErrorMessage = '';
-        this.dataSource.matTableDataSource.data = this.dataSource.matTableDataSource.data.filter((item) => {
-            for (let i = 0; i < this.filteredArray.length; i++) {
-                const filterObj = this.filteredArray[i];
+        this.dataSource.matTableDataSource.data = this.dataSource.matTableDataSource.data.filter(
+            (item) => {
+                for (let i = 0; i < this.filteredArray.length; i++) {
+                    const filterObj = this.filteredArray[i];
 
-                const filterKey = filterObj.keyDisplayValue;
-                const filterValue = String(filterObj.filterValue);
+                    const filterKey = filterObj.keyDisplayValue;
+                    const filterValue = String(filterObj.filterValue);
 
-                if (filterValue == 'undefined') {
-                    continue;
-                }
+                    if (filterValue == 'undefined') {
+                        continue;
+                    }
 
-                if (filterKey && filterValue) {
-                    const cellValue = item[filterKey].valueText;
-                    if (
-                        filterValue == '0%-25%' ||
-                        filterValue == '26%-50%' ||
-                        filterValue == '51%-75%' ||
-                        filterValue == '76%-100%'
-                    ) {
-                        const cv = cellValue.substring(0, cellValue.length - 1);
-                        const cv_f = parseFloat(cv);
-                        if (isNaN(cv_f)) return false;
-                        if (filterValue == '0%-25%' && !(cv_f >= 0 && cv_f <= 25)) return false;
-                        if (filterValue == '26%-50%' && !(cv_f >= 26 && cv_f <= 50)) return false;
-                        if (filterValue == '51%-75%' && !(cv_f >= 51 && cv_f <= 75)) return false;
-                        if (filterValue == '76%-100%' && !(cv_f >= 76 && cv_f <= 100)) return false;
-                    } else if(filterValue.includes('-')){
-                        const [min, max] = filterValue.split('-');
-                        if(cellValue<min || cellValue>max) return false;
-                    } else if(this.filterFunctionMap && this.filterFunctionMap[filterKey]){
-                        if(!this.filterFunctionMap[filterKey](item, filterKey, filterValue)){
+                    if (filterKey && filterValue) {
+                        const cellValue = item[filterKey].valueText;
+                        if (
+                            filterValue == '0%-25%' ||
+                            filterValue == '26%-50%' ||
+                            filterValue == '51%-75%' ||
+                            filterValue == '76%-100%'
+                        ) {
+                            const cv = cellValue.substring(0, cellValue.length - 1);
+                            const cv_f = parseFloat(cv);
+                            if (isNaN(cv_f)) return false;
+                            if (filterValue == '0%-25%' && !(cv_f >= 0 && cv_f <= 25)) return false;
+                            if (filterValue == '26%-50%' && !(cv_f >= 26 && cv_f <= 50))
+                                return false;
+                            if (filterValue == '51%-75%' && !(cv_f >= 51 && cv_f <= 75))
+                                return false;
+                            if (filterValue == '76%-100%' && !(cv_f >= 76 && cv_f <= 100))
+                                return false;
+                        } else if (filterValue.includes('-')) {
+                            const [min, max] = filterValue.split('-');
+                            if (cellValue < min || cellValue > max) return false;
+                        } else if (this.filterFunctionMap && this.filterFunctionMap[filterKey]) {
+                            if (!this.filterFunctionMap[filterKey](item, filterKey, filterValue)) {
+                                return false;
+                            }
+                        } else if (
+                            !(String(cellValue).toLowerCase() == filterValue.toLowerCase())
+                        ) {
                             return false;
                         }
-                    } else if (!(String(cellValue).toLowerCase() == filterValue.toLowerCase())) {
-                        return false;
                     }
                 }
-            }
-            return true;
-        });
+                return true;
+            },
+        );
 
         this.totalRecordsAfterFilter = this.dataSource.matTableDataSource.data.length;
         if (this.dataSource.matTableDataSource.data.length == 0) {
@@ -568,16 +601,17 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     customSearch() {
         const searchTxt = this.searchQuery;
         // whenever search or filter is called, we perform search first and then filter and thus we take maindatasource here for search
-        this.dataSource.matTableDataSource.data = this.mainDataSource.matTableDataSource.data.filter((item) => {
-            const columnsToSearchIN = Object.keys(item);
-            for (const i in columnsToSearchIN) {
-                const col = columnsToSearchIN[i];
-                if (String(item[col].valueText).toLowerCase().match(searchTxt)) {
-                    return true;
+        this.dataSource.matTableDataSource.data =
+            this.mainDataSource.matTableDataSource.data.filter((item) => {
+                const columnsToSearchIN = Object.keys(item);
+                for (const i in columnsToSearchIN) {
+                    const col = columnsToSearchIN[i];
+                    if (String(item[col].valueText).toLowerCase().match(searchTxt)) {
+                        return true;
+                    }
                 }
-            }
-            return false;
-        });
+                return false;
+            });
         if (this.dataSource.matTableDataSource.data.length == 0) {
             this.tableErrorMessage = 'noDataAvailable';
         }
@@ -613,7 +647,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
 
     announceSortChange(sort: Sort) {
-        if (this.doNotSort || sort.active=='Actions') {
+        if (this.doNotSort || sort.active == 'Actions') {
             return;
         }
         this.scrollTableToPos(this.initialScrollPosition); // scroll to top when sort is applied
@@ -631,46 +665,53 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
         const isAsc = this.direction === 'asc';
 
-        this.dataSource.matTableDataSource.data = this.dataSource.matTableDataSource.data.sort((a, b) => {
-            if (this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]) {
-                return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
-            }else if(this.sortByColumn[this.headerColName.toLowerCase()]){
-                return this.sortByColumn[this.headerColName.toLowerCase()](a, b, isAsc);
-            }
+        this.dataSource.matTableDataSource.data = this.dataSource.matTableDataSource.data.sort(
+            (a, b) => {
+                if (
+                    this.columnsSortFunctionMap &&
+                    this.columnsSortFunctionMap[this.headerColName]
+                ) {
+                    return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
+                } else if (this.sortByColumn[this.headerColName.toLowerCase()]) {
+                    return this.sortByColumn[this.headerColName.toLowerCase()](a, b, isAsc);
+                }
 
-            const elementA = a[this.headerColName];
-            const elementB = b[this.headerColName];
+                const elementA = a[this.headerColName];
+                const elementB = b[this.headerColName];
 
-            if (!isNaN(parseFloat(elementA?.valueText)) && !isNaN(parseFloat(elementB?.valueText))) {
-                return (
-                    (parseFloat(elementA.valueText) - parseFloat(elementB.valueText)) *
-                    (isAsc ? 1 : -1)
-                );
-            }
+                if (
+                    !isNaN(parseFloat(elementA?.valueText)) &&
+                    !isNaN(parseFloat(elementB?.valueText))
+                ) {
+                    return (
+                        (parseFloat(elementA.valueText) - parseFloat(elementB.valueText)) *
+                        (isAsc ? 1 : -1)
+                    );
+                }
 
-            const elementAValue =
-                elementA && elementA.valueText
-                    ? elementA.valueText.toString().toLowerCase().trim()
-                    : isAsc
-                    ? 'zzzzzzzzzzzzzzzz'
-                    : '0000000000000000';
-            const elementBValue =
-                elementB && elementB.valueText
-                    ? elementB.valueText.toString().toLowerCase().trim()
-                    : isAsc
-                    ? 'zzzzzzzzzzzzzzzz'
-                    : '0000000000000000';
+                const elementAValue =
+                    elementA && elementA.valueText
+                        ? elementA.valueText.toString().toLowerCase().trim()
+                        : isAsc
+                          ? 'zzzzzzzzzzzzzzzz'
+                          : '0000000000000000';
+                const elementBValue =
+                    elementB && elementB.valueText
+                        ? elementB.valueText.toString().toLowerCase().trim()
+                        : isAsc
+                          ? 'zzzzzzzzzzzzzzzz'
+                          : '0000000000000000';
 
-            return (elementAValue < elementBValue ? -1 : 1) * (isAsc ? 1 : -1);
-        });
+                return (elementAValue < elementBValue ? -1 : 1) * (isAsc ? 1 : -1);
+            },
+        );
     }
 
-
-    handleCheckboxChange(row, col, e){
-        row[col].valueText=e.checked?'checked':'unchecked';
+    handleCheckboxChange(row, col, e) {
+        row[col].valueText = e.checked ? 'checked' : 'unchecked';
         const event = {
             rowSelected: row,
-            col
+            col,
         };
         this.rowSelectEventEmitter.emit(event);
     }
@@ -682,7 +723,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         });
     }
 
-    trackColumnByIndex(index: number){
+    trackColumnByIndex(index: number) {
         return index;
     }
 }

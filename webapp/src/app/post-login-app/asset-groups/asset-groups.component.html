@@ -3,37 +3,76 @@
         <div class="dialog-header flex">
             <div class="dialog-body-header-wrapper flex flex-row gap-12">
                 <span class="dialog-body-header">Asset Group Selector</span>
-                <app-chip 
-                [backgroundColor]="'#F2F3F5'"
-                [color]="'#73777D'"
-                [chipsList]="chipList">
+                <app-chip [backgroundColor]="'#F2F3F5'" [color]="'#73777D'" [chipsList]="chipList">
                 </app-chip>
             </div>
-            <img class="x-icon pointer" src="/assets/icons/x-icon.svg" alt="" (click)="instructParentToCloseAssetGroup()">
+            <img
+                class="x-icon pointer"
+                src="/assets/icons/x-icon.svg"
+                alt=""
+                (click)="instructParentToCloseAssetGroup()"
+            />
         </div>
         <div class="dialog-body-content-wrapper">
             <div class="list-wrapper flex">
                 <div class="tab-list flex flex-col">
                     <div *ngFor="let assetTabName of assetTabNames; let i = index">
-                        <div [class.active]="selectedTabName==assetTabName" class="asset-group-tab" (click)='tabsClicked(assetTabName)'  [ngStyle]="{ 'text-transform': 'capitalize'}">{{assetTabName}}</div>
+                        <div
+                            [class.active]="selectedTabName == assetTabName"
+                            class="asset-group-tab"
+                            (click)="tabsClicked(assetTabName)"
+                            [ngStyle]="{ 'text-transform': 'capitalize' }"
+                        >
+                            {{ assetTabName }}
+                        </div>
                     </div>
                 </div>
                 <div class="asset-group-list flex flex-col">
                     <div class="search-wrapper">
-                        <app-search-bar [placeHolderText]="placeHolderText" (searchQuery)="handleSearch($event)"></app-search-bar>
+                        <app-search-bar
+                            [placeHolderText]="placeHolderText"
+                            (searchQuery)="handleSearch($event)"
+                        ></app-search-bar>
                     </div>
                     <div class="container-wrapper">
-                    <div class="container relative" [class.left-most]='i%3 == 0'[hidden]="!( checkIsRecentlyViewedOrAll() || getSelectedTabAssets(assettile.type))"
-                     *ngFor="let assettile of ( selectedTabName !== 'recently viewed' ? assetTiles : recentlyViewedAssets ) | searchFilter : returnedSearch; 
-                    let i = index; " (click)='assetTileClicked(assettile.name);'>
-                    <div class="asset-group-list-item" [class.active]='currentAssetTile ==  assettile.name.toLowerCase()'>
-                        <div class="asset-tile-name" [ngStyle]="{ 'text-transform': 'capitalize'}">{{getDisplayName(assettile.displayname)}}</div>
+                        <div
+                            class="container relative"
+                            [class.left-most]="i % 3 == 0"
+                            [hidden]="
+                                !(
+                                    checkIsRecentlyViewedOrAll() ||
+                                    getSelectedTabAssets(assettile.type)
+                                )
+                            "
+                            *ngFor="
+                                let assettile of (selectedTabName !== 'recently viewed'
+                                    ? assetTiles
+                                    : recentlyViewedAssets
+                                ) | searchFilter: returnedSearch;
+                                let i = index
+                            "
+                            (click)="assetTileClicked(assettile.name)"
+                        >
+                            <div
+                                class="asset-group-list-item"
+                                [class.active]="currentAssetTile == assettile.name.toLowerCase()"
+                            >
+                                <div
+                                    class="asset-tile-name"
+                                    [ngStyle]="{ 'text-transform': 'capitalize' }"
+                                >
+                                    {{ getDisplayName(assettile.displayname) }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    </div>
-                </div>
                 </div>
                 <div class="asset-group-details">
-                    <app-asset-group-details [assetDetailsState]='assetDetailsState' [detailsVal]='assetDetailTiles' (navigatePage)="navigatePage($event,assetTile)"></app-asset-group-details>
+                    <app-asset-group-details
+                        [assetDetailsState]="assetDetailsState"
+                        [detailsVal]="assetDetailTiles"
+                        (navigatePage)="navigatePage($event, assetTile)"
+                    ></app-asset-group-details>
                 </div>
             </div>
         </div>

@@ -11,11 +11,14 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
- <div class="alert-banner" *ngIf="status.toLowerCase()=='disabled'">
-    <img  style="height: 16px;width: 16px;" src="/assets/icons/alert.svg">
-    <span class="banner-text body-2 medium-emphasis">{{bannerText}}</span>
+<div class="alert-banner" *ngIf="status.toLowerCase() == 'disabled'">
+    <img style="height: 16px; width: 16px" src="/assets/icons/alert.svg" />
+    <span class="banner-text body-2 medium-emphasis">{{ bannerText }}</span>
 </div>
- <div class="policy-knowledgebase-wrapper flex" [class.has-banner]="status.toLowerCase()=='disabled'">
+<div
+    class="policy-knowledgebase-wrapper flex"
+    [class.has-banner]="status.toLowerCase() == 'disabled'"
+>
     <div *ngIf="backButtonRequired" class="breadcrumb-container">
         <app-breadcrumb
             *ngIf="breadcrumbLinks"
@@ -49,7 +52,7 @@
                         {{ assetGroup }}
                         <img
                             *ngIf="assetGroup"
-                            src="/assets/icons/{{assetGroupImage}}-color.svg"
+                            src="/assets/icons/{{ assetGroupImage }}-color.svg"
                         />
                     </span>
                 </div>

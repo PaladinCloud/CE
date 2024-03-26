@@ -4,13 +4,13 @@ import { OmniSearchPageComponent } from './omni-search-page/omni-search-page.com
 
 export const OMNISEARCH_ROUTES = [
     {
-      path: "omni-search-page",
-      component: OmniSearchPageComponent,
-      canActivate: [AuthGuardService],
+        path: 'omni-search-page',
+        component: OmniSearchPageComponent,
+        canActivate: [AuthGuardService],
     },
     {
-      path: "omni-search-details",
-      component: OmniSearchDetailsComponent,
-      canActivate: [AuthGuardService],
+        path: 'omni-search-details',
+        component: OmniSearchDetailsComponent,
+        canActivate: [AuthGuardService],
     },
-  ];
+];

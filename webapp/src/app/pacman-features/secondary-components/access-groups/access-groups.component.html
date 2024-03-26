@@ -12,12 +12,17 @@
  * limitations under the License.
  -->
 
- <section class="access-groups" *ngIf="resource">
-	<div class="access-groups-wrapper">
-		<div class="access-groups-list link-text pointer" *ngFor="let data of resource">
-			<a target='_blank' href="{{config.optional.general.ACCESS_MANAGEMENT_PORTAL_URL}}/web/guest/ad-groups">
-				{{data.name}}
-			</a>
-		</div>
-	</div>
+<section class="access-groups" *ngIf="resource">
+    <div class="access-groups-wrapper">
+        <div class="access-groups-list link-text pointer" *ngFor="let data of resource">
+            <a
+                target="_blank"
+                href="{{
+                    config.optional.general.ACCESS_MANAGEMENT_PORTAL_URL
+                }}/web/guest/ad-groups"
+            >
+                {{ data.name }}
+            </a>
+        </div>
+    </div>
 </section>

@@ -7,12 +7,12 @@ import { FilterItem } from '../table/table.component';
 import { FilterChipUpdateEvent } from './table-filter-chip/table-filter-chip.component';
 
 interface AppliedFilter {
-    [categoryName: string]: AppliedFilterTags
+    [categoryName: string]: AppliedFilterTags;
 }
 
 export interface AppliedFilterTags {
     [optionName: string]: boolean;
-};
+}
 export interface OptionChange {
     category: string;
     appliedFilterTags: string[];
@@ -36,19 +36,22 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
             if (!next.filterValue || !next.key) {
                 return prev;
             }
-        (next.filterValue as any).map(item => {
-            prev = merge({}, prev, {
-                [next.key]: {
-                    [item]: true,
-                },
+            (next.filterValue as any).map((item) => {
+                prev = merge({}, prev, {
+                    [next.key]: {
+                        [item]: true,
+                    },
+                });
             });
-        })
             return prev;
         }, {});
 
         this.syncFiltersDictWithFiltersArray();
         // TODO: REMOVE IF STATEMENT WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
-        if (Object.keys(this.appliedFiltersDict).length && (!this.enableMultiValuedFilter || this.isDateFilter)) {
+        if (
+            Object.keys(this.appliedFiltersDict).length &&
+            (!this.enableMultiValuedFilter || this.isDateFilter)
+        ) {
             this.appliedFiltersDict = Object.keys(this.appliedFiltersDict).reduce((acc, next) => {
                 acc[next] = optionDict[next] ? optionDict[next] : this.appliedFiltersDict[next];
                 return acc;
@@ -82,16 +85,16 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         return this._categories;
     }
 
-    @Input() set categoryOptions(values){
+    @Input() set categoryOptions(values) {
         this._categoryOptions = values;
-        
-        if(this.isDateFilter && this._categoryOptions[this.selectedCategory].length){
+
+        if (this.isDateFilter && this._categoryOptions[this.selectedCategory].length) {
             this.calendarMinDate = new Date(this._categoryOptions[this.selectedCategory][0]);
             this.calendarMaxDate = new Date(this._categoryOptions[this.selectedCategory][1]);
         }
-    };
+    }
 
-    get categoryOptions(){
+    get categoryOptions() {
         return this._categoryOptions;
     }
 
@@ -125,15 +128,16 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.filterTextSubscription = this.filterTextChange
-        .pipe(debounceTime(500))
-        .subscribe((event) => {
-            this.filterSearchTextChange.emit(event);
-        });
+            .pipe(debounceTime(500))
+            .subscribe((event) => {
+                this.filterSearchTextChange.emit(event);
+            });
 
-        this.filterOptionChangeSubscription = this.filterOptionChange.pipe(debounceTime(500))
-        .subscribe((event) => {
-            this.optionChange.emit(event);
-        });
+        this.filterOptionChangeSubscription = this.filterOptionChange
+            .pipe(debounceTime(500))
+            .subscribe((event) => {
+                this.optionChange.emit(event);
+            });
     }
 
     openMenu() {
@@ -146,32 +150,37 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     openFilterCategory(filterCategory: string) {
         this.isCategoryOptionsMenuOpen = true;
         this.selectedCategory = filterCategory;
-        if(this.dateCategoryList?.toString().toLowerCase().includes(this.selectedCategory?.toLowerCase())){
+        if (
+            this.dateCategoryList
+                ?.toString()
+                .toLowerCase()
+                .includes(this.selectedCategory?.toLowerCase())
+        ) {
             this.isDateFilter = true;
-        }else{
+        } else {
             this.isDateFilter = false;
         }
         this.categoryChange.emit(filterCategory);
     }
 
-    handleSearchTextChangeForCategory(event){
+    handleSearchTextChangeForCategory(event) {
         this.filterTextChange.next(event);
     }
 
-    handleSearchTextChange(searchText){
+    handleSearchTextChange(searchText) {
         const event = {
             searchText,
-            selectedFilterCategory: this.selectedCategory
+            selectedFilterCategory: this.selectedCategory,
         };
-        
+
         this.handleSearchTextChangeForCategory(event);
     }
 
-    dateIntervalSelected(from?, to?){
+    dateIntervalSelected(from?, to?) {
         const toDate = new Date(to).toLocaleDateString('en-CA');
         const fromDate = new Date(from).toLocaleDateString('en-CA');
         this.isCategoryMenuOpen = false;
-        this.applyFilter(fromDate+' - '+toDate);
+        this.applyFilter(fromDate + ' - ' + toDate);
     }
 
     applyFilter(filterOption: string, event?: MatCheckboxChange) {
@@ -181,7 +190,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         this.updateFilter({
             category: this.selectedCategory,
             filterName: filterOption,
-            filterValue: event? event.checked : true,
+            filterValue: event ? event.checked : true,
         });
     }
 
@@ -190,7 +199,10 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         // TODO: REMOVE WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
         const uncheckedOptionsDict = Object.entries(this.appliedFiltersDict[filterCategory]).reduce(
             (prev, [name]) => {
-                if (name !== event.filterName && (!this.enableMultiValuedFilter || this.isDateFilter)) {
+                if (
+                    name !== event.filterName &&
+                    (!this.enableMultiValuedFilter || this.isDateFilter)
+                ) {
                     prev[name] = false;
                 }
                 return prev;
@@ -206,16 +218,18 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
 
         this.filterOptionChange.next({
             category: filterCategory,
-            appliedFilterTags: Object.keys(this.appliedFiltersDict[filterCategory]).filter(filter => this.appliedFiltersDict[filterCategory][filter])
+            appliedFilterTags: Object.keys(this.appliedFiltersDict[filterCategory]).filter(
+                (filter) => this.appliedFiltersDict[filterCategory][filter],
+            ),
         });
     }
 
-    closeOptionsMenu(){
+    closeOptionsMenu() {
         this.isCategoryOptionsMenuOpen = false;
     }
 
     clearFilter(filterCategory: string) {
-        if(this.appliedFiltersDict[filterCategory]){
+        if (this.appliedFiltersDict[filterCategory]) {
             const resettedFilter = Object.keys(this.appliedFiltersDict[filterCategory]).reduce(
                 (acc, next) => {
                     acc[next] = false;
@@ -223,7 +237,7 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
                 },
                 {},
             );
-    
+
             this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
                 [filterCategory]: resettedFilter,
             });
@@ -240,13 +254,14 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
     }
 
     filterCategoriesByQuery() {
-        const appliedFilterCategories = this.appliedFilters.map(filter => filter.keyDisplayValue);
+        const appliedFilterCategories = this.appliedFilters.map((filter) => filter.keyDisplayValue);
         return (
-            this.categories?.filter((c) =>
-                c.toLowerCase().includes(this.categoryFilterQuery.toLowerCase())
-                &&  !appliedFilterCategories.includes(c),
+            this.categories?.filter(
+                (c) =>
+                    c.toLowerCase().includes(this.categoryFilterQuery.toLowerCase()) &&
+                    !appliedFilterCategories.includes(c),
             ) || []
-        )
+        );
     }
 
     filterSelectedCategoryOptionsByQuery() {
@@ -264,27 +279,27 @@ export class TableFiltersComponent implements OnInit, OnDestroy {
         return item.key || index;
     }
 
-    syncFiltersDictWithFiltersArray(){
-        const appliedFilterKeys = this.appliedFilters.map(filter => filter.keyDisplayValue);
-        
-        Object.keys(this.appliedFiltersDict).map(key => {
-            if(!appliedFilterKeys.includes(key)){                
+    syncFiltersDictWithFiltersArray() {
+        const appliedFilterKeys = this.appliedFilters.map((filter) => filter.keyDisplayValue);
+
+        Object.keys(this.appliedFiltersDict).map((key) => {
+            if (!appliedFilterKeys.includes(key)) {
                 this.appliedFiltersDict[key] = {};
             }
         });
 
         this.appliedFilters.reduce((dict, filterItem) => {
             const { keyDisplayValue, filterValue } = filterItem;
-          
-            if (filterValue && typeof filterValue != "string") {
-              dict[keyDisplayValue] = filterValue.reduce((innerDict, value) => {
-                innerDict[value] = true;
-                return innerDict;
-              }, {});
+
+            if (filterValue && typeof filterValue != 'string') {
+                dict[keyDisplayValue] = filterValue.reduce((innerDict, value) => {
+                    innerDict[value] = true;
+                    return innerDict;
+                }, {});
             }
-          
+
             return dict;
-          }, this.appliedFiltersDict);
+        }, this.appliedFiltersDict);
     }
 
     ngOnDestroy(): void {

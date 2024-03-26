@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -35,43 +35,43 @@ import { TableComponent } from 'src/app/shared/table/table.component';
 import { PoliciesComponent } from './policies.component';
 
 describe('PoliciesComponent', () => {
-  let component: PoliciesComponent;
-  let fixture: ComponentFixture<PoliciesComponent>;
+    let component: PoliciesComponent;
+    let fixture: ComponentFixture<PoliciesComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        FormsModule,
-        HttpClientTestingModule,
-        MatDialogModule,
-        MatSelectModule,
-        MatMenuModule,
-        NoopAnimationsModule,
-        RouterTestingModule,
-      ],
-      declarations: [PoliciesComponent, DropdownComponent, TableComponent],
-      providers: [
-        DataCacheService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        TableStateService,
-        UtilsService,
-        WindowExpansionService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [
+                FormsModule,
+                HttpClientTestingModule,
+                MatDialogModule,
+                MatSelectModule,
+                MatMenuModule,
+                NoopAnimationsModule,
+                RouterTestingModule,
+            ],
+            declarations: [PoliciesComponent, DropdownComponent, TableComponent],
+            providers: [
+                DataCacheService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                TableStateService,
+                UtilsService,
+                WindowExpansionService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PoliciesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PoliciesComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

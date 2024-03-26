@@ -44,26 +44,26 @@ export class WorkflowService {
         private router: Router,
     ) {}
 
-    getCurrentLevel(){
-        return this.level["level0"]?.length || 0;
+    getCurrentLevel() {
+        return this.level['level0']?.length || 0;
     }
 
-    getLastLevel(){
-        const lastLevel = sessionStorage.getItem("lastLevel");
-        return lastLevel?parseInt(lastLevel):0;
+    getLastLevel() {
+        const lastLevel = sessionStorage.getItem('lastLevel');
+        return lastLevel ? parseInt(lastLevel) : 0;
     }
 
-    getNavigationDirection(){
+    getNavigationDirection() {
         const curLevel = this.getCurrentLevel();
         const lastLevel = this.getLastLevel();
-        const navDirection = curLevel-lastLevel;
+        const navDirection = curLevel - lastLevel;
         // 0 if same level i.e., L[i] to L[i]
         // +ve if L[i] to L[i+n] (here L[i] is last level, L[i+n] is current level -> forward navigation)
         // -ve if L[i] to L[i-n] (here L[i] is last level, L[i-n] is current level -> backward navigation)
         return navDirection;
     }
 
-    storeLastLevel(lastLevel){
+    storeLastLevel(lastLevel) {
         sessionStorage.setItem('lastLevel', String(lastLevel));
     }
 
@@ -88,9 +88,10 @@ export class WorkflowService {
         }
 
         const url = this.routerUtilityService.getFullUrlFromSnapshopt(routerSnapshot);
-        const queryParams =
-            {...this.routerUtilityService.getQueryParametersFromSnapshot(routerSnapshot)};
-        if(queryParams.hasOwnProperty('filter')){
+        const queryParams = {
+            ...this.routerUtilityService.getQueryParametersFromSnapshot(routerSnapshot),
+        };
+        if (queryParams.hasOwnProperty('filter')) {
             queryParams['filter'] = undefined;
         }
 
@@ -138,7 +139,7 @@ export class WorkflowService {
         });
     }
 
-    checkIfFlowExistsCurrently(currentLevel:number=0) {
+    checkIfFlowExistsCurrently(currentLevel: number = 0) {
         currentLevel = 0;
         let flowExiststatus = false;
         this.level = this.getDetailsFromStorage();
@@ -218,33 +219,47 @@ export class WorkflowService {
         this.trackOpenedPageInAModule = {};
     }
 
-    getIndexByTitleIfLevelAlreadyExists(title){
-        if(!title) return;
-        const levels = this.level["level0"];
-        const levelIdx = _.findIndex(levels, {"title": title});
+    getIndexByTitleIfLevelAlreadyExists(title) {
+        if (!title) return;
+        const levels = this.level['level0'];
+        const levelIdx = _.findIndex(levels, { title: title });
         return levelIdx;
     }
 
-    navigateTo({urlArray, queryParams, relativeTo, currPagetitle, nextPageTitle=undefined, state=undefined}){
-        try{
-            const index = this.getIndexByTitleIfLevelAlreadyExists(nextPageTitle);                
-            if(index>=0){
+    navigateTo({
+        urlArray,
+        queryParams,
+        relativeTo,
+        currPagetitle,
+        nextPageTitle = undefined,
+        state = undefined,
+    }) {
+        try {
+            const index = this.getIndexByTitleIfLevelAlreadyExists(nextPageTitle);
+            if (index >= 0) {
                 const currentLevel = this.level['level0'].length;
-                
-                this.level['level0'].splice(index, currentLevel-index);
+
+                this.level['level0'].splice(index, currentLevel - index);
                 this.saveToStorage(this.level);
             }
-            if(currPagetitle && index<0) this.addRouterSnapshotToLevel(
-                this.router.routerState.snapshot.root, 0, currPagetitle
-              );
-            this.router.navigate(
-                urlArray,
-                { relativeTo: relativeTo, queryParams:queryParams, queryParamsHandling: "merge", state }
-              ).catch(e => {
-                this.logger.log("error in navigation from workflow service --", e);
-              });
-        }catch(e){
-            this.logger.log("jsError: ", e);
+            if (currPagetitle && index < 0)
+                this.addRouterSnapshotToLevel(
+                    this.router.routerState.snapshot.root,
+                    0,
+                    currPagetitle,
+                );
+            this.router
+                .navigate(urlArray, {
+                    relativeTo: relativeTo,
+                    queryParams: queryParams,
+                    queryParamsHandling: 'merge',
+                    state,
+                })
+                .catch((e) => {
+                    this.logger.log('error in navigation from workflow service --', e);
+                });
+        } catch (e) {
+            this.logger.log('jsError: ', e);
         }
     }
 }

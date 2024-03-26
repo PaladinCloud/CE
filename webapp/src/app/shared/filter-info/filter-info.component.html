@@ -12,13 +12,13 @@
  * limitations under the License.
  -->
 
- <section class="filter-info-wrapper flex flex-col" *ngIf="tagsArray.length > 0">
-	<header class="header" *ngIf="showHeader">
-		{{header}}
-	</header>
-	<div class="tags-wrapper flex flex-wrap" *ngIf="tagsArray.length > 0">
-		<div class="tags nowrap-ellipsis" title="{{data.value}}" *ngFor='let data of tagsArray'>
-			{{data.name}}: {{data.value}}
-		</div>
-	</div>
+<section class="filter-info-wrapper flex flex-col" *ngIf="tagsArray.length > 0">
+    <header class="header" *ngIf="showHeader">
+        {{ header }}
+    </header>
+    <div class="tags-wrapper flex flex-wrap" *ngIf="tagsArray.length > 0">
+        <div class="tags nowrap-ellipsis" title="{{ data.value }}" *ngFor="let data of tagsArray">
+            {{ data.name }}: {{ data.value }}
+        </div>
+    </div>
 </section>

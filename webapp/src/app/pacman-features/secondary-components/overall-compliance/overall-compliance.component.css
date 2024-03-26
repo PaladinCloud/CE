@@ -22,7 +22,7 @@ app-overall-compliance .sub-heading {
     border: 1px solid var(--border-100);
 }
 
-app-overall-compliance .complaince-graph-container{
+app-overall-compliance .complaince-graph-container {
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
 }

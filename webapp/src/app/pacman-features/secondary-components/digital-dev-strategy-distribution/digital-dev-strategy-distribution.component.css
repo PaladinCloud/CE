@@ -12,10 +12,10 @@
  * limitations under the License.
  */
 
-.sub-header{
+.sub-header {
     min-width: 50em;
 }
-.digital-dev-strategy-distribution-wrapper{
+.digital-dev-strategy-distribution-wrapper {
     /* min-height: 25em; */
     height: 100%;
     overflow: auto;

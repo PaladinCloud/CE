@@ -32,58 +32,58 @@
     font: var(--text-body-2);
 }
 
-.violations-content .violations-count{
-  font: var(--text-body-2);
+.violations-content .violations-count {
+    font: var(--text-body-2);
 }
 
-.link{
-  color: var(--primary-400);
-  cursor: pointer;
+.link {
+    color: var(--primary-400);
+    cursor: pointer;
 }
 
-.violations-content .violations-count img{
-  height: 10px;
-  filter: invert(46%) sepia(3%) saturate(1769%) hue-rotate(159deg) brightness(96%) contrast(85%);
+.violations-content .violations-count img {
+    height: 10px;
+    filter: invert(46%) sepia(3%) saturate(1769%) hue-rotate(159deg) brightness(96%) contrast(85%);
 }
 
 .violations-card-divier {
     color: var(--border-200);
 }
 
-.violations-info-wrapper .name{
-  font: var(--text-overline);
-  font-family: var(--text-light-font-family);
-  color: var(--text-medium-emphasis);
+.violations-info-wrapper .name {
+    font: var(--text-overline);
+    font-family: var(--text-light-font-family);
+    color: var(--text-medium-emphasis);
 }
 
-.violations-info-wrapper .count{
-  font: var(--text-overline);
-  color: var(--text-medium-emphasis);
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  pointer-events: none;
+.violations-info-wrapper .count {
+    font: var(--text-overline);
+    color: var(--text-medium-emphasis);
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    pointer-events: none;
 }
 
-.hidden{
-  opacity: 0;
+.hidden {
+    opacity: 0;
 }
 
-.link{
-  cursor: pointer !important;
-  color: var(--primary-400) !important;
-  pointer-events: all !important;
+.link {
+    cursor: pointer !important;
+    color: var(--primary-400) !important;
+    pointer-events: all !important;
 }
 
-.red{
-  color: rgb(204, 98, 98) !important;
+.red {
+    color: rgb(204, 98, 98) !important;
 }
 
-.violations-info-wrapper{
-  display: grid;
-  grid-template-areas: 'col1 col2';
-  column-gap: 16px;
-  row-gap: 8px;
+.violations-info-wrapper {
+    display: grid;
+    grid-template-areas: 'col1 col2';
+    column-gap: 16px;
+    row-gap: 8px;
 }
 
 .violations-info-item .count {

@@ -18,35 +18,36 @@
 }
 
 .floating-widgets-container {
-    overflow: hidden;    
+    overflow: hidden;
 }
 
 .target-tiles:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 
 .floating-widgets-filter-wrapper {
     padding: 0em 1.5em 1.5em;
 }
 
-.width-100{
-    width:100%;
+.width-100 {
+    width: 100%;
 }
 
-.z-index-1{
+.z-index-1 {
     z-index: 1;
 }
 
 .target-wrap {
-	left: 1.25em;
-	right: 1.25em;
-	top: 0;
-	height: calc(100vh - 16.5em);
-	z-index: 12;
-	background-color: rgba(255,255,255,0.97);
-	/* padding: 3em 2em; */
-	border-radius: var(--border-radius);
-	box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.2);
+    left: 1.25em;
+    right: 1.25em;
+    top: 0;
+    height: calc(100vh - 16.5em);
+    z-index: 12;
+    background-color: rgba(255, 255, 255, 0.97);
+    /* padding: 3em 2em; */
+    border-radius: var(--border-radius);
+    box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.2);
 }
 
 .patching-wrapper {
@@ -73,7 +74,7 @@
 }
 
 .target-tiles {
-    height: 100%;    
+    height: 100%;
     max-width: 100%;
     padding: 3em;
     overflow: hidden;
@@ -96,15 +97,15 @@
     width: 11em;
 }
 
-.select-target{
+.select-target {
     border-right: 1px solid #fff;
     padding-right: 6em;
     width: 60em;
 }
 
-.weekly-section{
-    margin-left:6em;
-    height:100%;
+.weekly-section {
+    margin-left: 6em;
+    height: 100%;
 }
 
 .filter-arrow {
@@ -120,48 +121,48 @@
     right: 0.5em;
 }
 
-.select-dropdown{
+.select-dropdown {
     display: block;
     margin-top: 2px;
-    width:100%;
+    width: 100%;
     border-radius: var(--border-radius);
     border: 1px solid #fff;
 }
 
-.weeks-title{
-    display:block;
+.weeks-title {
+    display: block;
 }
 
-.week-input{
+.week-input {
     margin: 1px 0;
     width: 68px;
     border-radius: var(--border-radius);
     border: 1px solid #fff;
 }
-.week-loop{
+.week-loop {
     width: 5em;
     display: inline-block;
     margin: 1em 2em 1em 0;
 }
 
-.sub-text{
+.sub-text {
     font-size: 90%;
     padding-bottom: 2px;
 }
-.info-text{
+.info-text {
     font-style: italic;
     font-size: 75%;
     padding: 12px 0px;
-    color: #A9A9A9;
+    color: #a9a9a9;
 }
 
-.period-dropdown{
-    width:7em;
+.period-dropdown {
+    width: 7em;
     text-overflow: ellipsis;
     min-width: 4em;
 }
 
-.target-dropdown{
+.target-dropdown {
     margin: 20px 0;
     width: 100%;
     text-overflow: ellipsis;
@@ -169,24 +170,24 @@
 }
 
 .save-wrap {
-	padding: 2em 1em;
+    padding: 2em 1em;
 }
 
-.drop-options{
-    color:#000;
+.drop-options {
+    color: #000;
     width: 100%;
     margin: 2px 0;
     text-overflow: ellipsis;
 }
 
-.total-count{
+.total-count {
     padding: 6px 0px;
     white-space: nowrap;
 }
 
-.heading-text{
+.heading-text {
     padding-bottom: 6px;
-    font-size:1.2em;
+    font-size: 1.2em;
 }
 
 .circle-loader {
@@ -380,7 +381,7 @@
     font-size: 1.13em;
     line-height: 1.5;
 }
-.error-text{
+.error-text {
     /* position: absolute;
     top: 7%;
     left: 50%;
@@ -392,19 +393,18 @@
     margin: 0.5em 0 0;
 }
 
-.selection-disabled{
+.selection-disabled {
     opacity: 0.7;
 }
 
-.bottom-buttons{
-    width:22em;
+.bottom-buttons {
+    width: 22em;
 }
 
-.reset-btn{
+.reset-btn {
     margin: 0 1em;
 }
 
-.year-dropdown{
-    margin-right:3px;
+.year-dropdown {
+    margin-right: 3px;
 }
-

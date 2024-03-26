@@ -1,19 +1,21 @@
 <div class="table-wrapper">
     <app-table
-    [rowClickable]="true"
-    (rowSelectEventEmitter)="goToDetails($event)"
-    [data]="associatedPolicies" 
-    [tableTitle]="'Associated Policies'"
-    [whiteListColumns]="whiteListColumns" 
-    [showAddRemoveCol]="false" [showSearchBar]="false"
-    [tableErrorMessage]='errorMessage'
-    [tableDataLoaded]="policyTableDataLoaded"
-    [columnWidths]="columnWidths"
-    [centeredColumns]="centeredColumns"
-    [columnsSortFunctionMap]="columnsSortFunctionMap"
-    [doLocalSort]="true"
-    [headerColName]="headerColName"
-    [direction]="direction"
-    (headerColNameSelected)="handleHeaderColNameSelection($event)">
+        [rowClickable]="true"
+        (rowSelectEventEmitter)="goToDetails($event)"
+        [data]="associatedPolicies"
+        [tableTitle]="'Associated Policies'"
+        [whiteListColumns]="whiteListColumns"
+        [showAddRemoveCol]="false"
+        [showSearchBar]="false"
+        [tableErrorMessage]="errorMessage"
+        [tableDataLoaded]="policyTableDataLoaded"
+        [columnWidths]="columnWidths"
+        [centeredColumns]="centeredColumns"
+        [columnsSortFunctionMap]="columnsSortFunctionMap"
+        [doLocalSort]="true"
+        [headerColName]="headerColName"
+        [direction]="direction"
+        (headerColNameSelected)="handleHeaderColNameSelection($event)"
+    >
     </app-table>
 </div>

@@ -12,16 +12,25 @@
  * limitations under the License.
  -->
 
- <section class="content-slider-wrapper relative">
-    <header *ngIf='title' class="content-header nowrap-ellipsis" title='{{title}}'>
-        {{title}}
+<section class="content-slider-wrapper relative">
+    <header *ngIf="title" class="content-header nowrap-ellipsis" title="{{ title }}">
+        {{ title }}
     </header>
-    <div class="content-subheader" [ngClass]="{'content-subheader-close': isClose,'nowrap-ellipsis': isClose, 'content-subheader-open': !isClose}" title='{{titleDesc}}'>
-        {{titleDesc}}
+    <div
+        class="content-subheader"
+        [ngClass]="{
+            'content-subheader-close': isClose,
+            'nowrap-ellipsis': isClose,
+            'content-subheader-open': !isClose
+        }"
+        title="{{ titleDesc }}"
+    >
+        {{ titleDesc }}
     </div>
     <div class="navigate-link" *ngIf="!isClose">
         For more details <span (click)="instructParentToNavigate()">click here</span>
     </div>
-    <div class='slider-arrow' (click)='openSlider()' [ngClass]="{'rotate90': !isClose}"><img src='../assets/icons/back-arrow.svg'>
+    <div class="slider-arrow" (click)="openSlider()" [ngClass]="{ rotate90: !isClose }">
+        <img src="../assets/icons/back-arrow.svg" />
     </div>
 </section>

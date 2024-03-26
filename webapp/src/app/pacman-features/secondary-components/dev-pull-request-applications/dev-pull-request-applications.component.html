@@ -12,12 +12,17 @@
  * limitations under the License.
  -->
 
- <div class="issue-trend-wrapper flex flex-col">
-	<div class="sub-head relative">
+<div class="issue-trend-wrapper flex flex-col">
+    <div class="sub-head relative">
         <app-title-burger-head [subHeadTitle]="'All Applications'"></app-title-burger-head>
-        <img [class.hide]='errorValue<1' (click)='downloadCsv()' class='ag-download' src='../assets/icons/Download-active.svg'>
-  </div>
-  <div class="full-width relative overflow-hidden flex-grow" (window:resize)='onresize()'>
+        <img
+            [class.hide]="errorValue < 1"
+            (click)="downloadCsv()"
+            class="ag-download"
+            src="../assets/icons/Download-active.svg"
+        />
+    </div>
+    <div class="full-width relative overflow-hidden flex-grow" (window:resize)="onresize()">
         <ag-grid-angular
             [class.hide]="errorValue < 1"
             #agGrid
@@ -47,9 +52,12 @@
             paginationAutoPageSize="true"
         >
         </ag-grid-angular>
-      <div class='loader' *ngIf='errorValue==0'></div>
-      <div class="error-msg-block center" *ngIf='errorValue == -1'>
-          <app-error-message *ngIf='errorValue == -1' [selectedValue]="errorMessage"></app-error-message>
-      </div>
-  </div>
+        <div class="loader" *ngIf="errorValue == 0"></div>
+        <div class="error-msg-block center" *ngIf="errorValue == -1">
+            <app-error-message
+                *ngIf="errorValue == -1"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
+        </div>
+    </div>
 </div>

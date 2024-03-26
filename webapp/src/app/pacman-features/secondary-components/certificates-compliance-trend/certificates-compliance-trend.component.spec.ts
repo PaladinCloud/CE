@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -31,41 +31,41 @@ import { SelectComplianceDropdown } from '../../services/select-compliance-dropd
 import { CertificatesComplianceTrendComponent } from './certificates-compliance-trend.component';
 
 describe('CertificatesComplianceTrendComponent', () => {
-  let component: CertificatesComplianceTrendComponent;
-  let fixture: ComponentFixture<CertificatesComplianceTrendComponent>;
+    let component: CertificatesComplianceTrendComponent;
+    let fixture: ComponentFixture<CertificatesComplianceTrendComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [
-        CertificatesComplianceTrendComponent,
-        ErrorMessageComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        ErrorHandlingService,
-        DataCacheService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        SelectComplianceDropdown,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [
+                CertificatesComplianceTrendComponent,
+                ErrorMessageComponent,
+                TitleBurgerHeadComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                ErrorHandlingService,
+                DataCacheService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                SelectComplianceDropdown,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CertificatesComplianceTrendComponent);
-    component = fixture.componentInstance;
-    fakeAsync(() => {
-      fixture.detectChanges();
-    })
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CertificatesComplianceTrendComponent);
+        component = fixture.componentInstance;
+        fakeAsync(() => {
+            fixture.detectChanges();
+        });
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

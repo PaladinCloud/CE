@@ -103,9 +103,9 @@ export class IssuesHistoryService {
 
             const types = Object.keys(apiResponse[0]);
             types.splice(types.indexOf('date'), 1);
-            types.forEach(type => {
+            types.forEach((type) => {
                 const values = [];
-                apiResponse.forEach(details => {
+                apiResponse.forEach((details) => {
                     const obj = {
                         date: new Date(details['date']),
                         value: details[type],

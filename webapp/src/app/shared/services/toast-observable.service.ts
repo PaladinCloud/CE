@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -17,21 +17,20 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable ,  Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { MatCardLgImage } from '@angular/material/card';
 
 @Injectable()
-
 export class ToastObservableService {
-    private subject = new Subject;
+    private subject = new Subject();
 
-    postMessage (msg: String, duration , category? , image?) {
+    postMessage(msg: String, duration, category?, image?) {
         if (msg) {
             const obj = {
-                'msg': msg,
-                'duration': duration,
-                'category' : category,
-                'image': image
+                msg: msg,
+                duration: duration,
+                category: category,
+                image: image,
             };
             this.subject.next(obj);
         }
@@ -40,5 +39,4 @@ export class ToastObservableService {
     getMessage(): Observable<any> {
         return this.subject.asObservable();
     }
-
 }

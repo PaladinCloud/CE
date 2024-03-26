@@ -19,8 +19,8 @@
     color: #3f4a59;
 }
 
-.post{
-	top: 60%
+.post {
+    top: 60%;
 }
 
 :host ::ng-deep .error_message_post .error-handling {

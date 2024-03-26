@@ -15,56 +15,56 @@
 /* CSS styles of default asset group starts here */
 
 .defualt-asset-wrapper {
-  border: 1px solid var(--neutral-200);
-  background: var(--neutral-100);
-  border-radius: 4px;
-  display: flex;
-  padding: 8px;
+    border: 1px solid var(--neutral-200);
+    background: var(--neutral-100);
+    border-radius: 4px;
+    display: flex;
+    padding: 8px;
 }
 
 .defualt-asset-image-wrapper {
-  background-color: var(--background-white);
-  padding: 6px;
+    background-color: var(--background-white);
+    padding: 6px;
 }
 
 .defualt-asset-image-wrapper img {
-  height: 16px;
-  width: 16px;
+    height: 16px;
+    width: 16px;
 }
 
 .defualt-asset-content-wrapper {
-  display: flex;
-  flex-direction: column;
-  padding-left: 12px;
-  padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    padding-left: 12px;
+    padding-right: 20px;
 }
 
-.isCollapsed{
-  display: none!important;
+.isCollapsed {
+    display: none !important;
 }
 
 .defualt-asset-title {
-  width: 112px;
-  font-weight: var(--text-font-weight);
-  font-size: var(--text-body-2-font-size);
-  font-family: var(--text-medium-font-family);
-  color: var(--text-high-emphasis);
-  align-items: center;
-  padding-bottom: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    width: 112px;
+    font-weight: var(--text-font-weight);
+    font-size: var(--text-body-2-font-size);
+    font-family: var(--text-medium-font-family);
+    color: var(--text-high-emphasis);
+    align-items: center;
+    padding-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .defualt-asset-count {
-  font-size: var(--text-caption-font-size);
-  font-family: var(--text-font-family);
-  font-weight: var(--text-light-font-weight);
-  color: var(--text-low-emphasis);
-  align-items: center;
-  padding-top: 3px;
+    font-size: var(--text-caption-font-size);
+    font-family: var(--text-font-family);
+    font-weight: var(--text-light-font-weight);
+    color: var(--text-low-emphasis);
+    align-items: center;
+    padding-top: 3px;
 }
 
 .default-asset-icons-wrapper {
-  padding-top: 5.5px;
+    padding-top: 5.5px;
 }

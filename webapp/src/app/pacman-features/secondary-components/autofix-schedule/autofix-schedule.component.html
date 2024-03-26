@@ -12,23 +12,47 @@
  * limitations under the License.
 -->
 
-<div class="status-wrap flex flex-col flex-align-center" *ngIf='autofixData && autofixData.planItems && autofixData.planItems.length'>
-    <div class="text-header"> Autofix Plan </div>
+<div
+    class="status-wrap flex flex-col flex-align-center"
+    *ngIf="autofixData && autofixData.planItems && autofixData.planItems.length"
+>
+    <div class="text-header">Autofix Plan</div>
     <div class="relative flex flex-align-center plan-wrap">
-        <div class="flex flex-col flex-align-start" [class.last-element]='i == autofixData.planItems.length - 1' *ngFor='let plan of autofixData.planItems; let i = index;'>
+        <div
+            class="flex flex-col flex-align-start"
+            [class.last-element]="i == autofixData.planItems.length - 1"
+            *ngFor="let plan of autofixData.planItems; let i = index"
+        >
             <div class="flex flex-align-center full-width">
-                <div class="plan-circle relative flex flex-center flex-align-center" [class.completed]="plan.status == 'COMPLETED'">
-                    <img class="tick" src='../assets/icons/white-tick.svg'>
+                <div
+                    class="plan-circle relative flex flex-center flex-align-center"
+                    [class.completed]="plan.status == 'COMPLETED'"
+                >
+                    <img class="tick" src="../assets/icons/white-tick.svg" />
                 </div>
-                <div class="plan-separator relative" *ngIf='autofixData.planItems && (i < autofixData.planItems.length - 1)'>
+                <div
+                    class="plan-separator relative"
+                    *ngIf="autofixData.planItems && i < autofixData.planItems.length - 1"
+                >
                     <div class="absolute green-track"></div>
                 </div>
             </div>
             <div class="flex flex-col flex-center text-box">
-                <div class="plan-txt">{{plan.action == 'AUTOFIX_ACTION_EMAIL' ? 'Email Notification ' + (i + 1) : 'Fixed'}}</div>
-                <div class="plan-txt">{{plan.plannedActionTime}}</div>
+                <div class="plan-txt">
+                    {{
+                        plan.action == 'AUTOFIX_ACTION_EMAIL'
+                            ? 'Email Notification ' + (i + 1)
+                            : 'Fixed'
+                    }}
+                </div>
+                <div class="plan-txt">{{ plan.plannedActionTime }}</div>
             </div>
         </div>
-        <img *ngIf='transformVal >= 0' [ngStyle]="{'transform': 'translateX(' + transformVal + 'px' }" class='absolute today-marker' src='../assets/icons/instanceState.gif'>
+        <img
+            *ngIf="transformVal >= 0"
+            [ngStyle]="{ transform: 'translateX(' + transformVal + 'px' }"
+            class="absolute today-marker"
+            src="../assets/icons/instanceState.gif"
+        />
     </div>
 </div>

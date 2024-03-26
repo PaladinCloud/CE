@@ -22,18 +22,20 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class PatchingSponsorService {
-
-    constructor(@Inject(HttpService) private httpService: HttpService,
-                private errorHandling: ErrorHandlingService) { }
+    constructor(
+        @Inject(HttpService) private httpService: HttpService,
+        private errorHandling: ErrorHandlingService,
+    ) {}
     getData(patchingTableUrl, patchingTableMethod, payload): Observable<any> {
         const url = patchingTableUrl;
         const method = patchingTableMethod;
         const queryParams = {};
         try {
-            return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .pipe(map(response => {
-                        return this.massageData(response);
-                    }));
+            return this.httpService.getHttpResponse(url, method, payload, queryParams).pipe(
+                map((response) => {
+                    return this.massageData(response);
+                }),
+            );
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

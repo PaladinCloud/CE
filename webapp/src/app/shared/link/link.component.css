@@ -21,10 +21,10 @@
 .app-link a:hover {
     cursor: pointer;
     color: #c6106e;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .app-link a:active {
     color: #c6106e;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }

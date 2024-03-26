@@ -46,10 +46,10 @@
     transition: 0.8s ease;
 }
 
-.link-text:hover .left_count_issue, .link-text:hover .total-issues-text-issue{
+.link-text:hover .left_count_issue,
+.link-text:hover .total-issues-text-issue {
     color: var(--primary-500);
 }
-
 
 .left_count {
     font-size: 2.5em;
@@ -153,7 +153,13 @@
     margin-bottom: 0.8em;
     margin-left: 0.3em;
     height: 1em;
-    background: repeating-linear-gradient( 135deg, var(--primary-400), var(--primary-400) 2px, #eef4f9 2px, #eef4f9 5px);
+    background: repeating-linear-gradient(
+        135deg,
+        var(--primary-400),
+        var(--primary-400) 2px,
+        #eef4f9 2px,
+        #eef4f9 5px
+    );
     border-radius: 5px;
     cursor: pointer;
 }
@@ -226,6 +232,8 @@
     width: 100%;
 }
 
-.enclosure_within_values, .left_count_issue, .total-issues-text-issue{
+.enclosure_within_values,
+.left_count_issue,
+.total-issues-text-issue {
     cursor: pointer;
 }

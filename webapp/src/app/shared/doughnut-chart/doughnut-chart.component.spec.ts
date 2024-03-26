@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -17,28 +17,27 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DoughnutChartComponent } from './doughnut-chart.component';
 
 describe('DoughnutChartComponent', () => {
-  let component: DoughnutChartComponent;
-  let fixture: ComponentFixture<DoughnutChartComponent>;
+    let component: DoughnutChartComponent;
+    let fixture: ComponentFixture<DoughnutChartComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DoughnutChartComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [DoughnutChartComponent],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DoughnutChartComponent);
-    component = fixture.componentInstance;
-    component.graphData = {
-      legend: ['legend1'],
-      legendTextColor: 'red',
-      data: []
-    }
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DoughnutChartComponent);
+        component = fixture.componentInstance;
+        component.graphData = {
+            legend: ['legend1'],
+            legendTextColor: 'red',
+            data: [],
+        };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });
