@@ -12,7 +12,15 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Input, OnChanges } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ElementRef,
+    ViewChild,
+    Input,
+    OnChanges,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { AutorefreshService } from '../../services/autorefresh.service';
@@ -32,12 +40,10 @@ import { DomainTypeObservableService } from '../../../core/services/domain-type-
     providers: [MultilineChartService, AutorefreshService, IssueFilterService],
     // eslint-disable-next-line
     host: {
-        '(window:resize)': 'onResize($event)'
-    }
+        '(window:resize)': 'onResize($event)',
+    },
 })
-
 export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy {
-
     @ViewChild('widget') widgetContainer: ElementRef;
     @Input() targetType: any;
 
@@ -55,7 +61,7 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
     currentObj: any = {};
     filterArr: any = [];
     selectedComplianceDropdown: any = {
-        'Applications': ''
+        Applications: '',
     };
 
     public error = false;
@@ -86,7 +92,6 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
     private autorefreshInterval;
     @Input() pageLevel: number;
 
-
     constructor(
         private utils: UtilsService,
         private multilineChartService: MultilineChartService,
@@ -94,27 +99,29 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
         private autorefreshService: AutorefreshService,
         private selectComplianceDropdown: SelectComplianceDropdown,
         private issueFilterService: IssueFilterService,
-        private domainObservableService: DomainTypeObservableService) {
-
-
-        this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
-            assetGroupName => {
+        private domainObservableService: DomainTypeObservableService,
+    ) {
+        this.subscriptionToAssetGroup = this.assetGroupObservableService
+            .getAssetGroup()
+            .subscribe((assetGroupName) => {
                 this.selectedAssetGroup = assetGroupName;
             });
 
-        this.subscriptionDomain = this.domainObservableService.getDomainType().subscribe(domain => {
-            this.selectedDomain = domain;
-            this.getApplications();
-            this.deleteFilters();
-        });
+        this.subscriptionDomain = this.domainObservableService
+            .getDomainType()
+            .subscribe((domain) => {
+                this.selectedDomain = domain;
+                this.getApplications();
+                this.deleteFilters();
+            });
 
-        this.complianceDropdownSubscription = this.selectComplianceDropdown.getCompliance().subscribe(
-            filtersObject => {
+        this.complianceDropdownSubscription = this.selectComplianceDropdown
+            .getCompliance()
+            .subscribe((filtersObject) => {
                 this.filtersObject = filtersObject;
                 this.updateComponent();
             });
     }
-
 
     ngOnChanges() {
         this.updateComponent();
@@ -123,21 +130,25 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
     onResize() {
         const element = document.getElementById('inv');
         if (element) {
-            this.widgetWidth = parseInt((window.getComputedStyle(element, null).getPropertyValue('width')).split('px')[0], 10);
-            this.widgetHeight = parseInt((window.getComputedStyle(element, null).getPropertyValue('height')).split('px')[0], 10);
+            this.widgetWidth = parseInt(
+                window.getComputedStyle(element, null).getPropertyValue('width').split('px')[0],
+                10,
+            );
+            this.widgetHeight = parseInt(
+                window.getComputedStyle(element, null).getPropertyValue('height').split('px')[0],
+                10,
+            );
         }
     }
 
     ngOnInit() {
-
         this.durationParams = this.autorefreshService.getDuration();
         this.durationParams = parseInt(this.durationParams, 10);
         this.autoRefresh = this.autorefreshService.autoRefresh;
 
         const afterLoad = this;
         if (this.autoRefresh !== undefined) {
-            if ((this.autoRefresh === true) || (this.autoRefresh.toString() === 'true')) {
-
+            if (this.autoRefresh === true || this.autoRefresh.toString() === 'true') {
                 this.autorefreshInterval = setInterval(function () {
                     afterLoad.getIssues();
                 }, this.durationParams);
@@ -146,8 +157,18 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
 
         this.getApplications();
         setTimeout(() => {
-            this.widgetWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
-            this.widgetHeight = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('height'), 10);
+            this.widgetWidth = parseInt(
+                window
+                    .getComputedStyle(this.widgetContainer.nativeElement, null)
+                    .getPropertyValue('width'),
+                10,
+            );
+            this.widgetHeight = parseInt(
+                window
+                    .getComputedStyle(this.widgetContainer.nativeElement, null)
+                    .getPropertyValue('height'),
+                10,
+            );
             this.getIssues();
         }, 0);
     }
@@ -157,59 +178,53 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
         this.showloader = false;
         this.error = false;
         this.getIssues();
-
     }
 
     getIssues() {
-
         if (this.multilineChartSubscription) {
             this.multilineChartSubscription.unsubscribe();
         }
 
-
         const queryParameters = {
-            'ag': this.selectedAssetGroup,
-            'type': this.targetType,
-            'filter': this.filtersObject,
-            'domain': this.selectedDomain
+            ag: this.selectedAssetGroup,
+            type: this.targetType,
+            filter: this.filtersObject,
+            domain: this.selectedDomain,
         };
 
         this.colorSet = ['#645ec5', '#26ba9d', '#289cf7'];
 
         if (queryParameters.type !== undefined) {
-
-            this.multilineChartSubscription = this.multilineChartService.getDataDiffNew(queryParameters).subscribe(
-                response => {
-                    try {
-
-                        if (response[0][0].values.length < 1) {
-                            this.showerror = true;
-                            this.showloader = true;
-                            this.error = true;
-                            this.errorMessage = 'noDataAvailable';
-                        } else {
-                            this.showerror = false;
-                            this.showloader = true;
-                            this.error = false;
-                            this.graphData = response[0];
-                            this.showdata = true;
+            this.multilineChartSubscription = this.multilineChartService
+                .getDataDiffNew(queryParameters)
+                .subscribe(
+                    (response) => {
+                        try {
+                            if (response[0][0].values.length < 1) {
+                                this.showerror = true;
+                                this.showloader = true;
+                                this.error = true;
+                                this.errorMessage = 'noDataAvailable';
+                            } else {
+                                this.showerror = false;
+                                this.showloader = true;
+                                this.error = false;
+                                this.graphData = response[0];
+                                this.showdata = true;
+                            }
+                        } catch (error) {
+                            this.errorMessage = 'jsError';
+                            this.handleError(error);
                         }
-
-                    } catch (error) {
-                        this.errorMessage = 'jsError';
+                    },
+                    (error) => {
                         this.handleError(error);
-                    }
-                },
-                error => {
-                    this.handleError(error);
-                    this.showerror = true;
-                    this.showloader = true;
-                    this.errorMessage = 'apiResponseError';
-                }
-            );
-
+                        this.showerror = true;
+                        this.showloader = true;
+                        this.errorMessage = 'apiResponseError';
+                    },
+                );
         }
-
     }
 
     handleError(error) {
@@ -218,18 +233,18 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
     }
 
     getApplications(): void {
-
         if (this.applicationSubscription) {
             this.applicationSubscription.unsubscribe();
         }
 
         const queryParams = {
-            'filterId': 3
+            filterId: 3,
         };
         const issueFilterUrl = environment.issueFilter.url;
         const issueFilterMethod = environment.issueFilter.method;
-        this.applicationSubscription = this.issueFilterService.getFilters(queryParams, issueFilterUrl, issueFilterMethod).subscribe(
-            (response) => {
+        this.applicationSubscription = this.issueFilterService
+            .getFilters(queryParams, issueFilterUrl, issueFilterMethod)
+            .subscribe((response) => {
                 this.filterTypeLabels = map(response[0].response, 'optionName');
                 this.filterTypeOptions = response[0].response;
             });
@@ -237,11 +252,15 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
 
     changeFilterType(filterType) {
         this.currentFilterType = filterType;
-        this.filterTypesSubscription = this.issueFilterService.getFilters({
-            'ag': this.selectedAssetGroup
-        },
-            (environment.base + this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL).url),
-            'GET')
+        this.filterTypesSubscription = this.issueFilterService
+            .getFilters(
+                {
+                    ag: this.selectedAssetGroup,
+                },
+                environment.base +
+                    this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL).url,
+                'GET',
+            )
             .subscribe((response) => {
                 this.filterTagOptions = response[0].response;
                 this.filterTagLabels = map(response[0].response, 'name');
@@ -250,17 +269,23 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
 
     changeFilterTag(filterTag) {
         if (this.currentFilterType) {
-            this.utils.addOrReplaceElement(this.filters, {
-                typeName: this.currentFilterType.optionName,
-                typeValue: this.currentFilterType.optionValue,
-                tagName: filterTag.name,
-                tagValue: filterTag.id,
-                key: this.currentFilterType.optionName,
-                value: filterTag.name
-            }, (el) => {
-                return el.key === this.currentFilterType.optionName;
-            });
-            this.selectComplianceDropdown.updateCompliance(this.utils.arrayToObject(this.filters, 'typeValue', 'tagValue'));
+            this.utils.addOrReplaceElement(
+                this.filters,
+                {
+                    typeName: this.currentFilterType.optionName,
+                    typeValue: this.currentFilterType.optionValue,
+                    tagName: filterTag.name,
+                    tagValue: filterTag.id,
+                    key: this.currentFilterType.optionName,
+                    value: filterTag.name,
+                },
+                (el) => {
+                    return el.key === this.currentFilterType.optionName;
+                },
+            );
+            this.selectComplianceDropdown.updateCompliance(
+                this.utils.arrayToObject(this.filters, 'typeValue', 'tagValue'),
+            );
             this.currentFilterType = null;
         }
         this.utils.clickClearDropdown();
@@ -270,9 +295,7 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
         let option = find(this.filterTypeOptions, { optionName: val.id });
 
         if (option) {
-
             this.changeFilterType(option);
-
         } else {
             option = find(this.filterTagOptions, { name: val.id });
             this.changeFilterTag(option);
@@ -289,11 +312,11 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
                 } else {
                     this.filters.splice(event.index, 1);
                 }
-                this.selectComplianceDropdown.updateCompliance(this.utils.arrayToObject(this.filters, 'typeValue', 'tagValue'));
+                this.selectComplianceDropdown.updateCompliance(
+                    this.utils.arrayToObject(this.filters, 'typeValue', 'tagValue'),
+                );
             }
-        } catch (error) {
-
-        }
+        } catch (error) {}
     }
 
     ngOnDestroy() {
@@ -311,8 +334,6 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
                 this.filterTypesSubscription.unsubscribe();
             }
             clearInterval(this.autorefreshInterval);
-        } catch (error) {
-        }
+        } catch (error) {}
     }
-
 }

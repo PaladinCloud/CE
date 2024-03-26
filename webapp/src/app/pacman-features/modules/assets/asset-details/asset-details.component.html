@@ -1,29 +1,56 @@
 <div class="page-layout">
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
-            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <app-breadcrumb
+            *ngIf="breadcrumbLinks.length > 0"
+            [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray"
+            [breadcrumbPresent]="breadcrumbPresent"
+        ></app-breadcrumb>
     </div>
     <div class="header flex flex-row gap-12 flex-align-center">
-          <h6 class="page-title">Asset Details -</h6>
-          <span class="resource-text subtitle-1 medium-emphasis">{{decodedResourceId}}</span>
-          <img class="copy-icon" [cdkCopyToClipboard]="decodedResourceId" src="/assets/icons/files.svg">
+        <h6 class="page-title">Asset Details -</h6>
+        <span class="resource-text subtitle-1 medium-emphasis">{{ decodedResourceId }}</span>
+        <img
+            class="copy-icon"
+            [cdkCopyToClipboard]="decodedResourceId"
+            src="/assets/icons/files.svg"
+        />
     </div>
     <div class="tile-container">
-        <div class="tile-wrapper flex flex-row" >
-                <div class="tile-content-wrapper flex flex-row flex-align-center gap-12" *ngFor="let tile of tileList">
-                    <div class="tile-name capitalize nowrap-ellipsis">{{tile}} :</div>
-                    <div class="tile-value-wrapper flex flex-row gap-8 flex-align-center">
-                        <img *ngIf="tiles[tile].img" style="height: 12px;" src="/assets/icons/{{tiles[tile].img}}-color.svg">
-                        <div class="tile">{{ tile.toLowerCase() == "source" || tile.toLowerCase() == "asset" ? tiles[tile].value  : (tiles[tile].value | number )}}</div>
-						<span class="percent" *ngIf='tile.toLowerCase() == "compliance"'>%</span>
+        <div class="tile-wrapper flex flex-row">
+            <div
+                class="tile-content-wrapper flex flex-row flex-align-center gap-12"
+                *ngFor="let tile of tileList"
+            >
+                <div class="tile-name capitalize nowrap-ellipsis">{{ tile }} :</div>
+                <div class="tile-value-wrapper flex flex-row gap-8 flex-align-center">
+                    <img
+                        *ngIf="tiles[tile].img"
+                        style="height: 12px"
+                        src="/assets/icons/{{ tiles[tile].img }}-color.svg"
+                    />
+                    <div class="tile">
+                        {{
+                            tile.toLowerCase() == 'source' || tile.toLowerCase() == 'asset'
+                                ? tiles[tile].value
+                                : (tiles[tile].value | number)
+                        }}
                     </div>
+                    <span class="percent" *ngIf="tile.toLowerCase() == 'compliance'">%</span>
                 </div>
+            </div>
         </div>
     </div>
     <div class="content-wrapper flex flex-row gap-24">
         <div class="left-wrapper flex flex-col">
-            <app-pacman-policy-violations *ngIf="resourceId" [breadcrumbPresent]="breadcrumbPresent" [resourceId]='resourceId' [resourceType]='resourceType'
-            [pageLevel]="pageLevel" (policyCount)="fetchPolicyCount($event)"></app-pacman-policy-violations>
+            <app-pacman-policy-violations
+                *ngIf="resourceId"
+                [breadcrumbPresent]="breadcrumbPresent"
+                [resourceId]="resourceId"
+                [resourceType]="resourceType"
+                [pageLevel]="pageLevel"
+                (policyCount)="fetchPolicyCount($event)"
+            ></app-pacman-policy-violations>
             <div class="right-wrapper flex flex-row">
                 <div class="violations-summary-wrapper">
                     <div class="violations-summary-header body-2 high-emphasis">
@@ -31,33 +58,39 @@
                     </div>
                     <div class="violations-summary-content">
                         <div class="chart">
-                            <div [class.loader]="!policyData && violationErrorMessage==''"></div>
-                            <app-error-message *ngIf="violationErrorMessage" [selectedValue]="violationErrorMessage"></app-error-message>
+                            <div [class.loader]="!policyData && violationErrorMessage == ''"></div>
+                            <app-error-message
+                                *ngIf="violationErrorMessage"
+                                [selectedValue]="violationErrorMessage"
+                            ></app-error-message>
                             <div class="graph-chart-cont relative" id="statsDoughnut">
-                              <app-doughnut-chart *ngIf="violationErrorMessage=='' && policyData?.totalCount"
-                                [chartContId]="'statsDoughnut'"
-                                [displayLegendText]="true"
-                                [flexTrue]="true"
-                                [graphData]="policyData"
-                                [graphHeight]="widgetHeight"
-                                [graphWidth]="widgetWidth"   
-                                [innerRadius]="innerRadius"
-                                [MainTextcolor]="MainTextcolor"
-                                [outerRadius]="outerRadius" 
-                                [showFlexGrow] = "true"
-                                [strokeColor]="strokeColor"
-                                (navigatePage)="navigateDataTable($event)">
-                              </app-doughnut-chart>
+                                <app-doughnut-chart
+                                    *ngIf="violationErrorMessage == '' && policyData?.totalCount"
+                                    [chartContId]="'statsDoughnut'"
+                                    [displayLegendText]="true"
+                                    [flexTrue]="true"
+                                    [graphData]="policyData"
+                                    [graphHeight]="widgetHeight"
+                                    [graphWidth]="widgetWidth"
+                                    [innerRadius]="innerRadius"
+                                    [MainTextcolor]="MainTextcolor"
+                                    [outerRadius]="outerRadius"
+                                    [showFlexGrow]="true"
+                                    [strokeColor]="strokeColor"
+                                    (navigatePage)="navigateDataTable($event)"
+                                >
+                                </app-doughnut-chart>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="mandatory-tags-wrapper">
-                    <div class="mandatory-tags-header body-2 high-emphasis">
-                       Tags
-                    </div>
+                    <div class="mandatory-tags-header body-2 high-emphasis">Tags</div>
                     <div class="mandatory-tags-content">
-                        <app-error-message *ngIf="tagErrorMessage" [selectedValue]="tagErrorMessage"></app-error-message>
+                        <app-error-message
+                            *ngIf="tagErrorMessage"
+                            [selectedValue]="tagErrorMessage"
+                        ></app-error-message>
                         <ng-container *ngIf="!tagErrorMessage">
                             <div class="content-header">
                                 <div class="column-wrapper-header">
@@ -80,52 +113,86 @@
                                 </div>
                             </div>
                             <div class="tags-content-wrapper">
-                                    <div class="column-wrapper" *ngFor="let tag of tagsArray | keyvalue">
-                                        <div class="col-1 body-2 high-emphasis">
-                                            <span class="tag-name nowrap-ellipsis" title="{{tag.key}}">{{ tag.key }}</span>
-                                        </div>
-                                        <div class="col-2 body-2 high-emphasis">
-                                            <span class="tag-value nowrap-ellipsis" title="{{tag.value}}">{{ tag.value == 'unknown' ? 'Unknown' : tag.value }}</span>
-                                        </div>
+                                <div
+                                    class="column-wrapper"
+                                    *ngFor="let tag of tagsArray | keyvalue"
+                                >
+                                    <div class="col-1 body-2 high-emphasis">
+                                        <span
+                                            class="tag-name nowrap-ellipsis"
+                                            title="{{ tag.key }}"
+                                            >{{ tag.key }}</span
+                                        >
                                     </div>
-                            
+                                    <div class="col-2 body-2 high-emphasis">
+                                        <span
+                                            class="tag-value nowrap-ellipsis"
+                                            title="{{ tag.value }}"
+                                            >{{
+                                                tag.value == 'unknown' ? 'Unknown' : tag.value
+                                            }}</span
+                                        >
+                                    </div>
+                                </div>
                             </div>
                         </ng-container>
                     </div>
                 </div>
             </div>
-            <div *ngIf="resourceType=='sg' && (outboundRulesData.length>0 || inboundRulesData.length>0)" class="sg-rules-wrapper" style="height: calc(100% - 48px);">
+            <div
+                *ngIf="
+                    resourceType == 'sg' &&
+                    (outboundRulesData.length > 0 || inboundRulesData.length > 0)
+                "
+                class="sg-rules-wrapper"
+                style="height: calc(100% - 48px)"
+            >
                 <mat-tab-group class="height-100" animationDuration="0ms">
                     <mat-tab label="Inbound Rules">
                         <div class="wrapper sg-rules-table">
-                            <app-table 
-                                [data]="inboundRulesData" [columnWidths]="sgRulesColumnWidths"
-                                [whiteListColumns]="sgRulesColumns" [rowSize]="'LG'"
-                                [showAddRemoveCol]="false" [showSearchBar]="false" 
-                                [tableErrorMessage]='sgRulesTableErrorMessage'
-                                [tableDataLoaded]="sgRulesTableDataLoaded" [doNotSort]="false"
-                                [centeredColumns]="centeredColumns">
+                            <app-table
+                                [data]="inboundRulesData"
+                                [columnWidths]="sgRulesColumnWidths"
+                                [whiteListColumns]="sgRulesColumns"
+                                [rowSize]="'LG'"
+                                [showAddRemoveCol]="false"
+                                [showSearchBar]="false"
+                                [tableErrorMessage]="sgRulesTableErrorMessage"
+                                [tableDataLoaded]="sgRulesTableDataLoaded"
+                                [doNotSort]="false"
+                                [centeredColumns]="centeredColumns"
+                            >
                             </app-table>
                         </div>
                     </mat-tab>
                     <mat-tab label="Outbound Rules">
                         <div class="wrapper sg-rules-table">
-                            <app-table 
-                                [data]="outboundRulesData" [columnWidths]="sgRulesColumnWidths"
-                                [whiteListColumns]="sgRulesColumns" [rowSize]="'LG'"
-                                [showAddRemoveCol]="false" [showSearchBar]="false"
-                                [tableErrorMessage]='sgRulesTableErrorMessage'
+                            <app-table
+                                [data]="outboundRulesData"
+                                [columnWidths]="sgRulesColumnWidths"
+                                [whiteListColumns]="sgRulesColumns"
+                                [rowSize]="'LG'"
+                                [showAddRemoveCol]="false"
+                                [showSearchBar]="false"
+                                [tableErrorMessage]="sgRulesTableErrorMessage"
                                 (headerColNameSelected)="handleHeaderColNameSelection($event)"
-                                [tableDataLoaded]="sgRulesTableDataLoaded" [doNotSort]="false"
-                                 [centeredColumns]="centeredColumns">
+                                [tableDataLoaded]="sgRulesTableDataLoaded"
+                                [doNotSort]="false"
+                                [centeredColumns]="centeredColumns"
+                            >
                             </app-table>
                         </div>
                     </mat-tab>
                 </mat-tab-group>
             </div>
-                    <div class="widget"  *ngIf="filteredData">
-                            <app-attribute [breadcrumbPresent]="breadcrumbPresent" [pageLevel]="pageLevel" [dataObj]='genericAttributes' (assetCloudType)=assignCloudType($event)></app-attribute>
-                    </div>
+            <div class="widget" *ngIf="filteredData">
+                <app-attribute
+                    [breadcrumbPresent]="breadcrumbPresent"
+                    [pageLevel]="pageLevel"
+                    [dataObj]="genericAttributes"
+                    (assetCloudType)="assignCloudType($event)"
+                ></app-attribute>
+            </div>
         </div>
     </div>
 </div>

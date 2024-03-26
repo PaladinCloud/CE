@@ -12,13 +12,17 @@
  * limitations under the License.
  -->
 
- <div class="compliance-dashboard-wrapper flex flex-between certificates-wrapper">
+<div class="compliance-dashboard-wrapper flex flex-between certificates-wrapper">
     <div class="floating-widgets-section flex flex-col">
-        <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <app-breadcrumb
+            [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray"
+            [breadcrumbPresent]="breadcrumbPresent"
+        ></app-breadcrumb>
         <div class="floating-widgets-header flex flex-between">
             <div>
                 <!-- <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg"> -->
-                <h6 class="title-text">{{pageTitle}}</h6>
+                <h6 class="title-text">{{ pageTitle }}</h6>
             </div>
         </div>
         <div class="floating-widgets-container data-table-container">
@@ -46,7 +50,10 @@
     <div class="fixed-widgets-section">
         <div class="compliance-issues-container">
             <app-certificate-summary [pageLevel]="pageLevel"></app-certificate-summary>
-            <app-certificate-stage [pageLevel]="pageLevel" [headerText]="'Certificates Expiring by App'"></app-certificate-stage>
+            <app-certificate-stage
+                [pageLevel]="pageLevel"
+                [headerText]="'Certificates Expiring by App'"
+            ></app-certificate-stage>
         </div>
     </div>
 </div>

@@ -1,29 +1,29 @@
-.input-wrapper{
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-bottom: 8px;
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 8px;
 }
 
-.input-wrapper ::ng-deep .mat-form-field-label{
-   padding: 5px 5px !important;
+.input-wrapper ::ng-deep .mat-form-field-label {
+    padding: 5px 5px !important;
 }
 
-.input-wrapper ::ng-deep .mat-form-field{
-  width: 100% !important;
+.input-wrapper ::ng-deep .mat-form-field {
+    width: 100% !important;
 }
 
-.input-wrapper ::ng-deep .mat-form-field-wrapper{
-  padding: 0px;
+.input-wrapper ::ng-deep .mat-form-field-wrapper {
+    padding: 0px;
 }
 
-.error-message{
-  padding-top: 15px;
-  color: red;
+.error-message {
+    padding-top: 15px;
+    color: red;
 }
 
 .show-hint {
-  padding-bottom: 8px;
-  color: gray;
-  font-size: 12px;
+    padding-bottom: 8px;
+    color: gray;
+    font-size: 12px;
 }

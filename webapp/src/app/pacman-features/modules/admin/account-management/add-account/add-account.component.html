@@ -1,33 +1,69 @@
-<div class="page-layout" [style.backgroundColor]="!showStepper()? 'white' : '#f2f3f5'">
+<div class="page-layout" [style.backgroundColor]="!showStepper() ? 'white' : '#f2f3f5'">
     <!-- Breadcrumb -->
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
-            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <app-breadcrumb
+            *ngIf="breadcrumbLinks.length > 0"
+            [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray"
+            [breadcrumbPresent]="breadcrumbPresent"
+        ></app-breadcrumb>
     </div>
     <div class="page-content" [class.hide]="!selectedAccount">
         <div class="configuration-header">
-            <h6>
-                {{selectedAccount}} Plugin Configuration
-            </h6>
+            <h6>{{ selectedAccount }} Plugin Configuration</h6>
         </div>
 
         <!-- Stepper -->
-        <div class="stepper" *ngIf="showStepper();else hideStepperRef">
-            <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
-                (selectedStepperIndex)="selectedStepperIndex($event)">
+        <div class="stepper" *ngIf="showStepper(); else hideStepperRef">
+            <app-stepper
+                [currentStepperIndex]="currentStepperIndex"
+                [stepperData]="stepperData"
+                (selectedStepperIndex)="selectedStepperIndex($event)"
+            >
                 <ng-template #stepsContent>
-                    <div class="right-wrapper" [class.error-state]="!isValid && addDetailsStepperIndex==currentStepperIndex">
-                        <ng-container [ngTemplateOutlet]="currentTemplateRef">
-                        </ng-container>
+                    <div
+                        class="right-wrapper"
+                        [class.error-state]="
+                            !isValid && addDetailsStepperIndex == currentStepperIndex
+                        "
+                    >
+                        <ng-container [ngTemplateOutlet]="currentTemplateRef"> </ng-container>
                         <div class="button-wrapper">
-                            <button class="button btn" [class.hide]="(pluginSelected=='gcp' && (currentStepperIndex<2 || currentStepperIndex>2)) || (pluginSelected!='gcp' && (currentStepperIndex<1 || currentStepperIndex>1))"
-                                (click)="validateAccount()" [class.isDisabled]="selectedAccount && currentPluginForm?.invalid">
-                                Add Plugin</button>
-                            <button class="button btn" [class.hide]="(currentStepperIndex>1 && pluginSelected=='gcp') || (currentStepperIndex>0 && pluginSelected!='gcp')" (click)="pageCounter('next')"
-                                [class.isDisabled]="selectedAccount && (selectedAccount.toLowerCase() == 'aws' && currentPluginForm?.invalid)">
-                                Next</button>
-                            <button class=" button back-btn" [class.hide]="currentStepperIndex==0"
-                                (click)="pageCounter('back')">Back</button>
+                            <button
+                                class="button btn"
+                                [class.hide]="
+                                    (pluginSelected == 'gcp' &&
+                                        (currentStepperIndex < 2 || currentStepperIndex > 2)) ||
+                                    (pluginSelected != 'gcp' &&
+                                        (currentStepperIndex < 1 || currentStepperIndex > 1))
+                                "
+                                (click)="validateAccount()"
+                                [class.isDisabled]="selectedAccount && currentPluginForm?.invalid"
+                            >
+                                Add Plugin
+                            </button>
+                            <button
+                                class="button btn"
+                                [class.hide]="
+                                    (currentStepperIndex > 1 && pluginSelected == 'gcp') ||
+                                    (currentStepperIndex > 0 && pluginSelected != 'gcp')
+                                "
+                                (click)="pageCounter('next')"
+                                [class.isDisabled]="
+                                    selectedAccount &&
+                                    selectedAccount.toLowerCase() == 'aws' &&
+                                    currentPluginForm?.invalid
+                                "
+                            >
+                                Next
+                            </button>
+                            <button
+                                class="button back-btn"
+                                [class.hide]="currentStepperIndex == 0"
+                                (click)="pageCounter('back')"
+                            >
+                                Back
+                            </button>
                         </div>
                     </div>
                 </ng-template>
@@ -44,10 +80,13 @@
         </span>
         <div class="tile-wrapper">
             <div class="tile flex flex-col" *ngFor="let account of accountsList">
-                <img class="account-img" src="../../../../../../assets/icons/{{account.img}}-color.svg">
+                <img
+                    class="account-img"
+                    src="../../../../../../assets/icons/{{ account.img }}-color.svg"
+                />
                 <div class="tile-text-wrapper">
-                    <span class="body-2 high-emphasis">{{account.name}}</span>
-                    <span>{{account.FullName}}</span>
+                    <span class="body-2 high-emphasis">{{ account.name }}</span>
+                    <span>{{ account.FullName }}</span>
                 </div>
                 <button class="button btn" (click)="selectAccount(account)">Select</button>
             </div>
@@ -55,21 +94,30 @@
     </div>
 </div>
 
-<ng-template #validateAccountRef>   
+<ng-template #validateAccountRef>
     <div class="validation-wrapper">
         <div class="validation-inner-wrapper">
             <div class="validation-image-wrapper">
-                <img class="validate-cloud-img" src="/assets/icons/paladin-logo.svg">
-                <img src="/assets/icons/arrows.svg">
-                <img class="validate-cloud-img" src="/assets/icons/{{selectedAccountImage}}-color.svg">
+                <img class="validate-cloud-img" src="/assets/icons/paladin-logo.svg" />
+                <img src="/assets/icons/arrows.svg" />
+                <img
+                    class="validate-cloud-img"
+                    src="/assets/icons/{{ selectedAccountImage }}-color.svg"
+                />
             </div>
             <div class="validation-text-wrapper" *ngIf="isValidating">
-                <h5 class="high-emphasis">Validating Your {{selectedAccount}} Plugin</h5>
-                <span class="validation-sub-text">Please wait for few minutes till the validation is done. Do not press back button.</span>
+                <h5 class="high-emphasis">Validating Your {{ selectedAccount }} Plugin</h5>
+                <span class="validation-sub-text"
+                    >Please wait for few minutes till the validation is done. Do not press back
+                    button.</span
+                >
             </div>
             <div class="validation-text-wrapper" *ngIf="isAdding">
-                <h5 class="high-emphasis">Adding Your {{selectedAccount}} Plugin</h5>
-                <span class="validation-sub-text">Please wait for few minutes till the account has been added. Do not press back button.</span>
+                <h5 class="high-emphasis">Adding Your {{ selectedAccount }} Plugin</h5>
+                <span class="validation-sub-text"
+                    >Please wait for few minutes till the account has been added. Do not press back
+                    button.</span
+                >
             </div>
         </div>
     </div>
@@ -78,111 +126,143 @@
 <ng-template #configureAccountRef>
     <div class="header">
         <h6>Configure Access</h6>
-        <span class="subtext">
-            Follow the instruction to setup your account.
-        </span>
+        <span class="subtext"> Follow the instruction to setup your account. </span>
     </div>
     <div class="configuration-body">
-          <div  class="configure-wrapper" *ngIf="pluginSelected===('aws')">
+        <div class="configure-wrapper" *ngIf="pluginSelected === 'aws'">
             <div class="download-template">
                 <a [href]="CloudformationTemplateUrl">
-                    <img class="download-icon" src="/assets/icons/download-blue.svg">
+                    <img class="download-icon" src="/assets/icons/download-blue.svg" />
                 </a>
-                <span class="subtitle-2 primary-400">Click here to download the CloudFormation template</span>
+                <span class="subtitle-2 primary-400"
+                    >Click here to download the CloudFormation template</span
+                >
             </div>
-            <div class="steps-wrapper" >
-                <div *ngFor="let step of configureSteps;let i=index">
+            <div class="steps-wrapper">
+                <div *ngFor="let step of configureSteps; let i = index">
                     <div class="flex flex-row gap-12">
-                        <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
-                        <span class="body-2 medium-emphasis">{{step}}</span>
+                        <span class="index-wrapper body-2 medium-emphasis">Step {{ i + 1 }}</span>
+                        <span class="body-2 medium-emphasis">{{ step }}</span>
                     </div>
                 </div>
             </div>
-           </div>
-            <div class="configure-wrapper" *ngIf="pluginSelected===('gcp')">
-                <div class="script-wrapper">
-                    <div class="steps-wrapper" >
-                        <div *ngFor="let step of configureSteps;let i=index">
-                            <div class="flex flex-row gap-12">
-                                <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
-                                <span class="body-2 medium-emphasis">{{step}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="configure-wrapper" *ngIf="pluginSelected===('azure')">
-                <div class="steps-wrapper" >
-                    <div *ngFor="let step of configureSteps;let i=index">
+        </div>
+        <div class="configure-wrapper" *ngIf="pluginSelected === 'gcp'">
+            <div class="script-wrapper">
+                <div class="steps-wrapper">
+                    <div *ngFor="let step of configureSteps; let i = index">
                         <div class="flex flex-row gap-12">
-                            <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
-                            <span class="body-2 medium-emphasis">{{step}}</span>
+                            <span class="index-wrapper body-2 medium-emphasis"
+                                >Step {{ i + 1 }}</span
+                            >
+                            <span class="body-2 medium-emphasis">{{ step }}</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="configure-wrapper" *ngIf="pluginSelected===('qualys')">
-                <div class="steps-wrapper" >
-                    <div *ngFor="let step of configureSteps;let i=index">
-                        <div class="flex flex-row gap-12">
-                            <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
-                            <span class="body-2 medium-emphasis">{{step}}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="configure-wrapper" *ngIf="pluginSelected===('aqua')">
-                <div class="steps-wrapper" >
-                    <div *ngFor="let step of configureSteps;let i=index">
-                        <div class="flex flex-row gap-12">
-                            <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
-                            <span class="body-2 medium-emphasis">{{step}}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="configure-wrapper redhat-video-wrapper" *ngIf="pluginSelected===('red hat')">
-                <div class="steps-wrapper" style="padding: 0;">
-                    <div class="configure-header">
-                        <p>To seamlessly integrate Red Hat ACS with Paladin Cloud, Red Hat recommends utilizing an authentication token, especially in a production environment, as it offers specific access control permissions.</p>
-                        <p style="padding-top: 12px">Follow these straightforward steps to generate an authentication token:</p>
-                    </div>
+        </div>
+        <div class="configure-wrapper" *ngIf="pluginSelected === 'azure'">
+            <div class="steps-wrapper">
+                <div *ngFor="let step of configureSteps; let i = index">
                     <div class="flex flex-row gap-12">
-                        <span class="index-wrapper body-2 medium-emphasis">1.</span>
-                        <span class="body-2 medium-emphasis">
-                            Log in to the <a class="primary-400" href="https://console.redhat.com/application-services/acs/instances" target="_blank"> Red Hat ACS Console</a>.
-                        </span>
-                    </div>
-                    <div *ngFor="let step of configureSteps;let i=index">
-                        <div class="flex flex-row gap-12">
-                            <span class="index-wrapper body-2 medium-emphasis">{{i+2}}.</span>
-                            <span class="body-2 medium-emphasis">{{step}}</span>
-                        </div>
-                    </div>
-                    <div class="configure-footer">
-                        <strong class="high-emphasis">IMPORTANT: </strong>Be sure to safely store the copied token. Once generated, it won't be visible again for security reasons
+                        <span class="index-wrapper body-2 medium-emphasis">Step {{ i + 1 }}</span>
+                        <span class="body-2 medium-emphasis">{{ step }}</span>
                     </div>
                 </div>
-                <ng-container [ngTemplateOutlet]="videoThumbnailRef"></ng-container>
             </div>
+        </div>
+        <div class="configure-wrapper" *ngIf="pluginSelected === 'qualys'">
+            <div class="steps-wrapper">
+                <div *ngFor="let step of configureSteps; let i = index">
+                    <div class="flex flex-row gap-12">
+                        <span class="index-wrapper body-2 medium-emphasis">Step {{ i + 1 }}</span>
+                        <span class="body-2 medium-emphasis">{{ step }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="configure-wrapper" *ngIf="pluginSelected === 'aqua'">
+            <div class="steps-wrapper">
+                <div *ngFor="let step of configureSteps; let i = index">
+                    <div class="flex flex-row gap-12">
+                        <span class="index-wrapper body-2 medium-emphasis">Step {{ i + 1 }}</span>
+                        <span class="body-2 medium-emphasis">{{ step }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="configure-wrapper redhat-video-wrapper" *ngIf="pluginSelected === 'red hat'">
+            <div class="steps-wrapper" style="padding: 0">
+                <div class="configure-header">
+                    <p>
+                        To seamlessly integrate Red Hat ACS with Paladin Cloud, Red Hat recommends
+                        utilizing an authentication token, especially in a production environment,
+                        as it offers specific access control permissions.
+                    </p>
+                    <p style="padding-top: 12px">
+                        Follow these straightforward steps to generate an authentication token:
+                    </p>
+                </div>
+                <div class="flex flex-row gap-12">
+                    <span class="index-wrapper body-2 medium-emphasis">1.</span>
+                    <span class="body-2 medium-emphasis">
+                        Log in to the
+                        <a
+                            class="primary-400"
+                            href="https://console.redhat.com/application-services/acs/instances"
+                            target="_blank"
+                        >
+                            Red Hat ACS Console</a
+                        >.
+                    </span>
+                </div>
+                <div *ngFor="let step of configureSteps; let i = index">
+                    <div class="flex flex-row gap-12">
+                        <span class="index-wrapper body-2 medium-emphasis">{{ i + 2 }}.</span>
+                        <span class="body-2 medium-emphasis">{{ step }}</span>
+                    </div>
+                </div>
+                <div class="configure-footer">
+                    <strong class="high-emphasis">IMPORTANT: </strong>Be sure to safely store the
+                    copied token. Once generated, it won't be visible again for security reasons
+                </div>
+            </div>
+            <ng-container [ngTemplateOutlet]="videoThumbnailRef"></ng-container>
+        </div>
     </div>
 </ng-template>
 
 <ng-template #videoThumbnailRef>
     <div class="video-thumbnail-wrapper">
         <div class="play-button-wrapper">
-            <img class="video-thumbnail" src="/assets/images/plugin-thumbnails/{{getImageName()}}-steps.png" alt="{{getImageName() | titlecase}} Steps">
+            <img
+                class="video-thumbnail"
+                src="/assets/images/plugin-thumbnails/{{ getImageName() }}-steps.png"
+                alt="{{ getImageName() | titlecase }} Steps"
+            />
             <div class="play-button">
-                <img class="icon" (click)="openVideoDialog()" src="/assets/icons/play-button.svg" alt="play button">
+                <img
+                    class="icon"
+                    (click)="openVideoDialog()"
+                    src="/assets/icons/play-button.svg"
+                    alt="play button"
+                />
             </div>
         </div>
-        <div class="video-desc caption-2 medium-emphasis">Learn how to integrate {{pluginSelected | titlecase}} with Paladin Cloud in this video.</div>
+        <div class="video-desc caption-2 medium-emphasis">
+            Learn how to integrate {{ pluginSelected | titlecase }} with Paladin Cloud in this
+            video.
+        </div>
     </div>
 </ng-template>
 
 <ng-template #addDetailsRef>
-    <div *ngIf="!isValid" class="flex gap-8 body-2" style="padding: 16px 24px; background: #FEF5F5; border-radius: 8px 8px 0;">
-        <div><img src="/assets/icons/alert-icon.svg" alt="" style="height: 16px;"></div>
+    <div
+        *ngIf="!isValid"
+        class="flex gap-8 body-2"
+        style="padding: 16px 24px; background: #fef5f5; border-radius: 8px 8px 0"
+    >
+        <div><img src="/assets/icons/alert-icon.svg" alt="" style="height: 16px" /></div>
         <div class="flex flex-col gap-8">
             <div class="title high-emphasis">Plugin Validation failed</div>
             <div class="errorMessage low-emphasis">{{ errorMessage }}</div>
@@ -190,57 +270,175 @@
     </div>
     <div class="header">
         <h6>Add Details</h6>
-        <span class="subtext">
-            Follow the instruction to setup your account.
-        </span>
+        <span class="subtext"> Follow the instruction to setup your account. </span>
     </div>
     <div class="configuration-body">
-        <div *ngIf="pluginSelected===('aws')" class="details-wrapper"> 
+        <div *ngIf="pluginSelected === 'aws'" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="awsPluginForm">
-                <app-input-field [parentForm]="awsPluginForm" formControlName="accountId" [label]="'Account ID'" 
-                                 placeholder="Enter only digits" [(value)]="accountId" [shouldApplyNumericDirective]="true"
-                                 [formErrors]="awsFormErrors" [isRequired]="true">
+                <app-input-field
+                    [parentForm]="awsPluginForm"
+                    formControlName="accountId"
+                    [label]="'Account ID'"
+                    placeholder="Enter only digits"
+                    [(value)]="accountId"
+                    [shouldApplyNumericDirective]="true"
+                    [formErrors]="awsFormErrors"
+                    [isRequired]="true"
+                >
                 </app-input-field>
-                <app-input-field [label]="'Account Name'"[(value)]="accountName"
-                                 [parentForm]="awsPluginForm"
-                                 hint="Please provide the name of your AWS account">
+                <app-input-field
+                    [label]="'Account Name'"
+                    [(value)]="accountName"
+                    [parentForm]="awsPluginForm"
+                    hint="Please provide the name of your AWS account"
+                >
                 </app-input-field>
             </form>
         </div>
-        <div *ngIf="pluginSelected===('azure')" class="details-wrapper">
+        <div *ngIf="pluginSelected === 'azure'" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="azurePluginForm">
-                <app-input-field [label]="'Application ID'" [(value)]="clientId" [parentForm]="azurePluginForm" formControlName="applicationId" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Directory ID'" [(value)]="tenantId" [parentForm]="azurePluginForm" formControlName="directoryId" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Client Secret Value'" [(value)]="tenantSecret" [parentForm]="azurePluginForm" formControlName="secretValue" [formErrors]="azureFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field
+                    [label]="'Application ID'"
+                    [(value)]="clientId"
+                    [parentForm]="azurePluginForm"
+                    formControlName="applicationId"
+                    [formErrors]="azureFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Directory ID'"
+                    [(value)]="tenantId"
+                    [parentForm]="azurePluginForm"
+                    formControlName="directoryId"
+                    [formErrors]="azureFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Client Secret Value'"
+                    [(value)]="tenantSecret"
+                    [parentForm]="azurePluginForm"
+                    formControlName="secretValue"
+                    [formErrors]="azureFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
             </form>
         </div>
-        <div *ngIf="pluginSelected===('gcp')" class="details-wrapper">
+        <div *ngIf="pluginSelected === 'gcp'" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="gcpPluginForm">
-                <app-input-field [label]="'Project ID'" [(value)]="projectId" [parentForm]="gcpPluginForm" formControlName="projectId" [formErrors]="gcpFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field type="textarea" height="56px" [label]="'Service Account Key JSON'" [(value)]="serviceAccount" [parentForm]="gcpPluginForm" formControlName="serviceAccount" [formErrors]="gcpFormErrors" [isRequired]="true"></app-input-field>
-            </form>
-            </div>
-        <div *ngIf="pluginSelected===('qualys')" class="details-wrapper">
-            <form class="form-wrapper" [formGroup]="qualysPluginForm">
-                <app-input-field [label]="'API URL'" [(value)]="qualysApiUrl" [parentForm]="qualysPluginForm" formControlName="qualysApiUrl" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'API Username'" [(value)]="qualysApiUser" [parentForm]="qualysPluginForm" formControlName="qualysApiUser" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Password'" type="password" [(value)]="qualysApiPassword" [parentForm]="qualysPluginForm" formControlName="qualysApiPassword" [formErrors]="qualysFormErrors" [isRequired]="true"></app-input-field>
+                <app-input-field
+                    [label]="'Project ID'"
+                    [(value)]="projectId"
+                    [parentForm]="gcpPluginForm"
+                    formControlName="projectId"
+                    [formErrors]="gcpFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    type="textarea"
+                    height="56px"
+                    [label]="'Service Account Key JSON'"
+                    [(value)]="serviceAccount"
+                    [parentForm]="gcpPluginForm"
+                    formControlName="serviceAccount"
+                    [formErrors]="gcpFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
             </form>
         </div>
-        <div *ngIf="pluginSelected===('red hat')" class="details-wrapper">
+        <div *ngIf="pluginSelected === 'qualys'" class="details-wrapper">
+            <form class="form-wrapper" [formGroup]="qualysPluginForm">
+                <app-input-field
+                    [label]="'API URL'"
+                    [(value)]="qualysApiUrl"
+                    [parentForm]="qualysPluginForm"
+                    formControlName="qualysApiUrl"
+                    [formErrors]="qualysFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'API Username'"
+                    [(value)]="qualysApiUser"
+                    [parentForm]="qualysPluginForm"
+                    formControlName="qualysApiUser"
+                    [formErrors]="qualysFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Password'"
+                    type="password"
+                    [(value)]="qualysApiPassword"
+                    [parentForm]="qualysPluginForm"
+                    formControlName="qualysApiPassword"
+                    [formErrors]="qualysFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+            </form>
+        </div>
+        <div *ngIf="pluginSelected === 'red hat'" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="redHatPluginForm">
-                <app-input-field [label]="'ID'" [(value)]="redHatId" [parentForm]="redHatPluginForm" formControlName="redHatId" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Token'" type="textarea" height="112px" [(value)]="redHatToken" [parentForm]="redHatPluginForm" formControlName="redHatToken" [formErrors]="redHatFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Account Name (Optional)'" [(value)]="redHatAccountName" [parentForm]="redHatPluginForm" formControlName="redHatAccountName" [formErrors]="redHatFormErrors"></app-input-field>
+                <app-input-field
+                    [label]="'ID'"
+                    [(value)]="redHatId"
+                    [parentForm]="redHatPluginForm"
+                    formControlName="redHatId"
+                    [formErrors]="redHatFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Token'"
+                    type="textarea"
+                    height="112px"
+                    [(value)]="redHatToken"
+                    [parentForm]="redHatPluginForm"
+                    formControlName="redHatToken"
+                    [formErrors]="redHatFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Account Name (Optional)'"
+                    [(value)]="redHatAccountName"
+                    [parentForm]="redHatPluginForm"
+                    formControlName="redHatAccountName"
+                    [formErrors]="redHatFormErrors"
+                ></app-input-field>
                 <!-- <app-input-field [label]="'Owner (Optional)'" [(value)]="redHatOwner" [parentForm]="redHatPluginForm" formControlName="redHatOwner" [formErrors]="redHatFormErrors"></app-input-field> -->
             </form>
         </div>
-        <div *ngIf="pluginSelected===('aqua')" class="details-wrapper">
+        <div *ngIf="pluginSelected === 'aqua'" class="details-wrapper">
             <form class="form-wrapper" [formGroup]="aquaPluginForm">
-                <app-input-field [label]="'API Username'" [(value)]="aquaApiUser" [parentForm]="aquaPluginForm" formControlName="aquaApiUser" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Password'" type="password" [(value)]="aquaApiPassword" [parentForm]="aquaPluginForm" formControlName="aquaApiPassword" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'API URL'" [(value)]="aquaApiUrl" [parentForm]="aquaPluginForm" formControlName="aquaApiUrl" [formErrors]="aquaFormErrors" [isRequired]="true"></app-input-field>
-                <app-input-field [label]="'Client Domain URL'" [(value)]="aquaClientDomainUrl" [isDisabled]="true" [parentForm]="aquaPluginForm" formControlName="aquaClientDomainUrl" [formErrors]="aquaFormErrors"></app-input-field>
+                <app-input-field
+                    [label]="'API Username'"
+                    [(value)]="aquaApiUser"
+                    [parentForm]="aquaPluginForm"
+                    formControlName="aquaApiUser"
+                    [formErrors]="aquaFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Password'"
+                    type="password"
+                    [(value)]="aquaApiPassword"
+                    [parentForm]="aquaPluginForm"
+                    formControlName="aquaApiPassword"
+                    [formErrors]="aquaFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'API URL'"
+                    [(value)]="aquaApiUrl"
+                    [parentForm]="aquaPluginForm"
+                    formControlName="aquaApiUrl"
+                    [formErrors]="aquaFormErrors"
+                    [isRequired]="true"
+                ></app-input-field>
+                <app-input-field
+                    [label]="'Client Domain URL'"
+                    [(value)]="aquaClientDomainUrl"
+                    [isDisabled]="true"
+                    [parentForm]="aquaPluginForm"
+                    formControlName="aquaClientDomainUrl"
+                    [formErrors]="aquaFormErrors"
+                ></app-input-field>
             </form>
         </div>
     </div>
@@ -248,17 +446,21 @@
 
 <ng-template #supportInfoRef>
     <div class="configuration-body flex flex-around flex-align-center">
-        <img class="info-icon" src="/assets/icons/info-octogon.svg">
-        <img class="close-icon" src="/assets/icons/x-icon.svg" (click)="closeDialog()">  
+        <img class="info-icon" src="/assets/icons/info-octogon.svg" />
+        <img class="close-icon" src="/assets/icons/x-icon.svg" (click)="closeDialog()" />
     </div>
     <div class="info-wrapper flex flex-col">
-        <span class="info-text">{{selectedAccountName}} requires manual setup</span>
+        <span class="info-text">{{ selectedAccountName }} requires manual setup</span>
         <span class="supporting-info-text">
-            Join our 
-            <a href="https://join.slack.com/t/paladincloudcommunity/shared_invite/zt-1c2ehv1rm-KkIBLKkHZhjs543ZArbiAg" target="_blank" rel="noopener noreferrer">
+            Join our
+            <a
+                href="https://join.slack.com/t/paladincloudcommunity/shared_invite/zt-1c2ehv1rm-KkIBLKkHZhjs543ZArbiAg"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
                 Slack community
-            </a> 
-            for info on connecting {{selectedAccountName}} with Paladin Cloud via plugin.
+            </a>
+            for info on connecting {{ selectedAccountName }} with Paladin Cloud via plugin.
         </span>
     </div>
 </ng-template>
@@ -274,11 +476,11 @@
         <div class="configure-wrapper">
             <div class="commands-container border-200">
                 <div class="commands-header-container">
-                    <div class="commands-header-wrapper flex flex-between flex-align-center ">
+                    <div class="commands-header-wrapper flex flex-between flex-align-center">
                         <div class="body-1">Code</div>
                         <div class="copy-button">
                             <button mat-button (click)="copyToClipboard(commands)">
-                                <img src="/assets/icons/copy-content.svg" alt="copy icon">
+                                <img src="/assets/icons/copy-content.svg" alt="copy icon" />
                                 <span style="font: var(--text-body-3)">Copy</span>
                             </button>
                         </div>
@@ -288,35 +490,43 @@
                     <div class="commands-number-container flex flex-col gap-4">
                         <section>
                             <ul>
-                                <li *ngFor="let command of commands; let i=index" style="color: grey;"> {{ i+1 }} </li>
+                                <li
+                                    *ngFor="let command of commands; let i = index"
+                                    style="color: grey"
+                                >
+                                    {{ i + 1 }}
+                                </li>
                             </ul>
                         </section>
                     </div>
                     <div class="commands-body-wrapper flex flex-row gap-4">
                         <section>
                             <ul>
-                              <li *ngFor="let command of commands">{{ command.command }} <span class="command-service-name">{{ command.service }}</span></li>
+                                <li *ngFor="let command of commands">
+                                    {{ command.command }}
+                                    <span class="command-service-name">{{ command.service }}</span>
+                                </li>
                             </ul>
                         </section>
-                          
                     </div>
                 </div>
             </div>
             <div class="note-container">
                 <div class="note-wrapper flex flex gap-8 padding-20">
                     <div class="icon-indent">
-                        <mat-icon style="font-size: 20px;">info</mat-icon>
+                        <mat-icon style="font-size: 20px">info</mat-icon>
                     </div>
                     <div class="note-body">
                         <app-text classNames="body-2" text="Note"></app-text>
                         <div style="font: var(--text-body-3)">
-                            For the discovery of GCP resources and the authentication process, you must enable the following APIs: 
-                            <span *ngFor="let command of commands;let i=index">
+                            For the discovery of GCP resources and the authentication process, you
+                            must enable the following APIs:
+                            <span *ngFor="let command of commands; let i = index">
                                 <span class="command-service-name">{{ command.service }}</span>
-                                <span *ngIf="i<commands.length-2">, </span>
-                                <span *ngIf="i==commands.length-2"> and </span>
-                            </span>.
-                            If you don’t enable these APIs, we’ll enable them during the onboarding process by running the GCloud script.
+                                <span *ngIf="i < commands.length - 2">, </span>
+                                <span *ngIf="i == commands.length - 2"> and </span> </span
+                            >. If you don’t enable these APIs, we’ll enable them during the
+                            onboarding process by running the GCloud script.
                         </div>
                     </div>
                 </div>
@@ -327,109 +537,135 @@
 
 <ng-template #redHatStepsVideoRef>
     <div>
-        <video controls (canplay)="pauseVideo(videoplayer)"
-                #videoPlayer style="width: 100%;height: 100%;">
-            <source src="{{videoSource}}" type="video/mp4">
+        <video
+            controls
+            (canplay)="pauseVideo(videoplayer)"
+            #videoPlayer
+            style="width: 100%; height: 100%"
+        >
+            <source src="{{ videoSource }}" type="video/mp4" />
             Your browser does not support the video tag
         </video>
     </div>
-  </ng-template>
+</ng-template>
 
-  <ng-template #tenableRef>
-      <div class="tenable-wrapper">
-        <span class="body-1 low-emphasis tenable-subheader" >Integrate with Paladin Cloud using your Tenable’s secret and API keys.</span>
+<ng-template #tenableRef>
+    <div class="tenable-wrapper">
+        <span class="body-1 low-emphasis tenable-subheader"
+            >Integrate with Paladin Cloud using your Tenable’s secret and API keys.</span
+        >
         <div class="flex flex-row video-instructions-wrapper">
             <div class="flex flex-col instructions-form-wrapper">
-                    <div class="instructions-wrapper">
-                    <img src="/assets/icons/info-fill.svg" alt="info icon">
-                        <div class="instructions flex flex-col gap-8">
-                            <span class="instructions-header body-2 high-emphasis">How to create access keys?</span>
-                            <div class="steps content-container" [ngClass]="{ 'show-all': showAllSteps }">
+                <div class="instructions-wrapper">
+                    <img src="/assets/icons/info-fill.svg" alt="info icon" />
+                    <div class="instructions flex flex-col gap-8">
+                        <span class="instructions-header body-2 high-emphasis"
+                            >How to create access keys?</span
+                        >
+                        <div
+                            class="steps content-container"
+                            [ngClass]="{ 'show-all': showAllSteps }"
+                        >
                             <div class="flex flex-row gap-12">
                                 <span class="index-wrapper body-2 medium-emphasis">1.</span>
                                 <span class="body-2 medium-emphasis">
-                                Go to <a class="primary-400" href="https://cloud.tenable.com/tio/app.html#/login" target="_blank">cloud.tenable.io</a>.
+                                    Go to
+                                    <a
+                                        class="primary-400"
+                                        href="https://cloud.tenable.com/tio/app.html#/login"
+                                        target="_blank"
+                                        >cloud.tenable.io</a
+                                    >.
                                 </span>
                             </div>
                             <div class="flex flex-row gap-12">
                                 <span class="index-wrapper body-2 medium-emphasis">2.</span>
                                 <span class="body-2 medium-emphasis">
-                                Access <span style="font-weight: bold;">Settings</span> from the sidebar
+                                    Access <span style="font-weight: bold">Settings</span> from the
+                                    sidebar
                                 </span>
                             </div>
                             <div class="flex flex-row gap-12">
                                 <span class="index-wrapper body-2 medium-emphasis">3.</span>
                                 <span class="body-2 medium-emphasis">
-                                    Find Account management section and select <span style="font-weight: bold;">"My account"</span> 
+                                    Find Account management section and select
+                                    <span style="font-weight: bold">"My account"</span>
                                 </span>
                             </div>
                             <div class="flex flex-row gap-12">
                                 <span class="index-wrapper body-2 medium-emphasis">4.</span>
                                 <span class="body-2 medium-emphasis">
-                                    Select <span style="font-weight: bold;">API keys</span> step in the vertical stepper
+                                    Select <span style="font-weight: bold">API keys</span> step in
+                                    the vertical stepper
                                 </span>
                             </div>
                             <div class="flex flex-row gap-12">
                                 <span class="index-wrapper body-2 medium-emphasis">5.</span>
                                 <span class="body-2 medium-emphasis">
-                                    Click the <span style="font-weight: bold;">generate</span> button in the footer 
+                                    Click the <span style="font-weight: bold">generate</span> button
+                                    in the footer
                                 </span>
                             </div>
                             <div class="flex flex-row gap-12">
                                 <span class="index-wrapper body-2 medium-emphasis">6.</span>
                                 <span class="body-2 medium-emphasis">
-                                    In the dialog box, click 
-                                    <span style="font-weight: bold;">generate</span> again. 
-                                    <span style="color: red;">Note: </span>
-                                    Existing keys will be overridden 
+                                    In the dialog box, click
+                                    <span style="font-weight: bold">generate</span> again.
+                                    <span style="color: red">Note: </span>
+                                    Existing keys will be overridden
                                 </span>
                             </div>
                             <div class="flex flex-row gap-12">
                                 <span class="index-wrapper body-2 medium-emphasis">7.</span>
                                 <span class="body-2 medium-emphasis">
-                                    <span style="font-weight: bold;">API</span>
+                                    <span style="font-weight: bold">API</span>
                                     and
-                                    <span style="font-weight: bold;">Secret</span>
+                                    <span style="font-weight: bold">Secret</span>
                                     Keys will be generated.
-                                    <span style="color: red;">Note: </span>
+                                    <span style="color: red">Note: </span>
                                     Remember to copy API keys before leaving
                                 </span>
                             </div>
-                            </div>
-                            <button class="show-more" (click)="toggleSteps()">
-                            {{ showAllSteps ? 'Show Less Instructions' : 'Show More Instructions' }}
-                            </button>
                         </div>
+                        <button class="show-more" (click)="toggleSteps()">
+                            {{ showAllSteps ? 'Show Less Instructions' : 'Show More Instructions' }}
+                        </button>
                     </div>
-                    <div class="tenable-form" style="padding: 20px 0px;"> 
-                        <form class="form-wrapper" [formGroup]="tenablePluginForm">
+                </div>
+                <div class="tenable-form" style="padding: 20px 0px">
+                    <form class="form-wrapper" [formGroup]="tenablePluginForm">
                         <app-input-field
-                        [label]="'Access Key'"
-                        [(value)]="tenableAccessKey"    
-                        [parentForm]="tenablePluginForm"
-                        formControlName="tenableAccessKey"
-                        [formErrors]="tenableFormErrors"
-                        [isRequired]="true"
-                        placeholder="Eg: f8a3e59271d64d98ba6706c952820e"
+                            [label]="'Access Key'"
+                            [(value)]="tenableAccessKey"
+                            [parentForm]="tenablePluginForm"
+                            formControlName="tenableAccessKey"
+                            [formErrors]="tenableFormErrors"
+                            [isRequired]="true"
+                            placeholder="Eg: f8a3e59271d64d98ba6706c952820e"
                         ></app-input-field>
                         <app-input-field
-                        [label]="'Secret Key'"
-                        [(value)]="tenableSecretKey"
-                        [parentForm]="tenablePluginForm"
-                        formControlName="tenableSecretKey"
-                        [formErrors]="tenableFormErrors"
-                        [isRequired]="true"
-                        type="password"
-                        placeholder="Eg: 69a8c5e6706c9528a1c5a6f3eef844"
+                            [label]="'Secret Key'"
+                            [(value)]="tenableSecretKey"
+                            [parentForm]="tenablePluginForm"
+                            formControlName="tenableSecretKey"
+                            [formErrors]="tenableFormErrors"
+                            [isRequired]="true"
+                            type="password"
+                            placeholder="Eg: 69a8c5e6706c9528a1c5a6f3eef844"
                         ></app-input-field>
-                        </form>
-                    </div>
-                    <button class="button btn" [class.hide]="shouldHideAddButton()" style="width:200px"
-                            (click)="validateAccount()" [class.isDisabled]="isAddButtonDisabled()">
-                            Add Plugin
-                    </button>
+                    </form>
+                </div>
+                <button
+                    class="button btn"
+                    [class.hide]="shouldHideAddButton()"
+                    style="width: 200px"
+                    (click)="validateAccount()"
+                    [class.isDisabled]="isAddButtonDisabled()"
+                >
+                    Add Plugin
+                </button>
             </div>
             <ng-container [ngTemplateOutlet]="videoThumbnailRef"></ng-container>
         </div>
-      </div>
-  </ng-template>
+    </div>
+</ng-template>

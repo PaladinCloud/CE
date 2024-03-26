@@ -12,21 +12,21 @@
  * limitations under the License.
  -->
 
- <article class="contents-wrapper flex flex-between flex-wrap">
-	<section class="wrapper" *ngFor='let data of resource'>		
-		<div *ngIf='data.value.length > 0'>
-			<div class="content-header">
-				{{data.name}}
-			</div>
-			<div class="content" *ngIf="data.name == 'creationDate'">
-				{{data.value | date:'mediumDate'}}
-			</div>
-			<div class="content" *ngIf="data.name == 'email'">
-				<a href="mailto:{{data.value}}?Subject=Hello" target="_top">{{data.value}}</a>
-			</div>
-			<div class="content" *ngIf="data.name != 'creationDate' && data.name != 'email'">
-				{{data.value}}
-			</div>			
-		</div>		
-	</section>
+<article class="contents-wrapper flex flex-between flex-wrap">
+    <section class="wrapper" *ngFor="let data of resource">
+        <div *ngIf="data.value.length > 0">
+            <div class="content-header">
+                {{ data.name }}
+            </div>
+            <div class="content" *ngIf="data.name == 'creationDate'">
+                {{ data.value | date: 'mediumDate' }}
+            </div>
+            <div class="content" *ngIf="data.name == 'email'">
+                <a href="mailto:{{ data.value }}?Subject=Hello" target="_top">{{ data.value }}</a>
+            </div>
+            <div class="content" *ngIf="data.name != 'creationDate' && data.name != 'email'">
+                {{ data.value }}
+            </div>
+        </div>
+    </section>
 </article>

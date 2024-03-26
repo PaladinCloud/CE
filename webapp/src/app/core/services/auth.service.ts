@@ -12,7 +12,14 @@
  * limitations under the License.
  */
 
-import { throwError as observableThrowError, Observable, Observer, Subscription, from, throwError } from 'rxjs';
+import {
+    throwError as observableThrowError,
+    Observable,
+    Observer,
+    Subscription,
+    from,
+    throwError,
+} from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { AdalService } from './adal.service';
@@ -54,7 +61,7 @@ export class AuthService {
         private logger: LoggerService,
         private permissionGuardService: PermissionGuardService,
         private authSessionStorage: AuthSessionStorageService,
-        private errorHandler: ErrorHandlingService
+        private errorHandler: ErrorHandlingService,
     ) {
         this.adAuthentication = CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso';
         this.cognitoAuthentication = CONFIGURATIONS.optional.auth.AUTH_TYPE === 'cognito';
@@ -118,7 +125,7 @@ export class AuthService {
         // }));
     }
 
-    refreshToken () {
+    refreshToken() {
         try {
             const tokenObj = this.dataStore.getUserDetailsValue().getAuthToken();
             if (!tokenObj || !tokenObj.refresh_token) {
@@ -131,9 +138,7 @@ export class AuthService {
 
             const payload = { refreshToken };
 
-            return from(
-                this.commonResponseService.getData(url, method, payload, {})
-            ).pipe(
+            return from(this.commonResponseService.getData(url, method, payload, {})).pipe(
                 switchMap((response: any) => {
                     if (response && response.success && response.access_token) {
                         const userLoginDetails = {
@@ -142,14 +147,14 @@ export class AuthService {
                             id_token: response.id_token,
                             success: true,
                             token_type: response.token_type,
-                            expires_in: response.expires_in
+                            expires_in: response.expires_in,
                         };
                         this.dataStore.setCurrentUserLoginDetails(JSON.stringify(userLoginDetails));
                         return this.setUserFetchedInformationCognito().pipe(
                             tap((userResponse: any) => {
-                                this.logger.log('info', "Fetched user info successfully");
+                                this.logger.log('info', 'Fetched user info successfully');
                             }),
-                            switchMap(() => from([userLoginDetails.access_token]))
+                            switchMap(() => from([userLoginDetails.access_token])),
                         );
                     } else {
                         const errorMessage = response.message || 'Error renewing the access token';
@@ -158,9 +163,12 @@ export class AuthService {
                     }
                 }),
                 catchError((error: any) => {
-                    this.errorHandler.handleJavascriptError(error, 'Error renewing the access token');
+                    this.errorHandler.handleJavascriptError(
+                        error,
+                        'Error renewing the access token',
+                    );
                     return throwError(null);
-                })
+                }),
             );
         } catch (error) {
             this.errorHandler.handleJavascriptError(error, 'Error while processing access token');
@@ -206,7 +214,7 @@ export class AuthService {
         });
     }
 
-    async redirectPostLogin (defaultAssetGroup?: string) {
+    async redirectPostLogin(defaultAssetGroup?: string) {
         let redirectUrl = decodeURIComponent(this.redirectUrl);
 
         if (redirectUrl && redirectUrl !== '') {
@@ -259,10 +267,8 @@ export class AuthService {
         }
     }
 
-    removeEmptyStringKeys (obj: { [key: string]: any }): { [key: string]: any } {
-        return Object.fromEntries(
-            Object.entries(obj).filter(([key, value]) => key !== '')
-        );
+    removeEmptyStringKeys(obj: { [key: string]: any }): { [key: string]: any } {
+        return Object.fromEntries(Object.entries(obj).filter(([key, value]) => key !== ''));
     }
 
     private redirectToPostLoginDefault(defaultAssetGroup: string) {

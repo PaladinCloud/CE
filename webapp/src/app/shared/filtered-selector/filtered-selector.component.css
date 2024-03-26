@@ -18,11 +18,11 @@
     align-items: flex-start;
     padding: 0px;
     width: fit-content;
-    background: #EDF2F7;
+    background: #edf2f7;
     border-radius: 2px;
 }
 
-.text-content{
+.text-content {
     font-family: 'mark-pro-medium';
     font-style: normal;
     font-weight: 500;
@@ -44,7 +44,7 @@
 }
 
 .close-img:hover {
-    transform: rotate(-90deg); 
+    transform: rotate(-90deg);
 }
 
 .clear-filter {
@@ -55,14 +55,13 @@
     cursor: pointer;
 }
 
-.filters{
-gap: 10px;
-display: flex;
-flex-wrap: wrap;
+.filters {
+    gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.filters-wrapper{
+.filters-wrapper {
     display: flex;
     justify-content: space-between;
-
 }

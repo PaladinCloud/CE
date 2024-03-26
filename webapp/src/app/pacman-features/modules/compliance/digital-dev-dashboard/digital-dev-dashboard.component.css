@@ -13,33 +13,33 @@
  */
 
 .widget.widget-container {
-  padding-bottom: 0em;
-  overflow: hidden;
+    padding-bottom: 0em;
+    overflow: hidden;
 }
 
 .page-scroll {
-  overflow-y: auto;
-  overflow-y: overlay;
+    overflow-y: auto;
+    overflow-y: overlay;
 }
 
 .floating-widgets-header {
-  padding: 0em 1.4em;
-  align-items: center;
+    padding: 0em 1.4em;
+    align-items: center;
 }
 
 .section {
-  padding-bottom: 1em;
+    padding-bottom: 1em;
 }
 
 /* ********************************************************************************************************* */
 /*  Dev Strategy section css starts here */
 .dev-strategy-widget-wrapper {
-  justify-content: space-between;
+    justify-content: space-between;
 }
 
 .dev-strategy-each-widget {
-  width: 49%;
-  height: 28em;
+    width: 49%;
+    height: 28em;
 }
 /*  Dev Strategy section css ends here */
 /* ********************************************************************************************************* */
@@ -50,19 +50,19 @@
 /* ********************************************************************************************************* */
 /*  Stale branches css starts here */
 .stale-branch-donut-chart {
-  /* flex: 3; */
-  width: 30%;
+    /* flex: 3; */
+    width: 30%;
 }
 .stale-branch-bar-chart {
-  /* flex: 7; */
-  width: 70%;
+    /* flex: 7; */
+    width: 70%;
 }
 /* Stale branches css ends here */
 /* ********************************************************************************************************* */
 
 /* css for edge browser */
-@supports (-ms-ime-align: auto) { 
-  .page-scroll {
-      overflow-y: auto;
-  }
+@supports (-ms-ime-align: auto) {
+    .page-scroll {
+        overflow-y: auto;
+    }
 }

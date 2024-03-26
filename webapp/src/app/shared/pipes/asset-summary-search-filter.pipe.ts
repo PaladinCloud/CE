@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -21,31 +21,29 @@ import { LoggerService } from '../services/logger.service';
 
 @Pipe({ name: 'assetSummarySearchFilter' })
 export class AssetSummarySearchFilterPipe implements PipeTransform {
-  @Output() pipeError = new EventEmitter();
+    @Output() pipeError = new EventEmitter();
 
-  constructor(private loggerService: LoggerService) { }
+    constructor(private loggerService: LoggerService) {}
 
-  transform(input: any, searchQuery: string): any {
-    if (!input) return [];
-    if (!searchQuery) return input;
+    transform(input: any, searchQuery: string): any {
+        if (!input) return [];
+        if (!searchQuery) return input;
 
-    try {
-      return input.filter(item => {
-          if (item['type'] &&
-            (
-              '' +
-              JSON.stringify(item['type'])
-                .toString()
-                .toLowerCase()
-            ).includes(searchQuery.toString().toLowerCase())
-          ) {
-            return true;
+        try {
+            return input.filter((item) => {
+                if (
+                    item['type'] &&
+                    ('' + JSON.stringify(item['type']).toString().toLowerCase()).includes(
+                        searchQuery.toString().toLowerCase(),
+                    )
+                ) {
+                    return true;
+                }
+                return false;
+            });
+        } catch (error) {
+            this.loggerService.log('infor', 'error in pipe' + error);
+            return false;
         }
-        return false;
-      });
-    } catch (error) {
-      this.loggerService.log('infor', 'error in pipe' + error);
-      return false;
     }
-  }
 }

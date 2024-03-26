@@ -3,26 +3,24 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
-import {Injectable} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import { Injectable } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable()
 export class StateManagementService {
-
     private ag;
 
-    constructor (private activatedRoute: ActivatedRoute) {
-
-        this.activatedRoute.params.subscribe(params => {
+    constructor(private activatedRoute: ActivatedRoute) {
+        this.activatedRoute.params.subscribe((params) => {
             this.ag = params['ag'];
         });
     }
@@ -30,5 +28,4 @@ export class StateManagementService {
     getSelectedAssetGroup() {
         return this.ag;
     }
-
 }

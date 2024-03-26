@@ -19,36 +19,38 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { RouterUtilityService } from '../../shared/services/router-utility.service';
 
 @Component({
-  selector: 'app-back-navigation',
-  templateUrl: './back-navigation.component.html',
-  styleUrls: ['./back-navigation.component.css']
+    selector: 'app-back-navigation',
+    templateUrl: './back-navigation.component.html',
+    styleUrls: ['./back-navigation.component.css'],
 })
 export class BackNavigationComponent implements OnInit {
+    public backButtonRequired;
+    @Input() pageTitle?;
 
-  public backButtonRequired;
-  @Input() pageTitle?;
-
-  constructor(
-    private workflowService: WorkflowService,
-    private router: Router,
-    private logger: LoggerService,
-    private routerUtilityService: RouterUtilityService
-  ) {
-    this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently();
-  }
-
-  ngOnInit() {
-    if (!this.pageTitle) {
-      this.pageTitle = this.routerUtilityService.getpageTitle(this.router.routerState.snapshot.root);
+    constructor(
+        private workflowService: WorkflowService,
+        private router: Router,
+        private logger: LoggerService,
+        private routerUtilityService: RouterUtilityService,
+    ) {
+        this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently();
     }
-  }
 
-  navigateBack() {
-    try {
-      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
-    } catch (error) {
-      this.logger.log('error', error);
+    ngOnInit() {
+        if (!this.pageTitle) {
+            this.pageTitle = this.routerUtilityService.getpageTitle(
+                this.router.routerState.snapshot.root,
+            );
+        }
     }
-  }
 
+    navigateBack() {
+        try {
+            this.workflowService.goBackToLastOpenedPageAndUpdateLevel(
+                this.router.routerState.snapshot.root,
+            );
+        } catch (error) {
+            this.logger.log('error', error);
+        }
+    }
 }

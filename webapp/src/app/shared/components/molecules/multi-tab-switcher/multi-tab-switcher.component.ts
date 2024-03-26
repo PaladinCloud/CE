@@ -1,24 +1,21 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-multi-tab-switcher',
-  templateUrl: './multi-tab-switcher.component.html',
-  styleUrls: ['./multi-tab-switcher.component.css']
+    selector: 'app-multi-tab-switcher',
+    templateUrl: './multi-tab-switcher.component.html',
+    styleUrls: ['./multi-tab-switcher.component.css'],
 })
 export class MultiTabSwitcherComponent implements OnInit {
+    @Input() tabs;
+    @Input() tabSelected;
 
-  @Input() tabs;
-  @Input() tabSelected;
+    @Output() switchView = new EventEmitter();
 
-  @Output() switchView = new EventEmitter();
+    constructor() {}
 
-  constructor() { }
+    ngOnInit(): void {}
 
-  ngOnInit(): void {
-  }
-
-  handleSwitchView(e){
-    this.switchView.emit(e);
-  }
-
+    handleSwitchView(e) {
+        this.switchView.emit(e);
+    }
 }

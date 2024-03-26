@@ -12,23 +12,43 @@
  * limitations under the License.
  -->
 
- <div class='relative searchable-dropdown-wrapper flex flex-col flex-center'>
-    <div class='items-wrapper' *ngIf="errorValue == 1">
-        <div class='each-tile' *ngFor='let tile of tiles; let i = index;' [class.active]= 'activeTile == i' [class.hover-tile]='activeTile == -1' (click)= 'activeTile = i; selected(tile, i)'>
-            <div class='flex flex-col each-tile-wrapper'>
-                <div class='flex flex-between each-tile-row'>
-                    <div>Modified by: <span class='owner'>{{tile.modifiedBy}}</span></div>
-                    <div class='timestamp'>{{tile.auditTimeStamp}}</div>
+<div class="relative searchable-dropdown-wrapper flex flex-col flex-center">
+    <div class="items-wrapper" *ngIf="errorValue == 1">
+        <div
+            class="each-tile"
+            *ngFor="let tile of tiles; let i = index"
+            [class.active]="activeTile == i"
+            [class.hover-tile]="activeTile == -1"
+            (click)="activeTile = i; selected(tile, i)"
+        >
+            <div class="flex flex-col each-tile-wrapper">
+                <div class="flex flex-between each-tile-row">
+                    <div>
+                        Modified by: <span class="owner">{{ tile.modifiedBy }}</span>
+                    </div>
+                    <div class="timestamp">{{ tile.auditTimeStamp }}</div>
                 </div>
-                <div class='each-tile-row message' *ngIf='tile.userMessage'>User remarks: <span>{{tile.userMessage}}</span></div>
-                <div class='each-tile-row message' *ngIf='tile.systemMessage'>System remarks: <span>{{tile.systemMessage}}</span></div>
-                <div class='flex flex-col flex-wrap'>
-                    <div class='application-name flex flex-row flex-wrap' *ngFor='let property of tile.configPropertyChangeList; let i = index;'>
-                            <span>{{property.application}}: </span>
-                        <div class='property' *ngFor='let configObj of property.configProperties; let j = index;'>
-                            <span  *ngIf= 'j < 2'>{{configObj.configKey}}</span>
-                            <span  *ngIf= 'j == 2'>+{{property.configProperties.length - 2}} more</span>
-                            <span class='property-border'></span>
+                <div class="each-tile-row message" *ngIf="tile.userMessage">
+                    User remarks: <span>{{ tile.userMessage }}</span>
+                </div>
+                <div class="each-tile-row message" *ngIf="tile.systemMessage">
+                    System remarks: <span>{{ tile.systemMessage }}</span>
+                </div>
+                <div class="flex flex-col flex-wrap">
+                    <div
+                        class="application-name flex flex-row flex-wrap"
+                        *ngFor="let property of tile.configPropertyChangeList; let i = index"
+                    >
+                        <span>{{ property.application }}: </span>
+                        <div
+                            class="property"
+                            *ngFor="let configObj of property.configProperties; let j = index"
+                        >
+                            <span *ngIf="j < 2">{{ configObj.configKey }}</span>
+                            <span *ngIf="j == 2"
+                                >+{{ property.configProperties.length - 2 }} more</span
+                            >
+                            <span class="property-border"></span>
                         </div>
                     </div>
                 </div>

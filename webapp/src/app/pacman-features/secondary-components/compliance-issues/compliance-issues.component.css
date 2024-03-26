@@ -22,11 +22,10 @@
     /*border-bottom: 1px solid #dbe7f1;*/
 }
 
-
 .issues-category-container {
     flex-grow: 1;
     min-width: 50%;
     min-height: calc(19.1vh - 7px);
     border-left: none;
-    border-top: none
+    border-top: none;
 }

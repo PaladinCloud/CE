@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -32,36 +32,40 @@ import { SelectComplianceDropdown } from '../../services/select-compliance-dropd
 import { ComplianceOverviewTrendComponent } from './compliance-overview-trend.component';
 
 describe('ComplianceOverviewTrendComponent', () => {
-  let component: ComplianceOverviewTrendComponent;
-  let fixture: ComponentFixture<ComplianceOverviewTrendComponent>;
+    let component: ComplianceOverviewTrendComponent;
+    let fixture: ComponentFixture<ComplianceOverviewTrendComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [ComplianceOverviewTrendComponent, TitleBurgerHeadComponent, OverlayComponent],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        DomainTypeObservableService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        SelectComplianceDropdown,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [
+                ComplianceOverviewTrendComponent,
+                TitleBurgerHeadComponent,
+                OverlayComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                DomainTypeObservableService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                SelectComplianceDropdown,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ComplianceOverviewTrendComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ComplianceOverviewTrendComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

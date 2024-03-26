@@ -12,12 +12,16 @@
  * limitations under the License.
  -->
 
- <div *ngIf="awsResourceName != 'view-all'" [ngClass]="{'active' : active}" class="aws-app-type-container ">
+<div
+    *ngIf="awsResourceName != 'view-all'"
+    [ngClass]="{ active: active }"
+    class="aws-app-type-container"
+>
     <div class="aws-app-details flex flex-row">
         <div class="flex flex-row">
-            <img src="../../../../assets/icons/{{assetGroup}}-color.svg" />
-            <div title='{{awsResourceName | uppercase}}' class="type">{{awsResourceName}}</div>
+            <img src="../../../../assets/icons/{{ assetGroup }}-color.svg" />
+            <div title="{{ awsResourceName | uppercase }}" class="type">{{ awsResourceName }}</div>
         </div>
-        <div class="instances" *ngIf="resourceInstances !== undefined">{{resourceInstances}}</div>
+        <div class="instances" *ngIf="resourceInstances !== undefined">{{ resourceInstances }}</div>
     </div>
 </div>

@@ -38,41 +38,41 @@ export class CardComponent implements OnInit {
     widgetWidth2: number;
     @Output() graphIntervalSelected = new EventEmitter<any>();
 
-  @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
-  isCustomSelected = false;
-  @Input("fromDate") fromDate: Date;
-  @Input("minDate") minDate: Date;
-  selectedRange?: DateRange<Date>;
-  toDate: Date = new Date();
-  @Input() selectedItem = "All time";
-  breadcrumbPresent: string = "Dashboard";
-  agDomainSubscription: Subscription;
+    @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
+    isCustomSelected = false;
+    @Input('fromDate') fromDate: Date;
+    @Input('minDate') minDate: Date;
+    selectedRange?: DateRange<Date>;
+    toDate: Date = new Date();
+    @Input() selectedItem = 'All time';
+    breadcrumbPresent: string = 'Dashboard';
+    agDomainSubscription: Subscription;
 
-  constructor(
-    private errorHandling: ErrorHandlingService,
-    private utils: UtilsService,
-    private loggerService: LoggerService,
-    private workflowService: WorkflowService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private agDomainObservableService:AgDomainObservableService
-  ) { 
-    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(() => {
-        this.selectedRange = null;
-      })
-  }
+    constructor(
+        private errorHandling: ErrorHandlingService,
+        private utils: UtilsService,
+        private loggerService: LoggerService,
+        private workflowService: WorkflowService,
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+        private agDomainObservableService: AgDomainObservableService,
+    ) {
+        this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(() => {
+            this.selectedRange = null;
+        });
+    }
 
     ngOnInit() {}
 
-    ifCustomSelected(){
-        if (this.selectedItem == "Custom") {
-            this.selectedItem = "-1";
+    ifCustomSelected() {
+        if (this.selectedItem == 'Custom') {
+            this.selectedItem = '-1';
         }
     }
 
-    onDropdownClose(){
-        if (this.selectedItem == "-1") {
-            this.selectedItem = "Custom";
+    onDropdownClose() {
+        if (this.selectedItem == '-1') {
+            this.selectedItem = 'Custom';
         }
     }
 
@@ -111,9 +111,9 @@ export class CardComponent implements OnInit {
     };
 
     dateIntervalSelected(fromDate?, toDate?) {
-        if(this.isCustomSelected){
+        if (this.isCustomSelected) {
             this.selectedRange = new DateRange<Date>(fromDate, toDate);
-          }
+        }
         const queryParamObj = {};
         if (fromDate) {
             queryParamObj['from'] = fromDate;
@@ -121,7 +121,7 @@ export class CardComponent implements OnInit {
         if (toDate) {
             queryParamObj['to'] = toDate;
         }
-        queryParamObj['graphInterval']=this.selectedItem;
+        queryParamObj['graphInterval'] = this.selectedItem;
         this.isCustomSelected = false;
         this.matMenuTrigger.closeMenu();
         this.graphIntervalSelected.emit(queryParamObj);
@@ -130,21 +130,21 @@ export class CardComponent implements OnInit {
     navigateToViolationsByCategory(bar) {
         const category = bar?.title;
         const percent = bar?.val;
-        if(typeof percent === "number" && percent!=100){
+        if (typeof percent === 'number' && percent != 100) {
             this.workflowService.addRouterSnapshotToLevel(
                 this.router.routerState.snapshot.root,
                 0,
                 this.breadcrumbPresent,
             );
-    
+
             const filterParam = this.utils.makeFilterObj({
                 'policyCategory.keyword': category.toLowerCase(),
-                'issueStatus.keyword': ['open']
+                'issueStatus.keyword': ['open'],
             });
-    
+
             this.router.navigate(['/pl/compliance/issue-listing'], {
                 relativeTo: this.activatedRoute,
-                queryParams: {...filterParam, 'tempFilters': true},
+                queryParams: { ...filterParam, tempFilters: true },
                 queryParamsHandling: 'merge',
             });
         }
@@ -196,7 +196,7 @@ export class CardComponent implements OnInit {
         }
     }
 
-    ngOnDestroy(){
-        if(this.agDomainSubscription) this.agDomainSubscription.unsubscribe();
+    ngOnDestroy() {
+        if (this.agDomainSubscription) this.agDomainSubscription.unsubscribe();
     }
 }

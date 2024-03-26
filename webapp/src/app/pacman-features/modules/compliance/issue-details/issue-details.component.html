@@ -12,39 +12,63 @@
  * limitations under the License.
  -->
 
- <div class="exemption-banner" *ngIf="exemptionDetails?.status == 'requested'">
+<div class="exemption-banner" *ngIf="exemptionDetails?.status == 'requested'">
     <div class="exemption-wrapper">
-        <img src="/assets/icons/blue-info.svg">
+        <img src="/assets/icons/blue-info.svg" />
         <div class="exemption-details-wrapper flex flex-col">
-            <span class="body-1 high-emphasis">Exemption Request: {{issueBlocks.policyViolated}}</span>
-            <span class="body-1 low-emphasis"> <mark class="custom-highlight"> {{exemptionRaisedBy}} </mark> has requested an exemption for the violation due to <mark class="custom-highlight">{{exemptionDetails.reasonToExempt}}</mark> until <mark class="custom-highlight">{{exemptionDetails.exemptionRaisedExpiringOn | date : 'mediumDate'}}</mark></span>
+            <span class="body-1 high-emphasis"
+                >Exemption Request: {{ issueBlocks.policyViolated }}</span
+            >
+            <span class="body-1 low-emphasis">
+                <mark class="custom-highlight"> {{ exemptionRaisedBy }} </mark> has requested an
+                exemption for the violation due to
+                <mark class="custom-highlight">{{ exemptionDetails.reasonToExempt }}</mark> until
+                <mark class="custom-highlight">{{
+                    exemptionDetails.exemptionRaisedExpiringOn | date: 'mediumDate'
+                }}</mark></span
+            >
             <div class="button-wrapper" *ngIf="adminAccess">
-                <app-button
-                (onClickInner)="handleRequest('grant')">Exempt</app-button>
-                <app-button
-                (onClickInner)="handleRequest('deny')" type="secondary">Deny</app-button>
+                <app-button (onClickInner)="handleRequest('grant')">Exempt</app-button>
+                <app-button (onClickInner)="handleRequest('deny')" type="secondary"
+                    >Deny</app-button
+                >
             </div>
         </div>
     </div>
 </div>
- <div class="page-layout">
+<div class="page-layout">
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
-            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <app-breadcrumb
+            *ngIf="breadcrumbLinks.length > 0"
+            [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray"
+            [breadcrumbPresent]="breadcrumbPresent"
+        ></app-breadcrumb>
     </div>
     <div class="header flex flex-row gap-12 flex-align-center">
-          <h6 class="page-title">Violation Details -</h6>
-          <span class="resource-text subtitle-1 medium-emphasis">{{policyViolationId}}</span>
-          <img class="copy-icon" [cdkCopyToClipboard]="policyViolationId" src="/assets/icons/files.svg">
+        <h6 class="page-title">Violation Details -</h6>
+        <span class="resource-text subtitle-1 medium-emphasis">{{ policyViolationId }}</span>
+        <img
+            class="copy-icon"
+            [cdkCopyToClipboard]="policyViolationId"
+            src="/assets/icons/files.svg"
+        />
     </div>
     <div class="tile-container">
-        <div class="tile-wrapper flex flex-row" >
-                <div class="tile-content-wrapper flex flex-row flex-align-center gap-12" *ngFor="let issueTopblock of issueTopblocks">
-                    <div class="tile-value-wrapper flex flex-row gap-8 flex-align-center">
-                        <img *ngIf="issueTopblock.img" style="height: 16px;" src="{{issueTopblock.img}}">
-                    </div>
-                    <div class="tile-name capitalize nowrap-ellipsis">{{issueTopblock.footer}}</div>
+        <div class="tile-wrapper flex flex-row">
+            <div
+                class="tile-content-wrapper flex flex-row flex-align-center gap-12"
+                *ngFor="let issueTopblock of issueTopblocks"
+            >
+                <div class="tile-value-wrapper flex flex-row gap-8 flex-align-center">
+                    <img
+                        *ngIf="issueTopblock.img"
+                        style="height: 16px"
+                        src="{{ issueTopblock.img }}"
+                    />
                 </div>
+                <div class="tile-name capitalize nowrap-ellipsis">{{ issueTopblock.footer }}</div>
+            </div>
         </div>
     </div>
     <div class="content-wrapper">
@@ -55,37 +79,64 @@
             <app-policy-violation-desc
                 [breadcrumbPresent]="breadcrumbPresent"
                 [pageLevel]="pageLevel"
-                [violationData]="issueBlocks">
+                [violationData]="issueBlocks"
+            >
             </app-policy-violation-desc>
-          
         </div>
         <div *ngIf="issueBlocks" class="right-details-container flex flex-col">
-            <div [class.after-click-button]='showOpposite || showOppositeEmail || showOppositeRecommend || showOppositeRevoke'
-                 class="actions-wrapper flex flex-col">
-                <div *ngIf='showRecommendantions' class="recommend-data">
-                    <header class="recommend">
-                        Recommended Actions
-                    </header>
-                    <div *ngFor='let data of numberOfButtons; let i = index ' class="numberOfButtons">
+            <div
+                [class.after-click-button]="
+                    showOpposite || showOppositeEmail || showOppositeRecommend || showOppositeRevoke
+                "
+                class="actions-wrapper flex flex-col"
+            >
+                <div *ngIf="showRecommendantions" class="recommend-data">
+                    <header class="recommend">Recommended Actions</header>
+                    <div
+                        *ngFor="let data of numberOfButtons; let i = index"
+                        class="numberOfButtons"
+                    >
                         <div class="btn-wrapper-actions">
-                            <app-button
-                                (onClickInner)="showButtons(i); showOtherDivRecommend()">{{data.actionDesc}}</app-button>
+                            <app-button (onClickInner)="showButtons(i); showOtherDivRecommend()">{{
+                                data.actionDesc
+                            }}</app-button>
                         </div>
                     </div>
                 </div>
-                <header class="recommend">
-                    Additional Actions
-                </header>
+                <header class="recommend">Additional Actions</header>
                 <div class="btn-wrapper-additional-actions">
-                    <app-button-icon [disabled]="disableExemption" [class.isDisabled]="disableExemption" (onClickInner)="showOtherDiv()" *ngIf="!exceptionAdded && exemptionDetails.status != 'requested'"> {{addExemption}}
+                    <app-button-icon
+                        [disabled]="disableExemption"
+                        [class.isDisabled]="disableExemption"
+                        (onClickInner)="showOtherDiv()"
+                        *ngIf="!exceptionAdded && exemptionDetails.status != 'requested'"
+                    >
+                        {{ addExemption }}
                     </app-button-icon>
-                    <app-button-icon [disabled]="disableExemption" [class.isDisabled]="disableExemption" (onClickInner)="showOtherDivRevoke();revokeException()"
-                                     *ngIf="(exceptionAdded && adminAccess) || (!adminAccess && exemptionDetails.status == 'requested' && hasCurrentUserRequested)"> {{revokeExemption}}
+                    <app-button-icon
+                        [disabled]="disableExemption"
+                        [class.isDisabled]="disableExemption"
+                        (onClickInner)="showOtherDivRevoke(); revokeException()"
+                        *ngIf="
+                            (exceptionAdded && adminAccess) ||
+                            (!adminAccess &&
+                                exemptionDetails.status == 'requested' &&
+                                hasCurrentUserRequested)
+                        "
+                    >
+                        {{ revokeExemption }}
                     </app-button-icon>
                 </div>
-                <div *ngIf="GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL"
-                     class="btn-wrapper-additional-actions">
-                    <app-button-icon (onClickInner)="showOtherDivEmail()" [iconSrc]="emailIcon.icon">
+                <div
+                    *ngIf="
+                        GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL
+                    "
+                    class="btn-wrapper-additional-actions"
+                >
+                    <app-button-icon
+                        (onClickInner)="showOtherDivEmail()"
+                        [iconSrc]="emailIcon.icon"
+                    >
                         Email Violation
                     </app-button-icon>
                 </div>
@@ -95,134 +146,214 @@
                     </div>
                 </div>
             </div>
-            <div [class.after-click-button-opposite]='showOppositeRecommend'
-                 class="actions-wrapper back">
+            <div
+                [class.after-click-button-opposite]="showOppositeRecommend"
+                class="actions-wrapper back"
+            >
                 <header class="recommend-flip flex-between flex flex-align-center">
-                    <div class="header-text">
-                        Recommendation Status
-                    </div>
-                    <div (click)="showOtherDivRecommend()" [class.showNone]='showRecommend'
-                         class="delete-img">
-                        <img src="../assets/icons/x-icon.svg" style="height: 1.5em;">
+                    <div class="header-text">Recommendation Status</div>
+                    <div
+                        (click)="showOtherDivRecommend()"
+                        [class.showNone]="showRecommend"
+                        class="delete-img"
+                    >
+                        <img src="../assets/icons/x-icon.svg" style="height: 1.5em" />
                     </div>
                 </header>
                 <section class="text-wrapper">
                     <div *ngIf="showOppositeRecommend" class="circle-container">
-                        <div [class.load-complete-failure]='showLoadcompleteRecommend && checkRecommend'
-                             [class.load-complete-success]='showLoadcompleteRecommend && !checkRecommend'
-                             class="circle-loader">
-                            <div *ngIf='!checkRecommend' [class.checkmark-show]='showLoadcompleteRecommend'
-                                 class="checkmark draw"></div>
-                            <div *ngIf='checkRecommend' [class.crossmark-show]='showLoadcompleteRecommend'
-                                 class="crossmark draw"></div>
+                        <div
+                            [class.load-complete-failure]="
+                                showLoadcompleteRecommend && checkRecommend
+                            "
+                            [class.load-complete-success]="
+                                showLoadcompleteRecommend && !checkRecommend
+                            "
+                            class="circle-loader"
+                        >
+                            <div
+                                *ngIf="!checkRecommend"
+                                [class.checkmark-show]="showLoadcompleteRecommend"
+                                class="checkmark draw"
+                            ></div>
+                            <div
+                                *ngIf="checkRecommend"
+                                [class.crossmark-show]="showLoadcompleteRecommend"
+                                class="crossmark draw"
+                            ></div>
                         </div>
                     </div>
-                    <div *ngIf='showLoadcompleteRecommend && checkRecommend'
-                         class="error_msg_exception">
-                    </div>
-                    <div *ngIf='showLoadcompleteRecommend && !checkRecommend'
-                         class="success_msg_exception">
-                    </div>
+                    <div
+                        *ngIf="showLoadcompleteRecommend && checkRecommend"
+                        class="error_msg_exception"
+                    ></div>
+                    <div
+                        *ngIf="showLoadcompleteRecommend && !checkRecommend"
+                        class="success_msg_exception"
+                    ></div>
                 </section>
             </div>
-            <div [class.after-click-button-opposite]='showOppositeRevoke' class="actions-wrapper back">
+            <div
+                [class.after-click-button-opposite]="showOppositeRevoke"
+                class="actions-wrapper back"
+            >
                 <header class="recommend-flip flex-between flex flex-align-center">
-                    <div class="header-text">
-                        Status :
-                    </div>
-                    <div (click)="showOtherDivRevoke()" [class.showNone]='showRevoke'
-                         class="delete-img">
-                        <img src="../assets/icons/x-icon.svg" style="height: 1.8em;">
+                    <div class="header-text">Status :</div>
+                    <div
+                        (click)="showOtherDivRevoke()"
+                        [class.showNone]="showRevoke"
+                        class="delete-img"
+                    >
+                        <img src="../assets/icons/x-icon.svg" style="height: 1.8em" />
                     </div>
                 </header>
                 <section class="text-wrapper">
                     <div *ngIf="showOppositeRevoke" class="circle-container">
-                        <div [class.load-complete-failure]='showLoadcompleteRevoke && checkRevoke'
-                             [class.load-complete-success]='showLoadcompleteRevoke && !checkRevoke'
-                             class="circle-loader">
-                            <div *ngIf='!checkRevoke' [class.checkmark-show]='showLoadcompleteRevoke'
-                                 class="checkmark draw"></div>
-                            <div *ngIf='checkRevoke' [class.crossmark-show]='showLoadcompleteRevoke'
-                                 class="crossmark draw"></div>
+                        <div
+                            [class.load-complete-failure]="showLoadcompleteRevoke && checkRevoke"
+                            [class.load-complete-success]="showLoadcompleteRevoke && !checkRevoke"
+                            class="circle-loader"
+                        >
+                            <div
+                                *ngIf="!checkRevoke"
+                                [class.checkmark-show]="showLoadcompleteRevoke"
+                                class="checkmark draw"
+                            ></div>
+                            <div
+                                *ngIf="checkRevoke"
+                                [class.crossmark-show]="showLoadcompleteRevoke"
+                                class="crossmark draw"
+                            ></div>
                         </div>
                     </div>
-                    <div *ngIf='showLoadcompleteRevoke && checkRevoke' class="error_msg_exception">
+                    <div *ngIf="showLoadcompleteRevoke && checkRevoke" class="error_msg_exception">
                         Failed in Revoking Issue Exemption !
                     </div>
-                    <div *ngIf='showLoadcompleteRevoke && !checkRevoke' class="success_msg_exception">
+                    <div
+                        *ngIf="showLoadcompleteRevoke && !checkRevoke"
+                        class="success_msg_exception"
+                    >
                         Successfully Revoked Issue Exemption!
                     </div>
                 </section>
             </div>
-            <div [class.after-click-button-opposite]='showOpposite' class="actions-wrapper back">
+            <div [class.after-click-button-opposite]="showOpposite" class="actions-wrapper back">
                 <header class="recommend-flip flex-between flex flex-align-center">
                     <div class="header-text">
-                        {{addExemption}}
+                        {{ addExemption }}
                     </div>
-                    <div (click)="showOtherDiv()" [class.showNone]='showNone' class="delete-img">
-                        <img src="../assets/icons/x-icon.svg" style="height: 1.8em;">
+                    <div (click)="showOtherDiv()" [class.showNone]="showNone" class="delete-img">
+                        <img src="../assets/icons/x-icon.svg" style="height: 1.8em" />
                     </div>
                 </header>
                 <section class="text-wrapper">
-                    <form (ngSubmit)="onSubmit();clearContents(this)" *ngIf="!showTransaction"
-                          [formGroup]="user" novalidate>
+                    <form
+                        (ngSubmit)="onSubmit(); clearContents(this)"
+                        *ngIf="!showTransaction"
+                        [formGroup]="user"
+                        novalidate
+                    >
                         <label>
                             <div class="text-wrapper-header">Reason</div>
-                            <textarea class="textarea-container" formControlName="name" [(ngModel)]="exemptionReason"
-                                      id="textarea-id"></textarea>
+                            <textarea
+                                class="textarea-container"
+                                formControlName="name"
+                                [(ngModel)]="exemptionReason"
+                                id="textarea-id"
+                            ></textarea>
                         </label>
-                        <div *ngIf="user.get('name').hasError('minlength') || user.get('name').hasError('required')"
-                             class="error-reason">
+                        <div
+                            *ngIf="
+                                user.get('name').hasError('minlength') ||
+                                user.get('name').hasError('required')
+                            "
+                            class="error-reason"
+                        >
                             Please enter min 5 characters
                         </div>
                         <div class="text-wrapper-header">End Date</div>
-                        <app-date-dropdown (dataSent)='getDateData($event)' [dataForm]="dataForm"
-                                           [minDate]="today"></app-date-dropdown>
+                        <app-date-dropdown
+                            (dataSent)="getDateData($event)"
+                            [dataForm]="dataForm"
+                            [minDate]="today"
+                        ></app-date-dropdown>
                         <div class="textarea-button">
-                            <button *ngIf="adminAccess;else userRef" [disabled]="user.invalid" class="button-textarea" type="submit">ADD
+                            <button
+                                *ngIf="adminAccess; else userRef"
+                                [disabled]="user.invalid"
+                                class="button-textarea"
+                                type="submit"
+                            >
+                                ADD
                             </button>
                             <ng-template #userRef>
-                                <button [disabled]="user.invalid" class="button-textarea" type="submit">Request
+                                <button
+                                    [disabled]="user.invalid"
+                                    class="button-textarea"
+                                    type="submit"
+                                >
+                                    Request
                                 </button>
                             </ng-template>
                         </div>
                     </form>
                     <div *ngIf="showTransaction" class="circle-container">
-                        <div [class.load-complete-failure]='showLoadcomplete && !check'
-                             [class.load-complete-success]='showLoadcomplete && check'
-                             class="circle-loader">
-                            <div *ngIf='check' [class.checkmark-show]='showLoadcomplete'
-                                 class="checkmark draw"></div>
-                            <div *ngIf='!check' [class.crossmark-show]='showLoadcomplete'
-                                 class="crossmark draw"></div>
+                        <div
+                            [class.load-complete-failure]="showLoadcomplete && !check"
+                            [class.load-complete-success]="showLoadcomplete && check"
+                            class="circle-loader"
+                        >
+                            <div
+                                *ngIf="check"
+                                [class.checkmark-show]="showLoadcomplete"
+                                class="checkmark draw"
+                            ></div>
+                            <div
+                                *ngIf="!check"
+                                [class.crossmark-show]="showLoadcomplete"
+                                class="crossmark draw"
+                            ></div>
                         </div>
                     </div>
-                    <div *ngIf='showLoadcomplete && !check'
-                         class="error_msg_exception">{{addRevokeExemptionErrorMessage}}
+                    <div *ngIf="showLoadcomplete && !check" class="error_msg_exception">
+                        {{ addRevokeExemptionErrorMessage }}
                     </div>
-                    <div *ngIf='showLoadcomplete && check' class="success_msg_exception">Exemption added
-                        successfully
+                    <div *ngIf="showLoadcomplete && check" class="success_msg_exception">
+                        Exemption added successfully
                     </div>
                 </section>
             </div>
-            <div [class.after-click-button-opposite]='showOppositeEmail' class="actions-wrapper back">
+            <div
+                [class.after-click-button-opposite]="showOppositeEmail"
+                class="actions-wrapper back"
+            >
                 <header class="recommend-flip flex-between flex flex-align-center">
-                    <div class="header-text">
-                        Send Email
-                    </div>
-                    <div (click)="showOtherDivEmail()" [class.showNone]='showNone' class="delete-img">
-                        <img src="../assets/icons/x-icon.svg" style="height: 1.8em;">
+                    <div class="header-text">Send Email</div>
+                    <div
+                        (click)="showOtherDivEmail()"
+                        [class.showNone]="showNone"
+                        class="delete-img"
+                    >
+                        <img src="../assets/icons/x-icon.svg" style="height: 1.8em" />
                     </div>
                 </header>
                 <section *ngIf="!showTransactionEmail" class="text-wrapper">
-                    <form (keydown.enter)="$event.preventDefault()" [formGroup]="userEmail" novalidate>
+                    <form
+                        (keydown.enter)="$event.preventDefault()"
+                        [formGroup]="userEmail"
+                        novalidate
+                    >
                         <label>
                             <div class="text-wrapper-header">From</div>
                             <div class="input-wrapper">
-                                <input (keydown)="keyDown($event)" [(ngModel)]='fromEmailID'
-                                       class="inputarea-container"
-                                       formControlName="fname" placeholder="Enter From email"
-                                       type="text">
+                                <input
+                                    (keydown)="keyDown($event)"
+                                    [(ngModel)]="fromEmailID"
+                                    class="inputarea-container"
+                                    formControlName="fname"
+                                    placeholder="Enter From email"
+                                    type="text"
+                                />
                             </div>
                         </label>
                         <div *ngIf="!this.emailObj.from.required" class="error-reason">
@@ -234,25 +365,39 @@
                         <label>
                             <div class="text-wrapper-header">To</div>
                             <ul class="input-wrapper">
-                                <li *ngFor="let data of emailArray;let i = index"
-                                    class="list-inputs flex flex-align-center">
-                                    {{data}}<img (click)='removeData(i)' class="crossmark-icon"
-                                                 src="../assets/icons/x-icon.svg">
+                                <li
+                                    *ngFor="let data of emailArray; let i = index"
+                                    class="list-inputs flex flex-align-center"
+                                >
+                                    {{ data
+                                    }}<img
+                                        (click)="removeData(i)"
+                                        class="crossmark-icon"
+                                        src="../assets/icons/x-icon.svg"
+                                    />
                                 </li>
-                                <input (keydown)="keyDown($event)" (keyup)=filter()
-                                       [(ngModel)]='queryValue' class="inputarea-container"
-                                       formControlName="ename" placeholder="Enter User's Email"
-                                       type="text">
+                                <input
+                                    (keydown)="keyDown($event)"
+                                    (keyup)="filter()"
+                                    [(ngModel)]="queryValue"
+                                    class="inputarea-container"
+                                    formControlName="ename"
+                                    placeholder="Enter User's Email"
+                                    type="text"
+                                />
                             </ul>
                         </label>
                         <div class="suggestion-wrapper">
                             <div *ngIf="filteredList.length > 0" class="suggestions">
                                 <ul class="suggestion-list">
-                                    <li (click)="select(item)"
+                                    <li
+                                        (click)="select(item)"
                                         (keydown)="keyEvent($event, item)"
-                                        *ngFor="let item of filteredList; let i = index " [class.active]="i == arrowkeyLocation"
-                                        class="lists-suggestion">
-                                        <a>{{item}}</a>
+                                        *ngFor="let item of filteredList; let i = index"
+                                        [class.active]="i == arrowkeyLocation"
+                                        class="lists-suggestion"
+                                    >
+                                        <a>{{ item }}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -264,25 +409,35 @@
                             Please provide valid Email address
                         </div>
                         <div class="textarea-button">
-                            <button (click)='onSubmitemail()' class="button-textarea" type="button">SEND
+                            <button (click)="onSubmitemail()" class="button-textarea" type="button">
+                                SEND
                             </button>
                         </div>
                     </form>
                 </section>
                 <div *ngIf="showTransactionEmail" class="circle-container">
-                    <div [class.load-complete-failure]='showLoadcompleteEmail && !checkEmail'
-                         [class.load-complete-success]='showLoadcompleteEmail && checkEmail'
-                         class="circle-loader">
-                        <div *ngIf='checkEmail' [class.checkmark-show]='showLoadcompleteEmail'
-                             class="checkmark draw"></div>
-                        <div *ngIf='!checkEmail' [class.crossmark-show]='showLoadcompleteEmail'
-                             class="crossmark draw"></div>
+                    <div
+                        [class.load-complete-failure]="showLoadcompleteEmail && !checkEmail"
+                        [class.load-complete-success]="showLoadcompleteEmail && checkEmail"
+                        class="circle-loader"
+                    >
+                        <div
+                            *ngIf="checkEmail"
+                            [class.checkmark-show]="showLoadcompleteEmail"
+                            class="checkmark draw"
+                        ></div>
+                        <div
+                            *ngIf="!checkEmail"
+                            [class.crossmark-show]="showLoadcompleteEmail"
+                            class="crossmark draw"
+                        ></div>
                     </div>
                 </div>
-                <div *ngIf='showLoadcompleteEmail && !checkEmail' class="error_msg_email">Email not sent
+                <div *ngIf="showLoadcompleteEmail && !checkEmail" class="error_msg_email">
+                    Email not sent
                 </div>
-                <div *ngIf='showLoadcompleteEmail && checkEmail' class="success_msg_email">Email sent
-                    successfully
+                <div *ngIf="showLoadcompleteEmail && checkEmail" class="success_msg_email">
+                    Email sent successfully
                 </div>
             </div>
         </div>
@@ -309,4 +464,3 @@
         </app-table>
     </div>
 </div>
-

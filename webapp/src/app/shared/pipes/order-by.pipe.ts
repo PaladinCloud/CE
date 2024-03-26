@@ -16,93 +16,98 @@
  * Created by adityaagarwal on 11/13/17.
  */
 
- import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
- @Pipe({ name: 'orderBy' })
- export class OrderByPipe implements PipeTransform {
-   transform(records: Array<any>, args?: any): any {
-     if (!args.childProperty) {
-       return records.sort(function(a, b) {
-         try {
-           if (isNaN(a[args.property]) || isNaN(b[args.property])) {
-             if (
-               a[args.property].toLowerCase().trim() < b[args.property].toLowerCase().trim()
-             ) {
-               return -1 * args.direction;
-             } else if (
-               a[args.property].toLowerCase().trim() > b[args.property].toLowerCase().trim()
-             ) {
-               return 1 * args.direction;
-             } else {
-               return 0;
-             }
-           } else {
-             if (a[args.property] < b[args.property]) {
-               return -1 * args.direction;
-             } else if (a[args.property] > b[args.property]) {
-               return 1 * args.direction;
-             } else {
-               return 0;
-             }
-           }
-         } catch (e) {
-           return 0;
-         }
-       });   //sorting dates by time,day,months,year
-     } else if(args.childProperty && args.property?.includes("Time")){
-         return records.sort(function (a, b){
-           try{
-               var dateA = new Date(a[args.property].text.replace(",","").slice(0, -3));
-               var dateB = new Date(b[args.property].text.replace(",","").slice(0, -3));
-               return dateA > dateB ? 1 * args.direction : dateA < dateB ? -1 * args.direction : 0 * args.direction;
-           }catch(e){
-             return 0;
-           }
-         });
-       } else if (args.childProperty && args.property) {
-       return records.sort(function(a, b) {
-         try {
-           if (
-             isNaN(a[args.property][args.childProperty]) ||
-             isNaN(b[args.property][args.childProperty])
-           ) {
-             if (
-               a[args.property][args.childProperty].toLowerCase().trim() <
-               b[args.property][args.childProperty].toLowerCase().trim()
-             ) {
-               return -1 * args.direction;
-             } else if (
-               a[args.property][args.childProperty].toLowerCase().trim() >
-               b[args.property][args.childProperty].toLowerCase().trim()
-             ) {
-               return 1 * args.direction;
-             } else {
-               return 0;
-             }
-           } else {
-             if (
-               a[args.property][args.childProperty] <
-               b[args.property][args.childProperty]
-             ) {
-               return -1 * args.direction;
-             } else if (
-               a[args.property][args.childProperty] >
-               b[args.property][args.childProperty]
-             ) {
-               return 1 * args.direction;
-             } else {
-               return 0;
-             }
-           }
-         } catch (error) {
-           return 0;
-         }
-       });
-     } else {
-       return records.sort(function(a, b) {
-         return 0;
-       });
-     }
-   }
- }
- 
+@Pipe({ name: 'orderBy' })
+export class OrderByPipe implements PipeTransform {
+    transform(records: Array<any>, args?: any): any {
+        if (!args.childProperty) {
+            return records.sort(function (a, b) {
+                try {
+                    if (isNaN(a[args.property]) || isNaN(b[args.property])) {
+                        if (
+                            a[args.property].toLowerCase().trim() <
+                            b[args.property].toLowerCase().trim()
+                        ) {
+                            return -1 * args.direction;
+                        } else if (
+                            a[args.property].toLowerCase().trim() >
+                            b[args.property].toLowerCase().trim()
+                        ) {
+                            return 1 * args.direction;
+                        } else {
+                            return 0;
+                        }
+                    } else {
+                        if (a[args.property] < b[args.property]) {
+                            return -1 * args.direction;
+                        } else if (a[args.property] > b[args.property]) {
+                            return 1 * args.direction;
+                        } else {
+                            return 0;
+                        }
+                    }
+                } catch (e) {
+                    return 0;
+                }
+            }); //sorting dates by time,day,months,year
+        } else if (args.childProperty && args.property?.includes('Time')) {
+            return records.sort(function (a, b) {
+                try {
+                    var dateA = new Date(a[args.property].text.replace(',', '').slice(0, -3));
+                    var dateB = new Date(b[args.property].text.replace(',', '').slice(0, -3));
+                    return dateA > dateB
+                        ? 1 * args.direction
+                        : dateA < dateB
+                          ? -1 * args.direction
+                          : 0 * args.direction;
+                } catch (e) {
+                    return 0;
+                }
+            });
+        } else if (args.childProperty && args.property) {
+            return records.sort(function (a, b) {
+                try {
+                    if (
+                        isNaN(a[args.property][args.childProperty]) ||
+                        isNaN(b[args.property][args.childProperty])
+                    ) {
+                        if (
+                            a[args.property][args.childProperty].toLowerCase().trim() <
+                            b[args.property][args.childProperty].toLowerCase().trim()
+                        ) {
+                            return -1 * args.direction;
+                        } else if (
+                            a[args.property][args.childProperty].toLowerCase().trim() >
+                            b[args.property][args.childProperty].toLowerCase().trim()
+                        ) {
+                            return 1 * args.direction;
+                        } else {
+                            return 0;
+                        }
+                    } else {
+                        if (
+                            a[args.property][args.childProperty] <
+                            b[args.property][args.childProperty]
+                        ) {
+                            return -1 * args.direction;
+                        } else if (
+                            a[args.property][args.childProperty] >
+                            b[args.property][args.childProperty]
+                        ) {
+                            return 1 * args.direction;
+                        } else {
+                            return 0;
+                        }
+                    }
+                } catch (error) {
+                    return 0;
+                }
+            });
+        } else {
+            return records.sort(function (a, b) {
+                return 0;
+            });
+        }
+    }
+}

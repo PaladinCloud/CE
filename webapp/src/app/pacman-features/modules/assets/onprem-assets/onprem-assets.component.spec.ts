@@ -31,42 +31,34 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { OnpremAssetsComponent } from './onprem-assets.component';
 
 describe('OnpremAssetsComponent', () => {
-  let component: OnpremAssetsComponent;
-  let fixture: ComponentFixture<OnpremAssetsComponent>;
+    let component: OnpremAssetsComponent;
+    let fixture: ComponentFixture<OnpremAssetsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AgGridModule,
-        RouterTestingModule,
-      ],
-      declarations: [
-        OnpremAssetsComponent,
-        ButtonComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, AgGridModule, RouterTestingModule],
+            declarations: [OnpremAssetsComponent, ButtonComponent, TitleBurgerHeadComponent],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(OnpremAssetsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(OnpremAssetsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

@@ -13,24 +13,24 @@
  */
 
 import {
-  Component,
-  OnInit,
-  ViewEncapsulation,
-  OnDestroy,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-} from "@angular/core";
-import { ComplianceOverviewService } from "../../services/compliance-overview.service";
-import { Subscription } from "rxjs";
-import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
-import { SelectComplianceDropdown } from "../../services/select-compliance-dropdown.service";
-import { LoggerService } from "../../../shared/services/logger.service";
-import { environment } from "./../../../../environments/environment";
-import { AutorefreshService } from "../../services/autorefresh.service";
-import { DomainTypeObservableService } from "../../../core/services/domain-type-observable.service";
-import { ActivatedRoute, Router } from "@angular/router";
-import { TourService } from "src/app/core/services/tour.service";
+    Component,
+    OnInit,
+    ViewEncapsulation,
+    OnDestroy,
+    ViewChild,
+    ElementRef,
+    AfterViewInit,
+} from '@angular/core';
+import { ComplianceOverviewService } from '../../services/compliance-overview.service';
+import { Subscription } from 'rxjs';
+import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
+import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { environment } from './../../../../environments/environment';
+import { AutorefreshService } from '../../services/autorefresh.service';
+import { DomainTypeObservableService } from '../../../core/services/domain-type-observable.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TourService } from 'src/app/core/services/tour.service';
 
 enum ComplianceType {
     COST = 'cost',
@@ -49,252 +49,246 @@ const complianceTypeOrder = {
 };
 
 @Component({
-  selector: "app-compliance-overview-trend",
-  templateUrl: "./compliance-overview-trend.component.html",
-  styleUrls: ["./compliance-overview-trend.component.css"],
-  providers: [ComplianceOverviewService, AutorefreshService],
-  encapsulation: ViewEncapsulation.None,
-  // eslint-disable-next-line
-  host: {
-    "(window:resize)": "onResize($event)",
-  },
+    selector: 'app-compliance-overview-trend',
+    templateUrl: './compliance-overview-trend.component.html',
+    styleUrls: ['./compliance-overview-trend.component.css'],
+    providers: [ComplianceOverviewService, AutorefreshService],
+    encapsulation: ViewEncapsulation.None,
+    // eslint-disable-next-line
+    host: {
+        '(window:resize)': 'onResize($event)',
+    },
 })
-export class ComplianceOverviewTrendComponent
-  implements OnInit, OnDestroy, AfterViewInit
-{
-  @ViewChild("complianceOverviewContainer") widgetContainer: ElementRef;
+export class ComplianceOverviewTrendComponent implements OnInit, OnDestroy, AfterViewInit {
+    @ViewChild('complianceOverviewContainer') widgetContainer: ElementRef;
 
-  private assetGroupSubscription: Subscription;
-  private complianceDropdownSubscription: Subscription;
-  private issuesSubscription: Subscription;
-  subscriptionDomain: Subscription;
-  selectedDomain: any;
-  private selectedAssetGroup: any = "rebellion";
-  private selectedComplianceDropdown: any = {
-    "Target Types": "",
-    Applications: "",
-    Environments: "",
-  };
-
-  private graphWidth: any;
-  private subtractGraphWidthBy = 50;
-  private graphData: any;
-  public dataLoaded: any = false;
-  public error: any = false;
-  private loading: any = false;
-  public errorMessage: any = "jsError";
-  private distributedFiltersObject: any = {};
-
-  // Graph customization variables
-  private yAxisLabel = "Compliance %";
-  private showGraphLegend = true;
-  private showArea = false;
-  private hoverActive = true;
-
-  private autorefreshInterval;
-
-  durationParams: any;
-  autoRefresh: boolean;
-
-  constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private complianceOverviewService: ComplianceOverviewService,
-    private assetGroupObservableService: AssetGroupObservableService,
-    private selectComplianceDropdown: SelectComplianceDropdown,
-    private autorefreshService: AutorefreshService,
-    private logger: LoggerService,
-    private domainObservableService: DomainTypeObservableService,
-    private tourService: TourService,
-  ) {
-    // Get latest asset group selected and re-plot the graph
-    this.assetGroupSubscription = this.assetGroupObservableService
-      .getAssetGroup()
-      .subscribe((assetGroupName) => {
-        this.selectedAssetGroup = assetGroupName;
-      });
-
-    this.subscriptionDomain = this.domainObservableService
-      .getDomainType()
-      .subscribe((domain) => {
-        this.selectedDomain = domain;
-        this.init();
-      });
-
-    // Get latest targetType/Application/Environment
-    this.complianceDropdownSubscription = this.selectComplianceDropdown
-      .getCompliance()
-      .subscribe((distributedFiltersObject) => {
-        this.distributedFiltersObject = distributedFiltersObject;
-      });
-
-    this.durationParams = this.autorefreshService.getDuration();
-    this.durationParams = parseInt(this.durationParams, 10);
-    this.autoRefresh = this.autorefreshService.autoRefresh;
-  }
-
-  closeOverallComplianceTrendModal(value: String) {
-    const navigationParams = {
-      relativeTo: this.activatedRoute.parent, // <-- Parent activated route
+    private assetGroupSubscription: Subscription;
+    private complianceDropdownSubscription: Subscription;
+    private issuesSubscription: Subscription;
+    subscriptionDomain: Subscription;
+    selectedDomain: any;
+    private selectedAssetGroup: any = 'rebellion';
+    private selectedComplianceDropdown: any = {
+        'Target Types': '',
+        Applications: '',
+        Environments: '',
     };
 
-    const agValue = value ? value : "";
+    private graphWidth: any;
+    private subtractGraphWidthBy = 50;
+    private graphData: any;
+    public dataLoaded: any = false;
+    public error: any = false;
+    private loading: any = false;
+    public errorMessage: any = 'jsError';
+    private distributedFiltersObject: any = {};
 
-    if (agValue) {
-      navigationParams["queryParams"] = { ag: agValue };
-    } else {
-      navigationParams["queryParamsHandling"] = "merge";
+    // Graph customization variables
+    private yAxisLabel = 'Compliance %';
+    private showGraphLegend = true;
+    private showArea = false;
+    private hoverActive = true;
+
+    private autorefreshInterval;
+
+    durationParams: any;
+    autoRefresh: boolean;
+
+    constructor(
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+        private complianceOverviewService: ComplianceOverviewService,
+        private assetGroupObservableService: AssetGroupObservableService,
+        private selectComplianceDropdown: SelectComplianceDropdown,
+        private autorefreshService: AutorefreshService,
+        private logger: LoggerService,
+        private domainObservableService: DomainTypeObservableService,
+        private tourService: TourService,
+    ) {
+        // Get latest asset group selected and re-plot the graph
+        this.assetGroupSubscription = this.assetGroupObservableService
+            .getAssetGroup()
+            .subscribe((assetGroupName) => {
+                this.selectedAssetGroup = assetGroupName;
+            });
+
+        this.subscriptionDomain = this.domainObservableService
+            .getDomainType()
+            .subscribe((domain) => {
+                this.selectedDomain = domain;
+                this.init();
+            });
+
+        // Get latest targetType/Application/Environment
+        this.complianceDropdownSubscription = this.selectComplianceDropdown
+            .getCompliance()
+            .subscribe((distributedFiltersObject) => {
+                this.distributedFiltersObject = distributedFiltersObject;
+            });
+
+        this.durationParams = this.autorefreshService.getDuration();
+        this.durationParams = parseInt(this.durationParams, 10);
+        this.autoRefresh = this.autorefreshService.autoRefresh;
     }
 
-    this.router.navigate(
-      [
-        // No relative path pagination
-        {
-          outlets: {
-            modal: null,
-          },
-        },
-      ],
-      navigationParams
-    );
-  }
+    closeOverallComplianceTrendModal(value: String) {
+        const navigationParams = {
+            relativeTo: this.activatedRoute.parent, // <-- Parent activated route
+        };
 
-  onResize() {
-    const element = document.getElementById("complianceOverview");
-    if (element) {
-      this.graphWidth =
-        parseInt(
-          window
-            .getComputedStyle(element, null)
-            .getPropertyValue("width")
-            .split("px")[0],
-          10
-        ) - this.subtractGraphWidthBy;
-    }
-  }
+        const agValue = value ? value : '';
 
-  ngAfterViewInit() {
-     try {
-      this.graphWidth = this.widgetContainer?
-        parseInt(
-          window
-            .getComputedStyle(this.widgetContainer.nativeElement, null)
-            .getPropertyValue("width"),
-          10
-        ) - this.subtractGraphWidthBy:700;
-    } catch (error) {
-      this.setError("jsError");
-    }
+        if (agValue) {
+            navigationParams['queryParams'] = { ag: agValue };
+        } else {
+            navigationParams['queryParamsHandling'] = 'merge';
+        }
 
-    const afterLoad = this;
-    if (this.autoRefresh !== undefined) {
-      if (this.autoRefresh === true || this.autoRefresh.toString() === "true") {
-        this.autorefreshInterval = setInterval(function () {
-          afterLoad.init();
-        }, this.durationParams);
-      }
-    }
-  }
-
-  getOverview() {
-    try {
-      if (this.issuesSubscription) {
-        this.issuesSubscription.unsubscribe();
-      }
-
-      const complianceOverviewUrl = environment.complianceOverview.url;
-      const method = environment.complianceOverview.method;
-
-      const prevDate = new Date();
-      prevDate.setMonth(prevDate.getMonth() - 1);
-      let fromDay;
-      fromDay = prevDate.toISOString().split("T")[0];
-
-      const payload = {
-        ag: this.selectedAssetGroup,
-        from: fromDay,
-        filters: {
-          domain: this.selectedDomain,
-        },
-      };
-
-      this.issuesSubscription = this.complianceOverviewService
-        .getDailyData(complianceOverviewUrl, method, payload, {})
-        .subscribe(
-          (response) => {
-            try {
-              this.setDataLoaded();
-              const responseData = response.finalData;
-              this.graphData = responseData.sort(
-                (a, b) => complianceTypeOrder[a.key] - complianceTypeOrder[b.key],
-              );
-              if (
-                this.graphData.constructor.name === "Object" ||
-                this.graphData.length === 0
-              ) {
-                this.setError("noDataAvailable");
-              }
-            } catch (error) {
-              this.setError("jsError");
-            }
-            this.tourService.setComponentReady();
-          },
-          (error) => {
-            this.setError("apiResponseError");
-            this.tourService.setComponentReady();
-          }
+        this.router.navigate(
+            [
+                // No relative path pagination
+                {
+                    outlets: {
+                        modal: null,
+                    },
+                },
+            ],
+            navigationParams,
         );
-    } catch (error) {
-      this.setError("jsError");
     }
-  }
 
-  getData() {
-    this.getOverview();
-  }
-
-  init() {
-    if (this.issuesSubscription) {
-      this.issuesSubscription.unsubscribe();
+    onResize() {
+        const element = document.getElementById('complianceOverview');
+        if (element) {
+            this.graphWidth =
+                parseInt(
+                    window.getComputedStyle(element, null).getPropertyValue('width').split('px')[0],
+                    10,
+                ) - this.subtractGraphWidthBy;
+        }
     }
-    this.setDataLoading();
-    this.getData();
-  }
 
-  setDataLoaded() {
-    this.dataLoaded = true;
-    this.error = false;
-    this.loading = false;
-  }
+    ngAfterViewInit() {
+        try {
+            this.graphWidth = this.widgetContainer
+                ? parseInt(
+                      window
+                          .getComputedStyle(this.widgetContainer.nativeElement, null)
+                          .getPropertyValue('width'),
+                      10,
+                  ) - this.subtractGraphWidthBy
+                : 700;
+        } catch (error) {
+            this.setError('jsError');
+        }
 
-  setDataLoading() {
-    this.dataLoaded = false;
-    this.error = false;
-    this.loading = true;
-  }
-
-  setError(message?: any) {
-    this.dataLoaded = false;
-    this.error = true;
-    this.loading = false;
-    if (message) {
-      this.errorMessage = message;
+        const afterLoad = this;
+        if (this.autoRefresh !== undefined) {
+            if (this.autoRefresh === true || this.autoRefresh.toString() === 'true') {
+                this.autorefreshInterval = setInterval(function () {
+                    afterLoad.init();
+                }, this.durationParams);
+            }
+        }
     }
-  }
 
-  ngOnInit() {
+    getOverview() {
+        try {
+            if (this.issuesSubscription) {
+                this.issuesSubscription.unsubscribe();
+            }
 
-  }
+            const complianceOverviewUrl = environment.complianceOverview.url;
+            const method = environment.complianceOverview.method;
 
-  ngOnDestroy() {
-    try {
-      this.issuesSubscription.unsubscribe();
-      this.assetGroupSubscription.unsubscribe();
-      this.subscriptionDomain.unsubscribe();
-      this.complianceDropdownSubscription.unsubscribe();
-      clearInterval(this.autorefreshInterval);
-    } catch (error) {
-      this.logger.log("error", "--- Error while unsubscribing ---");
+            const prevDate = new Date();
+            prevDate.setMonth(prevDate.getMonth() - 1);
+            let fromDay;
+            fromDay = prevDate.toISOString().split('T')[0];
+
+            const payload = {
+                ag: this.selectedAssetGroup,
+                from: fromDay,
+                filters: {
+                    domain: this.selectedDomain,
+                },
+            };
+
+            this.issuesSubscription = this.complianceOverviewService
+                .getDailyData(complianceOverviewUrl, method, payload, {})
+                .subscribe(
+                    (response) => {
+                        try {
+                            this.setDataLoaded();
+                            const responseData = response.finalData;
+                            this.graphData = responseData.sort(
+                                (a, b) => complianceTypeOrder[a.key] - complianceTypeOrder[b.key],
+                            );
+                            if (
+                                this.graphData.constructor.name === 'Object' ||
+                                this.graphData.length === 0
+                            ) {
+                                this.setError('noDataAvailable');
+                            }
+                        } catch (error) {
+                            this.setError('jsError');
+                        }
+                        this.tourService.setComponentReady();
+                    },
+                    (error) => {
+                        this.setError('apiResponseError');
+                        this.tourService.setComponentReady();
+                    },
+                );
+        } catch (error) {
+            this.setError('jsError');
+        }
     }
-  }
+
+    getData() {
+        this.getOverview();
+    }
+
+    init() {
+        if (this.issuesSubscription) {
+            this.issuesSubscription.unsubscribe();
+        }
+        this.setDataLoading();
+        this.getData();
+    }
+
+    setDataLoaded() {
+        this.dataLoaded = true;
+        this.error = false;
+        this.loading = false;
+    }
+
+    setDataLoading() {
+        this.dataLoaded = false;
+        this.error = false;
+        this.loading = true;
+    }
+
+    setError(message?: any) {
+        this.dataLoaded = false;
+        this.error = true;
+        this.loading = false;
+        if (message) {
+            this.errorMessage = message;
+        }
+    }
+
+    ngOnInit() {}
+
+    ngOnDestroy() {
+        try {
+            this.issuesSubscription.unsubscribe();
+            this.assetGroupSubscription.unsubscribe();
+            this.subscriptionDomain.unsubscribe();
+            this.complianceDropdownSubscription.unsubscribe();
+            clearInterval(this.autorefreshInterval);
+        } catch (error) {
+            this.logger.log('error', '--- Error while unsubscribing ---');
+        }
+    }
 }

@@ -16,47 +16,44 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import findIndex from 'lodash/findIndex';
 
 @Component({
-  selector: 'app-table-tabs',
-  templateUrl: './table-tabs.component.html',
-  styleUrls: ['./table-tabs.component.css']
+    selector: 'app-table-tabs',
+    templateUrl: './table-tabs.component.html',
+    styleUrls: ['./table-tabs.component.css'],
 })
 export class TableTabsComponent implements OnInit {
-  constructor() {}
+    constructor() {}
 
-  @Input() tabsData = [];
-  @Input() displayProperty = null;
-  @Input() selected = null;
-  @Output() onSelectChange = new EventEmitter();
+    @Input() tabsData = [];
+    @Input() displayProperty = null;
+    @Input() selected = null;
+    @Output() onSelectChange = new EventEmitter();
 
-  ngOnInit() {}
+    ngOnInit() {}
 
-  selectTab(tab, index) {
-    if (tab === this.selected) {
-      return;
+    selectTab(tab, index) {
+        if (tab === this.selected) {
+            return;
+        }
+        let direction;
+        const prevIndex = !!this.selected
+            ? findIndex(this.tabsData, (tabData) => {
+                  return tabData[this.displayProperty] === this.selected[this.displayProperty];
+              }) + 1
+            : 0;
+        direction = index < prevIndex ? 'left' : 'right';
+
+        this.selected = tab;
+        this.onSelectChange.emit({
+            tab: this.selected,
+            index: index,
+            direction: direction,
+        });
     }
-    let direction;
-    const prevIndex = !!this.selected
-      ? findIndex(this.tabsData, tabData => {
-          return (
-            tabData[this.displayProperty] ===
-            this.selected[this.displayProperty]
-          );
-        }) + 1
-      : 0;
-    direction = index < prevIndex ? 'left' : 'right';
 
-    this.selected = tab;
-    this.onSelectChange.emit({
-      tab: this.selected,
-      index: index,
-      direction: direction
-    });
-  }
-
-  tabSelected(tab) {
-    if (!this.selected) {
-      return false;
+    tabSelected(tab) {
+        if (!this.selected) {
+            return false;
+        }
+        return this.selected[this.displayProperty] === tab[this.displayProperty];
     }
-    return this.selected[this.displayProperty] === tab[this.displayProperty];
-  }
 }

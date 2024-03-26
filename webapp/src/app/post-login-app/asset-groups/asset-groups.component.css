@@ -1,126 +1,127 @@
-.dialog-header{
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-200);
+.dialog-header {
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-200);
 }
 
-.dialog-body-subheader{
-  font: var(--text-body-1);
-  color: var(--text-medium-emphasis);
+.dialog-body-subheader {
+    font: var(--text-body-1);
+    color: var(--text-medium-emphasis);
 }
 
-.dialog-body-content-wrapper{
- padding-top: 24px;
+.dialog-body-content-wrapper {
+    padding-top: 24px;
 }
 
-.dialog-body-header-wrapper{
-  align-items: center;
+.dialog-body-header-wrapper {
+    align-items: center;
 }
 
-.asset-group-tab{
- font: var(--text-body-2);
- padding: 12px;
- color: var(--text-high-emphasis);
- border-radius: 4px;
- cursor: pointer;
+.asset-group-tab {
+    font: var(--text-body-2);
+    padding: 12px;
+    color: var(--text-high-emphasis);
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.asset-tile-name{
- font: var(--text-body-3);
- color: var(--text-high-emphasis);
+.asset-tile-name {
+    font: var(--text-body-3);
+    color: var(--text-high-emphasis);
 }
 
-.tab-list{
- min-width: 200px;
- padding-right: 12px;
- height: 100%;
- overflow: auto;
+.tab-list {
+    min-width: 200px;
+    padding-right: 12px;
+    height: 100%;
+    overflow: auto;
 }
 
-.container-wrapper{
- height: calc(100% - 62px);
- padding-right: 12px;
- overflow: auto;
+.container-wrapper {
+    height: calc(100% - 62px);
+    padding-right: 12px;
+    overflow: auto;
 }
 
-.list-wrapper{
- height: 55vh;
- gap: 24px;
+.list-wrapper {
+    height: 55vh;
+    gap: 24px;
 }
 
-.asset-group-list{
- min-width: 260px;
- padding: 0px 24px;
- border-right: 1px solid var(--border-200);
- border-left: 1px solid var(--border-200);
- height: 100%;
+.asset-group-list {
+    min-width: 260px;
+    padding: 0px 24px;
+    border-right: 1px solid var(--border-200);
+    border-left: 1px solid var(--border-200);
+    height: 100%;
 }
 
-.asset-group-list-item{
- display: flex;
- align-items: center;
- justify-content: space-between;
- padding: 10px 12px;
- border-radius: 4px;
- cursor: pointer;
+.asset-group-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.asset-group-list-item:hover, .asset-group-tab:hover{
- background-color: #f1f6ff;
+.asset-group-list-item:hover,
+.asset-group-tab:hover {
+    background-color: #f1f6ff;
 }
 
-.default-btn{
- padding: 3px 8px;
- font: var(--text-overline);
- color: var(--text-low-emphasis);
- background: #EDF0F2;
- border: 1px solid #DDE2E5;
- border-radius: 4px;
- display: block;
+.default-btn {
+    padding: 3px 8px;
+    font: var(--text-overline);
+    color: var(--text-low-emphasis);
+    background: #edf0f2;
+    border: 1px solid #dde2e5;
+    border-radius: 4px;
+    display: block;
 }
 
-.container:hover .set-default-btn{
- display: block;
- cursor: pointer;
+.container:hover .set-default-btn {
+    display: block;
+    cursor: pointer;
 }
 
-.container:hover .default-btn{
- background-color: var(--background-grey);
- cursor: pointer;
+.container:hover .default-btn {
+    background-color: var(--background-grey);
+    cursor: pointer;
 }
 
-.set-default-btn{
- padding: 3px 8px;
- font: var(--text-overline);
- color: var(--primary-400);
- background: white;
- border: 1px solid var(--primary-100);
- border-radius: 4px;
- display: none;
- cursor: pointer;
+.set-default-btn {
+    padding: 3px 8px;
+    font: var(--text-overline);
+    color: var(--primary-400);
+    background: white;
+    border: 1px solid var(--primary-100);
+    border-radius: 4px;
+    display: none;
+    cursor: pointer;
 }
 
-.search-wrapper{
- padding-bottom: 24px;
+.search-wrapper {
+    padding-bottom: 24px;
 }
 
-.asset-group-details{
- padding: 24px;
- border-radius: 8px;
- border: 1px solid var(--border-200);
- width: 400px;
- height: 100%;
- word-wrap: break-word;
+.asset-group-details {
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid var(--border-200);
+    width: 400px;
+    height: 100%;
+    word-wrap: break-word;
 }
 
-.active{
- color: var(--primary-400);  
- background-color: var(--primary-100);
- font: var(--text-body-2);
+.active {
+    color: var(--primary-400);
+    background-color: var(--primary-100);
+    font: var(--text-body-2);
 }
 
-.asset-group-wrapper ::ng-deep .mat-dialog-content{
- min-width: 800px !important;
- min-height: 75vh !important;
+.asset-group-wrapper ::ng-deep .mat-dialog-content {
+    min-width: 800px !important;
+    min-height: 75vh !important;
 }

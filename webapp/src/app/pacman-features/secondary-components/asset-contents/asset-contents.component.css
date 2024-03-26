@@ -12,28 +12,28 @@
  * limitations under the License.
  */
 
- .wrapper{
-	width: 50%;
-	margin-bottom: 1.5em;
-	line-height: 1.5;
-	padding: 0 8px 0 0;
+.wrapper {
+    width: 50%;
+    margin-bottom: 1.5em;
+    line-height: 1.5;
+    padding: 0 8px 0 0;
 }
 
-.content-header{
-	font-size: 0.9em;
-	font-family: var(--text-light-font-family);
+.content-header {
+    font-size: 0.9em;
+    font-family: var(--text-light-font-family);
 }
 
-.content{
-	font-weight: 800;
-	word-break: break-all;
+.content {
+    font-weight: 800;
+    word-break: break-all;
     margin-right: 1px;
 }
 
 .content-header:first-letter {
-	text-transform: capitalize;
+    text-transform: capitalize;
 }
 
 .content:first-letter {
-	text-transform: capitalize;
+    text-transform: capitalize;
 }

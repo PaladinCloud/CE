@@ -5,7 +5,7 @@
     border-radius: 6px;
     font-size: 14px;
     line-height: 24px;
-    box-shadow: 0 1px 2px 0 #1B242C1F;
+    box-shadow: 0 1px 2px 0 #1b242c1f;
 }
 
 .table-filter-chip .tfc-text-container:hover {
@@ -32,7 +32,9 @@
     background: white;
     border: 1px solid rgba(16 40 72 / 9%);
     border-radius: 6px;
-    box-shadow: 0 2px 2px -1px rgba(27 35 44 / 4%), 0 8px 16px -2px rgba(27 36 44 / 12%);
+    box-shadow:
+        0 2px 2px -1px rgba(27 35 44 / 4%),
+        0 8px 16px -2px rgba(27 36 44 / 12%);
 }
 
 .filters-chip-menu {
@@ -79,7 +81,7 @@
     align-items: center;
     gap: 8px;
     flex: 1 0 0;
-    background-color: #FEF5F5;
+    background-color: #fef5f5;
     border-top: 1px solid #fccfcf;
     border-radius: 0 0 6px 6px;
     font-family: 'mark-pro-medium';
@@ -94,7 +96,9 @@
 .info-label {
     align-self: stretch;
     color: var(--Content-Tertiary, #586470);
-    font-feature-settings: 'clig' off, 'liga' off;
+    font-feature-settings:
+        'clig' off,
+        'liga' off;
     font-size: 12px;
     font-style: normal;
     font-weight: 500;

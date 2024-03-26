@@ -19,12 +19,11 @@
 }
 
 .search-icon {
-        width: 1.5em;
-        height: 1.5em;
-        font-size: 0.9em;
-        left: 1em;
-        margin: 0 1e;
-
+    width: 1.5em;
+    height: 1.5em;
+    font-size: 0.9em;
+    left: 1em;
+    margin: 0 1e;
 }
 
 .input-text {

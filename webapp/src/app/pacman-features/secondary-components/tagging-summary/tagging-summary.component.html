@@ -12,18 +12,30 @@
  * limitations under the License.
  -->
 
- <div class="certficate-summary-wrapper relative">
+<div class="certficate-summary-wrapper relative">
     <div class="sub-heading">
-        <app-title-burger-head [helpId]="'w3'" [subHeadTitle]="'Tagging Summary'" ></app-title-burger-head>
+        <app-title-burger-head
+            [helpId]="'w3'"
+            [subHeadTitle]="'Tagging Summary'"
+        ></app-title-burger-head>
     </div>
-    <div class="certficate-summary-container tagging-summary" *ngIf='dataComing && !showLoader'>
-        <app-generic-summary [data]='dataValue' [colors]="colors" [percent]='percent' [headerText]="'Tagging Summary'" (navigatePage)="navigatePage($event)"></app-generic-summary>
+    <div class="certficate-summary-container tagging-summary" *ngIf="dataComing && !showLoader">
+        <app-generic-summary
+            [data]="dataValue"
+            [colors]="colors"
+            [percent]="percent"
+            [headerText]="'Tagging Summary'"
+            (navigatePage)="navigatePage($event)"
+        ></app-generic-summary>
     </div>
 
-    <article class='center error_handling' *ngIf='!dataComing'>
+    <article class="center error_handling" *ngIf="!dataComing">
         <div class="error_msg">
-            <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+            <app-error-message
+                *ngIf="seekdata == true"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
         </div>
     </article>
-    <div *ngIf='showLoader' class="loader"></div>
+    <div *ngIf="showLoader" class="loader"></div>
 </div>

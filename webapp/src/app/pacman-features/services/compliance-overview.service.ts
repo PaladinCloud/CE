@@ -22,43 +22,39 @@ import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { map } from 'rxjs/operators';
 
-
-
 @Injectable()
 export class ComplianceOverviewService {
-
-    constructor (
-                 @Inject(HttpService) private httpService: HttpService,
-                 private errorHandling: ErrorHandlingService) { }
-
+    constructor(
+        @Inject(HttpService) private httpService: HttpService,
+        private errorHandling: ErrorHandlingService,
+    ) {}
 
     private combinedData: any = [];
 
     getDailyData(url, method, payload, queryParameters = {}) {
-
         try {
-
-            return this.httpService.getHttpResponse(url, method, payload, queryParameters)
-                        .pipe(map(response => this.massageDailyResponse(response['data'].response)));
+            return this.httpService
+                .getHttpResponse(url, method, payload, queryParameters)
+                .pipe(map((response) => this.massageDailyResponse(response['data'].response)));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
     }
 
     getWeeklyData(url, method, queryParameters) {
-
         let payload = {};
         const queryParams = {};
 
         try {
             payload = {
-                'ag': queryParameters.ag,
-                'from': queryParameters.from,
-                'filters': {}
+                ag: queryParameters.ag,
+                from: queryParameters.from,
+                filters: {},
             };
 
-            return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                        .pipe(map(response => this.massageWeeklyResponse(response['data'].response)));
+            return this.httpService
+                .getHttpResponse(url, method, payload, queryParams)
+                .pipe(map((response) => this.massageWeeklyResponse(response['data'].response)));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -72,7 +68,6 @@ export class ComplianceOverviewService {
     }
 
     massageDailyResponse(data) {
-
         // datacheck function is added by Trinanjan on 10.03.2018 to check for empty data
         this.dataCheck(data);
 
@@ -81,37 +76,37 @@ export class ComplianceOverviewService {
         const apiResponse = data['compliance_info'];
         let mostKeysObject;
         let mostKeysCount = 0;
-        
-        apiResponse.forEach(obj => {
-          const objKeys = Object.keys(obj);
-          if (objKeys.length > mostKeysCount) {
-            mostKeysObject = obj;
-            mostKeysCount = objKeys.length;
-          }
+
+        apiResponse.forEach((obj) => {
+            const objKeys = Object.keys(obj);
+            if (objKeys.length > mostKeysCount) {
+                mostKeysObject = obj;
+                mostKeysCount = objKeys.length;
+            }
         });
         let minDate = new Date();
         if (apiResponse.length) {
             const types = Object.keys(apiResponse[0]);
             types.splice(types.indexOf('date'), 1);
-            types.forEach(type => {
+            types.forEach((type) => {
                 const values = [];
                 let formattedObject = {};
-                apiResponse.forEach(details => {
+                apiResponse.forEach((details) => {
                     const curr_date = new Date(details['date']);
-                    if(curr_date<minDate){
+                    if (curr_date < minDate) {
                         minDate = curr_date;
                     }
                     const obj = {
-                        'date' : curr_date,
-                        'value': details[type] ? details[type] : null,
+                        date: curr_date,
+                        value: details[type] ? details[type] : null,
                         'zero-value': details[type] && details[type] == 0 ? true : false,
-                        "no-data": !details[type] ? true : false
+                        'no-data': !details[type] ? true : false,
                     };
                     values.push(obj);
                 });
                 formattedObject = {
-                    'key'    : type,
-                    'values' : values
+                    key: type,
+                    values: values,
                 };
                 if (type.toLowerCase() !== 'overall' && type.toLowerCase() !== 'total') {
                     finalData.unshift(formattedObject);
@@ -121,11 +116,10 @@ export class ComplianceOverviewService {
             });
         }
 
-        return {finalData,minDate};
-
+        return { finalData, minDate };
     }
 
-    massageWeeklyResponse (data) {
+    massageWeeklyResponse(data) {
         // datacheck function is added by Trinanjan on 10.03.2018 to check for empty data
         this.dataCheck(data);
         // *************************************************************** //
@@ -133,23 +127,23 @@ export class ComplianceOverviewService {
         const currentData = data.compliance_trend;
         const types = Object.keys(currentData[0]['compliance_info'][0]);
         types.splice(types.indexOf('date'), 1);
-        types.forEach(type => {
+        types.forEach((type) => {
             let formattedObject = {};
             const values = [];
-            currentData.forEach(weeklyData => {
+            currentData.forEach((weeklyData) => {
                 const apiResponse = weeklyData['compliance_info'];
-                apiResponse.forEach(details => {
+                apiResponse.forEach((details) => {
                     const obj = {
-                        'date' : new Date(details['date']),
-                        'value': details[type],
-                        'zero-value': details[type] === 0 ? true : false
+                        date: new Date(details['date']),
+                        value: details[type],
+                        'zero-value': details[type] === 0 ? true : false,
                     };
                     values.push(obj);
                 });
             });
             formattedObject = {
-                'key'    : type,
-                'values' : values
+                key: type,
+                values: values,
             };
             if (type.toLowerCase() !== 'overall' && type.toLowerCase() !== 'total') {
                 finalData.unshift(formattedObject);
@@ -159,5 +153,4 @@ export class ComplianceOverviewService {
         });
         return finalData;
     }
-
 }

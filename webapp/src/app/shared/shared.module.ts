@@ -120,12 +120,12 @@ import { TableListComponent } from './table-list/table-list.component';
 import { TableOptionsComponent } from './table-options/table-options.component';
 import { TableTabsComponent } from './table-tabs/table-tabs.component';
 import { TableColumnWidthPipe } from './table/pipes/table-column-width.pipe';
-import { CellDataCasePipe } from "./table/pipes/cell-data-case-pipe";
+import { CellDataCasePipe } from './table/pipes/cell-data-case-pipe';
 import { TableComponent } from './table/table.component';
 import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.component';
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
-import {ClipboardModule} from '@angular/cdk/clipboard';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { IssueFilterService } from '../pacman-features/services/issue-filter.service';
 import { DateRangeFormatterPipe } from './table-filters/pipes/date-range-formatter.pipe';
 import { AssetTrendGraphComponent } from '../pacman-features/secondary-components/asset-trend-graph/asset-trend-graph.component';
@@ -135,7 +135,7 @@ import { IsImagePresentPipe } from './table/pipes/is-image-present.pipe';
 import { ResultCountPipe } from './table/pipes/result-count.pipe';
 
 @NgModule({
-  imports: [
+    imports: [
         AngularSvgIconModule.forRoot(),
         ScrollingModule,
         MatCheckboxModule,
@@ -166,7 +166,7 @@ import { ResultCountPipe } from './table/pipes/result-count.pipe';
         RouterModule,
         SelectDropDownModule,
     ],
-  declarations: [
+    declarations: [
         IsImagePresentPipe,
         AgGridTableComponent,
         AssetSummarySearchFilterPipe,
@@ -245,7 +245,7 @@ import { ResultCountPipe } from './table/pipes/result-count.pipe';
         CellDataCasePipe,
         DateRangeFormatterPipe,
         AssetTrendGraphComponent,
-        ResultCountPipe
+        ResultCountPipe,
     ],
     exports: [
         CellDataCasePipe,
@@ -327,7 +327,7 @@ import { ResultCountPipe } from './table/pipes/result-count.pipe';
         TitleBurgerHeadComponent,
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
-        AssetTrendGraphComponent
+        AssetTrendGraphComponent,
     ],
     providers: [
         IssueFilterService,

@@ -12,9 +12,16 @@
  * limitations under the License.
  -->
 
- 
-<a class="panel-wrapper" (click)="navigateToModule(moduleName, agAndDomain)" *ngIf="displayProperty">
+<a
+    class="panel-wrapper"
+    (click)="navigateToModule(moduleName, agAndDomain)"
+    *ngIf="displayProperty"
+>
     <p class="mr-panel-icon-wrapper">
-        <i class="fa fa-angle-left mr-panel-icon" [class.fa-angle-right]='rightPointing' aria-hidden="true"></i>
+        <i
+            class="fa fa-angle-left mr-panel-icon"
+            [class.fa-angle-right]="rightPointing"
+            aria-hidden="true"
+        ></i>
     </p>
 </a>

@@ -12,29 +12,54 @@
  * limitations under the License.
  -->
 
- <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
+<div
+    class="floating-widgets-section flex flex-col issue-listing-wrapper"
+    [class.filter-absent]="filters.length == 0"
+>
     <div class="padding-top"></div>
     <div class="floating-widgets-header flex flex-between">
         <div>
-            <h6 class="title-text">{{pageTitle}}</h6>
+            <h6 class="title-text">{{ pageTitle }}</h6>
         </div>
         <div class="flex relative z-index textarea-button">
-
-            <button class="submit-btn uppercase" type="button" (click)='goToCreateRules()'><i class="fa fa-plus"></i> Create Rules</button>
+            <button class="submit-btn uppercase" type="button" (click)="goToCreateRules()">
+                <i class="fa fa-plus"></i> Create Rules
+            </button>
         </div>
     </div>
     <div *ngIf="isRulesTurnedOff" class="shut-down-alert">
-        <img src="../../../../../assets/icons/Info-Filled-White.svg">Rules execution is currently disabled. <a href="javascript:void()" (click)="routeToSystemManagementPage()">Click here</a> to turn back on.</div>
+        <img src="../../../../../assets/icons/Info-Filled-White.svg" />Rules execution is currently
+        disabled.
+        <a href="javascript:void()" (click)="routeToSystemManagementPage()">Click here</a> to turn
+        back on.
+    </div>
     <div class="floating-widgets-container data-table-container">
         <section>
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-data-table [searchTextValues]=searchTxt [showGenericMessage]='showGenericMessage' [errorValue]='errorValue' [parentName]="'taggingTargetMessage'" [showingArr]='showingArr' [outerArr]='outerArr' [searchableHeader]='true' [allColumns]='allColumns'
-                            [dataHead]="'All Rules'" (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)' (previousPageCalled)='prevPage()'
-                            (nextPageCalled)='nextPage()' (searchTriggerred)='callNewSearch()'>
+                        <app-data-table
+                            [searchTextValues]="searchTxt"
+                            [showGenericMessage]="showGenericMessage"
+                            [errorValue]="errorValue"
+                            [parentName]="'taggingTargetMessage'"
+                            [showingArr]="showingArr"
+                            [outerArr]="outerArr"
+                            [searchableHeader]="true"
+                            [allColumns]="allColumns"
+                            [dataHead]="'All Rules'"
+                            (selectedRow)="goToDetails($event)"
+                            [firstPaginator]="firstPaginator"
+                            [lastPaginator]="lastPaginator"
+                            [totalRows]="totalRows"
+                            [currentPointer]="currentPointer"
+                            (searchRowTxt)="searchCalled($event)"
+                            (previousPageCalled)="prevPage()"
+                            (nextPageCalled)="nextPage()"
+                            (searchTriggerred)="callNewSearch()"
+                        >
                         </app-data-table>
-                        <div class="data-table-desc">{{dataTableDesc}}</div>
+                        <div class="data-table-desc">{{ dataTableDesc }}</div>
                     </div>
                 </li>
             </ul>

@@ -10,18 +10,18 @@
             <td class="keyvalue-name" *ngIf="!isObject(item)">
                 {{ item.key | proptitlecase }}
             </td>
-            <td
-                class="keyvalue-value"
-                *ngIf="!isObject(item)"
-                (click)="navigateTo(item.value)"
-            >
+            <td class="keyvalue-value" *ngIf="!isObject(item)" (click)="navigateTo(item.value)">
                 <app-text
-                    *ngIf="!isStringDate(item.value);else nonDateTemplate"
-                    [classNames]="item.value?.includes(windowHostName)?'pointer primary-400':'high-emphasis'"
+                    *ngIf="!isStringDate(item.value); else nonDateTemplate"
+                    [classNames]="
+                        item.value?.includes(windowHostName)
+                            ? 'pointer primary-400'
+                            : 'high-emphasis'
+                    "
                     [text]="item.value"
-                    >
+                >
                 </app-text>
-                <ng-template #nonDateTemplate> {{ item.value | date : 'medium' }} </ng-template>
+                <ng-template #nonDateTemplate> {{ item.value | date: 'medium' }} </ng-template>
             </td>
         </tr>
     </tbody>

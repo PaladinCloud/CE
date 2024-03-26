@@ -1,4 +1,4 @@
-::ng-deep .mat-snack-bar-container{
+::ng-deep .mat-snack-bar-container {
     padding: 0;
     margin: 0;
     background: none;
@@ -6,15 +6,15 @@
     box-shadow: none;
 }
 
-.success{
+.success {
     color: var(--secondary-700);
-    background: #D8F5E3;
+    background: #d8f5e3;
     margin: 74px 28px 12px;
     padding: 8px 24px;
     border-radius: 4px;
 }
 
-.error{
+.error {
     background: #efaca6;
     margin: 74px 28px 12px;
     padding: 8px 24px;
@@ -22,6 +22,6 @@
     color: red;
 }
 
-.error img{
+.error img {
     filter: invert(10%) sepia(97%) saturate(7002%) hue-rotate(0deg) brightness(93%) contrast(117%);
 }

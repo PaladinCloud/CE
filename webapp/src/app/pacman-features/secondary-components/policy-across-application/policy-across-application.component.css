@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
- .sub-head {
+.sub-head {
     padding: 16px 24px;
     background-color: #dce3e9;
     font-size: 1em;
@@ -20,25 +20,27 @@
 }
 
 .vulnerability-across-app-outer-wrapper:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 
-.vul-across-app-wrapper{
+.vul-across-app-wrapper {
     padding: 1px;
     min-height: 30vh;
     font-size: 1em;
     background-color: var(--background-white);
-     /* added for height adjustment by trinanjan on 9th jan,2017.
+    /* added for height adjustment by trinanjan on 9th jan,2017.
         Once it is verified by puneet,it will be added to other table page also
     */
     height: 95%;
     /* ********** */
 }
 
-.vul-app-wrapper{
+.vul-app-wrapper {
     width: 100%;
     /* max-height: 25vh; */
-    overflow-y: auto; overflow-y: overlay;
+    overflow-y: auto;
+    overflow-y: overlay;
     margin: 2em 0 0 0;
     /* added for height adjustment by trinanjan on 9th jan,2017.
         Once it is verified by puneet,it will be added to other table page also
@@ -47,7 +49,7 @@
     /* *********** */
 }
 
-.search-wrapper{
+.search-wrapper {
     border-radius: var(--border-radius);
     background-color: rgba(255, 255, 255, 0.6);
     border: solid 1px #c3cbd7;
@@ -55,18 +57,18 @@
     margin: 2em auto 0 auto;
 }
 :host ::ng-deep app-list-table .list-table-divider {
-    left : 25%;
+    left: 25%;
 }
-:host ::ng-deep app-list-table .list-table-header-values{
+:host ::ng-deep app-list-table .list-table-header-values {
     flex: 1;
 }
-:host ::ng-deep app-list-table .list-table-elem-name{
+:host ::ng-deep app-list-table .list-table-elem-name {
     flex: 1.5;
 }
-:host ::ng-deep app-list-table .list-table-header-values:first-child{
+:host ::ng-deep app-list-table .list-table-header-values:first-child {
     flex: 2;
 }
-:host ::ng-deep app-list-table .list-table-header-values{
+:host ::ng-deep app-list-table .list-table-header-values {
     flex: 2;
     word-break: break-word;
 }
@@ -75,19 +77,19 @@
     *To overwrite css hover property in the policy across application compliant column as it is not clickable
     *This should be removed and one condition should be added from js to disable any particular column click in the list table
  */
-:host ::ng-deep app-list-table .list-table-value .list-table-value-each:last-child:hover{
+:host ::ng-deep app-list-table .list-table-value .list-table-value-each:last-child:hover {
     cursor: text;
     color: #000 !important;
     transform: scaleX(1) !important;
 }
- /* added for height adjustment by trinanjan on 9th jan,2017.
+/* added for height adjustment by trinanjan on 9th jan,2017.
         Once it is verified by puneet,it will be added to other table page also
  */
-.appblock{
+.appblock {
     height: 100%;
     overflow: hidden;
 }
-.vul-across-app-inner-wrapper{
+.vul-across-app-inner-wrapper {
     height: 96%;
 }
 /* ********* */

@@ -12,8 +12,17 @@
  * limitations under the License.
  -->
 
- <a>
+<a>
     <app-overlay></app-overlay>
 </a>
-<app-know-your-dashboard *ngIf='selectedSlide != images.length' [images]='images' [selectedSlide]='selectedSlide' (lastSlideReached)='selectedSlide = images.length'></app-know-your-dashboard>
-<app-asset-groups *ngIf='selectedSlide == images.length' [hideCloseButton]="true" (closeAssetGroup)="closeAssetGroup($event)"></app-asset-groups>
+<app-know-your-dashboard
+    *ngIf="selectedSlide != images.length"
+    [images]="images"
+    [selectedSlide]="selectedSlide"
+    (lastSlideReached)="selectedSlide = images.length"
+></app-know-your-dashboard>
+<app-asset-groups
+    *ngIf="selectedSlide == images.length"
+    [hideCloseButton]="true"
+    (closeAssetGroup)="closeAssetGroup($event)"
+></app-asset-groups>

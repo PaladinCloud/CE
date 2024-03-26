@@ -22,7 +22,8 @@
 }
 
 .patching-issues-text:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 
 .issues-category-container {
@@ -31,10 +32,10 @@
     min-height: calc(19.1vh - 7px);
     border: 0.9px solid #c3cbd7;
     border-left: none;
-    border-top: none
+    border-top: none;
 }
 
-.sub-head{
+.sub-head {
     padding: 16px 24px;
     background-color: #dce3e9;
 }

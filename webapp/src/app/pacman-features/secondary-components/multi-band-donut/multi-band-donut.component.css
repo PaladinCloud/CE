@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
- .complaince-graph-container {
+.complaince-graph-container {
     position: relative;
     width: 100%;
     height: 100%;
@@ -148,5 +148,5 @@
 }
 
 .single-arc .data-pack {
-    transform: translate(-50%, -12px)!important;
+    transform: translate(-50%, -12px) !important;
 }

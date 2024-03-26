@@ -80,8 +80,8 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     selectedSeverity: string;
     selectedCategory: string;
     assetGroup;
-    assetGroupImage:string;
-    status: string = "";
+    assetGroupImage: string;
+    status: string = '';
     assetType: string;
     action: string;
     bannerText: string;
@@ -218,12 +218,12 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
         this.status = this.uppercasefirst(data.status);
         this.bannerText = data.disableDesc;
         const policyParams = JSON.parse(this.policyDetails.policyParams);
-        if(policyParams){
+        if (policyParams) {
             this.allpolicyParams = Array.isArray(policyParams.params)
-            ? (policyParams.params as PolicyParams[]).filter(
-                  (p) => p.key !== 'severity' && p.key !== 'policyCategory',
-              )
-            : [];
+                ? (policyParams.params as PolicyParams[]).filter(
+                      (p) => p.key !== 'severity' && p.key !== 'policyCategory',
+                  )
+                : [];
 
             if (policyParams.autofix) {
                 this.isAutofixEnabled = policyParams.autofix;

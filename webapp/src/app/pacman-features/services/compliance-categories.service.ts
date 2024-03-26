@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -24,10 +24,11 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ComplianceCategoriesService {
-
     dataArray: any = {};
-    constructor( @Inject(HttpService) private httpService: HttpService,
-        private errorHandling: ErrorHandlingService) {}
+    constructor(
+        @Inject(HttpService) private httpService: HttpService,
+        private errorHandling: ErrorHandlingService,
+    ) {}
     getData(queryParams, category, categoryUrl, categoryMethod) {
         const url = categoryUrl;
         const method = categoryMethod;
@@ -35,9 +36,10 @@ export class ComplianceCategoriesService {
         const query = queryParams;
         try {
             return combineLatest(
-            this.httpService.getHttpResponse(url, method, payload, query)
-            .pipe(map(response => this.massageData(response, category) )
-            ));
+                this.httpService
+                    .getHttpResponse(url, method, payload, query)
+                    .pipe(map((response) => this.massageData(response, category))),
+            );
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -48,8 +50,4 @@ export class ComplianceCategoriesService {
         this.dataArray[category].loaded = true;
         return this.dataArray;
     }
-
 }
-
-
-

@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -24,44 +24,58 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class TaggingComplianceService {
-    constructor( @Inject(HttpService) private httpService: HttpService,
-                private errorHandler: ErrorHandlingService) { }
+    constructor(
+        @Inject(HttpService) private httpService: HttpService,
+        private errorHandler: ErrorHandlingService,
+    ) {}
 
-    getTaggingCompliance(queryParams, taggingComplianceUrl, taggingComplianceMethod): Observable<any> {
+    getTaggingCompliance(
+        queryParams,
+        taggingComplianceUrl,
+        taggingComplianceMethod,
+    ): Observable<any> {
         const url = taggingComplianceUrl;
         const method = taggingComplianceMethod;
         const payload = {};
         try {
-          return combineLatest(
-            this.httpService.getHttpResponse(url, method, payload, queryParams)
-            .pipe(map(response => {
-                try {
-                    return this.massageData(response);
-                } catch (error) {
-                    this.errorHandler.handleJavascriptError(error);
-                }
-            })
-          ));
+            return combineLatest(
+                this.httpService.getHttpResponse(url, method, payload, queryParams).pipe(
+                    map((response) => {
+                        try {
+                            return this.massageData(response);
+                        } catch (error) {
+                            this.errorHandler.handleJavascriptError(error);
+                        }
+                    }),
+                ),
+            );
         } catch (error) {
             this.errorHandler.handleJavascriptError(error);
         }
     }
 
-    getTaggingSummaryByTargetType(payload, taggingSummaryUrl, taggingSummaryMethod): Observable<any> {
+    getTaggingSummaryByTargetType(
+        payload,
+        taggingSummaryUrl,
+        taggingSummaryMethod,
+    ): Observable<any> {
         const queryParams = {};
         try {
-          return this.httpService.getHttpResponse(taggingSummaryUrl, taggingSummaryMethod, payload, queryParams)
-            .pipe(map(response => {
-                try {
-                    const data = response['data'].response;
-                    data.sort(function(a, b) {
-                        return b.untagged - a.untagged;     // For descending order
-                    });
-                    return data;
-                } catch (error) {
-                    this.errorHandler.handleJavascriptError(error);
-                }
-            }));
+            return this.httpService
+                .getHttpResponse(taggingSummaryUrl, taggingSummaryMethod, payload, queryParams)
+                .pipe(
+                    map((response) => {
+                        try {
+                            const data = response['data'].response;
+                            data.sort(function (a, b) {
+                                return b.untagged - a.untagged; // For descending order
+                            });
+                            return data;
+                        } catch (error) {
+                            this.errorHandler.handleJavascriptError(error);
+                        }
+                    }),
+                );
         } catch (error) {
             this.errorHandler.handleJavascriptError(error);
         }
@@ -76,33 +90,33 @@ export class TaggingComplianceService {
 
         /* tableheaderdata is for table header */
         headerData.push('TagName');
-        tempData.forEach(element => {
+        tempData.forEach((element) => {
             const complianceInstance = [
-                {title: 'topBlank', val: (100 - (element.compliancePercentage || 100) ) },
-                {title: element.name, val: (element.compliancePercentage || 100)},
-                {title: 'leftBlank', val: 100}
-               ];
+                { title: 'topBlank', val: 100 - (element.compliancePercentage || 100) },
+                { title: element.name, val: element.compliancePercentage || 100 },
+                { title: 'leftBlank', val: 100 },
+            ];
             const taggingStatus = {
-                'AppName' : element.name,
-                'AppDetails': [
-                    {'CountType' : 'untagged', 'count' : parseInt(element.untagged, 10)},
-                    {'CountType' : 'tagged', 'count' : parseInt(element.tagged, 10)}
-                ]
+                AppName: element.name,
+                AppDetails: [
+                    { CountType: 'untagged', count: parseInt(element.untagged, 10) },
+                    { CountType: 'tagged', count: parseInt(element.tagged, 10) },
+                ],
             };
             finalData.push(complianceInstance);
             appTaggingStatus.push(taggingStatus);
         });
-        appTaggingStatus[0].AppDetails.forEach((element , index) => {
+        appTaggingStatus[0].AppDetails.forEach((element, index) => {
             headerData.push(element.CountType);
         });
-        appTaggingStatus.forEach(element => {
-            element.AppDetails.forEach(details => {
+        appTaggingStatus.forEach((element) => {
+            element.AppDetails.forEach((details) => {
                 element[details.CountType] = details.count;
             });
         });
         finalObj['data'] = finalData;
         finalObj['percent'] = data.response.overallCompliance;
-        finalObj['taggingStatus'] = {'header' : headerData, 'data' : appTaggingStatus};
+        finalObj['taggingStatus'] = { header: headerData, data: appTaggingStatus };
         return finalObj;
     }
 }

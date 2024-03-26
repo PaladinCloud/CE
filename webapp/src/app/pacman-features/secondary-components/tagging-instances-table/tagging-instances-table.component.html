@@ -12,28 +12,30 @@
  * limitations under the License.
  -->
 
- <div class="tagging-instances-container relative">
+<div class="tagging-instances-container relative">
     <div class="tagging-instances-content relative">
-        <app-data-table [searchTextValues]=searchTxt
-                        [errorValue]='errorValue'
-                        [parentName]="'taggingMessage'"
-                        [showGenericMessage]='showGenericMessage'
-                        [allColumns]='allColumns'
-                        [outerArr]='outerArr'
-                        [heightValue]="'27.4em'"
-                        [totalRows]='totalRows'
-                        [firstPaginator]='firstPaginator'
-                        [lastPaginator]='lastPaginator'
-                        [popRows]='popRows'
-                        [currentPointer]='currentPointer'
-                        (previousPageCalled)='prevPg()'
-                        (nextPageCalled)='nextPg()'
-                        [searchableHeader]='true'
-                        [dataHead]="'Untagged Assets By App'"
-                        (searchRowTxt)='searchCalled($event)'
-                        (searchTriggerred)='callNewSearch()'
-                        [popRows]='popRows' 
-                        (rowClickText)='handlePopClick($event)'
-                        (selectedRow)='goToDetails($event)'></app-data-table>
+        <app-data-table
+            [searchTextValues]="searchTxt"
+            [errorValue]="errorValue"
+            [parentName]="'taggingMessage'"
+            [showGenericMessage]="showGenericMessage"
+            [allColumns]="allColumns"
+            [outerArr]="outerArr"
+            [heightValue]="'27.4em'"
+            [totalRows]="totalRows"
+            [firstPaginator]="firstPaginator"
+            [lastPaginator]="lastPaginator"
+            [popRows]="popRows"
+            [currentPointer]="currentPointer"
+            (previousPageCalled)="prevPg()"
+            (nextPageCalled)="nextPg()"
+            [searchableHeader]="true"
+            [dataHead]="'Untagged Assets By App'"
+            (searchRowTxt)="searchCalled($event)"
+            (searchTriggerred)="callNewSearch()"
+            [popRows]="popRows"
+            (rowClickText)="handlePopClick($event)"
+            (selectedRow)="goToDetails($event)"
+        ></app-data-table>
     </div>
 </div>

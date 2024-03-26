@@ -12,21 +12,39 @@
  * limitations under the License.
  -->
 
- <div class="certificater-stage-wrapper relative">
-  <section class="sub-head">
-      <header class="header">
+<div class="certificater-stage-wrapper relative">
+    <section class="sub-head">
+        <header class="header">
             <app-title-burger-head [subHeadTitle]="headerText"></app-title-burger-head>
         </header>
     </section>
-    <ul class="flex flex-wrap each-progress-tracker-wrapper flex-center" *ngIf='dataComing && !showLoader'>
-        <li class="each-progress-tracker" *ngFor = "let appProgressData of progressdata.data" >
-            <app-progress-summary [bardata]="appProgressData" [barColor] = "appProgressData.barColor" [flexleftvalue]="appProgressData.leftBarWidth" [flexrightvalue]="appProgressData.rightBarWidth" [appNum] ="appProgressData.appNum" [appName] ="appProgressData.appName" [leftBarValue] ="appProgressData.expiry30Days" [rightBarValue] ="appProgressData.expiry45Days" [zeroValueColor] = "appProgressData.zeroValueColor" [showBar] = "appProgressData.showBar" (navigatePage)="navigatePage($event)"></app-progress-summary>
+    <ul
+        class="flex flex-wrap each-progress-tracker-wrapper flex-center"
+        *ngIf="dataComing && !showLoader"
+    >
+        <li class="each-progress-tracker" *ngFor="let appProgressData of progressdata.data">
+            <app-progress-summary
+                [bardata]="appProgressData"
+                [barColor]="appProgressData.barColor"
+                [flexleftvalue]="appProgressData.leftBarWidth"
+                [flexrightvalue]="appProgressData.rightBarWidth"
+                [appNum]="appProgressData.appNum"
+                [appName]="appProgressData.appName"
+                [leftBarValue]="appProgressData.expiry30Days"
+                [rightBarValue]="appProgressData.expiry45Days"
+                [zeroValueColor]="appProgressData.zeroValueColor"
+                [showBar]="appProgressData.showBar"
+                (navigatePage)="navigatePage($event)"
+            ></app-progress-summary>
         </li>
     </ul>
-    <article class='center error_handling' *ngIf='!dataComing'>
+    <article class="center error_handling" *ngIf="!dataComing">
         <div class="error_msg">
-            <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+            <app-error-message
+                *ngIf="seekdata == true"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
         </div>
-      </article>
-      <div *ngIf='showLoader' class="loader"></div>
+    </article>
+    <div *ngIf="showLoader" class="loader"></div>
 </div>

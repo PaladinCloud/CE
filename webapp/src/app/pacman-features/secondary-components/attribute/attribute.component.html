@@ -11,58 +11,91 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
- <div class="attribute-wrapper" *ngIf="dataObjArray.length>0">
-	<div class="header">Attributes</div>
-	<article class="attribute-parent-wrapper" *ngIf='dataObjArray.length > 0'>
-		<section class="system-info" *ngFor='let data of dataObjArray'>
-			<div class="system-info-topic" *ngIf="data.name != ''">
-				<header class="sub-header body-2 high-emphasis">
-					{{data.name}} :
-				</header>
-			</div>
-			<div class="system-values flex flex-wrap gap-20">
-				<div class="values-wrapper widthWrapper" *ngFor='let tiles of data.values'>
-					<div *ngIf='tiles.value.length > 0'>
-						<div class="tile-wrapper flex flex-col">
-							<div class="values-wrapper-field nowrap-ellipsis uncategorizedWrapper" title="{{tiles.name}}">
-							{{tiles.name}}
-							</div>
-							<div class="values-wrapper-value" *ngFor='let subTiles of tiles.value'>
-								<div *ngIf="subTiles.href" class="nowrap-ellipsis uncategorizedWrapper" title="{{subTiles.href}}" [innerHTML]='subTiles.href'></div>
-								<div *ngIf="!subTiles.href" class="nowrap-ellipsis uncategorizedWrapper" title="{{subTiles}}" [innerHTML]='subTiles'></div>
-								<img class="copy-icon" [cdkCopyToClipboard]="subTiles" src="/assets/icons/files.svg">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-	</article>
+<div class="attribute-wrapper" *ngIf="dataObjArray.length > 0">
+    <div class="header">Attributes</div>
+    <article class="attribute-parent-wrapper" *ngIf="dataObjArray.length > 0">
+        <section class="system-info" *ngFor="let data of dataObjArray">
+            <div class="system-info-topic" *ngIf="data.name != ''">
+                <header class="sub-header body-2 high-emphasis">{{ data.name }} :</header>
+            </div>
+            <div class="system-values flex flex-wrap gap-20">
+                <div class="values-wrapper widthWrapper" *ngFor="let tiles of data.values">
+                    <div *ngIf="tiles.value.length > 0">
+                        <div class="tile-wrapper flex flex-col">
+                            <div
+                                class="values-wrapper-field nowrap-ellipsis uncategorizedWrapper"
+                                title="{{ tiles.name }}"
+                            >
+                                {{ tiles.name }}
+                            </div>
+                            <div class="values-wrapper-value" *ngFor="let subTiles of tiles.value">
+                                <div
+                                    *ngIf="subTiles.href"
+                                    class="nowrap-ellipsis uncategorizedWrapper"
+                                    title="{{ subTiles.href }}"
+                                    [innerHTML]="subTiles.href"
+                                ></div>
+                                <div
+                                    *ngIf="!subTiles.href"
+                                    class="nowrap-ellipsis uncategorizedWrapper"
+                                    title="{{ subTiles }}"
+                                    [innerHTML]="subTiles"
+                                ></div>
+                                <img
+                                    class="copy-icon"
+                                    [cdkCopyToClipboard]="subTiles"
+                                    src="/assets/icons/files.svg"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </article>
 </div>
 
-
-<div class="attribute-wrapper" *ngIf="relatedAssetList.length>0">
-	<div class="header">Related Assets</div>
-	<div class="assets-wrapper padding-20">
-		<div class="system-values flex flex-wrap">
-			<div class="values-wrapper widthWrapper" *ngFor='let tiles of relatedAssetList[0].values'>
-				<div *ngIf='tiles.value.length > 0'>
-					<div class="tile-wrapper flex flex-col gap-12">
-						<div class="values-wrapper-field nowrap-ellipsis uncategorizedWrapper" title="{{tiles.name}}">
-						{{tiles.name}}
-						</div>
-						<div class="values-wrapper-value" *ngFor='let subTiles of tiles.value'>
-							<div *ngIf="tiles.assetType;else noLinksRef" class="nowrap-ellipsis uncategorizedWrapper link-text pointer" title="{{subTiles}}" (click)="navigatePage(tiles)">
-								{{subTiles}}
-							</div>
-							<ng-template #noLinksRef>
-								<div class="nowrap-ellipsis uncategorizedWrapper" title="{{subTiles}}" [innerHTML]='subTiles'></div>
-							</ng-template>
-							<img class="copy-icon" [cdkCopyToClipboard]="subTiles" src="/assets/icons/files.svg">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="attribute-wrapper" *ngIf="relatedAssetList.length > 0">
+    <div class="header">Related Assets</div>
+    <div class="assets-wrapper padding-20">
+        <div class="system-values flex flex-wrap">
+            <div
+                class="values-wrapper widthWrapper"
+                *ngFor="let tiles of relatedAssetList[0].values"
+            >
+                <div *ngIf="tiles.value.length > 0">
+                    <div class="tile-wrapper flex flex-col gap-12">
+                        <div
+                            class="values-wrapper-field nowrap-ellipsis uncategorizedWrapper"
+                            title="{{ tiles.name }}"
+                        >
+                            {{ tiles.name }}
+                        </div>
+                        <div class="values-wrapper-value" *ngFor="let subTiles of tiles.value">
+                            <div
+                                *ngIf="tiles.assetType; else noLinksRef"
+                                class="nowrap-ellipsis uncategorizedWrapper link-text pointer"
+                                title="{{ subTiles }}"
+                                (click)="navigatePage(tiles)"
+                            >
+                                {{ subTiles }}
+                            </div>
+                            <ng-template #noLinksRef>
+                                <div
+                                    class="nowrap-ellipsis uncategorizedWrapper"
+                                    title="{{ subTiles }}"
+                                    [innerHTML]="subTiles"
+                                ></div>
+                            </ng-template>
+                            <img
+                                class="copy-icon"
+                                [cdkCopyToClipboard]="subTiles"
+                                src="/assets/icons/files.svg"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

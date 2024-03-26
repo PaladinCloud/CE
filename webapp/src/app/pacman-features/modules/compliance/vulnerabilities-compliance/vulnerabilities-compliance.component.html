@@ -12,16 +12,20 @@
  * limitations under the License.
  -->
 
- <div class="compliance-dashboard-wrapper flex flex-between vulnerabilities-wrapper">
+<div class="compliance-dashboard-wrapper flex flex-between vulnerabilities-wrapper">
     <div class="floating-widgets-section flex flex-col">
         <div class="padding-top"></div>
         <div class="floating-widgets-header dashboards-header flex flex-between">
             <div>
-                <app-back-navigation [pageTitle]='pageTitle'></app-back-navigation>
+                <app-back-navigation [pageTitle]="pageTitle"></app-back-navigation>
             </div>
         </div>
-        <div class='floating-widgets-filter-wrapper ' *ngIf='filters.length'>
-            <app-filtered-selector (deleteFilter)='deleteFilters($event)' (deleteAllFilters)='deleteFilters($event)' [(filteredArray)]='filters'></app-filtered-selector>
+        <div class="floating-widgets-filter-wrapper" *ngIf="filters.length">
+            <app-filtered-selector
+                (deleteFilter)="deleteFilters($event)"
+                (deleteAllFilters)="deleteFilters($event)"
+                [(filteredArray)]="filters"
+            ></app-filtered-selector>
         </div>
         <div class="floating-widgets-container">
             <section>
@@ -32,7 +36,7 @@
                         </div>
                     </li>
                     <li class="widget-wrapper">
-                        <div class="widget-container">                            
+                        <div class="widget-container">
                             <app-vulnerability-summary-table></app-vulnerability-summary-table>
                         </div>
                     </li>
@@ -52,7 +56,7 @@
     </div>
     <div class="fixed-widgets-section">
         <div class="compliance-issues-container">
-            <app-vulnerability-issue ></app-vulnerability-issue>
+            <app-vulnerability-issue></app-vulnerability-issue>
         </div>
     </div>
 </div>

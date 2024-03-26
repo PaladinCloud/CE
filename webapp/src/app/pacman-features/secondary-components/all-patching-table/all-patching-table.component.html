@@ -12,27 +12,29 @@
  * limitations under the License.
  -->
 
- <div class="all-patch-container relative">
+<div class="all-patch-container relative">
     <div class="all-patch-content relative">
-        <app-data-table [searchTextValues]=searchTxt
-                        [errorValue]='errorValue'
-                        [parentName]="'patchingDataTableMessage'"
-                        [showGenericMessage]='showGenericMessage'
-                        [allColumns]='allColumns'
-                        [outerArr]='outerArr'
-                        [heightValue]="'27.4em'"
-                        [searchableHeader]='true'
-                        [dataHead]="'Compliance Details'"
-                        [popRows]='popRows'
-                        [totalRows]='totalRows'
-                        [firstPaginator]='firstPaginator'
-                        [lastPaginator]='lastPaginator'
-                        [currentPointer]='currentPointer'
-                        (previousPageCalled)='prevPg()'
-                        (nextPageCalled)='nextPg()'
-                        (searchRowTxt)='searchCalled($event)'
-                        (searchTriggerred)='callNewSearch()'
-                        (rowClickText)='handlePopClick($event)'
-                        (selectedRow)='goToDetails($event)'></app-data-table>
+        <app-data-table
+            [searchTextValues]="searchTxt"
+            [errorValue]="errorValue"
+            [parentName]="'patchingDataTableMessage'"
+            [showGenericMessage]="showGenericMessage"
+            [allColumns]="allColumns"
+            [outerArr]="outerArr"
+            [heightValue]="'27.4em'"
+            [searchableHeader]="true"
+            [dataHead]="'Compliance Details'"
+            [popRows]="popRows"
+            [totalRows]="totalRows"
+            [firstPaginator]="firstPaginator"
+            [lastPaginator]="lastPaginator"
+            [currentPointer]="currentPointer"
+            (previousPageCalled)="prevPg()"
+            (nextPageCalled)="nextPg()"
+            (searchRowTxt)="searchCalled($event)"
+            (searchTriggerred)="callNewSearch()"
+            (rowClickText)="handlePopClick($event)"
+            (selectedRow)="goToDetails($event)"
+        ></app-data-table>
     </div>
 </div>

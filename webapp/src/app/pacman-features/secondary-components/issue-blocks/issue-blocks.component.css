@@ -12,35 +12,35 @@
  * limitations under the License.
  */
 
- .issue-blocks-wrapper{
-	padding: 0.5em 0.8em;
-	width: 11em;
+.issue-blocks-wrapper {
+    padding: 0.5em 0.8em;
+    width: 11em;
 }
 
-.header{
-	text-align: center;
+.header {
+    text-align: center;
 }
 
-.image-container{
-	text-align: center;
-	margin: 1.2em 0;
+.image-container {
+    text-align: center;
+    margin: 1.2em 0;
 }
 
-.image-wrapper{
-	height: 2.7em;
-	transition: 0.2s ease-in;
+.image-wrapper {
+    height: 2.7em;
+    transition: 0.2s ease-in;
 }
 
-.image-wrapper:hover{
-	transform: scale(1.2) translateY(-2px);
+.image-wrapper:hover {
+    transform: scale(1.2) translateY(-2px);
 }
 
-.footer{
-	text-align: center;
-	font-size: 1.1em;
-	line-height: 1.4;
+.footer {
+    text-align: center;
+    font-size: 1.1em;
+    line-height: 1.4;
 }
 
-.footer::first-letter{
+.footer::first-letter {
     text-transform: capitalize;
 }

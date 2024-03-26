@@ -1,24 +1,41 @@
 <div class="violations-card flex flex-col">
     <div class="violations-content-container flex flex-row">
-      <div class="violations-img">
-        <img src="/assets/icons/violations-{{card.name}}.svg" alt="" >
-      </div>
-      <div class="violations-content flex flex-col">
-        <div class="violations-title capitalize nowrap-ellipsis">{{card.name}} Violations</div>
-        <div class="violations-count flex gap-4 flex-align-center" [class.link]="card.totalViolations>0" (click)="redirect(card.name, card.totalViolations)">
-            {{card.totalViolations | number}}
-            <img src="/assets/icons/Path.svg"/>
+        <div class="violations-img">
+            <img src="/assets/icons/violations-{{ card.name }}.svg" alt="" />
         </div>
-      </div>
+        <div class="violations-content flex flex-col">
+            <div class="violations-title capitalize nowrap-ellipsis">
+                {{ card.name }} Violations
+            </div>
+            <div
+                class="violations-count flex gap-4 flex-align-center"
+                [class.link]="card.totalViolations > 0"
+                (click)="redirect(card.name, card.totalViolations)"
+            >
+                {{ card.totalViolations | number }}
+                <img src="/assets/icons/Path.svg" />
+            </div>
+        </div>
     </div>
     <div class="violations-info-container">
-      <div class="violations-info-wrapper">
-        <div class="{{item}}-count flex flex-row violations-info space-between"
-         *ngFor="let item of keyList">
-          <div class="name nowrap-ellipsis flex-grow">{{ item }}</div>
-          <div [class.link]="card.subInfo[item].isLink && card.subInfo[item].value>0" class="count" (click)="redirect(item, card.subInfo[item].value)">
-               {{ card.subInfo[item].value | number }}
-               <img [class.hidden]="!card.subInfo[item].isLink" style="height: 8px;" src="/assets/icons/Path.svg"/>
+        <div class="violations-info-wrapper">
+            <div
+                class="{{ item }}-count flex flex-row violations-info space-between"
+                *ngFor="let item of keyList"
+            >
+                <div class="name nowrap-ellipsis flex-grow">{{ item }}</div>
+                <div
+                    [class.link]="card.subInfo[item].isLink && card.subInfo[item].value > 0"
+                    class="count"
+                    (click)="redirect(item, card.subInfo[item].value)"
+                >
+                    {{ card.subInfo[item].value | number }}
+                    <img
+                        [class.hidden]="!card.subInfo[item].isLink"
+                        style="height: 8px"
+                        src="/assets/icons/Path.svg"
+                    />
+                </div>
             </div>
         </div>
     </div>

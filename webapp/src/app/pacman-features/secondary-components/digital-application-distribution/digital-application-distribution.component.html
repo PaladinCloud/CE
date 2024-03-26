@@ -12,26 +12,43 @@
  * limitations under the License.
  -->
 
- <section class="digital-application-distribution-wrapper relative">
+<section class="digital-application-distribution-wrapper relative">
     <div class="sub-header">
-        <app-title-burger-head [subHeadTitle]="'Applications Distribution by Branching Strategies'"></app-title-burger-head>
+        <app-title-burger-head
+            [subHeadTitle]="'Applications Distribution by Branching Strategies'"
+        ></app-title-burger-head>
     </div>
     <div class="graph-chart-cont relative" *ngIf="dataComing && !showLoader">
         <div class="total-count" *ngIf="total && dataComing && !showLoader">
-            {{'Total Applications: ' + total}}
+            {{ 'Total Applications: ' + total }}
         </div>
-        <div class="relative show-links" id="devStrategyAppsBarChart" *ngIf='dataComing && !showLoader'>
-            <app-bar-chart (graphTextClick)='redirectGraph($event)' (error)="getErrorValues($event)" [chartContId]="'devStrategyAppsBarChart'" [graphData]="graphData" [legend_text]="legend_text"
-                [barChartHeight]="barChartHeight" *ngIf="graphData"></app-bar-chart>
+        <div
+            class="relative show-links"
+            id="devStrategyAppsBarChart"
+            *ngIf="dataComing && !showLoader"
+        >
+            <app-bar-chart
+                (graphTextClick)="redirectGraph($event)"
+                (error)="getErrorValues($event)"
+                [chartContId]="'devStrategyAppsBarChart'"
+                [graphData]="graphData"
+                [legend_text]="legend_text"
+                [barChartHeight]="barChartHeight"
+                *ngIf="graphData"
+            ></app-bar-chart>
         </div>
         <div class="total-untagged" *ngIf="repowithoutApplication && dataComing && !showLoader">
-            Note: <span>{{repowithoutApplication}}</span> repositories not tagged with application tag
+            Note: <span>{{ repowithoutApplication }}</span> repositories not tagged with application
+            tag
         </div>
     </div>
-    <article class='center error_handling' *ngIf="!dataComing">
+    <article class="center error_handling" *ngIf="!dataComing">
         <div class="error_msg">
-            <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+            <app-error-message
+                *ngIf="seekdata == true"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
         </div>
     </article>
-    <div *ngIf='showLoader' class="loader"></div>
+    <div *ngIf="showLoader" class="loader"></div>
 </section>

@@ -3,25 +3,30 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
-import {Component, OnInit, Input, OnChanges} from '@angular/core';
-import {UtilsService} from '../../../shared/services/utils.service';
-import {glowPulse, fadeInOutDiamond, diamondTitleActive, topGlowTravellerDuration} from './../animations/animations';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { UtilsService } from '../../../shared/services/utils.service';
+import {
+    glowPulse,
+    fadeInOutDiamond,
+    diamondTitleActive,
+    topGlowTravellerDuration,
+} from './../animations/animations';
 
 @Component({
     selector: 'app-landing-diamond',
     templateUrl: './landing-diamond.component.html',
     styleUrls: ['./landing-diamond.component.css'],
     providers: [UtilsService],
-    animations: [glowPulse, fadeInOutDiamond, diamondTitleActive]
+    animations: [glowPulse, fadeInOutDiamond, diamondTitleActive],
 })
 export class LandingDiamondComponent implements OnInit, OnChanges {
     public index;
@@ -34,14 +39,13 @@ export class LandingDiamondComponent implements OnInit, OnChanges {
     public sequence: any = [
         this.sequenceElement('left', 'ASSESS', 'Continuous compliance assessment'),
         this.sequenceElement('center', 'REPORT', 'Live reports and dashboards'),
-        this.sequenceElement('right', 'REMEDIATE', 'Recommendations, one-click & auto fixes')
+        this.sequenceElement('right', 'REMEDIATE', 'Recommendations, one-click & auto fixes'),
     ];
     public promises;
     public sequenceEnded = true;
     @Input() inView = false;
 
-    constructor(private utils: UtilsService) {
-    }
+    constructor(private utils: UtilsService) {}
 
     ngOnInit() {
         this.pulsingInterval = this.activePulsateLoop();
@@ -53,14 +57,14 @@ export class LandingDiamondComponent implements OnInit, OnChanges {
         } else {
             this.stopAnimation();
         }
-
     }
 
     nextInSequence(previousIndex, nextIndex) {
         const previousPulseBall = this.sequence[previousIndex];
         this.index = nextIndex;
         const nextPulseBall = this.sequence[nextIndex];
-        return this.utils.setTimeoutPromise(0)
+        return this.utils
+            .setTimeoutPromise(0)
             .then(() => {
                 previousPulseBall.glowTravellerState = 'end';
                 this.showText = 'hide';
@@ -83,7 +87,8 @@ export class LandingDiamondComponent implements OnInit, OnChanges {
         const previousPulseBall = this.sequence[2];
         this.index = 0;
         const nextPulseBall = this.sequence[0];
-        return this.utils.setTimeoutPromise(0)
+        return this.utils
+            .setTimeoutPromise(0)
             .then(() => {
                 this.topGlowTraveller = true;
                 this.showText = 'hide';
@@ -112,10 +117,9 @@ export class LandingDiamondComponent implements OnInit, OnChanges {
         } else if (this.inView && !this.promises) {
             this.stopAnimation();
             this.sequenceEnded = true;
-            this.utils.setTimeoutPromise(this.interval)
-                .then(() => {
-                    this.beginAnimation();
-                });
+            this.utils.setTimeoutPromise(this.interval).then(() => {
+                this.beginAnimation();
+            });
         } else {
             this.stopAnimation();
             this.sequenceEnded = true;
@@ -143,7 +147,7 @@ export class LandingDiamondComponent implements OnInit, OnChanges {
 
     stopAnimation() {
         this.promises = null;
-        for (let i = 0 ; i < this.sequence.length; i++ ) {
+        for (let i = 0; i < this.sequence.length; i++) {
             const activePulseBall = this.sequence[i];
             this.togglePulseBall(activePulseBall, false);
         }
@@ -157,12 +161,14 @@ export class LandingDiamondComponent implements OnInit, OnChanges {
             title: title,
             active: 'inactive',
             pulseState: this.getPulseState(false),
-            glowTravellerState: 'begin'
+            glowTravellerState: 'begin',
         };
     }
 
     togglePulsate() {
-        this.pulsingState === 'active-large' ? this.pulsingState = 'active-small' : this.pulsingState = 'active-large';
+        this.pulsingState === 'active-large'
+            ? (this.pulsingState = 'active-small')
+            : (this.pulsingState = 'active-large');
     }
 
     togglePulseBall(pulseBall, active) {
@@ -213,7 +219,7 @@ export class LandingDiamondComponent implements OnInit, OnChanges {
                 return this.activateTopGlowTraveller().then(() => {
                     return this.nextPromise();
                 });
-            }
+            },
         ];
     }
 }

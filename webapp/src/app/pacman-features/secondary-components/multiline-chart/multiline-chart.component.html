@@ -12,9 +12,8 @@
  * limitations under the License.
  -->
 
- <div #widgetContainer class='multiline-brush-zoom-container'>   
-   
-    <div class="multiline-graph-container">    
-        <svg [attr.hidden]='!dataLoaded || error' id={{idUnique}}></svg>
-    </div> 
+<div #widgetContainer class="multiline-brush-zoom-container">
+    <div class="multiline-graph-container">
+        <svg [attr.hidden]="!dataLoaded || error" id="{{ idUnique }}"></svg>
+    </div>
 </div>

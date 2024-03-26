@@ -21,19 +21,19 @@
     /* min-height: 30em; */
 }
 
-.total-text-msg{
+.total-text-msg {
     margin: 1em 0 0.2em 2em;
     font-size: 13px;
     color: #2c2e3d;
 }
 
-.total-count{
+.total-count {
     font-weight: 900;
 }
-.sub-head{
+.sub-head {
     min-width: 20em;
 }
-.stale-branches-summary-wrapper  .graph-chart-cont {
+.stale-branches-summary-wrapper .graph-chart-cont {
     height: 90%;
     min-width: 20em;
     overflow: auto;

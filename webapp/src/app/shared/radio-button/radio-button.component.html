@@ -12,7 +12,13 @@
  * limitations under the License.
  -->
 
- <label class="container" [ngStyle]="{'font-family': labelFontFamily }"><ng-content></ng-content>
-    <input type="radio" [checked]="isChecked == true"  name="radio" (change)="radioBtnClick($event)">
+<label class="container" [ngStyle]="{ 'font-family': labelFontFamily }"
+    ><ng-content></ng-content>
+    <input
+        type="radio"
+        [checked]="isChecked == true"
+        name="radio"
+        (change)="radioBtnClick($event)"
+    />
     <span class="checkmark"></span>
 </label>

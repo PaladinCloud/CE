@@ -21,24 +21,26 @@ import { CONFIGURATIONS } from '../../../config/configurations';
 
 @Injectable()
 export class DomainMappingService {
-    constructor(private dataCacheService: DataCacheService, private router: Router) {}
+    constructor(
+        private dataCacheService: DataCacheService,
+        private router: Router,
+    ) {}
 
     getDomainInfoForSelectedDomain(key) {
         /*
-            * this function returns the info related to the selected domain
-            * which is defined in the doamin constant file
-        */
+         * this function returns the info related to the selected domain
+         * which is defined in the doamin constant file
+         */
 
-        const domainInfoObj = DOMAIN_MAPPING.find(o => o.domain === key );
+        const domainInfoObj = DOMAIN_MAPPING.find((o) => o.domain === key);
         return domainInfoObj;
     }
 
     /*@returns: It returns the list of links applicable for a domain and module */
     getDashboardsApplicableForADomain(domainName, moduleName) {
         try {
-
             const domains = [];
-            if (!domainName ) {
+            if (!domainName) {
                 domains.push(domainName);
             } else {
                 domains.push('');
@@ -49,7 +51,10 @@ export class DomainMappingService {
 
             domains.forEach((domain) => {
                 const domainObj = this.getDomainInfoForSelectedDomain(domain);
-                const dashboardsObj = this.getDashboardsPathForADomain(domainObj.dashboards, moduleName);
+                const dashboardsObj = this.getDashboardsPathForADomain(
+                    domainObj.dashboards,
+                    moduleName,
+                );
                 ListOfDashboards = ListOfDashboards.concat(dashboardsObj.dashboards);
             });
 
@@ -58,27 +63,38 @@ export class DomainMappingService {
             let provider = [];
             recentList = this.dataCacheService.getRecentlyViewedAssetGroups();
             if (recentList) {
-            const currentAGDetails = JSON.parse(recentList).filter(element => element.ag === currentSelectedAg);
-            provider = this.fetchprovider(currentAGDetails);
+                const currentAGDetails = JSON.parse(recentList).filter(
+                    (element) => element.ag === currentSelectedAg,
+                );
+                provider = this.fetchprovider(currentAGDetails);
             }
-            if (currentSelectedAg.includes('azure') || (provider.length === 1 && provider[0] === 'azure')) {
-                ListOfDashboards = ListOfDashboards.filter(element => {
+            if (
+                currentSelectedAg.includes('azure') ||
+                (provider.length === 1 && provider[0] === 'azure')
+            ) {
+                ListOfDashboards = ListOfDashboards.filter((element) => {
                     if (window.location.pathname.includes(element.route) && element.cloudSpecific) {
                         this.router.navigate(['pl/compliance/compliance-dashboard'], {
                             queryParams: { domain: domainName },
-                            queryParamsHandling: 'merge'
+                            queryParamsHandling: 'merge',
                         });
                     }
                     return element.cloudSpecific !== true;
                 });
             }
 
-             // check qualys enabled or not
+            // check qualys enabled or not
             if (!CONFIGURATIONS.optional.general.qualysEnabled) {
-                ListOfDashboards = ListOfDashboards.filter(item => !(item.name === 'Vulnerabilities' && item.route === 'vulnerabilities-compliance'));
+                ListOfDashboards = ListOfDashboards.filter(
+                    (item) =>
+                        !(
+                            item.name === 'Vulnerabilities' &&
+                            item.route === 'vulnerabilities-compliance'
+                        ),
+                );
             }
 
-            let updatedListOfLinks = ListOfDashboards.map(dashboard => {
+            let updatedListOfLinks = ListOfDashboards.map((dashboard) => {
                 // Get title from routes data
 
                 const data = this.getRouteData(dashboard.route, moduleName);
@@ -112,43 +128,45 @@ export class DomainMappingService {
     getRouteData(path, moduleName) {
         let routes = [];
         routes = this.getAllRoutesOfAModule(moduleName);
-        const route = routes.find( routing => {
+        const route = routes.find((routing) => {
             return routing.path === path;
         });
         if (route && route.data) {
             return route.data;
         } else {
-            return {'title': 'No page title'};
+            return { title: 'No page title' };
         }
     }
 
     checkForUserPermissions(links, userRoles) {
-
         return links.filter((eachLink) => {
             if (eachLink.data && eachLink.data.roles && eachLink.data.roles.length) {
                 const linkRoles = eachLink.data.roles;
                 /* If all link roles are available in userRoles, that means, user has access to that link */
-                const hasAccess = !(difference(linkRoles, userRoles).length);
+                const hasAccess = !difference(linkRoles, userRoles).length;
                 return hasAccess;
             } else {
                 return true;
             }
         });
-
     }
 
     fetchprovider(assetGroupObject) {
         const provider = [];
         if (assetGroupObject.length && assetGroupObject[0].providers) {
-          assetGroupObject[0].providers.forEach(element => {
-            provider.push(element.provider);
-          });
+            assetGroupObject[0].providers.forEach((element) => {
+                provider.push(element.provider);
+            });
         }
         return provider;
     }
 
     getDashboardsPathForADomain(dashboards, moduleName) {
-        return dashboards.find(eachModule => eachModule.moduleName === moduleName) || {'dashboards': []};
+        return (
+            dashboards.find((eachModule) => eachModule.moduleName === moduleName) || {
+                dashboards: [],
+            }
+        );
     }
 
     getThemeForADomain(domainName) {

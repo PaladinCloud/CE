@@ -30,41 +30,34 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { DevPullRequestApplicationsComponent } from './dev-pull-request-applications.component';
 
 describe('DevPullRequestApplicationsComponent', () => {
-  let component: DevPullRequestApplicationsComponent;
-  let fixture: ComponentFixture<DevPullRequestApplicationsComponent>;
+    let component: DevPullRequestApplicationsComponent;
+    let fixture: ComponentFixture<DevPullRequestApplicationsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AgGridModule,
-        RouterTestingModule,
-      ],
-      declarations: [
-        DevPullRequestApplicationsComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, AgGridModule, RouterTestingModule],
+            declarations: [DevPullRequestApplicationsComponent, TitleBurgerHeadComponent],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DevPullRequestApplicationsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DevPullRequestApplicationsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

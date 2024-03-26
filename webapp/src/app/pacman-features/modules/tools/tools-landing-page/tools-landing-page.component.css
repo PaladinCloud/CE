@@ -20,13 +20,14 @@
 }
 
 .tools-outer-wrapper:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 
 .tools-header {
     font-size: 2em;
     color: #000000;
-    padding: .5em 0 1em 0;
+    padding: 0.5em 0 1em 0;
     text-transform: capitalize;
 }
 
@@ -62,7 +63,8 @@
 }
 
 .each-flex-child:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 
 .each-flex-child:hover {
@@ -71,7 +73,7 @@
 }
 
 .periscope-height {
-    background-image: url("../../../../../assets/images/periscope.svg");
+    background-image: url('../../../../../assets/images/periscope.svg');
     height: 40%;
     background-color: #c9ebe4;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.32);
@@ -79,21 +81,21 @@
 
 .blackbox-height {
     height: 100%;
-    background-image: url("../../../../../assets/images/blackbox.svg");
+    background-image: url('../../../../../assets/images/blackbox.svg');
     background-color: #d0d2d5;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.32);
 }
 
 .vault-height {
     height: 60%;
-    background-image: url("../../../../../assets/images/vault.svg");
+    background-image: url('../../../../../assets/images/vault.svg');
     background-color: #c9ebe4;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.32);
 }
 
 .self-service-height {
     height: 40%;
-    background-image: url("../../../../../assets/images/self-service.svg");
+    background-image: url('../../../../../assets/images/self-service.svg');
     background-color: #ffe09f;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.32);
 }
@@ -101,14 +103,14 @@
 .delta-height {
     margin: 0;
     height: 100%;
-    background-image: url("../../../../../assets/images/delta.svg");
+    background-image: url('../../../../../assets/images/delta.svg');
     background-color: #d9def5;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.32);
 }
 
 .pacbot-height {
     height: 100%;
-    background-image: url("../../../../../assets/images/PacBot.svg");
+    background-image: url('../../../../../assets/images/PacBot.svg');
     background-color: #d9def5;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.32);
 }
@@ -124,7 +126,7 @@
 .each-flex-header {
     font-size: 3em;
     color: #000000;
-    padding-bottom: .1em;
+    padding-bottom: 0.1em;
     line-height: 1.2;
 }
 
@@ -138,7 +140,7 @@
 
 .link-txt {
     font-size: 1.3em;
-    padding: .8em 0;
+    padding: 0.8em 0;
     display: inline-block;
     font-weight: 600;
     font-family: ex2-medium;
@@ -182,8 +184,8 @@ a:hover {
 }
 
 /* css for edge browser */
-@supports (-ms-ime-align: auto) { 
+@supports (-ms-ime-align: auto) {
     .each-flex-child {
         overflow: auto;
     }
-  }
+}

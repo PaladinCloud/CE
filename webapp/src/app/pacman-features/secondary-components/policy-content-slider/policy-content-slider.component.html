@@ -12,14 +12,21 @@
  * limitations under the License.
  -->
 
- <section class="policy-cont-slider-wrapper relative" [ngClass]="{'wrapper-shadow': !dataComing}">
-    <div class="policy-cont-slider-inner-wrapper" *ngIf='dataComing && !showLoader'>
-        <app-content-slider [title] = "title" [titleDesc] = "titleDesc" (navigatePage)="navigateToPlolicy($event)" ></app-content-slider>
+<section class="policy-cont-slider-wrapper relative" [ngClass]="{ 'wrapper-shadow': !dataComing }">
+    <div class="policy-cont-slider-inner-wrapper" *ngIf="dataComing && !showLoader">
+        <app-content-slider
+            [title]="title"
+            [titleDesc]="titleDesc"
+            (navigatePage)="navigateToPlolicy($event)"
+        ></app-content-slider>
     </div>
-    <article class='center error_handling' *ngIf='!dataComing'>
+    <article class="center error_handling" *ngIf="!dataComing">
         <div class="error_msg">
-            <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage" ></app-error-message>
+            <app-error-message
+                *ngIf="seekdata == true"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
         </div>
-        </article>
-    <div *ngIf='showLoader' class="loader"></div>
+    </article>
+    <div *ngIf="showLoader" class="loader"></div>
 </section>

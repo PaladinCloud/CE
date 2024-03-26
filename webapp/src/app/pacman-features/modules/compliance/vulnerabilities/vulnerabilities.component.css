@@ -22,7 +22,8 @@
 }
 
 .floating-widgets-container:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 
 .floating-widgets-filter-wrapper {
@@ -35,14 +36,14 @@
 }
 
 .h-100 {
-    height:100%;
+    height: 100%;
 }
 .w-100 {
-    width:100%;
+    width: 100%;
 }
 
 /* css for edge browser */
-@supports (-ms-ime-align: auto) { 
+@supports (-ms-ime-align: auto) {
     .floating-widgets-container {
         overflow: auto;
     }

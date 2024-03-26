@@ -4,20 +4,24 @@
     cdkOverlayOrigin
     #optionsMenuTrigger="cdkOverlayOrigin"
 >
-    <div class="tfc-text-container" [class.pointer-events-none]="isDisabled" (click)="toggleOptionsMenu()">
+    <div
+        class="tfc-text-container"
+        [class.pointer-events-none]="isDisabled"
+        (click)="toggleOptionsMenu()"
+    >
         <span class="tfc-name"> {{ category }}:&nbsp;</span>
 
         <span class="tfc-value" [title]="appliedFilters.length === 1 ? appliedFilters[0].name : ''">
             <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
-                <span *ngIf="isDateFilter else textBlock">
-                    {{ appliedFilters[0].name | slice : 0 : maxOptionChars | dateRangeFormatter }}
+                <span *ngIf="isDateFilter; else textBlock">
+                    {{ appliedFilters[0].name | slice: 0 : maxOptionChars | dateRangeFormatter }}
                 </span>
                 <ng-template #textBlock>
                     <span *ngIf="!filtersToExcludeFromCasing.includes(category)">
-                        {{ appliedFilters[0].name | slice : 0 : maxOptionChars | celldatacase }}
+                        {{ appliedFilters[0].name | slice: 0 : maxOptionChars | celldatacase }}
                     </span>
                     <span *ngIf="filtersToExcludeFromCasing.includes(category)">
-                        {{ appliedFilters[0].name | slice : 0 : maxOptionChars }}
+                        {{ appliedFilters[0].name | slice: 0 : maxOptionChars }}
                     </span>
                 </ng-template>
             </ng-container>
@@ -25,7 +29,9 @@
             <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
         </span>
     </div>
-    <mat-icon *ngIf="!disableRemoveChip" class="tfc-close-icon" (click)="clear.emit(category)">close</mat-icon>
+    <mat-icon *ngIf="!disableRemoveChip" class="tfc-close-icon" (click)="clear.emit(category)"
+        >close</mat-icon
+    >
 </div>
 
 <ng-template
@@ -37,26 +43,42 @@
     (overlayKeydown)="overlayKeyDown($event)"
 >
     <div class="filters-menu-container flex flex-col" *ngIf="isOptionsMenuOpen && !isDateFilter">
-        <app-table-filter-search [(text)]="optionFilterQuery" (textChange)="handleSearchTextChange($event)"></app-table-filter-search>
+        <app-table-filter-search
+            [(text)]="optionFilterQuery"
+            (textChange)="handleSearchTextChange($event)"
+        ></app-table-filter-search>
         <ul class="filters-chip-menu">
-            <li 
-                *ngFor="let option of filteredOptions" 
-                ngClass="appliedFiltersDict[option]" [ngClass]="{'selected': appliedFiltersDict[option]}" [ngClass]="{'cursor-not-allowed':isDisableFilters && !appliedFiltersDict[option]}" class="fcm-item" [title]="option">
+            <li
+                *ngFor="let option of filteredOptions"
+                ngClass="appliedFiltersDict[option]"
+                [ngClass]="{ selected: appliedFiltersDict[option] }"
+                [ngClass]="{
+                    'cursor-not-allowed': isDisableFilters && !appliedFiltersDict[option]
+                }"
+                class="fcm-item"
+                [title]="option"
+            >
                 <mat-checkbox
                     color="primary"
                     [checked]="appliedFiltersDict[option]"
                     (change)="updateFilterOption(option, $event.checked)"
                     [disabled]="isDisableFilters && !appliedFiltersDict[option]"
                 >
-                    <span *ngIf="!filtersToExcludeFromCasing.includes(category)">{{ option | slice : 0 : maxOptionChars | celldatacase }}</span>
-                    <span *ngIf="filtersToExcludeFromCasing.includes(category)">{{ option | slice : 0 : maxOptionChars }}</span>
+                    <span *ngIf="!filtersToExcludeFromCasing.includes(category)">{{
+                        option | slice: 0 : maxOptionChars | celldatacase
+                    }}</span>
+                    <span *ngIf="filtersToExcludeFromCasing.includes(category)">{{
+                        option | slice: 0 : maxOptionChars
+                    }}</span>
                 </mat-checkbox>
             </li>
         </ul>
         <div *ngIf="isDisableFilters" class="info-container">
             <div class="info-wrapper">
                 <img src="/assets/icons/info-circle-chip.svg" />
-                <div class="info-label">You can only select {{numberOfAllowedFilters}} asset types for comparison</div>
+                <div class="info-label">
+                    You can only select {{ numberOfAllowedFilters }} asset types for comparison
+                </div>
             </div>
         </div>
     </div>

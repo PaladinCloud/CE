@@ -5,11 +5,11 @@ import { Subject } from 'rxjs';
 export class WindowExpansionService {
     status = new Subject<boolean>();
 
-    getExpansionStatus(){
+    getExpansionStatus() {
         return this.status;
     }
 
-    setExpansionStatus(status: boolean){
+    setExpansionStatus(status: boolean) {
         this.status.next(status);
     }
 }

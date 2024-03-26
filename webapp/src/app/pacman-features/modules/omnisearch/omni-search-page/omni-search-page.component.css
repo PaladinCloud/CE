@@ -13,21 +13,21 @@
  */
 
 .search-wrapper {
-  height: 100%;
+    height: 100%;
 }
 .search-center-container {
-  background-size: cover;
-  height: 100%;
-  background-color: var(--background-grey);
+    background-size: cover;
+    height: 100%;
+    background-color: var(--background-grey);
 }
 
 .search-center-container ::ng-deep ngx-select-dropdown,
 .search-center-container ::ng-deep .ngx-dropdown-container {
-  height: 100%;
+    height: 100%;
 }
 .search-center-container ::ng-deep .ngx-dropdown-button {
-  height: 100%;
-  border: none !important;
-  border-top-right-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
+    height: 100%;
+    border: none !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
 }

@@ -12,35 +12,35 @@
  * limitations under the License.
  */
 
- .breadcrumb-text{
-	color: var(--primary-500);
+.breadcrumb-text {
+    color: var(--primary-500);
 }
 
-.breadcrumb{
-	max-width: 200px;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+.breadcrumb {
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.primary-500{
-	color: var(--primary-500);
+.primary-500 {
+    color: var(--primary-500);
 }
 
-.breadcrumb-slash{
-	margin: 0 0.8em;
-	color: #999;
+.breadcrumb-slash {
+    margin: 0 0.8em;
+    color: #999;
     height: 1.3em;
     transform: rotate(25deg);
     width: 1px;
     background: #c3cbd7;
 }
 
-.breadcrumb-container{
-	cursor: pointer;
-	gap: 8px;
+.breadcrumb-container {
+    cursor: pointer;
+    gap: 8px;
 }
 
-.listing-wrapper{
-	gap: 8px;
+.listing-wrapper {
+    gap: 8px;
 }

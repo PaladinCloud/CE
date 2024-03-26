@@ -44,7 +44,7 @@
     font-weight: var(--text-font-weight);
     font-size: var(--text-body-2-font-size);
     line-height: 20px;
-    color: #2E2C34;
+    color: #2e2c34;
     flex: 1;
 }
 
@@ -54,7 +54,7 @@
     flex-wrap: wrap;
 }
 
-.donut-container-statsDoughnut .graph-legend-cont{
+.donut-container-statsDoughnut .graph-legend-cont {
     margin: 2em 1em;
 }
 
@@ -67,13 +67,13 @@
     font-size: var(--text-body-2-font-size);
     line-height: 20px;
     text-align: right;
-    color: #2E2C34;
+    color: #2e2c34;
     flex: 1;
     order: 0;
 }
 
 .legend-each {
-    padding: .5em;
+    padding: 0.5em;
     flex-grow: 1;
     max-width: 100%;
     white-space: nowrap;
@@ -88,7 +88,7 @@
     text-align: center;
 }
 
-.statisticsDoughnutChart .graph-outer-container{
+.statisticsDoughnutChart .graph-outer-container {
     margin-bottom: 16px;
 }
 
@@ -110,7 +110,7 @@
     margin-top: 1em;
 }
 
-.legend-text-right{
+.legend-text-right {
     font-family: var(--text-medium-font-family);
 }
 

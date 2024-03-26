@@ -12,9 +12,7 @@
  * limitations under the License.
  */
 
-
-  
- .asset-card {
+.asset-card {
     width: 250px;
     height: 108px;
     box-sizing: border-box;
@@ -28,19 +26,18 @@
     border: 1px solid var(--border-200);
     font-family: var(--text-font-family);
     font-style: var(--text-font-style);
-  }
-  
-  mat-card-title {
+}
+
+mat-card-title {
     height: 20px;
     font-family: var(--text-medium-font-family);
     font-style: var(--text-font-style);
     color: var(--text-low-emphasis);
-  }
-  
-  mat-card-subtitle {
+}
+
+mat-card-subtitle {
     font-weight: var(--text-bold-font-weight);
     font-size: 31px;
     color: var(--primary-400);
     cursor: pointer;
-  }
-  
+}

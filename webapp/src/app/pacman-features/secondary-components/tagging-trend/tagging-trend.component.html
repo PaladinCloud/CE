@@ -12,15 +12,25 @@
  * limitations under the License.
  -->
 
- <div #certificateHistoryContainer class="issue-trend-wrapper">
-  <div class='multiline-brush-zoom-container'>
-      <div class="sub-header">
-          <app-title-burger-head [subHeadTitle]="'Trend of Tagging Policy Violations'"></app-title-burger-head>
-      </div>
-      <div id="taggingTrend">
-        <app-multiline-brush-zoom [id]="'taggingTrend'" (error)="setError($event)" *ngIf="dataLoaded" [showLegend]="showGraphLegend" [yAxisLabel]="yAxisLabel" [graphWidth]="graphWidth" [graphLinesData]="graphData"></app-multiline-brush-zoom>
-      </div>      
-      <div class="loader" *ngIf='!dataLoaded && !error'></div>
-      <app-error-message *ngIf='error' [selectedValue]="errorMessage"></app-error-message>
-  </div>
+<div #certificateHistoryContainer class="issue-trend-wrapper">
+    <div class="multiline-brush-zoom-container">
+        <div class="sub-header">
+            <app-title-burger-head
+                [subHeadTitle]="'Trend of Tagging Policy Violations'"
+            ></app-title-burger-head>
+        </div>
+        <div id="taggingTrend">
+            <app-multiline-brush-zoom
+                [id]="'taggingTrend'"
+                (error)="setError($event)"
+                *ngIf="dataLoaded"
+                [showLegend]="showGraphLegend"
+                [yAxisLabel]="yAxisLabel"
+                [graphWidth]="graphWidth"
+                [graphLinesData]="graphData"
+            ></app-multiline-brush-zoom>
+        </div>
+        <div class="loader" *ngIf="!dataLoaded && !error"></div>
+        <app-error-message *ngIf="error" [selectedValue]="errorMessage"></app-error-message>
+    </div>
 </div>

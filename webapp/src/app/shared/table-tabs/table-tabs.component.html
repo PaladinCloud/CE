@@ -12,14 +12,23 @@
  * limitations under the License.
  -->
 
- <div class="data-table-tabs flex flex-between flex-align-center" *ngIf="tabsData">
+<div class="data-table-tabs flex flex-between flex-align-center" *ngIf="tabsData">
     <div class="tabs-header flex flex-align-center">
         <div class="individual-tag-header filter-by">Filter by:</div>
-        <div (click)="selectTab(null, 0)" [class.selected]="!selected" class="individual-tag-header">
+        <div
+            (click)="selectTab(null, 0)"
+            [class.selected]="!selected"
+            class="individual-tag-header"
+        >
             <span>All</span>
         </div>
-        <div class="individual-tag-header" *ngFor="let tab of tabsData; let i = index " [class.selected]="tabSelected(tab)" (click)="selectTab(tab, i + 1)">
-            <span>{{tab['displayName']}}</span>
+        <div
+            class="individual-tag-header"
+            *ngFor="let tab of tabsData; let i = index"
+            [class.selected]="tabSelected(tab)"
+            (click)="selectTab(tab, i + 1)"
+        >
+            <span>{{ tab['displayName'] }}</span>
         </div>
     </div>
     <div class="policies-count">

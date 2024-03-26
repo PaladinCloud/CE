@@ -22,23 +22,24 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class DevPullRequestApplicationService {
-
     getMethod: any;
-    constructor( @Inject(HttpService) private httpService: HttpService,
-                private errorHandling: ErrorHandlingService) { }
+    constructor(
+        @Inject(HttpService) private httpService: HttpService,
+        private errorHandling: ErrorHandlingService,
+    ) {}
 
     getData(tableUrl, tableMethod, payload, queryParam): Observable<any> {
-
         const url = tableUrl;
         const method = tableMethod;
         const queryParams = queryParam;
         this.getMethod = tableMethod;
 
         try {
-            return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .pipe(map(response => {
-                        return this.massageData(response);
-                    }));
+            return this.httpService.getHttpResponse(url, method, payload, queryParams).pipe(
+                map((response) => {
+                    return this.massageData(response);
+                }),
+            );
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

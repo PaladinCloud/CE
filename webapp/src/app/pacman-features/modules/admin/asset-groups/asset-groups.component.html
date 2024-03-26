@@ -12,28 +12,48 @@
  * limitations under the License.
  -->
 
- <div class="asset-groups-wrapper flex flex-col padding-28 gap-24">
+<div class="asset-groups-wrapper flex flex-col padding-28 gap-24">
     <div class="flex flex-between flex-align-center">
         <div>
             <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
         </div>
-        <app-custom-button buttonType="flat" label="Create Asset Group" (onclick)='goToCreateAssetGroup()'></app-custom-button>
+        <app-custom-button
+            buttonType="flat"
+            label="Create Asset Group"
+            (onclick)="goToCreateAssetGroup()"
+        ></app-custom-button>
     </div>
 
     <div class="relative table-wrapper">
-        <app-table 
+        <app-table
             [data]="tableData"
             [columnWidths]="columnWidths"
-            [headerColName]="headerColName" [direction]="direction"
-            [doLocalSearch]="false" [doLocalFilter]="false" [doLocalSort]="false"
-            [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
-            [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
-            [showDownloadBtn]="false" [showFilterBtn]="true" (nextPageCalled)="nextPg($event)"
-            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded"
-            [rowClickable]="true" [showAddRemoveCol]="true" [showDownloadBtn]="false"  [tableErrorMessage]="tableErrorMessage"
+            [headerColName]="headerColName"
+            [direction]="direction"
+            [doLocalSearch]="false"
+            [doLocalFilter]="false"
+            [doLocalSort]="false"
+            [whiteListColumns]="whiteListColumns"
+            (searchCalledEventEmitter)="callNewSearch($event)"
+            [searchQuery]="searchTxt"
+            [showSearchBar]="true"
+            [showMoreMenu]="true"
+            [showDownloadBtn]="false"
+            [showFilterBtn]="true"
+            (nextPageCalled)="nextPg($event)"
+            [totalRows]="totalRows"
+            [tableScrollTop]="tableScrollTop"
+            [tableDataLoaded]="tableDataLoaded"
+            [rowClickable]="true"
+            [showAddRemoveCol]="true"
+            [showDownloadBtn]="false"
+            [tableErrorMessage]="tableErrorMessage"
             [onScrollDataLoader]="onScrollDataLoader"
-            [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [selectedRowIndex]="selectedRowIndex"
-            [filterTagLabels]="filterTagLabels" [filterTypeOptions]="filterTypeOptions"
+            [filteredArray]="filters"
+            [filterTypeLabels]="filterTypeLabels"
+            [selectedRowIndex]="selectedRowIndex"
+            [filterTagLabels]="filterTagLabels"
+            [filterTypeOptions]="filterTypeOptions"
             (headerColNameSelected)="handleHeaderColNameSelection($event)"
             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
             (rowSelectEventEmitter)="handleRowClick($event)"
@@ -41,8 +61,8 @@
             (selectedFilterType)="changeFilterType($event)"
             (deleteFilters)="deleteFilters($event)"
             [columnsAndFiltersToExcludeFromCasing]="columnsAndFiltersToExcludeFromCasing"
-            [enableMultiValuedFilter]="true">
+            [enableMultiValuedFilter]="true"
+        >
         </app-table>
     </div>
 </div>
-

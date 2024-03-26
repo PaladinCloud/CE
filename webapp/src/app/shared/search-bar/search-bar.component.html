@@ -12,7 +12,14 @@
  * limitations under the License.
  -->
 
- <article class="search-section flex flex-align-center">
-  <img class="search-icon" src="../../assets/png/search.png">
-  <input [(ngModel)]='search' (ngModelChange)='searchCalled()' type="text" name="search" class="input-text" placeholder = {{placeHolderText}}>
+<article class="search-section flex flex-align-center">
+    <img class="search-icon" src="../../assets/png/search.png" />
+    <input
+        [(ngModel)]="search"
+        (ngModelChange)="searchCalled()"
+        type="text"
+        name="search"
+        class="input-text"
+        placeholder="{{ placeHolderText }}"
+    />
 </article>

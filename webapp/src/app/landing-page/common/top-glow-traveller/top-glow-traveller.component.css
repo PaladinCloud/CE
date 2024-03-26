@@ -44,10 +44,9 @@
     left: 54em;
     right: 6em;
     height: 3px;
-    background-color: #F5006D;
+    background-color: #f5006d;
     z-index: -1;
 }
-
 
 .glow-traveller-inside-left {
     position: absolute;
@@ -55,7 +54,7 @@
     right: 22em;
     left: 38em;
     height: 3px;
-    background-color: #F5006D;
+    background-color: #f5006d;
     z-index: -1;
 }
 

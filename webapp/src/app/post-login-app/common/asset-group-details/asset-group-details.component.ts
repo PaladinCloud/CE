@@ -12,68 +12,70 @@
  * limitations under the License.
  */
 
- import { Component, Input, EventEmitter, Output, OnChanges } from '@angular/core';
+import { Component, Input, EventEmitter, Output, OnChanges } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
- import { AssetTilesService } from '../../../core/services/asset-tiles.service';
- 
- @Component({
-   selector: 'app-asset-group-details',
-   templateUrl: './asset-group-details.component.html',
-   styleUrls: ['./asset-group-details.component.css'],
-   providers: [AssetTilesService]
- })
- 
- export class AssetGroupDetailsComponent implements OnChanges {
- 
-     @Input() selectedValue: any;
-     @Input() detailsVal: any = {};
-     @Input() assetDetailsState = 0;
-     accounts = 0;
- 
-     public errorMessage: any;
-     @Output() navigatePage: EventEmitter<any> = new EventEmitter();
-     provider = [];
-     constructor (private assetTilesService: AssetTilesService) {
-     }
- 
-     ngOnChanges() {
-       this.createProviderArray();
-     }
- 
-     capitalizeFirstLetter(string): any {
-       return string.charAt(0).toUpperCase() + string.slice(1);
-     }
- 
-     getAssetGroupDisplayName(ag: string): Promise<string> {
-      return this.assetTilesService.getAssetGroupDisplayName(ag)
-        .pipe(map((agDisplayName: string) => agDisplayName ?? ag),
-          catchError((error) => {
-            console.error('Error occurred: ', error);
-            return of(ag);
-          })
-        )
-        .toPromise();
-      }
+import { AssetTilesService } from '../../../core/services/asset-tiles.service';
 
-    async createProviderArray() {
-      this.provider = [];      
-      if (this.detailsVal && this.detailsVal.providers) {
-        const providers = await Promise.all(this.detailsVal.providers.map((element) => this.getAssetGroupDisplayName(element.provider)));
-        this.provider = providers.sort((a,b) => a.localeCompare(b));
-      }
+@Component({
+    selector: 'app-asset-group-details',
+    templateUrl: './asset-group-details.component.html',
+    styleUrls: ['./asset-group-details.component.css'],
+    providers: [AssetTilesService],
+})
+export class AssetGroupDetailsComponent implements OnChanges {
+    @Input() selectedValue: any;
+    @Input() detailsVal: any = {};
+    @Input() assetDetailsState = 0;
+    accounts = 0;
+
+    public errorMessage: any;
+    @Output() navigatePage: EventEmitter<any> = new EventEmitter();
+    provider = [];
+    constructor(private assetTilesService: AssetTilesService) {}
+
+    ngOnChanges() {
+        this.createProviderArray();
     }
 
-    instructParentToNavigate (data, agDetails) {
-      const obj = {
-        data: data,
-        agDetails: agDetails
-      };
-      this.navigatePage.emit(obj);
-   }
+    capitalizeFirstLetter(string): any {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
-   getDisplayName(assertName:string){
-     return assertName.replace(/,/g, " ");
-   }
+    getAssetGroupDisplayName(ag: string): Promise<string> {
+        return this.assetTilesService
+            .getAssetGroupDisplayName(ag)
+            .pipe(
+                map((agDisplayName: string) => agDisplayName ?? ag),
+                catchError((error) => {
+                    console.error('Error occurred: ', error);
+                    return of(ag);
+                }),
+            )
+            .toPromise();
+    }
 
+    async createProviderArray() {
+        this.provider = [];
+        if (this.detailsVal && this.detailsVal.providers) {
+            const providers = await Promise.all(
+                this.detailsVal.providers.map((element) =>
+                    this.getAssetGroupDisplayName(element.provider),
+                ),
+            );
+            this.provider = providers.sort((a, b) => a.localeCompare(b));
+        }
+    }
+
+    instructParentToNavigate(data, agDetails) {
+        const obj = {
+            data: data,
+            agDetails: agDetails,
+        };
+        this.navigatePage.emit(obj);
+    }
+
+    getDisplayName(assertName: string) {
+        return assertName.replace(/,/g, ' ');
+    }
 }

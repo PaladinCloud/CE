@@ -15,11 +15,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-pacman-loader',
-  styleUrls: ['./pacman-loader.component.css'],
-  templateUrl: './pacman-loader.component.html'
+    selector: 'app-pacman-loader',
+    styleUrls: ['./pacman-loader.component.css'],
+    templateUrl: './pacman-loader.component.html',
 })
-
-export class PacmanLoaderComponent {
-
-}
+export class PacmanLoaderComponent {}

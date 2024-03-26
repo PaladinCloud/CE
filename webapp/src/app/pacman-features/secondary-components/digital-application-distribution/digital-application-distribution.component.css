@@ -12,19 +12,18 @@
  * limitations under the License.
  */
 
-
-.digital-application-distribution-wrapper{
+.digital-application-distribution-wrapper {
     height: 100%;
 }
 .digital-application-distribution-wrapper .graph-chart-cont {
     height: 90%;
 }
-.total-count{
+.total-count {
     font-size: 1.5em;
     margin: 1em auto;
     text-align: center;
 }
-.total-untagged{
+.total-untagged {
     margin: 1em auto;
     text-align: center;
 }

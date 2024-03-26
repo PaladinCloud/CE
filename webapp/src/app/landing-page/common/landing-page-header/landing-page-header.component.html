@@ -12,18 +12,23 @@
  * limitations under the License.
  -->
 
- <header class="mr-common-header-wrapper clearfix">
+<header class="mr-common-header-wrapper clearfix">
     <ul class="mr-header-list-left">
         <li class="mr-each-item-left">
             <a href="">
-            <img class="mr-header-logo-icon" src={{item1}}>
-          </a>
+                <img class="mr-header-logo-icon" src="{{ item1 }}" />
+            </a>
         </li>
     </ul>
     <ul class="mr-header-list-right">
-        <a class="mr-each-item-right" (click)="goTo('mr-highlight-section')">{{item2}}</a>
-        <a class="mr-each-item-right" (click)="goTo('mr-feature-section')">{{item3}}</a>
-        <a class="mr-each-item-right" (click)="goTo('mr-footer-section')">{{item4}}</a>
-        <app-button class="mr-each-item-right mr-login-btn-header" class="mr-login-btn" (onClickInner)="openLoginMenu($event)">{{item5}}</app-button>
+        <a class="mr-each-item-right" (click)="goTo('mr-highlight-section')">{{ item2 }}</a>
+        <a class="mr-each-item-right" (click)="goTo('mr-feature-section')">{{ item3 }}</a>
+        <a class="mr-each-item-right" (click)="goTo('mr-footer-section')">{{ item4 }}</a>
+        <app-button
+            class="mr-each-item-right mr-login-btn-header"
+            class="mr-login-btn"
+            (onClickInner)="openLoginMenu($event)"
+            >{{ item5 }}</app-button
+        >
     </ul>
 </header>

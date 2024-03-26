@@ -12,22 +12,24 @@
  * limitations under the License.
  -->
 
-
-
-
-
 <div class="view-all-resources-wrapper flex flex-row">
     <div class="left-section flex flex-col">
         <div class="display-category flex flex-row">
             <div class="header">Showing</div>
-            <div title="{{activeFilterCategory?activeFilterCategory.name:''}}" class="selected-category">
-                {{activeFilterCategory?activeFilterCategory.name:''}}</div>
+            <div
+                title="{{ activeFilterCategory ? activeFilterCategory.name : '' }}"
+                class="selected-category"
+            >
+                {{ activeFilterCategory ? activeFilterCategory.name : '' }}
+            </div>
             <div class="expander">
                 <mat-form-field>
                     <mat-select>
-                        <mat-option (click)="filterByCategory(category)"
-                            [ngClass]="{'active' : activeFilterCategory.name == category.name}"
-                            *ngFor="let category of categories; let i = index">{{category.name}}
+                        <mat-option
+                            (click)="filterByCategory(category)"
+                            [ngClass]="{ active: activeFilterCategory.name == category.name }"
+                            *ngFor="let category of categories; let i = index"
+                            >{{ category.name }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -35,8 +37,8 @@
         </div>
         <div class="search-bar-wrapper">
             <div class="search-bar">
-                <img src="/assets/icons/header-search.svg" alt="">
-                <input [(ngModel)]="searchTxt" placeholder="Search" type="text">
+                <img src="/assets/icons/header-search.svg" alt="" />
+                <input [(ngModel)]="searchTxt" placeholder="Search" type="text" />
             </div>
         </div>
         <div class="list-header">
@@ -46,12 +48,24 @@
             </div>
         </div>
         <div class="resource-tiles-container">
-            <ul class="flex flex-col" *ngIf="dataLoaded && !error && selectedResource!=undefined">
-                <li *ngFor="let resource of filteredResources | assetSummarySearchFilter: searchTxt; let i = index"
-                    (click)="awsTileClicked(resource)" class="flex">
-                    <app-aws-app-tile [i]='i' class='full-width' [active]="selectedResource.type == resource.type"
-                        [awsResource]="resource" [awsResourceName]="resource.displayName || resource.type"
-                        [resourceInstances]="resource.count" [assetGroup]="resource.provider">
+            <ul class="flex flex-col" *ngIf="dataLoaded && !error && selectedResource != undefined">
+                <li
+                    *ngFor="
+                        let resource of filteredResources | assetSummarySearchFilter: searchTxt;
+                        let i = index
+                    "
+                    (click)="awsTileClicked(resource)"
+                    class="flex"
+                >
+                    <app-aws-app-tile
+                        [i]="i"
+                        class="full-width"
+                        [active]="selectedResource.type == resource.type"
+                        [awsResource]="resource"
+                        [awsResourceName]="resource.displayName || resource.type"
+                        [resourceInstances]="resource.count"
+                        [assetGroup]="resource.provider"
+                    >
                     </app-aws-app-tile>
                 </li>
             </ul>
@@ -61,18 +75,26 @@
         </div>
     </div>
     <div class="resource-details-container flex-col" *ngIf="dataLoaded">
-        <div class="resource-name-type" *ngIf="selectedResource.type !== undefined">{{selectedResource.displayName ||
-            selectedResource.type}}</div>
+        <div class="resource-name-type" *ngIf="selectedResource.type !== undefined">
+            {{ selectedResource.displayName || selectedResource.type }}
+        </div>
         <div class="flex-col asset-info-container">
             <div class="asset-dist-header">Asset by application</div>
             <div class="tagged" *ngIf="selectedResource.type !== undefined">
-                <app-asset-info [targetType]="selectedResource.type" [pageLevel]="pageLevel"></app-asset-info>
+                <app-asset-info
+                    [targetType]="selectedResource.type"
+                    [pageLevel]="pageLevel"
+                ></app-asset-info>
             </div>
         </div>
         <div class="multiline-chart-header">
-            <app-title-burger-head [subHeadTitle]="'Inventory'" [arrow]="'true'"
-                [routeParams]="utils.makeFilterObj({ 'resourceType': selectedResource.type })" [routeTo]="routeTo"
-                [pageLevel]="pageLevel"></app-title-burger-head>
+            <app-title-burger-head
+                [subHeadTitle]="'Inventory'"
+                [arrow]="'true'"
+                [routeParams]="utils.makeFilterObj({ resourceType: selectedResource.type })"
+                [routeTo]="routeTo"
+                [pageLevel]="pageLevel"
+            ></app-title-burger-head>
         </div>
         <div class="multiline-chart" *ngIf="selectedResource !== undefined">
             <app-inventory-container [targetType]="selectedResource.type" [pageLevel]="pageLevel">

@@ -12,45 +12,46 @@
  * limitations under the License.
  */
 
- .details-header-wrapper{
+.details-header-wrapper {
     padding: 16px 0px 16px 24px;
     border-bottom: 1px solid var(--border-100);
-  }
-  
-  .detail-header{
-     color: var(--text-low-emphasis);
-  }
+}
 
- .details-body{
+.detail-header {
+    color: var(--text-low-emphasis);
+}
+
+.details-body {
     padding: 24px;
     display: inline-flex;
     flex-wrap: wrap;
     gap: 20px;
     max-height: calc(100% - 52px);
     overflow: auto;
-  }
-  
-  .detail-wrapper{
+}
+
+.detail-wrapper {
     display: flex;
     flex-direction: column;
     gap: 12px;
     width: 45%;
-  }
-  
-  .reason, .vulnerabilty-link {
+}
+
+.reason,
+.vulnerabilty-link {
     width: 100%;
-  }
-  
-  .link{
+}
+
+.link {
     font: var(--text-body-2);
     color: var(--primary-400);
     cursor: pointer;
-  }
-  
-  .detail-value{
+}
+
+.detail-value {
     overflow: hidden;
     text-overflow: ellipsis;
-  }
+}
 
 .policy-violation-label {
     font-size: 1.2em;
@@ -63,7 +64,7 @@
 }
 
 .policy-violation-desc-wrapper {
-     word-break: break-word;
+    word-break: break-word;
 }
 
 .policy-violation-label-content {
@@ -102,28 +103,28 @@
     padding-right: 0;
 }
 
-.copy-icon{
+.copy-icon {
     height: 12px;
 }
 
-.copy-wrapper{
+.copy-wrapper {
     flex-direction: row;
     gap: 12px;
     align-items: center;
 }
 
 .goto-link {
-    transition: all .3s;
+    transition: all 0.3s;
 }
-.goto-link:hover{
-    letter-spacing: .2px
+.goto-link:hover {
+    letter-spacing: 0.2px;
 }
-.nested-accordion-component-wrapper{
+.nested-accordion-component-wrapper {
     left: 0;
     top: 100%;
     margin-top: 10px;
 }
-.policy-description-content{
+.policy-description-content {
     white-space: pre-line;
 }
 
@@ -133,16 +134,16 @@
     padding-top: 4px;
 }
 
-.red{
+.red {
     color: rgb(204, 98, 98) !important;
     font: var(--text-body-2);
-  }
+}
 
-.dialog-body{
+.dialog-body {
     height: 400px;
 }
 
-.dialog-body ::ng-deep .mat-icon{
+.dialog-body ::ng-deep .mat-icon {
     height: 16px;
     width: 16px;
 }

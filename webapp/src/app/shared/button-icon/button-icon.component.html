@@ -12,8 +12,8 @@
  * limitations under the License.
  -->
 
- <button class="app-button" [ngClass]="{disabled: disabled}" (click)="onButtonClick()">
-    <img *ngIf="beforeDate" src={{iconSrc}}>
+<button class="app-button" [ngClass]="{ disabled: disabled }" (click)="onButtonClick()">
+    <img *ngIf="beforeDate" src="{{ iconSrc }}" />
     <ng-content></ng-content>
-    <img *ngIf="afterData" src="{{iconSrcAfter}}">
+    <img *ngIf="afterData" src="{{ iconSrcAfter }}" />
 </button>

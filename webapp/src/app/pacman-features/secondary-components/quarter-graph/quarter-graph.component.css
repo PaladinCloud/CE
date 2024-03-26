@@ -13,16 +13,16 @@
  */
 
 .sub-head {
-  padding: 0.8em;
-  background-color: var(--background-white);
-  border: solid 1px #d6e2f1;
-  color: #555;
-  font-size: 1em;
+    padding: 0.8em;
+    background-color: var(--background-white);
+    border: solid 1px #d6e2f1;
+    color: #555;
+    font-size: 1em;
 }
 
 .multiline-brush-zoom-container {
-  position: relative;
-  min-height: 1.83em;
-  font-size: 1em;
-  width: 100%;
+    position: relative;
+    min-height: 1.83em;
+    font-size: 1em;
+    width: 100%;
 }

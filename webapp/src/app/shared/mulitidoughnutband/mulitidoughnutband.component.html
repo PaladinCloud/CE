@@ -12,22 +12,55 @@
  * limitations under the License.
  -->
 
- <div class='complaince-graph-container-new' (window:resize)="onResize()">
-    <svg [class.no-opacity]='!loaded' class='donut-chart-svg transition' height='250' id='overallComplianceSvgNewId'></svg>
-    <div class='absolute donut-chart-center'>
-        <div class='donut-chart-val'>
-            <div class='title-percent anim-percent' [class.complaint]='overallPercentage == 100' [class.after-load]='loaded'>{{overallPercentage}}%</div>
+<div class="complaince-graph-container-new" (window:resize)="onResize()">
+    <svg
+        [class.no-opacity]="!loaded"
+        class="donut-chart-svg transition"
+        height="250"
+        id="overallComplianceSvgNewId"
+    ></svg>
+    <div class="absolute donut-chart-center">
+        <div class="donut-chart-val">
+            <div
+                class="title-percent anim-percent"
+                [class.complaint]="overallPercentage == 100"
+                [class.after-load]="loaded"
+            >
+                {{ overallPercentage }}%
+            </div>
         </div>
-        <div class='donut-chart-title'>
-            <div class='title-val anim-title' [class.complaint]='overallPercentage == 100' [class.after-load]='loaded'>overall</div>
+        <div class="donut-chart-title">
+            <div
+                class="title-val anim-title"
+                [class.complaint]="overallPercentage == 100"
+                [class.after-load]="loaded"
+            >
+                overall
+            </div>
         </div>
     </div>
-    <div class='absolute data-pack' [ngStyle]="{'transform': 'translate(-106%,' + (( donutData.length - 5 ) * 14 - 3 )  + 'px)'}">
-        <div class='ilb v-mid title-wrap'>
-            <div title='{{instance[1].title | uppercase}}' class='nowrap-ellipsis anim-title' *ngFor='let instance of donutData' [(class.after-load)]='loaded'>{{instance[1].title}}</div>
+    <div
+        class="absolute data-pack"
+        [ngStyle]="{ transform: 'translate(-106%,' + ((donutData.length - 5) * 14 - 3) + 'px)' }"
+    >
+        <div class="ilb v-mid title-wrap">
+            <div
+                title="{{ instance[1].title | uppercase }}"
+                class="nowrap-ellipsis anim-title"
+                *ngFor="let instance of donutData"
+                [(class.after-load)]="loaded"
+            >
+                {{ instance[1].title }}
+            </div>
         </div>
-        <div class='ilb v-mid bold percent-wrap'>
-            <div class='anim-title' *ngFor='let instance of donutData' [(class.after-load)]='loaded'>{{instance[1].val}}%</div>
+        <div class="ilb v-mid bold percent-wrap">
+            <div
+                class="anim-title"
+                *ngFor="let instance of donutData"
+                [(class.after-load)]="loaded"
+            >
+                {{ instance[1].val }}%
+            </div>
         </div>
     </div>
 </div>

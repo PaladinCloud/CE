@@ -26,32 +26,32 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { IssueExceptionComponent } from './issue-exception.component';
 
 describe('IssueExceptionComponent', () => {
-  let component: IssueExceptionComponent;
-  let fixture: ComponentFixture<IssueExceptionComponent>;
+    let component: IssueExceptionComponent;
+    let fixture: ComponentFixture<IssueExceptionComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ReactiveFormsModule],
-      declarations: [IssueExceptionComponent],
-      providers: [
-        DataCacheService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        ToastObservableService,
-        UtilsService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, ReactiveFormsModule],
+            declarations: [IssueExceptionComponent],
+            providers: [
+                DataCacheService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                ToastObservableService,
+                UtilsService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(IssueExceptionComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(IssueExceptionComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

@@ -12,14 +12,36 @@
  * limitations under the License.
  -->
 
- <div class="relative">
-	<div class='sub-head'>
-	    <app-title-burger-head [subHeadTitle]="complianceData[0].categoriesHeader"  [arrow]="'true'" [routeTo]="routeTo" [pageLevel]="pageLevel"></app-title-burger-head>
-	</div>
-	<app-issues-category *ngIf='complianceCategoriesFinal[complianceData[0].categoriesHeader]' [(categoriesHeader)]="complianceData[0].categoriesHeader" [categoriesTitle]="complianceData[0].categoriesTitle" [categoriesSubTitle]="complianceData[0].categoriesSubTitle" [categoriesPostTitle]="complianceData[0].categoriesPostTitle" [categoriesTotal]='complianceCategoriesFinal[complianceData[0].categoriesHeader].output.total_instances' [categoriesVal]="complianceCategoriesFinal[complianceData[0].categoriesHeader].output.unpatched_instances" [(categoriesLoaded)]='complianceCategoriesFinal[complianceData[0].categoriesHeader].loaded' [(errorOccurred)]='error[complianceData[0].categoriesHeader]' [hideLoader]='hideLoader' [routeTo]="routeTo" [pageLevel]="pageLevel">
-	</app-issues-category>
-	<div class="error_message_post" *ngIf='showError'>
-	    <app-error-message [selectedValue]="errorMessages"></app-error-message>
-	</div>
-	<div class="loader post" *ngIf="!hideLoader"></div>
+<div class="relative">
+    <div class="sub-head">
+        <app-title-burger-head
+            [subHeadTitle]="complianceData[0].categoriesHeader"
+            [arrow]="'true'"
+            [routeTo]="routeTo"
+            [pageLevel]="pageLevel"
+        ></app-title-burger-head>
+    </div>
+    <app-issues-category
+        *ngIf="complianceCategoriesFinal[complianceData[0].categoriesHeader]"
+        [(categoriesHeader)]="complianceData[0].categoriesHeader"
+        [categoriesTitle]="complianceData[0].categoriesTitle"
+        [categoriesSubTitle]="complianceData[0].categoriesSubTitle"
+        [categoriesPostTitle]="complianceData[0].categoriesPostTitle"
+        [categoriesTotal]="
+            complianceCategoriesFinal[complianceData[0].categoriesHeader].output.total_instances
+        "
+        [categoriesVal]="
+            complianceCategoriesFinal[complianceData[0].categoriesHeader].output.unpatched_instances
+        "
+        [(categoriesLoaded)]="complianceCategoriesFinal[complianceData[0].categoriesHeader].loaded"
+        [(errorOccurred)]="error[complianceData[0].categoriesHeader]"
+        [hideLoader]="hideLoader"
+        [routeTo]="routeTo"
+        [pageLevel]="pageLevel"
+    >
+    </app-issues-category>
+    <div class="error_message_post" *ngIf="showError">
+        <app-error-message [selectedValue]="errorMessages"></app-error-message>
+    </div>
+    <div class="loader post" *ngIf="!hideLoader"></div>
 </div>

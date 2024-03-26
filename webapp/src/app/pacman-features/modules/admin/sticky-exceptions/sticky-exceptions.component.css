@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
- .floating-widgets-section {
+.floating-widgets-section {
     height: 100%;
     width: 100%;
 }
@@ -70,19 +70,19 @@
 }
 
 .issue-listing-wrapper ::ng-deep .data-table-wrap {
-    min-height: calc( 100vh - 24em);
+    min-height: calc(100vh - 24em);
 }
 
 .issue-listing-wrapper ::ng-deep .data-table-content {
-    min-height: calc( 100vh - 32em);
+    min-height: calc(100vh - 32em);
 }
 
 .issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
-    max-height: calc(100vh - 35em)
+    max-height: calc(100vh - 35em);
 }
 
 .issue-listing-wrapper ::ng-deep .data-table-wrap.loading {
-    min-height: calc( 100vh - 24em);
+    min-height: calc(100vh - 24em);
 }
 
 .filter-absent.issue-listing-wrapper ::ng-deep .data-table-wrap {

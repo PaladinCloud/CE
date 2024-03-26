@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.certficate-summary-wrapper{
+.certficate-summary-wrapper {
     min-height: 18em;
     padding: 0 1.25em 2em 1.25em;
 }
@@ -26,5 +26,3 @@
     border-top-right-radius: var(--border-radius);
     border-bottom: 2px var(--border-100);
 }
-
-

@@ -22,33 +22,32 @@ import { UtilsService } from '../services/utils.service';
 import { SearchbarDropdownComponent } from './searchbar-dropdown.component';
 
 describe('SearchbarDropdownComponent', () => {
-  let component: SearchbarDropdownComponent;
-  let fixture: ComponentFixture<SearchbarDropdownComponent>;
+    let component: SearchbarDropdownComponent;
+    let fixture: ComponentFixture<SearchbarDropdownComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [ SearchbarDropdownComponent ],
-      providers: [ DataCacheService, LoggerService, RefactorFieldsService, UtilsService ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [FormsModule],
+            declarations: [SearchbarDropdownComponent],
+            providers: [DataCacheService, LoggerService, RefactorFieldsService, UtilsService],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SearchbarDropdownComponent);
-    component = fixture.componentInstance;
-    component.dropDownSelectedValue = 'id1';
-    component.dropdownData = [
-      {
-        id: 'id1',
-        value: 'id1'
-      }
-    ]
-    component.ngAfterViewInit();
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SearchbarDropdownComponent);
+        component = fixture.componentInstance;
+        component.dropDownSelectedValue = 'id1';
+        component.dropdownData = [
+            {
+                id: 'id1',
+                value: 'id1',
+            },
+        ];
+        component.ngAfterViewInit();
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

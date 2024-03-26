@@ -1,29 +1,64 @@
-<ng-container *ngIf="label=='Disable';else primaryButton">
-    <button *ngIf="buttonType=='flat'" (click)="handleClick($event)" [class.isDisabled]="disabled"  [disabled]="disabled" mat-flat-button color="danger">
+<ng-container *ngIf="label == 'Disable'; else primaryButton">
+    <button
+        *ngIf="buttonType == 'flat'"
+        (click)="handleClick($event)"
+        [class.isDisabled]="disabled"
+        [disabled]="disabled"
+        mat-flat-button
+        color="danger"
+    >
         <div class="button-label">
             <app-text classNames="body-2" [text]="label"></app-text>
         </div>
     </button>
 </ng-container>
 <ng-template #primaryButton>
-<button *ngIf="buttonType=='default'" (click)="handleClick($event)" [class.isDisabled]="disabled" [disabled]="disabled" mat-button color="primary">
-    <div class="button-label">
-        <app-text classNames="body-2" [text]="label"></app-text>
-    </div>
-</button>
-<button *ngIf="buttonType=='flat'" (click)="handleClick($event)" [class.isDisabled]="disabled" [disabled]="disabled" mat-flat-button color="primary">
-    <div class="button-label">
-        <app-text classNames="body-2" [text]="label"></app-text>
-    </div>
-</button>
-<button *ngIf="buttonType=='stroked'" (click)="handleClick($event)" [class.isDisabled]="disabled"  [disabled]="disabled" mat-stroked-button color="primary">
-    <div class="button-label">
-        <app-text classNames="body-2" [text]="label"></app-text>
-    </div>
-</button>
-<button *ngIf="buttonType=='raised'" (click)="handleClick($event)" [class.isDisabled]="disabled"  [disabled]="disabled" mat-raised-button color="primary">
-    <div class="button-label">
-        <app-text classNames="body-2" [text]="label"></app-text>
-    </div>
-</button>
+    <button
+        *ngIf="buttonType == 'default'"
+        (click)="handleClick($event)"
+        [class.isDisabled]="disabled"
+        [disabled]="disabled"
+        mat-button
+        color="primary"
+    >
+        <div class="button-label">
+            <app-text classNames="body-2" [text]="label"></app-text>
+        </div>
+    </button>
+    <button
+        *ngIf="buttonType == 'flat'"
+        (click)="handleClick($event)"
+        [class.isDisabled]="disabled"
+        [disabled]="disabled"
+        mat-flat-button
+        color="primary"
+    >
+        <div class="button-label">
+            <app-text classNames="body-2" [text]="label"></app-text>
+        </div>
+    </button>
+    <button
+        *ngIf="buttonType == 'stroked'"
+        (click)="handleClick($event)"
+        [class.isDisabled]="disabled"
+        [disabled]="disabled"
+        mat-stroked-button
+        color="primary"
+    >
+        <div class="button-label">
+            <app-text classNames="body-2" [text]="label"></app-text>
+        </div>
+    </button>
+    <button
+        *ngIf="buttonType == 'raised'"
+        (click)="handleClick($event)"
+        [class.isDisabled]="disabled"
+        [disabled]="disabled"
+        mat-raised-button
+        color="primary"
+    >
+        <div class="button-label">
+            <app-text classNames="body-2" [text]="label"></app-text>
+        </div>
+    </button>
 </ng-template>

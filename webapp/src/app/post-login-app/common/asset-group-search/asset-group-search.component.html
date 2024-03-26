@@ -12,7 +12,15 @@
  * limitations under the License.
  -->
 
- <article class="search-section">
-    <img class="search-icon" src="../../assets/png/search.png">
-    <input autofocus [(ngModel)]='search' (ngModelChange)='searchCalled()' type="text" name="search" class="input-text" placeholder="Search Asset Groups">
+<article class="search-section">
+    <img class="search-icon" src="../../assets/png/search.png" />
+    <input
+        autofocus
+        [(ngModel)]="search"
+        (ngModelChange)="searchCalled()"
+        type="text"
+        name="search"
+        class="input-text"
+        placeholder="Search Asset Groups"
+    />
 </article>

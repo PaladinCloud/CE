@@ -17,9 +17,7 @@
     --app-switcher-height: 81px;
     --know-your-app-height: 48px;
     --version-height: 35px;
-    --nav-subel-sum-height: calc(
-        var(--header-height) + var(--app-switcher-height) + 20px
-    );
+    --nav-subel-sum-height: calc(var(--header-height) + var(--app-switcher-height) + 20px);
 }
 
 .contextual-menu-wrapper {

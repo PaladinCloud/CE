@@ -13,177 +13,187 @@
  */
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {Subscription} from 'rxjs';
+import { Subscription } from 'rxjs';
 
-import {WorkflowService} from '../../core/services/workflow.service';
-import {LoggerService} from '../services/logger.service';
-import {DataCacheService} from '../../core/services/data-cache.service';
-import {FilterManagementService} from '../services/filter-management.service';
-import {ErrorHandlingService} from '../services/error-handling.service';
-import {AssetGroupObservableService} from '../../core/services/asset-group-observable.service';
-import {DomainTypeObservableService} from '../../core/services/domain-type-observable.service';
-import {UtilsService} from '../services/utils.service';
-import {RouterUtilityService} from '../services/router-utility.service';
-import {RefactorFieldsService} from '../services/refactor-fields.service';
+import { WorkflowService } from '../../core/services/workflow.service';
+import { LoggerService } from '../services/logger.service';
+import { DataCacheService } from '../../core/services/data-cache.service';
+import { FilterManagementService } from '../services/filter-management.service';
+import { ErrorHandlingService } from '../services/error-handling.service';
+import { AssetGroupObservableService } from '../../core/services/asset-group-observable.service';
+import { DomainTypeObservableService } from '../../core/services/domain-type-observable.service';
+import { UtilsService } from '../services/utils.service';
+import { RouterUtilityService } from '../services/router-utility.service';
+import { RefactorFieldsService } from '../services/refactor-fields.service';
 
 @Component({
-  selector: 'app-common-page-template',
-  templateUrl: './common-page-template.component.html',
-  styleUrls: ['./common-page-template.component.css']
+    selector: 'app-common-page-template',
+    templateUrl: './common-page-template.component.html',
+    styleUrls: ['./common-page-template.component.css'],
 })
 export class CommonPageTemplateComponent implements OnInit, OnDestroy {
+    assetGroupSubscription: Subscription;
+    domainSubscription: Subscription;
 
-  assetGroupSubscription: Subscription;
-  domainSubscription: Subscription;
+    pageTitle: String = 'Digital Dev';
+    breadcrumbDetails = {
+        breadcrumbArray: ['Compliance'],
+        breadcrumbLinks: ['compliance-dashboard'],
+        breadcrumbPresent: 'Digital-dev-dashboard',
+    };
+    backButtonRequired: boolean;
+    pageLevel = 0;
+    errorMessage: string;
+    agAndDomain = {};
 
-  pageTitle: String = 'Digital Dev';
-  breadcrumbDetails = {
-    breadcrumbArray: ['Compliance'],
-    breadcrumbLinks: ['compliance-dashboard'],
-    breadcrumbPresent: 'Digital-dev-dashboard'
-  };
-  backButtonRequired: boolean;
-  pageLevel = 0;
-  errorMessage: string;
-  agAndDomain = {};
+    isFilterRquiredOnPage = true;
+    appliedFilters = {
+        queryParamsWithoutFilter: {} /* Stores the query parameter ibject without filter */,
+        pageLevelAppliedFilters: {} /* Stores the query parameter ibject without filter */,
+    };
+    filterArray = []; /* Stores the page applied filter array */
 
-  isFilterRquiredOnPage = true;
-  appliedFilters = {
-    queryParamsWithoutFilter: {}, /* Stores the query parameter ibject without filter */
-    pageLevelAppliedFilters: {} /* Stores the query parameter ibject without filter */
-  };
-  filterArray = []; /* Stores the page applied filter array */
-
-  constructor(private router: Router,
-              private activatedRoute: ActivatedRoute,
-              private workflowService: WorkflowService,
-              private logger: LoggerService,
-              private dataStore: DataCacheService,
-              private filterManagementService: FilterManagementService,
-              private errorHandling: ErrorHandlingService,
-              private assetGroupObservableService: AssetGroupObservableService,
-              private domainObservableService: DomainTypeObservableService,
-              private utils: UtilsService,
-              private routerUtilityService: RouterUtilityService,
-              private refactorFieldsService: RefactorFieldsService) {
-
-    this.subscribeToAssetGroup();
-    this.subscribeToDomain();
-
-  }
-
-  ngOnInit() {
-    this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
-
-  }
-
-  subscribeToAssetGroup() {
-    this.assetGroupSubscription = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroup => {
-      if (assetGroup) {
-        this.agAndDomain['ag'] = assetGroup;
-      }
-    });
-  }
-
-  subscribeToDomain() {
-    this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
-      if (domain) {
-        this.agAndDomain['domain'] = domain;
-      }
-
-      this.reset();
-      this.init();
-      this.updateComponent();
-    });
-  }
-
-  reset() {
-    /* Reset the page */
-    this.filterArray = [];
-  }
-
-  init() {
-    /* Initialize */
-    this.routerParam();
-  }
-
-  updateComponent() {
-    /* Updates the whole component */
-
-  }
-
-  routerParam() {
-    try {
-
-      const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
-
-      if (currentQueryParams) {
-
-        this.appliedFilters.queryParamsWithoutFilter = JSON.parse(JSON.stringify(currentQueryParams));
-        delete this.appliedFilters.queryParamsWithoutFilter['filter'];
-
-        this.appliedFilters.pageLevelAppliedFilters = this.utils.processFilterObj(currentQueryParams);
-
-        this.filterArray = this.filterManagementService.getFilterArray(this.appliedFilters.pageLevelAppliedFilters);
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+    constructor(
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+        private workflowService: WorkflowService,
+        private logger: LoggerService,
+        private dataStore: DataCacheService,
+        private filterManagementService: FilterManagementService,
+        private errorHandling: ErrorHandlingService,
+        private assetGroupObservableService: AssetGroupObservableService,
+        private domainObservableService: DomainTypeObservableService,
+        private utils: UtilsService,
+        private routerUtilityService: RouterUtilityService,
+        private refactorFieldsService: RefactorFieldsService,
+    ) {
+        this.subscribeToAssetGroup();
+        this.subscribeToDomain();
     }
-  }
 
-  updateUrlWithNewFilters(filterArr) {
-    this.appliedFilters.pageLevelAppliedFilters = this.utils.arrayToObject(
-        this.filterArray,
-        'filterkey',
-        'value'
-    ); // <-- TO update the queryparam which is passed in the filter of the api
-    this.appliedFilters.pageLevelAppliedFilters = this.utils.makeFilterObj(this.appliedFilters.pageLevelAppliedFilters);
+    ngOnInit() {
+        this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+    }
 
-    /**
-     * To change the url
-     * with the deleted filter value along with the other existing paramter(ex-->tv:true)
-     */
+    subscribeToAssetGroup() {
+        this.assetGroupSubscription = this.assetGroupObservableService
+            .getAssetGroup()
+            .subscribe((assetGroup) => {
+                if (assetGroup) {
+                    this.agAndDomain['ag'] = assetGroup;
+                }
+            });
+    }
 
-    const updatedFilters = Object.assign(
-        this.appliedFilters.pageLevelAppliedFilters,
-        this.appliedFilters.queryParamsWithoutFilter
-    );
+    subscribeToDomain() {
+        this.domainSubscription = this.domainObservableService
+            .getDomainType()
+            .subscribe((domain) => {
+                if (domain) {
+                    this.agAndDomain['domain'] = domain;
+                }
 
-    /*
+                this.reset();
+                this.init();
+                this.updateComponent();
+            });
+    }
+
+    reset() {
+        /* Reset the page */
+        this.filterArray = [];
+    }
+
+    init() {
+        /* Initialize */
+        this.routerParam();
+    }
+
+    updateComponent() {
+        /* Updates the whole component */
+    }
+
+    routerParam() {
+        try {
+            const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(
+                this.router.routerState.snapshot.root,
+            );
+
+            if (currentQueryParams) {
+                this.appliedFilters.queryParamsWithoutFilter = JSON.parse(
+                    JSON.stringify(currentQueryParams),
+                );
+                delete this.appliedFilters.queryParamsWithoutFilter['filter'];
+
+                this.appliedFilters.pageLevelAppliedFilters =
+                    this.utils.processFilterObj(currentQueryParams);
+
+                this.filterArray = this.filterManagementService.getFilterArray(
+                    this.appliedFilters.pageLevelAppliedFilters,
+                );
+            }
+        } catch (error) {
+            this.errorMessage = this.errorHandling.handleJavascriptError(error);
+            this.logger.log('error', error);
+        }
+    }
+
+    updateUrlWithNewFilters(filterArr) {
+        this.appliedFilters.pageLevelAppliedFilters = this.utils.arrayToObject(
+            this.filterArray,
+            'filterkey',
+            'value',
+        ); // <-- TO update the queryparam which is passed in the filter of the api
+        this.appliedFilters.pageLevelAppliedFilters = this.utils.makeFilterObj(
+            this.appliedFilters.pageLevelAppliedFilters,
+        );
+
+        /**
+         * To change the url
+         * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+         */
+
+        const updatedFilters = Object.assign(
+            this.appliedFilters.pageLevelAppliedFilters,
+            this.appliedFilters.queryParamsWithoutFilter,
+        );
+
+        /*
      Update url with new filters
      */
 
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: updatedFilters
-    }).then(success => {
-      this.routerParam();
-    });
-  }
-
-  navigateBack() {
-    try {
-      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
-    } catch (error) {
-      this.logger.log('error', error);
+        this.router
+            .navigate([], {
+                relativeTo: this.activatedRoute,
+                queryParams: updatedFilters,
+            })
+            .then((success) => {
+                this.routerParam();
+            });
     }
 
-  }
-
-  ngOnDestroy() {
-    try {
-      if (this.assetGroupSubscription) {
-        this.assetGroupSubscription.unsubscribe();
-      }
-      if (this.domainSubscription) {
-        this.domainSubscription.unsubscribe();
-      }
-    } catch (error) {
-      this.logger.log('error', 'JS Error - ' + error);
+    navigateBack() {
+        try {
+            this.workflowService.goBackToLastOpenedPageAndUpdateLevel(
+                this.router.routerState.snapshot.root,
+            );
+        } catch (error) {
+            this.logger.log('error', error);
+        }
     }
-  }
 
+    ngOnDestroy() {
+        try {
+            if (this.assetGroupSubscription) {
+                this.assetGroupSubscription.unsubscribe();
+            }
+            if (this.domainSubscription) {
+                this.domainSubscription.unsubscribe();
+            }
+        } catch (error) {
+            this.logger.log('error', 'JS Error - ' + error);
+        }
+    }
 }

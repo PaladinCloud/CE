@@ -22,7 +22,8 @@
 }
 
 .floating-widgets-container:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 
 .floating-widgets-filter-wrapper {
@@ -31,20 +32,19 @@
 
 .widget-wrapper {
     min-height: 17em;
-} 
+}
 
 .issue-listing-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 320px;
 }
-
 
 .issue-listing-wrapper ::ng-deep .data-table-wrap .table-cells {
     width: 130px;
 }
 
 /* css for edge browser */
-@supports (-ms-ime-align: auto) { 
+@supports (-ms-ime-align: auto) {
     .floating-widgets-container {
         overflow: auto;
     }
-} 
+}

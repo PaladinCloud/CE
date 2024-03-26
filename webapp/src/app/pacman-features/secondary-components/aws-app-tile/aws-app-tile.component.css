@@ -12,52 +12,51 @@
  * limitations under the License.
  */
 
-
 .aws-app-type-container {
-  cursor: pointer;
-  padding: 8px 4px;
-  background: var(--background-white);
-  border-radius: 4px;
-  font-family: var(--text-font-family);
-  font-style: var(--text-font-style);
-  line-height: var(--text-line-height);
+    cursor: pointer;
+    padding: 8px 4px;
+    background: var(--background-white);
+    border-radius: 4px;
+    font-family: var(--text-font-family);
+    font-style: var(--text-font-style);
+    line-height: var(--text-line-height);
 }
 
 .aws-app-details {
-  width: 100%;
-  justify-content: space-between;
-  color: var(--text-high-emphasis);
+    width: 100%;
+    justify-content: space-between;
+    color: var(--text-high-emphasis);
 }
 
 .aws-app-details img {
-  width: 24px;
-  height: 24px;
-  padding: 4px;
-  margin-right: 8px;
-  background-color: var(--background-white);
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    margin-right: 8px;
+    background-color: var(--background-white);
 }
 
 .aws-app-details .type {
-  text-transform: capitalize;
-  font-weight: var(--text-light-font-weight);
-  font-size: var(--text-body-1-font-size);
-  width: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  align-self: center;
+    text-transform: capitalize;
+    font-weight: var(--text-light-font-weight);
+    font-size: var(--text-body-1-font-size);
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    align-self: center;
 }
 
 .aws-app-details .instances {
-  font-weight: var(--text-font-weight);
-  font-size: var(--text-body-2-font-size);
-  align-self: center;
+    font-weight: var(--text-font-weight);
+    font-size: var(--text-body-2-font-size);
+    align-self: center;
 }
 
 .aws-app-type-container.active {
-  background-color: var(--primary-100);
-  border-radius: 4px;
+    background-color: var(--primary-100);
+    border-radius: 4px;
 }
 
 .aws-app-type-container.active .aws-app-details {
-  color: var(--primary-500);
+    color: var(--primary-500);
 }

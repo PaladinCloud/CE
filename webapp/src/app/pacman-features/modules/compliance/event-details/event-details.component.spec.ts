@@ -23,44 +23,44 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { EventDetailsComponent } from './event-details.component';
 
 describe('EventDetailsComponent', () => {
-  let component: EventDetailsComponent;
-  let fixture: ComponentFixture<EventDetailsComponent>;
+    let component: EventDetailsComponent;
+    let fixture: ComponentFixture<EventDetailsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
-      declarations: [
-        EventDetailsComponent,
-        BackNavigationComponent,
-        BreadcrumbComponent,
-        DataTableComponent,
-        TextComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        DomainTypeObservableService,
-        ErrorHandlingService,
-        ExceptionManagementService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+            declarations: [
+                EventDetailsComponent,
+                BackNavigationComponent,
+                BreadcrumbComponent,
+                DataTableComponent,
+                TextComponent,
+                TitleBurgerHeadComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                DomainTypeObservableService,
+                ErrorHandlingService,
+                ExceptionManagementService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EventDetailsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EventDetailsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

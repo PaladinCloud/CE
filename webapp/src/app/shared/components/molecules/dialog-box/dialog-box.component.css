@@ -1,17 +1,17 @@
-::ng-deep .mat-dialog-container{
+::ng-deep .mat-dialog-container {
     padding: 0px !important;
     border-radius: 8px;
 }
 
-::ng-deep .mat-dialog-title{
+::ng-deep .mat-dialog-title {
     padding: 20px 24px 20px 24px;
     margin: 0px !important;
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
 }
 
-::ng-deep .mat-dialog-content{
+::ng-deep .mat-dialog-content {
     padding: 24px;
     margin: 0px !important;
     max-height: 75vh;
@@ -19,24 +19,23 @@
     border-top: 1px solid var(--border-200);
 }
 
-::ng-deep .mat-dialog-actions{
+::ng-deep .mat-dialog-actions {
     padding: 4px 24px;
     margin: 0px !important;
     gap: 8px;
     flex-direction: row-reverse;
 }
 
-.hide{
+.hide {
     display: none !important;
 }
 
-.dialog-body ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label
-{
+.dialog-body ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
     margin-left: 12px !important;
     display: block !important;
 }
 
-::ng-deep .cdk-overlay-dark-backdrop{
+::ng-deep .cdk-overlay-dark-backdrop {
     background-color: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(6px) !important;
 }

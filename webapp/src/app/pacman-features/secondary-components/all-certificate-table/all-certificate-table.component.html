@@ -12,29 +12,30 @@
  * limitations under the License.
  -->
 
- <div class="all-patch-container relative">
-    <div class="all-patch-content relative" >
-        <app-data-table [searchTextValues]=searchTxt
-                        [parentName]="'certificateTableMessage'"
-                        [errorValue]='errorValue'
-                        [showGenericMessage]='showGenericMessage'
-                        [allColumns]='allColumns'
-                        [outerArr]='outerArr'
-                        [heightValue]="'27.4em'"
-                        [totalRows]='totalRows'
-                        [firstPaginator]='firstPaginator'
-                        [lastPaginator]='lastPaginator'
-                        [currentPointer]='currentPointer'
-                        (previousPageCalled)='prevPg()'
-                        (nextPageCalled)='nextPg()'
-                        [searchableHeader]='true'
-                        [headerColName]="'expiringIn'"
-                        [popRows]='popRows'
-                        [direction]='1'
-                        [dataHead]="'All Certificates'"
-                        (searchRowTxt)='searchCalled($event)'
-                        (searchTriggerred)='callNewSearch()'
-                        (rowClickText)='handlePopClick($event)'></app-data-table>
+<div class="all-patch-container relative">
+    <div class="all-patch-content relative">
+        <app-data-table
+            [searchTextValues]="searchTxt"
+            [parentName]="'certificateTableMessage'"
+            [errorValue]="errorValue"
+            [showGenericMessage]="showGenericMessage"
+            [allColumns]="allColumns"
+            [outerArr]="outerArr"
+            [heightValue]="'27.4em'"
+            [totalRows]="totalRows"
+            [firstPaginator]="firstPaginator"
+            [lastPaginator]="lastPaginator"
+            [currentPointer]="currentPointer"
+            (previousPageCalled)="prevPg()"
+            (nextPageCalled)="nextPg()"
+            [searchableHeader]="true"
+            [headerColName]="'expiringIn'"
+            [popRows]="popRows"
+            [direction]="1"
+            [dataHead]="'All Certificates'"
+            (searchRowTxt)="searchCalled($event)"
+            (searchTriggerred)="callNewSearch()"
+            (rowClickText)="handlePopClick($event)"
+        ></app-data-table>
     </div>
 </div>
-  

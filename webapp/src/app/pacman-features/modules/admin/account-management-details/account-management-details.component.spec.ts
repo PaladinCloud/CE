@@ -21,42 +21,43 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { AccountManagementDetailsComponent } from './account-management-details.component';
 
 describe('AccountManagementDetailsComponent', () => {
-  let component: AccountManagementDetailsComponent;
-  let fixture: ComponentFixture<AccountManagementDetailsComponent>;
+    let component: AccountManagementDetailsComponent;
+    let fixture: ComponentFixture<AccountManagementDetailsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ReactiveFormsModule, FormsModule, RouterTestingModule],
-      declarations: [
-        AccountManagementDetailsComponent,
-        ButtonComponent,
-        FormsComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        DomainTypeObservableService,
-        ErrorHandlingService,
-        FilterManagementService,
-        FormService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        WorkflowService,
-        UtilsService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [
+                HttpClientTestingModule,
+                ReactiveFormsModule,
+                FormsModule,
+                RouterTestingModule,
+            ],
+            declarations: [AccountManagementDetailsComponent, ButtonComponent, FormsComponent],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                DomainTypeObservableService,
+                ErrorHandlingService,
+                FilterManagementService,
+                FormService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                WorkflowService,
+                UtilsService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AccountManagementDetailsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AccountManagementDetailsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

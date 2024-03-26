@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -43,51 +43,51 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { CertificateComplianceComponent } from './certificate-compliance.component';
 
 describe('CertificateComplianceComponent', () => {
-  let component: CertificateComplianceComponent;
-  let fixture: ComponentFixture<CertificateComplianceComponent>;
+    let component: CertificateComplianceComponent;
+    let fixture: ComponentFixture<CertificateComplianceComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
-      declarations: [
-        CertificateComplianceComponent,
-        AllCertificateTableComponent,
-        BreadcrumbComponent,
-        CertificateAssetsTrendComponent,
-        CertificatesComplianceTrendComponent,
-        CertificateStageComponent,
-        CertificateSummaryComponent,
-        DataTableComponent,
-        ErrorMessageComponent,
-        TextComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        DomainTypeObservableService,
-        DownloadService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        SelectComplianceDropdown,
-        ToastObservableService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+            declarations: [
+                CertificateComplianceComponent,
+                AllCertificateTableComponent,
+                BreadcrumbComponent,
+                CertificateAssetsTrendComponent,
+                CertificatesComplianceTrendComponent,
+                CertificateStageComponent,
+                CertificateSummaryComponent,
+                DataTableComponent,
+                ErrorMessageComponent,
+                TextComponent,
+                TitleBurgerHeadComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                DomainTypeObservableService,
+                DownloadService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                SelectComplianceDropdown,
+                ToastObservableService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(async () => {
-    fixture = TestBed.createComponent(CertificateComplianceComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(async () => {
+        fixture = TestBed.createComponent(CertificateComplianceComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  // todo: fix undefined widgetContainer in ngOnInit method
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    // todo: fix undefined widgetContainer in ngOnInit method
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

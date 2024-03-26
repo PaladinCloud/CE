@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
- <div class="contextual-menu-wrapper" [ngStyle]="theme">
+<div class="contextual-menu-wrapper" [ngStyle]="theme">
     <!-- asset-switcher -->
     <div class="asset-switcher-container">
         <app-asset-switcher [isExpanded]="expanded"></app-asset-switcher>
@@ -22,13 +22,13 @@
             <!-- PARENT NODE -->
             <cdk-nested-tree-node *cdkTreeNodeDef="let node">
                 <div
-                (click)="selectNode(node)"
+                    (click)="selectNode(node)"
                     *ngIf="
                         hasRequiredPermission(node) &&
                         !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
                     "
                     class="tree-item flex flex-align-center"
-                    [class.active] = "node.id == currentNodeId"
+                    [class.active]="node.id == currentNodeId"
                     [queryParams]="agAndDomain"
                     routerLinkActive="active"
                 >
@@ -79,7 +79,7 @@
             <!-- CHILD NODE -->
             <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: isChild">
                 <div
-                (click)="selectNode(node)"
+                    (click)="selectNode(node)"
                     class="tree-child-wrapper"
                     *ngIf="
                         hasRequiredPermission(node) &&
@@ -88,7 +88,7 @@
                 >
                     <div
                         class="tree-child-item"
-                        [class.active] = "node.id == currentNodeId"
+                        [class.active]="node.id == currentNodeId"
                         routerLinkActive="active"
                         [queryParams]="agAndDomain"
                     >

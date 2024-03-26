@@ -12,16 +12,19 @@
  * limitations under the License.
  -->
 
- <div class="issues-category-container relative">
-    <div class='flex flex-align-center flex-center icc-parent' *ngIf='categoriesVal>-1 && hideLoader && categoriesTotal>-1 && !errorOccurred'>
-        <div class='issues-category-content center' (click)="navigateTo()">
-            <div class='issues-category-img relative' [(class.after-load)]='categoriesLoaded'>
-                <img src='assets/icons/{{categoriesHeader}}.svg'>
-                <div class='absolute categories-val'>{{categoriesVal}}</div>
+<div class="issues-category-container relative">
+    <div
+        class="flex flex-align-center flex-center icc-parent"
+        *ngIf="categoriesVal > -1 && hideLoader && categoriesTotal > -1 && !errorOccurred"
+    >
+        <div class="issues-category-content center" (click)="navigateTo()">
+            <div class="issues-category-img relative" [(class.after-load)]="categoriesLoaded">
+                <img src="assets/icons/{{ categoriesHeader }}.svg" />
+                <div class="absolute categories-val">{{ categoriesVal }}</div>
             </div>
-            <div class='issues-title' *ngIf='categoriesLoaded'>{{categoriesTitle}}
-            </div>
-            <div class='issues-subtitle' *ngIf='categoriesLoaded'>{{categoriesSubTitle}} {{categoriesTotal}} {{categoriesPostTitle}}
+            <div class="issues-title" *ngIf="categoriesLoaded">{{ categoriesTitle }}</div>
+            <div class="issues-subtitle" *ngIf="categoriesLoaded">
+                {{ categoriesSubTitle }} {{ categoriesTotal }} {{ categoriesPostTitle }}
             </div>
         </div>
     </div>

@@ -19,41 +19,37 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { PluginManagementComponent } from './plugin-management.component';
 
 describe('PluginManagementComponent', () => {
-  let component: PluginManagementComponent;
-  let fixture: ComponentFixture<PluginManagementComponent>;
+    let component: PluginManagementComponent;
+    let fixture: ComponentFixture<PluginManagementComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
-      declarations: [
-        PluginManagementComponent,
-        DataTableComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        ErrorHandlingService,
-        FilterManagementService,
-        HttpService,
-        LoggerService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+            declarations: [PluginManagementComponent, DataTableComponent, TitleBurgerHeadComponent],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                ErrorHandlingService,
+                FilterManagementService,
+                HttpService,
+                LoggerService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PluginManagementComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PluginManagementComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

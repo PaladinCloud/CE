@@ -44,7 +44,6 @@
                     (filterSearchTextChange)="filterSearchTextChange.emit($event)"
                 ></app-table-filters>
                 <div class="flex flex-align-center table-right-items">
-                 
                     <div class="table-count-info">
                         <ng-container>
                             <span>{{ totalRecordsAfterFilter | resultCount: dataSource }}</span>
@@ -74,243 +73,332 @@
         <div class="table-wrapper" #viewportContainer>
             <!-- table header -->
             <div class="table-header-wrapper">
-                <div class="mat-header-row flex" [style.width]="totalRows<15?'100%':'calc(100% - 7px)'">
-                    <div 
+                <div
+                    class="mat-header-row flex"
+                    [style.width]="totalRows < 15 ? '100%' : 'calc(100% - 7px)'"
+                >
+                    <div
                         class="mat-header-cell mat-sort-header custom-mat-header pointer"
-                        (click)="announceSortChange({active:column, direction:headerColName==column&&direction=='asc'?'desc':'asc'})"
+                        (click)="
+                            announceSortChange({
+                                active: column,
+                                direction:
+                                    headerColName == column && direction == 'asc' ? 'desc' : 'asc'
+                            })
+                        "
                         role="columnheader"
-                        aria-sort="descending" 
+                        aria-sort="descending"
                         [class.flex-center]="centeredColumns[column]"
-                        [style.flex-basis.%]="(100 * columnWidths[column]/denominator)"
+                        [style.flex-basis.%]="(100 * columnWidths[column]) / denominator"
                         [title]="displayToolTip(column)"
-                        *ngFor="let column of whiteListColumns" 
+                        *ngFor="let column of whiteListColumns"
                     >
-                        <div
-                        class="mat-focus-indicator mat-sort-header-container">
+                        <div class="mat-focus-indicator mat-sort-header-container">
                             {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
                         </div>
-                        <div 
-                            [class.hide]="doNotSort || column == 'Actions' || column == 'DetailsBtn'"
-                            [class.up-arrow]="headerColName != column" 
-                            class="mat-sort-header-arrow ng-trigger-arrowPosition indicator-up" 
+                        <div
+                            [class.hide]="
+                                doNotSort || column == 'Actions' || column == 'DetailsBtn'
+                            "
+                            [class.up-arrow]="headerColName != column"
+                            class="mat-sort-header-arrow ng-trigger-arrowPosition indicator-up"
                             [style.opacity]="headerColName === column ? '1' : '0.5'"
-                            >
+                        >
                             <div class="mat-sort-header-stem"></div>
-                            <div class="mat-sort-header-indicator ng-trigger-indicator"
-                            [ngClass]="{
-                                'indicator-up': headerColName !== column || direction !== 'desc',
-                                'indicator-down': headerColName === column && direction === 'desc'
-                            }">
-                                <div class="mat-sort-header-pointer-left ng-trigger-leftPointer"
+                            <div
+                                class="mat-sort-header-indicator ng-trigger-indicator"
+                                [ngClass]="{
+                                    'indicator-up':
+                                        headerColName !== column || direction !== 'desc',
+                                    'indicator-down':
+                                        headerColName === column && direction === 'desc'
+                                }"
+                            >
+                                <div
+                                    class="mat-sort-header-pointer-left ng-trigger-leftPointer"
                                     [ngClass]="{
-                                    'pointer-up': headerColName !== column || direction !== 'desc',
-                                    'pointer-down': headerColName === column && direction === 'desc'
-                                    }"></div>
-                                <div class="mat-sort-header-pointer-right ng-trigger-rightPointer"
+                                        'pointer-up':
+                                            headerColName !== column || direction !== 'desc',
+                                        'pointer-down':
+                                            headerColName === column && direction === 'desc'
+                                    }"
+                                ></div>
+                                <div
+                                    class="mat-sort-header-pointer-right ng-trigger-rightPointer"
                                     [ngClass]="{
-                                    'pointer-down': headerColName !== column || direction !== 'desc',
-                                    'pointer-up': headerColName === column && direction === 'desc'
-                                    }"></div>
+                                        'pointer-down':
+                                            headerColName !== column || direction !== 'desc',
+                                        'pointer-up':
+                                            headerColName === column && direction === 'desc'
+                                    }"
+                                ></div>
                                 <div class="mat-sort-header-pointer-middle"></div>
                             </div>
-
                         </div>
-
                     </div>
                 </div>
             </div>
             <!-- removing height of mat table header, which was 40px, from virtual scroll container -->
-            <cdk-virtual-scroll-viewport #viewport [itemSize]="rowHeight" [minBufferPx]="1050" [maxBufferPx]="1800" matSort style="height: calc(100% - 40px);">
-            <mat-table
-                *ngIf="!tableErrorMessage && tableDataLoaded"
-                [dataSource]="dataSource"
-                [matSortActive]="headerColName"
-                [matSortDirection]="direction"
-                matSortDisableClear
+            <cdk-virtual-scroll-viewport
+                #viewport
+                [itemSize]="rowHeight"
+                [minBufferPx]="1050"
+                [maxBufferPx]="1800"
                 matSort
-                (matSortChange)="announceSortChange($event)"
+                style="height: calc(100% - 40px)"
             >
-                <ng-container
-                    *ngFor="let column of whiteListColumns"
-                    [ngTemplateOutlet]="cellDefinition"
-                    [ngTemplateOutletContext]="{
-                        column,
-                        columnWidth: denominator | tableColumnWidth : columnWidths[column]
-                    }"
-                    [matColumnDef]="column"
+                <mat-table
+                    *ngIf="!tableErrorMessage && tableDataLoaded"
+                    [dataSource]="dataSource"
+                    [matSortActive]="headerColName"
+                    [matSortDirection]="direction"
+                    matSortDisableClear
+                    matSort
+                    (matSortChange)="announceSortChange($event)"
                 >
-                    <ng-template #cellDefinition let-column="column" let-columnWidth="columnWidth">
-                        <mat-header-cell
-                        [style.flex-basis.%]="columnWidth"
-                            [style.top.px]="offset"
-                            [class.flex-center]="centeredColumns[column]"
-                            *matHeaderCellDef
-                            [mat-sort-header]="
-                                column !== 'Actions' && column !== 'DetailsBtn' ? column : ''
-                            "
-                            [class.hide-sort-arrow-wrapper]="doNotSort || column == 'Actions' || column == 'DetailsBtn'"
+                    <ng-container
+                        *ngFor="let column of whiteListColumns"
+                        [ngTemplateOutlet]="cellDefinition"
+                        [ngTemplateOutletContext]="{
+                            column,
+                            columnWidth: denominator | tableColumnWidth: columnWidths[column]
+                        }"
+                        [matColumnDef]="column"
+                    >
+                        <ng-template
+                            #cellDefinition
+                            let-column="column"
+                            let-columnWidth="columnWidth"
                         >
-                            <span>
-                                {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
-                            </span>
-                        </mat-header-cell>
-
-                        <mat-cell
-                            (click)="handleClick(element, column, i)"
-                            class="table-cell"
-                            [style.flex-basis.%]="columnWidth"
-                            *matCellDef="let element; let i = index"
-                            [class.flex-center]="centeredColumns[column]"
-                        >
-                            <div
-                                *ngIf="element[column] && element[column].isMenuBtn; else clickable"
-                                class="center"
+                            <mat-header-cell
+                                [style.flex-basis.%]="columnWidth"
+                                [style.top.px]="offset"
+                                [class.flex-center]="centeredColumns[column]"
+                                *matHeaderCellDef
+                                [mat-sort-header]="
+                                    column !== 'Actions' && column !== 'DetailsBtn' ? column : ''
+                                "
+                                [class.hide-sort-arrow-wrapper]="
+                                    doNotSort || column == 'Actions' || column == 'DetailsBtn'
+                                "
                             >
-                                <img
-                                    class="pointer menu-btn"
-                                    *ngIf="element[column].menuItems.length > 0"
-                                    mat-button
-                                    [matMenuTriggerFor]="actionMenu"
-                                    src="/assets/icons/three-dots.svg"
-                                    alt=""
-                                />
-                                <mat-menu #actionMenu="matMenu">
-                                    <button
-                                        (click)="handleAction(element, action, i)"
-                                        style="min-width: 156px"
-                                        *ngFor="let action of element[column].menuItems"
-                                        mat-menu-item
-                                    >
-                                        <span>{{ action }}</span>
-                                    </button>
-                                </mat-menu>
-                            </div>
-                            <ng-template #clickable>
+                                <span>
+                                    {{
+                                        column !== 'Actions' && column !== 'DetailsBtn'
+                                            ? column
+                                            : ''
+                                    }}
+                                </span>
+                            </mat-header-cell>
+
+                            <mat-cell
+                                (click)="handleClick(element, column, i)"
+                                class="table-cell"
+                                [style.flex-basis.%]="columnWidth"
+                                *matCellDef="let element; let i = index"
+                                [class.flex-center]="centeredColumns[column]"
+                            >
                                 <div
-                                    class="clickable"
-                                    [ngClass]="{
-                                        flex: showCopyButton || element[column]?.haveCopyElement,
-                                        'flex-align-center':
-                                            showCopyButton || element[column]?.haveCopyElement
-                                    }"
-                                    style="min-width: 0"
+                                    *ngIf="
+                                        element[column] && element[column].isMenuBtn;
+                                        else clickable
+                                    "
+                                    class="center"
                                 >
+                                    <img
+                                        class="pointer menu-btn"
+                                        *ngIf="element[column].menuItems.length > 0"
+                                        mat-button
+                                        [matMenuTriggerFor]="actionMenu"
+                                        src="/assets/icons/three-dots.svg"
+                                        alt=""
+                                    />
+                                    <mat-menu #actionMenu="matMenu">
+                                        <button
+                                            (click)="handleAction(element, action, i)"
+                                            style="min-width: 156px"
+                                            *ngFor="let action of element[column].menuItems"
+                                            mat-menu-item
+                                        >
+                                            <span>{{ action }}</span>
+                                        </button>
+                                    </mat-menu>
+                                </div>
+                                <ng-template #clickable>
                                     <div
-                                        class="chip-wrapper"
-                                        *ngIf="
-                                            element[column]?.valueText && element[column]?.isChip;
-                                            else checkbox
-                                        "
-                                        [title]="element[column].titleText"
+                                        class="clickable"
+                                        [ngClass]="{
+                                            flex:
+                                                showCopyButton || element[column]?.haveCopyElement,
+                                            'flex-align-center':
+                                                showCopyButton || element[column]?.haveCopyElement
+                                        }"
+                                        style="min-width: 0"
                                     >
-                                        <app-chip
-                                            [backgroundColor]="element[column].chipBackgroundColor"
-                                            [color]="element[column].chipTextColor"
-                                            [chipsList]="element[column].chipList"
-                                        >
-                                        </app-chip>
-                                    </div>
-                                    <ng-template #checkbox>
                                         <div
-                                            *ngIf="element[column]?.isCheckbox; else textImageData"
-                                        >
-                                        <mat-checkbox
-                                        (change)="handleCheckboxChange(element, column, $event)"
-                                            [checked]="element[column].valueText == 'checked'?true:false"
-                                            [disabled]="element[column].valueText == 'disabled'">
-                                        </mat-checkbox>
-                                        </div>
-                                    </ng-template>
-                                    <ng-template #textImageData>
-                                        <div
+                                            class="chip-wrapper"
                                             *ngIf="
-                                                element[column]?.valueText ||
-                                                    element[column]?.valueText === 0;
-                                                else noData
+                                                element[column]?.valueText &&
+                                                    element[column]?.isChip;
+                                                else checkbox
                                             "
-                                            [class.row-title]="element[column].isLink"
-                                            class="nowrap-ellipsis"
-                                            [class.pointer]="element[column].link"
-                                            [title]="
-                                                element[column].isDate
-                                                    ? (element[column].text | date : 'medium')
-                                                    : element[column].text
-                                            "
+                                            [title]="element[column].titleText"
                                         >
-                                            <img *ngIf="!(element[column] | isImagePresent)" class="no-img" src="" [alt]="element[column].imageTitleText" />
-                                            <svg-icon
-                                                *ngIf="(element[column] | isImagePresent)"
-                                                svgClass="cell-img"
-                                                [name]="element[column].imgSrc"
-                                                [title]="element[column].imageTitleText || element[column].titleText"
-                                                >
-                                            </svg-icon>
-                                            <span
+                                            <app-chip
+                                                [backgroundColor]="
+                                                    element[column].chipBackgroundColor
+                                                "
+                                                [color]="element[column].chipTextColor"
+                                                [chipsList]="element[column].chipList"
+                                            >
+                                            </app-chip>
+                                        </div>
+                                        <ng-template #checkbox>
+                                            <div
                                                 *ngIf="
-                                                    !element[column].isDate &&
-                                                    !element[column].isNumber
+                                                    element[column]?.isCheckbox;
+                                                    else textImageData
                                                 "
                                             >
-                                                <span *ngIf="!columnsAndFiltersToExcludeFromCasing.includes(column)">{{ element[column].text | celldatacase }}</span>
-                                                <span *ngIf="columnsAndFiltersToExcludeFromCasing.includes(column)">{{ element[column].text }}</span>
-                                           
-                                            </span>
-                                            <span *ngIf="element[column].isDate">
-                                                {{ element[column].text | date : 'medium' }}
-                                            </span>
-                                            <span *ngIf="element[column].isNumber">
-                                                {{ element[column].text | number }}
-                                            </span>
+                                                <mat-checkbox
+                                                    (change)="
+                                                        handleCheckboxChange(
+                                                            element,
+                                                            column,
+                                                            $event
+                                                        )
+                                                    "
+                                                    [checked]="
+                                                        element[column].valueText == 'checked'
+                                                            ? true
+                                                            : false
+                                                    "
+                                                    [disabled]="
+                                                        element[column].valueText == 'disabled'
+                                                    "
+                                                >
+                                                </mat-checkbox>
+                                            </div>
+                                        </ng-template>
+                                        <ng-template #textImageData>
                                             <div
-                                                *ngIf="element[column].symbol"
-                                                class="symbol"
-                                                [class]="element[column].symbol.type"
-                                                [style.background-color]="
-                                                    element[column].symbol.type !== 'triangle'
-                                                        ? element[column].symbol.color
-                                                        : ''
+                                                *ngIf="
+                                                    element[column]?.valueText ||
+                                                        element[column]?.valueText === 0;
+                                                    else noData
                                                 "
-                                                [style.border-bottom-color]="
-                                                    element[column].symbol.type === 'triangle'
-                                                        ? element[column].symbol.color
-                                                        : ''
+                                                [class.row-title]="element[column].isLink"
+                                                class="nowrap-ellipsis"
+                                                [class.pointer]="element[column].link"
+                                                [title]="
+                                                    element[column].isDate
+                                                        ? (element[column].text | date: 'medium')
+                                                        : element[column].text
                                                 "
-                                            ></div>
+                                            >
+                                                <img
+                                                    *ngIf="!(element[column] | isImagePresent)"
+                                                    class="no-img"
+                                                    src=""
+                                                    [alt]="element[column].imageTitleText"
+                                                />
+                                                <svg-icon
+                                                    *ngIf="element[column] | isImagePresent"
+                                                    svgClass="cell-img"
+                                                    [name]="element[column].imgSrc"
+                                                    [title]="
+                                                        element[column].imageTitleText ||
+                                                        element[column].titleText
+                                                    "
+                                                >
+                                                </svg-icon>
+                                                <span
+                                                    *ngIf="
+                                                        !element[column].isDate &&
+                                                        !element[column].isNumber
+                                                    "
+                                                >
+                                                    <span
+                                                        *ngIf="
+                                                            !columnsAndFiltersToExcludeFromCasing.includes(
+                                                                column
+                                                            )
+                                                        "
+                                                        >{{
+                                                            element[column].text | celldatacase
+                                                        }}</span
+                                                    >
+                                                    <span
+                                                        *ngIf="
+                                                            columnsAndFiltersToExcludeFromCasing.includes(
+                                                                column
+                                                            )
+                                                        "
+                                                        >{{ element[column].text }}</span
+                                                    >
+                                                </span>
+                                                <span *ngIf="element[column].isDate">
+                                                    {{ element[column].text | date: 'medium' }}
+                                                </span>
+                                                <span *ngIf="element[column].isNumber">
+                                                    {{ element[column].text | number }}
+                                                </span>
+                                                <div
+                                                    *ngIf="element[column].symbol"
+                                                    class="symbol"
+                                                    [class]="element[column].symbol.type"
+                                                    [style.background-color]="
+                                                        element[column].symbol.type !== 'triangle'
+                                                            ? element[column].symbol.color
+                                                            : ''
+                                                    "
+                                                    [style.border-bottom-color]="
+                                                        element[column].symbol.type === 'triangle'
+                                                            ? element[column].symbol.color
+                                                            : ''
+                                                    "
+                                                ></div>
+                                            </div>
+                                        </ng-template>
+                                        <ng-template #noData>
+                                            <div class="nowrap-ellipsis">
+                                                <span>No Data</span>
+                                            </div>
+                                        </ng-template>
+                                        <div
+                                            class="copy-icon"
+                                            *ngIf="
+                                                showCopyButton || element[column]?.haveCopyElement
+                                            "
+                                        >
+                                            <app-copy-element
+                                                [CopyElement]="element[column]?.valueText"
+                                                [iconSize]="'10px'"
+                                                [hidePadding]="true"
+                                            ></app-copy-element>
                                         </div>
-                                    </ng-template>
-                                    <ng-template #noData>
-                                        <div class="nowrap-ellipsis">
-                                            <span>No Data</span>
-                                        </div>
-                                    </ng-template>
-                                    <div
-                                        class="copy-icon"
-                                        *ngIf="showCopyButton || element[column]?.haveCopyElement"
-                                    >
-                                        <app-copy-element
-                                            [CopyElement]="element[column]?.valueText"
-                                            [iconSize]="'10px'"
-                                            [hidePadding]="true"
-                                        ></app-copy-element>
                                     </div>
-                                </div>
-                            </ng-template>
-                        </mat-cell>
-                    </ng-template>
-                </ng-container>
+                                </ng-template>
+                            </mat-cell>
+                        </ng-template>
+                    </ng-container>
 
-                <!-- removing it to avoid flickering of header on virtual scroll -->
-                <!-- offset is used here to make header stick to top -->
-                <!-- <mat-header-row class="hide" [style.width.px]="screenWidth" *matHeaderRowDef="whiteListColumns; sticky: true" [style.top.px]="offset"></mat-header-row> -->
-                <mat-row
-                    [class.row-hover]="rowClickable"
-                    [class.row-selected]="idColumn && row[idColumn].valueText?row[idColumn].valueText === selectedRowId:i === selectedRowIndex"
-                    [class.md]="rowSize === 'MD'"
-                    [class.sm]="rowSize === 'SM'"
-                    [class.lg]="rowSize === 'LG'"
-                    *matRowDef="let row; columns: whiteListColumns; let i = index"
-                ></mat-row>
-            </mat-table>
+                    <!-- removing it to avoid flickering of header on virtual scroll -->
+                    <!-- offset is used here to make header stick to top -->
+                    <!-- <mat-header-row class="hide" [style.width.px]="screenWidth" *matHeaderRowDef="whiteListColumns; sticky: true" [style.top.px]="offset"></mat-header-row> -->
+                    <mat-row
+                        [class.row-hover]="rowClickable"
+                        [class.row-selected]="
+                            idColumn && row[idColumn].valueText
+                                ? row[idColumn].valueText === selectedRowId
+                                : i === selectedRowIndex
+                        "
+                        [class.md]="rowSize === 'MD'"
+                        [class.sm]="rowSize === 'SM'"
+                        [class.lg]="rowSize === 'LG'"
+                        *matRowDef="let row; columns: whiteListColumns; let i = index"
+                    ></mat-row>
+                </mat-table>
             </cdk-virtual-scroll-viewport>
         </div>
     </div>

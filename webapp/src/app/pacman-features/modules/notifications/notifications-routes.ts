@@ -3,20 +3,20 @@ import { CloudNotificationsComponent } from './cloud-notifications/cloud-notific
 import { NotificationDetailsComponent } from './notification-details/notification-details.component';
 
 export const NOTIFICATIONS_ROUTES = [
-  {
-    path: "notification-details",
-    component: NotificationDetailsComponent,
-    data: {
-      title: "Notifications Details",
+    {
+        path: 'notification-details',
+        component: NotificationDetailsComponent,
+        data: {
+            title: 'Notifications Details',
+        },
+        canActivate: [AuthGuardService],
     },
-    canActivate: [AuthGuardService],
-  },
-  {
-    path: "notifications-list",
-    component: CloudNotificationsComponent,
-    data: {
-      title: "Notifications",
+    {
+        path: 'notifications-list',
+        component: CloudNotificationsComponent,
+        data: {
+            title: 'Notifications',
+        },
+        canActivate: [AuthGuardService],
     },
-    canActivate: [AuthGuardService],
-  },
 ];

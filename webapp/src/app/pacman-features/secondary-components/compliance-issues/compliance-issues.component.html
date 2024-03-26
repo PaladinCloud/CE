@@ -12,24 +12,24 @@
  * limitations under the License.
  -->
 
- <div class="compliance-issues-text">
-    <div class='sidebar-widget-container'>
+<div class="compliance-issues-text">
+    <div class="sidebar-widget-container">
         <app-overall-compliance></app-overall-compliance>
     </div>
-    <div class='sidebar-widget-container'>
+    <div class="sidebar-widget-container">
         <app-pacman-issues [pageLevel]="pageLevel"></app-pacman-issues>
     </div>
-    <div class='sidebar-widget-container flex flex-wrap'>
-        <div class='issues-category-container' *ngIf="tileMapping['app-overview-vulnerabilities']">
+    <div class="sidebar-widget-container flex flex-wrap">
+        <div class="issues-category-container" *ngIf="tileMapping['app-overview-vulnerabilities']">
             <app-overview-vulnerabilities [pageLevel]="pageLevel"></app-overview-vulnerabilities>
         </div>
-        <div class='issues-category-container' *ngIf="tileMapping['app-overview-tagging']">
+        <div class="issues-category-container" *ngIf="tileMapping['app-overview-tagging']">
             <app-overview-tagging [pageLevel]="pageLevel"></app-overview-tagging>
         </div>
-        <div class='issues-category-container' *ngIf="tileMapping['app-overview-certificates']">
+        <div class="issues-category-container" *ngIf="tileMapping['app-overview-certificates']">
             <app-overview-certificates [pageLevel]="pageLevel"></app-overview-certificates>
         </div>
-        <div class='issues-category-container' *ngIf="tileMapping['app-overview-patching']">
+        <div class="issues-category-container" *ngIf="tileMapping['app-overview-patching']">
             <app-overview-patching [pageLevel]="pageLevel"></app-overview-patching>
         </div>
     </div>

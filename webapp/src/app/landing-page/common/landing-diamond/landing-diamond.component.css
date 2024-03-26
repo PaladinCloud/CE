@@ -72,9 +72,9 @@
 
 .diamond-line-secondary {
     stroke-width: 2px;
-    stroke: #A4A4A4;
+    stroke: #a4a4a4;
     stroke-dasharray: 10, 5;
-    opacity: .3;
+    opacity: 0.3;
 }
 
 .pulse-ball {
@@ -109,8 +109,6 @@
     position: absolute;
 }
 
-
-
 /*vertical*/
 
 .glow-traveller-right {
@@ -118,8 +116,6 @@
     right: 2px;
     height: 100%;
 }
-
-
 
 /*horizontal*/
 
@@ -136,5 +132,5 @@
     color: white;
     font-size: 2em;
     line-height: 1.5em;
-    letter-spacing: .8px;
+    letter-spacing: 0.8px;
 }

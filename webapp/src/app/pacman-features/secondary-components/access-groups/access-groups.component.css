@@ -12,20 +12,20 @@
  * limitations under the License.
  */
 
-section.access-groups{
-	padding: 1em 2em;
-	/*width: 50%;*/
-	line-height: 2;
+section.access-groups {
+    padding: 1em 2em;
+    /*width: 50%;*/
+    line-height: 2;
 }
 
-.access-groups-list{
-	min-width: 13em;
-	display: flex;
-	transform-origin: left;
-	text-shadow: 0.1px 0;
+.access-groups-list {
+    min-width: 13em;
+    display: flex;
+    transform-origin: left;
+    text-shadow: 0.1px 0;
 }
 
-.assets{
-	margin-bottom: 1em;
-	font-size: 0.9em;
+.assets {
+    margin-bottom: 1em;
+    font-size: 0.9em;
 }

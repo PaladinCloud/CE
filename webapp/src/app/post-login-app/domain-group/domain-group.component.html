@@ -12,11 +12,21 @@
  * limitations under the License.
  -->
 
- <div class="relative" tabindex="1" (blur)="closeUserInfo()" *ngIf="selectedDomain">
-    <div class="default-asset-group-wrapper " (click)='showUserInfo=!showUserInfo'>
-        <img class="default-asset-group-icon" src="/assets/icons/earth-grid-symbol.svg" width="19px" />
-        <h4 class="default-asset-group-text">{{selectedDomain}}</h4>
+<div class="relative" tabindex="1" (blur)="closeUserInfo()" *ngIf="selectedDomain">
+    <div class="default-asset-group-wrapper" (click)="showUserInfo = !showUserInfo">
+        <img
+            class="default-asset-group-icon"
+            src="/assets/icons/earth-grid-symbol.svg"
+            width="19px"
+        />
+        <h4 class="default-asset-group-text">{{ selectedDomain }}</h4>
         <i class="fa fa-angle-down mr-right-arrow" aria-hidden="true"></i>
     </div>
-    <app-domain-dropdown (onChange)="updateDropdownSelection($event)" [dropdownDataStr]="DomainListString" (click)='showUserInfo=false' *ngIf="showUserInfo" class="user-options"></app-domain-dropdown>
+    <app-domain-dropdown
+        (onChange)="updateDropdownSelection($event)"
+        [dropdownDataStr]="DomainListString"
+        (click)="showUserInfo = false"
+        *ngIf="showUserInfo"
+        class="user-options"
+    ></app-domain-dropdown>
 </div>

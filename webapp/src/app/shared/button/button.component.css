@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
- .app-button {
+.app-button {
     border: none;
     box-shadow: none;
     border-radius: 4px;
@@ -29,7 +29,7 @@
     border: none;
     box-shadow: none;
     display: inline-block;
-    background:none;
+    background: none;
     text-transform: capitalize;
     cursor: pointer;
     text-align: center;
@@ -37,17 +37,16 @@
 }
 .app-button:hover {
     background-color: var(--primary-500);
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .32);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 .white-button.app-button:hover {
     box-shadow: none;
     background: none;
-    
 }
 
 .app-button:active {
     background-color: var(--primary-500);
-    box-shadow: 0 2px 10px 1px rgba(0, 0, 0, .32);
+    box-shadow: 0 2px 10px 1px rgba(0, 0, 0, 0.32);
 }
 
 .app-button.disabled {

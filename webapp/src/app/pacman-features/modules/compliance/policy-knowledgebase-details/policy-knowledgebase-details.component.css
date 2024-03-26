@@ -12,24 +12,24 @@
  * limitations under the License.
  */
 
- .alert-banner{
+.alert-banner {
     height: 56px;
-    background-color: #C53434;
+    background-color: #c53434;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
-  }
-  
-  .banner-text{
+}
+
+.banner-text {
     color: white;
-  }
+}
 
-  .has-banner{
-      height: 90%;
-  }
+.has-banner {
+    height: 90%;
+}
 
- .header {
+.header {
     justify-content: space-between;
     align-items: center;
 }
@@ -42,7 +42,7 @@
     gap: 4px;
 }
 
-.header-autofix-icon{
+.header-autofix-icon {
     height: 20px;
     width: 20px;
 }
@@ -188,8 +188,11 @@ img {
     background-image: url('../../../../../assets/icons/white-arrow.svg') !important;
 }
 
-.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
-  display: none !important;
+.policy-knowledgebase-wrapper
+    ::ng-deep
+    .mat-form-field-can-float.mat-form-field-should-float
+    .mat-form-field-label {
+    display: none !important;
 }
 
 .policy-knowledgebase-wrapper ::ng-deep .mat-form-field-infix {

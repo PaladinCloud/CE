@@ -22,24 +22,24 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({ name: 'orderBySum' })
 export class OrderBySumPipe implements PipeTransform {
-  transform(records: Array<any>, args?: any): any {
-    if (!args) {
-      return records;
-    }
-    const list = orderBy(
-      records,
-      record => {
-        const total = reduce(
-          record[args.propertyKey],
-          (sum, countedObject) => {
-            return sum + countedObject[args.countKey];
-          },
-          0
+    transform(records: Array<any>, args?: any): any {
+        if (!args) {
+            return records;
+        }
+        const list = orderBy(
+            records,
+            (record) => {
+                const total = reduce(
+                    record[args.propertyKey],
+                    (sum, countedObject) => {
+                        return sum + countedObject[args.countKey];
+                    },
+                    0,
+                );
+                return total;
+            },
+            args.direction,
         );
-        return total;
-      },
-      args.direction
-    );
-    return list;
-  }
+        return list;
+    }
 }

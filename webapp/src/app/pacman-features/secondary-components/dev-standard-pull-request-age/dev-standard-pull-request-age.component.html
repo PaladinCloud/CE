@@ -12,17 +12,28 @@
  * limitations under the License.
  -->
 
- <div class="aging-summary-wrapper flex flex-col show-links">
-	<div class="sub-head">
+<div class="aging-summary-wrapper flex flex-col show-links">
+    <div class="sub-head">
         <app-title-burger-head [subHeadTitle]="'Pull Request Age'"></app-title-burger-head>
-    </div>  
-    <div *ngIf='errorValue > 0' #widget id="agingBarGraph">
-        <div class='total-text-msg'>Open Pull Requests: <span class='total-count'>{{total}}</span></div>
-        <app-bar-chart (graphTextClick)='redirectGraph($event);' (error)="getErrorValues($event)" [chartContId] = "'agingBarGraph'" [graphData] = "graphData" [legend_text]="legend_text" *ngIf = "graphData"></app-bar-chart>
-    </div>    
-    <div class='loader' *ngIf='errorValue==0'></div>      
-      <div class="error-msg-block center" *ngIf='errorValue == -1'>
-          <app-error-message *ngIf='errorValue == -1' [selectedValue]="errorMessage"></app-error-message>
-    </div>    
+    </div>
+    <div *ngIf="errorValue > 0" #widget id="agingBarGraph">
+        <div class="total-text-msg">
+            Open Pull Requests: <span class="total-count">{{ total }}</span>
+        </div>
+        <app-bar-chart
+            (graphTextClick)="redirectGraph($event)"
+            (error)="getErrorValues($event)"
+            [chartContId]="'agingBarGraph'"
+            [graphData]="graphData"
+            [legend_text]="legend_text"
+            *ngIf="graphData"
+        ></app-bar-chart>
+    </div>
+    <div class="loader" *ngIf="errorValue == 0"></div>
+    <div class="error-msg-block center" *ngIf="errorValue == -1">
+        <app-error-message
+            *ngIf="errorValue == -1"
+            [selectedValue]="errorMessage"
+        ></app-error-message>
+    </div>
 </div>
-  

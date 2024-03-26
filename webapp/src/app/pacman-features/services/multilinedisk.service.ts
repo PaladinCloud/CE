@@ -3,30 +3,25 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
-
-import {throwError as observableThrowError,  Observable, combineLatest, of } from 'rxjs';
+import { throwError as observableThrowError, Observable, combineLatest, of } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
 import { HttpService } from '../../shared/services/http-response.service';
 import { map } from 'rxjs/operators';
 
-
 @Injectable()
 export class MultilineChartServiceDisk {
-
-    constructor (
-                 @Inject(HttpService) private httpService: HttpService) { }
-
+    constructor(@Inject(HttpService) private httpService: HttpService) {}
 
     private combinedData: any = [];
 
@@ -38,10 +33,13 @@ export class MultilineChartServiceDisk {
             const allObservables: Observable<any>[] = [];
             const queryParams = {};
             allObservables.push(
-                this.httpService.getHttpResponse(MultilineChartDiskUrl, method, payload, queryParameters)
-                    .pipe(map(response => this.massageResponse(response))
-                    // .catch(error => this.handleCombiningError(error))
-            ));
+                this.httpService
+                    .getHttpResponse(MultilineChartDiskUrl, method, payload, queryParameters)
+                    .pipe(
+                        map((response) => this.massageResponse(response)),
+                        // .catch(error => this.handleCombiningError(error))
+                    ),
+            );
             return allObservables.length > 0 ? combineLatest(allObservables) : of([]);
         } catch (error) {
             this.handleError(error);
@@ -68,44 +66,46 @@ export class MultilineChartServiceDisk {
             }
         }
 
-        keys = keys.filter(function(item, index, inputArray) {
-                    return inputArray.indexOf(item) === index;
-                });
+        keys = keys.filter(function (item, index, inputArray) {
+            return inputArray.indexOf(item) === index;
+        });
 
         for (let i = 0; i < allDates.length; i++) {
             // Additional property 'zero-value' being added to keep track of zero values, as the zero values are replaced
             // with 1 during plotting graph with a log axis (as [log 0]  is infinity)
             const write_obj = {
-                'date' : new Date(allDates[i]),
-                'value' : apiResponse[i].diskWriteinBytes,
-                'keys' : keys[0],
-                'legends' : legends
+                date: new Date(allDates[i]),
+                value: apiResponse[i].diskWriteinBytes,
+                keys: keys[0],
+                legends: legends,
             };
             valuesWrite.push(write_obj);
 
             const read_obj = {
-                'date' : new Date(allDates[i]),
-                'value' : apiResponse[i].diskReadinBytes,
-                'keys' :  keys[0],
-                'legends' : legends
+                date: new Date(allDates[i]),
+                value: apiResponse[i].diskReadinBytes,
+                keys: keys[0],
+                legends: legends,
             };
             valuesRead.push(read_obj);
-
         }
 
-        valuesWrite.sort(function(a, b) {
+        valuesWrite.sort(function (a, b) {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
 
-        valuesRead.sort(function(a, b) {
+        valuesRead.sort(function (a, b) {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
 
-        formattedObject = [{
-            'values' : valuesWrite
-        }, {
-            'values' : valuesRead
-        }];
+        formattedObject = [
+            {
+                values: valuesWrite,
+            },
+            {
+                values: valuesRead,
+            },
+        ];
         return formattedObject;
     }
 
@@ -125,4 +125,3 @@ export class MultilineChartServiceDisk {
         return Promise.reject(error.message || error);
     }
 }
-

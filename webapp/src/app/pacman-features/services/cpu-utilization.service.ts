@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -24,12 +24,12 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class CpuUtilizationService {
-
     values: any = [];
     dataArray: any = [];
     constructor(
-                private httpService: HttpService,
-                private errorHandling: ErrorHandlingService) { }
+        private httpService: HttpService,
+        private errorHandling: ErrorHandlingService,
+    ) {}
 
     getData(Url, Method): Observable<any> {
         const url = Url;
@@ -37,15 +37,16 @@ export class CpuUtilizationService {
         const payload = {};
         const queryParams = {};
         try {
-            return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .pipe(map(response => {
-                        try {
-                            this.dataCheck(response);
-                            return this.massageData(response);
-                        } catch (error) {
-                            this.errorHandling.handleJavascriptError(error);
-                        }
-                    }));
+            return this.httpService.getHttpResponse(url, method, payload, queryParams).pipe(
+                map((response) => {
+                    try {
+                        this.dataCheck(response);
+                        return this.massageData(response);
+                    } catch (error) {
+                        this.errorHandling.handleJavascriptError(error);
+                    }
+                }),
+            );
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -59,7 +60,6 @@ export class CpuUtilizationService {
     }
 
     massageData(data): any {
-
         this.dataArray = [];
         this.values = [];
         for (let i = 0; i < data.response.length; i++) {
@@ -71,17 +71,17 @@ export class CpuUtilizationService {
             dateValue = new Date(dateValue);
             data.response[i].date = dateValue;
             obj = {
-                'value': numValue,
-                'keys': ['cpu-utilization'],
-                'legends': ['CPU'],
-                'date': data.response[i].date
+                value: numValue,
+                keys: ['cpu-utilization'],
+                legends: ['CPU'],
+                date: data.response[i].date,
             };
             this.values.push(obj);
         }
         this.dataArray = [
             {
-              'values': this.values
-            }
+                values: this.values,
+            },
         ];
         return this.dataArray;
     }

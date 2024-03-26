@@ -12,13 +12,32 @@
  * limitations under the License.
  -->
 
- <div class="sub-heading">
-    <app-title-burger-head [helpId]="'w1'" [subHeadTitle]="'overall compliance'"></app-title-burger-head>
+<div class="sub-heading">
+    <app-title-burger-head
+        [helpId]="'w1'"
+        [subHeadTitle]="'overall compliance'"
+    ></app-title-burger-head>
 </div>
-<div class='flex cg-container-parent flex-align-center flex-center'>
-    <app-multi-band-donut [colorData]="['#00569D', '#289cf7', '#26ba9d', '#f2425f', '#645ec5']" [colorTransData]="['rgba(0,86,157,0.267)' , 'rgba(40,156,247,0.2)', 'rgba(38,186,157,0.2)', 'rgba(242,66,95,0.2)', 'rgba(100,94,197,0.2)']" [donutData]="complianceData" [overallPercentage]="overallPercentage" [loaded]="loaded" *ngIf="!seekdata && contValue"></app-multi-band-donut>
+<div class="flex cg-container-parent flex-align-center flex-center">
+    <app-multi-band-donut
+        [colorData]="['#00569D', '#289cf7', '#26ba9d', '#f2425f', '#645ec5']"
+        [colorTransData]="[
+            'rgba(0,86,157,0.267)',
+            'rgba(40,156,247,0.2)',
+            'rgba(38,186,157,0.2)',
+            'rgba(242,66,95,0.2)',
+            'rgba(100,94,197,0.2)'
+        ]"
+        [donutData]="complianceData"
+        [overallPercentage]="overallPercentage"
+        [loaded]="loaded"
+        *ngIf="!seekdata && contValue"
+    ></app-multi-band-donut>
     <div class="error_msg">
-        <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+        <app-error-message
+            *ngIf="seekdata == true"
+            [selectedValue]="errorMessage"
+        ></app-error-message>
     </div>
-    <div class="loader" *ngIf='!contValue'></div>
+    <div class="loader" *ngIf="!contValue"></div>
 </div>

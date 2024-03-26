@@ -30,38 +30,34 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { PatchingSponsorComponent } from './patching-sponsor.component';
 
 describe('PatchingSponsorComponent', () => {
-  let component: PatchingSponsorComponent;
-  let fixture: ComponentFixture<PatchingSponsorComponent>;
+    let component: PatchingSponsorComponent;
+    let fixture: ComponentFixture<PatchingSponsorComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AgGridModule,
-        RouterTestingModule,
-      ],
-      declarations: [PatchingSponsorComponent, TitleBurgerHeadComponent],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, AgGridModule, RouterTestingModule],
+            declarations: [PatchingSponsorComponent, TitleBurgerHeadComponent],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PatchingSponsorComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PatchingSponsorComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

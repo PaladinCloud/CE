@@ -1,4 +1,4 @@
-.stepper-content-wrapper{
+.stepper-content-wrapper {
     display: flex;
 }
 
@@ -75,7 +75,9 @@
 
 .subtext {
     color: var(--gray-600, #475467);
-    font-feature-settings: 'clig' off, 'liga' off;
+    font-feature-settings:
+        'clig' off,
+        'liga' off;
     /* Body-2 */
     font-family: 'mark-pro';
     font-size: 14px;

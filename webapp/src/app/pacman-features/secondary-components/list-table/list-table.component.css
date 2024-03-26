@@ -15,7 +15,7 @@
 .list-table-elem-name {
     flex: 4;
     font-family: ex2-medium;
-    font-size: .95em;
+    font-size: 0.95em;
     font-weight: bold;
     color: #000000;
     word-break: break-word;
@@ -33,7 +33,7 @@
     flex: 5;
     justify-content: space-evenly;
     font-family: var(--text-light-font-family);
-    font-size: .95em;
+    font-size: 0.95em;
     align-items: center;
 }
 
@@ -77,7 +77,6 @@
     align-self: flex-start;
 }
 
-
 .list-table-wrapper .list-table-inner-wrapper .list-table-header-cont {
     border-bottom: solid 0.5px #c3cbd7;
     position: sticky;
@@ -86,8 +85,8 @@
     background-color: var(--background-white);
 }
 
-.count-color{
-    color:rgb(105, 103, 103);
+.count-color {
+    color: rgb(105, 103, 103);
 }
 
 .list-table-count-each {

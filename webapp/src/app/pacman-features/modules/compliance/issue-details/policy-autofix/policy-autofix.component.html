@@ -4,14 +4,16 @@
     <br />
     <p>
         An Autofix for <span class="autofix-info-value">{{ autofixDetails.name }}</span> has been
-        <span class="autofix-info-value">{{ autofixDetails.status }}</span> and will resolve this Violation on
-        <span class="autofix-info-value">{{ autofixDetails.endDate | date : 'medium' }}</span>.
+        <span class="autofix-info-value">{{ autofixDetails.status }}</span> and will resolve this
+        Violation on
+        <span class="autofix-info-value">{{ autofixDetails.endDate | date: 'medium' }}</span
+        >.
     </p>
     <br />
     <p>
         You'll get
         <span class="autofix-info-value">{{ autofixDetails.playItemsCount }}</span> notification{{
-        autofixDetails.playItemsCount > 1 ? 's' : ''
+            autofixDetails.playItemsCount > 1 ? 's' : ''
         }}
         along the way to keep you in the loop on how it's going.
     </p>

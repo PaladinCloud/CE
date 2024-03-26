@@ -1,11 +1,21 @@
 <div class="chip-wrapper">
-    <div *ngIf="chipVariant=='customVariant'; else notCustomVariant">
+    <div *ngIf="chipVariant == 'customVariant'; else notCustomVariant">
         <div *ngFor="let item of chipsList">
             <div class="chip customVariant nowrap-ellipsis">
                 <div [class]="'flex flex-align-center flex-around nowrap-ellipsis'">
-                    <div [title]="item" class="body-2 nowrap-ellipsis"> {{ item }} </div>
+                    <div [title]="item" class="body-2 nowrap-ellipsis">{{ item }}</div>
                     <div *ngIf="isRemovable">
-                        <mat-icon class="mat-icon" style="color: rgba(0, 0, 0, 0.37); font-size: 18px;vertical-align: text-top; cursor: pointer;" (click)="$event.stopPropagation();onReomve(item)">cancel</mat-icon>
+                        <mat-icon
+                            class="mat-icon"
+                            style="
+                                color: rgba(0, 0, 0, 0.37);
+                                font-size: 18px;
+                                vertical-align: text-top;
+                                cursor: pointer;
+                            "
+                            (click)="$event.stopPropagation(); onReomve(item)"
+                            >cancel</mat-icon
+                        >
                     </div>
                 </div>
             </div>
@@ -13,11 +23,16 @@
     </div>
     <ng-template #notCustomVariant>
         <mat-chip-list>
-            <mat-chip [class]="chipVariant" [ngStyle]="{'background-color': backgroundColor, 'color': color}"
-            *ngFor="let item of chipsList" [removable]="isRemovable" (removed)="onReomve(item)">
+            <mat-chip
+                [class]="chipVariant"
+                [ngStyle]="{ 'background-color': backgroundColor, color: color }"
+                *ngFor="let item of chipsList"
+                [removable]="isRemovable"
+                (removed)="onReomve(item)"
+            >
                 {{ item }}
                 <div *ngIf="isRemovable && isRemovableChip(item)">
-                <mat-icon matChipRemove>cancel</mat-icon>
+                    <mat-icon matChipRemove>cancel</mat-icon>
                 </div>
             </mat-chip>
         </mat-chip-list>

@@ -12,19 +12,21 @@
  * limitations under the License.
  */
 
- .attribute-wrapper{
-     background-color: var(--background-white);
-     margin-bottom: 24px;
-     border: 1px solid var(--border-200);
-     border-radius: 4px;
- }
+.attribute-wrapper {
+    background-color: var(--background-white);
+    margin-bottom: 24px;
+    border: 1px solid var(--border-200);
+    border-radius: 4px;
+}
 
-.attribute-parent-wrapper, .assets-wrapper{
-  padding: 16px 24px;
+.attribute-parent-wrapper,
+.assets-wrapper {
+    padding: 16px 24px;
 }
 
 .attribute-parent-wrapper:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 
 section.system-info {
@@ -61,7 +63,7 @@ section.system-info {
     text-transform: capitalize;
 }
 
-.values-wrapper-value{
+.values-wrapper-value {
     font: var(--text-body-2);
     color: var(--text-high-emphasis);
     text-transform: capitalize;
@@ -71,16 +73,16 @@ section.system-info {
     align-items: center;
 }
 
-.copy-icon{
+.copy-icon {
     display: none;
 }
 
-.tile-wrapper{
+.tile-wrapper {
     width: 90%;
     gap: 6px;
 }
 
-.values-wrapper-value:hover .copy-icon{
+.values-wrapper-value:hover .copy-icon {
     display: block;
     height: 12px;
 }
@@ -127,16 +129,16 @@ section.access-groups {
     margin-bottom: 1em;
 }
 
-.attribute-parent-wrapper .system-info:nth-last-child(1){
+.attribute-parent-wrapper .system-info:nth-last-child(1) {
     border: none;
 }
 
-.sub-header{
+.sub-header {
     padding: 0px;
 }
 
 /* css for edge browser */
-@supports (-ms-ime-align: auto) { 
+@supports (-ms-ime-align: auto) {
     .attribute-parent-wrapper {
         overflow: auto;
     }
