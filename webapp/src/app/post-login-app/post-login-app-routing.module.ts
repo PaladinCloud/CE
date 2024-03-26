@@ -53,14 +53,6 @@ const routes: Routes = [
                     ),
             },
             {
-                path: 'tools',
-                data: { sequence: 3 },
-                loadChildren: () =>
-                    import('./../pacman-features/modules/tools/tools.module').then(
-                        (m) => m.ToolsModule,
-                    ),
-            },
-            {
                 path: 'notifications',
                 data: { sequence: 6 },
                 loadChildren: () =>
