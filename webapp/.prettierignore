@@ -1,0 +1,15 @@
+# Ignore all files in the node_modules directory
+node_modules/
+
+# Ignore all files in the dist directory
+dist/
+e2e/
+src/assets/
+
+# Ignore all files with .min.js extension
+*.min.js
+
+# Ignore all files with .svg .png .xml extension
+*.png
+*.svg
+*.xml
