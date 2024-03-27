@@ -1997,12 +1997,21 @@ public class InventoryUtil {
      * @return the boolean
      */
     private static boolean getSnapShotPermissions(AmazonEC2 ec2Client, String snapshotID) {
-        DescribeSnapshotAttributeResult describeSnapshotAttribute = ec2Client
-                .describeSnapshotAttribute(new DescribeSnapshotAttributeRequest().withSnapshotId(snapshotID)
-                        .withAttribute(SnapshotAttributeName.CreateVolumePermission));
-        List<CreateVolumePermission> createVolumePermissions = describeSnapshotAttribute.getCreateVolumePermissions();
-        boolean ispublic = createVolumePermissions.stream()
-                .anyMatch(volPerm -> volPerm.getGroup() != null && "all".equalsIgnoreCase(volPerm.getGroup()));
+        boolean ispublic = false;
+        try {
+            DescribeSnapshotAttributeResult describeSnapshotAttribute = ec2Client
+                    .describeSnapshotAttribute(new DescribeSnapshotAttributeRequest().withSnapshotId(snapshotID)
+                            .withAttribute(SnapshotAttributeName.CreateVolumePermission));
+            List<CreateVolumePermission> createVolumePermissions = describeSnapshotAttribute.getCreateVolumePermissions();
+            ispublic = createVolumePermissions.stream()
+                    .anyMatch(volPerm -> volPerm.getGroup() != null && "all".equalsIgnoreCase(volPerm.getGroup()));
+        } catch (AmazonEC2Exception e) {
+            if ("InvalidSnapshot.NotFound".equalsIgnoreCase(e.getErrorCode())) {
+                log.info("Snapshot Not found. Unable to describe snapshot with ID " + snapshotID);
+            } else {
+                throw e;
+            }
+        }
         return ispublic;
     }
 
