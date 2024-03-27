@@ -41,20 +41,16 @@ import { TaggingAcrossTargetTypeComponent } from "./../../secondary-components/t
 import { TaggingInstancesTableComponent } from "./../../secondary-components/tagging-instances-table/tagging-instances-table.component";
 import { ComplianceOverviewTrendComponent } from "./../../secondary-components/compliance-overview-trend/compliance-overview-trend.component";
 import { TaggingComplianceTrendComponent } from "./../../secondary-components/tagging-compliance-trend/tagging-compliance-trend.component";
-import { CertificatesComplianceTrendComponent } from "./../../secondary-components/certificates-compliance-trend/certificates-compliance-trend.component";
 import { PolicyKnowledgebaseComponent } from "./policy-knowledgebase/policy-knowledgebase.component";
 import { PolicyKnowledgebaseDetailsComponent } from "./policy-knowledgebase-details/policy-knowledgebase-details.component";
-import { CertificateAssetsTrendComponent } from "./../../secondary-components/certificate-assets-trend/certificate-assets-trend.component";
 import { TaggingAssetsTrendComponent } from "./../../secondary-components/tagging-assets-trend/tagging-assets-trend.component";
 import { PolicyAssetsTrendComponent } from "./../../secondary-components/policy-assets-trend/policy-assets-trend.component";
-import { VulnerabilitySummaryTableComponent } from "./../../secondary-components/vulnerability-summary-table/vulnerability-summary-table.component";
 import { AgGridModule } from "ag-grid-angular";
 import { PolicyViolationDescComponent } from "./../../secondary-components/policy-violation-desc/policy-violation-desc.component";
 import { IssueListingService } from "../../services/issue-listing.service";
 import { RecommendationsComponent } from "../../modules/compliance/recommendations/recommendations.component";
 import { RecommandCategoryComponent } from "../../secondary-components/recommand-category/recommand-category.component";
 import { RecommendationsDetailsComponent } from "./recommendations-details/recommendations-details.component";
-import { OverallVulnerabilitiesComponent } from "./../../secondary-components/overall-vulnerabilities/overall-vulnerabilities.component";
 import { MatCardModule } from "@angular/material/card";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
@@ -63,7 +59,6 @@ import { CardComponent } from "./card/card.component";
 import { PolicyViolationSummaryService } from "../../services/policy-violation-summary.service";
 import { PacmanIssuesService } from "../../services/pacman-issues.service";
 import { ProgressBarChartComponent } from "./progress-bar-chart/progress-bar-chart.component";
-import { HorizontalBarChartComponent } from "./horizontal-bar-chart/horizontal-bar-chart.component";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -84,7 +79,6 @@ import { PolicyAutofixComponent } from './issue-details/policy-autofix/policy-au
   ],
   declarations: [
     ProgressBarChartComponent,
-    HorizontalBarChartComponent,
     PacmanIssuesComponent,
     MultilineBrushZoomComponent,
     MultiBandDonutComponent,
@@ -109,18 +103,14 @@ import { PolicyAutofixComponent } from './issue-details/policy-autofix/policy-au
     TaggingInstancesTableComponent,
     ComplianceOverviewTrendComponent,
     TaggingComplianceTrendComponent,
-    CertificatesComplianceTrendComponent,
     PolicyKnowledgebaseComponent,
     PolicyKnowledgebaseDetailsComponent,
-    CertificateAssetsTrendComponent,
     TaggingAssetsTrendComponent,
     PolicyAssetsTrendComponent,
-    VulnerabilitySummaryTableComponent,
     PolicyViolationDescComponent,
     RecommendationsComponent,
     RecommandCategoryComponent,
     RecommendationsDetailsComponent,
-    OverallVulnerabilitiesComponent,
     CardComponent,
     ViolationsCardComponent,
     PolicyAutofixComponent,
