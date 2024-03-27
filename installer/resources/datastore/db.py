@@ -9,18 +9,15 @@ import base64
 class DBOptionGroup(RDSOptionGroupResource):
     name = "mysql"
     engine_name = "mysql"
-    major_engine_version = "5.7"
-
+    major_engine_version = "8.0"
 
 class DBParameterGroup(RDSParameterGroupResource):
     name = "mysql"
-    family = "mysql5.7"
-
+    family = "mysql8.0"
 
 class DBSubnetGroup(RDSSubnetGroupResource):
     name = "mysql"
     subnet_ids = Settings.get('VPC')['SUBNETS']
-
 
 class MySQLDatabase(RDSResource):
     db_name = "pacmandata"
@@ -28,7 +25,7 @@ class MySQLDatabase(RDSResource):
     identifier = "data"
     storage_type = "gp2"
     engine = "mysql"
-    engine_version = "5.7.43"
+    engine_version = "8.0.35"
     allocated_storage = 10
     username =  Settings.DB_USERNAME
     password = Settings.DB_PASSWORD                 
