@@ -1970,8 +1970,8 @@ public class InventoryUtil {
                             .describeSnapshots(new DescribeSnapshotsRequest().withOwnerIds(accountId)).getSnapshots();
                     if (!snapShotsList.isEmpty()) {
                         List<SnapshotVH> snapShotVHList = snapShotsList.stream()
-                                .map(snapshot -> new SnapshotVH(snapshot,
-                                        getSnapShotPermissions(ec2Client, snapshot.getSnapshotId())))
+                                .map(snapshot -> buildSnapshotVH(ec2Client, snapshot))
+                                .filter(Objects::nonNull)
                                 .collect(Collectors.toList());
 
                         log.debug(InventoryConstants.ACCOUNT + accountId + " Type : Snapshot " + region.getName()
@@ -1993,26 +1993,26 @@ public class InventoryUtil {
      * Get SnapShot permission.
      *
      * @param ec2Client  the AmazonEC2
-     * @param snapshotID the SnapShot ID
+     * @param snapshot the SnapShot
      * @return the boolean
      */
-    private static boolean getSnapShotPermissions(AmazonEC2 ec2Client, String snapshotID) {
-        boolean ispublic = false;
+    private static SnapshotVH buildSnapshotVH(AmazonEC2 ec2Client, Snapshot snapshot) {
         try {
             DescribeSnapshotAttributeResult describeSnapshotAttribute = ec2Client
-                    .describeSnapshotAttribute(new DescribeSnapshotAttributeRequest().withSnapshotId(snapshotID)
+                    .describeSnapshotAttribute(new DescribeSnapshotAttributeRequest().withSnapshotId(snapshot.getSnapshotId())
                             .withAttribute(SnapshotAttributeName.CreateVolumePermission));
             List<CreateVolumePermission> createVolumePermissions = describeSnapshotAttribute.getCreateVolumePermissions();
-            ispublic = createVolumePermissions.stream()
+            boolean isPublic = createVolumePermissions.stream()
                     .anyMatch(volPerm -> volPerm.getGroup() != null && "all".equalsIgnoreCase(volPerm.getGroup()));
+            return new SnapshotVH(snapshot, isPublic);
         } catch (AmazonEC2Exception e) {
             if ("InvalidSnapshot.NotFound".equalsIgnoreCase(e.getErrorCode())) {
-                log.info("Snapshot Not found. Unable to describe snapshot with ID " + snapshotID);
+                log.info("Snapshot Not found. Unable to describe snapshot with ID " + snapshot.getSnapshotId());
             } else {
                 throw e;
             }
         }
-        return ispublic;
+        return null;
     }
 
     /**
