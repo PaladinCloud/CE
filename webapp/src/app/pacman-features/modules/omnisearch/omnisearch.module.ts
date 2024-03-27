@@ -17,7 +17,6 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
 import { OmnisearchComponent } from './omnisearch.component';
 import { OmnisearchRoutingModule } from './omnisearch-routing.module';
-import { OmniSearchPageComponent } from './omni-search-page/omni-search-page.component';
 import { OmniSearchDetailsComponent } from './omni-search-details/omni-search-details.component';
 
 @NgModule({
@@ -26,7 +25,7 @@ import { OmniSearchDetailsComponent } from './omni-search-details/omni-search-de
     SharedModule,
     OmnisearchRoutingModule
   ],
-  declarations: [OmnisearchComponent , OmniSearchPageComponent , OmniSearchDetailsComponent]
+  declarations: [OmnisearchComponent , OmniSearchDetailsComponent]
 })
 
 export class OmnisearchModule { }
