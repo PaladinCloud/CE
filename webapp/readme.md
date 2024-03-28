@@ -6,27 +6,28 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 This is a multi module project. These are the modules available:
 
-- _App Module_: This is the mail module in which application is loading
-    -  _Core Module_: This is a core module which is the backbone of the application and includes services which drive the application
-    - _Landing Page Module_: This module contains pre login section of the module
-    - _Post login Module_: This module sets the base of application once user logs in
-    - Feature modules
-        - Compliance
-        - Assets
-        - Omni Search
-        - Admin
-    - _Shared Module_: This module contains all components, services, constant files which are shared across the
-      application
+-   _App Module_: This is the mail module in which application is loading
+    -   _Core Module_: This is a core module which is the backbone of the application and includes services which drive the application
+    -   _Landing Page Module_: This module contains pre login section of the module
+    -   _Post login Module_: This module sets the base of application once user logs in
+    -   Feature modules
+        -   Compliance
+        -   Assets
+        -   Omni Search
+        -   Admin
+    -   _Shared Module_: This module contains all components, services, constant files which are shared across the
+        application
 
 ## Configurations
 
-* All the configurations can be done at this [file](src/config/configuration.ts).
-* Check the details about each configuration
-  value [here](https://github.com/PaladinCloud/CE/wiki/How-To-Configure-the-UI)
+-   All the configurations can be done at this [file](src/config/configuration.ts).
+-   Check the details about each configuration
+    value [here](https://github.com/PaladinCloud/CE/wiki/How-To-Configure-the-UI)
 
 ## Development & Build
 
 ### Setup the development environment
+
 You need to set up your development environment before you can do anything.
 
 Install [Node.js® and npm](https://nodejs.org/en/download/) if they are not already on your machine.
@@ -35,16 +36,18 @@ Install [Node.js® and npm](https://nodejs.org/en/download/) if they are not alr
 > window. Older versions produce errors, but newer versions are fine.
 
 Then install the [Angular CLI](https://github.com/angular/angular-cli) globally. You can install angular cli using npm:
+
 ```
 npm install -g @angular/cli
 ```
 
 Then install [Bower](https://bower.io/) globally. You can install Bower using npm:
+
 ```
 npm install -g bower
 ```
 
-*Great, your base setup is done!*
+_Great, your base setup is done!_
 
 ### Setup Web app
 
@@ -65,7 +68,7 @@ configuration can be skipped for now.
 
 Check the details about each configuration value [here](https://github.com/PaladinCloud/CE/wiki/How-To-Configure-the-UI)
 
-*Let's start the application!*
+_Let's start the application!_
 
 ### Development server
 
