@@ -1,28 +1,27 @@
-.account-management-page-wrapper{
+.account-management-page-wrapper {
     padding: 32px 28px;
     display: flex;
     flex-direction: column;
     gap: 28px;
     height: 100%;
- }
+}
 
- .page-header{
+.page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.body-2{
+.body-2 {
     color: white;
 }
 
-.btn{
+.btn {
     color: white;
     background: var(--primary-400);
-  }
+}
 
-
-  .button {
+.button {
     display: flex;
     flex-direction: row;
     padding: 8px 16px;
@@ -32,4 +31,4 @@
     order: 1;
     flex-grow: 0;
     border: none;
-  }
+}

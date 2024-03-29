@@ -22,7 +22,8 @@
     overflow: hidden;
 }
 
-.filter-icon img, .info-wrap img {
+.filter-icon img,
+.info-wrap img {
     height: 1.4em;
     cursor: pointer;
 }
@@ -80,7 +81,7 @@
 }
 
 @media print {
-    .vuln-trend-body{
+    .vuln-trend-body {
         font-size: 1.2em;
     }
     .print-container {

@@ -82,7 +82,7 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
         const urlObj = this.utils.getParamsFromUrlSnippet(link);
         const queryParams = {
             ...urlObj.params,
-          }
+        };
         // const url = new URL(urlObj.url);
         // const route = url.pathname + url.search;
 
@@ -92,7 +92,7 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
             this.breadcrumbPresent,
         );
         this.router
-            .navigate([urlObj.url.replace(window.location.origin, "")], {
+            .navigate([urlObj.url.replace(window.location.origin, '')], {
                 relativeTo: this.activatedRoute,
                 queryParams: queryParams,
                 queryParamsHandling: 'merge',

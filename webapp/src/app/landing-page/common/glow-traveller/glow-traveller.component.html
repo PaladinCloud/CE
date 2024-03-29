@@ -12,9 +12,19 @@
  * limitations under the License.
  -->
 
- <div *ngIf="!orientationVertical" [@horizontalLineTravel]="animationState" [ngClass]="classInner" class="app-glow-traveller">
+<div
+    *ngIf="!orientationVertical"
+    [@horizontalLineTravel]="animationState"
+    [ngClass]="classInner"
+    class="app-glow-traveller"
+>
     <!--HORIZONTAL-->
 </div>
-<div *ngIf="orientationVertical" [@verticalLineTravel]="animationState" [ngClass]="classInner" class="app-glow-traveller">
+<div
+    *ngIf="orientationVertical"
+    [@verticalLineTravel]="animationState"
+    [ngClass]="classInner"
+    class="app-glow-traveller"
+>
     <!--VERTICAL-->
 </div>

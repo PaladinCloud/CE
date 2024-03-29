@@ -18,38 +18,38 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { PluginManagementDetailsComponent } from './plugin-management-details.component';
 
 describe('PluginManagementDetailsComponent', () => {
-  let component: PluginManagementDetailsComponent;
-  let fixture: ComponentFixture<PluginManagementDetailsComponent>;
+    let component: PluginManagementDetailsComponent;
+    let fixture: ComponentFixture<PluginManagementDetailsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [PluginManagementDetailsComponent],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        DomainTypeObservableService,
-        ErrorHandlingService,
-        FormService,
-        FilterManagementService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [PluginManagementDetailsComponent],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                DomainTypeObservableService,
+                ErrorHandlingService,
+                FormService,
+                FilterManagementService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PluginManagementDetailsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PluginManagementDetailsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

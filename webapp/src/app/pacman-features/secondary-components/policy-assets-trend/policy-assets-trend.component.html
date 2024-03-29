@@ -12,16 +12,24 @@
  * limitations under the License.
  -->
 
- <div #policyAssetsTrendContainer class="issue-trend-wrapper">
-  <div class='multiline-brush-zoom-container'>
-      <div class="header-wrapper">
-        <span class="body-2 high-emphasis">Trend of total and compliant assets</span>
-      </div>
-      <div *ngIf="dataLoaded" id="policyAssetsTrend">
-        <app-multiline-brush-zoom (error)="setError($event)" [id]="'policyAssetsTrend'"  *ngIf="dataLoaded" [showLegend]="showGraphLegend" [yAxisLabel]="yAxisLabel" [graphWidth]="graphWidth" [graphLinesData]="graphData"></app-multiline-brush-zoom>
-      </div>
-      
-      <div class="loader" *ngIf='!dataLoaded && !error'></div>
-      <app-error-message *ngIf='error' [selectedValue]="errorMessage"></app-error-message>
-  </div>
+<div #policyAssetsTrendContainer class="issue-trend-wrapper">
+    <div class="multiline-brush-zoom-container">
+        <div class="header-wrapper">
+            <span class="body-2 high-emphasis">Trend of total and compliant assets</span>
+        </div>
+        <div *ngIf="dataLoaded" id="policyAssetsTrend">
+            <app-multiline-brush-zoom
+                (error)="setError($event)"
+                [id]="'policyAssetsTrend'"
+                *ngIf="dataLoaded"
+                [showLegend]="showGraphLegend"
+                [yAxisLabel]="yAxisLabel"
+                [graphWidth]="graphWidth"
+                [graphLinesData]="graphData"
+            ></app-multiline-brush-zoom>
+        </div>
+
+        <div class="loader" *ngIf="!dataLoaded && !error"></div>
+        <app-error-message *ngIf="error" [selectedValue]="errorMessage"></app-error-message>
+    </div>
 </div>

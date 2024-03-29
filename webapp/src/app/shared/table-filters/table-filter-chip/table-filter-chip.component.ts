@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+} from '@angular/core';
 import { LoggerService } from '../../services/logger.service';
 
 export interface FilterChipUpdateEvent {
@@ -20,7 +28,7 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     @Input() options: string[] = [];
     @Input() dateCategoryList: string[] = [];
     @Input() shortFilters: string[] = [];
-    @Input() numberOfAllowedFilters:number;
+    @Input() numberOfAllowedFilters: number;
     isDateFilter: boolean = false;
     calendarMinDate: Date;
     calendarMaxDate: Date;
@@ -60,30 +68,35 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
 
     constructor(private logger: LoggerService) {}
 
-    ngOnChanges (changes: SimpleChanges): void {
+    ngOnChanges(changes: SimpleChanges): void {
         if (changes.dateCategoryList) {
-            if (this.dateCategoryList?.toString().toLowerCase().includes(this.category?.toLowerCase())) {
+            if (
+                this.dateCategoryList
+                    ?.toString()
+                    .toLowerCase()
+                    .includes(this.category?.toLowerCase())
+            ) {
                 this.isDateFilter = true;
             }
         }
-        if(changes.options){
-            if(this.isDateFilter && this.options?.length){
+        if (changes.options) {
+            if (this.isDateFilter && this.options?.length) {
                 this.calendarMinDate = new Date(this.options[0]);
                 this.calendarMaxDate = new Date(this.options[1]);
             }
             this.filterOptionsByQuery();
         }
-        if(changes.appliedFiltersDict){
+        if (changes.appliedFiltersDict) {
             this.isMaxfiltersSelected();
         }
     }
 
     ngOnInit(): void {}
 
-    handleSearchTextChange(searchText){
+    handleSearchTextChange(searchText) {
         const event = {
             searchText,
-            selectedFilterCategory: this.category
+            selectedFilterCategory: this.category,
         };
 
         this.filterOptionsByQuery();
@@ -92,36 +105,38 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
 
     toggleOptionsMenu() {
         this.isOptionsMenuOpen = !this.isOptionsMenuOpen;
-        if(this.isOptionsMenuOpen){
+        if (this.isOptionsMenuOpen) {
             this.filterOptionsByQuery();
-        }else{
+        } else {
             this.optionFilterQuery = '';
         }
     }
 
-    closeMenu(){
+    closeMenu() {
         this.optionFilterQuery = '';
         this.chipDropdownClose.emit(null);
     }
 
-    sortCheckedOptionsFirst(){
-        let checkedOptions = Object.keys(this.appliedFiltersDict || {}).filter(key => this.appliedFiltersDict[key]);
+    sortCheckedOptionsFirst() {
+        let checkedOptions = Object.keys(this.appliedFiltersDict || {}).filter(
+            (key) => this.appliedFiltersDict[key],
+        );
         let uncheckedOptions = this.options?.filter((f) => !checkedOptions.includes(f)) || [];
-        if(this.shortFilters?.length === 0){
+        if (this.shortFilters?.length === 0) {
             this.options = [...checkedOptions, ...uncheckedOptions];
-        }else{
-            checkedOptions = checkedOptions.filter(item => !this.shortFilters.includes(item));
-            uncheckedOptions = uncheckedOptions.filter(item => !this.shortFilters.includes(item));
+        } else {
+            checkedOptions = checkedOptions.filter((item) => !this.shortFilters.includes(item));
+            uncheckedOptions = uncheckedOptions.filter((item) => !this.shortFilters.includes(item));
             this.options = [...this.shortFilters, ...checkedOptions, ...uncheckedOptions];
         }
     }
 
-    dateIntervalSelected(from?, to?){
+    dateIntervalSelected(from?, to?) {
         const toDate = new Date(to).toLocaleDateString('en-CA');
         const fromDate = new Date(from).toLocaleDateString('en-CA');
         this.isOptionsMenuOpen = false;
         this.optionFilterQuery = '';
-        this.updateFilterOption(fromDate+' - '+toDate,true);
+        this.updateFilterOption(fromDate + ' - ' + toDate, true);
     }
 
     updateFilterOption(filterName: string, filterValue: boolean) {
@@ -140,24 +155,27 @@ export class TableFilterChipComponent implements OnInit, OnChanges {
     }
 
     filterOptionsByQuery() {
-        
-        if(this.options){
-            try{
+        if (this.options) {
+            try {
                 this.sortCheckedOptionsFirst();
-                this.filteredOptions = this.options.filter((f) =>
-                    f?.toLowerCase()?.includes(this.optionFilterQuery?.toLowerCase()),
-                ) || [];
-    
-            }catch(e){
+                this.filteredOptions =
+                    this.options.filter((f) =>
+                        f?.toLowerCase()?.includes(this.optionFilterQuery?.toLowerCase()),
+                    ) || [];
+            } catch (e) {
                 this.logger.log('jsError', e);
             }
         }
     }
 
-    isMaxfiltersSelected(){
-        if(this.numberOfAllowedFilters && Object.values(this.appliedFiltersDict).filter(value => value).length >=this.numberOfAllowedFilters){
+    isMaxfiltersSelected() {
+        if (
+            this.numberOfAllowedFilters &&
+            Object.values(this.appliedFiltersDict).filter((value) => value).length >=
+                this.numberOfAllowedFilters
+        ) {
             this.isDisableFilters = true;
-        }else{
+        } else {
             this.isDisableFilters = false;
         }
     }

@@ -48,12 +48,12 @@
 }
 
 .legend-each {
-    padding: .5em;
+    padding: 0.5em;
     flex-grow: 1;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; 
+    text-overflow: ellipsis;
 }
 
 .graph-outer-container {
@@ -76,21 +76,21 @@
 .showFlex .legend-each {
     margin-top: 1em;
 }
-.legend-text-right{
+.legend-text-right {
     font-family: var(--text-medium-font-family);
 }
 
-.total-count-section{
-    font-size: 1.5em
+.total-count-section {
+    font-size: 1.5em;
 }
-.pie-chart-desc{
+.pie-chart-desc {
     text-align: center;
 }
-.pie-chart-legend-desc{
+.pie-chart-legend-desc {
     padding: 1em 0 0 0;
     word-spacing: 2px;
     text-align: center;
 }
-.pie-chart-legend-desc span{
+.pie-chart-legend-desc span {
     font-family: var(--text-medium-font-family);
 }

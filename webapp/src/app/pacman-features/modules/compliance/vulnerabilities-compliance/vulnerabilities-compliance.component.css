@@ -12,20 +12,18 @@
  * limitations under the License.
  */
 
-
-
-.title-text{
+.title-text {
     display: inline-block;
 }
 
-.arrow-img{
+.arrow-img {
     transform: rotate(180deg);
     margin-right: 1em;
     cursor: pointer;
     transition: 0.4s ease;
 }
 
-.arrow-img:hover{
+.arrow-img:hover {
     transform: rotate(180deg) translateX(20%);
 }
 .dashboards-header {

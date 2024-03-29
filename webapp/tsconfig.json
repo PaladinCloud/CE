@@ -1,36 +1,32 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": false,
-    "noPropertyAccessFromIndexSignature": false,
-    "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": true,
-    "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "es2020",
-    "lib": [
-      "es2021",
-      "dom",
-      "esnext.asynciterable"
-    ],
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": false,
-    "strictInputAccessModifiers": false,
-    "strictTemplates": false,
-    "strictPropertyInitialization": false,
-    "noImplicitAny": false
-  }
+    "compileOnSave": false,
+    "compilerOptions": {
+        "baseUrl": "./",
+        "outDir": "./dist/out-tsc",
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": false,
+        "noPropertyAccessFromIndexSignature": false,
+        "noImplicitReturns": false,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "declaration": false,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "es2015",
+        "module": "es2020",
+        "lib": ["es2021", "dom", "esnext.asynciterable"],
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true
+    },
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": false,
+        "strictInputAccessModifiers": false,
+        "strictTemplates": false,
+        "strictPropertyInitialization": false,
+        "noImplicitAny": false
+    }
 }

@@ -12,306 +12,300 @@
  * limitations under the License.
  */
 
-import {
-  Component,
-  Input,
-  OnInit,
-  OnDestroy,
-  OnChanges,
-  SimpleChanges,
-} from "@angular/core";
-import { DataCacheService } from "../../core/services/data-cache.service";
-import { AssetGroupObservableService } from "../../core/services/asset-group-observable.service";
-import { LoggerService } from "../../shared/services/logger.service";
-import { AssetTilesService } from "../../core/services/asset-tiles.service";
-import { environment } from "./../../../environments/environment";
-import { DomainTypeObservableService } from "../../core/services/domain-type-observable.service";
-import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
-import { RouterUtilityService } from "../../shared/services/router-utility.service";
-import { combineLatest, Subscription } from "rxjs";
-import { WorkflowService } from "../../core/services/workflow.service";
-import { FetchResourcesService } from "../../pacman-features/services/fetch-resources.service";
-import { AwsResourceTypeSelectionService } from "src/app/pacman-features/services/aws-resource-type-selection.service";
-import { AgDomainObservableService } from "src/app/core/services/ag-domain-observable.service";
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { DataCacheService } from '../../core/services/data-cache.service';
+import { AssetGroupObservableService } from '../../core/services/asset-group-observable.service';
+import { LoggerService } from '../../shared/services/logger.service';
+import { AssetTilesService } from '../../core/services/asset-tiles.service';
+import { environment } from './../../../environments/environment';
+import { DomainTypeObservableService } from '../../core/services/domain-type-observable.service';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { RouterUtilityService } from '../../shared/services/router-utility.service';
+import { combineLatest, Subscription } from 'rxjs';
+import { WorkflowService } from '../../core/services/workflow.service';
+import { FetchResourcesService } from '../../pacman-features/services/fetch-resources.service';
+import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
+import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
 
 @Component({
-  selector: "app-default-asset-group",
-  templateUrl: "./default-asset-group.component.html",
-  styleUrls: ["./default-asset-group.component.css"],
-  providers: [DataCacheService],
+    selector: 'app-default-asset-group',
+    templateUrl: './default-asset-group.component.html',
+    styleUrls: ['./default-asset-group.component.css'],
+    providers: [DataCacheService],
 })
 export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
-  awsResourceDetails: any;
-  agAndDomain: any;
-  agDomainSubscription: Subscription;
-  constructor(
-    private agDomainObservableService: AgDomainObservableService,
-    private fetchResourcesService: FetchResourcesService,
-    private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
-    private dataStore: DataCacheService,
-    private assetGroupObservableService: AssetGroupObservableService,
-    private logger: LoggerService,
-    private assetTileService: AssetTilesService,
-    private domainTypeObservableService: DomainTypeObservableService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private routingUtilityService: RouterUtilityService,
-    private workflowService: WorkflowService
-  ) { }
+    awsResourceDetails: any;
+    agAndDomain: any;
+    agDomainSubscription: Subscription;
+    constructor(
+        private agDomainObservableService: AgDomainObservableService,
+        private fetchResourcesService: FetchResourcesService,
+        private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
+        private dataStore: DataCacheService,
+        private assetGroupObservableService: AssetGroupObservableService,
+        private logger: LoggerService,
+        private assetTileService: AssetTilesService,
+        private domainTypeObservableService: DomainTypeObservableService,
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+        private routingUtilityService: RouterUtilityService,
+        private workflowService: WorkflowService,
+    ) {}
 
-  clicked = false;
+    clicked = false;
 
-  assetCount;
-  @Input() defaultAssetGroup: string;
-  @Input() provider;
-  @Input() dataLoaded;
-  @Input() isExpanded;
-  private assetGroupSubscription: Subscription;
-  private domainSubscription: Subscription;
+    assetCount;
+    @Input() defaultAssetGroup: string;
+    @Input() provider;
+    @Input() dataLoaded;
+    @Input() isExpanded;
+    private assetGroupSubscription: Subscription;
+    private domainSubscription: Subscription;
 
-  public assetGroupDisplayName = "";
-  private assetGroupName;
-  private assetGroupList;
-  private domainName: string;
+    public assetGroupDisplayName = '';
+    private assetGroupName;
+    private assetGroupList;
+    private domainName: string;
 
-  ngOnInit() {
-    try {
-      this.subscribeToAssetGroupChange();
-      this.subscribeToDomainChange();
-      this.getResources();
-    }
-    catch (error) {
-      this.logger.log("error", error);
-    }
-  }
-
-
-  getResources() {
-    this.agDomainSubscription = this.agDomainObservableService.getAgDomain().subscribe(([ag, domain]) => {
-      this.agAndDomain = { ag, domain };
-      this.fetchResourcesService
-        .getResourceTypesAndCount(this.agAndDomain).then(results => {
-          this.assetCount = results[1].totalassets;
-          const resourceTypes = results[0]['targettypes'];
-          let resourceTypeCount = results[1];
-          let recommendations: any = results[2];
-
-          this.awsResourceTypeSelectionService.setAssetTypeCount(resourceTypeCount);
-          this.awsResourceDetails = resourceTypes.map(function (resourceType: any) {
-
-            if (resourceTypeCount !== undefined && resourceTypeCount !== null) {
-              resourceTypeCount = results[1].assetcount;
-              const countObj = resourceTypeCount.find(obj => obj.type === resourceType.type);
-              resourceType.count = countObj ? countObj.count : 0;
-            }
-
-            if (recommendations !== undefined && recommendations !== null) {
-              recommendations = results[2]['response'];
-              let recommendationArray = [];
-              recommendationArray = recommendations.filter((value) => {
-                return value.targetType === resourceType.type;
-              });
-              resourceType.recommendations = recommendationArray;
-
-              resourceType.recommendationAvailable = recommendationArray.length > 0 ? true : false;
-            }
-
-            return resourceType;
-          });
-          this.awsResourceTypeSelectionService.allAwsResourcesForAssetGroup(this.awsResourceDetails);
-        })
-    });
-  }
-
-  getAssetsCount() {
-    const assetDetailUrl = environment.assetTilesdata.url;
-    const assetDetailMethod = environment.assetTilesdata.method;
-
-    const queryParams = {
-      'ag': this.assetGroupName
-    };
-    if (this.assetGroupName) {
-      this.assetTileService.getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod).subscribe(
-        response => {
-          this.assetCount = response[0].assetcount;
-        });
-    }
-  }
-
-  openOverlay(): void {
-    this.clicked = true;
-  }
-
-  closeOverlay() {
-    this.clicked = false;
-  }
-
-  subscribeToAssetGroupChange() {
-    this.assetGroupName = this.dataStore.getCurrentSelectedAssetGroup();
-    if (this.assetGroupName) {
-      const navigationExtras: NavigationExtras = {
-        queryParams: {
-          ag: this.assetGroupName,
-        },
-        queryParamsHandling: "merge",
-      };
-      this.router.navigate([], navigationExtras);
-    }
-
-    this.assetGroupSubscription = this.assetGroupObservableService
-      .getAssetGroup()
-      .subscribe((assGroupName) => {
-        if (assGroupName) {
-          this.assetGroupName = assGroupName;
-          this.getAssetGroupDisplayName(this.assetGroupName);
-          this.getAssetsCount();
+    ngOnInit() {
+        try {
+            this.subscribeToAssetGroupChange();
+            this.subscribeToDomainChange();
+            this.getResources();
+        } catch (error) {
+            this.logger.log('error', error);
         }
-      });
-  }
+    }
 
-  subscribeToDomainChange() {
-    this.domainSubscription = this.domainTypeObservableService
-      .getDomainType()
-      .subscribe((domain) => {
-        this.domainName = domain;
-      });
-  }
+    getResources() {
+        this.agDomainSubscription = this.agDomainObservableService
+            .getAgDomain()
+            .subscribe(([ag, domain]) => {
+                this.agAndDomain = { ag, domain };
+                this.fetchResourcesService
+                    .getResourceTypesAndCount(this.agAndDomain)
+                    .then((results) => {
+                        this.assetCount = results[1].totalassets;
+                        const resourceTypes = results[0]['targettypes'];
+                        let resourceTypeCount = results[1];
+                        let recommendations: any = results[2];
 
-  getAssetGroupDisplayName(assetGroupName) {
-    /* To check if asset group list is available in cache */
-    const assetGroupList = this.dataStore.getListOfAssetGroups();
+                        this.awsResourceTypeSelectionService.setAssetTypeCount(resourceTypeCount);
+                        this.awsResourceDetails = resourceTypes.map(function (resourceType: any) {
+                            if (resourceTypeCount !== undefined && resourceTypeCount !== null) {
+                                resourceTypeCount = results[1].assetcount;
+                                const countObj = resourceTypeCount.find(
+                                    (obj) => obj.type === resourceType.type,
+                                );
+                                resourceType.count = countObj ? countObj.count : 0;
+                            }
 
-    if (!assetGroupList) {
-      /* Asset group list not available, getting the list */
+                            if (recommendations !== undefined && recommendations !== null) {
+                                recommendations = results[2]['response'];
+                                let recommendationArray = [];
+                                recommendationArray = recommendations.filter((value) => {
+                                    return value.targetType === resourceType.type;
+                                });
+                                resourceType.recommendations = recommendationArray;
 
-      const assetUrl = environment.assetTiles.url;
-      const assetMethod = environment.assetTiles.method;
+                                resourceType.recommendationAvailable =
+                                    recommendationArray.length > 0 ? true : false;
+                            }
 
-      this.assetTileService.getAssetTiles(assetUrl, assetMethod).subscribe(
-        (response) => {
-          this.assetGroupList = response[0];
-          if (this.assetGroupList) {
-            /* Store the list in stringify format */
-            this.dataStore.setListOfAssetGroups(
-              JSON.stringify(this.assetGroupList)
+                            return resourceType;
+                        });
+                        this.awsResourceTypeSelectionService.allAwsResourcesForAssetGroup(
+                            this.awsResourceDetails,
+                        );
+                    });
+            });
+    }
+
+    getAssetsCount() {
+        const assetDetailUrl = environment.assetTilesdata.url;
+        const assetDetailMethod = environment.assetTilesdata.method;
+
+        const queryParams = {
+            ag: this.assetGroupName,
+        };
+        if (this.assetGroupName) {
+            this.assetTileService
+                .getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod)
+                .subscribe((response) => {
+                    this.assetCount = response[0].assetcount;
+                });
+        }
+    }
+
+    openOverlay(): void {
+        this.clicked = true;
+    }
+
+    closeOverlay() {
+        this.clicked = false;
+    }
+
+    subscribeToAssetGroupChange() {
+        this.assetGroupName = this.dataStore.getCurrentSelectedAssetGroup();
+        if (this.assetGroupName) {
+            const navigationExtras: NavigationExtras = {
+                queryParams: {
+                    ag: this.assetGroupName,
+                },
+                queryParamsHandling: 'merge',
+            };
+            this.router.navigate([], navigationExtras);
+        }
+
+        this.assetGroupSubscription = this.assetGroupObservableService
+            .getAssetGroup()
+            .subscribe((assGroupName) => {
+                if (assGroupName) {
+                    this.assetGroupName = assGroupName;
+                    this.getAssetGroupDisplayName(this.assetGroupName);
+                    this.getAssetsCount();
+                }
+            });
+    }
+
+    subscribeToDomainChange() {
+        this.domainSubscription = this.domainTypeObservableService
+            .getDomainType()
+            .subscribe((domain) => {
+                this.domainName = domain;
+            });
+    }
+
+    getAssetGroupDisplayName(assetGroupName) {
+        /* To check if asset group list is available in cache */
+        const assetGroupList = this.dataStore.getListOfAssetGroups();
+
+        if (!assetGroupList) {
+            /* Asset group list not available, getting the list */
+
+            const assetUrl = environment.assetTiles.url;
+            const assetMethod = environment.assetTiles.method;
+
+            this.assetTileService.getAssetTiles(assetUrl, assetMethod).subscribe(
+                (response) => {
+                    this.assetGroupList = response[0];
+                    if (this.assetGroupList) {
+                        /* Store the list in stringify format */
+                        this.dataStore.setListOfAssetGroups(JSON.stringify(this.assetGroupList));
+                        this.fetchAssetGroupDisplayName(assetGroupName);
+                    }
+                },
+                (error) => {
+                    this.logger.log('error', error);
+                },
             );
+        } else {
+            /* If list is availbe then get asset group display name, domain list from a matchign asset group name */
+            this.assetGroupList = JSON.parse(assetGroupList);
             this.fetchAssetGroupDisplayName(assetGroupName);
-          }
-        },
-        (error) => {
-          this.logger.log("error", error);
         }
-      );
-    } else {
-      /* If list is availbe then get asset group display name, domain list from a matchign asset group name */
-      this.assetGroupList = JSON.parse(assetGroupList);
-      this.fetchAssetGroupDisplayName(assetGroupName);
     }
-  }
 
-  fetchAssetGroupDisplayName(assetGroupName) {
-    if (this.assetGroupList) {
-      let allAssetGroups;
-      if (typeof this.assetGroupList === "string") {
-        allAssetGroups = JSON.parse(this.assetGroupList);
-      } else {
-        allAssetGroups = this.assetGroupList;
-      }
+    fetchAssetGroupDisplayName(assetGroupName) {
+        if (this.assetGroupList) {
+            let allAssetGroups;
+            if (typeof this.assetGroupList === 'string') {
+                allAssetGroups = JSON.parse(this.assetGroupList);
+            } else {
+                allAssetGroups = this.assetGroupList;
+            }
 
-      let isAgPresent = false;
+            let isAgPresent = false;
 
-      const filteredArray = allAssetGroups.filter(
-        (element) => element.name === assetGroupName
-      );
+            const filteredArray = allAssetGroups.filter(
+                (element) => element.name === assetGroupName,
+            );
 
-      if (filteredArray.length) {
-        isAgPresent = true;
-        const assetGroupObject = filteredArray[0];
-        this.assetGroupDisplayName = assetGroupObject.displayname;
-        this.getUpdatedDomain(assetGroupName, assetGroupObject);
-      }
+            if (filteredArray.length) {
+                isAgPresent = true;
+                const assetGroupObject = filteredArray[0];
+                this.assetGroupDisplayName = assetGroupObject.displayname;
+                this.getUpdatedDomain(assetGroupName, assetGroupObject);
+            }
 
-      if (!isAgPresent) {
-        this.router.navigate([
-          "/pl",
-          { outlets: { modal: ["change-default-asset-group"] } },
-        ]);
-      }
+            if (!isAgPresent) {
+                this.router.navigate([
+                    '/pl',
+                    { outlets: { modal: ['change-default-asset-group'] } },
+                ]);
+            }
+        }
     }
-  }
 
-  getUpdatedDomain(assetGroupName, assetGroupObject) {
-    if (assetGroupObject.domains && assetGroupObject.domains.length > 0) {
-      this.domainTypeObservableService.updateListOfDomains(
-        assetGroupObject.domains.join("~")
-      );
+    getUpdatedDomain(assetGroupName, assetGroupObject) {
+        if (assetGroupObject.domains && assetGroupObject.domains.length > 0) {
+            this.domainTypeObservableService.updateListOfDomains(
+                assetGroupObject.domains.join('~'),
+            );
 
-      const newDomain = this.dataStore.getCurrentSelectedDomain(assetGroupName)
-        ? this.dataStore.getCurrentSelectedDomain(assetGroupName)
-        : assetGroupObject.domains[0];
+            const newDomain = this.dataStore.getCurrentSelectedDomain(assetGroupName)
+                ? this.dataStore.getCurrentSelectedDomain(assetGroupName)
+                : assetGroupObject.domains[0];
 
-      const deepestUrl = this.routingUtilityService.getJointDeepestPageUrl(
-        this.activatedRoute.snapshot
-      );
+            const deepestUrl = this.routingUtilityService.getJointDeepestPageUrl(
+                this.activatedRoute.snapshot,
+            );
 
-      const isActiveUrlACommonModulePage =
-        this.routingUtilityService.checkIfCurrentRouteBelongsToCommonPages(
-          deepestUrl
-        );
+            const isActiveUrlACommonModulePage =
+                this.routingUtilityService.checkIfCurrentRouteBelongsToCommonPages(deepestUrl);
 
-      const currentModule =
-        this.routingUtilityService.getModuleNameFromCurrentRoute(
-          this.activatedRoute.snapshot
-        );
+            const currentModule = this.routingUtilityService.getModuleNameFromCurrentRoute(
+                this.activatedRoute.snapshot,
+            );
 
-      const landingPageUrl =
-        this.routingUtilityService.getLandingPageInAModule(currentModule);
+            const landingPageUrl =
+                this.routingUtilityService.getLandingPageInAModule(currentModule);
 
-      const navigationExtras: NavigationExtras = {
-        queryParams: {
-          domain: newDomain,
-        },
-        queryParamsHandling: "merge",
-      };
+            const navigationExtras: NavigationExtras = {
+                queryParams: {
+                    domain: newDomain,
+                },
+                queryParamsHandling: 'merge',
+            };
 
-      if (
-        !isActiveUrlACommonModulePage &&
-        this.domainName &&
-        landingPageUrl &&
-        newDomain !== this.domainName
-      ) {
-        /* Clears the saved url from module as different module may not have that page */
-        this.workflowService.clearDataOfOpenedPageInModule();
-        this.router.navigate([landingPageUrl], navigationExtras);
-      } else {
-        this.router.navigate([], navigationExtras);
-      }
-    } else {
-      this.domainTypeObservableService.updateListOfDomains("");
-      const navigationExtras: NavigationExtras = {
-        queryParams: {
-          domain: "",
-        },
-        queryParamsHandling: "merge",
-      };
+            if (
+                !isActiveUrlACommonModulePage &&
+                this.domainName &&
+                landingPageUrl &&
+                newDomain !== this.domainName
+            ) {
+                /* Clears the saved url from module as different module may not have that page */
+                this.workflowService.clearDataOfOpenedPageInModule();
+                this.router.navigate([landingPageUrl], navigationExtras);
+            } else {
+                this.router.navigate([], navigationExtras);
+            }
+        } else {
+            this.domainTypeObservableService.updateListOfDomains('');
+            const navigationExtras: NavigationExtras = {
+                queryParams: {
+                    domain: '',
+                },
+                queryParamsHandling: 'merge',
+            };
 
-      this.router.navigate([], navigationExtras);
+            this.router.navigate([], navigationExtras);
+        }
     }
-  }
 
-  ngOnDestroy() {
-    try {
-      if (this.agDomainSubscription) {
-        this.agDomainSubscription.unsubscribe();
-      }
-      if (this.assetGroupSubscription) {
-        this.assetGroupSubscription.unsubscribe();
-      }
-      if (this.assetGroupSubscription) {
-        this.domainSubscription.unsubscribe();
-      }
-    } catch (error) {
-      this.logger.log("error", error);
+    ngOnDestroy() {
+        try {
+            if (this.agDomainSubscription) {
+                this.agDomainSubscription.unsubscribe();
+            }
+            if (this.assetGroupSubscription) {
+                this.assetGroupSubscription.unsubscribe();
+            }
+            if (this.assetGroupSubscription) {
+                this.domainSubscription.unsubscribe();
+            }
+        } catch (error) {
+            this.logger.log('error', error);
+        }
     }
-  }
 }

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.value{
+.value {
     font-weight: 600;
     width: 72%;
     word-wrap: break-word;
@@ -21,7 +21,7 @@
     overflow: auto;
 }
 
-.title{
+.title {
     margin-bottom: 0.7em;
     font-family: var(--text-light-font-family);
     text-transform: capitalize;
@@ -30,25 +30,25 @@
     line-height: 1.3;
 }
 
-.container{
-	width: 25%;
-	margin-bottom: 1.5em;
+.container {
+    width: 25%;
+    margin-bottom: 1.5em;
 }
 
-.desc-details{
-	margin: 1.5em 0 1em 0;
+.desc-details {
+    margin: 1.5em 0 1em 0;
 }
 
-.colored{
+.colored {
     color: var(--primary-500);
     cursor: pointer;
 }
 
-.header{
-	font-family: var(--text-medium-font-family);
-	margin-top: 1.5em;
+.header {
+    font-family: var(--text-medium-font-family);
+    margin-top: 1.5em;
 }
 
-.spacingWord{
+.spacingWord {
     word-spacing: 4px;
 }

@@ -11,11 +11,11 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.violations-table{
+.violations-table {
     height: 100%;
 }
 
-.violations-header{
+.violations-header {
     padding-bottom: 18px;
 }
 
@@ -28,5 +28,5 @@
 
 .wrapper {
     position: relative;
-    height: calc(100% - 62px); /* removed page title height*/ 
+    height: calc(100% - 62px); /* removed page title height*/
 }

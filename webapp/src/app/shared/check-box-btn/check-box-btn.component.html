@@ -12,7 +12,8 @@
  * limitations under the License.
  -->
 
- <label class="container nowrap-ellipsis" ><ng-content></ng-content>
-    <input type="checkbox" [checked]="isChecked == true" (click)="checkBoxClick()">
-    <span [ngStyle]="{'border-color': checkboxColor}" class="checkmark"></span>
+<label class="container nowrap-ellipsis"
+    ><ng-content></ng-content>
+    <input type="checkbox" [checked]="isChecked == true" (click)="checkBoxClick()" />
+    <span [ngStyle]="{ 'border-color': checkboxColor }" class="checkmark"></span>
 </label>

@@ -14,7 +14,6 @@
 
 /* Reset CSS */
 
-
 /**
    Coded by /u/j0be in scss.
    See scss source here -> https://codepen.io/j0be/pen/MKRVyN
@@ -109,8 +108,6 @@ video {
     /* vertical-align: baseline; */
 }
 
-
-
 /* HTML5 display-role reset for older browsers */
 
 article,
@@ -163,9 +160,6 @@ a {
 :focus {
     outline: none;
 }
-
-
-
 
 /* Global styles */
 

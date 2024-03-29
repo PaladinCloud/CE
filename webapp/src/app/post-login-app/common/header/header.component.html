@@ -1,49 +1,69 @@
-<div class='header-wrapper'>
-    <img src='/assets/images/Paladin_Logo.svg' (click)="openDashboard()" style='height: 28px;' />
-    <div class='flex flex-row flex-align-center gap-20'>
+<div class="header-wrapper">
+    <img src="/assets/images/Paladin_Logo.svg" (click)="openDashboard()" style="height: 28px" />
+    <div class="flex flex-row flex-align-center gap-20">
         <div>
-            <div class='relative search-container'>
-                <input required type='text' class='header-search-input body-3' id='headSearch{{"tableIdAppend"}}' [(ngModel)]='searchQuery' (keyup)="handleSearch($event)">
-                <label class='absolute search-label header-icon header-hoverable-icon' for='headSearch{{"tableIdAppend"}}'> 
-                    <img class="pointer" alt='' src='/assets/icons/header-search.svg' />
+            <div class="relative search-container">
+                <input
+                    required
+                    type="text"
+                    class="header-search-input body-3"
+                    id="headSearch{{ 'tableIdAppend' }}"
+                    [(ngModel)]="searchQuery"
+                    (keyup)="handleSearch($event)"
+                />
+                <label
+                    class="absolute search-label header-icon header-hoverable-icon"
+                    for="headSearch{{ 'tableIdAppend' }}"
+                >
+                    <img class="pointer" alt="" src="/assets/icons/header-search.svg" />
                 </label>
             </div>
         </div>
-        <div (click)="openNotification()" class='notifications-icon header-icon header-hoverable-icon'>
+        <div
+            (click)="openNotification()"
+            class="notifications-icon header-icon header-hoverable-icon"
+        >
             <mat-icon
-                [ngClass]='{ active: haveNewNotification }'
-                class='header-user-notification material-icons-outlined'
-                title='Notifications'
+                [ngClass]="{ active: haveNewNotification }"
+                class="header-user-notification material-icons-outlined"
+                title="Notifications"
             >
                 notifications
             </mat-icon>
         </div>
-        <div (menuClosed)='isUserMenuOpen = false' (menuOpened)='isUserMenuOpen = true' [matMenuTriggerFor]='userInfoMenu'
-             class='header-hoverable-icon'>
-            <div class='user-info-menu'>{{ userName[0] }}</div>
+        <div
+            (menuClosed)="isUserMenuOpen = false"
+            (menuOpened)="isUserMenuOpen = true"
+            [matMenuTriggerFor]="userInfoMenu"
+            class="header-hoverable-icon"
+        >
+            <div class="user-info-menu">{{ userName[0] }}</div>
         </div>
-        <mat-menu #userInfoMenu='matMenu'>
-            <div class='non-clickable-menu-item header-user-wrapper' disabled mat-menu-item>
-                <div class='header-user-content-wrapper'>
-                    <div class='user-image-wrapper'>
+        <mat-menu #userInfoMenu="matMenu">
+            <div class="non-clickable-menu-item header-user-wrapper" disabled mat-menu-item>
+                <div class="header-user-content-wrapper">
+                    <div class="user-image-wrapper">
                         <div>{{ userName[0] }}</div>
                     </div>
-                    <div class='user-info-wrapper'>
-                        <div class='user-name capitalize'>{{userName}}</div>
-                        <div class='user-email'>{{userEmail}}</div>
+                    <div class="user-info-wrapper">
+                        <div class="user-name capitalize">{{ userName }}</div>
+                        <div class="user-email">{{ userEmail }}</div>
                     </div>
                 </div>
             </div>
-            <div (click)="showTour()" class='menu-item flex flex-align-center'
-                 mat-menu-item>
+            <div (click)="showTour()" class="menu-item flex flex-align-center" mat-menu-item>
                 Tutorial
             </div>
-            <div (click)='logout()' class='user-logout-modal-btn menu-item flex flex-align-center' mat-menu-item>
+            <div
+                (click)="logout()"
+                class="user-logout-modal-btn menu-item flex flex-align-center"
+                mat-menu-item
+            >
                 Logout
             </div>
-            <div class='non-clickable-menu-item' disabled mat-menu-item>
-                <div class='version-number flex flex-align-center'>
-                    Version-{{currentVersion}}
+            <div class="non-clickable-menu-item" disabled mat-menu-item>
+                <div class="version-number flex flex-align-center">
+                    Version-{{ currentVersion }}
                 </div>
             </div>
         </mat-menu>

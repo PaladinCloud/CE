@@ -12,14 +12,19 @@
  * limitations under the License.
  -->
 
- <hr align="left" *ngIf="showHeader">
-<header class="header" *ngIf="showHeader">
-    {{headers}}:
-</header>
+<hr align="left" *ngIf="showHeader" />
+<header class="header" *ngIf="showHeader">{{ headers }}:</header>
 <ul class="desc-details flex flex-wrap" *ngIf="showData">
-    <div class="container" *ngFor='let data of dataArray' [class.innerHtml]="getVal(data)" [class.hide]='!data.values && data.values!=0 && data.values!=false'>
-        <li class="title">{{data.name}}</li>
-        <li *ngIf='!data.isLink' class="value">{{data.values}}</li>
-        <a *ngIf='data.isLink' target='_blank' href='{{data.values}}' class="value link-text">{{data.values}}</a>
+    <div
+        class="container"
+        *ngFor="let data of dataArray"
+        [class.innerHtml]="getVal(data)"
+        [class.hide]="!data.values && data.values != 0 && data.values != false"
+    >
+        <li class="title">{{ data.name }}</li>
+        <li *ngIf="!data.isLink" class="value">{{ data.values }}</li>
+        <a *ngIf="data.isLink" target="_blank" href="{{ data.values }}" class="value link-text">{{
+            data.values
+        }}</a>
     </div>
 </ul>

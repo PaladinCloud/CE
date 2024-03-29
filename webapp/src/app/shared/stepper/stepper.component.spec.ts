@@ -5,24 +5,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { StepperComponent } from './stepper.component';
 
 describe('StepperComponent', () => {
-  let component: StepperComponent;
-  let fixture: ComponentFixture<StepperComponent>;
+    let component: StepperComponent;
+    let fixture: ComponentFixture<StepperComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ MatStepperModule, NoopAnimationsModule ],
-      declarations: [ StepperComponent ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [MatStepperModule, NoopAnimationsModule],
+            declarations: [StepperComponent],
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(StepperComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(StepperComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

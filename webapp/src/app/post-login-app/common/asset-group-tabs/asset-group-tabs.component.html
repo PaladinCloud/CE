@@ -12,16 +12,41 @@
  * limitations under the License.
  -->
 
- <div class="asset-tabs-outer clearfix" (window:resize)="calcMore(); showMorePop = false; ">
-    <div class='tabs-enclosure left' *ngFor='let assets of assetTempTabName; let i = index '>
-        <div class='ilb asset-tab-wrap' (click)='selectedTab = i; selectedTabName = assets; showMorePop=false; tabsClicked(selectedTabName) ' [class.active]='selectedTabName == assets' class='asset-tabs-inset pointer'>{{assets}}</div>
+<div class="asset-tabs-outer clearfix" (window:resize)="calcMore(); showMorePop = false">
+    <div class="tabs-enclosure left" *ngFor="let assets of assetTempTabName; let i = index">
+        <div
+            class="ilb asset-tab-wrap"
+            (click)="
+                selectedTab = i;
+                selectedTabName = assets;
+                showMorePop = false;
+                tabsClicked(selectedTabName)
+            "
+            [class.active]="selectedTabName == assets"
+            class="asset-tabs-inset pointer"
+        >
+            {{ assets }}
+        </div>
     </div>
-    <div class='left asset-tabs-inset pointer relative more-tab' [hidden]='!moreArray.length' (click)='showMorePop = !showMorePop;' tabindex='1' (blur)='showMorePop=false' [class.active]='selectedTab == -1'>
-        <div class='ilb asset-tab-wrap pointer' >More</div>
-        <div class='absolute show-more-pop' [hidden]='!showMorePop'>
-            <div class='each-pop-row pointer' (click)='selectCategoryFromMore($event, tabs)' [class.active]='selectedTabName == tabs' *ngFor='let tabs of moreArray'>{{tabs}}
+    <div
+        class="left asset-tabs-inset pointer relative more-tab"
+        [hidden]="!moreArray.length"
+        (click)="showMorePop = !showMorePop"
+        tabindex="1"
+        (blur)="showMorePop = false"
+        [class.active]="selectedTab == -1"
+    >
+        <div class="ilb asset-tab-wrap pointer">More</div>
+        <div class="absolute show-more-pop" [hidden]="!showMorePop">
+            <div
+                class="each-pop-row pointer"
+                (click)="selectCategoryFromMore($event, tabs)"
+                [class.active]="selectedTabName == tabs"
+                *ngFor="let tabs of moreArray"
+            >
+                {{ tabs }}
             </div>
         </div>
-        <div *ngIf='selectedTab == -1' class='absolute more-selected'>({{selectedTabName}})</div>
+        <div *ngIf="selectedTab == -1" class="absolute more-selected">({{ selectedTabName }})</div>
     </div>
 </div>

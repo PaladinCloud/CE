@@ -45,8 +45,11 @@ export class TourService {
         },
     };
 
-    constructor(private router: Router, private shepherd: ShepherdService,
-        private dialog: MatDialog) {}
+    constructor(
+        private router: Router,
+        private shepherd: ShepherdService,
+        private dialog: MatDialog,
+    ) {}
 
     init(userRoles) {
         if (this.isInitialized) {
@@ -75,17 +78,17 @@ export class TourService {
     }
 
     private buildSteps(userRoles): Step.StepOptions[] {
-        let userType = "ReadOnly";
-        if(userRoles.includes("ROLE_ADMIN")){
-            userType = "Admin";
-        }else if(userRoles.includes("ROLE_USER")){
-            userType = "User";
+        let userType = 'ReadOnly';
+        if (userRoles.includes('ROLE_ADMIN')) {
+            userType = 'Admin';
+        } else if (userRoles.includes('ROLE_USER')) {
+            userType = 'User';
         }
 
-        switch(userType){
-            case "User":
+        switch (userType) {
+            case 'User':
                 return this.getReadOnlyUserSteps();
-            case "Admin":
+            case 'Admin':
                 return this.getTechnicalAdminSteps();
             default:
                 return this.getReadOnlyUserSteps();
@@ -126,7 +129,7 @@ export class TourService {
                     this.builtInButtons.cancel,
                     {
                         ...this.builtInButtons.next,
-                        action: async() => {
+                        action: async () => {
                             this.dialog.closeAll();
                             await this.router.navigate(
                                 [
@@ -153,10 +156,9 @@ export class TourService {
                                 this.shepherd.next();
                                 return;
                             }
-                            await this.router.navigate(
-                                [assetSummaryRoute],
-                                { queryParamsHandling: 'merge' },
-                            );
+                            await this.router.navigate([assetSummaryRoute], {
+                                queryParamsHandling: 'merge',
+                            });
                             this.waitForComponentReady();
                         },
                     },
@@ -175,7 +177,6 @@ export class TourService {
                     {
                         ...this.builtInButtons.next,
                         action: async () => {
-
                             const policyKnowledgeBaseRoute = 'pl/compliance/policy-knowledgebase';
 
                             if (
@@ -204,8 +205,7 @@ export class TourService {
             },
             {
                 attachTo: {
-                    element:
-                        '.policy-knowledgebase-content .table-container mat-table > mat-row',
+                    element: '.policy-knowledgebase-content .table-container mat-table > mat-row',
                     on: 'bottom',
                 },
                 buttons: [
@@ -220,7 +220,7 @@ export class TourService {
                 id: 'policy-row-select',
                 title: 'Interactive Table',
                 text: 'To access more detailed information, simply click on any row within the table.',
-            }
+            },
         ];
     }
 
@@ -240,17 +240,18 @@ export class TourService {
         return [...this.getCommonSteps(), ...steps];
     }
 
-    private getTechnicalAdminSteps(): Step.StepOptions[]{
+    private getTechnicalAdminSteps(): Step.StepOptions[] {
         const steps: Step.StepOptions[] = [
             {
                 attachTo: {
                     element: '.table-header .filters-menu-btn',
                     on: 'right',
                 },
-                buttons: [this.builtInButtons.cancel,
+                buttons: [
+                    this.builtInButtons.cancel,
                     {
                         ...this.builtInButtons.next,
-                        action: async() => {
+                        action: async () => {
                             const createAssetGroupRoute = 'pl/admin/asset-groups';
 
                             if (
@@ -282,10 +283,11 @@ export class TourService {
                     element: '.asset-groups-wrapper app-custom-button',
                     on: 'left',
                 },
-                buttons: [this.builtInButtons.cancel,
+                buttons: [
+                    this.builtInButtons.cancel,
                     {
                         ...this.builtInButtons.next,
-                        action: async() => {
+                        action: async () => {
                             const pluginsRoute = 'pl/admin/account-management';
 
                             if (
@@ -317,11 +319,13 @@ export class TourService {
                     element: '.account-management-page-wrapper > .page-header > .button',
                     on: 'left',
                 },
-                buttons: [this.builtInButtons.cancel,
+                buttons: [
+                    this.builtInButtons.cancel,
                     {
                         ...this.builtInButtons.next,
-                        action: async() => {
-                            const policyId = "SGWithAnywhereAccess_version-1_SgWithAnywhereAccess_sg";
+                        action: async () => {
+                            const policyId =
+                                'SGWithAnywhereAccess_version-1_SgWithAnywhereAccess_sg';
                             const policyDetailsRoute = 'pl/admin/policies/create-edit-policy';
 
                             if (
@@ -338,7 +342,7 @@ export class TourService {
 
                             await this.router.navigate([policyDetailsRoute], {
                                 queryParams: {
-                                    policyId
+                                    policyId,
                                 },
                                 queryParamsHandling: 'merge',
                             });
@@ -356,10 +360,11 @@ export class TourService {
                     element: '.create-edit-policy .right-wrapper .details-wrapper',
                     on: 'bottom',
                 },
-                buttons: [this.builtInButtons.cancel,
+                buttons: [
+                    this.builtInButtons.cancel,
                     {
                         ...this.builtInButtons.next,
-                        action: async() => {
+                        action: async () => {
                             const usersRoute = 'pl/admin/user-management';
 
                             if (
@@ -375,7 +380,7 @@ export class TourService {
                             }
 
                             await this.router.navigate([usersRoute], {
-                                queryParams: {policyId: undefined},
+                                queryParams: { policyId: undefined },
                                 queryParamsHandling: 'merge',
                             });
                             this.waitForComponentReady();
@@ -391,7 +396,8 @@ export class TourService {
                     element: '.user-management-page-wrapper > .page-header > app-custom-button',
                     on: 'left',
                 },
-                buttons: [this.builtInButtons.cancel,
+                buttons: [
+                    this.builtInButtons.cancel,
                     {
                         ...this.builtInButtons.next,
                         ...this.builtInButtons.done,

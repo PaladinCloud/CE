@@ -12,14 +12,19 @@
  * limitations under the License.
  -->
 
- <div class="domains-wrapper floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
+<div
+    class="domains-wrapper floating-widgets-section flex flex-col issue-listing-wrapper"
+    [class.filter-absent]="filters.length == 0"
+>
     <div class="padding-top"></div>
     <div class="floating-widgets-header flex flex-between">
         <div>
-            <h6 class="title-text">{{pageTitle}}</h6>
+            <h6 class="title-text">{{ pageTitle }}</h6>
         </div>
         <div class="flex relative z-index textarea-button">
-            <button class="submit-btn uppercase" type="button" (click)='goToCreateUpdateDomain()'><i class="fa fa-plus"></i> Create Domain</button>
+            <button class="submit-btn uppercase" type="button" (click)="goToCreateUpdateDomain()">
+                <i class="fa fa-plus"></i> Create Domain
+            </button>
         </div>
     </div>
     <div class="floating-widgets-container data-table-container">
@@ -27,11 +32,28 @@
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-data-table [searchTextValues]='searchTxt' [showGenericMessage]='showGenericMessage' [errorValue]='errorValue' [parentName]="'taggingTargetMessage'" [showingArr]='showingArr' [outerArr]='outerArr' [searchableHeader]='true' [allColumns]='allColumns'
-                            [dataHead]="'All Domains'" (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)' (previousPageCalled)='prevPage()'
-                            (nextPageCalled)='nextPage()' (searchTriggerred)='callNewSearch()'>
+                        <app-data-table
+                            [searchTextValues]="searchTxt"
+                            [showGenericMessage]="showGenericMessage"
+                            [errorValue]="errorValue"
+                            [parentName]="'taggingTargetMessage'"
+                            [showingArr]="showingArr"
+                            [outerArr]="outerArr"
+                            [searchableHeader]="true"
+                            [allColumns]="allColumns"
+                            [dataHead]="'All Domains'"
+                            (selectedRow)="goToDetails($event)"
+                            [firstPaginator]="firstPaginator"
+                            [lastPaginator]="lastPaginator"
+                            [totalRows]="totalRows"
+                            [currentPointer]="currentPointer"
+                            (searchRowTxt)="searchCalled($event)"
+                            (previousPageCalled)="prevPage()"
+                            (nextPageCalled)="nextPage()"
+                            (searchTriggerred)="callNewSearch()"
+                        >
                         </app-data-table>
-                        <div class="data-table-desc">{{dataTableDesc}}</div>
+                        <div class="data-table-desc">{{ dataTableDesc }}</div>
                     </div>
                 </li>
             </ul>

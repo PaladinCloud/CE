@@ -14,8 +14,8 @@
 
 .app-glow-traveller {
     position: absolute;
-    background-color: #F5006D;
-    box-shadow: 0 0 5px #F5006D;
+    background-color: #f5006d;
+    box-shadow: 0 0 5px #f5006d;
     color: white;
     z-index: -1;
 }

@@ -33,12 +33,12 @@ export class LayoutService {
             case 'redhat_acs':
                 return LayoutType.REDHAT_ACS;
             case 'paladincloud_violations':
-            // case 'paladincloud_exemptions':
-            // case 'paladincloud_autofix':
+                // case 'paladincloud_exemptions':
+                // case 'paladincloud_autofix':
                 return LayoutType.PALADINCLOUD_VIOLATION;
             default:
                 for (const prop in payload) {
-                    if(prop === 'additionalInfo') continue;
+                    if (prop === 'additionalInfo') continue;
                     if (typeof payload[prop] === 'object' || Array.isArray(payload[prop])) {
                         return LayoutType.JSON;
                     }

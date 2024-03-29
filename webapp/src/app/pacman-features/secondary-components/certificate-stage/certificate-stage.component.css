@@ -12,20 +12,21 @@
  * limitations under the License.
  */
 
-.certificater-stage-wrapper{
+.certificater-stage-wrapper {
     height: calc(100% - 19em);
     /*overflow: auto; overflow: overlay;*/
 }
-.sub-head{
+.sub-head {
     background-color: #dce3e9;
 }
-ul.each-progress-tracker-wrapper{
+ul.each-progress-tracker-wrapper {
     padding: 1.5em 1em;
     max-height: 90%;
     overflow: hidden;
 }
 ul.each-progress-tracker-wrapper:hover {
-    overflow: auto; overflow: overlay;
+    overflow: auto;
+    overflow: overlay;
 }
 li.each-progress-tracker {
     width: 50%;
@@ -33,17 +34,17 @@ li.each-progress-tracker {
     border-right: 2px solid #ddd;
     border-bottom: 2px solid #ddd;
 }
-li.each-progress-tracker:nth-child(even){
+li.each-progress-tracker:nth-child(even) {
     border-right: none;
     padding-right: 0;
 }
-li.each-progress-tracker:nth-child(odd){
+li.each-progress-tracker:nth-child(odd) {
     padding-left: 0;
 }
-li.each-progress-tracker:last-child:nth-child(even){
+li.each-progress-tracker:last-child:nth-child(even) {
     /* color : red; */
 }
-li.each-progress-tracker:last-child:nth-child(odd){
+li.each-progress-tracker:last-child:nth-child(odd) {
     border-right: none;
     border-bottom: none;
 }

@@ -10,36 +10,35 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { ViolationsCardComponent } from './violations-card.component';
 
 describe('ViolationsCardComponent', () => {
-  let component: ViolationsCardComponent;
-  let fixture: ComponentFixture<ViolationsCardComponent>;
+    let component: ViolationsCardComponent;
+    let fixture: ComponentFixture<ViolationsCardComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [ ViolationsCardComponent ],
-      providers: [
-        DataCacheService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule],
+            declarations: [ViolationsCardComponent],
+            providers: [
+                DataCacheService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViolationsCardComponent);
-    component = fixture.componentInstance;
-    component.card = {
-      name: 'name',
-      subInfo: {},
-    }
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViolationsCardComponent);
+        component = fixture.componentInstance;
+        component.card = {
+            name: 'name',
+            subInfo: {},
+        };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

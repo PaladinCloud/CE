@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -27,8 +27,9 @@ import { map } from 'rxjs/operators';
 export class OmniSearchDataService {
     getMethod: any;
     constructor(
-                private httpService: HttpService,
-                private errorHandling: ErrorHandlingService) { }
+        private httpService: HttpService,
+        private errorHandling: ErrorHandlingService,
+    ) {}
 
     getOmniSearchData(omniSearchUrl, omniSearchMethod, OmnisearchPayload): Observable<any> {
         const url = omniSearchUrl;
@@ -36,25 +37,27 @@ export class OmniSearchDataService {
         const payload = OmnisearchPayload;
 
         try {
-            return this.httpService.getHttpResponse(url, method, payload)
-                    .pipe(map(response => {
-                        this.dataCheck(response);
-                        return this.massageData(response);
-                    }));
+            return this.httpService.getHttpResponse(url, method, payload).pipe(
+                map((response) => {
+                    this.dataCheck(response);
+                    return this.massageData(response);
+                }),
+            );
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
     }
-    getOmniSearchCategories(omniSearchUrl, omniSearchMethod , queryParam ): Observable<any> {
+    getOmniSearchCategories(omniSearchUrl, omniSearchMethod, queryParam): Observable<any> {
         const url = omniSearchUrl;
         const method = omniSearchMethod;
         const payload = {};
         try {
-            return this.httpService.getHttpResponse(url, method, {}, queryParam)
-                    .pipe(map(response => {
-                        this.dataCheck(response);
-                        return this.massageData(response);
-                    }));
+            return this.httpService.getHttpResponse(url, method, {}, queryParam).pipe(
+                map((response) => {
+                    this.dataCheck(response);
+                    return this.massageData(response);
+                }),
+            );
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -69,5 +72,4 @@ export class OmniSearchDataService {
     massageData(data): any {
         return data;
     }
-
 }

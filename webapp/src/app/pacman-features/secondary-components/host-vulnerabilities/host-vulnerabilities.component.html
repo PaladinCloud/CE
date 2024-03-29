@@ -12,27 +12,29 @@
  * limitations under the License.
  -->
 
- <div class="host-vulnerabilities-container relative">
+<div class="host-vulnerabilities-container relative">
     <div class="host-vulnerabilities-content relative">
-        <app-data-table [searchTextValues]='searchTxt'
-                        [errorValue]='errorValue'
-                        [parentName]="'patchingDataTableMessage'"
-                        [showGenericMessage]='showGenericMessage'
-                        [allColumns]='allColumns'
-                        [outerArr]='outerArr'
-                        [heightValue]="'27.4em'"
-                        [searchableHeader]='true'
-                        [dataHead]="'Host Vulnerabilities'"
-                        [totalRows]='totalRows'
-                        [tableIdAppend]="'3'"
-                        [firstPaginator]='firstPaginator'
-                        [lastPaginator]='lastPaginator'
-                        (selectedRow)='goToDetails($event)'
-                        [currentPointer]='currentPointer'
-                        (previousPageCalled)='prevPg()'
-                        (nextPageCalled)='nextPg()'
-                        (searchRowTxt)='searchCalled($event)'
-                        (searchTriggerred)='callNewSearch()'>
+        <app-data-table
+            [searchTextValues]="searchTxt"
+            [errorValue]="errorValue"
+            [parentName]="'patchingDataTableMessage'"
+            [showGenericMessage]="showGenericMessage"
+            [allColumns]="allColumns"
+            [outerArr]="outerArr"
+            [heightValue]="'27.4em'"
+            [searchableHeader]="true"
+            [dataHead]="'Host Vulnerabilities'"
+            [totalRows]="totalRows"
+            [tableIdAppend]="'3'"
+            [firstPaginator]="firstPaginator"
+            [lastPaginator]="lastPaginator"
+            (selectedRow)="goToDetails($event)"
+            [currentPointer]="currentPointer"
+            (previousPageCalled)="prevPg()"
+            (nextPageCalled)="nextPg()"
+            (searchRowTxt)="searchCalled($event)"
+            (searchTriggerred)="callNewSearch()"
+        >
         </app-data-table>
     </div>
 </div>

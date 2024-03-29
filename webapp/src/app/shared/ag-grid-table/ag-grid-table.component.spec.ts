@@ -14,36 +14,32 @@ import { TitleBurgerHeadComponent } from '../title-burger-head/title-burger-head
 import { AgGridTableComponent } from './ag-grid-table.component';
 
 describe('AgGridTableComponent', () => {
-  let component: AgGridTableComponent;
-  let fixture: ComponentFixture<AgGridTableComponent>;
+    let component: AgGridTableComponent;
+    let fixture: ComponentFixture<AgGridTableComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        AgGridModule,
-        FormsModule,
-      ],
-      declarations: [AgGridTableComponent, TitleBurgerHeadComponent],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule, AgGridModule, FormsModule],
+            declarations: [AgGridTableComponent, TitleBurgerHeadComponent],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AgGridTableComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AgGridTableComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

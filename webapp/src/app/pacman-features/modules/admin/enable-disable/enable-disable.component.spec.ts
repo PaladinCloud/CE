@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -16,24 +16,23 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EnableDisableRuleJobComponent } from './enable-disable.component';
 
 describe('EnableDisableRuleJobComponent', () => {
-  let component: EnableDisableRuleJobComponent;
-  let fixture: ComponentFixture<EnableDisableRuleJobComponent>;
+    let component: EnableDisableRuleJobComponent;
+    let fixture: ComponentFixture<EnableDisableRuleJobComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ EnableDisableRuleJobComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [EnableDisableRuleJobComponent],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EnableDisableRuleJobComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EnableDisableRuleJobComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  // Disbled due unexpected closing div tag in component template
-  xit('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    // Disbled due unexpected closing div tag in component template
+    xit('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

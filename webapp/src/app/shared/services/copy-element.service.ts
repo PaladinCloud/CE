@@ -1,4 +1,3 @@
-
 /*
  *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
  *
@@ -25,25 +24,18 @@ import { LoggerService } from './logger.service';
 
 @Injectable()
 export class CopyElementService {
-
-
     constructor(
-                private errorHandling: ErrorHandlingService,
-                private toastObservableService: ToastObservableService,
-                private loggerService: LoggerService) { }
-
+        private errorHandling: ErrorHandlingService,
+        private toastObservableService: ToastObservableService,
+        private loggerService: LoggerService,
+    ) {}
 
     textCopyMessage(message, time_duration, type, image) {
-
         try {
-            this.toastObservableService.postMessage(
-              message , time_duration, type , image
-            );
+            this.toastObservableService.postMessage(message, time_duration, type, image);
             return;
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
-
     }
 }
-

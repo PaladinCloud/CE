@@ -21,7 +21,7 @@ import {
     NgZone,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import * as d3 from 'd3';
@@ -88,7 +88,18 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     backButtonRequired = false;
     pageLevel = 0;
 
-    colors = ['#6FAFE5','#5F9DC8','#4F8BBB','#3F7AAA','#2F689D','#1F5790','#105581','#004372','#003263','#002155']
+    colors = [
+        '#6FAFE5',
+        '#5F9DC8',
+        '#4F8BBB',
+        '#3F7AAA',
+        '#2F689D',
+        '#1F5790',
+        '#105581',
+        '#004372',
+        '#003263',
+        '#002155',
+    ];
     isSortedByName = true;
     isSortedByAssetNo = true;
 
@@ -185,11 +196,13 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
             this.errorMessage = NO_DATA_AVAILABLE;
             return;
         }
-        if(maxIndex==1){
-            this.treemapData = [{
-                x: this.awsResources[0].displayName || this.awsResources[0].type,
-                y: 1
-            }]
+        if (maxIndex == 1) {
+            this.treemapData = [
+                {
+                    x: this.awsResources[0].displayName || this.awsResources[0].type,
+                    y: 1,
+                },
+            ];
             this.buildTreeMap();
             return;
         }
@@ -202,7 +215,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
             this.treemapData.push(obj);
         }
 
-       // Initialize variables to store the maximum and minimum values
+        // Initialize variables to store the maximum and minimum values
         let maxDataValue, minDataValue;
 
         // Find the maximum value within the treemap data
@@ -212,13 +225,13 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         const sqrtScale = d3.scaleSqrt().domain([0, maxDataValue]).range([0, 20]);
 
         // Scale down the data values using the square root scale
-        this.treemapData = this.treemapData.map(dataPoint => ({
-        ...dataPoint,
-        y: sqrtScale(dataPoint.y)
+        this.treemapData = this.treemapData.map((dataPoint) => ({
+            ...dataPoint,
+            y: sqrtScale(dataPoint.y),
         }));
 
         // Filter out data points with a value of 0
-        const filteredTreemapData = this.treemapData.filter(dataPoint => dataPoint.y !== 0);
+        const filteredTreemapData = this.treemapData.filter((dataPoint) => dataPoint.y !== 0);
 
         // Find the minimum and maximum values within the scaled data
         if (filteredTreemapData.length) {
@@ -249,7 +262,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
                 }
             }
         }
-        
+
         this.buildTreeMap();
     }
 
@@ -327,7 +340,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         const selectedTargetType = tagetType.type;
         const queryParams = {
             filter: '_entitytype.keyword=' + selectedTargetType,
-            tempFilters: true
+            tempFilters: true,
         };
         this.workflowService.addRouterSnapshotToLevel(
             this.router.routerState.snapshot.root,
@@ -363,7 +376,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
                 },
                 (error) => {
                     this.logger.log(API_RESPONSE_ERROR, error);
-                    this.errorMessage = API_RESPONSE_ERROR;                    
+                    this.errorMessage = API_RESPONSE_ERROR;
                 },
             );
     }

@@ -55,66 +55,66 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 describe('PostLoginAppComponent', () => {
-  let component: PostLoginAppComponent;
-  let fixture: ComponentFixture<PostLoginAppComponent>;
+    let component: PostLoginAppComponent;
+    let fixture: ComponentFixture<PostLoginAppComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSnackBarModule,
-        MatSidenavModule,
-        NoopAnimationsModule,
-        RouterTestingModule,
-      ],
-      declarations: [
-        AssetSwitcherComponent,
-        ContextualMenuComponent,
-        DefaultAssetGroupComponent,
-        HeaderComponent,
-        PostLoginAppComponent,
-        ToastNotificationComponent,
-      ],
-      providers: [
-        AdalService,
-        AssetGroupObservableService,
-        AssetTilesService,
-        AuthService,
-        AuthSessionStorageService,
-        AwsResourceTypeSelectionService,
-        CommonResponseService,
-        DataCacheService,
-        DownloadService,
-        DomainTypeObservableService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        MainRoutingAnimationEventService,
-        OnPremAuthenticationService,
-        PermissionGuardService,
-        RecentlyViewedObservableService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        SharedToasObservableService,
-        ToastObservableService,
-        TokenResolverService,
-        ThemeObservableService,
-        UtilsService,
-        WindowExpansionService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [
+                HttpClientTestingModule,
+                MatFormFieldModule,
+                MatInputModule,
+                MatSnackBarModule,
+                MatSidenavModule,
+                NoopAnimationsModule,
+                RouterTestingModule,
+            ],
+            declarations: [
+                AssetSwitcherComponent,
+                ContextualMenuComponent,
+                DefaultAssetGroupComponent,
+                HeaderComponent,
+                PostLoginAppComponent,
+                ToastNotificationComponent,
+            ],
+            providers: [
+                AdalService,
+                AssetGroupObservableService,
+                AssetTilesService,
+                AuthService,
+                AuthSessionStorageService,
+                AwsResourceTypeSelectionService,
+                CommonResponseService,
+                DataCacheService,
+                DownloadService,
+                DomainTypeObservableService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                MainRoutingAnimationEventService,
+                OnPremAuthenticationService,
+                PermissionGuardService,
+                RecentlyViewedObservableService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                SharedToasObservableService,
+                ToastObservableService,
+                TokenResolverService,
+                ThemeObservableService,
+                UtilsService,
+                WindowExpansionService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PostLoginAppComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PostLoginAppComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

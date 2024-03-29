@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, AfterViewInit, Output, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    AfterViewInit,
+    Output,
+    ViewChild,
+    ElementRef,
+    Renderer2,
+} from '@angular/core';
 
 @Component({
     selector: 'app-table-filter-search',

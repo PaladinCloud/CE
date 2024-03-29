@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -13,26 +13,25 @@
  */
 
 /**
-* @type Component
-* @desc Landing page for Tools module
-* @author Puneet Baser
-*/
+ * @type Component
+ * @desc Landing page for Tools module
+ * @author Puneet Baser
+ */
 
 import { Component, OnInit } from '@angular/core';
 import { CONTENT } from '../../../../../config/static-content';
 
 @Component({
-  selector: 'app-tools-landing-page',
-  templateUrl: './tools-landing-page.component.html',
-  styleUrls: ['./tools-landing-page.component.css']
+    selector: 'app-tools-landing-page',
+    templateUrl: './tools-landing-page.component.html',
+    styleUrls: ['./tools-landing-page.component.css'],
 })
-
 export class ToolsLandingPageComponent implements OnInit {
-  public content;
+    public content;
 
-  constructor() {}
+    constructor() {}
 
-  ngOnInit() {
-    this.content = CONTENT;
-  }
+    ngOnInit() {
+        this.content = CONTENT;
+    }
 }

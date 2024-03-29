@@ -19,41 +19,41 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { RecommendationsDetailsComponent } from './recommendations-details.component';
 
 describe('RecommendationsDetailsComponent', () => {
-  let component: RecommendationsDetailsComponent;
-  let fixture: ComponentFixture<RecommendationsDetailsComponent>;
+    let component: RecommendationsDetailsComponent;
+    let fixture: ComponentFixture<RecommendationsDetailsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [RecommendationsDetailsComponent, BackNavigationComponent],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        DomainTypeObservableService,
-        DownloadService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        ToastObservableService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [RecommendationsDetailsComponent, BackNavigationComponent],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                DomainTypeObservableService,
+                DownloadService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                ToastObservableService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RecommendationsDetailsComponent);
-    component = fixture.componentInstance;
-    component.recommendationParams = {
-      name: 'name',
-    }
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RecommendationsDetailsComponent);
+        component = fixture.componentInstance;
+        component.recommendationParams = {
+            name: 'name',
+        };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

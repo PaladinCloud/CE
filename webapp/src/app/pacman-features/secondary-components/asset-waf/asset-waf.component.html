@@ -12,10 +12,19 @@
  * limitations under the License.
  -->
 
- <app-asset-type [pageLevel]="pageLevel" [imgLocation]="assetDetails.imgLocation" [assetValue]="applicationValue" [assetName]="assetDetails.assetName" *ngIf='dataComing && !showLoader'></app-asset-type>
-<article class='center error_handling' *ngIf='!dataComing'>
+<app-asset-type
+    [pageLevel]="pageLevel"
+    [imgLocation]="assetDetails.imgLocation"
+    [assetValue]="applicationValue"
+    [assetName]="assetDetails.assetName"
+    *ngIf="dataComing && !showLoader"
+></app-asset-type>
+<article class="center error_handling" *ngIf="!dataComing">
     <div class="error_msg">
-        <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+        <app-error-message
+            *ngIf="seekdata == true"
+            [selectedValue]="errorMessage"
+        ></app-error-message>
     </div>
-  </article>
-<div *ngIf='showLoader' class="loader"></div>
+</article>
+<div *ngIf="showLoader" class="loader"></div>

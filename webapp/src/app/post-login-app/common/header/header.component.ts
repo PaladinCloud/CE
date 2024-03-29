@@ -6,13 +6,13 @@ import { Apollo } from 'apollo-angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { NOTIFICATIONS_SUBSCRIPTION } from 'src/app/core/graphql/subscriptions/notifications.gql';
-import { AuthService } from "../../../core/services/auth.service";
-import { DataCacheService } from "../../../core/services/data-cache.service";
-import { PermissionGuardService } from "../../../core/services/permission-guard.service";
-import { LoggerService } from "../../../shared/services/logger.service";
-import { environment } from "../../../../environments/environment";
-import { CommonResponseService } from "src/app/shared/services/common-response.service";
-import { MatDialog } from "@angular/material/dialog";
+import { AuthService } from '../../../core/services/auth.service';
+import { DataCacheService } from '../../../core/services/data-cache.service';
+import { PermissionGuardService } from '../../../core/services/permission-guard.service';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { environment } from '../../../../environments/environment';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { MatDialog } from '@angular/material/dialog';
 import { TourService } from 'src/app/core/services/tour.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 
@@ -22,7 +22,6 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
     styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-
     currentVersion = '';
     showUserInfo = false;
     haveAdminPageAccess = false;
@@ -51,26 +50,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
         private domSanitizer: DomSanitizer,
         private utils: UtilsService,
         private tourService: TourService,
-        ) {
+    ) {
         const userRoles = this.dataCacheService.getUserDetailsValue().getRoles();
         this.tourService.init(userRoles);
         this.matIconRegistry.addSvgIcon(
             `customSearchIcon`,
-            this.domSanitizer.bypassSecurityTrustResourceUrl(
-                '/assets/icons/header-search.svg',
-            ),
+            this.domSanitizer.bypassSecurityTrustResourceUrl('/assets/icons/header-search.svg'),
         );
 
         const url = environment.getCurrentVersion.url;
         const urlMethod = environment.getCurrentVersion.method;
         const queryParam = {
-            'cfkey': 'current-release',
+            cfkey: 'current-release',
         };
-        this.commonResponseService.getData(url, urlMethod, '', queryParam).subscribe(
-            response => {
-                this.currentVersion = response[0].value;
-            },
-        );
+        this.commonResponseService.getData(url, urlMethod, '', queryParam).subscribe((response) => {
+            this.currentVersion = response[0].value;
+        });
     }
 
     ngOnInit() {
@@ -92,7 +87,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
             this.route.queryParams.subscribe((params) => {
                 this.queryParams = params;
-                this.searchQuery = params["searchText"]
+                this.searchQuery = params['searchText'];
             });
         } catch (error) {
             this.loggerService.log('error', 'JS Error' + error);
@@ -113,7 +108,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             });
     }
 
-    showTour(){
+    showTour() {
         this.tourService.start();
     }
 
@@ -124,10 +119,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     navigateTo(pageName) {
         if (pageName == 'health-notifications') {
-            this.router
-                .navigate(['/pl/notifications/notifications-list'], {
-                    queryParams: this.queryParams,
-                });
+            this.router.navigate(['/pl/notifications/notifications-list'], {
+                queryParams: this.queryParams,
+            });
         }
     }
 
@@ -136,7 +130,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.haveNewNotification = false;
         }
         this.router.navigate(['pl/notifications/notifications-list'], {
-            queryParams: {...this.route.snapshot.queryParams, tempFilters: true, filter: undefined},
+            queryParams: {
+                ...this.route.snapshot.queryParams,
+                tempFilters: true,
+                filter: undefined,
+            },
         });
     }
 
@@ -147,8 +145,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         if (event.keyCode === 13) {
             const queryParams = {
                 ...this.queryParams,
-                searchText: searchTxt
-            }
+                searchText: searchTxt,
+            };
             this.router
                 .navigate(['/pl/omnisearch/omni-search-details'], {
                     queryParams: queryParams,
@@ -158,11 +156,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 });
         }
     }
-  logout() {
-      this.utils.storeRedirectUrl();
-      this.authenticateService.doLogout();
+    logout() {
+        this.utils.storeRedirectUrl();
+        this.authenticateService.doLogout();
     }
-  
+
     openDashboard() {
         const queryParams = this.route.snapshot.queryParams;
         this.router.navigate(['pl/compliance/compliance-dashboard'], {

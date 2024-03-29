@@ -12,14 +12,13 @@
  * limitations under the License.
  -->
 
-<app-overlay (click)='closeModal();'></app-overlay>
+<app-overlay (click)="closeModal()"></app-overlay>
 <div class="fixed flex flex-col generic-modal">
-    <div class="absolute close-img" (click)='closeModal();'>
-      <img src='../assets/icons/x-icon.svg'>
+    <div class="absolute close-img" (click)="closeModal()">
+        <img src="../assets/icons/x-icon.svg" />
     </div>
-    <div class="title-txt no-shink">{{title}}</div>
+    <div class="title-txt no-shink">{{ title }}</div>
     <div class="main-container">
         <ng-content></ng-content>
     </div>
 </div>
-

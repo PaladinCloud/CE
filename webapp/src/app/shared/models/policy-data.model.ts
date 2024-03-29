@@ -40,15 +40,15 @@ export interface PolicyData {
 }
 
 export interface ExemptionDetails {
-    "expiryDate": string,
-    "assetGroup": string,
-    "policyId": string,
-    "exceptionReason": string,
-    "dataSource": string,
-    "exceptionName": string,
-    "createdBy"?: string,
-    "createdOn"?: string
-};
+    expiryDate: string;
+    assetGroup: string;
+    policyId: string;
+    exceptionReason: string;
+    dataSource: string;
+    exceptionName: string;
+    createdBy?: string;
+    createdOn?: string;
+}
 
 export interface PolicyParams {
     key: string;

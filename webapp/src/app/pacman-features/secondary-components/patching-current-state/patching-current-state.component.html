@@ -12,34 +12,47 @@
  * limitations under the License.
  -->
 
- <div class="parent-wrapper flex flex-col">
+<div class="parent-wrapper flex flex-col">
     <div class="sub-head">
         <app-title-burger-head [subHeadTitle]="'Non Compliant Assets'"></app-title-burger-head>
     </div>
     <section class="relative patch-across-app-wrapper">
-        <div class="top-tile" [class.addPadding]='seekdata'>
-            <div class='flex-col relative' *ngIf='topState && !showLoader'>
+        <div class="top-tile" [class.addPadding]="seekdata">
+            <div class="flex-col relative" *ngIf="topState && !showLoader">
                 <div class="state-wrapper">
-                    <app-state-table [data]='topState' [headers]='listArrays' [top]='true' [pageLevel]="pageLevel"></app-state-table>
-                    <hr align="left" class="width-rule">
+                    <app-state-table
+                        [data]="topState"
+                        [headers]="listArrays"
+                        [top]="true"
+                        [pageLevel]="pageLevel"
+                    ></app-state-table>
+                    <hr align="left" class="width-rule" />
                 </div>
             </div>
         </div>
-        <div class="bottom-tile" [class.addPadding]='seekdataExec'>
-            <div class='flex-col relative' *ngIf='execState && !showLoaderExec'>
+        <div class="bottom-tile" [class.addPadding]="seekdataExec">
+            <div class="flex-col relative" *ngIf="execState && !showLoaderExec">
                 <div class="state-wrapper">
-                    <app-state-table [pageLevel]="pageLevel" [data]='execState' [headers]='execArrays' [bottom]='true'></app-state-table>
+                    <app-state-table
+                        [pageLevel]="pageLevel"
+                        [data]="execState"
+                        [headers]="execArrays"
+                        [bottom]="true"
+                    ></app-state-table>
                 </div>
             </div>
         </div>
-        <div class="showDateandTime" *ngIf='topState || execState'>
-            Report date: {{reportDate}} {{reportTime}}
+        <div class="showDateandTime" *ngIf="topState || execState">
+            Report date: {{ reportDate }} {{ reportTime }}
         </div>
     </section>
-    <article class='positioning center error_handling' *ngIf='!topState && !execState'>
+    <article class="positioning center error_handling" *ngIf="!topState && !execState">
         <div class="error_msg">
-            <app-error-message *ngIf='seekdataExec == true' [selectedValue]="errorMessage"></app-error-message>
+            <app-error-message
+                *ngIf="seekdataExec == true"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
         </div>
     </article>
-    <div *ngIf='showLoader && showLoaderExec' class="loader"></div>
+    <div *ngIf="showLoader && showLoaderExec" class="loader"></div>
 </div>

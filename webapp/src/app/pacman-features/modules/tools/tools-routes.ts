@@ -3,11 +3,11 @@ import { ToolsLandingPageComponent } from './tools-landing-page/tools-landing-pa
 
 export const TOOLS_ROUTES = [
     {
-      path: "tools-landing",
-      component: ToolsLandingPageComponent,
-      data: {
-        title: "Tools Overview",
-      },
-      canActivate: [AuthGuardService],
+        path: 'tools-landing',
+        component: ToolsLandingPageComponent,
+        data: {
+            title: 'Tools Overview',
+        },
+        canActivate: [AuthGuardService],
     },
-  ];
+];

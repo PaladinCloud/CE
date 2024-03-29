@@ -12,18 +12,18 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {environment} from '../../../../../environments/environment';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Subject, Subscription} from 'rxjs';
-import {UtilsService} from '../../../../shared/services/utils.service';
-import {LoggerService} from '../../../../shared/services/logger.service';
-import {CommonResponseService} from '../../../../shared/services/common-response.service';
-import {DownloadService} from '../../../../shared/services/download.service';
-import {WorkflowService} from '../../../../core/services/workflow.service';
-import {RouterUtilityService} from '../../../../shared/services/router-utility.service';
-import {ErrorHandlingService} from 'src/app/shared/services/error-handling.service';
-import {TableStateService} from 'src/app/core/services/table-state.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { UtilsService } from '../../../../shared/services/utils.service';
+import { LoggerService } from '../../../../shared/services/logger.service';
+import { CommonResponseService } from '../../../../shared/services/common-response.service';
+import { DownloadService } from '../../../../shared/services/download.service';
+import { WorkflowService } from '../../../../core/services/workflow.service';
+import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { TableStateService } from 'src/app/core/services/table-state.service';
 import find from 'lodash/find';
 import map from 'lodash/map';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
@@ -31,25 +31,24 @@ import { ComponentKeys } from 'src/app/shared/constants/component-keys';
 import { DatePipe } from '@angular/common';
 import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
 import { AgDomainObservableService } from 'src/app/core/services/ag-domain-observable.service';
-import { IColumnNamesMap, IColumnWidthsMap } from 'src/app/shared/table/interfaces/table-props.interface';
+import {
+    IColumnNamesMap,
+    IColumnWidthsMap,
+} from 'src/app/shared/table/interfaces/table-props.interface';
 
 @Component({
     selector: 'app-cloud-notifications',
     templateUrl: './cloud-notifications.component.html',
     styleUrls: ['./cloud-notifications.component.css'],
-    providers: [
-        LoggerService,
-        IssueFilterService
-    ]
+    providers: [LoggerService, IssueFilterService],
 })
-
 export class CloudNotificationsComponent implements OnInit, OnDestroy {
     agDomainSubscription: Subscription;
     dataSubscription: Subscription;
     summarySubscription: Subscription;
     filterSubscription: Subscription;
 
-    pageTitle = "Notifications";
+    pageTitle = 'Notifications';
     saveStateKey: String = ComponentKeys.NotificationList;
     popRows = ['Download Data'];
     tabSelected = 'asset';
@@ -71,7 +70,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     summaryValue = 0;
     errorMessage = '';
     filter = {
-        'eventtypecategory': ''
+        eventtypecategory: '',
     };
 
     filterTypeOptions: any = [];
@@ -98,18 +97,18 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     isTableStatePreserved = false;
 
     columnNamesMap: IColumnNamesMap = {
-        'eventName': 'Event'
+        eventName: 'Event',
     };
 
     columnWidths: IColumnWidthsMap = {
-        'Event': 2,
+        Event: 2,
     };
 
     centeredColumns = {
         Event: false,
         Type: true,
         Source: true,
-        "Created Date": true,
+        'Created Date': true,
     };
 
     FullQueryParams: any;
@@ -133,15 +132,15 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         private routerUtilityService: RouterUtilityService,
         private activatedRoute: ActivatedRoute,
         private tableStateService: TableStateService,
-        private filterManagementService: FilterManagementService
+        private filterManagementService: FilterManagementService,
     ) {
-        this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
-        this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
-            this.pageLevel
+        this.currentPageLevel = this.routerUtilityService.getpageLevel(
+            this.router.routerState.snapshot.root,
         );
+        this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
     }
 
-    getPreservedState(){
+    getPreservedState() {
         const state = this.tableStateService.getState(this.saveStateKey) || {};
         this.headerColName = state.headerColName || '';
         this.direction = state.direction || '';
@@ -161,7 +160,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         this.applyPreservedFilters(state);
     }
 
-    applyPreservedFilters (state) {
+    applyPreservedFilters(state) {
         const updateInfo = this.filterManagementService.applyPreservedFilters(state);
         if (updateInfo.shouldUpdateFilters) {
             this.filters = state.filters || [];
@@ -178,13 +177,13 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         this.agDomainSubscription = this.agDomainObservableService
             .getAgDomain()
             .subscribe(([ag, domain]) => {
-                  this.getPreservedState();
-                  if(this.selectedAssetGroup){
+                this.getPreservedState();
+                if (this.selectedAssetGroup) {
                     this.tableScrollTop = 0;
-                  }
-                  this.selectedAssetGroup = ag;
-                  this.selectedDomain = domain;
-                  this.getFilters();
+                }
+                this.selectedAssetGroup = ag;
+                this.selectedDomain = domain;
+                this.getFilters();
             });
     }
 
@@ -194,31 +193,24 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
      */
     routerParam() {
         try {
-            const currentQueryParams =
-                this.routerUtilityService.getQueryParametersFromSnapshot(
-                    this.router.routerState.snapshot.root
-                );
+            const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(
+                this.router.routerState.snapshot.root,
+            );
             if (currentQueryParams) {
                 this.FullQueryParams = currentQueryParams;
-                this.queryParamsWithoutFilter = JSON.parse(
-                    JSON.stringify(this.FullQueryParams)
-                );
-                delete this.queryParamsWithoutFilter["filter"];
+                this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
+                delete this.queryParamsWithoutFilter['filter'];
                 this.filterText = this.utils.processFilterObj(this.FullQueryParams);
             }
         } catch (error) {
             this.errorMessage = this.errorHandler.handleJavascriptError(error);
-            this.logger.log("error", error);
+            this.logger.log('error', error);
         }
     }
 
     getUpdatedUrl() {
         let updatedQueryParams = {};
-        this.filterText = this.utils.arrayToObject(
-            this.filters,
-            "filterkey",
-            "value"
-        ); // <-- TO update the queryparam which is passed in the filter of the api
+        this.filterText = this.utils.arrayToObject(this.filters, 'filterkey', 'value'); // <-- TO update the queryparam which is passed in the filter of the api
         this.filterText = this.utils.makeFilterObj(this.filterText);
 
         /**
@@ -227,7 +219,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
          */
         updatedQueryParams = {
             filter: this.filterText.filter,
-        }
+        };
 
         /**
          * Finally after changing URL Link
@@ -244,51 +236,74 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
     deleteFilters(event?) {
         let shouldUpdateComponent = false;
-        [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(event, this.filters);      
-        if(shouldUpdateComponent){
+        [this.filters, shouldUpdateComponent] = this.filterManagementService.deleteFilters(
+            event,
+            this.filters,
+        );
+        if (shouldUpdateComponent) {
             this.getUpdatedUrl();
             this.updateComponent();
         }
     }
 
     /*
-       * this functin passes query params to filter component to show filter
-       */
+     * this functin passes query params to filter component to show filter
+     */
     async getFilterArray() {
         try {
-          const filterText = this.filterText;
-          const filterTypeOptions = this.filterTypeOptions;
-          let filters = this.filters;
-          
-          const formattedFilters = this.filterManagementService.getFormattedFilters(filterText, filterTypeOptions);
-    
-          for (let i = 0; i < formattedFilters.length; i++) {
-            filters = await this.processAndAddFilterItem({ formattedFilterItem: formattedFilters[i] , filters});
-            this.filters = filters;
-          }
+            const filterText = this.filterText;
+            const filterTypeOptions = this.filterTypeOptions;
+            let filters = this.filters;
+
+            const formattedFilters = this.filterManagementService.getFormattedFilters(
+                filterText,
+                filterTypeOptions,
+            );
+
+            for (let i = 0; i < formattedFilters.length; i++) {
+                filters = await this.processAndAddFilterItem({
+                    formattedFilterItem: formattedFilters[i],
+                    filters,
+                });
+                this.filters = filters;
+            }
         } catch (error) {
-          this.errorMessage = this.errorHandler.handleJavascriptError(error);
-          this.logger.log("error", error);
+            this.errorMessage = this.errorHandler.handleJavascriptError(error);
+            this.logger.log('error', error);
         }
-      }
-    
-      async processAndAddFilterItem({formattedFilterItem, filters}){
-    
-        const keyDisplayValue = this.utils.getFilterKeyDisplayValue(formattedFilterItem, this.filterTypeOptions);
+    }
+
+    async processAndAddFilterItem({ formattedFilterItem, filters }) {
+        const keyDisplayValue = this.utils.getFilterKeyDisplayValue(
+            formattedFilterItem,
+            this.filterTypeOptions,
+        );
         const filterKey = formattedFilterItem.filterkey;
-          
-        const existingFilterObjIndex = filters.findIndex(filter => filter.keyDisplayValue === keyDisplayValue);
-        if(existingFilterObjIndex<0){
-          // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
-          await this.changeFilterType(keyDisplayValue);
-          const validFilterValues = this.filterManagementService.getValidFilterValues(keyDisplayValue, filterKey, this.filterText, this.filterTagOptions, this.filterTagLabels);
-          const filterObj = this.filterManagementService.createFilterObj(keyDisplayValue, filterKey, validFilterValues);
-    
-          filters.push(filterObj);
+
+        const existingFilterObjIndex = filters.findIndex(
+            (filter) => filter.keyDisplayValue === keyDisplayValue,
+        );
+        if (existingFilterObjIndex < 0) {
+            // we make API call by calling changeFilterType mathod to fetch filter options and their display names for a filterKey
+            await this.changeFilterType(keyDisplayValue);
+            const validFilterValues = this.filterManagementService.getValidFilterValues(
+                keyDisplayValue,
+                filterKey,
+                this.filterText,
+                this.filterTagOptions,
+                this.filterTagLabels,
+            );
+            const filterObj = this.filterManagementService.createFilterObj(
+                keyDisplayValue,
+                filterKey,
+                validFilterValues,
+            );
+
+            filters.push(filterObj);
         }
         filters = [...filters];
         return filters;
-      }
+    }
 
     /**
      * This function get calls the keyword service before initializing
@@ -302,61 +317,83 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     environment.issueFilter.url,
                     environment.issueFilter.method,
                 )
-                .subscribe((response) => {
-                    this.filterTypeLabels = map(response[0].response, 'optionName');
-                    this.filterTypeOptions = response[0].response;
-                    this.filterTypeLabels.sort();
+                .subscribe(
+                    (response) => {
+                        this.filterTypeLabels = map(response[0].response, 'optionName');
+                        this.filterTypeOptions = response[0].response;
+                        this.filterTypeLabels.sort();
 
-                    [this.columnNamesMap, this.columnWidths] = this.utils.getColumnNamesMapAndColumnWidthsMap(this.filterTypeLabels, this.filterTypeOptions, this.columnWidths, this.columnNamesMap, []);
-                    this.routerParam();
-                    this.getFilterArray();
-                    this.updateComponent();
-                },
-                error => {
-                  this.tableErrorMessage = 'apiResponseError';
-                  this.logger.log("apiResponseError", error);
-                });
+                        [this.columnNamesMap, this.columnWidths] =
+                            this.utils.getColumnNamesMapAndColumnWidthsMap(
+                                this.filterTypeLabels,
+                                this.filterTypeOptions,
+                                this.columnWidths,
+                                this.columnNamesMap,
+                                [],
+                            );
+                        this.routerParam();
+                        this.getFilterArray();
+                        this.updateComponent();
+                    },
+                    (error) => {
+                        this.tableErrorMessage = 'apiResponseError';
+                        this.logger.log('apiResponseError', error);
+                    },
+                );
         } catch (error) {
             this.errorMessage = this.errorHandler.handleJavascriptError(error);
-            this.logger.log("error", error);
+            this.logger.log('error', error);
         }
     }
 
-    async changeFilterType(value, searchText='') {
+    async changeFilterType(value, searchText = '') {
         try {
-          const currentQueryParams =
-            this.routerUtilityService.getQueryParametersFromSnapshot(
-              this.router.routerState.snapshot.root
+            const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(
+                this.router.routerState.snapshot.root,
             );
-          this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
-          const filtersToBePassed = this.getFilterPayloadForDataAPI();
-          const filterText = this.filterText;
-          const currentFilterType = this.currentFilterType;
-          const labelsToExcludeSort = ['created date'];
-    
-          const [filterTagOptions, filterTagLabels] = await this.filterManagementService.changeFilterType({currentFilterType, filterText, filtersToBePassed, type:undefined, currentQueryParams, agAndDomain:{}, searchText, updateFilterTags: undefined, labelsToExcludeSort});
-          this.filterTagOptions[value] = filterTagOptions;
-          this.filterTagLabels[value] = filterTagLabels;
+            this.currentFilterType = find(this.filterTypeOptions, { optionName: value });
+            const filtersToBePassed = this.getFilterPayloadForDataAPI();
+            const filterText = this.filterText;
+            const currentFilterType = this.currentFilterType;
+            const labelsToExcludeSort = ['created date'];
 
-          this.filterTagLabels = {...this.filterTagLabels};          
+            const [filterTagOptions, filterTagLabels] =
+                await this.filterManagementService.changeFilterType({
+                    currentFilterType,
+                    filterText,
+                    filtersToBePassed,
+                    type: undefined,
+                    currentQueryParams,
+                    agAndDomain: {},
+                    searchText,
+                    updateFilterTags: undefined,
+                    labelsToExcludeSort,
+                });
+            this.filterTagOptions[value] = filterTagOptions;
+            this.filterTagLabels[value] = filterTagLabels;
 
-      
+            this.filterTagLabels = { ...this.filterTagLabels };
         } catch (error) {
-          this.errorMessage = this.errorHandler.handleJavascriptError(error);
-          this.logger.log("error", error);
+            this.errorMessage = this.errorHandler.handleJavascriptError(error);
+            this.logger.log('error', error);
         }
-      }
+    }
 
     async changeFilterTags(event) {
         let filterValues = event.filterValue;
-        if(!filterValues){
-          return;
+        if (!filterValues) {
+            return;
         }
-        this.currentFilterType =  find(this.filterTypeOptions, {
-          optionName: event.filterKeyDisplayValue,
+        this.currentFilterType = find(this.filterTypeOptions, {
+            optionName: event.filterKeyDisplayValue,
         });
-        if(event.filterKeyDisplayValue.toLowerCase() !== "created date"){
-            this.filters = this.filterManagementService.changeFilterTags(this.filters, this.filterTagOptions, this.currentFilterType, event);
+        if (event.filterKeyDisplayValue.toLowerCase() !== 'created date') {
+            this.filters = this.filterManagementService.changeFilterTags(
+                this.filters,
+                this.filterTagOptions,
+                this.currentFilterType,
+                event,
+            );
         }
         this.getUpdatedUrl();
         this.updateComponent();
@@ -375,19 +412,21 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
     }
 
-    updateSortFieldName(){
-        try{
-            if(!this.headerColName || !this.direction) return;        
+    updateSortFieldName() {
+        try {
+            if (!this.headerColName || !this.direction) return;
             this.selectedOrder = this.direction;
-            let apiColName:any = Object.keys(this.columnNamesMap).find(col => this.columnNamesMap[col]==this.headerColName);
-            if(!apiColName){
+            let apiColName: any = Object.keys(this.columnNamesMap).find(
+                (col) => this.columnNamesMap[col] == this.headerColName,
+            );
+            if (!apiColName) {
                 apiColName = find(this.filterTypeOptions, {
                     optionName: this.headerColName,
-                })["optionValue"];
+                })['optionValue'];
             }
-            this.fieldType = "string";
-            this.fieldName = apiColName+'.keyword';
-        }catch(e){
+            this.fieldType = 'string';
+            this.fieldName = apiColName + '.keyword';
+        } catch (e) {
             this.logger.log('Sort error', e);
             this.headerColName = '';
         }
@@ -400,7 +439,9 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     handleWhitelistColumnsChange(columns) {
-        columns = columns.sort((a, b) => this.displayedColumns.indexOf(a) - this.displayedColumns.indexOf(b));
+        columns = columns.sort(
+            (a, b) => this.displayedColumns.indexOf(a) - this.displayedColumns.indexOf(b),
+        );
         this.whiteListColumns = columns;
     }
 
@@ -428,7 +469,9 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
     navigateBack() {
         try {
-            this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
+            this.workflowService.goBackToLastOpenedPageAndUpdateLevel(
+                this.router.routerState.snapshot.root,
+            );
         } catch (error) {
             this.logger.log('error', error);
         }
@@ -443,88 +486,91 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             fieldName: this.fieldName,
             fieldType: this.fieldType,
             order: this.selectedOrder,
-        }
+        };
 
         const filtersToBePassed = this.getFilterPayloadForDataAPI();
 
         const payload = {
-            'ag': this.selectedAssetGroup,
-            'filter': filtersToBePassed,
-            'from': (this.bucketNumber) * this.paginatorSize,
-            'searchtext': this.searchTxt,
-            'size': this.paginatorSize,
-            sortFilter
+            ag: this.selectedAssetGroup,
+            filter: filtersToBePassed,
+            from: this.bucketNumber * this.paginatorSize,
+            searchtext: this.searchTxt,
+            size: this.paginatorSize,
+            sortFilter,
         };
 
         const queryParam = {
-            global: this.tabSelected === 'general'
+            global: this.tabSelected === 'general',
         };
 
         const TableUrl = environment.cloudNotifications.url;
         const TableMethod = environment.cloudNotifications.method;
-        this.dataSubscription = this.commonResponseService.getData(TableUrl, TableMethod, payload, queryParam).subscribe(
-            response => {
-                if (!isNextPageCalled) {
-                    this.tableData = [];
-                }
-
-                this.tableDataLoaded = true;
-                try {
-                    if (response.data.response.length === 0) {
-                        this.totalRows = 0;
-                        this.tableErrorMessage = 'noDataAvailable';
-                    } else {
-                        this.tableErrorMessage = '';
+        this.dataSubscription = this.commonResponseService
+            .getData(TableUrl, TableMethod, payload, queryParam)
+            .subscribe(
+                (response) => {
+                    if (!isNextPageCalled) {
+                        this.tableData = [];
                     }
 
-                    this.totalRows = response.data.total;
-                    if (response.data.response.length > 0) {
-
-                        let updatedResponse = this.utils.massageTableData(response.data.response, this.columnNamesMap);
-                        const processData = this.processData(updatedResponse);
-                        if (isNextPageCalled) {
-                            this.onScrollDataLoader.next(processData)
+                    this.tableDataLoaded = true;
+                    try {
+                        if (response.data.response.length === 0) {
+                            this.totalRows = 0;
+                            this.tableErrorMessage = 'noDataAvailable';
                         } else {
-                            this.tableData = processData;
+                            this.tableErrorMessage = '';
                         }
+
+                        this.totalRows = response.data.total;
+                        if (response.data.response.length > 0) {
+                            let updatedResponse = this.utils.massageTableData(
+                                response.data.response,
+                                this.columnNamesMap,
+                            );
+                            const processData = this.processData(updatedResponse);
+                            if (isNextPageCalled) {
+                                this.onScrollDataLoader.next(processData);
+                            } else {
+                                this.tableData = processData;
+                            }
+                        }
+                    } catch (e) {
+                        this.errorValue = -1;
+                        this.logger.log('error', e);
+                        this.tableErrorMessage = 'jsError';
                     }
-                } catch (e) {
+                },
+                (error) => {
                     this.errorValue = -1;
-                    this.logger.log('error', e);
-                    this.tableErrorMessage = 'jsError';
-                }
-            },
-            error => {
-                this.errorValue = -1;
-                this.logger.log('error', error);
-                this.tableErrorMessage = 'apiResponseError';
-            });
+                    this.logger.log('error', error);
+                    this.tableErrorMessage = 'apiResponseError';
+                },
+            );
     }
 
     processData(data) {
         try {
-          return this.utils.processTableData(data, {}, (row, col, cellObj) => {
-            if (col.toLowerCase() == "event") {
-                cellObj = {
-                    ...cellObj,
-                    isLink: true
-                };
-            }else if(col.toLowerCase() == "created date"){
-                
-                cellObj = {
-                    ...cellObj,
-                    isDate: true
+            return this.utils.processTableData(data, {}, (row, col, cellObj) => {
+                if (col.toLowerCase() == 'event') {
+                    cellObj = {
+                        ...cellObj,
+                        isLink: true,
+                    };
+                } else if (col.toLowerCase() == 'created date') {
+                    cellObj = {
+                        ...cellObj,
+                        isDate: true,
+                    };
                 }
-            }
-            
-            return cellObj;
-          });
-          
+
+                return cellObj;
+            });
         } catch (error) {
-          this.errorMessage = this.errorHandler.handleJavascriptError(error);
-          this.logger.log("error", error);
+            this.errorMessage = this.errorHandler.handleJavascriptError(error);
+            this.logger.log('error', error);
         }
-      }
+    }
 
     goToDetails(event) {
         const rowSelected = event.rowSelected;
@@ -533,15 +579,22 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         this.tableScrollTop = event.tableScrollTop;
         try {
             const eventId = encodeURIComponent(rowSelected['eventId'].valueText);
-            this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
-            this.router.navigate(
-                ['pl/notifications/notification-details'],
-                {queryParams: {'eventId': eventId}, queryParamsHandling: 'merge'}
-            ).then(response => {
-                this.logger.log('info', 'Successfully navigated to details page: ' + response);
-            }).catch(error => {
-                this.logger.log('error', 'Error in navigation - ' + error);
-            });
+            this.workflowService.addRouterSnapshotToLevel(
+                this.router.routerState.snapshot.root,
+                0,
+                this.pageTitle,
+            );
+            this.router
+                .navigate(['pl/notifications/notification-details'], {
+                    queryParams: { eventId: eventId },
+                    queryParamsHandling: 'merge',
+                })
+                .then((response) => {
+                    this.logger.log('info', 'Successfully navigated to details page: ' + response);
+                })
+                .catch((error) => {
+                    this.logger.log('error', 'Error in navigation - ' + error);
+                });
         } catch (error) {
             this.logger.log('error', error);
         }
@@ -554,21 +607,22 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
             this.getData(true);
         } catch (error) {
-            this.logger.log("error", error);
+            this.logger.log('error', error);
         }
     }
 
-    getFilterPayloadForDataAPI(){
-        const filterToBePassed = {...this.filterText};
-        Object.keys(filterToBePassed).forEach(filterKey => {
-            if(filterKey=='_loaddate'){
-
-                const [fromDate, toDate] = filterToBePassed[filterKey].split(" - ");
-                const dateRangeString = `${this.utils.getFormattedDate(fromDate)} - ${this.utils.getFormattedDate(toDate, true)}`;
+    getFilterPayloadForDataAPI() {
+        const filterToBePassed = { ...this.filterText };
+        Object.keys(filterToBePassed).forEach((filterKey) => {
+            if (filterKey == '_loaddate') {
+                const [fromDate, toDate] = filterToBePassed[filterKey].split(' - ');
+                const dateRangeString = `${this.utils.getFormattedDate(
+                    fromDate,
+                )} - ${this.utils.getFormattedDate(toDate, true)}`;
                 filterToBePassed[filterKey] = dateRangeString;
             }
-            filterToBePassed[filterKey] = filterToBePassed[filterKey].split(",");
-        })
+            filterToBePassed[filterKey] = filterToBePassed[filterKey].split(',');
+        });
 
         return filterToBePassed;
     }
@@ -578,26 +632,26 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         try {
             let queryParams;
             queryParams = {
-                'fileFormat': 'csv',
-                'serviceId': this.tabSelected === 'general' ? 18 : 17,
-                'fileType': fileType
+                fileFormat: 'csv',
+                serviceId: this.tabSelected === 'general' ? 18 : 17,
+                fileType: fileType,
             };
 
             const sortFilter = {
                 fieldName: this.fieldName,
                 fieldType: this.fieldType,
                 order: this.selectedOrder,
-            }
+            };
 
             const filtersToBePassed = this.getFilterPayloadForDataAPI();
 
             const downloadRequest = {
-                'ag': this.selectedAssetGroup,
-                'filter': filtersToBePassed,
-                'from': 0,
-                'searchtext': this.searchTxt,
-                'size': this.totalRows,
-                sortFilter
+                ag: this.selectedAssetGroup,
+                filter: filtersToBePassed,
+                from: 0,
+                searchtext: this.searchTxt,
+                size: this.totalRows,
+                sortFilter,
             };
 
             const downloadUrl = environment.download.url;
@@ -610,7 +664,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 downloadMethod,
                 downloadRequest,
                 downloadName,
-                this.totalRows);
+                this.totalRows,
+            );
         } catch (error) {
             this.logger.log('error', error);
         }

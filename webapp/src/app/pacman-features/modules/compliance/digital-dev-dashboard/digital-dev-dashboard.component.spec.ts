@@ -48,59 +48,54 @@ import { WidgetSectionStarterComponent } from 'src/app/shared/widget-section-sta
 import { DigitalDevDashboardComponent } from './digital-dev-dashboard.component';
 
 describe('DigitalDevDashboardComponent', () => {
-  let component: DigitalDevDashboardComponent;
-  let fixture: ComponentFixture<DigitalDevDashboardComponent>;
+    let component: DigitalDevDashboardComponent;
+    let fixture: ComponentFixture<DigitalDevDashboardComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        AgGridModule,
-        HttpClientTestingModule,
-        FormsModule,
-        RouterTestingModule,
-      ],
-      declarations: [
-        DigitalDevDashboardComponent,
-        BreadcrumbComponent,
-        DevPullRequestApplicationsComponent,
-        DevStandardPullRequestAgeComponent,
-        DevStandardStaleBranchAgeComponent,
-        DevStandardTotalStaleBranchesComponent,
-        DevStaleBranchApplicationsComponent,
-        DigitalApplicationDistributionComponent,
-        DigitalDevStrategyDistributionComponent,
-        FilteredSelectorComponent,
-        GenericPageFilterComponent,
-        NgxSelectDropdownComponent,
-        PullRequestLineMetricsComponent,
-        SearchableDropdownComponent,
-        TextComponent,
-        TitleBurgerHeadComponent,
-        WidgetSectionStarterComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        DomainTypeObservableService,
-        FilterManagementService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        WorkflowService,
-        UtilsService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [AgGridModule, HttpClientTestingModule, FormsModule, RouterTestingModule],
+            declarations: [
+                DigitalDevDashboardComponent,
+                BreadcrumbComponent,
+                DevPullRequestApplicationsComponent,
+                DevStandardPullRequestAgeComponent,
+                DevStandardStaleBranchAgeComponent,
+                DevStandardTotalStaleBranchesComponent,
+                DevStaleBranchApplicationsComponent,
+                DigitalApplicationDistributionComponent,
+                DigitalDevStrategyDistributionComponent,
+                FilteredSelectorComponent,
+                GenericPageFilterComponent,
+                NgxSelectDropdownComponent,
+                PullRequestLineMetricsComponent,
+                SearchableDropdownComponent,
+                TextComponent,
+                TitleBurgerHeadComponent,
+                WidgetSectionStarterComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                DomainTypeObservableService,
+                FilterManagementService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                WorkflowService,
+                UtilsService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DigitalDevDashboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DigitalDevDashboardComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

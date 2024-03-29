@@ -1,31 +1,60 @@
-
 import { throwError as observableThrowError, Observable, BehaviorSubject } from 'rxjs';
 
 import { take, filter, catchError, switchMap, finalize, retry } from 'rxjs/operators';
 import { Injectable, Injector } from '@angular/core';
-import { HttpEvent, HttpInterceptor, HttpRequest, HttpHandler, HttpSentEvent, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpUserEvent, HttpErrorResponse } from '@angular/common/http';
+import {
+    HttpEvent,
+    HttpInterceptor,
+    HttpRequest,
+    HttpHandler,
+    HttpSentEvent,
+    HttpHeaderResponse,
+    HttpProgressEvent,
+    HttpResponse,
+    HttpUserEvent,
+    HttpErrorResponse,
+} from '@angular/common/http';
 
 import { AuthService } from './auth.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
 @Injectable()
 export class RequestInterceptorService implements HttpInterceptor {
-
     isRefreshingToken = false;
     tokenSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
-    constructor(private injector: Injector, private loggerService: LoggerService) { }
+    constructor(
+        private injector: Injector,
+        private loggerService: LoggerService,
+    ) {}
 
     addToken(req: HttpRequest<any>, token: string): HttpRequest<any> {
-        return req.clone({ setHeaders: { 'Authorization': 'Bearer ' + token } });
+        return req.clone({ setHeaders: { Authorization: 'Bearer ' + token } });
     }
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any> | HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
-        if (req.url.includes('/oauth2/token') || req.url.includes('aws-account-configure.template')) {
-           return next.handle(req);
-       }
+    intercept(
+        req: HttpRequest<any>,
+        next: HttpHandler,
+    ): Observable<
+        | HttpEvent<any>
+        | HttpSentEvent
+        | HttpHeaderResponse
+        | HttpProgressEvent
+        | HttpResponse<any>
+        | HttpUserEvent<any>
+    > {
+        if (
+            req.url.includes('/oauth2/token') ||
+            req.url.includes('aws-account-configure.template')
+        ) {
+            return next.handle(req);
+        }
         const authService = this.injector.get(AuthService);
-        if (req.url.includes('user/authorize') || req.url.includes('user/login') || req.url.includes('user/refresh')) {
+        if (
+            req.url.includes('user/authorize') ||
+            req.url.includes('user/login') ||
+            req.url.includes('user/refresh')
+        ) {
             this.loggerService.log('info', 'Not adding the access token for this api - ' + req.url);
             return next.handle(req);
         } else if (req.url.includes('user/logout-session')) {
@@ -33,13 +62,13 @@ export class RequestInterceptorService implements HttpInterceptor {
             return next.handle(this.addToken(req, authService.getAuthToken()));
         }
         return next.handle(this.addToken(req, authService.getAuthToken())).pipe(
-            catchError(error => {
-
+            catchError((error) => {
                 // We don't want to refresh token for some requests like login or refresh token itself
                 // So we verify url and we throw an error if it's the case
                 if (
                     req.url.includes('user/refresh') ||
-                    req.url.includes('user/login') || req.url.includes('user/authorize')
+                    req.url.includes('user/login') ||
+                    req.url.includes('user/authorize')
                 ) {
                     // We do another check to see if refresh token failed
                     // In this case we want to logout user and to redirect it to login page
@@ -62,7 +91,8 @@ export class RequestInterceptorService implements HttpInterceptor {
                 } else {
                     return observableThrowError(error);
                 }
-            }));
+            }),
+        );
     }
 
     handle400Error(error) {
@@ -84,7 +114,6 @@ export class RequestInterceptorService implements HttpInterceptor {
             // comes back from the refreshToken call.
             this.tokenSubject.next(null);
 
-
             return authService.refreshToken().pipe(
                 switchMap((newToken: string) => {
                     if (newToken) {
@@ -95,21 +124,22 @@ export class RequestInterceptorService implements HttpInterceptor {
                     // If we don't get a new token, we are in trouble so logout.
                     return this.logoutUser();
                 }),
-                catchError(error => {
+                catchError((error) => {
                     // If there is an exception calling 'refreshToken', bad news so logout.
                     return this.logoutUser();
                 }),
                 finalize(() => {
                     this.isRefreshingToken = false;
-                })
+                }),
             );
         } else {
             return this.tokenSubject.pipe(
-                filter(token => token != null),
+                filter((token) => token != null),
                 take(1),
                 switchMap((token: string) => {
                     return next.handle(this.addToken(req, token));
-                }));
+                }),
+            );
         }
     }
 

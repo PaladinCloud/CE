@@ -4,23 +4,22 @@ import { TextComponent } from '../../atoms/text/text.component';
 import { TextWithIconComponent } from './text-with-icon.component';
 
 describe('TextWithIconComponent', () => {
-  let component: TextWithIconComponent;
-  let fixture: ComponentFixture<TextWithIconComponent>;
+    let component: TextWithIconComponent;
+    let fixture: ComponentFixture<TextWithIconComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ TextWithIconComponent, TextComponent ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [TextWithIconComponent, TextComponent],
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TextWithIconComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(TextWithIconComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

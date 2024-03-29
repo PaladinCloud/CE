@@ -8,44 +8,49 @@ import { HttpService } from 'src/app/shared/services/http-response.service';
 import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class AwsCognitoService {
+    constructor(
+        private http: HttpClient,
+        private httpService: HttpService,
+        private router: Router,
+    ) {}
 
-  constructor(private http: HttpClient,
-    private httpService: HttpService,
-    private router: Router) { }
+    public getTokenDetailsFromCognito(callbackCode: string): Observable<any> {
+        const details = {
+            grant_type: 'authorization_code',
+            code: callbackCode,
+            scope: 'openid+profile',
+            redirect_uri: CONFIGURATIONS.optional.auth.cognitoConfig.redirectURL,
+        };
+        console.log('Inside AWS cognito service');
 
-  public getTokenDetailsFromCognito(callbackCode: string): Observable<any> {
-    const details = {
-      grant_type: 'authorization_code',
-      code: callbackCode,
-      scope: 'openid+profile',
-      redirect_uri: CONFIGURATIONS.optional.auth.cognitoConfig.redirectURL
-    };
-    console.log('Inside AWS cognito service');
+        //window.alert('Inside AWS cognito service, callBack code: '+ callbackCode);
+        const formBody = Object.keys(details)
+            .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(details[key])}`)
+            .join('&');
+        console.log('formBody', formBody);
 
-    //window.alert('Inside AWS cognito service, callBack code: '+ callbackCode);
-    const formBody = Object.keys(details)
-      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(details[key])}`)
-      .join('&');
-    console.log('formBody', formBody);
+        const response = this.http.post(
+            CONFIGURATIONS.optional.auth.cognitoConfig.cognitoTokenURL,
+            formBody,
+            {
+                responseType: 'json',
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization:
+                        'Basic ' +
+                        btoa(
+                            `${CONFIGURATIONS.optional.auth.cognitoConfig.sso_api_username}:${CONFIGURATIONS.optional.auth.cognitoConfig.sso_api_pwd}`,
+                        ),
+                }),
+            },
+        );
+        return response;
+    }
 
-    const response = this.http.post(CONFIGURATIONS.optional.auth.cognitoConfig.cognitoTokenURL,
-      formBody,
-      {
-        responseType: 'json',
-        headers: new HttpHeaders({
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Basic ' + btoa(`${CONFIGURATIONS.optional.auth.cognitoConfig.sso_api_username}:${CONFIGURATIONS.optional.auth.cognitoConfig.sso_api_pwd}`)
-        })
-      }
-    );
-    return response;
-  
-  }
-
-  public logoutUserFromCognito(): Observable<any> {
-    return this.http.get<any>(CONFIGURATIONS.optional.auth.cognitoConfig.logout);
-  }
+    public logoutUserFromCognito(): Observable<any> {
+        return this.http.get<any>(CONFIGURATIONS.optional.auth.cognitoConfig.logout);
+    }
 }

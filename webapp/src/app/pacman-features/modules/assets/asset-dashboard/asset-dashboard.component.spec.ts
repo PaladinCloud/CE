@@ -43,54 +43,54 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { AssetDashboardComponent } from './asset-dashboard.component';
 
 describe('AssetDashboardComponent', () => {
-  let component: AssetDashboardComponent;
-  let fixture: ComponentFixture<AssetDashboardComponent>;
+    let component: AssetDashboardComponent;
+    let fixture: ComponentFixture<AssetDashboardComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        FormsModule,
-        HttpClientTestingModule,
-        MatCardModule,
-        MatMenuModule,
-        MatSelectModule,
-        NoopAnimationsModule,
-        RouterTestingModule,
-      ],
-      declarations: [
-        AssetDashboardComponent,
-        DateSelectionComponent,
-        DropdownComponent,
-        TextComponent,
-        TextWithIconComponent,
-        CustomCardComponent,
-        OverviewTileComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        AssetTilesService,
-        AwsResourceTypeSelectionService,
-        CommonResponseService,
-        DataCacheService,
-        DomainTypeObservableService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [
+                FormsModule,
+                HttpClientTestingModule,
+                MatCardModule,
+                MatMenuModule,
+                MatSelectModule,
+                NoopAnimationsModule,
+                RouterTestingModule,
+            ],
+            declarations: [
+                AssetDashboardComponent,
+                DateSelectionComponent,
+                DropdownComponent,
+                TextComponent,
+                TextWithIconComponent,
+                CustomCardComponent,
+                OverviewTileComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                AssetTilesService,
+                AwsResourceTypeSelectionService,
+                CommonResponseService,
+                DataCacheService,
+                DomainTypeObservableService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AssetDashboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AssetDashboardComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

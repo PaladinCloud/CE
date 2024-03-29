@@ -1,0 +1,22 @@
+# Ignore all files in the node_modules directory
+node_modules/
+
+# Ignore all files in the dist directory
+dist/
+e2e/
+.angular/
+.husky/
+src/assets/
+
+# Ignore all files with .min.js extension
+*.min.js
+
+# Ignore all files with .svg .png .xml extension
+.DS_Store
+.editorconfig
+.gitignore
+.prettierignore
+sonar-project.properties
+*.png
+*.svg
+*.xml

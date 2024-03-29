@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -33,36 +33,36 @@ import { TableComponent } from 'src/app/shared/table/table.component';
 import { PolicyKnowledgebaseDetailsComponent } from './policy-knowledgebase-details.component';
 
 describe('PolicyKnowledgebaseDetailsComponent', () => {
-  let component: PolicyKnowledgebaseDetailsComponent;
-  let fixture: ComponentFixture<PolicyKnowledgebaseDetailsComponent>;
+    let component: PolicyKnowledgebaseDetailsComponent;
+    let fixture: ComponentFixture<PolicyKnowledgebaseDetailsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MatDialogModule, RouterTestingModule],
-      declarations: [PolicyKnowledgebaseDetailsComponent, TableComponent, ChipComponent],
-      providers: [
-        AssetGroupObservableService,
-        DataCacheService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        PermissionGuardService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-        WindowExpansionService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, MatDialogModule, RouterTestingModule],
+            declarations: [PolicyKnowledgebaseDetailsComponent, TableComponent, ChipComponent],
+            providers: [
+                AssetGroupObservableService,
+                DataCacheService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                PermissionGuardService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+                WindowExpansionService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PolicyKnowledgebaseDetailsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PolicyKnowledgebaseDetailsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

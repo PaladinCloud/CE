@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+} from '@angular/core';
 import {
     DateRange,
     DefaultMatCalendarRangeStrategy,
@@ -19,7 +27,7 @@ import {
 export class DateSelectionComponent implements OnInit, OnChanges {
     readonly today = new Date();
 
-    @Input("minDate") minDate : Date;
+    @Input('minDate') minDate: Date;
     @Input() maxDate: Date = this.today;
 
     @Input() selectedRange?: DateRange<Date>;
@@ -27,10 +35,10 @@ export class DateSelectionComponent implements OnInit, OnChanges {
     @Output() datesSelected = new EventEmitter<{ from: Date; to: Date }>();
 
     ngOnInit() {}
-    
+
     ngOnChanges(changes: SimpleChanges): void {
-        if(changes.minDate || changes.maxDate){
-            if(this.minDate && this.maxDate && this.minDate>this.maxDate){
+        if (changes.minDate || changes.maxDate) {
+            if (this.minDate && this.maxDate && this.minDate > this.maxDate) {
                 const temp = this.minDate;
                 this.minDate = this.maxDate;
                 this.maxDate = temp;

@@ -20,41 +20,41 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { AccountManagementComponent } from './account-management.component';
 
 describe('AccountManagementComponent', () => {
-  let component: AccountManagementComponent;
-  let fixture: ComponentFixture<AccountManagementComponent>;
+    let component: AccountManagementComponent;
+    let fixture: ComponentFixture<AccountManagementComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
-      declarations: [
-        AccountManagementComponent,
-        ButtonComponent,
-        DataTableComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        ErrorHandlingService,
-        FilterManagementService,
-        HttpService,
-        LoggerService,
-        WorkflowService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+            declarations: [
+                AccountManagementComponent,
+                ButtonComponent,
+                DataTableComponent,
+                TitleBurgerHeadComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                ErrorHandlingService,
+                FilterManagementService,
+                HttpService,
+                LoggerService,
+                WorkflowService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AccountManagementComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AccountManagementComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

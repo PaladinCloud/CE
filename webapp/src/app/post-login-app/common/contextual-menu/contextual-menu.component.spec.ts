@@ -39,43 +39,47 @@ import { ToastObservableService } from '../services/toast-observable.service';
 import { ContextualMenuComponent } from './contextual-menu.component';
 
 describe('ContextualMenuComponent', () => {
-  let component: ContextualMenuComponent;
-  let fixture: ComponentFixture<ContextualMenuComponent>;
+    let component: ContextualMenuComponent;
+    let fixture: ComponentFixture<ContextualMenuComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [DefaultAssetGroupComponent, AssetSwitcherComponent, ContextualMenuComponent],
-      providers: [
-        AssetGroupObservableService,
-        AssetTilesService,
-        AwsResourceTypeSelectionService,
-        CommonResponseService,
-        DataCacheService,
-        DomainTypeObservableService,
-        DownloadService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        PermissionGuardService,
-        RefactorFieldsService,
-        RecentlyViewedObservableService,
-        RouterUtilityService,
-        ThemeObservableService,
-        ToastObservableService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [
+                DefaultAssetGroupComponent,
+                AssetSwitcherComponent,
+                ContextualMenuComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                AssetTilesService,
+                AwsResourceTypeSelectionService,
+                CommonResponseService,
+                DataCacheService,
+                DomainTypeObservableService,
+                DownloadService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                PermissionGuardService,
+                RefactorFieldsService,
+                RecentlyViewedObservableService,
+                RouterUtilityService,
+                ThemeObservableService,
+                ToastObservableService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ContextualMenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ContextualMenuComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

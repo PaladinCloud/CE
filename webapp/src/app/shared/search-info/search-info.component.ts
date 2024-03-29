@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -15,22 +15,20 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-search-info',
-  templateUrl: './search-info.component.html',
-  styleUrls: ['./search-info.component.css']
+    selector: 'app-search-info',
+    templateUrl: './search-info.component.html',
+    styleUrls: ['./search-info.component.css'],
 })
 export class SearchInfoComponent {
+    search = '';
 
-  search = '';
+    @Input() placeholderText: any;
 
-  @Input() placeholderText: any;
+    @Output() searchQuery: EventEmitter<String> = new EventEmitter<String>();
 
-  @Output() searchQuery: EventEmitter<String> = new EventEmitter<String>();
+    constructor() {}
 
-  constructor() { }
-
-  searchCalled() {
-    this.searchQuery.emit(this.search);
-  }
-
+    searchCalled() {
+        this.searchQuery.emit(this.search);
+    }
 }

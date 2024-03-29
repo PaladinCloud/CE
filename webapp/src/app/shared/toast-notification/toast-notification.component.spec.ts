@@ -17,24 +17,23 @@ import { ToastObservableService } from '../services/toast-observable.service';
 import { ToastNotificationComponent } from './toast-notification.component';
 
 describe('ToastNotificationComponent', () => {
-  let component: ToastNotificationComponent;
-  let fixture: ComponentFixture<ToastNotificationComponent>;
+    let component: ToastNotificationComponent;
+    let fixture: ComponentFixture<ToastNotificationComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ToastNotificationComponent ],
-      providers: [ ToastObservableService ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [ToastNotificationComponent],
+            providers: [ToastObservableService],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ToastNotificationComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ToastNotificationComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

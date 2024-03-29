@@ -1,131 +1,120 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "newProjectRoot": "projects",
-  "projects": {
-    "pacman-spa": {
-      "root": "",
-      "sourceRoot": "src",
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:application": {
-          "strict": true
-        }
-      },
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
-            "assets": [
-              "src/assets",
-              "src/favicon.ico"
-            ],
-            "styles": [
-              "src/styles.css",
-              "node_modules/offline-js/themes/offline-theme-chrome.css",
-              "node_modules/offline-js/themes/offline-language-english.css",
-              "node_modules/ag-grid-community/styles/ag-grid.min.css",
-              "node_modules/ag-grid-community/styles/ag-theme-material-no-font.min.css",
-              "node_modules/shepherd.js/dist/css/shepherd.css",
-              "src/material-theme.scss"
-            ],
-            "scripts": [
-              "node_modules/offline-js/offline.js"
-            ]
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "6mb",
-                  "maximumError": "10mb"
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "pacman-spa": {
+            "root": "",
+            "sourceRoot": "src",
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:application": {
+                    "strict": true
+                }
+            },
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist",
+                        "index": "src/index.html",
+                        "main": "src/main.ts",
+                        "tsConfig": "tsconfig.app.json",
+                        "polyfills": "src/polyfills.ts",
+                        "assets": ["src/assets", "src/favicon.ico"],
+                        "styles": [
+                            "src/styles.css",
+                            "node_modules/offline-js/themes/offline-theme-chrome.css",
+                            "node_modules/offline-js/themes/offline-language-english.css",
+                            "node_modules/ag-grid-community/styles/ag-grid.min.css",
+                            "node_modules/ag-grid-community/styles/ag-theme-material-no-font.min.css",
+                            "node_modules/shepherd.js/dist/css/shepherd.css",
+                            "src/material-theme.scss"
+                        ],
+                        "scripts": ["node_modules/offline-js/offline.js"]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "6mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "30kb",
+                                    "maximumError": "50kb"
+                                }
+                            ],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
+                        "development": {
+                            "buildOptimizer": false,
+                            "optimization": false,
+                            "vendorChunk": true,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "namedChunks": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
                 },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "30kb",
-                  "maximumError": "50kb"
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "pacman-spa:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "pacman-spa:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "pacman-spa:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "src/test.ts",
+                        "karmaConfig": "./karma.conf.js",
+                        "polyfills": "src/polyfills.ts",
+                        "tsConfig": "tsconfig.spec.json",
+                        "scripts": [
+                            "node_modules/offline-js/offline.js",
+                            "node_modules/apexcharts/dist/apexcharts.min.js"
+                        ],
+                        "styles": [
+                            "src/styles.css",
+                            "src/material-theme.scss",
+                            "node_modules/offline-js/themes/offline-theme-chrome.css",
+                            "node_modules/offline-js/themes/offline-language-english.css",
+                            "node_modules/ag-grid-community/styles/ag-grid.min.css",
+                            "node_modules/ag-grid-community/styles/ag-theme-material-no-font.min.css"
+                        ],
+                        "assets": ["src/assets", "src/favicon.ico"]
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+                    }
                 }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
             }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "production": {
-              "browserTarget": "pacman-spa:build:production"
-            },
-            "development": {
-              "browserTarget": "pacman-spa:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "pacman-spa:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "karmaConfig": "./karma.conf.js",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "scripts": [
-              "node_modules/offline-js/offline.js",
-              "node_modules/apexcharts/dist/apexcharts.min.js"
-            ],
-            "styles": [
-              "src/styles.css",
-              "src/material-theme.scss",
-              "node_modules/offline-js/themes/offline-theme-chrome.css",
-              "node_modules/offline-js/themes/offline-language-english.css",
-              "node_modules/ag-grid-community/styles/ag-grid.min.css",
-              "node_modules/ag-grid-community/styles/ag-theme-material-no-font.min.css"
-            ],
-            "assets": [
-              "src/assets",
-              "src/favicon.ico"
-            ]
-          }
-        },
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
-          }
         }
-      }
-    }
-  },
-  "defaultProject": "pacman-spa"
+    },
+    "defaultProject": "pacman-spa"
 }

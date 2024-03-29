@@ -27,7 +27,7 @@
     border: solid 0.5px #f0f0f0;
 }
 
-.tagging-instances-content ::ng-deep .head-cell-wrapper{
+.tagging-instances-content ::ng-deep .head-cell-wrapper {
     text-align: left;
 }
 
@@ -35,4 +35,3 @@
     max-width: 500px;
     width: 100% !important;
 }
-

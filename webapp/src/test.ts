@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -22,8 +22,8 @@ import 'zone.js/dist/async-test';
 import 'zone.js/dist/fake-async-test';
 import { getTestBed } from '@angular/core/testing';
 import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting
+    BrowserDynamicTestingModule,
+    platformBrowserDynamicTesting,
 } from '@angular/platform-browser-dynamic/testing';
 
 // Unfortunately there's no typing for the `__karma__` variable. Just declare it as any.
@@ -34,12 +34,9 @@ declare const require: any;
 __karma__.loaded = function () {};
 
 // First, initialize the Angular testing environment.
-getTestBed().initTestEnvironment(
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting(), {
-    teardown: { destroyAfterEach: false }
-}
-);
+getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
+    teardown: { destroyAfterEach: false },
+});
 // Then we find all the tests.
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.

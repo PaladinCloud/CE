@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -14,14 +14,13 @@
 
 /// <reference path="adal-angular.d.ts" />
 import { Injectable } from '@angular/core';
-import { bindCallback, Observable} from 'rxjs';
+import { bindCallback, Observable } from 'rxjs';
 import * as lib from 'adal-angular';
 import { DataCacheService } from './data-cache.service';
 import { AuthSessionStorageService } from './auth-session-storage.service';
 
 @Injectable()
 export class AdalService {
-
     private context: adal.AuthenticationContext = <any>null;
 
     private user: adal.User = {
@@ -29,11 +28,13 @@ export class AdalService {
         userName: '',
         error: '',
         token: '',
-        profile: {}
+        profile: {},
     };
 
-    constructor(private dataStore: DataCacheService,
-                private authSessionStorage: AuthSessionStorageService) { }
+    constructor(
+        private dataStore: DataCacheService,
+        private authSessionStorage: AuthSessionStorageService,
+    ) {}
 
     public init(configOptions: adal.Config) {
         if (!configOptions) {
@@ -87,9 +88,9 @@ export class AdalService {
             this.context.saveTokenFromHash(requestInfo);
             if (requestInfo.requestType === this.context.REQUEST_TYPE.LOGIN) {
                 this.updateDataFromCache(<any>this.context.config.loginResource);
-
             } else if (requestInfo.requestType === this.context.REQUEST_TYPE.RENEW_TOKEN) {
-                this.context.callback = window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
+                this.context.callback =
+                    window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
             }
 
             if (requestInfo.stateMatch) {
@@ -97,13 +98,26 @@ export class AdalService {
                     if (requestInfo.requestType === this.context.REQUEST_TYPE.RENEW_TOKEN) {
                         // Idtoken or Accestoken can be renewed
                         if (requestInfo.parameters['access_token']) {
-                            this.context.callback(this.context._getItem(this.context.CONSTANTS.STORAGE.ERROR_DESCRIPTION)
-                                , requestInfo.parameters['access_token']);
+                            this.context.callback(
+                                this.context._getItem(
+                                    this.context.CONSTANTS.STORAGE.ERROR_DESCRIPTION,
+                                ),
+                                requestInfo.parameters['access_token'],
+                            );
                         } else if (requestInfo.parameters['id_token']) {
-                            this.context.callback(this.context._getItem(this.context.CONSTANTS.STORAGE.ERROR_DESCRIPTION)
-                                , requestInfo.parameters['id_token']);
+                            this.context.callback(
+                                this.context._getItem(
+                                    this.context.CONSTANTS.STORAGE.ERROR_DESCRIPTION,
+                                ),
+                                requestInfo.parameters['id_token'],
+                            );
                         } else if (requestInfo.parameters['error']) {
-                            this.context.callback(this.context._getItem(this.context.CONSTANTS.STORAGE.ERROR_DESCRIPTION), null);
+                            this.context.callback(
+                                this.context._getItem(
+                                    this.context.CONSTANTS.STORAGE.ERROR_DESCRIPTION,
+                                ),
+                                null,
+                            );
                             this.context._renewFailed = true;
                         }
                     }
@@ -122,16 +136,15 @@ export class AdalService {
     }
 
     public getCachedToken(resource: string): string {
-        
         return this.context.getCachedToken(resource);
     }
 
     public acquireToken(resource: string) {
-        const _this = this;   // save outer this for inner function
+        const _this = this; // save outer this for inner function
         let errorMessage: string;
         return bindCallback(acquireTokenInternal, function (token: string) {
             if (!token && errorMessage) {
-                throw (errorMessage);
+                throw errorMessage;
             }
             return token;
         })();
@@ -141,7 +154,10 @@ export class AdalService {
 
             _this.context.acquireToken(resource, (error: string, tokenOut: string) => {
                 if (error) {
-                    _this.context.error('Error when acquiring token for resource: ' + resource, error);
+                    _this.context.error(
+                        'Error when acquiring token for resource: ' + resource,
+                        error,
+                    );
                     errorMessage = error;
                     cb(<any>null);
                 } else {
@@ -201,7 +217,6 @@ export class AdalService {
             this.user.error = this.context.getLoginError();
 
             this.updateSessionStorage(this.user);
-
         } else {
             this.user.userName = '';
             this.user.profile = {};
@@ -211,21 +226,19 @@ export class AdalService {
     }
 
     private updateSessionStorage(user): void {
-
         let modifiedUserInfo;
         const userLoginDetails = this.dataStore.getCurrentUserLoginDetails();
         if (!userLoginDetails) {
-
             modifiedUserInfo = {
-                'userInfo': {
-                    'firstName': '',
-                    'lastName': '',
-                    'userRoles': [],
-                    'defaultAssetGroup': '',
-                    'userName': '',
-                    'userId': '',
-                    'email': ''
-                }
+                userInfo: {
+                    firstName: '',
+                    lastName: '',
+                    userRoles: [],
+                    defaultAssetGroup: '',
+                    userName: '',
+                    userId: '',
+                    email: '',
+                },
             };
         } else {
             modifiedUserInfo = JSON.parse(userLoginDetails);
@@ -233,8 +246,10 @@ export class AdalService {
 
         if (this.user.profile) {
             modifiedUserInfo.userInfo.firstName = this.user.profile.given_name || 'Guest';
-            modifiedUserInfo.userInfo.lastName = this.user.profile.family_name || modifiedUserInfo.userInfo.lastName;
-            modifiedUserInfo.userInfo.userName = this.user.userName || modifiedUserInfo.userInfo.userName;
+            modifiedUserInfo.userInfo.lastName =
+                this.user.profile.family_name || modifiedUserInfo.userInfo.lastName;
+            modifiedUserInfo.userInfo.userName =
+                this.user.userName || modifiedUserInfo.userInfo.userName;
             modifiedUserInfo.userInfo.email = this.user.userName || modifiedUserInfo.userInfo.email;
         }
 

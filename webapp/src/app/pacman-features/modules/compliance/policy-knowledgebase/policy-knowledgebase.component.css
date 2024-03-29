@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
- .policy-knowledgebase-wrapper {
+.policy-knowledgebase-wrapper {
     height: 100%;
     justify-content: flex-start;
     padding: 24px;
@@ -50,7 +50,7 @@
     font: var(--text-body-2);
 }
 
-.cursor-unset{
+.cursor-unset {
     cursor: unset !important;
 }
 

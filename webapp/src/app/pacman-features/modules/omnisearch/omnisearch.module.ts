@@ -21,12 +21,7 @@ import { OmniSearchPageComponent } from './omni-search-page/omni-search-page.com
 import { OmniSearchDetailsComponent } from './omni-search-details/omni-search-details.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SharedModule,
-    OmnisearchRoutingModule
-  ],
-  declarations: [OmnisearchComponent , OmniSearchPageComponent , OmniSearchDetailsComponent]
+    imports: [CommonModule, SharedModule, OmnisearchRoutingModule],
+    declarations: [OmnisearchComponent, OmniSearchPageComponent, OmniSearchDetailsComponent],
 })
-
-export class OmnisearchModule { }
+export class OmnisearchModule {}

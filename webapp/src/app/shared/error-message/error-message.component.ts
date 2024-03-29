@@ -16,23 +16,21 @@ import { Component, OnInit, Input } from '@angular/core';
 import { MESSAGES } from './../constants/messages';
 
 @Component({
-  selector: 'app-error-message',
-  templateUrl: './error-message.component.html',
-  styleUrls: ['./error-message.component.css']
+    selector: 'app-error-message',
+    templateUrl: './error-message.component.html',
+    styleUrls: ['./error-message.component.css'],
 })
 export class ErrorMessageComponent implements OnInit {
+    @Input() selectedValue: any;
 
-  @Input() selectedValue: any;
+    errorMessages;
 
-  errorMessages;
+    constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-    if (typeof(this.selectedValue) === 'string' && this.selectedValue.match('"')) {
-      this.selectedValue = this.selectedValue.slice(1, -1);
+    ngOnInit() {
+        if (typeof this.selectedValue === 'string' && this.selectedValue.match('"')) {
+            this.selectedValue = this.selectedValue.slice(1, -1);
+        }
+        this.errorMessages = MESSAGES.errorMessages[this.selectedValue] || this.selectedValue;
     }
-    this.errorMessages = MESSAGES.errorMessages[this.selectedValue] || this.selectedValue;
-  }
-
 }

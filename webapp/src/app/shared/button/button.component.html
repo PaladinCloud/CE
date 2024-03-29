@@ -12,6 +12,12 @@
  * limitations under the License.
  -->
 
- <button class="app-button" [class.white-button] = "type == 'secondary'" [disabled]="disabled" [ngClass]="{disabled: disabled}" (click)="onButtonClick()">
+<button
+    class="app-button"
+    [class.white-button]="type == 'secondary'"
+    [disabled]="disabled"
+    [ngClass]="{ disabled: disabled }"
+    (click)="onButtonClick()"
+>
     <ng-content></ng-content>
 </button>

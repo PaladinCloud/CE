@@ -12,25 +12,20 @@
  * limitations under the License.
  */
 
-
 import { Injectable } from '@angular/core';
-import { Observable ,  ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 
 @Injectable()
-
 export class RecentlyViewedObservableService {
-
     private subject = new ReplaySubject<string>(0);
 
-    constructor() {
-    }
+    constructor() {}
 
-    updateRecentAssets (recentList) {
+    updateRecentAssets(recentList) {
         this.subject.next(recentList);
     }
 
     getRecentAssets(): Observable<any> {
         return this.subject.asObservable();
     }
-
 }

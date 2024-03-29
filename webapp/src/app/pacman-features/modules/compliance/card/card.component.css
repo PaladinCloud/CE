@@ -40,8 +40,8 @@ mat-card-header {
     color: var(--text-high-emphasis);
 }
 
-mat-card-content.asset-graph{
-    padding:0;
+mat-card-content.asset-graph {
+    padding: 0;
 }
 
 mat-card-content {
@@ -134,6 +134,6 @@ mat-card-actions img {
     margin-right: 150px;
 }
 
-.graph-chart-cont{
+.graph-chart-cont {
     flex: 1;
 }

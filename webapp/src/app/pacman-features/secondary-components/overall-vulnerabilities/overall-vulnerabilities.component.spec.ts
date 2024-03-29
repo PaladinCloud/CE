@@ -1,4 +1,4 @@
- /*
+/*
  *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
@@ -31,36 +31,36 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { OverallVulnerabilitiesComponent } from './overall-vulnerabilities.component';
 
 describe('OverallVulnerabilitiesComponent', () => {
-  let component: OverallVulnerabilitiesComponent;
-  let fixture: ComponentFixture<OverallVulnerabilitiesComponent>;
+    let component: OverallVulnerabilitiesComponent;
+    let fixture: ComponentFixture<OverallVulnerabilitiesComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [OverallVulnerabilitiesComponent, TitleBurgerHeadComponent],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        DomainTypeObservableService,
-        ErrorHandlingService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, RouterTestingModule],
+            declarations: [OverallVulnerabilitiesComponent, TitleBurgerHeadComponent],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                DomainTypeObservableService,
+                ErrorHandlingService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(OverallVulnerabilitiesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(OverallVulnerabilitiesComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

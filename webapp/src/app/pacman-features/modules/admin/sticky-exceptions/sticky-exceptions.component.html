@@ -12,15 +12,19 @@
  * limitations under the License.
  -->
 
- <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
+<div
+    class="floating-widgets-section flex flex-col issue-listing-wrapper"
+    [class.filter-absent]="filters.length == 0"
+>
     <div class="padding-top"></div>
     <div class="floating-widgets-header flex flex-between">
         <div>
-          <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
+            <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
         </div>
         <div class="flex relative z-index textarea-button">
-
-            <button class="submit-btn uppercase" type="button" (click)='goToCreateRules()'><i class="fa fa-plus"></i> Create Exemptions</button>
+            <button class="submit-btn uppercase" type="button" (click)="goToCreateRules()">
+                <i class="fa fa-plus"></i> Create Exemptions
+            </button>
         </div>
     </div>
     <div class="floating-widgets-container data-table-container">
@@ -28,11 +32,28 @@
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-data-table [searchTextValues]=searchTxt [showGenericMessage]='showGenericMessage' [errorValue]='errorValue' [parentName]="'taggingTargetMessage'" [showingArr]='showingArr' [outerArr]='outerArr' [searchableHeader]='true' [allColumns]='allColumns'
-                            [dataHead]="'All Exemptions'" (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)'
-                            (previousPageCalled)='prevPage()' (nextPageCalled)='nextPage()' (searchTriggerred)='callNewSearch()'>
+                        <app-data-table
+                            [searchTextValues]="searchTxt"
+                            [showGenericMessage]="showGenericMessage"
+                            [errorValue]="errorValue"
+                            [parentName]="'taggingTargetMessage'"
+                            [showingArr]="showingArr"
+                            [outerArr]="outerArr"
+                            [searchableHeader]="true"
+                            [allColumns]="allColumns"
+                            [dataHead]="'All Exemptions'"
+                            (selectedRow)="goToDetails($event)"
+                            [firstPaginator]="firstPaginator"
+                            [lastPaginator]="lastPaginator"
+                            [totalRows]="totalRows"
+                            [currentPointer]="currentPointer"
+                            (searchRowTxt)="searchCalled($event)"
+                            (previousPageCalled)="prevPage()"
+                            (nextPageCalled)="nextPage()"
+                            (searchTriggerred)="callNewSearch()"
+                        >
                         </app-data-table>
-                        <div class="data-table-desc">{{dataTableDesc}}</div>
+                        <div class="data-table-desc">{{ dataTableDesc }}</div>
                     </div>
                 </li>
             </ul>

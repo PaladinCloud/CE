@@ -10,7 +10,7 @@
 //  * implied. See the License for the specific language governing permissions and
 //  * limitations under the License.
 
- import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -34,43 +34,43 @@ import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title
 import { CloudNotificationsComponent } from './cloud-notifications.component';
 
 describe('CloudNotificationsComponent', () => {
-  let component: CloudNotificationsComponent;
-  let fixture: ComponentFixture<CloudNotificationsComponent>;
+    let component: CloudNotificationsComponent;
+    let fixture: ComponentFixture<CloudNotificationsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
-      declarations: [
-        CloudNotificationsComponent,
-        BackNavigationComponent,
-        DataTableComponent,
-        TitleBurgerHeadComponent,
-      ],
-      providers: [
-        AssetGroupObservableService,
-        CommonResponseService,
-        DataCacheService,
-        DownloadService,
-        ErrorHandlingService,
-        FilterManagementService,
-        HttpService,
-        LoggerService,
-        RefactorFieldsService,
-        RouterUtilityService,
-        ToastObservableService,
-        UtilsService,
-        WorkflowService,
-      ],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+            declarations: [
+                CloudNotificationsComponent,
+                BackNavigationComponent,
+                DataTableComponent,
+                TitleBurgerHeadComponent,
+            ],
+            providers: [
+                AssetGroupObservableService,
+                CommonResponseService,
+                DataCacheService,
+                DownloadService,
+                ErrorHandlingService,
+                FilterManagementService,
+                HttpService,
+                LoggerService,
+                RefactorFieldsService,
+                RouterUtilityService,
+                ToastObservableService,
+                UtilsService,
+                WorkflowService,
+            ],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CloudNotificationsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CloudNotificationsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

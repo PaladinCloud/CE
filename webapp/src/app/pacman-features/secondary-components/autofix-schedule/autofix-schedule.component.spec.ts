@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
- import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
@@ -20,26 +20,26 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { AutofixScheduleComponent } from './autofix-schedule.component';
 
 describe('AutofixScheduleComponent', () => {
-  let component: AutofixScheduleComponent;
-  let fixture: ComponentFixture<AutofixScheduleComponent>;
+    let component: AutofixScheduleComponent;
+    let fixture: ComponentFixture<AutofixScheduleComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [AutofixScheduleComponent],
-      providers: [LoggerService, RefactorFieldsService, UtilsService],
-    }).compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [AutofixScheduleComponent],
+            providers: [LoggerService, RefactorFieldsService, UtilsService],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AutofixScheduleComponent);
-    component = fixture.componentInstance;
-    component.autofixData = {
-      planItems: [],
-    }
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AutofixScheduleComponent);
+        component = fixture.componentInstance;
+        component.autofixData = {
+            planItems: [],
+        };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

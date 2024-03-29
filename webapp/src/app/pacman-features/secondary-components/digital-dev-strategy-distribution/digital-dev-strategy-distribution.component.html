@@ -17,16 +17,32 @@
         <app-title-burger-head [subHeadTitle]="'Repositories Distribution by Branching Strategies'">
         </app-title-burger-head>
     </div>
-    <div class="graph-chart-cont show-links relative" id="devApplicationDist" *ngIf='dataComing && !showLoader'>
-        <app-doughnut-chart (linkData)='handleLink($event)' *ngIf='donutData' [chartContId]="'devApplicationDist'"
-            [graphData]="donutData" [graphWidth]="widgetWidth" [flexTrue]="true" [graphHeight]="widgetHeight"
-            [MainTextcolor]='MainTextcolor' [innerRadius]='innerRadius' [outerRadius]='outerRadius'
-            [strokeColor]="strokeColor"></app-doughnut-chart>
+    <div
+        class="graph-chart-cont show-links relative"
+        id="devApplicationDist"
+        *ngIf="dataComing && !showLoader"
+    >
+        <app-doughnut-chart
+            (linkData)="handleLink($event)"
+            *ngIf="donutData"
+            [chartContId]="'devApplicationDist'"
+            [graphData]="donutData"
+            [graphWidth]="widgetWidth"
+            [flexTrue]="true"
+            [graphHeight]="widgetHeight"
+            [MainTextcolor]="MainTextcolor"
+            [innerRadius]="innerRadius"
+            [outerRadius]="outerRadius"
+            [strokeColor]="strokeColor"
+        ></app-doughnut-chart>
     </div>
-    <article class='center error_handling' *ngIf="!dataComing">
+    <article class="center error_handling" *ngIf="!dataComing">
         <div class="error_msg">
-            <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+            <app-error-message
+                *ngIf="seekdata == true"
+                [selectedValue]="errorMessage"
+            ></app-error-message>
         </div>
     </article>
-    <div *ngIf='showLoader' class="loader"></div>
+    <div *ngIf="showLoader" class="loader"></div>
 </section>

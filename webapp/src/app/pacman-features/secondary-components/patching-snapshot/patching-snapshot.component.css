@@ -13,20 +13,20 @@
  */
 
 .ag-theme-material {
-	border: 1px solid #ededed;
-	border-radius: var(--border-radius);
-	box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.15);
+    border: 1px solid #ededed;
+    border-radius: var(--border-radius);
+    box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
 }
 
 .table-wrap {
-	height: 31.5em;
+    height: 31.5em;
 }
 
 .flex-grow {
-	flex-grow: 1;
-	min-height: 25em;
+    flex-grow: 1;
+    min-height: 25em;
 }
 
 .issue-trend-wrapper {
-	max-height: 50em;
+    max-height: 50em;
 }

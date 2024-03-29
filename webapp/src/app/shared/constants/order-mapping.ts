@@ -5,23 +5,23 @@ export const SeverityOrderMap = {
     high: 2,
     medium: 3,
     low: 4,
-}
+};
 
 export const CategoryOrderMap = {
     security: 1,
     cost: 2,
     operations: 3,
-    tagging: 4
-}
+    tagging: 4,
+};
 
 export const AssociatedPolicyStatusOrderMap = {
     fail: 1,
     exempt: 2,
-    pass: 3
-}
+    pass: 3,
+};
 
 export const ViolationStatusOrderMap = {
     open: 1,
     exempt: 2,
-    closed: 3
-}
+    closed: 3,
+};

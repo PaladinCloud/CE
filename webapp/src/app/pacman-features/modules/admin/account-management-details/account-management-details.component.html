@@ -1,55 +1,58 @@
 <div class="page-layout">
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
-            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <app-breadcrumb
+            *ngIf="breadcrumbLinks.length > 0"
+            [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray"
+            [breadcrumbPresent]="breadcrumbPresent"
+        ></app-breadcrumb>
     </div>
     <div class="header-wrapper">
         <app-text classNames="headline-6 medium-emphasis" [text]="accountName"></app-text>
         <button class="app-button white-button" (click)="openModal()">Delete</button>
     </div>
     <div class="content-wrapper">
-                <div class="text-wrapper flex flex-col">
-                    <span class="body-2 low-emphasis">Account ID</span>
-                    <span class="value-text body-2 high-emphasis">{{accountId}}</span>
-                </div>
-                <div class="text-wrapper flex flex-col">
-                    <span class="body-2 low-emphasis">Assets</span>
-                    <span class="value-text body-2 high-emphasis">{{assets}}</span>
-                </div>
-                <div class="text-wrapper flex flex-col">
-                    <span class="body-2 low-emphasis">Violations</span>
-                    <span class="value-text body-2 high-emphasis">{{violations}}</span>
-                </div>
-                <div class="text-wrapper flex flex-col">
-                    <span class="body-2 low-emphasis">Status</span>
-                    <app-chip 
-                     [backgroundColor]="'#E6F5EC'"
-                     [color]="'#00923F'"
-                     [chipsList]="chipList">
-                    </app-chip>
-                </div>
-                <div class="text-wrapper flex flex-col">
-                    <span class="body-2 low-emphasis">Source</span>
-                    <div class="image-wrapper flex gap-8">
-                         <img style="height: 12px;" src="../../../../assets/icons/{{platform}}-color.svg" />
-                        <span class="value-text body-2 high-emphasis">{{platformDisplayName}}</span>
-                    </div>
-                </div>
-                <div class="text-wrapper flex flex-col">
-                    <span class="body-2 low-emphasis">Created By</span>
-                    <span class="value-text body-2 high-emphasis">{{createdBy}}</span>
-                </div>
-                <div class="text-wrapper flex flex-col">
-                    <span class="body-2 low-emphasis">Date Created</span>
-                    <span class="value-text body-2 high-emphasis">{{createdTime  | date : 'medium'}}</span>
-                </div>
+        <div class="text-wrapper flex flex-col">
+            <span class="body-2 low-emphasis">Account ID</span>
+            <span class="value-text body-2 high-emphasis">{{ accountId }}</span>
+        </div>
+        <div class="text-wrapper flex flex-col">
+            <span class="body-2 low-emphasis">Assets</span>
+            <span class="value-text body-2 high-emphasis">{{ assets }}</span>
+        </div>
+        <div class="text-wrapper flex flex-col">
+            <span class="body-2 low-emphasis">Violations</span>
+            <span class="value-text body-2 high-emphasis">{{ violations }}</span>
+        </div>
+        <div class="text-wrapper flex flex-col">
+            <span class="body-2 low-emphasis">Status</span>
+            <app-chip [backgroundColor]="'#E6F5EC'" [color]="'#00923F'" [chipsList]="chipList">
+            </app-chip>
+        </div>
+        <div class="text-wrapper flex flex-col">
+            <span class="body-2 low-emphasis">Source</span>
+            <div class="image-wrapper flex gap-8">
+                <img style="height: 12px" src="../../../../assets/icons/{{ platform }}-color.svg" />
+                <span class="value-text body-2 high-emphasis">{{ platformDisplayName }}</span>
+            </div>
+        </div>
+        <div class="text-wrapper flex flex-col">
+            <span class="body-2 low-emphasis">Created By</span>
+            <span class="value-text body-2 high-emphasis">{{ createdBy }}</span>
+        </div>
+        <div class="text-wrapper flex flex-col">
+            <span class="body-2 low-emphasis">Date Created</span>
+            <span class="value-text body-2 high-emphasis">{{ createdTime | date: 'medium' }}</span>
+        </div>
     </div>
- </div>
+</div>
 
-
- <ng-template #deleteAccountRef>
+<ng-template #deleteAccountRef>
     <div class="dialog-body">
         <span class="dialog-body-header">Delete Account</span>
-        <span class="dialog-body-content">Are you really sure you want to delete account "{{accountName}} - {{accountId}}"?</span>
-     </div>
- </ng-template>
+        <span class="dialog-body-content"
+            >Are you really sure you want to delete account "{{ accountName }} -
+            {{ accountId }}"?</span
+        >
+    </div>
+</ng-template>

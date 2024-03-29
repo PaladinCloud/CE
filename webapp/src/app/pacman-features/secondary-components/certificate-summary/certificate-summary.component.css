@@ -12,11 +12,10 @@
  * limitations under the License.
  */
 
-.certficate-summary-wrapper{
+.certficate-summary-wrapper {
     min-height: 18em;
 }
-.sub-head{
+.sub-head {
     padding: 16px 24px;
     background-color: #dce3e9;
 }
-
