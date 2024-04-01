@@ -60,8 +60,8 @@ public class ErrorManageUtil implements Constants{
         Map<String, List<String>> assetPermissionMapping = new HashMap<>();
         for(Map<String, String> error:copyErrorList)
         {
-            if(error.get("exception").contains("UnAuthorisedException")) {
-                List<String> permissionIssues=new ArrayList<>();
+            if (error.get("exception") != null && error.get("exception").contains("UnAuthorisedException")) {
+                List<String> permissionIssues = new ArrayList<>();
                 permissionIssues.add(error.get("exception"));
                 assetPermissionMapping.put("ec2,virtual machines,onpremserver", permissionIssues);
                 errorList.remove(error);
