@@ -9,7 +9,7 @@ export class SelectivePreloadingStrategy implements PreloadingStrategy {
         if (route.data && route.data['shouldNotPreload']) {
             return of(null);
         } else {
-            return timer(500).pipe(
+            return timer(2000).pipe(
                 mergeMap(() => load()), // Load the module after the delay
             );
         }
