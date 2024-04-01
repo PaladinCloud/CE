@@ -22,6 +22,7 @@ import { HelpTextComponent } from '../shared/help-text/help-text.component';
 import { OmnisearchComponent } from '../pacman-features/modules/omnisearch/omnisearch.component';
 import { ComplianceOverviewTrendComponent } from '../pacman-features/secondary-components/compliance-overview-trend/compliance-overview-trend.component';
 import { IssuesTrendHistoryComponent } from '../pacman-features/secondary-components/issues-trend-history/issues-trend-history.component';
+import { SelectivePreloadingStrategy } from './common/services/selective-preloading-strategy.service';
 
 const routes: Routes = [
     {
@@ -46,7 +47,7 @@ const routes: Routes = [
             },
             {
                 path: 'statistics',
-                data: { sequence: 3 },
+                data: { sequence: 4 },
                 loadChildren: () =>
                     import('./../pacman-features/modules/statistics/statistics.module').then(
                         (m) => m.StatisticsModule,
@@ -63,7 +64,7 @@ const routes: Routes = [
             {
                 path: 'omnisearch',
                 component: OmnisearchComponent,
-                data: { sequence: 4 },
+                data: { sequence: 3 },
                 loadChildren: () =>
                     import('./../pacman-features/modules/omnisearch/omnisearch.module').then(
                         (m) => m.OmnisearchModule,
@@ -71,7 +72,7 @@ const routes: Routes = [
             },
             {
                 path: 'admin',
-                data: { sequence: 5 },
+                data: { sequence: 7, shouldNotPreload: true },
                 loadChildren: () =>
                     import('./../pacman-features/modules/admin/admin.module').then(
                         (m) => m.AdminModule,
@@ -112,7 +113,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forRoot(routes, {
+            preloadingStrategy: SelectivePreloadingStrategy,
+        }),
+    ],
     exports: [RouterModule],
 })
 export class PostLoginAppRoutingModule {}
