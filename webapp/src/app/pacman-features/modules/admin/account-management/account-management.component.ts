@@ -22,6 +22,7 @@ import {
     IColumnNamesMap,
     IColumnWidthsMap,
 } from 'src/app/shared/table/interfaces/table-props.interface';
+import { TABLE_DIRECTION_DESC } from 'src/app/shared/constants/global';
 
 enum TABLE_COLUMN_NAMES {
     ACCOUNT_NAME = 'Account Name',
@@ -243,8 +244,8 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
             state.bucketNumber = 0;
             this.storeState();
         }
-        this.headerColName = state.headerColName ?? 'Account Name';
-        this.direction = state.direction ?? 'asc';
+        this.headerColName = state.headerColName ?? TABLE_COLUMN_NAMES.CREATED_DATE;
+        this.direction = state.direction ?? TABLE_DIRECTION_DESC;
         this.bucketNumber = state.bucketNumber ?? 0;
         this.totalRows = state.totalRows ?? 0;
         this.searchTxt = state?.searchTxt ?? '';

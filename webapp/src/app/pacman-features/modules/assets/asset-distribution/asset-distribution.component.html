@@ -17,16 +17,13 @@
     </div>
     <div class="overall-distribution">
         <div class="distribution-content">
-            <div *ngIf="errorMessage">
-                <app-error-message [selectedValue]="errorMessage"></app-error-message>
-            </div>
-            <div
-                *ngIf="!errorMessage"
-                class="chart"
-                [class.expanded]="!isCollapsed"
-                #widgetContainer
-            >
+            <div class="chart relative" [class.expanded]="!isCollapsed" #widgetContainer>
+                <app-error-message
+                    *ngIf="errorMessage"
+                    [selectedValue]="errorMessage"
+                ></app-error-message>
                 <apx-chart
+                    *ngIf="!errorMessage"
                     [series]="chartOptions.series"
                     [chart]="chartOptions.chart"
                     [dataLabels]="chartOptions.dataLabels"
