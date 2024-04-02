@@ -85,7 +85,7 @@ class InAppNotificationFunction(LambdaFunctionResource):
     function_name = INAPP_NOTIFICATION_FILE_NAME
     role = LambdaRole.get_output_attr('arn')
     handler =  INAPP_NOTIFICATION_FILE_NAME + ".lambda_handler"
-    runtime = "python3.7"
+    runtime = "python3.12"
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
@@ -103,7 +103,7 @@ class LogEsNotificationFunction(LambdaFunctionResource):
     function_name = NOTIFICATION_LOG_TO_ES
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.notification_log.LogNotificationToOpenSearch::handleRequest"
-    runtime = "java8"
+    runtime = "java17"
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
