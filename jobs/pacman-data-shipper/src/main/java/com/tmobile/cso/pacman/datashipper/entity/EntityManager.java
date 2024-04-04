@@ -236,6 +236,9 @@ public class EntityManager implements Constants {
                              Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource, String displayName) {
         entities.parallelStream().forEach(entityInfo -> {
             String id = entityInfo.get(idColumn).toString();
+            if (id == null) {
+                id = entityInfo.get("id").toString();
+            }
             String docId = Util.concatenate(entityInfo, _keys, "_");
             String resourceName = ConfigManager.getResourceNameType(dataSource, _type);
             if (entityInfo.containsKey(resourceName)) {
