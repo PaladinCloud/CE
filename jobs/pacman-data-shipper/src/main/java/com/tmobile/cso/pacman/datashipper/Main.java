@@ -67,46 +67,52 @@ public class Main implements Constants {
             errorList.add(errorMap);
             return ErrorManageUtil.formErrorCode(jobName, errorList);
         }
-        String ds = params.get("datasource");
-        String tenantId = params.get("tenant_id");
-        ESManager.configureIndexAndTypes(ds, errorList);
-        errorList.addAll(new EntityManager().uploadEntityData(ds));
-        ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
-        try {
-            DatasourceData datasourceData = DatasourceDataFetcher.getInstance().fetchDatasourceData(ds);
-            if (datasourceData != null) {
-                List<String> accountIds = datasourceData.getAccountIds();
-                List<String> assetGroups = datasourceData.getAssetGroups();
-                if (assetGroups != null && !assetGroups.isEmpty()) {
-                    AssetGroupStatsCollector assetGroupStatsCollector = new AssetGroupStatsCollector();
-                    errorList.addAll(assetGroupStatsCollector.collectAssetGroupStats(datasourceData));
-                }
-                if (accountIds != null && !accountIds.isEmpty()) {
-                    IssueCountManager issueCountManager = new IssueCountManager();
-                    errorList.addAll(issueCountManager.populateViolationsCount(ds, accountIds));
-                    AssetsCountManager assetsCountManager = new AssetsCountManager();
-                    errorList.addAll(assetsCountManager.populateAssetCount(ds, accountIds));
-                }
-            } else {
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put(ERROR, "Unexpected error while fetching accountIds and assetGroups, " +
-                        "DatasourceData is null");
-                errorMap.put(ERROR_TYPE, ERROR);
-                errorList.add(errorMap);
-                LOGGER.error("Datasource data is null");
+        String datasource = params.get("datasource");
+        String[] dsArray = datasource.split(",");
+        Arrays.stream(dsArray).forEach(ds -> {
+            String tenantId = params.get("tenant_id");
+            if (dsArray.length > 1) {
+                TargetTypeService.getInstance().configureNewTargetType(ds);
             }
-        } catch (Exception e) {
-            Map<String, String> errorMap = new HashMap<>();
-            errorMap.put(ERROR, "Exception in updating stats");
-            errorMap.put(ERROR_TYPE, ERROR);
-            errorMap.put(EXCEPTION, e.getMessage());
-            errorList.add(errorMap);
-            LOGGER.error("Error while updating stats", e);
-        }
-        SQSManager sqsManager = SQSManager.getInstance();
-        JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId, ds, null);
-        String sqsMessageID = sqsManager.sendSQSMessage(jobDoneMessage, System.getenv("SHIPPER_SQS_QUEUE_URL"));
-        LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
+            ESManager.configureIndexAndTypes(ds, errorList);
+            errorList.addAll(new EntityManager().uploadEntityData(ds));
+            ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
+            try {
+                DatasourceData datasourceData = DatasourceDataFetcher.getInstance().fetchDatasourceData(ds);
+                if (datasourceData != null) {
+                    List<String> accountIds = datasourceData.getAccountIds();
+                    List<String> assetGroups = datasourceData.getAssetGroups();
+                    if (assetGroups != null && !assetGroups.isEmpty()) {
+                        AssetGroupStatsCollector assetGroupStatsCollector = new AssetGroupStatsCollector();
+                        errorList.addAll(assetGroupStatsCollector.collectAssetGroupStats(datasourceData));
+                    }
+                    if (accountIds != null && !accountIds.isEmpty()) {
+                        IssueCountManager issueCountManager = new IssueCountManager();
+                        errorList.addAll(issueCountManager.populateViolationsCount(ds, accountIds));
+                        AssetsCountManager assetsCountManager = new AssetsCountManager();
+                        errorList.addAll(assetsCountManager.populateAssetCount(ds, accountIds));
+                    }
+                } else {
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put(ERROR, "Unexpected error while fetching accountIds and assetGroups, " +
+                            "DatasourceData is null");
+                    errorMap.put(ERROR_TYPE, ERROR);
+                    errorList.add(errorMap);
+                    LOGGER.error("Datasource data is null");
+                }
+            } catch (Exception e) {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Exception in updating stats");
+                errorMap.put(ERROR_TYPE, ERROR);
+                errorMap.put(EXCEPTION, e.getMessage());
+                errorList.add(errorMap);
+                LOGGER.error("Error while updating stats", e);
+            }
+            SQSManager sqsManager = SQSManager.getInstance();
+            JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId, ds, null);
+            String sqsMessageID = sqsManager.sendSQSMessage(jobDoneMessage, System.getenv("SHIPPER_SQS_QUEUE_URL"));
+            LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
+        });
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
         return status;
