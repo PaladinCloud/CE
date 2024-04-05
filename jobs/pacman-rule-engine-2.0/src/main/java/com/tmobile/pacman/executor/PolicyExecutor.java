@@ -507,10 +507,12 @@ public class PolicyExecutor {
             annotation = result.getAnnotation();
             String _id = CommonUtils.getUniqueAnnotationId(annotation);
             Map<String, String> originalIssue = annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey().get(_id);
-            Map<String, String> issueStauses = new HashMap<>(2);
-            issueStauses.put(PacmanSdkConstants.STATUS_KEY, originalIssue.get(PacmanSdkConstants.STATUS_KEY));
-            issueStauses.put(PacmanSdkConstants.ISSUE_STATUS_KEY, originalIssue.get(PacmanSdkConstants.ISSUE_STATUS_KEY));
-            originalIssueStatuses.put(_id, issueStauses);
+            if (originalIssue != null) {
+                Map<String, String> issueStauses = new HashMap<>(2);
+                issueStauses.put(PacmanSdkConstants.STATUS_KEY, originalIssue.get(PacmanSdkConstants.STATUS_KEY));
+                issueStauses.put(PacmanSdkConstants.ISSUE_STATUS_KEY, originalIssue.get(PacmanSdkConstants.ISSUE_STATUS_KEY));
+                originalIssueStatuses.put(_id, issueStauses);
+            }
             if (PacmanSdkConstants.STATUS_SUCCESS.equals(result.getStatus())) {
                 annotation.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, result.getDesc());
                 annotationPublisher.submitToClose(annotation);
@@ -531,7 +533,8 @@ public class PolicyExecutor {
                     }
 
                     /** close expired exemption request made by user **/
-                    if (originalIssue.get(PacmanSdkConstants.STATUS_KEY).equalsIgnoreCase(PacmanSdkConstants.EXEMPTION_REQUEST_RAISED)
+                    if (originalIssue != null
+                            && PacmanSdkConstants.EXEMPTION_REQUEST_RAISED.equalsIgnoreCase(originalIssue.get(PacmanSdkConstants.STATUS_KEY))
                             && LocalDate.now().compareTo(LocalDate.parse(originalIssue.get(PacmanSdkConstants.EXEMPTION_RAISED_EXPIRING_ON))) > 0) {
                         annotation.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.EXEMPTION_REQUEST_CANCELLED);
                         annotation.put(PacmanSdkConstants.EXEMPTION_REQUEST_CANCELLED_BY, PacmanSdkConstants.SYSTEM);

@@ -96,6 +96,9 @@ public class AuditUtils {
 
     /** get the status which led to the actual audit status **/
     private static String getPreAuditStatus(Annotation annotation, Map<String, String> originalIssue) {
+        if (originalIssue == null) {
+            return null;
+        }
         if (PacmanSdkConstants.EXEMPTION_REQUEST_RAISED.equalsIgnoreCase(originalIssue.get(PacmanSdkConstants.STATUS_KEY))
                 && PacmanSdkConstants.EXEMPTION_REQUEST_CANCELLED.equalsIgnoreCase(annotation.get(PacmanSdkConstants.STATUS_KEY))) {
             return PacmanSdkConstants.REQUEST_EXPIRED;
