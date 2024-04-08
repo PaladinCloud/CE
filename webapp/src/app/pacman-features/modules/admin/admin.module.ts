@@ -17,13 +17,10 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
 import { PoliciesComponent } from './policies/policies.component';
 import { AdminRoutingModule } from './admin-routing.module';
-import { RulesComponent } from './rules/rules.component';
 import { CreateEditPolicyComponent } from './create-edit-policy/create-edit-policy.component';
 import { CreateJobExecutionManagerComponent } from './job-execution-manager/create-job-execution-manager/create-job-execution-manager.component';
 import { JobExecutionManagerComponent } from './job-execution-manager/job-execution-manager.component';
-import { InvokeRuleComponent } from './invoke-rule/invoke-rule.component';
 import { CreateAssetGroupsComponent } from './asset-groups/create-asset-groups/create-asset-groups.component';
-import { EnableDisableRuleComponent } from './enable-disable-rule/enable-disable-rule.component';
 import { AssetGroupsComponent } from './asset-groups/asset-groups.component';
 import { StickyExceptionsComponent } from './sticky-exceptions/sticky-exceptions.component';
 import { DomainsComponent } from './asset-groups/domains/domains.component';
@@ -31,18 +28,11 @@ import { TargetTypesComponent } from './asset-groups/target-types/target-types.c
 import { CreateUpdateDomainComponent } from './asset-groups/domains/create-update-domain/create-update-domain.component';
 import { CreateUpdateTargetTypesComponent } from './asset-groups/target-types/create-update-target-types/create-update-target-types.component';
 import { CreateStickyExceptionsComponent } from './sticky-exceptions/create-sticky-exceptions/create-sticky-exceptions.component';
-import { RolesComponent } from './roles/roles.component';
-import { RolesAllocationComponent } from './roles-allocation/roles-allocation.component';
-import { CreateUpdateRolesComponent } from './roles/create-update-roles/create-update-roles.component';
 import { DeleteStickyExceptionsComponent } from './sticky-exceptions/delete-sticky-exceptions/delete-sticky-exceptions.component';
-import { DeleteAssetGroupsComponent } from './asset-groups/delete-asset-groups/delete-asset-groups.component';
-import { ConfigUsersComponent } from './roles/config-users/config-users.component';
 import { UpdateJobExecutionManagerComponent } from './job-execution-manager/update-job-execution-manager/update-job-execution-manager.component';
 import { PacmanLoaderComponent } from './commons/pacman-loader/pacman-loader.component';
 import { AccountManagementComponent } from './account-management/account-management.component';
 import { AccountManagementDetailsComponent } from './account-management-details/account-management-details.component';
-import { PluginManagementDetailsComponent } from './plugin-management-details/plugin-management-details.component';
-import { PluginManagementComponent } from './plugin-management/plugin-management.component';
 import { SystemManagementComponent } from './system-management/system-management.component';
 import { ConfigManagementComponent } from './config-management/config-management.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -66,13 +56,10 @@ import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
     ],
     declarations: [
         PoliciesComponent,
-        RulesComponent,
-        InvokeRuleComponent,
         CreateEditPolicyComponent,
         JobExecutionManagerComponent,
         CreateJobExecutionManagerComponent,
         CreateAssetGroupsComponent,
-        EnableDisableRuleComponent,
         AssetGroupsComponent,
         StickyExceptionsComponent,
         CreateStickyExceptionsComponent,
@@ -80,18 +67,11 @@ import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
         CreateUpdateDomainComponent,
         TargetTypesComponent,
         CreateUpdateTargetTypesComponent,
-        RolesComponent,
-        CreateUpdateRolesComponent,
-        RolesAllocationComponent,
         DeleteStickyExceptionsComponent,
-        DeleteAssetGroupsComponent,
-        ConfigUsersComponent,
         UpdateJobExecutionManagerComponent,
         PacmanLoaderComponent,
         AccountManagementComponent,
         AccountManagementDetailsComponent,
-        PluginManagementDetailsComponent,
-        PluginManagementComponent,
         SystemManagementComponent,
         ConfigManagementComponent,
         UserManagementComponent,
