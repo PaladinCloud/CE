@@ -1,5 +1,5 @@
 from os import defpath
-from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusazure,  CloudWatchEventBusgcp
+from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusazure,  CloudWatchEventBusGcp
 from resources.iam.base_role import BaseRole
 from resources.pacbot_app.utils import  need_to_deploy_vulnerability_service
 import json

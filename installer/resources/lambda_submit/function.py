@@ -8,7 +8,7 @@ from resources.batch.job import SubmitAndRuleEngineJobDefinition, BatchJobsQueue
 from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaLongRunningJobZipFile, UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME, BATCH_LONG_RUNNING_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
-from resources.eventbus.custom_event_bus import CloudWatchEventBusPlugin, CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
+from resources.eventbus.custom_event_bus import CloudWatchEventBusPlugin, CloudWatchEventBusaws, CloudWatchEventBusGcp, CloudWatchEventBusazure
 from resources.pacbot_app.utils import  get_azure_tenants,  get_gcp_project_ids, get_aws_account_details
 import json
 from core.config import Settings
@@ -71,7 +71,7 @@ class AzureEventsTarget(CloudWatchEventTargetResource):
 
 class GcpEventsTarget(CloudWatchEventTargetResource):
     rule = EventTrigger.get_output_attr('name')
-    arn = CloudWatchEventBusgcp.get_output_attr('arn')
+    arn = CloudWatchEventBusGcp.get_output_attr('arn')
     target_id = 'target-gcp-bus'  # Unique identifier
     role_arn = EventBridgePolicyRole.get_output_attr('arn')
 
@@ -580,7 +580,7 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
     name = "gcp-data-collector"
-    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusGcp.get_output_attr('arn')
     event_pattern = {
     "detail-type": [Settings.JOB_DETAIL_TYPE],
     "source": [Settings.JOB_SOURCE],
@@ -607,7 +607,7 @@ class GCPDataCollectorEventRuleLambdaPermission(LambdaPermission):
 class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = GCPDataCollectorEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
-    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusGcp.get_output_attr('arn')
     target_id = 'GCPDataCollectorTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "gcp-data-collector",
@@ -632,7 +632,7 @@ class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class GCPDataShipperEventRule(CloudWatchEventRuleResource):
     name = "gcp-data-shipper"
-    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusGcp.get_output_attr('arn')
     event_pattern = {
     "detail-type": ["Batch Job State Change"],
     "source": ["aws.batch"],
@@ -655,7 +655,7 @@ class GCPDataShipperEventRuleLambdaPermission(LambdaPermission):
 class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = GCPDataShipperEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
-    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusGcp.get_output_attr('arn')
     target_id = 'GCPDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "gcp-shipper-data",

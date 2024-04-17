@@ -13,7 +13,7 @@ from core.providers.aws.boto3 import cloudwatch_event
 from core.mixins import MsgMixin
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 import sys
-from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusazure, CloudWatchEventBusgcp, CloudWatchEventBusPlugin
+from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusazure, CloudWatchEventBusGcp, CloudWatchEventBusPlugin
 
 class RuleEngineLambdaFunction(LambdaFunctionResource):
     function_name = "ruleengine"
@@ -102,7 +102,7 @@ class RuleEngineEventRulesAzure(CloudWatchEventRuleResource):
 class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
     count = RulesListVariableGcp.length()
     name = RulesListVariableGcp.lookup('policyId')
-    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusGcp.get_output_attr('arn')
     event_pattern = RulesListVariableGcp.lookup('event')
     
     VARIABLES = [RulesListVariableGcp]
@@ -249,7 +249,7 @@ class RuleEngineCloudWatchEventTargetsGcp(CloudWatchEventTargetResource):
     arn = RuleEngineLambdaFunction.get_output_attr('arn')
     target_id = RuleEngineLambdaFunction.get_input_attr('function_name') + '-target'
     target_input = RulesListVariableGcp.lookup('policyParams')
-    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusGcp.get_output_attr('arn')
     DEPENDS_ON = [RuleEngineEventRulesGcp]
     
 class RuleEngineCloudWatchEventTargetsPlugin(CloudWatchEventTargetResource):
