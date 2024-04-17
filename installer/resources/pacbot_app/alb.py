@@ -14,10 +14,6 @@ class ApplicationLoadBalancer(LoadBalancerResource):
 
     @classmethod
     def get_http_url(cls):
-        # pacbot_domain = cls.get_output_attr('dns_name')
-        # return "%s://%s" % ("http", pacbot_domain)
-
-        # using domain url if exists.
         pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
         pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
         return "%s://%s" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
@@ -36,10 +32,6 @@ class ApplicationLoadBalancer(LoadBalancerResource):
     
     @classmethod
     def get_api_base_url(cls):
-        # pacbot_domain = cls.get_output_attr('dns_name')
-        # return "%s://%s/api" % ("http", pacbot_domain)
-
-        # using domain url if exists
         pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
         pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
         return "%s://%s/api" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)

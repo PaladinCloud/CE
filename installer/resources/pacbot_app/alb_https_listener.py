@@ -6,8 +6,6 @@ from resources.pacbot_app.utils import need_to_deploy_vulnerability_service
 from core.mixins import MsgMixin
 from resources.sslcertifcate.tls import AcmCertificate
 import sys
-# PATH_PREFIX = '/api/'
-
 
 class PacBotHttpsListener(ALBListenerResource):
     load_balancer_arn = ApplicationLoadBalancer.get_output_attr('arn')
@@ -16,20 +14,17 @@ class PacBotHttpsListener(ALBListenerResource):
     ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
     certificate_arn = Settings.get('SSL_CERTIFICATE_ARN') if Settings.ALB_PROTOCOL == 'HTTPS' else AcmCertificate.get_output_attr('arn')
     default_action_target_group_arn = tg.NginxALBTargetGroup.get_output_attr('arn')
-    default_action_type = "forward"
-   
+    default_action_type = "forward"   
     warn_msg = "*** Make ALB_PROTOCOL == HTTPS for external domian ***"
     if Settings.MAKE_ALB_INTERNAL == False and Settings.ALB_PROTOCOL == "HTTP":
         message = "\n\t ** %s **\n" % warn_msg
         print(MsgMixin.BERROR_ANSI + message + MsgMixin.RESET_ANSI)
         sys.exit()
 
-
 class BaseLR:
     listener_arn = PacBotHttpsListener.get_output_attr('arn')
     action_type = "forward"
     # condition_field = "path_pattern"
-
 
 class ConfigALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.ConfigALBTargetGroup.get_output_attr('arn')
@@ -39,7 +34,6 @@ class ConfigALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
         }
     }
 
-
 class AdminALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AdminALBTargetGroup.get_output_attr('arn')
     condition = {
@@ -47,7 +41,6 @@ class AdminALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/admin*"]
         }
     }
-
 
 class ComplianceALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.ComplianceALBTargetGroup.get_output_attr('arn')
@@ -66,7 +59,6 @@ class NotificationsALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
         }
     }
 
-
 class StatisticsALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.StatisticsALBTargetGroup.get_output_attr('arn')
     condition = {
@@ -74,7 +66,6 @@ class StatisticsALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/statistics*"]
         }
     }
-
 
 class AssetALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AssetALBTargetGroup.get_output_attr('arn')
@@ -84,7 +75,6 @@ class AssetALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
         }
     }
 
-
 class AuthALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AuthALBTargetGroup.get_output_attr('arn')
     condition = {
@@ -92,13 +82,3 @@ class AuthALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/auth*"]
         }
     }
-
-
-class VulnerabilityALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
-    action_target_group_arn = tg.VulnerabilityALBTargetGroup.get_output_attr('arn')
-    condition = {
-        "path_pattern" : {
-            "values" : ["/api/vulnerability*"]
-        }
-    }
-    # PROCESS = need_to_deploy_vulnerability_service()

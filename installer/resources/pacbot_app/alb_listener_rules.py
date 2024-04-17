@@ -7,8 +7,6 @@ import sys
 from core.mixins import MsgMixin
 
 PATH_PREFIX = '/api/'
-
-
 class ApplicationLoadBalancerListener(ALBListenerResource):
     load_balancer_arn = ApplicationLoadBalancer.get_output_attr('arn')
     default_action_target_group_arn = tg.NginxALBTargetGroup.get_output_attr('arn')
@@ -22,18 +20,9 @@ class ApplicationLoadBalancerListener(ALBListenerResource):
         print(MsgMixin.BERROR_ANSI + message + MsgMixin.RESET_ANSI)
         sys.exit()
 
-    # certificate_arn = Settings.get('SSL_CERTIFICATE_ARN') if Settings.get('ALB_PROTOCOL', None) == "HTTPS" else None
-    # port = 80 if Settings.get('ALB_PROTOCOL', "HTTP") != "HTTPS" else 443
-    # protocol = Settings.get('ALB_PROTOCOL', "HTTP")
-    # ssl_policy = "ELBSecurityPolicy-2016-08" if Settings.get('ALB_PROTOCOL', None) == "HTTPS" else None
-
-
 class BaseLR:
     listener_arn = ApplicationLoadBalancerListener.get_output_attr('arn')
     action_type = "forward"
-    # condition_field = "path_pattern"
-
-
 class ConfigALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.ConfigALBTargetGroup.get_output_attr('arn')
     condition = {
@@ -41,7 +30,6 @@ class ConfigALBListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/config*"]
         }
     }
-
 
 class AdminALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AdminALBTargetGroup.get_output_attr('arn')
@@ -51,7 +39,6 @@ class AdminALBListenerRule(ALBListenerRuleResource, BaseLR):
         }
     }
 
-
 class ComplianceALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.ComplianceALBTargetGroup.get_output_attr('arn')
     condition = {
@@ -59,7 +46,6 @@ class ComplianceALBListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/compliance*"]
         }
     }
-
 
 class NotificationsALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.NotificationsALBTargetGroup.get_output_attr('arn')
@@ -69,7 +55,6 @@ class NotificationsALBListenerRule(ALBListenerRuleResource, BaseLR):
         }
     }
 
-
 class StatisticsALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.StatisticsALBTargetGroup.get_output_attr('arn')
     condition = {
@@ -78,7 +63,6 @@ class StatisticsALBListenerRule(ALBListenerRuleResource, BaseLR):
         }
     }
 
-
 class AssetALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AssetALBTargetGroup.get_output_attr('arn')
     condition = {
@@ -86,7 +70,6 @@ class AssetALBListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/asset*"]
         }
     }
-
 
 class AuthALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AuthALBTargetGroup.get_output_attr('arn')
@@ -97,7 +80,6 @@ class AuthALBListenerRule(ALBListenerRuleResource, BaseLR):
         }
     }
 
-
 class VulnerabilityALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.VulnerabilityALBTargetGroup.get_output_attr('arn', 0)
     condition = {
@@ -105,4 +87,3 @@ class VulnerabilityALBListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/vulnerability*"]
         }
     }
-    # PROCESS = need_to_deploy_vulnerability_service()

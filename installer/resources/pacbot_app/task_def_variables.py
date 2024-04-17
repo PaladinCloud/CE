@@ -10,8 +10,6 @@ from core.config import Settings
 from resources.cognito.userpool import UserPool, AppCLient
 import json
 
-
-
 class ContainerDefinitions:
     """Friend class for getting the container definitions of each service"""
     ui_image = UIEcrRepository.get_output_attr('repository_url') + ":" + "latest"
@@ -36,11 +34,7 @@ class ContainerDefinitions:
     COGNITO_ACCOUNT = AwsAccount.get_output_attr('account_id')
     EXTERNAL_ID = "null"
     EXTERNAL_ID_FLAG = "false"
-    
-
-
-
-    
+        
     def get_container_definitions_without_env_vars(self, container_name):
         """
         This method returns the basic common container definitioons for all task definitions
@@ -116,7 +110,6 @@ class ContainerDefinitions:
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
         ]
-
 
     def get_admin_container_env_vars(self):
         return [
@@ -225,19 +218,4 @@ class ContainerDefinitions:
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
-        ]
- 
-    def get_vulnerability_container_env_vars(self):
-        return [
-            {'name': "JAR_FILE", 'value': "pacman-api-vulnerability.jar"},
-            {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
-            {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
-            {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('vulnerability')},
-            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
-            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
-            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
-            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
-            {'name':"REGION",'value':self.REGION},
-            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
         ]
