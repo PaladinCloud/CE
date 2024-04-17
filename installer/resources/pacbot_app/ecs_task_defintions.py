@@ -11,7 +11,7 @@ class BaseTaskDefinition:
     requires_compatibilities = ["FARGATE"]
     network_mode = "awsvpc"
     cpu = Settings.ECS_CPU
-    memory = 4096
+    memory = Settings.ECS_MEMORY
     execution_role_arn = ECSRole.get_output_attr('arn')
     task_role_arn = ECSRole.get_output_attr('arn')
     DEPENDS_ON = [AppCLient]

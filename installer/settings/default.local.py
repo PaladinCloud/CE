@@ -56,7 +56,7 @@ DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@',
 
 #ECS Related Configuration
 ECS_CPU = 256
-
+ECS_MEMORY = 1024
 # ElasticSearch Related Configurations
 # Possibble values m5.xlarge.elasticsearch  etc
 ES_INSTANCE_TYPE = "m5.large.elasticsearch"
