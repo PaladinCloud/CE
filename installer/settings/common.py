@@ -179,7 +179,7 @@ AQUA_PASSWORD = "" # Aqua Client password
 AQUA_API_DEFAULT_PAGE_SIZE=1000
 AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS= "include_vpatch_info=true&show_negligible=true&hide_base_image=false&severities=critical,high,medium,low,negligible"
 GOOGLE_ANALYTICS = ""
-ECS_CPU = 1024
+ECS_CPU = 256
 QUALYS_JOB_MEMORY = 8196
 QUALYS_JOB_VCPU = 2
 

@@ -20,7 +20,7 @@ class NginxEcsTaskDefinition(ECSTaskDefinitionResource, BaseTaskDefinition):
     family = "webapp"
     container_name = "nginx"
     container_definitions = container_def.get_container_definitions('nginx')
-    cpu = 512
+    cpu = 256
     memory = 1024
     DEPENDS_ON = [UIDockerImageBuild]
 
