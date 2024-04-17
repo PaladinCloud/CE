@@ -89,3 +89,16 @@ class LambdaFunctionUrl(TerraformResource):
         'function_name': {'required': True},
         'authorization_type': {'required': True}
     }
+
+class LambdaEventSourceMapping(TerraformResource):
+    """
+    Base resource class for Terraform AWS Lambda function url resource
+    Attributes:
+        resource_instance_name (str): Type of resource instance
+        available_args (dict): Instance configurations
+    """
+    resource_instance_name = "aws_lambda_event_source_mapping"
+    available_args = {
+        'event_source_arn': {'required': True},
+        'function_name': {'required': True}
+    }

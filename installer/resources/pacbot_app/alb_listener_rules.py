@@ -79,11 +79,3 @@ class AuthALBListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/auth*"]
         }
     }
-
-class VulnerabilityALBListenerRule(ALBListenerRuleResource, BaseLR):
-    action_target_group_arn = tg.VulnerabilityALBTargetGroup.get_output_attr('arn', 0)
-    condition = {
-        "path_pattern" : {
-            "values" : ["/api/vulnerability*"]
-        }
-    }
