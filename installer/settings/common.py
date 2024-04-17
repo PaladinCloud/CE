@@ -77,7 +77,7 @@ PROCESS_RESOURCES = {
     'iam.eventbridge_role' : {'tags': ["roles"]},    
 }
 
-
+RETENTION_IN_DAYS = 7
 LAMBDA_PATH = "V14"
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
 LOG_DIR = os.path.join(BASE_APP_DIR, 'log')

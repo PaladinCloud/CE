@@ -9,7 +9,7 @@ import json
 
 class ESCloudWatchLogGroup(CloudWatchLogGroupResource):
     name = "elasticsearch"
-    retention_in_days = 7
+    retention_in_days = Settings.RETENTION_IN_DAYS  
 
 
 class ESCloudWatchLogResourcePolicy(CloudWatchLogResourcePolicy):
