@@ -78,7 +78,7 @@ PROCESS_RESOURCES = {
 }
 
 RETENTION_IN_DAYS = 7
-LAMBDA_PATH = "V14"
+LAMBDA_PATH = "V15"
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
 LOG_DIR = os.path.join(BASE_APP_DIR, 'log')
 PROVISIONER_FILES_DIR_TO_COPY = os.path.join(BASE_APP_DIR, 'files')

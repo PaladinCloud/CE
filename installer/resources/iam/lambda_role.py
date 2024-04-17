@@ -50,7 +50,7 @@ class PaladinCloudEc2S3permission(iam.IAMPolicyDocumentData):
                 "ec2:DeleteNetworkInterface",
                 "ec2:DescribeInstances",
                 "ec2:AttachNetworkInterface",
-                "sqs:*"]
+                "sqs:*"],
             "resources": ["*"]
         }
     ]
