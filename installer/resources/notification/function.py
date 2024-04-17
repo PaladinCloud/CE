@@ -6,7 +6,6 @@ from resources.iam.lambda_role import LambdaRole
 from core.config import Settings
 from resources.s3.bucket import BucketStorage
 from resources.pacbot_app.alb import ApplicationLoadBalancer
-from resources.notification.appsync import AppSyncNotification, AppSyncIdKey
 from resources.notification.s3_upload import UploadLambdaInappFile, INAPP_NOTIFICATION_FILE_NAME
 from core.terraform.resources.aws.sns import SNSResources, SNSSubscription
 
@@ -90,13 +89,7 @@ class InAppNotificationFunction(LambdaFunctionResource):
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaInappFile.get_output_attr('id')
-    environment = {
-        'variables': {
-            'API_KEY':	AppSyncIdKey.get_output_attr('key'),
-            'APPSYNC_API_ENDPOINT_URL' :  AppSyncNotification.get_output_attr('uris["GRAPHQL"]')
-        }
-    }
-    DEPENDS_ON = [AppSyncNotification,BuildUiAndApis]
+    DEPENDS_ON = [BuildUiAndApis]
     
 
 class LogEsNotificationFunction(LambdaFunctionResource):
