@@ -282,7 +282,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
             const newTypeObj = {};
             for (let i = 0; i < this.assetTiles.length; i++) {
                 if (this.assetTiles[i].type.toLowerCase() != 'user')
-                    newTypeObj[this.assetTiles[i].type.toLowerCase()] = 'typeVal';
+                    newTypeObj[this.assetTiles[i].type] = 'typeVal';
             }
             delete typeObj[''];
             delete newTypeObj[''];
