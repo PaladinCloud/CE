@@ -321,7 +321,7 @@ public class EntityManager implements Constants {
                 }
             }
 
-            if ("gcp".equalsIgnoreCase(entityInfo.get("_cloudType").toString()) && entityInfo.containsKey("tags") && entityInfo.get("tags") instanceof Map) {
+            if ("gcp".equalsIgnoreCase(String.valueOf(entityInfo.get("_cloudType"))) && entityInfo.containsKey("tags") && entityInfo.get("tags") instanceof Map) {
                 Map<String, Object> tagMap = (Map<String, Object>) entityInfo.get("tags");
                 if (!tagMap.isEmpty()) {
                     tagMap.entrySet().stream().forEach(tagEntry -> {
