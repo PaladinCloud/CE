@@ -24,7 +24,6 @@ import {
 import { IssueHistoryItem, IssuesHistoryService } from '../../services/issues-history.service';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
-import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
 import { environment } from '../../../../environments/environment';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { DomainTypeObservableService } from '../../../core/services/domain-type-observable.service';
@@ -97,7 +96,6 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterView
         private activatedRoute: ActivatedRoute,
         private issuesHistoryService: IssuesHistoryService,
         private assetGroupObservableService: AssetGroupObservableService,
-        private selectComplianceDropdown: SelectComplianceDropdown,
         private autorefreshService: AutorefreshService,
         private domainObservableService: DomainTypeObservableService,
     ) {
@@ -113,13 +111,6 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterView
             .subscribe((domain) => {
                 this.selectedDomain = domain;
                 this.init();
-            });
-
-        // Get latest targetType/Application/Environment
-        this.complianceDropdownSubscription = this.selectComplianceDropdown
-            .getCompliance()
-            .subscribe((distributedFiltersObject) => {
-                this.distributedFiltersObject = distributedFiltersObject;
             });
     }
 

@@ -113,7 +113,7 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
                 const list = this.utils.mapValuesToArray(data);
                 this.assetTypesList = this.utils.mapToObject(data);
                 this.assetTypesList.totalassets = TOTAL_ASSETS;
-                this.assetTypeFilters.list = [TOTAL_ASSETS, ...list];
+                this.assetTypeFilters.list = Array.from(new Set([TOTAL_ASSETS, ...list]));
                 this.assetTypeFilters.listData = Object.fromEntries(
                     list.map((key) => [key, false]),
                 );
@@ -247,16 +247,29 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
         const transformedData = {};
         trendData.forEach((entry) => {
             Object.keys(entry).forEach((key) => {
-                if (key !== 'date') {
-                    if (!transformedData[key]) {
-                        transformedData[key] = {
-                            key,
-                            values: [],
-                        };
-                    }
-                    transformedData[key].values.push({
-                        date: new Date(entry.date),
-                        value: entry[key],
+                const transformedKey = this.assetTypesList[key] || key;
+                if (key === 'date') return;
+
+                const date = new Date(entry.date);
+                const value = entry[key];
+
+                if (!transformedData[transformedKey]) {
+                    transformedData[transformedKey] = {
+                        key: transformedKey,
+                        values: [],
+                    };
+                }
+
+                const curTrendArr = transformedData[transformedKey].values;
+                const lastIndex = curTrendArr.length - 1;
+                const lastEntry = curTrendArr[lastIndex];
+
+                if (lastEntry && date.getTime() === lastEntry.date.getTime()) {
+                    lastEntry.value += value;
+                } else {
+                    curTrendArr.push({
+                        date,
+                        value,
                         'zero-value': false,
                         'no-data': false,
                     });
@@ -264,9 +277,6 @@ export class AssetTrendGraphComponent implements OnInit, OnDestroy {
             });
         });
         const transformedValue = Object.values(transformedData);
-        transformedValue.forEach(
-            (item) => (item['key'] = this.assetTypesList[item['key']] || item['key']),
-        );
         this.assetsTrendData = [...transformedValue];
     }
 

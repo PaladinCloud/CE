@@ -25,7 +25,6 @@ import { TokenResolverService } from '../resolver/token-resolver.service';
 import { CopyElementService } from '../shared/services/copy-element.service';
 import { DownloadService } from '../shared/services/download.service';
 import { SharedModule } from '../shared/shared.module';
-import { ComplianceModule } from './../pacman-features/modules/compliance/compliance.module';
 import { AwsResourceTypeSelectionService } from './../pacman-features/services/aws-resource-type-selection.service';
 import { AssetGroupsComponent } from './asset-groups/asset-groups.component';
 import { ChangeDefaultAssetGroupComponent } from './change-default-asset-group/change-default-asset-group.component';
@@ -54,7 +53,6 @@ import { AssetTilesService } from '../core/services/asset-tiles.service';
         CommonModule,
         PostLoginAppRoutingModule,
         SharedModule,
-        ComplianceModule,
         MatMenuModule,
         CdkTreeModule,
     ],

@@ -29,7 +29,6 @@ import { DownloadService } from '../shared/services/download.service';
 import { LoggerService } from '../shared/services/logger.service';
 import { NotificationObservableService } from '../shared/services/notification-observable.service';
 import { TableStateService } from '../core/services/table-state.service';
-import { environment } from 'src/environments/environment';
 import { CommonResponseService } from '../shared/services/common-response.service';
 import { ComponentKeys } from '../shared/constants/component-keys';
 import { CONFIGURATIONS } from 'src/config/configurations';
@@ -116,7 +115,6 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
         private windowExpansionService: WindowExpansionService,
         private notificationObservableService: NotificationObservableService,
         private snackBar: MatSnackBar,
-        private commonResponseService: CommonResponseService,
         private tableStateService: TableStateService,
         private utils: UtilsService,
         private imageCacheService: ImageCacheService,

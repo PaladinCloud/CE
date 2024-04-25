@@ -140,7 +140,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     tableData = [];
     isStatePreserved = false;
     columnsToExcludeFromCasing = ['Account Name'];
-    filterOrder: any;
+    serverSideSearchFilters = ['Asset ID', 'Violation ID'];
 
     constructor(
         private assetGroupObservableService: AssetGroupObservableService,
@@ -412,8 +412,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                         keys.push(decodeURIComponent(keyValuePair[0]).replace('.keyword', ''));
                     }
                 });
-
-                this.filterOrder = keys;
             }
         } catch (e) {
             this.logger.log('jsError', e);
@@ -960,8 +958,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
 
     handleFilterSearchTextChange(event) {
-        if (event.selectedFilterCategory == 'Violation ID')
+        if (this.serverSideSearchFilters.includes(event.selectedFilterCategory)) {
             this.changeFilterType(event.selectedFilterCategory, event.searchText);
+        }
     }
 
     ngOnDestroy() {
