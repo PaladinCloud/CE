@@ -94,6 +94,9 @@ public class JobScheduler {
     
     @Value("${plugins.in.v1}")
     private String pluginUsingV1;
+
+    @Value("${wiz.enabled}")
+    private boolean wizEnabled;
     
     @Autowired
     private DataCollectorSQSService dataCollectorSQSServic;
@@ -110,18 +113,24 @@ public class JobScheduler {
         try {
             ConfigUtil.setConfigProperties();
 			  azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
-			  awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED)); 
-				if (awsEnabled) {
+			  awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
+				if (!wizEnabled && awsEnabled) {
 					addCollectorEvent(putEventsRequestEntries, awsBusDetails);
 				}
-				if (azureEnabled) {
+				if (!wizEnabled && azureEnabled) {
 					addCollectorEvent(putEventsRequestEntries, azureBusDetails);
 				}
 				// Sending SQS message to trigger Data-Collector
 				String[] plugins = pluginUsingV1.split(",");
 				List<String> configuredPlugins = dataCollectorSQSServic.pulginsUsingVersion1AndConfigured(plugins);
-				configuredPlugins.forEach(plugin -> dataCollectorSQSServic.sendSQSMessage(plugin));
-				if (!putEventsRequestEntries.isEmpty()) {
+            for (String plugin : configuredPlugins) {
+                if (wizEnabled && "gcp".equalsIgnoreCase(plugin)) {
+                    continue;
+                }
+                dataCollectorSQSServic.sendSQSMessage(plugin);
+            }
+
+            if (!putEventsRequestEntries.isEmpty()) {
 					PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries)
 							.build();
 
