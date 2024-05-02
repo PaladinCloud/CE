@@ -23,6 +23,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
+import com.tmobile.cso.pacman.datashipper.config.S3ClientConfig;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.dto.PolicyTable;
 import org.slf4j.Logger;
@@ -61,8 +62,7 @@ public class ExternalPolicies {
      */
     public void uploadPolicyDefinition(String dataSource) {
         LOGGER.info("Started upload policy definition for {}", dataSource);
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(
-                new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account, s3Role))).withRegion(s3Region).build();
+        AmazonS3 s3Client = S3ClientConfig.getInstance().getS3Client();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -84,6 +84,8 @@ public class ExternalPolicies {
 
             List<PolicyTable> policyList = new ArrayList<>();
             for (Map<String, Object> map : entities) {
+                map.remove("_cloudType");
+                map.remove("type");
                 PolicyTable policy = objectMapper.convertValue(map, PolicyTable.class);
                 policyList.add(policy);
             }

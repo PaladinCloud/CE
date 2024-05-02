@@ -28,6 +28,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
+import com.tmobile.cso.pacman.datashipper.config.S3ClientConfig;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,9 @@ public class Util {
     public static String concatenate(Map<String, Object> map, String[] keys, String delimiter) {
         List<String> values = new ArrayList<>();
         for (String key : keys) {
+            if (map.get(key) == null) {
+                continue;
+            }
             values.add(map.get(key).toString());
         }
 
@@ -163,14 +167,22 @@ public class Util {
         return authToken;
     }
 
-    public static <T> List<Map<String, T>> fetchDataFromS3(String s3Account, String s3Region, String s3Role, String bucketName, String path) throws IOException {
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account, s3Role))).withRegion(s3Region).build();
+    public static <T> List<Map<String, T>> fetchDataFromS3(String bucketName, String path) throws IOException {
+        AmazonS3 s3Client = S3ClientConfig.getInstance().getS3Client();
+        if (!s3Client.doesObjectExist(bucketName, path)) {
+            LOGGER.info("File {} does not exist in S3 bucket {}.", path, bucketName);
+            return new ArrayList<>();
+        }
         S3Object entitiesData = s3Client.getObject(new GetObjectRequest(bucketName, path));
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(entitiesData.getObjectContent()))) {
             return new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true).readValue(reader.lines().collect(Collectors.joining("\n")), new TypeReference<List<Map<String, T>>>() {
             });
         }
+    }
+
+    public static boolean doesObjectExist(String bucketName, String path) {
+        AmazonS3 s3Client = S3ClientConfig.getInstance().getS3Client();
+        return s3Client.doesObjectExist(bucketName, path);
     }
 
     public static List<String> retrieveErrorRecords(String responseStr) {

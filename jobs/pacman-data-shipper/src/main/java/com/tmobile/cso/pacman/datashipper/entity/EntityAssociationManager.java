@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
+import com.tmobile.cso.pacman.datashipper.config.S3ClientConfig;
 import com.tmobile.cso.pacman.datashipper.error.ErrorManager;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
@@ -58,8 +59,7 @@ public class EntityAssociationManager implements Constants {
     public List<Map<String, String>> uploadAssociationInfo(String dataSource, String type) {
         LOGGER.info("Started EntityAssociationDataCollector for {}", type);
         List<Map<String, String>> errorList = new ArrayList<>();
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(
-                new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account, s3Role))).withRegion(s3Region).build();
+        AmazonS3 s3Client = S3ClientConfig.getInstance().getS3Client();
 
         ObjectMapper objectMapper = new ObjectMapper();
         String indexName = null;
