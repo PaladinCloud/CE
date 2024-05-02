@@ -69,6 +69,9 @@ public class Main implements Constants {
         }
         String ds = params.get("datasource");
         String tenantId = params.get("tenant_id");
+        if (Boolean.parseBoolean(params.get("is_composite_plugin"))) {
+            TargetTypeService.getInstance().configureNewTargetType(ds);
+        }
         ESManager.configureIndexAndTypes(ds, errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
         ExternalPolicies.getInstance().uploadPolicyDefinition(ds);

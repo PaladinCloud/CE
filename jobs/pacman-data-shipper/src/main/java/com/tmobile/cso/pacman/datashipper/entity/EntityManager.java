@@ -113,6 +113,8 @@ public class EntityManager implements Constants {
     public List<Map<String, String>> uploadEntityData(String datasource) {
         List<Map<String, String>> errorList = new ArrayList<>();
         Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
+        types = types.entrySet().stream().filter(entry -> doesObjectExist(datasource, entry.getKey(), errorList))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
         String type = "";
         LOGGER.info("Start Collecting Entity Info");
@@ -196,7 +198,7 @@ public class EntityManager implements Constants {
     private List<Map<String, String>> fetchTagsForEntitiesFromS3(String datasource, String type) {
         List<Map<String, String>> tags = new ArrayList<>();
         try {
-            tags = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, dataPath + "/" + datasource + "-" + type + "-tags.data");
+            tags = Util.fetchDataFromS3(bucketName, dataPath + "/" + datasource + "-" + type + "-tags.data");
         } catch (Exception e) {
             // Do Nothing as there may not a tag file.
         }
@@ -207,7 +209,7 @@ public class EntityManager implements Constants {
         List<Map<String, Object>> entities = new ArrayList<>();
         String path = dataPath + "/" + datasource + "-" + type + ".data";
         try {
-            entities = Util.fetchDataFromS3(s3Account, s3Region, s3Role, bucketName, path);
+            entities = Util.fetchDataFromS3(bucketName, path);
         } catch (Exception e) {
             LOGGER.error("Exception in collecting data for {} from {}", type, path, e);
             Map<String, String> errorMap = new HashMap<>();
@@ -217,6 +219,21 @@ public class EntityManager implements Constants {
             errorList.add(errorMap);
         }
         return entities;
+    }
+
+    private boolean doesObjectExist(String datasource, String type, List<Map<String, String>> errorList) {
+        String path = dataPath + "/" + datasource + "-" + type + ".data";
+        try {
+            return Util.doesObjectExist(bucketName, path);
+        } catch (Exception e) {
+            LOGGER.error("File not found for {} from {}", type, path, e);
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put(ERROR, "File not found for " + type + " from " + path);
+            errorMap.put(ERROR_TYPE, WARN);
+            errorMap.put(EXCEPTION, e.getMessage());
+            errorList.add(errorMap);
+        }
+        return false;
     }
 
     /**
@@ -235,7 +252,14 @@ public class EntityManager implements Constants {
                              List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
                              Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource, String displayName) {
         entities.parallelStream().forEach(entityInfo -> {
-            String id = entityInfo.get(idColumn).toString();
+            Object idColumnValue = entityInfo.get(idColumn);
+            if (idColumnValue == null) {
+                return;
+            }
+            String id = idColumnValue.toString();
+            if (id == null) {
+                id = entityInfo.get("id").toString();
+            }
             String docId = Util.concatenate(entityInfo, _keys, "_");
             String resourceName = ConfigManager.getResourceNameType(dataSource, _type);
             if (entityInfo.containsKey(resourceName)) {
