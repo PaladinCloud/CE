@@ -3118,8 +3118,8 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Created By','createdBy','/admin/asset-group/filter');
 
 /* Plugin developed using PluginEngine V1 */
- INSERT INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
- VALUES ('plugins.in.v1','gcp,redhat,contrast,checkmarx','job-scheduler','prd','latest',NULL,NULL,NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp,redhat,contrast,checkmarx';
+INSERT INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
+ VALUES ('plugins.in.v1','gcp,redhat,contrast,checkmarx,crowdstrike','job-scheduler','prd','latest','System',now(),NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp,redhat,contrast,checkmarx,crowdstrike', modifiedBy='System', modifiedDate=now();
 
 /* Contrast asset application, library */
   INSERT  INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
@@ -3346,3 +3346,8 @@ DELIMITER ;
 CALL alter_cf_AssetGroupDetails_alter_user_length();
 
 UPDATE cf_Target SET displayName='PostgreSQL' WHERE targetName in ('cloudsql_postgres','postgresql');
+
+/* Crowdstrike assets */
+INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
+VALUES('workstation','Workstation','Compute','crowdstrike','{\"key\":\"_resourceid,cid\",\"id\":\"_resourceid\",\"name\":\"_resourcename\"}','enabled','admin@paladincloud.io',
+concat(@eshost,':',@esport,'/crowdstrike_workstation'),now(),null,'Infra & Platforms','Workstation');
