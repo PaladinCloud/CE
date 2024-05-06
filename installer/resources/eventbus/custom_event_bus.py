@@ -8,7 +8,7 @@ class CloudWatchEventBusazure(CloudWatchEventBusResource):
     name = "azure"
     # PROCESS = need_to_enable_azure()
 
-class CloudWatchEventBusgcp(CloudWatchEventBusResource):
+class CloudWatchEventBusGcp(CloudWatchEventBusResource):
     name = "gcp"
     # PROCESS = need_to_enable_gcp()
 

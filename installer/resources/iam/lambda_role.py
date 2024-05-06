@@ -41,7 +41,7 @@ class LambdaS3FullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = LambdaRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 
-class PaladinClPaladinCloudEc2PermissionDocument(iam.IAMPolicyDocumentData):
+class PaladinCloudEc2S3permission(iam.IAMPolicyDocumentData):
     statement = [
         {
             "effect": "Allow",
@@ -49,17 +49,18 @@ class PaladinClPaladinCloudEc2PermissionDocument(iam.IAMPolicyDocumentData):
                 "ec2:CreateNetworkInterface",
                 "ec2:DeleteNetworkInterface",
                 "ec2:DescribeInstances",
-                "ec2:AttachNetworkInterface"],
+                "ec2:AttachNetworkInterface",
+                "sqs:*"],
             "resources": ["*"]
         }
     ]
     
-class PaladinCloudEc2PermissionPolicy(iam.IAMRolePolicyResource):
-    name = "PaladinCloudEc2PermissionPolicy"
+class PaladinCloudEc2S3PermissionPolicy(iam.IAMRolePolicyResource):
+    name = "PaladinCloudEc2S3PermissionPolicy"
     path = '/'
-    policy = PaladinClPaladinCloudEc2PermissionDocument.get_output_attr('json')
+    policy = PaladinCloudEc2S3permission.get_output_attr('json')
 
-class PaladinCloudEc2PermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource):
+class PaladinCloudEc2S3PermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = LambdaRole.get_output_attr('name')
-    policy_arn = PaladinCloudEc2PermissionPolicy.get_output_attr('arn')
+    policy_arn = PaladinCloudEc2S3PermissionPolicy.get_output_attr('arn')
 

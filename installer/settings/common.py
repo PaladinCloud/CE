@@ -44,8 +44,6 @@ PROCESS_RESOURCES = {
     'iam.base_role_policy': {'tags': ["roles"]},
     'iam.post_auth' : {'tags': ["roles"]},
     'iam.all_read_role': {'tags': ["roles", "all_read_role"]},
-    'iam.acs_lambda_role' : {'tags': ["roles"]},
-    'iam.acs_lambda_policy' : {'tags': ["roles"]},
     'vpc.security_group': {'tags': ["security"]},
     'datastore.db': {'tags': ["rds", "datastore"]},
     'datastore.es': {'tags': ["es", "datastore"]},
@@ -76,13 +74,11 @@ PROCESS_RESOURCES = {
     'cognito.userpool' : {'tags' : ["cognito"]},
     'notification.s3_upload' : {'tags' : ["notification"]},
     'notification.function' : {'tags' : ["notification"]},
-    'notification.appsync' : {'tags' : ["notification"]},
-    'notification.apigateway' : {'tags' : ["notification"]},
     'iam.eventbridge_role' : {'tags': ["roles"]},    
 }
 
-
-LAMBDA_PATH = "V14"
+RETENTION_IN_DAYS = 7
+LAMBDA_PATH = "V15"
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
 LOG_DIR = os.path.join(BASE_APP_DIR, 'log')
 PROVISIONER_FILES_DIR_TO_COPY = os.path.join(BASE_APP_DIR, 'files')
@@ -183,7 +179,8 @@ AQUA_PASSWORD = "" # Aqua Client password
 AQUA_API_DEFAULT_PAGE_SIZE=1000
 AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS= "include_vpatch_info=true&show_negligible=true&hide_base_image=false&severities=critical,high,medium,low,negligible"
 GOOGLE_ANALYTICS = ""
-ECS_CPU = 1024
+ECS_CPU = 256
+ECS_MEMORY = 1024
 QUALYS_JOB_MEMORY = 8196
 QUALYS_JOB_VCPU = 2
 
@@ -194,7 +191,5 @@ except:
 
 # if ALB_PROTOCOL == "HTTPS":
 #     PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
-
-
 
 AUTHENTICATION_TYPE = "COGNITO"	

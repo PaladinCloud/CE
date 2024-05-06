@@ -1,27 +1,20 @@
 import json
 from core.config import Settings
 
-
 def need_to_deploy_vulnerability_service():
     feature_status = Settings.get('ENABLE_VULNERABILITY_FEATURE', False)
-
     return feature_status
-
 
 def need_to_deploy_aqua_vulnerability_service():
     feature_status = Settings.get('ENABLE_AQUA_VULNERABILITY_FEATURE', False)
-
     return feature_status
-
 
 def need_to_use_fed_identity_provider():
     feature_status = Settings.get('ENABLE_AZURE_AD', False)
-
     return feature_status
 
 def need_self_signed_ssl():
     feature_status = Settings.get('ALB_PROTOCOL', 'HTTP')
-
     if feature_status == 'HTTP':
         return True
     else:
@@ -29,9 +22,7 @@ def need_self_signed_ssl():
 
 def need_to_enable_azure():
     feature_status = Settings.get('ENABLE_AZURE', False)
-
     return feature_status
-
 
 def get_azure_tenants():
     if need_to_enable_azure():
@@ -45,15 +36,11 @@ def get_azure_tenants():
 def get_aws_account_details():
     aws_accounts = Settings.get('AWS_ACCOUNT_DETAILS', [])
     account_info = [account['accountId'] +  ':' +account['accountName'] for account in aws_accounts]
-
     return ",".join(account_info)
-
 
 def need_to_enable_gcp():
     feature_status = Settings.get('ENABLE_GCP', False)
-
     return feature_status
-
 
 def get_gcp_project_ids():
     if need_to_enable_gcp():

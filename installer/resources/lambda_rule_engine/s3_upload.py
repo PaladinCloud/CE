@@ -4,7 +4,6 @@ from core.terraform.utils import get_terraform_scripts_and_files_dir
 from core.config import Settings
 import os
 
-
 RULE_ENGINE_JOB_FILE_NAME = "paladincloud-submitRuleExecutionJob"
 PATH = "/"+Settings.LAMBDA_PATH+"/"
 

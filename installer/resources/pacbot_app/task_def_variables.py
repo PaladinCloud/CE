@@ -1,6 +1,6 @@
 
+from resources.lambda_submit.function import SubmitJobLambdaFunction
 from resources.iam.base_role import BaseRole
-from .utils import need_to_enable_azure, need_to_enable_gcp
 from resources.pacbot_app.cloudwatch_log_groups import UiCloudWatchLogGroup, ApiCloudWatchLogGroup
 from resources.pacbot_app.ecr import APIEcrRepository, UIEcrRepository
 from resources.data.aws_info import AwsAccount, AwsRegion
@@ -9,8 +9,6 @@ from resources.datastore.db import MySQLDatabase
 from core.config import Settings
 from resources.cognito.userpool import UserPool, AppCLient
 import json
-
-
 
 class ContainerDefinitions:
     """Friend class for getting the container definitions of each service"""
@@ -36,11 +34,9 @@ class ContainerDefinitions:
     COGNITO_ACCOUNT = AwsAccount.get_output_attr('account_id')
     EXTERNAL_ID = "null"
     EXTERNAL_ID_FLAG = "false"
-    
-
-
-
-    
+    SUB_DOMAIN = "paladincloud" #by deafult for oss we use paladincloud for all
+    LEGACY_COLLECTOR_LAMBDA_FUNCTION = SubmitJobLambdaFunction.get_output_attr('function_name')
+        
     def get_container_definitions_without_env_vars(self, container_name):
         """
         This method returns the basic common container definitioons for all task definitions
@@ -48,7 +44,7 @@ class ContainerDefinitions:
         Returns:
             container_definitions (dict): Container definitions
         """
-        memory = 1024 if container_name == "nginx"  else 3072
+        memory = 1024 if container_name == "nginx"  else Settings.ECS_MEMORY
         return {
             'name': container_name,
             "image": self.ui_image if container_name == 'nginx' else self.api_image,
@@ -115,8 +111,8 @@ class ContainerDefinitions:
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
+            {'name': "TENANT_ID",'value':self.SUB_DOMAIN},
         ]
-
 
     def get_admin_container_env_vars(self):
         return [
@@ -133,7 +129,8 @@ class ContainerDefinitions:
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
             {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT},
             {'name': "EXTERNAL_ID",'value':self.EXTERNAL_ID},
-            {'name': "EXTERNAL_ID_FLAG",'value':self.EXTERNAL_ID_FLAG}
+            {'name': "EXTERNAL_ID_FLAG",'value':self.EXTERNAL_ID_FLAG},
+            {'name': "TENANT_ID",'value':self.SUB_DOMAIN},
         ]
 
     def get_compliance_container_env_vars(self):
@@ -148,7 +145,8 @@ class ContainerDefinitions:
             {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
-            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}      
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
+            {'name': "TENANT_ID",'value':self.SUB_DOMAIN},  
         ]
 
     def get_notifications_container_env_vars(self):
@@ -163,7 +161,8 @@ class ContainerDefinitions:
             {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
-            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
+            {'name': "TENANT_ID",'value':self.SUB_DOMAIN},
         ]
 
     def get_statistics_container_env_vars(self):
@@ -178,7 +177,8 @@ class ContainerDefinitions:
             {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
-            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
+            {'name': "TENANT_ID",'value':self.SUB_DOMAIN}
         ]
 
     def get_asset_container_env_vars(self):
@@ -194,7 +194,8 @@ class ContainerDefinitions:
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
-             {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT}
+             {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT},
+             {'name': "TENANT_ID",'value':self.SUB_DOMAIN}
         ]
 
     def get_auth_container_env_vars(self):
@@ -211,33 +212,24 @@ class ContainerDefinitions:
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
             {'name':"AUTH_API_URL",'value':self.DOMAIN_URL},
-            {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT}
+            {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT},
+            {'name': "TENANT_ID",'value':self.SUB_DOMAIN}
         ]
         
     def get_scheduler_container_env_vars(self):
         return [
             {'name': "JAR_FILE", 'value': "paladin-job-scheduler.jar"},
+            {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
             {'name': "CONFIG_CREDS", 'value': self.CONFIG_CREDS},
             {'name': "CONFIG_URL", 'value': self.CONFIG_URL},
             {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
             {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
             {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
-            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
-            {'name':"REGION",'value':self.REGION},
-            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
-        ]
- 
-    def get_vulnerability_container_env_vars(self):
-        return [
-            {'name': "JAR_FILE", 'value': "pacman-api-vulnerability.jar"},
-            {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
-            {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
-            {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('vulnerability')},
-            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
-            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
-            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
-            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
-            {'name':"REGION",'value':self.REGION},
-            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
+            {'name': "AWS_USERPOOL_REGION",'value':self.REGION},
+            {'name': "REGION",'value':self.REGION},
+            {'name': "PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
+            {'name': "CONFIG_SERVER_URL",'value':self.CONFIG_SERVER_URL},
+            {'name': "LEGACY_COLLECTOR_LAMBDA_FUNCTION",'value':self.LEGACY_COLLECTOR_LAMBDA_FUNCTION},
+            {'name': "TENANT_ID",'value':self.SUB_DOMAIN},
+            {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT}
         ]

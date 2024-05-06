@@ -6,7 +6,6 @@ from resources.iam.lambda_role import LambdaRole
 from core.config import Settings
 from resources.s3.bucket import BucketStorage
 from resources.pacbot_app.alb import ApplicationLoadBalancer
-from resources.notification.appsync import AppSyncNotification, AppSyncIdKey
 from resources.notification.s3_upload import UploadLambdaInappFile, INAPP_NOTIFICATION_FILE_NAME
 from core.terraform.resources.aws.sns import SNSResources, SNSSubscription
 
@@ -85,20 +84,13 @@ class InAppNotificationFunction(LambdaFunctionResource):
     function_name = INAPP_NOTIFICATION_FILE_NAME
     role = LambdaRole.get_output_attr('arn')
     handler =  INAPP_NOTIFICATION_FILE_NAME + ".lambda_handler"
-    runtime = "python3.7"
+    runtime = "python3.11"
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaInappFile.get_output_attr('id')
-    environment = {
-        'variables': {
-            'API_KEY':	AppSyncIdKey.get_output_attr('key'),
-            'APPSYNC_API_ENDPOINT_URL' :  AppSyncNotification.get_output_attr('uris["GRAPHQL"]')
-        }
-    }
-    DEPENDS_ON = [AppSyncNotification,BuildUiAndApis]
+    DEPENDS_ON = [BuildUiAndApis]
     
-
 class LogEsNotificationFunction(LambdaFunctionResource):
     function_name = NOTIFICATION_LOG_TO_ES
     role = LambdaRole.get_output_attr('arn')
@@ -148,18 +140,21 @@ class TemplateLambdaPermission(LambdaPermission):
     function_name = TemplateFormatterFunction.get_output_attr('function_name')
     principal = "sns.amazonaws.com"
     source_arn = NotificationSNS.get_output_attr('arn')
+    
 class InAppLambdaPermission(LambdaPermission):
     statement_id = "Event"
     action = "lambda:InvokeFunction"
     function_name = InAppNotificationFunction.get_output_attr('function_name')
     principal = "sns.amazonaws.com"
     source_arn = NotificationSNS.get_output_attr('arn')
+    
 class SendLambdaPermission(LambdaPermission):
     statement_id = "Event"
     action = "lambda:InvokeFunction"
     function_name = SendNotificationFunction.get_output_attr('function_name')
     principal = "sns.amazonaws.com"
     source_arn = EmailSNS.get_output_attr('arn')
+    
 class LogEsLambdaPermission(LambdaPermission):
     statement_id = "Event"
     action = "lambda:InvokeFunction"
