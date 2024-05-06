@@ -3375,3 +3375,7 @@ UPDATE `cf_PolicyTable` SET `enricherSource` = 'qualys' WHERE (`policyId` = 'Ec2
 UPDATE `cf_PolicyTable` SET `enricherSource` = 'qualys' WHERE (`policyId` = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS3Vulnerability_ec2');
 UPDATE `cf_PolicyTable` SET `enricherSource` = 'qualys' WHERE (`policyId` = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS4Vulnerability_ec2');
 UPDATE `cf_PolicyTable` SET `enricherSource` = 'qualys' WHERE (`policyId` = 'Ec2WithSeverityVulnerability_version-1_Ec2WithS5Vulnerability_ec2');
+
+update cf_PolicyTable set policyDisplayName = 'Remove Inactive IAM Users after N days' where policyId='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser_inNDays';
+update cf_PolicyTable set policyDisplayName = 'Enable Log Alert for Account Delete Network Security Group Rule' where policyId = 'Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert';
+
