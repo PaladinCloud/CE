@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
+import com.tmobile.cso.pacman.datashipper.config.S3ClientConfig;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,8 +74,7 @@ public class AWSErrorManager implements Constants {
         if (errorInfo == null) {
             ObjectMapper objectMapper = new ObjectMapper();
             List<Map<String, String>> inventoryErrors = new ArrayList<>();
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account, s3Role))).withRegion(s3Region).build();
+            AmazonS3 s3Client = S3ClientConfig.getInstance().getS3Client();
             try {
                 S3Object inventoryErrorData = s3Client.getObject(new GetObjectRequest(bucketName, dataPath + "/" + datasource + "-loaderror.data"));
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inventoryErrorData.getObjectContent()))) {
