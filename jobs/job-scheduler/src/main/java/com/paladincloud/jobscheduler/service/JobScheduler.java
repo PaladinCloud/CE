@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 
 @Service
@@ -95,11 +97,14 @@ public class JobScheduler {
     @Value("${plugins.in.v1}")
     private String pluginUsingV1;
 
-    @Value("${wiz.enabled}")
-    private boolean wizEnabled;
+    @Value("#{'${composite.plugins:}'.split(',')}")
+    private Set<String> compositePlugins;
     
     @Autowired
     private DataCollectorSQSService dataCollectorSQSServic;
+
+    @Autowired
+    private Environment env;
 
     @Scheduled(initialDelayString = "${scheduler.collector.initial.delay}", fixedDelayString = "${scheduler.interval}")
     public void scheduleCollectorJobs() {
@@ -112,19 +117,20 @@ public class JobScheduler {
 
         try {
             ConfigUtil.setConfigProperties();
-			  azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
-			  awsEnabled=Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
-				if (!wizEnabled && awsEnabled) {
-					addCollectorEvent(putEventsRequestEntries, awsBusDetails);
-				}
-				if (!wizEnabled && azureEnabled) {
-					addCollectorEvent(putEventsRequestEntries, azureBusDetails);
-				}
-				// Sending SQS message to trigger Data-Collector
-				String[] plugins = pluginUsingV1.split(",");
-				List<String> configuredPlugins = dataCollectorSQSServic.pulginsUsingVersion1AndConfigured(plugins);
+            azureEnabled = Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
+            awsEnabled = Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
+            boolean compositePluginEnabled = isCompositeEnabled();
+            if (!compositePluginEnabled && awsEnabled) {
+                addCollectorEvent(putEventsRequestEntries, awsBusDetails);
+            }
+            if (!compositePluginEnabled && azureEnabled) {
+                addCollectorEvent(putEventsRequestEntries, azureBusDetails);
+            }
+            // Sending SQS message to trigger Data-Collector
+            String[] plugins = pluginUsingV1.split(",");
+            List<String> configuredPlugins = dataCollectorSQSServic.pulginsUsingVersion1AndConfigured(plugins);
             for (String plugin : configuredPlugins) {
-                if (wizEnabled && "gcp".equalsIgnoreCase(plugin)) {
+                if (compositePluginEnabled && "gcp".equalsIgnoreCase(plugin)) {
                     continue;
                 }
                 dataCollectorSQSServic.sendSQSMessage(plugin);
@@ -398,5 +404,17 @@ public class JobScheduler {
         event.setIsShipper(false);
 
         return event;
+    }
+
+    public boolean isCompositeEnabled() {
+        for (String plugin : compositePlugins) {
+            String isEnabledKey = plugin + ".enabled";
+            String isEnabledValue = env.getProperty(isEnabledKey);
+            if (isEnabledValue != null && (isEnabledValue.equalsIgnoreCase("true") ||
+                    isEnabledValue.equalsIgnoreCase("1"))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

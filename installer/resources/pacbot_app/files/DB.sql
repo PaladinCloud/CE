@@ -2103,7 +2103,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.total.batches',concat(@JOB_SCHEDULER_NUMBER_OF_BATCHES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.enabled',concat(@AZURE_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.enabled',concat(@GCP_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.enabled',concat(@AWS_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.enabled',concat(@AWS_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('qualys.enabled',concat(@QUALYS_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua.enabled',concat(@AQUA_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('tenable.enabled',concat(@TENABLE_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
@@ -3346,6 +3346,8 @@ DELIMITER ;
 CALL alter_cf_AssetGroupDetails_alter_user_length();
 
 UPDATE cf_Target SET displayName='PostgreSQL' WHERE targetName in ('cloudsql_postgres','postgresql');
+
+update pac_config_properties set application = 'application' where cfkey = 'aws.enabled';
 
 /* Crowdstrike assets */
 INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)

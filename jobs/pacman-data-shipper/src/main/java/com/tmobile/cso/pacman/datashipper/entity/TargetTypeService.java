@@ -108,15 +108,15 @@ public class TargetTypeService {
                     JsonNode firstRecord = rootNode.get(0);
                     String targetType = firstRecord.has("targetType") ?
                             firstRecord.get("targetType").asText() : null;
-                    String wizAssetType = firstRecord.has("targetTypeDisplayName") ?
+                    String compositePluginAssetType = firstRecord.has("targetTypeDisplayName") ?
                             firstRecord.get("targetTypeDisplayName").asText() : null;
                     if (targetType == null) {
                         continue;
                     }
-                    if (wizAssetType == null) {
+                    if (compositePluginAssetType == null) {
                         targetType = targetType.toUpperCase();
                     }
-                    result.put(targetType, wizAssetType);
+                    result.put(targetType, compositePluginAssetType);
                 } else {
                     LOGGER.info("JSON array is empty for {}", fileName);
                 }
