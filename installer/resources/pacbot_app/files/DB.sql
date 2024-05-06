@@ -2086,7 +2086,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.properties.mail.smtp.starttls.enable',concat(@MAIL_SMTP_SSL_ENABLE,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.test-connection',concat(@MAIL_SMTP_SSL_TEST_CONNECTION,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 
-DELETE IGNORE FROM pac_config_properties where cfKey in ('scheduler.interval','gcp.eventbridge.bus.details','aws.eventbridge.bus.details','scheduler.rules.initial.delay','scheduler.total.batches','scheduler.shipper.initial.delay','scheduler.collector.initial.delay','vulnerability.eventbridge.bus.details','vulnerability.interval','vulnerability.collector.initial.delay','vulnerability.shipper.initial.delay');
+DELETE IGNORE FROM pac_config_properties where cfKey in ('scheduler.interval','gcp.eventbridge.bus.details','aws.eventbridge.bus.details','scheduler.rules.initial.delay','scheduler.total.batches','scheduler.shipper.initial.delay','scheduler.collector.initial.delay','vulnerability.eventbridge.bus.details','vulnerability.interval','vulnerability.collector.initial.delay','vulnerability.shipper.initial.delay','aws.enabled');
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.interval',concat(@JOB_SCHEDULE_INTERVAL,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.rules.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY_RULES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
@@ -3346,8 +3346,6 @@ DELIMITER ;
 CALL alter_cf_AssetGroupDetails_alter_user_length();
 
 UPDATE cf_Target SET displayName='PostgreSQL' WHERE targetName in ('cloudsql_postgres','postgresql');
-
-update pac_config_properties set application = 'application' where cfkey = 'aws.enabled';
 
 /* Crowdstrike assets */
 INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
