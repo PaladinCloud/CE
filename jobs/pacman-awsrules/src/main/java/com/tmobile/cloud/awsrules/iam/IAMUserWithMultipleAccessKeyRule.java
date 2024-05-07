@@ -83,8 +83,10 @@ public class IAMUserWithMultipleAccessKeyRule extends BasePolicy {
 		String description = null;
 		String formattedUserKeyUrl = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_IAM_USER_KEY_URL);
 		String esUserKeyUrl = !StringUtils.isNullOrEmpty(formattedUserKeyUrl) ? formattedUserKeyUrl : "";
+		//Add logic to check for multiple access keys per account --accountid -> 283722849372
+		String accountId = (resourceAttributes.get(PacmanRuleConstants.ACCOUNT_ID)!=null)?(resourceAttributes.get(PacmanRuleConstants.ACCOUNT_ID)):"";
 		try {
-			Set<String> keys = PacmanUtils.getAccessKeysForIamUser(resourceAttributes.get(PacmanRuleConstants.IAM_USER_NAME), esUserKeyUrl);
+			Set<String> keys = PacmanUtils.getAccessKeysForIamUser(resourceAttributes.get(PacmanRuleConstants.IAM_USER_NAME),accountId,esUserKeyUrl);
 			if (keys.size()>1)
 				description = "IAM user with multiple access keys found. Remove or update no longer used keys !!";
 		} catch (Exception e) {

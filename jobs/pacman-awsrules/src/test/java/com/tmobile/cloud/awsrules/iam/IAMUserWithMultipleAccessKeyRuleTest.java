@@ -38,18 +38,19 @@ public class IAMUserWithMultipleAccessKeyRuleTest {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(true);
         
-        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString())).thenReturn(new HashSet<String>());
+        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString(),anyString())).thenReturn(new HashSet<String>());
         assertThat(iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         
         Set<String> keys = new HashSet<>();
         keys.add("assdasdsadwfv");
         keys.add("ertyryuryuyjh");
-        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString())).thenReturn(keys);
+        PacmanUtils.getAccessKeysForIamUser(anyString(), anyString(),anyString());
+        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString(),anyString())).thenReturn(keys);
         mockStatic(Annotation.class);
         when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString())).thenThrow(new Exception());
+        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString(),anyString())).thenThrow(new Exception());
         assertThatThrownBy(() -> iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
         
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(false);

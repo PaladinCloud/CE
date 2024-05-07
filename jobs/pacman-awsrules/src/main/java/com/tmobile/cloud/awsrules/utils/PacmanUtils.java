@@ -1250,7 +1250,7 @@ public class PacmanUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Set<String> getAccessKeysForIamUser(String userName, String esUserKeyUrl) throws Exception {
+	public static Set<String> getAccessKeysForIamUser(String userName, String accountId,String esUserKeyUrl) throws Exception {
 
 		Set<String> keys = new HashSet<>();
 		Map<String, Object> mustFilter = new HashMap<>();
@@ -1260,6 +1260,7 @@ public class PacmanUtils {
 
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.IAM_USER_NAME), userName);
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.STATUS), PacmanRuleConstants.STATUS_ACTIVE);
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ACCOUNT_ID), accountId);
 		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUserKeyUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
 
 		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
