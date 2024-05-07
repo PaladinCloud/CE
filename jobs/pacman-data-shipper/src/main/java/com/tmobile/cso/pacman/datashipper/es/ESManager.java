@@ -760,6 +760,31 @@ public class ESManager implements Constants {
         }
     }
 
+    public static void uploadVulnerabilityData(String index, List<Map<String, Object>> docs) {
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\" } }";
+        LOGGER.info("Uploading vulnerability data into index {}", index);
+        if (null != docs && !docs.isEmpty()) {
+            StringBuilder bulkRequest = new StringBuilder();
+            int i = 0;
+            for (Map<String, Object> doc : docs) {
+
+                String _id = (String) doc.remove("id");
+                String _doc = new Gson().toJson(doc);
+
+                bulkRequest.append(String.format(actionTemplate, index, _id)).append("\n");
+                bulkRequest.append(_doc).append("\n");
+                i++;
+                if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
+                    bulkUpload(bulkRequest);
+                    bulkRequest = new StringBuilder();
+                }
+            }
+            if (bulkRequest.length() > 0) {
+                bulkUpload(bulkRequest);
+            }
+        }
+    }
+
     public static void uploadAuditLogData(String index, List<Map<String, Object>> docs) {
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\" , \"_id\" : \"%s\", \"routing\" : \"%s\" } }";
         long dateInMillSec = new Date().getTime();
