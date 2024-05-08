@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.es;
 
+import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -855,10 +856,14 @@ public class ESManager implements Constants {
      * @param value the value
      */
     public static void deleteOldDocuments(String index, String type, String field, String value) {
-        String deleteJson = "{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"" + field + "\":\"" + value + "\"}}],"
-                + "\"must\":[{\"match\":{\"docType.keyword\":\"" + type + "\"}}]}}}";
+        StringBuilder deleteQuery = new StringBuilder();
+        deleteQuery.append("{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"" + field + "\":\"" + value + "\"}}]");
+        if (!StringUtils.isNullOrEmpty(type)) {
+            deleteQuery.append(",\"must\":[{\"match\":{\"docType.keyword\":\"" + type + "\"}}]");
+        }
+        deleteQuery.append("}}}");
         try {
-            invokeAPI("POST", index + "/" + "_delete_by_query", deleteJson);
+            invokeAPI("POST", index + "/" + "_delete_by_query", deleteQuery.toString());
         } catch (IOException e) {
             LOGGER.error("Error deleteOldDocuments ", e);
         }
