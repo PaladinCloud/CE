@@ -27,50 +27,12 @@ import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, Annotation.class})
+@PrepareForTest({PacmanUtils.class, Annotation.class})
 public class IAMUserWithMultipleAccessKeyRuleTest {
 
     @InjectMocks
     IAMUserWithMultipleAccessKeyRule iamUserWithMultipleAccessKeyRule;
- 
-    @Test
-    public void executeTest() throws Exception {
-        mockStatic(PacmanUtils.class);
-        when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(true);
-        
-        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString())).thenReturn(new HashSet<String>());
-        assertThat(iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
-        
-        Set<String> keys = new HashSet<>();
-        keys.add("assdasdsadwfv");
-        keys.add("ertyryuryuyjh");
-        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString())).thenReturn(keys);
-        mockStatic(Annotation.class);
-        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
-        assertThat(iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
-        
-        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString())).thenThrow(new Exception());
-        assertThatThrownBy(() -> iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
-        
-        when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(false);
-        assertThatThrownBy(
-                () -> iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
-        
-    }
-    private Annotation getMockAnnotation() {
-        Annotation annotation=new Annotation();
-        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
-        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
-        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
-        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
-        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
-        return annotation;
-    }
-    @Test
-    public void getHelpTextTest(){
-        assertThat(iamUserWithMultipleAccessKeyRule.getHelpText(), is(notNullValue()));
-    }
-    
+
     public static Map<String, String> getMapString(String passRuleResourceId) {
         Map<String, String> commonMap = new HashMap<>();
         commonMap.put("executionId", "1234");
@@ -84,6 +46,46 @@ public class IAMUserWithMultipleAccessKeyRuleTest {
         commonMap.put("esIamUserKeyUrl", "esIamUserKeyUrl");
         return commonMap;
     }
-  
-    
+
+    @Test
+    public void executeTest() throws Exception {
+        mockStatic(PacmanUtils.class);
+        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
+
+        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString(), anyString())).thenReturn(new HashSet<String>());
+        assertThat(iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "), getMapString("r_123 ")), is(notNullValue()));
+
+        Set<String> keys = new HashSet<>();
+        keys.add("assdasdsadwfv");
+        keys.add("ertyryuryuyjh");
+        PacmanUtils.getAccessKeysForIamUser(anyString(), anyString(), anyString());
+        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString(), anyString())).thenReturn(keys);
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(getMockAnnotation());
+        assertThat(iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "), getMapString("r_123 ")), is(notNullValue()));
+
+        when(PacmanUtils.getAccessKeysForIamUser(anyString(), anyString(), anyString())).thenThrow(new Exception());
+        assertThatThrownBy(() -> iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
+
+        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(false);
+        assertThatThrownBy(() -> iamUserWithMultipleAccessKeyRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation = new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME, "Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
+
+    @Test
+    public void getHelpTextTest() {
+        assertThat(iamUserWithMultipleAccessKeyRule.getHelpText(), is(notNullValue()));
+    }
+
+
 }
