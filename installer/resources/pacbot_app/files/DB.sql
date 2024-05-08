@@ -2086,7 +2086,17 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.properties.mail.smtp.starttls.enable',concat(@MAIL_SMTP_SSL_ENABLE,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.test-connection',concat(@MAIL_SMTP_SSL_TEST_CONNECTION,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 
-DELETE IGNORE FROM pac_config_properties where cfKey in ('scheduler.interval','gcp.eventbridge.bus.details','aws.eventbridge.bus.details','scheduler.rules.initial.delay','scheduler.total.batches','scheduler.shipper.initial.delay','scheduler.collector.initial.delay','vulnerability.eventbridge.bus.details','vulnerability.interval','vulnerability.collector.initial.delay','vulnerability.shipper.initial.delay','aws.enabled');
+DELETE IGNORE FROM pac_config_properties where cfKey in ('scheduler.interval','gcp.eventbridge.bus.details','aws.eventbridge.bus.details','scheduler.rules.initial.delay','scheduler.total.batches','scheduler.shipper.initial.delay','scheduler.collector.initial.delay','vulnerability.eventbridge.bus.details','vulnerability.interval','vulnerability.collector.initial.delay','vulnerability.shipper.initial.delay');
+
+/* can be removed after release */
+DELETE p1 FROM pac_config_properties p1
+JOIN (
+    SELECT MIN(cfkey) as min_id, COUNT(*) as cnt FROM pac_config_properties
+    WHERE cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled') GROUP BY cfkey
+) p2 ON p1.cfkey = p2.min_id AND p2.cnt > 1 WHERE p1.application = 'job-scheduler' AND p1.cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled');
+
+UPDATE pac_config_properties SET application = 'application' WHERE application = 'job-scheduler' AND cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled');
+
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.interval',concat(@JOB_SCHEDULE_INTERVAL,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.rules.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY_RULES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
@@ -2101,8 +2111,8 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.eventbridge.bus.details',concat(@AWS_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.eventbridge.bus.details',concat(@VULNERABILITY_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.total.batches',concat(@JOB_SCHEDULER_NUMBER_OF_BATCHES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.enabled',concat(@AZURE_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.enabled',concat(@GCP_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.enabled',concat(@AZURE_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.enabled',concat(@GCP_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.enabled',concat(@AWS_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('qualys.enabled',concat(@QUALYS_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua.enabled',concat(@AQUA_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
