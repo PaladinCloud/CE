@@ -170,7 +170,7 @@ public class AssetGroupController {
 	}
 
 	@ApiOperation(httpMethod = "POST", value = "API to filte asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@PostMapping(path = "/list",produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAllAssetGroupDetailsFilter(@RequestBody PluginRequestBody requestBody) {
 		try {
 			if(requestBody.getFilter() == null){
