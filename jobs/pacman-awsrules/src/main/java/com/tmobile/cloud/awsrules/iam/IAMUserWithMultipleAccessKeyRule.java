@@ -77,17 +77,17 @@ public class IAMUserWithMultipleAccessKeyRule extends BasePolicy {
 	public String getHelpText() {		
 		return "This rule checks for users with multiple access keys";
 	}
-    
-    private String checkValidation(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-		
+
+	private String checkValidation(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+
 		String description = null;
 		String formattedUserKeyUrl = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_IAM_USER_KEY_URL);
 		String esUserKeyUrl = !StringUtils.isNullOrEmpty(formattedUserKeyUrl) ? formattedUserKeyUrl : "";
 		//Add logic to check for multiple access keys per account/per user
-		String accountId = (resourceAttributes.get(PacmanRuleConstants.ACCOUNT_ID)!=null)?(resourceAttributes.get(PacmanRuleConstants.ACCOUNT_ID)):"";
+		String accountId = (resourceAttributes.get(PacmanRuleConstants.ACCOUNT_ID) != null) ? (resourceAttributes.get(PacmanRuleConstants.ACCOUNT_ID)) : "";
 		try {
-			Set<String> keys = PacmanUtils.getAccessKeysForIamUser(resourceAttributes.get(PacmanRuleConstants.IAM_USER_NAME),accountId,esUserKeyUrl);
-			if (keys.size()>1)
+			Set<String> keys = PacmanUtils.getAccessKeysForIamUser(resourceAttributes.get(PacmanRuleConstants.IAM_USER_NAME), accountId, esUserKeyUrl);
+			if (keys.size() > 1)
 				description = "IAM user with multiple access keys found. Remove or update no longer used keys !!";
 		} catch (Exception e) {
 			logger.error("unable to determine", e);

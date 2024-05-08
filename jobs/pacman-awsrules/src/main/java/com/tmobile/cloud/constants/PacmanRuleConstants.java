@@ -688,5 +688,5 @@ public class PacmanRuleConstants {
     public static final String LATEST_CLOUD_WATCH_DELIVERY_TIME="latestCloudWatchLogsDeliveryTime";
     public static final String SERVICE = "Service";
     public static final String REGION_GLOBAL = "global";
-    public static final String ACCOUNT_ID = "accountid";
+  public static final String ACCOUNT_ID = "accountid";
 }
