@@ -3379,3 +3379,5 @@ UPDATE `cf_PolicyTable` SET `enricherSource` = 'qualys' WHERE (`policyId` = 'Ec2
 update cf_PolicyTable set policyDisplayName = 'Remove Inactive IAM Users after N days' where policyId='CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser_inNDays';
 update cf_PolicyTable set policyDisplayName = 'Enable Log Alert for Account Delete Network Security Group Rule' where policyId = 'Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert';
 
+update  cf_PolicyTable set policyDesc = 'Using a single IAM access key for IAM users enhances access control and security. This policy ensures that IAM users are configured with a single access key, reducing the risk of unauthorized key proliferation. Failure to use a single access key may result in increased attack surface and potential security threats, compromising the confidentiality and integrity of sensitive information.'
+where policyId = 'IamUserWithMultipleAccessKey_version-1_IAMUserShouldUseSingleKey_iamuser' and policyUUID ='aws_iam_user_should_have_single_access_key';
