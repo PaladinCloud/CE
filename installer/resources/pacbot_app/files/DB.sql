@@ -2092,10 +2092,10 @@ DELETE IGNORE FROM pac_config_properties where cfKey in ('scheduler.interval','g
 DELETE p1 FROM pac_config_properties p1
 JOIN (
     SELECT MIN(cfkey) as min_id, COUNT(*) as cnt FROM pac_config_properties
-    WHERE cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled') GROUP BY cfkey
-) p2 ON p1.cfkey = p2.min_id AND p2.cnt > 1 WHERE p1.application = 'job-scheduler' AND p1.cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled');
+    WHERE cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled', 'qualys.enabled', 'aqua.enabled', 'tenable.enabled') GROUP BY cfkey
+) p2 ON p1.cfkey = p2.min_id AND p2.cnt > 1 WHERE p1.application = 'job-scheduler' AND p1.cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled', 'qualys.enabled', 'aqua.enabled', 'tenable.enabled');
 
-UPDATE pac_config_properties SET application = 'application' WHERE application = 'job-scheduler' AND cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled');
+UPDATE pac_config_properties SET application = 'application' WHERE application = 'job-scheduler' AND cfkey IN ('gcp.enabled', 'azure.enabled', 'aws.enabled', 'wiz.enabled', 'redhat.enabled', 'contrast.enabled', 'checkmarx.enabled', 'crowdstrike.enabled', 'qualys.enabled', 'aqua.enabled', 'tenable.enabled');
 
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.interval',concat(@JOB_SCHEDULE_INTERVAL,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
@@ -2114,9 +2114,9 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.enabled',concat(@AZURE_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.enabled',concat(@GCP_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.enabled',concat(@AWS_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('qualys.enabled',concat(@QUALYS_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua.enabled',concat(@AQUA_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('tenable.enabled',concat(@TENABLE_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('qualys.enabled',concat(@QUALYS_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua.enabled',concat(@AQUA_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('tenable.enabled',concat(@TENABLE_ENABLED,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('base.account',concat(@BASE_ACCOUNT,''),'job-scheduler','prd','latest',null,null,null,null);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('base.region',concat(@BASE_REGION,''),'job-scheduler','prd','latest',null,null,null,null);
 
