@@ -7,6 +7,6 @@ class AuthPostLambdaFunction(LambdaFunctionResource):
     function_name = "postauth"
     role = PostAuth.get_output_attr('arn')
     handler = POST_AUTH_FILE_NAME + ".lambda_handler"
-    runtime = "python3.11"
+    runtime = "python3.12"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaPostAuthFile.get_output_attr('id') 
