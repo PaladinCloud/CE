@@ -58,6 +58,12 @@ class ElasticsearchDomainResource(TerraformResource):
                 'cloudwatch_log_group_arn': {'required': True},
                 'log_type': {'required': True},
             }
+        },
+        'auto_tune_options': {
+            'required' : False,
+            'inline_args':{
+                'desired_state' :  {'required': True}
+            }
         }
     }
 

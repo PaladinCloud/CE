@@ -36,7 +36,7 @@ class ESCloudWatchLogResourcePolicy(CloudWatchLogResourcePolicy):
 class ESDomain(ElasticsearchDomainResource):
     domain_name = "data"
     elasticsearch_version = "OpenSearch_2.5"
-    instance_type = Settings.get('ES_INSTANCE_TYPE', "m5.large.elasticsearch")
+    instance_type = Settings.get('ES_INSTANCE_TYPE', "t3.small.elasticsearch")
     instance_count =  Settings.get('ES_NODE_COUNT',2)
     dedicated_master_enabled = Settings.get('ES_DEDICATED_MASTER_ENABLED',False)
     dedicated_master_count = Settings.get('ES_MASTER_NODE_COUNT', 3)
@@ -50,7 +50,8 @@ class ESDomain(ElasticsearchDomainResource):
     subnet_ids = [Settings.get('VPC')['SUBNETS'][0]]
     cloudwatch_log_group_arn = ESCloudWatchLogGroup.get_output_attr('arn')
     log_type = "ES_APPLICATION_LOGS"
-
+    desired_state = "DISABLED"  #auto_tune_options
+    
     @classmethod
     def get_http_url_with_port(cls):
         return "%s:%s" % (cls.get_http_url(), "80")
