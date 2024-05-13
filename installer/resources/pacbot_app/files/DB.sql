@@ -481,10 +481,6 @@ DELIMITER ;
 CALL alter_cf_Accounts_table_add_createdBy_createdTime_if_not_exists();
 
 
-/* Insert one account */
-
-insert ignore into cf_Accounts (`accountName`,`accountId`,`assets`,`violations`,`accountStatus`,`platform`,`createdBy`,`createdTime`) values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''),concat(@CUSTOMER_NAME,''),NOW());
-
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_target_table_add_display_name_if_not_exists $$
 CREATE PROCEDURE alter_cf_target_table_add_display_name_if_not_exists()
@@ -1106,9 +1102,6 @@ INSERT IGNORE INTO `cf_Datasource`(`dataSourceId`,`dataSourceName`,`dataSourceDe
 INSERT IGNORE INTO `cf_Datasource` (dataSourceId,dataSourceName,dataSourceDesc,config,createdDate,modifiedDate) VALUES (2,'azure','Azure','N/A',{d '2019-11-13'},{d '2019-11-13'});
 INSERT IGNORE INTO `cf_Datasource` (dataSourceId,dataSourceName,dataSourceDesc,config,createdDate,modifiedDate) VALUES (3,'gcp','GCP','N/A',{d '2022-05-18'},{d '2022-05-18'});
 
-/*Insert Data Asset Group to necessary tables*/
-
-INSERT IGNORE INTO cf_AssetGroupDetails (groupId,groupName,dataSource,displayName,groupType,createdBy,createdUser,createdDate,modifiedUser,modifiedDate,description,aliasQuery,isVisible) VALUES ('201','aws','aws','AWS','admin','Cloud Security','',now(),'pacman',now(),'Asset Group to segregate all data related to aws.','',true);
 
 /*Insert Target data in required table*/
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('subscription','Subscription','Azure subscription','','azure','{"key":"id","id":"id",\"name\":\"name\"}','enabled','admin',concat(@eshost,':',@esport,'/azure_subscription'),'2022-06-23','2022-06-23','Infra & Platforms');
