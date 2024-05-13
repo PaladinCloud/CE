@@ -115,6 +115,10 @@ public class EntityManager implements Constants {
         Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
         types = types.entrySet().stream().filter(entry -> doesObjectExist(datasource, entry.getKey(), errorList))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (types == null || types.isEmpty()) {
+            LOGGER.info("No assets to ship for datasource: {}", datasource);
+            return errorList;
+        }
         Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
         String type = "";
         LOGGER.info("Start Collecting Entity Info");
@@ -128,6 +132,7 @@ public class EntityManager implements Constants {
 
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
         ViolationAssociationManager violationAssociationManager = new ViolationAssociationManager();
+        VulnerabilityAssociationManager vulnerabilityAssociationManager = new VulnerabilityAssociationManager();
         while (itr.hasNext()) {
             try {
                 Map.Entry<String, String> entry = itr.next();
@@ -191,6 +196,7 @@ public class EntityManager implements Constants {
             }
 
         }
+        errorList.addAll(vulnerabilityAssociationManager.uploadVulnerabilityInfo(datasource));
         LOGGER.info("End Collecting Entity Info");
         return errorList;
     }
