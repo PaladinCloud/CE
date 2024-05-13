@@ -54,7 +54,7 @@ public class TargetTypeService {
             summaryList = summaryList.stream().filter(sl -> !sl.getKey().contains("-issues") &&
                     !sl.getKey().contains("-policy")).collect(Collectors.toList());
             Map<String, S3ObjectSummary> typesFromS3 = getTypesFromS3(summaryList, datasource);
-            Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
+            Map<String, String> types = getTypeInfo(datasource);
             List<String> typesInDB = new ArrayList<>(types.keySet());
             List<String> newTypes = new ArrayList<>(typesFromS3.keySet());
             newTypes.removeAll(typesInDB);
@@ -104,7 +104,7 @@ public class TargetTypeService {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(s3Object.getObjectContent()))) {
                 String firstLine = reader.readLine();
                 JsonNode rootNode = objectMapper.readTree(firstLine);
-                if (rootNode.isArray() && rootNode.size() > 0) {
+                if (rootNode.isArray() && !rootNode.isEmpty()) {
                     JsonNode firstRecord = rootNode.get(0);
                     String targetType = firstRecord.has("targetType") ?
                             firstRecord.get("targetType").asText() : null;
@@ -146,5 +146,21 @@ public class TargetTypeService {
 
     private static class InstanceHolder {
         private static final TargetTypeService instance = new TargetTypeService();
+    }
+
+    private Map<String, String> getTypeInfo(String datasource) {
+            Map<String, String> typeInfo = new HashMap<>();
+            try {
+                String query = System.getProperty(Constants.CONFIG_QUERY) + " AND dataSourceName = '" + datasource + "'";
+                List<Map<String, String>> typeList = RDSDBManager.executeQuery(query);
+                for (Map<String, String> type : typeList) {
+                    String typeName = type.get("targetName");
+                    String displayName = type.get("displayName");
+                    typeInfo.put(typeName, displayName);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error Fetching config Info", e);
+            }
+        return typeInfo;
     }
 }
