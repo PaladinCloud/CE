@@ -25,13 +25,14 @@ import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -327,8 +328,32 @@ public class AssetGroupManager {
         if (!dataSourceList.contains(currentDatasource)) {
             dataSourceList.add(currentDatasource);
         }
+        Set<String> uniqueDataSource = new HashSet<>(dataSourceList);
+        uniqueDataSource.addAll(getDatasourceFromEnabledCompositePlugins());
         // return at least one datasource
-        return dataSourceList;
+        return new ArrayList<>(uniqueDataSource);
+    }
+
+    private Set<String> getDatasourceFromEnabledCompositePlugins() {
+        Set<String> enabledPlugins = new HashSet<>();
+        String compositePlugins = System.getProperty("composite.plugins");
+        if (compositePlugins == null || compositePlugins.isEmpty()) {
+            return enabledPlugins;
+        }
+        List<String> compositePluginsList = Arrays.stream(compositePlugins.split(","))
+                .collect(Collectors.toList());
+        for (String cp : compositePluginsList) {
+            String isPluginEnabled = System.getProperty(cp + ".enabled");
+            if (isPluginEnabled == null || isPluginEnabled.isEmpty() || isPluginEnabled.equalsIgnoreCase("false")
+                    || isPluginEnabled.equalsIgnoreCase("0")) {
+                continue;
+            }
+            String availablePlugins = System.getProperty(cp + ".available.clouds");
+            List<String> availablePluginList = Arrays.stream(availablePlugins.split(","))
+                    .collect(Collectors.toList());
+            enabledPlugins.addAll(availablePluginList);
+        }
+        return enabledPlugins;
     }
 
     private String getFilterFromExistingAliasQuery(String existingAliasQuery) {
