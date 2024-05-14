@@ -1,10 +1,24 @@
+/*******************************************************************************
+ *  Copyright 2024 Paladin Cloud, Inc. or its affiliates. All Rights Reserved.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ *  use this file except in compliance with the License.  You may obtain a copy
+ *  of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ *  License for the specific language governing permissions and limitations under
+ *  the License.
+ ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.config.S3ClientConfig;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
@@ -14,11 +28,11 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,13 +75,14 @@ public class TargetTypeService {
             if (newTypes.isEmpty()) {
                 return;
             }
-            List<String> keysToRemove = new ArrayList<>();
-            typesFromS3.forEach((key, value) -> {
+            Iterator<Map.Entry<String, S3ObjectSummary>> iterator = typesFromS3.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, S3ObjectSummary> entry = iterator.next();
+                String key = entry.getKey();
                 if (!newTypes.contains(key)) {
-                    keysToRemove.add(key);
+                    iterator.remove();
                 }
-            });
-            keysToRemove.forEach(typesFromS3::remove);
+            }
             Map<String, String> typesFromS3Folder = processS3Folder(new ArrayList<>(typesFromS3.values()));
             typesFromS3Folder.forEach((targetType, displayName) -> {
                 createNewTargetType(targetType, displayName, datasource);
@@ -114,7 +129,7 @@ public class TargetTypeService {
                         continue;
                     }
                     if (compositePluginAssetType == null) {
-                        targetType = targetType.toUpperCase();
+                        compositePluginAssetType = targetType.toUpperCase();
                     }
                     result.put(targetType, compositePluginAssetType);
                 } else {
@@ -149,18 +164,18 @@ public class TargetTypeService {
     }
 
     private Map<String, String> getTypeInfo(String datasource) {
-            Map<String, String> typeInfo = new HashMap<>();
-            try {
-                String query = System.getProperty(Constants.CONFIG_QUERY) + " AND dataSourceName = '" + datasource + "'";
-                List<Map<String, String>> typeList = RDSDBManager.executeQuery(query);
-                for (Map<String, String> type : typeList) {
-                    String typeName = type.get("targetName");
-                    String displayName = type.get("displayName");
-                    typeInfo.put(typeName, displayName);
-                }
-            } catch (Exception e) {
-                LOGGER.error("Error Fetching config Info", e);
+        Map<String, String> typeInfo = new HashMap<>();
+        try {
+            String query = System.getProperty(Constants.CONFIG_QUERY) + " AND dataSourceName = '" + datasource + "'";
+            List<Map<String, String>> typeList = RDSDBManager.executeQuery(query);
+            for (Map<String, String> type : typeList) {
+                String typeName = type.get("targetName");
+                String displayName = type.get("displayName");
+                typeInfo.put(typeName, displayName);
             }
+        } catch (Exception e) {
+            LOGGER.error("Error Fetching config Info", e);
+        }
         return typeInfo;
     }
 }
