@@ -273,14 +273,13 @@ public class EntityManager implements Constants {
             } else {
                 entityInfo.put("_resourcename", id);
             }
-
-            entityInfo.put("_resourceid", id);
+            entityInfo.putIfAbsent("_resourceid", id);
             if ("aws".equalsIgnoreCase(dataSource)) {
                 if (Arrays.asList(_keys).contains("accountid")) {
                     docId = dataSource + "_" + _type + "_" + docId;
                 }
             }
-            entityInfo.put("_docid", docId);
+            entityInfo.putIfAbsent("_docid", docId);
             entityInfo.put("_entity", "true");
             entityInfo.put("_entitytype", _type);
             entityInfo.put("targettypedisplayname", displayName);
