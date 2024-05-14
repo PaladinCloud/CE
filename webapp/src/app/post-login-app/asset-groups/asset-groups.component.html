@@ -19,7 +19,7 @@
                     <div *ngFor="let assetTabName of assetTabNames; let i = index">
                         <div
                             [class.active]="selectedTabName == assetTabName"
-                            class="asset-group-tab"
+                            class="asset-group-tab capitalize"
                             (click)="tabsClicked(assetTabName)"
                         >
                             {{ assetTabName }}
