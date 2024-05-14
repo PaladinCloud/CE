@@ -132,7 +132,6 @@ public class EntityManager implements Constants {
 
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
         ViolationAssociationManager violationAssociationManager = new ViolationAssociationManager();
-        VulnerabilityAssociationManager vulnerabilityAssociationManager = new VulnerabilityAssociationManager();
         while (itr.hasNext()) {
             try {
                 Map.Entry<String, String> entry = itr.next();
@@ -196,7 +195,6 @@ public class EntityManager implements Constants {
             }
 
         }
-        errorList.addAll(vulnerabilityAssociationManager.uploadVulnerabilityInfo(datasource));
         LOGGER.info("End Collecting Entity Info");
         return errorList;
     }
