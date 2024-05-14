@@ -104,7 +104,7 @@ public class TargetTypeService {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(s3Object.getObjectContent()))) {
                 String firstLine = reader.readLine();
                 JsonNode rootNode = objectMapper.readTree(firstLine);
-                if (rootNode.isArray() && !rootNode.isEmpty()) {
+                if (rootNode.isArray() && rootNode.size() > 0) {
                     JsonNode firstRecord = rootNode.get(0);
                     String targetType = firstRecord.has("targetType") ?
                             firstRecord.get("targetType").asText() : null;
