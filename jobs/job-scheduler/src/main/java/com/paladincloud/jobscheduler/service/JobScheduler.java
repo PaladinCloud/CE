@@ -117,8 +117,8 @@ public class JobScheduler {
 
         try {
             ConfigUtil.setConfigProperties();
-            azureEnabled = Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
-            awsEnabled = Boolean.parseBoolean(System.getProperty(AWS_ENABLED));
+            azureEnabled = Boolean.parseBoolean(env.getProperty(AZURE_ENABLED));
+            awsEnabled = Boolean.parseBoolean(env.getProperty(AWS_ENABLED));
             boolean compositePluginEnabled = isCompositeEnabled();
             if (!compositePluginEnabled && awsEnabled) {
                 addCollectorEvent(putEventsRequestEntries, awsBusDetails);
@@ -202,9 +202,9 @@ public class JobScheduler {
         try {
             ConfigUtil.setConfigProperties();
 
-            qualysEnabled=Boolean.parseBoolean(System.getProperty(QUALYS_ENABLED));
-            aquaEnabled=Boolean.parseBoolean(System.getProperty(AQUA_ENABLED));
-            tenableEnabled=Boolean.parseBoolean(System.getProperty(TENABLE_ENABLED));
+            qualysEnabled=Boolean.parseBoolean(env.getProperty(QUALYS_ENABLED));
+            aquaEnabled=Boolean.parseBoolean(env.getProperty(AQUA_ENABLED));
+            tenableEnabled=Boolean.parseBoolean(env.getProperty(TENABLE_ENABLED));
             if (qualysEnabled) {
                 addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_QUALYS);
             }
