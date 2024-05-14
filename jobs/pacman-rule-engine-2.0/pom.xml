@@ -49,6 +49,10 @@
     <!-- AWS SDK -->
     <dependency>
       <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-secretsmanager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-config</artifactId>
     </dependency>
     <dependency>

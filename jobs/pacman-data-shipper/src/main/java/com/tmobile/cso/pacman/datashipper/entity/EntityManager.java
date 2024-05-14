@@ -15,12 +15,14 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
+import com.amazonaws.util.StringUtils;
 import com.google.common.base.Strings;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.error.ErrorManager;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
+import com.tmobile.cso.pacman.datashipper.util.CrowdstrikeUrlRegion;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntityManager implements Constants {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityManager.class);
@@ -41,6 +44,7 @@ public class EntityManager implements Constants {
     private final String dataPath = System.getProperty("s3.data");
     private final String attributesToPreserve = System.getProperty("shipper.attributes.to.preserve");
     private Map<String,String> accountIdNameMap   = new HashMap<>();
+    private Map<String,String> accountIdRegionMap   = new HashMap<>();
 
 
     /**
@@ -132,7 +136,6 @@ public class EntityManager implements Constants {
 
         EntityAssociationManager childTypeManager = new EntityAssociationManager();
         ViolationAssociationManager violationAssociationManager = new ViolationAssociationManager();
-        VulnerabilityAssociationManager vulnerabilityAssociationManager = new VulnerabilityAssociationManager();
         while (itr.hasNext()) {
             try {
                 Map.Entry<String, String> entry = itr.next();
@@ -196,7 +199,6 @@ public class EntityManager implements Constants {
             }
 
         }
-        errorList.addAll(vulnerabilityAssociationManager.uploadVulnerabilityInfo(datasource));
         LOGGER.info("End Collecting Entity Info");
         return errorList;
     }
@@ -296,31 +298,45 @@ public class EntityManager implements Constants {
                 entityInfo.put("accountid", entityInfo.get("projectId"));
             }
             // For CQ Collector accountName will be fetched from RDS using accountId only if not being set earlier
-            if ("gcp".equalsIgnoreCase(dataSource) && !entityInfo.containsKey("accountname")) {
-                String projectId = String.valueOf(entityInfo.get("projectId"));
-                if (null != projectId && !projectId.isEmpty()) {
-                    boolean isAccountIdAlreadyExists = accountIdNameMap.containsKey(projectId);
+            if (("gcp".equalsIgnoreCase(dataSource) || "crowdstrike".equalsIgnoreCase(dataSource)) && !entityInfo.containsKey("accountname")) {
+                String accountId = Stream.of(entityInfo.get("projectId"), entityInfo.get("accountid")).filter(Objects::nonNull).map(String::valueOf).findFirst().orElse(null);
+                if (!StringUtils.isNullOrEmpty(accountId)) {
+                    boolean isAccountIdAlreadyExists = accountIdNameMap.containsKey(accountId);
                     String accountName = null;
                     String accountNameIdentifier = "accountName";
                     String singleQuote = "'";
                     //RDS Call will only be made if HashMap does not contain entry for accountId {ie accountName}
                     if (!isAccountIdAlreadyExists) {
                         LOGGER.info("RDS Call is invoked for fetching accountName for specific accountId");
-                        String accountNameQueryStr = Constants.ACCOUNT_ID_SQL_QUERY + singleQuote + projectId + singleQuote;
+                        String accountNameQueryStr = Constants.ACCOUNT_ID_SQL_QUERY + singleQuote + accountId + singleQuote;
                         LOGGER.debug("Printing accountNameQueryStr:{}", accountNameQueryStr);
                         List<Map<String, String>> accountNameMapList = RDSDBManager.executeQuery(accountNameQueryStr);
                         if (accountNameMapList != null && accountNameMapList.size() > 0) {
                             accountName = accountNameMapList.get(0).get(accountNameIdentifier);
-                            accountIdNameMap.putIfAbsent(projectId, accountName);
+                            accountIdNameMap.putIfAbsent(accountId, accountName);
                         }
                     }
-                    accountName = accountIdNameMap.get(projectId);
+                    accountName = accountIdNameMap.get(accountId);
                     //add to ES doc
                     entityInfo.put("accountname", accountName);
-
                 }
-
             }
+
+            /** populate region for assets based on baseurl for crowdstrike. baseUrl was stored in secretManager at the time of plugin creation **/
+            String accountId = entityInfo.get("accountid") != null ? String.valueOf(entityInfo.get("accountid")) : null;
+            if ("crowdstrike".equalsIgnoreCase(dataSource) && !StringUtils.isNullOrEmpty(accountId)) {
+                String region = null;
+                if (accountIdRegionMap.containsKey(accountId)) {
+                    region = accountIdRegionMap.get(accountId);
+                } else {
+                    String baseUrl = Util.getValueFromSecretManager(dataSource, accountId, "baseUrl");
+                    CrowdstrikeUrlRegion urlRegion = CrowdstrikeUrlRegion.findByUrl(baseUrl);
+                    region = urlRegion.getRegion();
+                    accountIdRegionMap.put(accountId, region);
+                }
+                entityInfo.put("region", region);
+            }
+
             entityInfo.put(Constants.DOC_TYPE, _type);
             entityInfo.put(_type + "_relations", _type);
             if (currentInfo != null && !currentInfo.isEmpty()) {
