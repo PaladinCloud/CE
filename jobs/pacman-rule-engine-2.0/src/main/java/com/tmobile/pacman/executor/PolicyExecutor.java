@@ -107,7 +107,6 @@ public class PolicyExecutor {
         policyExecutor.setResourcesList(args[0]);
         policyExecutor.fetchPolicyWiseParams(args[0]);
         ExecutorService executor = Executors.newFixedThreadPool(POLICY_THREAD_POOL_SIZE);
-        policyExecutor.policyWiseParamsList = policyExecutor.policyWiseParamsList.stream().filter(m -> m.get("policyId").equalsIgnoreCase("ec2_cs_Vulnerability_high")).collect(Collectors.toList());
         for (Map<String, String> policyParam : policyExecutor.policyWiseParamsList) {
             String executionId = UUID.randomUUID().toString(); // this is the unique
             String status = fetchLatestPolicyStatus(policyParam);
