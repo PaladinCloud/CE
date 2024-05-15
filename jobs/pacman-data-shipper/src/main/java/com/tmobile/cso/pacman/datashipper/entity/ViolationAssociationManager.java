@@ -91,7 +91,7 @@ public class ViolationAssociationManager {
 			entities.parallelStream().forEach((obj) -> {
 				obj.put("_loaddate", loaddate);
 				obj.put("docType", docType);
-				obj.put("_docid", obj.get("_resourceid"));
+				obj.putIfAbsent("_docid", obj.get("_resourceid"));
 				obj.put("targetType", type);
 				Map<String, Object> relMap = new HashMap<>();
 				relMap.put("name", docType);
