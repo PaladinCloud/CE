@@ -2210,6 +2210,24 @@ public class PacmanUtils {
         return null;
     }
 
+    public static JsonArray getVulnerabilitiesArray(String datasource, String targetType, String instanceId, String ec2WithVulnUrl) throws Exception {
+        JsonParser jsonParser = new JsonParser();
+        Map<String, Object> mustFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.CLOUD_TYPE), datasource);
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.TARGET_TYPE), targetType);
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.INTSANCE_ID), instanceId);
+        JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(ec2WithVulnUrl, mustFilter,
+                Collections.emptyMap(), shouldFilter, null, 0, mustTermsFilter, null, null);
+        if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+            JsonObject hitsJson = (JsonObject) jsonParser.parse(resultJson.get(PacmanRuleConstants.HITS).toString());
+
+           return  hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+        }
+        return null;
+    }
+
     public static boolean checkACLAccess(AmazonS3Client awsS3Client, String s3BucketName, String accessType) {
         logger.info("inside the checkACLAccess method");
         Boolean openAcces = false;
@@ -4162,6 +4180,30 @@ public class PacmanUtils {
 
     }
 
+    public static String getCrowdstrikeVulnerabilitiesDetails(JsonArray vulnerabilities) {
+        List<VulnerabilityInfo> vulnerabilityList = new ArrayList<>(vulnerabilities.size());
+        if (vulnerabilities != null) {
+            for (int i = 0; i < vulnerabilities.size(); i++) {
+                JsonObject source = vulnerabilities.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
+                        .getAsJsonObject();
+                String cveId = source.get("cveId").getAsString();
+                String cveUrl = NIST_VULN_DETAILS_URL + cveId;
+                CveDetails cveDetails = new CveDetails(cveId, cveUrl);
+                VulnerabilityInfo vulnerabilityinfo = new VulnerabilityInfo();
+                vulnerabilityinfo.setTitle(source.get("description").getAsString());
+                vulnerabilityinfo.setVulnerabilityUrl(source.get("vulnerabilityUrl").getAsString());
+                vulnerabilityinfo.setCveList(Arrays.asList(cveDetails));
+                vulnerabilityList.add(vulnerabilityinfo);
+            }
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(vulnerabilityList);
+        } catch (JsonProcessingException e) {
+            throw new RuleExecutionFailedExeption(e.getMessage());
+        }
+    }
+
     private static void populateCveList(JsonObject cveList, List<CveDetails> cveDeytailsList) {
         if(!cveList.get("cve").isJsonNull()){
             JsonArray cveArray= cveList.get("cve").getAsJsonArray();
@@ -4188,5 +4230,4 @@ public class PacmanUtils {
         logger.info("Qualys base url for vulnerability details: {} ",baseUri);
         return baseUri;
     }
-
 }

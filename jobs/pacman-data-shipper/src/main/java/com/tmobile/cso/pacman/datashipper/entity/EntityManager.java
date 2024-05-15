@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
+import com.amazonaws.util.StringUtils;
 import com.google.common.base.Strings;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntityManager implements Constants {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityManager.class);
@@ -41,7 +43,6 @@ public class EntityManager implements Constants {
     private final String dataPath = System.getProperty("s3.data");
     private final String attributesToPreserve = System.getProperty("shipper.attributes.to.preserve");
     private Map<String,String> accountIdNameMap   = new HashMap<>();
-
 
     /**
      * Update on prem data.
@@ -115,6 +116,10 @@ public class EntityManager implements Constants {
         Map<String, String> types = ConfigManager.getTypesWithDisplayName(datasource);
         types = types.entrySet().stream().filter(entry -> doesObjectExist(datasource, entry.getKey(), errorList))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (types == null || types.isEmpty()) {
+            LOGGER.info("No assets to ship for datasource: {}", datasource);
+            return errorList;
+        }
         Iterator<Map.Entry<String, String>> itr = types.entrySet().iterator();
         String type = "";
         LOGGER.info("Start Collecting Entity Info");
@@ -289,30 +294,28 @@ public class EntityManager implements Constants {
                 entityInfo.put("accountid", entityInfo.get("projectId"));
             }
             // For CQ Collector accountName will be fetched from RDS using accountId only if not being set earlier
-            if ("gcp".equalsIgnoreCase(dataSource) && !entityInfo.containsKey("accountname")) {
-                String projectId = String.valueOf(entityInfo.get("projectId"));
-                if (null != projectId && !projectId.isEmpty()) {
-                    boolean isAccountIdAlreadyExists = accountIdNameMap.containsKey(projectId);
+            if (("gcp".equalsIgnoreCase(dataSource) || "crowdstrike".equalsIgnoreCase(dataSource)) && !entityInfo.containsKey("accountname")) {
+                String accountId = Stream.of(entityInfo.get("projectId"), entityInfo.get("accountid")).filter(Objects::nonNull).map(String::valueOf).findFirst().orElse(null);
+                if (!StringUtils.isNullOrEmpty(accountId)) {
+                    boolean isAccountIdAlreadyExists = accountIdNameMap.containsKey(accountId);
                     String accountName = null;
                     String accountNameIdentifier = "accountName";
                     String singleQuote = "'";
                     //RDS Call will only be made if HashMap does not contain entry for accountId {ie accountName}
                     if (!isAccountIdAlreadyExists) {
                         LOGGER.info("RDS Call is invoked for fetching accountName for specific accountId");
-                        String accountNameQueryStr = Constants.ACCOUNT_ID_SQL_QUERY + singleQuote + projectId + singleQuote;
+                        String accountNameQueryStr = Constants.ACCOUNT_ID_SQL_QUERY + singleQuote + accountId + singleQuote;
                         LOGGER.debug("Printing accountNameQueryStr:{}", accountNameQueryStr);
                         List<Map<String, String>> accountNameMapList = RDSDBManager.executeQuery(accountNameQueryStr);
                         if (accountNameMapList != null && accountNameMapList.size() > 0) {
                             accountName = accountNameMapList.get(0).get(accountNameIdentifier);
-                            accountIdNameMap.putIfAbsent(projectId, accountName);
+                            accountIdNameMap.putIfAbsent(accountId, accountName);
                         }
                     }
-                    accountName = accountIdNameMap.get(projectId);
+                    accountName = accountIdNameMap.get(accountId);
                     //add to ES doc
                     entityInfo.put("accountname", accountName);
-
                 }
-
             }
             entityInfo.put(Constants.DOC_TYPE, _type);
             entityInfo.put(_type + "_relations", _type);
