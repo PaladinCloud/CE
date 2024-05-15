@@ -22,7 +22,6 @@ import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import com.tmobile.cso.pacman.datashipper.error.ErrorManager;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
-import com.tmobile.cso.pacman.datashipper.util.CrowdstrikeUrlRegion;
 import com.tmobile.cso.pacman.datashipper.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +43,6 @@ public class EntityManager implements Constants {
     private final String dataPath = System.getProperty("s3.data");
     private final String attributesToPreserve = System.getProperty("shipper.attributes.to.preserve");
     private Map<String,String> accountIdNameMap   = new HashMap<>();
-    private Map<String,String> accountIdRegionMap   = new HashMap<>();
-
 
     /**
      * Update on prem data.
@@ -321,22 +318,6 @@ public class EntityManager implements Constants {
                     entityInfo.put("accountname", accountName);
                 }
             }
-
-            /** populate region for assets based on baseurl for crowdstrike. baseUrl was stored in secretManager at the time of plugin creation **/
-            String accountId = entityInfo.get("accountid") != null ? String.valueOf(entityInfo.get("accountid")) : null;
-            if ("crowdstrike".equalsIgnoreCase(dataSource) && !StringUtils.isNullOrEmpty(accountId)) {
-                String region = null;
-                if (accountIdRegionMap.containsKey(accountId)) {
-                    region = accountIdRegionMap.get(accountId);
-                } else {
-                    String baseUrl = Util.getValueFromSecretManager(dataSource, accountId, "baseUrl");
-                    CrowdstrikeUrlRegion urlRegion = CrowdstrikeUrlRegion.findByUrl(baseUrl);
-                    region = urlRegion.getRegion();
-                    accountIdRegionMap.put(accountId, region);
-                }
-                entityInfo.put("region", region);
-            }
-
             entityInfo.put(Constants.DOC_TYPE, _type);
             entityInfo.put(_type + "_relations", _type);
             if (currentInfo != null && !currentInfo.isEmpty()) {

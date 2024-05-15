@@ -105,7 +105,6 @@ import static com.tmobile.cloud.constants.PacmanRuleConstants.*;
 public class PacmanUtils {
     private static final Logger logger = LoggerFactory.getLogger(PacmanUtils.class);
     public static final String NIST_VULN_DETAILS_URL = "https://nvd.nist.gov/vuln/detail/";
-    private static final String CS_VULN_URL = "https://falcon.%s.crowdstrike.com/spotlight/vulnerabilities/group-by/vulnerability-id/instances/%s";
     AwsSecretManagerUtil awsSecretManagerUtil=new AwsSecretManagerUtil();
     CredentialProvider credentialProvider=new CredentialProvider();
 
@@ -4192,7 +4191,7 @@ public class PacmanUtils {
                 CveDetails cveDetails = new CveDetails(cveId, cveUrl);
                 VulnerabilityInfo vulnerabilityinfo = new VulnerabilityInfo();
                 vulnerabilityinfo.setTitle(source.get("description").getAsString());
-                vulnerabilityinfo.setVulnerabilityUrl(PacmanUtils.getCrowdstrikeVulnDetailUrl(source.get("region").getAsString(), cveId));
+                vulnerabilityinfo.setVulnerabilityUrl(source.get("vulnerabilityUrl").getAsString());
                 vulnerabilityinfo.setCveList(Arrays.asList(cveDetails));
                 vulnerabilityList.add(vulnerabilityinfo);
             }
@@ -4231,9 +4230,4 @@ public class PacmanUtils {
         logger.info("Qualys base url for vulnerability details: {} ",baseUri);
         return baseUri;
     }
-
-    private static String getCrowdstrikeVulnDetailUrl(String region, String cveId) {
-        return String.format(CS_VULN_URL, region, cveId);
-    }
-
 }
