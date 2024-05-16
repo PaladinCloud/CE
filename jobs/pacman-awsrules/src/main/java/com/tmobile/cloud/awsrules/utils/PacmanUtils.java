@@ -2215,8 +2215,6 @@ public class PacmanUtils {
         Map<String, Object> mustFilter = new HashMap<>();
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         Map<String, Object> mustTermsFilter = new HashMap<>();
-        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.CLOUD_TYPE), datasource);
-        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.TARGET_TYPE), targetType);
         mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.INTSANCE_ID), instanceId);
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(ec2WithVulnUrl, mustFilter,
                 Collections.emptyMap(), shouldFilter, null, 0, mustTermsFilter, null, null);
