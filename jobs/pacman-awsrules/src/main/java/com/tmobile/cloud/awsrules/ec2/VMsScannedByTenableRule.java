@@ -92,7 +92,7 @@ public class VMsScannedByTenableRule extends BasePolicy {
     }
 
     private PolicyResult getPolicyResult(Map<String, String> ruleParam, String category, String tenableEsApi, String instanceId, String entityType) throws ParseException {
-        List<JsonObject> tenableAssets = PacmanUtils.checkInstanceIdFromElasticSearchForTenable(instanceId, tenableEsApi, "aws_ec2_instance_id", null);
+        List<JsonObject> tenableAssets = PacmanUtils.matchAssetAgainestSourceVulnIndex(instanceId, tenableEsApi, "aws_ec2_instance_id", null);
 
         if (tenableAssets.isEmpty()) {
             // FAIL: Tenable doesn't do authenticated scans on this asset
