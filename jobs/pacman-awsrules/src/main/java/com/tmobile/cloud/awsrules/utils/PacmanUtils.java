@@ -2210,14 +2210,13 @@ public class PacmanUtils {
         return null;
     }
 
-    public static JsonArray getVulnerabilitiesArray(String datasource, String targetType, String instanceId, String ec2WithVulnUrl) throws Exception {
+    public static JsonArray getVulnerabilitiesArray(String severity, String instanceId, String ec2WithVulnUrl) throws Exception {
         JsonParser jsonParser = new JsonParser();
         Map<String, Object> mustFilter = new HashMap<>();
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         Map<String, Object> mustTermsFilter = new HashMap<>();
-        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.CLOUD_TYPE), datasource);
-        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.TARGET_TYPE), targetType);
         mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.INTSANCE_ID), instanceId);
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.SEVERITY), severity);
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(ec2WithVulnUrl, mustFilter,
                 Collections.emptyMap(), shouldFilter, null, 0, mustTermsFilter, null, null);
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
