@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.util;
 
-import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
@@ -27,10 +26,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cso.pacman.datashipper.config.S3ClientConfig;
-import com.tmobile.pacman.commons.aws.CredentialProvider;
-import com.tmobile.pacman.commons.secrets.AwsSecretManagerUtil;
-import com.tmobile.pacman.commons.utils.CommonUtils;
-import com.tmobile.pacman.commons.utils.Constants;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,25 +201,5 @@ public class Util {
         }
 
         return errorList;
-    }
-
-    public static String getValueFromSecretManager(String datasource, String accountId, String key) {
-        String baseAccount = System.getProperty(Constants.BASE_ACCOUNT);
-        String baseRegion = System.getProperty(Constants.BASE_REGION);
-        String baseRole = System.getProperty(Constants.BASE_ROLE);
-        String tenantId = System.getProperty(Constants.TENANT_ID);
-        String secretManagerPrefix = System.getProperty(Constants.SECRET_MANAGER_PATH);
-        com.tmobile.pacman.commons.aws.CredentialProvider credentialProvider = new CredentialProvider();
-        AwsSecretManagerUtil awsSecretManagerUtil = new AwsSecretManagerUtil();
-        String value = null;
-
-        BasicSessionCredentials credential = credentialProvider.getBaseAccountCredentials(baseAccount, baseRegion, baseRole);
-        String secretData = awsSecretManagerUtil.fetchSecret(secretManagerPrefix + "/" + tenantId + "/" + datasource + "/" + accountId, credential, baseRegion);
-        Map<String, Object> dataMap = CommonUtils.parseJson(secretData);
-
-        if (dataMap.get(key) != null) {
-            value = String.valueOf(dataMap.get(key));
-        }
-        return value;
     }
 }
