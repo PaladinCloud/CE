@@ -36,6 +36,7 @@ public final class Constants {
     public static final String EVENT_SOURCE_NAME = "Paladin Cloud";
     public static final String APPLICATION_JSON = "application/json";
     public static final String AUTHORIZATION = "Authorization";
+    public static final String TENANT_ID = "tenant_id";
 
     public enum NotificationTypes {
         @SerializedName("exemption")

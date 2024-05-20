@@ -15,9 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.util;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,7 +25,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.config.S3ClientConfig;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
