@@ -429,10 +429,8 @@ export class MultilineZoomGraphComponent implements AfterViewInit, OnChanges {
     // rounds off to nearest multiple of roundOffToVal bounding up to valToRoundOff
     roundOff(valToRoundOff, roundOffToVal, max = true) {
         if (roundOffToVal < 0 || valToRoundOff === 0) return 0;
-
-        const calc = (valToRoundOff / roundOffToVal) * roundOffToVal;
-        if (max) return Math.ceil(calc);
-        else return Math.floor(calc);
+        if (max) return Math.ceil(valToRoundOff / roundOffToVal) * roundOffToVal;
+        else return Math.floor(valToRoundOff / roundOffToVal) * roundOffToVal;
     }
 
     getNearestPowerOf10(val, offSet = 0) {
