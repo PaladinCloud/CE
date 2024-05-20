@@ -427,12 +427,12 @@ export class MultilineZoomGraphComponent implements AfterViewInit, OnChanges {
     }
 
     // rounds off to nearest multiple of roundOffToVal bounding up to valToRoundOff
-    roundOff(valToRoundOff, roundOffToVal) {
-        if (roundOffToVal > 0) {
-            return Math.ceil(valToRoundOff / roundOffToVal) * roundOffToVal;
-        } else {
-            return 0;
-        }
+    roundOff(valToRoundOff, roundOffToVal, max = true) {
+        if (roundOffToVal < 0 || valToRoundOff === 0) return 0;
+
+        const calc = (valToRoundOff / roundOffToVal) * roundOffToVal;
+        if (max) return Math.ceil(calc);
+        else return Math.floor(calc);
     }
 
     getNearestPowerOf10(val, offSet = 0) {
@@ -454,7 +454,7 @@ export class MultilineZoomGraphComponent implements AfterViewInit, OnChanges {
                 roundOffMultiple *
                 this.getNearestPowerOf10(this.axisMaxValue - this.axisMinValue, 1);
             // we need floor of val to get tickVal below minVal, minval should be rounded off to nearest roundOffToVal
-            const yMin = this.roundOff(this.axisMinValue - roundOffToVal, roundOffToVal); // we remove roundOffToVal from axisMinValue to get floor value since roundOff function returns ceil val
+            const yMin = this.roundOff(this.axisMinValue, roundOffToVal, false);
             const yMax = this.roundOff(this.axisMaxValue, roundOffToVal);
             let y = this.roundOff(
                 Math.ceil((yMax - yMin) / (maxNumberOfTickValues - 1)),
