@@ -82,7 +82,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
             String instanceId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
             List<JsonObject> vulnerabilityInfoList = new ArrayList<>();
             try {
-                vulnerabilityInfoList = PacmanUtils.matchAssetAgainestSourceVulnIndex(instanceId, vulnerabilitiesEndpoint, vulnAssetLookupKey, null);
+                vulnerabilityInfoList = PacmanUtils.matchAssetAgainstSourceVulnIndex(instanceId, vulnerabilitiesEndpoint, vulnAssetLookupKey, null);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
@@ -105,16 +105,19 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
 
     private String getVMVulnerabilityDetails(List<JsonObject> vulnerabilityInfoList, String severity) {
         List<VulnerabilityInfo> vulnerabilityList = new ArrayList<>();
-        JsonElement cveDetails = vulnerabilityInfoList.get(0).get(severity);
-        List<CveDetails> cveList = new ArrayList<>();
-        for (JsonElement elem : cveDetails.getAsJsonArray()) {
-            String id = elem.getAsJsonObject().get("cves").getAsString();
-            CveDetails cve = new CveDetails(id, PacmanUtils.NIST_VULN_DETAILS_URL + id);
-            cveList.add(cve);
+        for (JsonObject vulnerability : vulnerabilityInfoList) {
+            for (JsonElement cveDetails : vulnerability.get(severity).getAsJsonArray()) {
+                VulnerabilityInfo vul = new VulnerabilityInfo();
+                String cveId = cveDetails.getAsJsonObject().get("cves").getAsString();
+                CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
+                List<CveDetails> cveList = new ArrayList<>();
+                cveList.add(cve);
+                vul.setCveList(cveList);
+                vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("url").getAsString());
+                vul.setTitle(cveDetails.getAsJsonObject().get("title").getAsString());
+                vulnerabilityList.add(vul);
+            }
         }
-        VulnerabilityInfo vul = new VulnerabilityInfo();
-        vul.setCveList(cveList);
-        vulnerabilityList.add(vul);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.writeValueAsString(vulnerabilityList);

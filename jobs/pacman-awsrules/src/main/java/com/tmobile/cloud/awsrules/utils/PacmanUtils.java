@@ -4099,10 +4099,10 @@ public class PacmanUtils {
         return resourceVerified;
     }
 
-    public static List<JsonObject> matchAssetAgainestSourceVulnIndex(String instanceId,
-                                                                     String tenableEsAPI,
-                                                                     String attributeName,
-                                                                     String severityVulnValue) {
+    public static List<JsonObject> matchAssetAgainstSourceVulnIndex(String instanceId,
+                                                                    String tenableEsAPI,
+                                                                    String attributeName,
+                                                                    String severityVulnValue) {
         JsonParser jsonParser = new JsonParser();
         List<JsonObject> resourceVerified = new ArrayList<>();
 
