@@ -70,6 +70,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
+        String severityToCheck = ruleParam.get(PacmanRuleConstants.SEVERITY_TO_CHECK);
         String vulnerabilityIndex = ruleParam.get(VULNERABILITY_INDEX);
         String vulnAssetLookupKey = ruleParam.get(VULN_ASSET_LOOKUP_KEY);
         String vulnerabilitiesEndpoint = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + vulnerabilityIndex + "/_search";
@@ -82,7 +83,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
             String instanceId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
             List<JsonObject> vulnerabilityInfoList = new ArrayList<>();
             try {
-                vulnerabilityInfoList = PacmanUtils.matchAssetAgainstSourceVulnIndex(instanceId, vulnerabilitiesEndpoint, vulnAssetLookupKey, null);
+                vulnerabilityInfoList = PacmanUtils.matchAssetAgainstSourceVulnIndex(instanceId, vulnerabilitiesEndpoint, vulnAssetLookupKey, severityToCheck);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
