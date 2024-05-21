@@ -91,7 +91,6 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
             if (!CollectionUtils.isNullOrEmpty(vulnerabilityInfoList)) {
                 String vulnerabilityDetails = getVMVulnerabilityDetails(vulnerabilityInfoList, severity);
                 if (!vulnerabilityDetails.equals("[]")) {
-
                     Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                     annotation.put(PacmanSdkConstants.DESCRIPTION, "VM Instance with " + severity + " vulnerabilities found");
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
