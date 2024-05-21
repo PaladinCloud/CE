@@ -87,16 +87,22 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
-            if (!CollectionUtils.isNullOrEmpty(vulnerabilityInfoList)) {
-                Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION, "VM Instance with " + severity + " vulnerabilities found");
-                annotation.put(PacmanRuleConstants.SEVERITY, severity);
-                annotation.put(PacmanRuleConstants.CATEGORY, category);
-                String vulnerabilityDetails = getVMVulnerabilityDetails(vulnerabilityInfoList, severity);
-                annotation.put("vulnerabilityDetails", vulnerabilityDetails);
 
-                policyResult = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-            } else {
+            if (!CollectionUtils.isNullOrEmpty(vulnerabilityInfoList)) {
+                String vulnerabilityDetails = getVMVulnerabilityDetails(vulnerabilityInfoList, severity);
+                if (!vulnerabilityDetails.equals("[]")) {
+
+                    Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+                    annotation.put(PacmanSdkConstants.DESCRIPTION, "VM Instance with " + severity + " vulnerabilities found");
+                    annotation.put(PacmanRuleConstants.SEVERITY, severity);
+                    annotation.put(PacmanRuleConstants.CATEGORY, category);
+                    annotation.put("vulnerabilityDetails", vulnerabilityDetails);
+
+                    policyResult = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                }
+            }
+
+            if (policyResult == null) {
                 policyResult = new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
             }
         }
