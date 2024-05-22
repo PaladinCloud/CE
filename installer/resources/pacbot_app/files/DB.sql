@@ -3119,7 +3119,9 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Type','groupType','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Number of assets','assetCount','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Created By','createdBy','/admin/asset-group/filter');
-
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'DisabledReason','DisabledReason','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'DisabledOn','DisabledOn','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'DisableExpiredOn','DisableExpiredOn','/compliance/v1/filters/policy');
 /* Plugin developed using PluginEngine V1 */
 INSERT INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
  VALUES ('plugins.in.v1','gcp,redhat,contrast,checkmarx,crowdstrike,rapid7,wiz','job-scheduler','prd','latest','System',now(),NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp,redhat,contrast,checkmarx,crowdstrike,rapid7', modifiedBy='System', modifiedDate=now();
