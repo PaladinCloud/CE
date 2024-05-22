@@ -145,6 +145,7 @@ public class PolicyExecutor {
         try {
             String jsonResponse = CommonUtils.doHttpPost(policyDetailsUrl, requestJson);
             policyWiseParamsList = convertJsonToListOfMap(jsonResponse);
+            logger.debug("Found {} policies to evaluate", policyWiseParamsList.size());
         } catch (Exception e) {
             logger.error("failed in getting Policy list for {}", requestJson, e);
         }
