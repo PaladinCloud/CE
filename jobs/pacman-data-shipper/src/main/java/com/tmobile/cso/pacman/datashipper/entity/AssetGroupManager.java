@@ -271,7 +271,7 @@ public class AssetGroupManager {
         data.put("groupName", ASSET_GROUP_FOR_ALL_RESOURCES);
         data.put("dataSource", "");
         data.put("displayName", "All Sources");
-        data.put("groupType", "System");
+        data.put("groupType", "system");
         data.put("createdBy", "admin@paladincloud.io");
         data.put("createdUser", "admin@paladincloud.io");
         data.put("modifiedUser", "admin@paladincloud.io");
