@@ -113,6 +113,7 @@ public class PacmanRuleConstants {
     public static final String FOUND = "Found";
     public static final String NOTFOUND = "Not Found";
     public static final String SEVERITY = "severity";
+    public static final String SEVERITY_TO_CHECK = "severityToCheck";
     public static final String SUBTYPE = "subtype";
     public static final String MEDIUM = "MEDIUM";
     public static final String MISSING_TAGS = "missingTags";
