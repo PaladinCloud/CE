@@ -1541,7 +1541,7 @@ INSERT IGNORE INTO pac_v2_ui_download_filters (serviceId,serviceName,serviceEndp
  (16,'Recommendation','/api/asset/v1/recommendations'),
  (17,'CloudNotificationsWithOutGlobal','/api/asset/v1/cloud/notifications?global=false'),
  (18,'CloudNotificationsWithGlobal','/api/asset/v1/cloud/notifications?global=true');
-
+INSERT IGNORE INTO pac_v2_ui_download_filters(serviceId,serviceName,serviceEndpoint) value(19,'AdminPolicies','/api/admin/policy/list');
 
 INSERT IGNORE INTO pac_config_relation (`application`,`parent`) VALUES ('application','root');
 INSERT IGNORE INTO pac_config_relation (`application`,`parent`) VALUES ('batch','application');
