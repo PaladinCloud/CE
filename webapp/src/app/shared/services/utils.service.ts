@@ -190,6 +190,7 @@ export class UtilsService {
                         isLink: false,
                         imageTitleText: '',
                         isDate: false,
+                        haveCopyElement: !!(cellData && cellData !== 'No Data' && cellData !== '-'),
                     };
                     if (this.isDateStringValid(cellData)) {
                         cellObj = {

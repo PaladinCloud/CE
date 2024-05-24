@@ -8,8 +8,7 @@ import {
     HostListener,
 } from '@angular/core';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
-import { ActivatedRoute, UrlSegment, Router } from '@angular/router';
-import { ICONS } from './../../../../shared/constants/icons-mapping';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DataCacheService } from '../../../../core/services/data-cache.service';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AutorefreshService } from '../../../services/autorefresh.service';
@@ -31,6 +30,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
 import { EMAIL_PATTERN } from 'src/app/shared/constants/regex-constants';
+import { VIOLATION } from 'src/app/shared/constants/violation/violation';
+import { ERROR, TABLE_DIRECTION_ASC } from 'src/app/shared/constants/global';
 
 @Component({
     selector: 'app-issue-details',
@@ -40,6 +41,7 @@ import { EMAIL_PATTERN } from 'src/app/shared/constants/regex-constants';
 })
 export class IssueDetailsComponent implements OnInit, OnDestroy {
     /* global variables for email template and add exception*/
+    public readonly VIOLATION_CONSTANTS = VIOLATION;
     @ViewChild(PolicyViolationDescComponent)
     policyViolationDescComponent: PolicyViolationDescComponent;
 
@@ -155,11 +157,10 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     public GLOBAL_CONFIG;
     fromEmailID: any;
     public policyViolationId;
-    title = 'Violation Audit Logs';
-    direction = 'asc';
+    direction = TABLE_DIRECTION_ASC;
     tileList = [];
-    columnWidths = { Date: 1, Source: 1, Status: 1 };
-    whiteListColumns = [];
+    columnWidths = this.VIOLATION_CONSTANTS.AUDIT_LOG.WHITE_LISTED_COLUMNS_WIDTHS;
+    whiteListColumns = this.VIOLATION_CONSTANTS.AUDIT_LOG.WHITE_LISTED_COLUMNS;
     columnsSortFunctionMap = {
         Date: (a, b, isAsc) => {
             const ADate = a['Date'].valueText ?? 'default';
@@ -229,7 +230,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.filteredList = [];
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
     constructor(
@@ -263,7 +264,6 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.routeSubscription = this.activatedRoute.params.subscribe((params) => {
                 this.policyViolationId = params['issueId'];
             });
-            this.whiteListColumns = Object.keys(this.columnWidths);
             this.assetGroupSubscription = this.assetGroupObservableService
                 .getAssetGroup()
                 .subscribe((assetGroupName) => {
@@ -280,7 +280,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     this.updateComponent();
                 });
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -315,7 +315,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
             // this.getData();
         } catch (error) {
-            this.logger.log('error', error);
+            this.logger.log(ERROR, error);
         }
     }
 
@@ -515,7 +515,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     );
             }
         } catch (error) {
-            this.logger.log('error', error);
+            this.logger.log(ERROR, error);
         }
     }
 
@@ -558,7 +558,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.router.routerState.snapshot.root,
             );
         } catch (error) {
-            this.logger.log('error', error);
+            this.logger.log(ERROR, error);
         }
     }
 
@@ -575,7 +575,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.emailObj.to.required = true;
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -637,7 +637,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     (error) => {},
                 );
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -662,7 +662,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     (error) => {},
                 );
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -672,7 +672,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.currentBucket = [];
             this.getIssueAudit();
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -689,7 +689,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.entity = dataValue;
             this.tagsData = dataObj;
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -739,7 +739,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     },
                 );
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -748,21 +748,27 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.issueBlocks['violationModifiedDate'] = data[0].auditdate;
             this.issueBlocks['status'] =
                 data[0].status.toLowerCase() == 'enforced' ? 'exempt' : data[0].status;
+            const { date, reason, source, status, expirydate } =
+                this.VIOLATION_CONSTANTS.AUDIT_LOG.COLUMNS_KEYS;
             for (let i = 0; i < data.length; i++) {
-                data[i][`Date`] = data[i].auditdate;
-                data[i][`Source`] = data[i].createdBy?.split('@')[0];
-                data[i][`Status`] = data[i].status;
+                data[i][date] = data[i].auditdate;
+                data[i][source] = data[i].createdBy?.split('@')[0];
+                data[i][status] = data[i].status;
+                data[i][reason] = data[i].exemptionReason ?? '-';
+                data[i][expirydate] = data[i].exemptionExpiryDate ?? '-';
 
                 delete data[i].auditdate;
                 delete data[i].datasource;
                 delete data[i].status;
                 delete data[i]._id;
                 delete data[i].createdBy;
+                delete data[i].exemptionReason;
+                delete data[i].exemptionExpiryDate;
             }
 
             return data;
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -806,7 +812,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.lastPaginator = this.totalRows;
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -830,7 +836,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             }
             return year + '-' + monthString + '-' + dayString;
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -845,7 +851,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.emailObj.to.required = true;
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -893,7 +899,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                         },
                     );
             } catch (e) {
-                this.logger.log('error', e);
+                this.logger.log(ERROR, e);
             }
         }
     }
@@ -945,7 +951,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
                 this.user.reset();
             } catch (e) {
-                this.logger.log('error', e);
+                this.logger.log(ERROR, e);
             }
         }
     }
@@ -1011,7 +1017,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
             this.user.reset();
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1043,7 +1049,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     }
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1063,7 +1069,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     }
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1113,7 +1119,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.emailArray = [];
             this.userEmail.reset();
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1203,7 +1209,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     },
                 );
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1216,7 +1222,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.showRecommend = !this.showRecommend;
             this.showOppositeRecommend = !this.showOppositeRecommend;
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1224,7 +1230,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         try {
             this.searchTxt = search;
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1235,7 +1241,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.endDate.setHours(todaysDate.getHours());
             this.endDate.setMinutes(todaysDate.getMinutes());
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1249,7 +1255,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             }
             this.user.reset();
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1258,7 +1264,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.showRevoke = !this.showRevoke;
             this.showOppositeRevoke = !this.showOppositeRevoke;
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1289,7 +1295,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 };
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1300,7 +1306,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
             this.lastPaginator = this.currentPointer * this.paginatorSize + this.paginatorSize;
         } catch (error) {
-            this.logger.log('error', error);
+            this.logger.log(ERROR, error);
         }
     }
 
@@ -1319,7 +1325,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.getData();
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1346,7 +1352,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     (error) => {},
                 );
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1362,7 +1368,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.filteredList = [];
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 
@@ -1459,7 +1465,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.autofixDetails$.unsubscribe();
             }
         } catch (e) {
-            this.logger.log('error', e);
+            this.logger.log(ERROR, e);
         }
     }
 }

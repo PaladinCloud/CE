@@ -444,12 +444,12 @@
     </div>
     <div class="table-wrapper">
         <app-table
-            style="height: 100%; width: 100%"
+            class="full-width full-height"
             [columnWidths]="columnWidths"
             [data]="violationAuditLogs"
             [direction]="direction"
             [doLocalSort]="true"
-            [tableTitle]="title"
+            [tableTitle]="VIOLATION_CONSTANTS.AUDIT_LOG.TITLE"
             [rowSize]="'SM'"
             [searchQuery]="searchTxt"
             [showAddRemoveCol]="false"
