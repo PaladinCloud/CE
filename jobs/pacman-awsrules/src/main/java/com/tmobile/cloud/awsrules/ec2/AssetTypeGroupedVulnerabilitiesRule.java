@@ -93,7 +93,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
                 annotation.put(PacmanSdkConstants.DESCRIPTION, "VM Instance with " + severity + " vulnerabilities found");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
-                String vulnerabilityDetails = getVMVulnerabilityDetails(vulnerabilityInfoList, severity);
+                String vulnerabilityDetails = getVMVulnerabilityDetails(vulnerabilityInfoList, severityToCheck);
                 annotation.put("vulnerabilityDetails", vulnerabilityDetails);
 
                 policyResult = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
