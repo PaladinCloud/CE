@@ -83,7 +83,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
             String instanceId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
             List<JsonObject> vulnerabilityInfoList = new ArrayList<>();
             try {
-                vulnerabilityInfoList = PacmanUtils.matchAssetAgainstSourceVulnIndex(instanceId, vulnerabilitiesEndpoint, vulnAssetLookupKey, severityToCheck);
+                vulnerabilityInfoList = PacmanUtils.matchAssetAgainstSourceVulnIndex(instanceId, vulnerabilitiesEndpoint, vulnAssetLookupKey, null);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
