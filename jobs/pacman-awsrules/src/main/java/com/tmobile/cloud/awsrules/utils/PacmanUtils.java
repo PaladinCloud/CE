@@ -4179,25 +4179,33 @@ public class PacmanUtils {
 
     }
 
-    public static String getCrowdstrikeVulnerabilitiesDetails(JsonArray vulnerabilities) {
-        List<VulnerabilityInfo> vulnerabilityList = new ArrayList<>(vulnerabilities.size());
-        if (vulnerabilities != null) {
-            for (int i = 0; i < vulnerabilities.size(); i++) {
-                JsonObject source = vulnerabilities.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
-                        .getAsJsonObject();
-                String cveId = source.get("cveId").getAsString();
-                String cveUrl = NIST_VULN_DETAILS_URL + cveId;
-                CveDetails cveDetails = new CveDetails(cveId, cveUrl);
-                VulnerabilityInfo vulnerabilityinfo = new VulnerabilityInfo();
-                vulnerabilityinfo.setTitle(source.get("description").getAsString());
-                vulnerabilityinfo.setVulnerabilityUrl(source.get("vulnerabilityUrl").getAsString());
-                vulnerabilityinfo.setCveList(Arrays.asList(cveDetails));
-                vulnerabilityList.add(vulnerabilityinfo);
+    public static String getVulnerabilitiesDetails(JsonArray vulnerabilities) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, VulnerabilityInfo> productVulnerablilities = new HashMap<>();
+        for (int i = 0; i < vulnerabilities.size(); i++) {
+            JsonObject source = vulnerabilities.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
+                    .getAsJsonObject();
+            String cveId = source.get(CVE_ID).getAsString();
+            String cveUrl = NIST_VULN_DETAILS_URL + cveId;
+            CveDetails cveDetails = new CveDetails(cveId, cveUrl);
+            for (JsonElement appElement : source.get("apps").getAsJsonArray()) {
+                JsonObject app = appElement.getAsJsonObject();
+                String productName = String.valueOf(app.get(PRODUCT_NAME_VERSION).getAsString());
+                if (productVulnerablilities.containsKey(productName)) {
+                    productVulnerablilities.get(productName).getCveList().add(cveDetails);
+                } else {
+                    VulnerabilityInfo vulnerabilityinfo = new VulnerabilityInfo();
+                    vulnerabilityinfo.setTitle(productName);
+                    vulnerabilityinfo.setVulnerabilityUrl(source.get(PacmanSdkConstants.VULNERABILITY_URL).getAsString() + "'" + app.get(PRODUCT_NAME_NORMALIZED).getAsString() + "'");
+                    List<CveDetails> cveDetailsList = new ArrayList<>();
+                    cveDetailsList.add(cveDetails);
+                    vulnerabilityinfo.setCveList(cveDetailsList);
+                    productVulnerablilities.put(productName, vulnerabilityinfo);
+                }
             }
         }
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.writeValueAsString(vulnerabilityList);
+            return objectMapper.writeValueAsString(productVulnerablilities.values());
         } catch (JsonProcessingException e) {
             throw new RuleExecutionFailedExeption(e.getMessage());
         }
