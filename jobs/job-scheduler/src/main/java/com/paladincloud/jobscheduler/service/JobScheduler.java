@@ -128,7 +128,7 @@ public class JobScheduler {
             }
             // Sending SQS message to trigger Data-Collector
             String[] plugins = pluginUsingV1.split(",");
-            List<String> configuredPlugins = dataCollectorSQSServic.pulginsUsingVersion1AndConfigured(plugins);
+            List<String> configuredPlugins = dataCollectorSQSServic.pluginsUsingVersion1AndConfigured(plugins);
             for (String plugin : configuredPlugins) {
                 if (compositePluginEnabled && "gcp".equalsIgnoreCase(plugin)) {
                     continue;
