@@ -28,7 +28,7 @@ public class CheckResourceScannedByPlugin extends BasePolicy {
         Annotation annotation = null;
         String severity = policyParam.get(PacmanRuleConstants.SEVERITY);
         String category = policyParam.get(PacmanRuleConstants.CATEGORY);
-        String vulnIndexResourceKey = policyParam.get(PacmanRuleConstants.RESOURCE_KEY);
+        String resourceKey = policyParam.get(PacmanRuleConstants.RESOURCE_KEY);
         String datasorce = policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY);
         String esEndpoint = "/" + PacmanRuleConstants.RESOURCE_INDEX + "/_search";
         String esResourceUrl = PacmanUtils.formatUrl(policyParam, esEndpoint);
@@ -47,7 +47,7 @@ public class CheckResourceScannedByPlugin extends BasePolicy {
 
         String entityType = resourceAttributes.get(PacmanRuleConstants.ENTITY_TYPE);
         try {
-            JsonArray resourceArray = PacmanUtils.getResultFromElasticSearch(resourceAttributes.get(PacmanRuleConstants.ACCOUNTID), resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID), esResourceUrl, vulnIndexResourceKey, null, "true", null);
+            JsonArray resourceArray = PacmanUtils.getResultFromElasticSearch(resourceAttributes.get(PacmanRuleConstants.ACCOUNTID), resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID), esResourceUrl, resourceKey, null, "true", null);
             resourceScanned = !resourceArray.isEmpty();
         } catch (Exception e) {
             logger.error("Error while fetching resource info from ES", e);
@@ -60,7 +60,7 @@ public class CheckResourceScannedByPlugin extends BasePolicy {
             annotation.put(PacmanRuleConstants.CATEGORY, category);
 
             issue.put(PacmanRuleConstants.VIOLATION_REASON, description);
-            issue.put(PacmanRuleConstants.SOURCE_VERIFIED, vulnIndexResourceKey);
+            issue.put(PacmanRuleConstants.SOURCE_VERIFIED, resourceKey);
             issue.put(PacmanRuleConstants.FAILED_REASON, datasorce + " agent not found");
             issueList.add(issue);
             annotation.put("issueDetails", issueList.toString());
@@ -69,7 +69,7 @@ public class CheckResourceScannedByPlugin extends BasePolicy {
             return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
         }
 
-        logger.debug("========CheckResourceScannedByPlugin rule evaluation successful for resourceId {} =========", resourceAttributes.get(vulnIndexResourceKey));
+        logger.debug("========CheckResourceScannedByPlugin rule evaluation successful for resourceId {} =========", resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
