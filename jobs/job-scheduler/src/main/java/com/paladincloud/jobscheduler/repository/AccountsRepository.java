@@ -16,8 +16,10 @@ public interface AccountsRepository extends JpaRepository<AccountDetails, String
     List<AccountDetails> findByAccountStatusAndPlatform(String accountStatus, String platform);
     List<AccountDetails> findByAccountStatus(String accountStatus);
     
-    @Query(value = "select distinct platform from cf_Accounts where accountSTatus= :accountStatus and platform in "
-    		+ "(select distinct dataSourceName from cf_Target where status ='enabled')", nativeQuery = true)
-    List<String> getAccountNameByStatus(@Param("accountStatus")  String accountStatus);
+    @Query(value = "SELECT DISTINCT platform FROM cf_Accounts WHERE accountStatus = 'configured' AND platform IN ( " +
+            " SELECT DISTINCT SUBSTRING_INDEX(cfkey, '.', 1) AS `plugin` FROM pac_config_properties " +
+            " WHERE application = 'application' AND cfkey IN (:pluginConfigList) " +
+            " AND `value` IN ('true', '1'))", nativeQuery = true)
+    List<String> getEnabledAccountNameByConfig(List<String> pluginConfigList);
 
 }

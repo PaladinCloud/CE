@@ -3,6 +3,7 @@ package com.paladincloud.jobscheduler.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,12 +112,13 @@ public class DataCollectorSQSService {
                 .withRegion(region) // Replace with your desired region
                 .build();
     }
-    
-    public List<String> pulginsUsingVersion1AndConfigured(String[] puglinUsingV1){
-    	List<String> configuredPlugin = accountsRepository.getAccountNameByStatus(Constants.PLUGIN_STATUS);
-    	List<String> matchingList = new ArrayList<>(Arrays.asList(puglinUsingV1));
-        matchingList.retainAll(configuredPlugin);
-        return matchingList;
-    }
 
+    public List<String> pluginsUsingVersion1AndConfigured(String[] pluginsUsingV1) {
+        if (pluginsUsingV1.length == 0) {
+            return new ArrayList<>();
+        }
+        List<String> pluginConfigList = Arrays.stream(pluginsUsingV1).map(plugin -> plugin + ".enabled")
+                .collect(Collectors.toList());
+        return accountsRepository.getEnabledAccountNameByConfig(pluginConfigList);
+    }
 }
