@@ -3851,7 +3851,7 @@ public class PacmanUtils {
     public static JsonArray getResultFromElasticSearch(String accountId, String id, String esUrl, String attributeName, String region, String latest, Map<String, List<String>> matchPhrase)
             throws Exception {
 
-        if (StringUtils.isBlank(id) && matchPhrase.size() == 0) {
+        if (StringUtils.isBlank(id) && (matchPhrase == null || matchPhrase.size() == 0)) {
             throw new IllegalArgumentException("Missing atleast one mandatory criteria to fetch result from ES");
         }
 

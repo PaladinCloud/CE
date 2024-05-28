@@ -30,8 +30,8 @@ public class CheckResourceScannedByPlugin extends BasePolicy {
         String category = policyParam.get(PacmanRuleConstants.CATEGORY);
         String resourceKey = policyParam.get(PacmanRuleConstants.RESOURCE_KEY);
         String datasorce = policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY);
-        String esEndpoint = "/" + PacmanRuleConstants.RESOURCE_INDEX + "/_search";
-        String esResourceUrl = PacmanUtils.formatUrl(policyParam, esEndpoint);
+        String esEndpoint = "/" + policyParam.get(PacmanRuleConstants.RESOURCE_INDEX) + "/_search";
+        String esResourceUrl = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + esEndpoint;
 
         MDC.put("executionId", policyParam.get("executionId")); // this is the logback Mapped Diagnostic Context
         MDC.put("ruleId", policyParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Context
