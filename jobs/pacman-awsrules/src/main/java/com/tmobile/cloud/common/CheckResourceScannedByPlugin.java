@@ -28,9 +28,10 @@ public class CheckResourceScannedByPlugin extends BasePolicy {
         Annotation annotation = null;
         String severity = policyParam.get(PacmanRuleConstants.SEVERITY);
         String category = policyParam.get(PacmanRuleConstants.CATEGORY);
-        String vulnIndexResourceKey = policyParam.get(PacmanRuleConstants.VULNERABILITY_INDEX_RESOURCE_KEY);
+        String vulnIndexResourceKey = policyParam.get(PacmanRuleConstants.RESOURCE_KEY);
         String datasorce = policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY);
-        String esResourceUrl = PacmanUtils.formatUrl(policyParam, PacmanRuleConstants.RESOURCE_INFO_URL);
+        String esEndpoint = "/" + PacmanRuleConstants.RESOURCE_INDEX + "/_search";
+        String esResourceUrl = PacmanUtils.formatUrl(policyParam, esEndpoint);
 
         MDC.put("executionId", policyParam.get("executionId")); // this is the logback Mapped Diagnostic Context
         MDC.put("ruleId", policyParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Context
