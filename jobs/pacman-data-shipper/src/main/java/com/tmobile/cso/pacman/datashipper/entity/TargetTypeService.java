@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -68,20 +69,9 @@ public class TargetTypeService {
             summaryList = summaryList.stream().filter(sl -> !sl.getKey().contains("-issues") &&
                     !sl.getKey().contains("-policy")).collect(Collectors.toList());
             Map<String, S3ObjectSummary> typesFromS3 = getTypesFromS3(summaryList, datasource);
-            Map<String, String> types = getTypeInfo(datasource);
-            List<String> typesInDB = new ArrayList<>(types.keySet());
             List<String> newTypes = new ArrayList<>(typesFromS3.keySet());
-            newTypes.removeAll(typesInDB);
             if (newTypes.isEmpty()) {
                 return;
-            }
-            Iterator<Map.Entry<String, S3ObjectSummary>> iterator = typesFromS3.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, S3ObjectSummary> entry = iterator.next();
-                String key = entry.getKey();
-                if (!newTypes.contains(key)) {
-                    iterator.remove();
-                }
             }
             Map<String, String> typesFromS3Folder = processS3Folder(new ArrayList<>(typesFromS3.values()));
             typesFromS3Folder.forEach((targetType, displayName) -> {
@@ -156,26 +146,10 @@ public class TargetTypeService {
         data.put("createdDate", LocalDate.now().format(formatter));
         data.put("domain", "Infra & Platforms");
         data.put("displayName", displayName);
-        RDSDBManager.insertRecord("cf_Target", data);
+        RDSDBManager.insertRecord("cf_Target", data, Collections.singletonList("displayName"));
     }
 
     private static class InstanceHolder {
         private static final TargetTypeService instance = new TargetTypeService();
-    }
-
-    private Map<String, String> getTypeInfo(String datasource) {
-        Map<String, String> typeInfo = new HashMap<>();
-        try {
-            String query = System.getProperty(Constants.CONFIG_QUERY) + " AND dataSourceName = '" + datasource + "'";
-            List<Map<String, String>> typeList = RDSDBManager.executeQuery(query);
-            for (Map<String, String> type : typeList) {
-                String typeName = type.get("targetName");
-                String displayName = type.get("displayName");
-                typeInfo.put(typeName, displayName);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error Fetching config Info", e);
-        }
-        return typeInfo;
     }
 }
