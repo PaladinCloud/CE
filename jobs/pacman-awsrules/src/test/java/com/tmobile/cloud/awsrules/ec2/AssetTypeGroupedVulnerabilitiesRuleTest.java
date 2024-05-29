@@ -32,7 +32,7 @@ public class AssetTypeGroupedVulnerabilitiesRuleTest {
     public void correctlyProcessCritical() throws Exception {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        String vulnerabilities = "{ \"instanceId\": \"iid-1\", \"critical\": [ { \"cves\": \"CVE-2024-29986\", \"id\": \"microsoft-edge-cve-2024-29986\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29986\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29986/\" }, { \"cves\": \"CVE-2024-29987\", \"id\": \"microsoft-edge-cve-2024-29987\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29987\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29987/\" } ] }";
+        String vulnerabilities = "{ \"instanceId\": \"iid-1\", \"critical\": [ { \"id\": \"CVE-2024-29986\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29986\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29986/\" }, { \"id\": \"CVE-2024-29987\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29987\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29987/\" } ] }";
         when(PacmanUtils.matchAssetAgainstSourceVulnIndex(anyString(), anyString(), anyString(), anyObject())).thenReturn(convertVulnerabilities(vulnerabilities));
         PolicyResult result = assetTypeGroupedVulnerabilitiesRule.execute(getRuleParams("critical"), getResourceAttributes());
         assertThat(result, is(notNullValue()));
@@ -81,6 +81,7 @@ public class AssetTypeGroupedVulnerabilitiesRuleTest {
     private Map<String, String> getRuleParams(String severity) {
         Map<String, String> map = new HashMap<>();
         map.put("severity", severity);
+        map.put("severityMatchCriteria", severity);
         map.put("policyCategory", "one");
         return map;
     }
