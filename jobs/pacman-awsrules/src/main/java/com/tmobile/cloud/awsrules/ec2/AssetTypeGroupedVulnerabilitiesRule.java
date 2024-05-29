@@ -70,7 +70,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
-        String severityToCheck = ruleParam.get(PacmanRuleConstants.SEVERITY_TO_CHECK);
+        String severityMatchCriteria = ruleParam.get(PacmanRuleConstants.SEVERITY_MATCH_CRITERIA);
         String vulnerabilityIndex = ruleParam.get(VULNERABILITY_INDEX);
         String vulnAssetLookupKey = ruleParam.get(VULN_ASSET_LOOKUP_KEY);
         String vulnerabilitiesEndpoint = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + vulnerabilityIndex + "/_search";
@@ -90,7 +90,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
             }
 
             if (!CollectionUtils.isNullOrEmpty(vulnerabilityInfoList)) {
-                String vulnerabilityDetails = getVMVulnerabilityDetails(vulnerabilityInfoList, severityToCheck);
+                String vulnerabilityDetails = getVMVulnerabilityDetails(vulnerabilityInfoList, severityMatchCriteria);
                 if (!vulnerabilityDetails.equals("[]")) {
                     Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                     annotation.put(PacmanSdkConstants.DESCRIPTION, "VM Instance with " + severity + " vulnerabilities found");
@@ -114,7 +114,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
         for (JsonObject vulnerability : vulnerabilityInfoList) {
             for (JsonElement cveDetails : vulnerability.get(severity).getAsJsonArray()) {
                 VulnerabilityInfo vul = new VulnerabilityInfo();
-                String cveId = cveDetails.getAsJsonObject().get("cves").getAsString();
+                String cveId = cveDetails.getAsJsonObject().get("id").getAsString();
                 CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
                 List<CveDetails> cveList = new ArrayList<>();
                 cveList.add(cve);

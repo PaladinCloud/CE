@@ -3354,5 +3354,8 @@ UPDATE cf_Target SET displayName='PostgreSQL' WHERE targetName in ('cloudsql_pos
 INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
 VALUES('workstation','Workstation','Compute','crowdstrike','{\"key\":\"_resourceid,cid\",\"id\":\"_resourceid\",\"name\":\"_resourcename\"}','enabled','admin@paladincloud.io',
 concat(@eshost,':',@esport,'/crowdstrike_workstation'),now(),null,'Infra & Platforms','Workstation');
+INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`)
+VALUES ('server','Server','Server','Compute','crowdstrike','{"key":"externalAccountId,externalId","id":"externalId","name":"server"}','finding','admin@paladincloud.io',concat(@eshost,':',@esport,'/crowdstrike_server'),now(),null,'Infra & Platforms');
 
+update cf_Target set targetConfig='{"key":"externalAccountId,externalId","id":"externalId","name":"_resourcename"}' where targetName='workstation' and dataSourceName='crowdstrike';
 UPDATE cf_AssetGroupDetails SET groupType = 'system' where groupType = 'System';

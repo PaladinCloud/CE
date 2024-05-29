@@ -113,7 +113,7 @@ public class PacmanRuleConstants {
     public static final String FOUND = "Found";
     public static final String NOTFOUND = "Not Found";
     public static final String SEVERITY = "severity";
-    public static final String SEVERITY_TO_CHECK = "severityToCheck";
+    public static final String SEVERITY_MATCH_CRITERIA = "severityMatchCriteria";
     public static final String SUBTYPE = "subtype";
     public static final String MEDIUM = "MEDIUM";
     public static final String MISSING_TAGS = "missingTags";
@@ -689,5 +689,7 @@ public class PacmanRuleConstants {
     public static final String LATEST_CLOUD_WATCH_DELIVERY_TIME="latestCloudWatchLogsDeliveryTime";
     public static final String SERVICE = "Service";
     public static final String REGION_GLOBAL = "global";
-  public static final String ACCOUNT_ID = "accountid";
+    public static final String ACCOUNT_ID = "accountid";
+    public static final String RESOURCE_INDEX = "resourceIndex";
+    public static final String RESOURCE_KEY = "resourceKey";
 }
