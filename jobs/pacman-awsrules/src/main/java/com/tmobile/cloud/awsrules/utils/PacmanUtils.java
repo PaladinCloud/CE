@@ -3895,8 +3895,8 @@ public class PacmanUtils {
      * @param fieldKey the field key
      * @return String, if is instance exists
      */
-    private static String returnFieldValue(JsonArray jsonArray,String fieldKey) {
-        if (jsonArray!=null && jsonArray.size() > 0) {
+    private static String returnFieldValue(JsonArray jsonArray, String fieldKey) {
+        if (jsonArray != null && jsonArray.size() > 0) {
             for (int i = 0; i < jsonArray.size(); i++) {
                 JsonObject firstObject = (JsonObject) jsonArray.get(i);
                 JsonObject sourceJson = (JsonObject) firstObject.get(PacmanRuleConstants.SOURCE);

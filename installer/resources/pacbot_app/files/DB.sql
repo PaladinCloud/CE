@@ -3355,7 +3355,7 @@ INSERT IGNORE INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSou
 VALUES('workstation','Workstation','Compute','crowdstrike','{\"key\":\"_resourceid,cid\",\"id\":\"_resourceid\",\"name\":\"_resourcename\"}','enabled','admin@paladincloud.io',
 concat(@eshost,':',@esport,'/crowdstrike_workstation'),now(),null,'Infra & Platforms','Workstation');
 INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`)
-VALUES ('server','Server','Server','Compute','crowdstrike','{"key":"externalAccountId,externalId","id":"externalId","name":"server"}','finding','admin@paladincloud.io','http://vpc-saasdev-data-52k3snqnk3yi63pyocxvhoysyi.us-east-1.es.amazonaws.com:80/crowdstrike_server',now(),null,'Infra & Platforms');
+VALUES ('server','Server','Server','Compute','crowdstrike','{"key":"externalAccountId,externalId","id":"externalId","name":"server"}','finding','admin@paladincloud.io',concat(@eshost,':',@esport,'/crowdstrike_server'),now(),null,'Infra & Platforms');
 
 update cf_Target set targetConfig='{"key":"externalAccountId,externalId","id":"externalId","name":"_resourcename"}' where targetName='workstation' and dataSourceName='crowdstrike';
 UPDATE cf_AssetGroupDetails SET groupType = 'system' where groupType = 'System';
