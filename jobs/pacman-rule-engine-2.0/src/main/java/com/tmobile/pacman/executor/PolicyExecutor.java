@@ -72,6 +72,7 @@ public class PolicyExecutor {
     private List<Map<String, String>> resources = new ArrayList<>();
     private String targetType;
     private String source;
+    private String enricherSource;
     private List<Map<String, String>> policyWiseParamsList = new ArrayList<>();
     private static final int POLICY_THREAD_POOL_SIZE = 50;
     private static final String POLICY_DONE_SNS_TOPIC_ARN = "POLICY_DONE_SNS_TOPIC_ARN";
@@ -85,6 +86,7 @@ public class PolicyExecutor {
             JsonNode jsonNode =  objectMapper.readTree(jsonString);
             source = jsonNode.get(PacmanSdkConstants.SOURCE).asText();
             targetType = jsonNode.get(PacmanSdkConstants.TARGET_TYPE).asText();
+            enricherSource = jsonNode.get("enricherSource")  != null ? jsonNode.get("enricherSource").asText(): "";
         } catch (Exception e) {
             logger.error("error in getting Policy arguments -> {}", jsonString, e);
         }
@@ -110,6 +112,7 @@ public class PolicyExecutor {
         for (Map<String, String> policyParam : policyExecutor.policyWiseParamsList) {
             String executionId = UUID.randomUUID().toString(); // this is the unique
             String status = fetchLatestPolicyStatus(policyParam);
+            policyParam.put("pluginName",policyExecutor.enricherSource);
             //String status = "ENABLED";
             executor.execute(() -> {
                 try {
