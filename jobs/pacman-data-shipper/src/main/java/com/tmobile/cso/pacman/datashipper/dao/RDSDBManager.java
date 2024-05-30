@@ -197,7 +197,7 @@ public class RDSDBManager {
      * @param data      A Map containing the data to be inserted, with keys representing column names
      *                  and values representing values for the columns.
      */
-    public static void insertRecord(String tableName, Map<String, String> data) {
+    public static void insertRecord(String tableName, Map<String, String> data, List<String> updatableColumns) {
         StringJoiner joiner = new StringJoiner(",");
         List<String> columns = new ArrayList<>(data.keySet());
         for (int i = 0; i < columns.size(); i++) {
@@ -205,6 +205,13 @@ public class RDSDBManager {
         }
         String insertQuery = "INSERT INTO " + tableName + " (" + String.join(",", columns)
                 + ") VALUES (" + joiner + ")";
+        if (updatableColumns != null && !updatableColumns.isEmpty()) {
+            StringJoiner updateClauses = new StringJoiner(",");
+            for (String column : updatableColumns) {
+                updateClauses.add(column + " = VALUES(" + column + ")");
+            }
+            insertQuery += " ON DUPLICATE KEY UPDATE " + updateClauses.toString();
+        }
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(insertQuery)) {
             for (int i = 0; i < columns.size(); i++) {

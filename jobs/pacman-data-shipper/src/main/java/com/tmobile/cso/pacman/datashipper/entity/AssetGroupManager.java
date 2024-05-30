@@ -278,7 +278,7 @@ public class AssetGroupManager {
         data.put("description", "All assets from all Sources");
         data.put("aliasQuery", aliasQuery);
         data.put("isVisible", "1");
-        RDSDBManager.insertRecord("cf_AssetGroupDetails", data);
+        RDSDBManager.insertRecord("cf_AssetGroupDetails", data, null);
     }
 
     private String getAliasQueryForDefaultAssetGroup(String currentDatasource) {
