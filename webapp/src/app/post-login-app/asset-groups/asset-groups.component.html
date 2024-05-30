@@ -19,7 +19,7 @@
                     <div *ngFor="let assetTabName of assetTabNames; let i = index">
                         <div
                             [class.active]="selectedTabName == assetTabName"
-                            class="asset-group-tab capitalize"
+                            class="asset-group-tab"
                             (click)="tabsClicked(assetTabName)"
                         >
                             {{ assetTabName }}
@@ -56,10 +56,7 @@
                                 class="asset-group-list-item"
                                 [class.active]="currentAssetTile == assettile.name.toLowerCase()"
                             >
-                                <div
-                                    class="asset-tile-name"
-                                    [ngStyle]="{ 'text-transform': 'capitalize' }"
-                                >
+                                <div class="asset-tile-name">
                                     {{ getDisplayName(assettile.displayname) }}
                                 </div>
                             </div>
