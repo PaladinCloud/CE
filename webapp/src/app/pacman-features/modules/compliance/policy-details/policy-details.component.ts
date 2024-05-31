@@ -23,6 +23,8 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { ERROR, LEVEL_ZERO } from 'src/app/shared/constants/global';
+import { COMPLIANCE_CONSTANTS } from 'src/app/shared/constants/compliance/compliance';
 
 @Component({
     selector: 'app-policy-details',
@@ -31,9 +33,9 @@ import { CommonResponseService } from 'src/app/shared/services/common-response.s
     providers: [IssueFilterService, LoggerService, ErrorHandlingService],
 })
 export class PolicyDetailsComponent implements OnInit, OnDestroy {
+    public readonly CONSTANTS = COMPLIANCE_CONSTANTS;
     @ViewChild('widget') widgetContainer: ElementRef;
 
-    pageTitle = 'Policy Compliance';
     widgetWidth: number;
     widgetHeight: number;
     /*variables for breadcrumb data*/
@@ -57,7 +59,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     public backButtonRequired;
     policyParamsDataSubscription: Subscription;
     paramsArray = [];
-    paramErrorMessage: string;
+    isParamError: boolean = false;
 
     constructor(
         private assetGroupObservableService: AssetGroupObservableService,
@@ -88,13 +90,13 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     ngOnInit() {
         setTimeout(() => {
             try {
-                const breadcrumbInfo = this.workflowService.getDetailsFromStorage()['level0'];
+                const breadcrumbInfo = this.workflowService.getDetailsFromStorage()[LEVEL_ZERO];
                 if (breadcrumbInfo) {
                     this.breadcrumbArray = breadcrumbInfo.map((item) => item.title);
                     this.breadcrumbLinks = breadcrumbInfo.map((item) => item.url);
                 }
                 // gets the current page url,which is used to come back to the same page after navigate
-                this.breadcrumbPresent = 'Policy Compliance';
+                this.breadcrumbPresent = this.CONSTANTS.POLICY_COMPLIANCE_TITLE;
                 this.widgetWidth = parseInt(
                     window
                         .getComputedStyle(this.widgetContainer.nativeElement, null)
@@ -103,7 +105,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
                 );
             } catch (error) {
                 this.errorMessage = this.errorHandling.handleJavascriptError(error);
-                this.logger.log('error', error);
+                this.logger.log(ERROR, error);
             }
         }, 0);
     }
@@ -133,11 +135,11 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
                             this.complianceDropdowns.push(filterData.response[i].optionName);
                         }
                     } catch (e) {
-                        this.logger.log('error', e);
+                        this.logger.log(ERROR, e);
                     }
                 },
                 (error) => {
-                    this.logger.log('error', error);
+                    this.logger.log(ERROR, error);
                 },
             );
     }
@@ -156,7 +158,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
                 this.router.routerState.snapshot.root,
             );
         } catch (error) {
-            this.logger.log('error', error);
+            this.logger.log(ERROR, error);
         }
     }
     changedDropdown(val) {
@@ -219,28 +221,19 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
         this.policyParamsDataSubscription = this.commonResponseService
             .getData(getPolicyByIdUrl, getPolicyByIdMethod, {}, queryParams)
             .subscribe((response) => {
-                try {
-                    if (!response.policyParams) {
-                        this.paramErrorMessage = 'noDataAvailable';
-                        return;
-                    }
-                    this.paramsArray = (JSON.parse(response.policyParams).params ?? [])
-                        .filter((item) => item.isEdit && item.isEdit == 'true')
-                        .map((item) => {
-                            return {
-                                key: item.displayName || item.key,
-                                value: item.value || 'unknown',
-                            };
-                        });
-                    if (this.paramsArray.length == 0) {
-                        this.paramErrorMessage = 'noDataAvailable';
-                    } else {
-                        this.paramErrorMessage = '';
-                    }
-                } catch (err) {
-                    this.paramErrorMessage = 'jsError';
-                    this.logger.log('jsError', err);
+                if (!response.policyParams) {
+                    this.isParamError = true;
+                    return;
                 }
+                this.paramsArray = (JSON.parse(response.policyParams).params ?? [])
+                    .filter((item) => item.isEdit && item.isEdit == 'true')
+                    .map((item) => {
+                        return {
+                            key: item.displayName || item.key,
+                            value: item.value || 'unknown',
+                        };
+                    });
+                this.isParamError = !!(this.paramsArray.length === 0);
             });
     }
 
@@ -256,7 +249,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
                 this.routeSubscription.unsubscribe();
             }
         } catch (error) {
-            this.logger.log('error', '--- Error while unsubscribing ---');
+            this.logger.log(ERROR, '--- Error while unsubscribing ---');
         }
     }
 }
