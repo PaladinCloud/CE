@@ -28,6 +28,7 @@ import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -40,7 +41,8 @@ public class AssetTypeScannedBySourceRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(AssetTypeScannedBySourceRule.class);
     private static final String VULN_ASSET_LOOKUP_KEY = "asset_lookup_key";
-    private static final String VULNERABILITY_INDEX = "vulnerability_index";
+    private static final String SRC_ASSET_KEY = "src_asset_key";
+    private static final String ASSET_LOOKUP_INDEX = "asset_lookup_index";
 
     /**
      * The method will get triggered from Rule Engine with following parameters.
@@ -64,16 +66,18 @@ public class AssetTypeScannedBySourceRule extends BasePolicy {
         MDC.put("policyId", policyParam.get(PacmanSdkConstants.POLICY_ID));
         String category = policyParam.get(PacmanRuleConstants.CATEGORY);
         String severity = policyParam.get(PacmanRuleConstants.SEVERITY);
-        String vulnerabilityIndex = policyParam.get(VULNERABILITY_INDEX);
+        String assetLookupIndex = policyParam.get(ASSET_LOOKUP_INDEX);
+        /* this param determines the asset key in source index. for eg. for azure_virtualmachine asset key is vmId  */
+        String srcAssetKey = policyParam.get(SRC_ASSET_KEY);
         String vulnAssetLookupKey = policyParam.get(VULN_ASSET_LOOKUP_KEY);
-        String vulnerabilitiesEndpoint = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + vulnerabilityIndex + "/_search";
+        String vulnerabilitiesEndpoint = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + assetLookupIndex + "/_search";
         if (!PacmanUtils.doesAllHaveValue(category, severity)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
         PolicyResult policyResult = null;
         if (resourceAttributes != null) {
-            String instanceId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
+            String instanceId = StringUtils.trim(ObjectUtils.firstNonNull(resourceAttributes.get(srcAssetKey), resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID)));
             List<JsonObject> vulAssetList;
             try {
                 vulAssetList = PacmanUtils.matchAssetAgainstSourceVulnIndex(instanceId, vulnerabilitiesEndpoint, vulnAssetLookupKey, null);
