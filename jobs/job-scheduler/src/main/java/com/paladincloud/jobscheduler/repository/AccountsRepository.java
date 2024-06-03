@@ -20,6 +20,6 @@ public interface AccountsRepository extends JpaRepository<AccountDetails, String
             " SELECT DISTINCT SUBSTRING_INDEX(cfkey, '.', 1) AS `plugin` FROM pac_config_properties " +
             " WHERE application = 'application' AND cfkey IN (:pluginConfigList) " +
             " AND `value` IN ('true', '1'))", nativeQuery = true)
-    List<String> getEnabledAccountNameByConfig(List<String> pluginConfigList);
+    List<String> getEnabledAccountNameByConfig(@Param("pluginConfigList") List<String> pluginConfigList);
 
 }
