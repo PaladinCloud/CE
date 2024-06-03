@@ -31,7 +31,18 @@ import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-b
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
 import { EMAIL_PATTERN } from 'src/app/shared/constants/regex-constants';
 import { VIOLATION } from 'src/app/shared/constants/violation/violation';
-import { ERROR, TABLE_DIRECTION_ASC } from 'src/app/shared/constants/global';
+import {
+    DASH,
+    ENFORCED,
+    ERROR,
+    EXEMPT,
+    EXEMPTED,
+    LEVEL_ZERO,
+    NO_DATA_AVAILABLE,
+    SUCCESS,
+    TABLE_DIRECTION_ASC,
+    VIOLATIONS_LABEL,
+} from 'src/app/shared/constants/global';
 
 @Component({
     selector: 'app-issue-details',
@@ -305,7 +316,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 fname: new FormControl('', [Validators.required, Validators.minLength(6)]),
             });
 
-            const breadcrumbInfo = this.workflowService.getDetailsFromStorage()['level0'];
+            const breadcrumbInfo = this.workflowService.getDetailsFromStorage()[LEVEL_ZERO];
 
             if (breadcrumbInfo) {
                 this.breadcrumbArray = breadcrumbInfo.map((item) => item.title);
@@ -416,10 +427,9 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                                     }
                                     this.assetID = this.issueBlocks.resouceViolatedPolicy;
                                     if (this.issueBlocks.status !== undefined) {
-                                        this.exceptionAdded =
-                                            this.issueBlocks.status === 'exempted';
+                                        this.exceptionAdded = this.issueBlocks.status === EXEMPTED;
                                         if (this.exceptionAdded) {
-                                            this.issueBlocks.status = 'exempt';
+                                            this.issueBlocks.status = EXEMPT;
                                             statusIcon = '../assets/icons/Lock-Closed.svg';
                                         } else {
                                             statusIcon = '../assets/icons/Lock-Open.svg';
@@ -735,7 +745,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     },
                     (error) => {
                         this.errorValue = -1;
-                        this.tableErrorMessage = 'noDataAvailable';
+                        this.tableErrorMessage = NO_DATA_AVAILABLE;
                     },
                 );
         } catch (e) {
@@ -747,7 +757,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         try {
             this.issueBlocks['violationModifiedDate'] = data[0].auditdate;
             this.issueBlocks['status'] =
-                data[0].status.toLowerCase() == 'enforced' ? 'exempt' : data[0].status;
+                data[0].status.toLowerCase() == ENFORCED ? EXEMPT : data[0].status;
             const { date, reason, source, status, expirydate } =
                 this.VIOLATION_CONSTANTS.AUDIT_LOG.COLUMNS_KEYS;
             for (let i = 0; i < data.length; i++) {
@@ -780,8 +790,17 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         try {
             this.outerArr = data;
             let firsOpenAuditLog = false;
+            const { date, expirydate } = this.VIOLATION_CONSTANTS.AUDIT_LOG.COLUMNS_KEYS;
             let processedData = this.outerArr.reverse().filter((obj, index) => {
-                this.outerArr[index].Date.isDate = true;
+                if (this.outerArr[index][date] && this.outerArr[index][date].valueText !== DASH) {
+                    this.outerArr[index][date].isDate = true;
+                }
+                if (
+                    this.outerArr[index][expirydate] &&
+                    this.outerArr[index][expirydate].valueText !== DASH
+                ) {
+                    this.outerArr[index][expirydate].isDate = true;
+                }
                 if (
                     this.outerArr[index].Date.valueText >= this.issueBlocks['violationCreatedDate']
                 ) {
@@ -856,7 +875,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     }
 
     clearViolationsPreservedData() {
-        this.tableStateService.clearPreservedData('Violations');
+        this.tableStateService.clearPreservedData(VIOLATIONS_LABEL);
     }
 
     revokeException() {
@@ -878,7 +897,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     .getData(Url, Method, payload, queryParams)
                     .subscribe(
                         (response) => {
-                            if (response.message === 'success') {
+                            if (response.message === SUCCESS) {
                                 this.clearViolationsPreservedData();
                                 setTimeout(() => {
                                     this.exceptionAdded = !this.exceptionAdded;
@@ -929,7 +948,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     .getData(exceptionUrl, exceptionMethod, payload, queryParams)
                     .subscribe(
                         (response) => {
-                            if (response.message === 'success') {
+                            if (response.message === SUCCESS) {
                                 this.clearViolationsPreservedData();
                                 this.check = true;
                                 this.showLoadcomplete = true;
@@ -942,7 +961,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                             }
                         },
                         (error) => {
-                            this.logger.log('error test', error);
+                            this.logger.log(ERROR, error);
                             this.addRevokeExemptionErrorMessage = error.error.message;
                             this.check = false;
                             this.showLoadcomplete = true;
@@ -994,7 +1013,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                         this.check = true;
                         this.showLoadcomplete = true;
                         this.showTopSection = false;
-                        if (response?.data?.status?.toLowerCase() == 'success') {
+                        if (response?.data?.status?.toLowerCase() == SUCCESS) {
                             this.updateComponent();
                         } else {
                             this.dialog.open(DialogBoxComponent, {

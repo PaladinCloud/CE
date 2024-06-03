@@ -27,7 +27,7 @@ import {
     IColumnWidthsMap,
     IFilterOption,
 } from '../table/interfaces/table-props.interface';
-import { JS_ERROR, REDIRECT_URL_KEY } from '../constants/global';
+import { DASH, JS_ERROR, NO_DATA, REDIRECT_URL_KEY, STRING } from '../constants/global';
 import { ImageCacheService } from 'src/app/core/services/image-cache.service';
 
 @Injectable()
@@ -140,7 +140,7 @@ export class UtilsService {
 
                 let newDataValue =
                     DATA_MAPPING[
-                        typeof row[element] === 'string' ? row[element].toLowerCase() : row[element]
+                        typeof row[element] === STRING ? row[element].toLowerCase() : row[element]
                     ];
 
                 if (newDataValue === undefined) {
@@ -174,7 +174,7 @@ export class UtilsService {
                     const cellData = row[col];
                     const tableImageData =
                         tableImageDataMap[
-                            typeof cellData === 'string' ? cellData.toLowerCase() : cellData
+                            typeof cellData === STRING ? cellData.toLowerCase() : cellData
                         ];
 
                     let cellObj = {
@@ -190,7 +190,7 @@ export class UtilsService {
                         isLink: false,
                         imageTitleText: '',
                         isDate: false,
-                        haveCopyElement: !!(cellData && cellData !== 'No Data' && cellData !== '-'),
+                        haveCopyElement: !!(cellData && cellData !== NO_DATA && cellData !== DASH),
                     };
                     if (this.isDateStringValid(cellData)) {
                         cellObj = {
