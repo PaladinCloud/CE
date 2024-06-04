@@ -19,6 +19,7 @@ import com.amazonaws.util.CollectionUtils;
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
@@ -118,8 +119,17 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
         for (JsonObject vulnerability : vulnerabilityInfoList) {
             for (JsonElement cveDetails : vulnerability.get(severity).getAsJsonArray()) {
                 VulnerabilityInfo vul = new VulnerabilityInfo();
-                String cveId = cveDetails.getAsJsonObject().get("id").getAsString();
-                CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
+                JsonElement cveIdElement = cveDetails.getAsJsonObject().get("id");
+                String cveUrl;
+                String cveId;
+                if (Strings.isNullOrEmpty(cveIdElement.getAsString())) {
+                    cveUrl = cveDetails.getAsJsonObject().get("cveUrl").getAsString();
+                    cveId = "";
+                } else {
+                    cveUrl = PacmanUtils.NIST_VULN_DETAILS_URL + cveIdElement.getAsString();
+                    cveId = cveIdElement.getAsString();
+                }
+                CveDetails cve = new CveDetails(cveId, cveUrl);
                 List<CveDetails> cveList = new ArrayList<>();
                 cveList.add(cve);
                 vul.setCveList(cveList);

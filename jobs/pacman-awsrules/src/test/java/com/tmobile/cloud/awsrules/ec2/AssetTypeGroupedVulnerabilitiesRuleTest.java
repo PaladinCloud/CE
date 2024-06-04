@@ -32,7 +32,7 @@ public class AssetTypeGroupedVulnerabilitiesRuleTest {
     public void correctlyProcessCritical() throws Exception {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        String vulnerabilities = "{ \"instanceId\": \"iid-1\", \"critical\": [ { \"id\": \"CVE-2024-29986\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29986\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29986/\" }, { \"id\": \"CVE-2024-29987\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29987\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29987/\" } ] }";
+        String vulnerabilities = "{\"instanceId\":\"iid-1\",\"critical\":[{\"id\":\"CVE-2024-29986\",\"severity\":\"severe\",\"title\":\"Microsoft Edge Chromium: CVE-2024-29986\",\"url\":\"https://example.com/microsoft-edge-cve-2024-29986/\"},{\"id\":\"\",\"severity\":\"severe\",\"title\":\"Weak LAN Manager hashing permitted\",\"url\":\"https://example.com/weak-lan-manager-hashing-permitted\",\"cveUrl\":\"https://support.microsoft.com/en-us/help/2793313/security-guidance-for-ntlmv1-and-lm-network-authentication\"}]}";
         when(PacmanUtils.matchAssetAgainstSourceVulnIndex(anyString(), anyString(), anyString(), anyObject())).thenReturn(convertVulnerabilities(vulnerabilities));
         PolicyResult result = assetTypeGroupedVulnerabilitiesRule.execute(getRuleParams("critical"), getResourceAttributes());
         assertThat(result, is(notNullValue()));
@@ -70,10 +70,10 @@ public class AssetTypeGroupedVulnerabilitiesRuleTest {
         v[0].setVulnerabilityUrl("https://example.com/microsoft-edge-cve-2024-29986/");
         v[0].setCveList(Arrays.asList(cveList1));
 
-        CveDetails[] cveList2 = {new CveDetails("CVE-2024-29987", "https://nvd.nist.gov/vuln/detail/CVE-2024-29987")};
+        CveDetails[] cveList2 = {new CveDetails("", "https://support.microsoft.com/en-us/help/2793313/security-guidance-for-ntlmv1-and-lm-network-authentication")};
         v[1] = new VulnerabilityInfo();
-        v[1].setTitle("Microsoft Edge Chromium: CVE-2024-29987");
-        v[1].setVulnerabilityUrl("https://example.com/microsoft-edge-cve-2024-29987/");
+        v[1].setTitle("Weak LAN Manager hashing permitted");
+        v[1].setVulnerabilityUrl("https://example.com/weak-lan-manager-hashing-permitted/");
         v[1].setCveList(Arrays.asList(cveList2));
         return v;
     }
