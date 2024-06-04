@@ -106,8 +106,15 @@ public class BYOKDiskVolumeRule extends BasePolicy {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
                 logger.debug("Validating the data item: {}", jsonDataItem.toString());
-                JsonArray diskJsonArray = jsonDataItem.getAsJsonObject()
-                        .get(PacmanRuleConstants.DISKS).getAsJsonArray();
+                JsonArray diskJsonArray = null;
+
+                if (jsonDataItem != null && jsonDataItem.isJsonObject()) {
+                    JsonObject jsonObject = jsonDataItem.getAsJsonObject();
+
+                    if (jsonObject.has(PacmanRuleConstants.DISKS) && jsonObject.get(PacmanRuleConstants.DISKS).isJsonArray()) {
+                        diskJsonArray = jsonObject.get(PacmanRuleConstants.DISKS).getAsJsonArray();
+                    }
+                }
                 if(diskJsonArray.size()>0) {
                     for (int i = 0; i < diskJsonArray.size(); i++) {
                         JsonObject diskDataItem = ((JsonObject) diskJsonArray
