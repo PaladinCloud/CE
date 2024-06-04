@@ -119,17 +119,15 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
         for (JsonObject vulnerability : vulnerabilityInfoList) {
             for (JsonElement cveDetails : vulnerability.get(severity).getAsJsonArray()) {
                 VulnerabilityInfo vul = new VulnerabilityInfo();
-                JsonElement cveIdElement = cveDetails.getAsJsonObject().get("id");
-                String cveUrl;
-                String cveId;
-                if (Strings.isNullOrEmpty(cveIdElement.getAsString())) {
-                    cveUrl = cveDetails.getAsJsonObject().get("cveUrl").getAsString();
-                    cveId = "";
-                } else {
-                    cveUrl = PacmanUtils.NIST_VULN_DETAILS_URL + cveIdElement.getAsString();
-                    cveId = cveIdElement.getAsString();
+                String cveId = cveDetails.getAsJsonObject().get("id").getAsString();
+                String vulnerabilityUrl = null;
+                if (cveDetails.getAsJsonObject().has("vulnerabilityUrl")) {
+                    vulnerabilityUrl = cveDetails.getAsJsonObject().get("vulnerabilityUrl").getAsString();
                 }
-                CveDetails cve = new CveDetails(cveId, cveUrl);
+                if (Strings.isNullOrEmpty(vulnerabilityUrl)) {
+                    vulnerabilityUrl = PacmanUtils.NIST_VULN_DETAILS_URL + cveId;
+                }
+                CveDetails cve = new CveDetails(cveId, vulnerabilityUrl);
                 List<CveDetails> cveList = new ArrayList<>();
                 cveList.add(cve);
                 vul.setCveList(cveList);

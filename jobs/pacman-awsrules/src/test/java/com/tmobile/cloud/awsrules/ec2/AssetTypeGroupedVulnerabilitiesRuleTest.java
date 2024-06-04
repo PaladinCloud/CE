@@ -32,7 +32,7 @@ public class AssetTypeGroupedVulnerabilitiesRuleTest {
     public void correctlyProcessCritical() throws Exception {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        String vulnerabilities = "{\"instanceId\":\"iid-1\",\"critical\":[{\"id\":\"CVE-2024-29986\",\"severity\":\"severe\",\"title\":\"Microsoft Edge Chromium: CVE-2024-29986\",\"url\":\"https://example.com/microsoft-edge-cve-2024-29986/\"},{\"id\":\"\",\"severity\":\"severe\",\"title\":\"Weak LAN Manager hashing permitted\",\"url\":\"https://example.com/weak-lan-manager-hashing-permitted\",\"cveUrl\":\"https://support.microsoft.com/en-us/help/2793313/security-guidance-for-ntlmv1-and-lm-network-authentication\"}]}";
+        String vulnerabilities = "{\"instanceId\":\"iid-1\",\"critical\":[{\"id\":\"CVE-2024-29986\",\"severity\":\"severe\",\"title\":\"Microsoft Edge Chromium: CVE-2024-29986\",\"url\":\"https://example.com/microsoft-edge-cve-2024-29986/\"},{\"id\":\"\",\"severity\":\"severe\",\"title\":\"Weak LAN Manager hashing permitted\",\"url\":\"https://example.com/weak-lan-manager-hashing-permitted\",\"vulnerabilityUrl\":\"https://support.microsoft.com/en-us/help/2793313/security-guidance-for-ntlmv1-and-lm-network-authentication\"}]}";
         when(PacmanUtils.matchAssetAgainstSourceVulnIndex(anyString(), anyString(), anyString(), anyObject())).thenReturn(convertVulnerabilities(vulnerabilities));
         PolicyResult result = assetTypeGroupedVulnerabilitiesRule.execute(getRuleParams("critical"), getResourceAttributes());
         assertThat(result, is(notNullValue()));
