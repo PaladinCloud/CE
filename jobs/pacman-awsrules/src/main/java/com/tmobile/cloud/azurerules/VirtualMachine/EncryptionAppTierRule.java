@@ -107,7 +107,7 @@ public class EncryptionAppTierRule extends BasePolicy {
                         diskJsonArray = jsonObject.get(PacmanRuleConstants.DISKS).getAsJsonArray();
                     }
                 }
-                if(diskJsonArray.size()>0) {
+                if(diskJsonArray!=null && diskJsonArray.size()>0) {
                     for (int i = 0; i < diskJsonArray.size(); i++) {
                         JsonObject diskDataItem = ((JsonObject) diskJsonArray
                                 .get(i));
