@@ -3023,8 +3023,6 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupCriteriaDetails` (
 CREATE TABLE IF NOT EXISTS `cf_outbound_accounts` (
   `accountName` varchar(255) DEFAULT NULL,
   `accountId` varchar(255) NOT NULL,
-  `assets` varchar(255) DEFAULT NULL,
-  `violations` varchar(255) DEFAULT NULL,
   `accountStatus` varchar(100) DEFAULT NULL,
   `platform` varchar(255) DEFAULT NULL,
   `createdBy` varchar(150) DEFAULT 'admin',
