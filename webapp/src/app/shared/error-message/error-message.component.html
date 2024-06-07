@@ -13,6 +13,7 @@
  -->
 
 <div class="error-state-wrapper flex-col" *ngIf="errorMessages != undefined">
+    <img [src]="errorMessages.image" alt="" />
     <p class="bold-text">
         {{ errorMessages.title }}
     </p>
