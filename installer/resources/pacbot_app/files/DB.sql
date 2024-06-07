@@ -3035,12 +3035,6 @@ CREATE TABLE IF NOT EXISTS `cf_outbound_accounts` (
   `updatedBy` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`accountId`)
 );
-
-
-
-
-
-
 DELETE iGNORE FROM pac_config_properties where cfkey = "enable.external.id";
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES('enable.external.id',concat(@ENABLE_EXTERNAL_ID, ''),'application','prd','latest',null,null,null,null);
 
