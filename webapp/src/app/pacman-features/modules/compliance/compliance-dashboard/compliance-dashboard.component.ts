@@ -804,6 +804,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         this.policyDataError = '';
         this.updatePoliciesTable();
         this.getDistributionBySeverity();
+        this.getComplianceData();
     }
 
     updatePoliciesTable() {

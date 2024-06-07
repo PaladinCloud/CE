@@ -39,7 +39,7 @@
             ></app-asset-trend-graph>
         </div>
     </mat-card-content>
-    <mat-card-actions *ngIf="card.footer">
+    <mat-card-actions *ngIf="card.footer && !dataError">
         <button (click)="card.cardButtonAction()">
             {{ card.footer }} <img src="/assets/icons/right-arrow-icon.svg" />
         </button>
