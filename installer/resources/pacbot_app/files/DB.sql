@@ -3020,6 +3020,27 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupCriteriaDetails` (
   PRIMARY KEY (`id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+CREATE TABLE IF NOT EXISTS `cf_outbound_accounts` (
+  `accountName` varchar(255) DEFAULT NULL,
+  `accountId` varchar(255) NOT NULL,
+  `assets` varchar(100) DEFAULT NULL,
+  `violations` varchar(100) DEFAULT NULL,
+  `accountStatus` varchar(100) DEFAULT NULL,
+  `platform` varchar(255) DEFAULT NULL,
+‘violations’ VARCHAR(255),
+‘assets’ VARCHAR(255),
+  `createdBy` varchar(150) DEFAULT 'admin',
+  `createdTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedTime` timestamp NULL DEFAULT NULL,
+  `updatedBy` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`accountId`)
+);
+
+
+
+
+
+
 DELETE iGNORE FROM pac_config_properties where cfkey = "enable.external.id";
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES('enable.external.id',concat(@ENABLE_EXTERNAL_ID, ''),'application','prd','latest',null,null,null,null);
 
