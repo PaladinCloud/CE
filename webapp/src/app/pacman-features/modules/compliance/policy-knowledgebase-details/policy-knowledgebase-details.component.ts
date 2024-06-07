@@ -354,6 +354,12 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
+    getImageSource(policyDetails: any): string {
+        return policyDetails?.autoFixAvailable === 'true'
+            ? '/assets/icons/autofix.svg'
+            : '/assets/icons/no-autofix.svg';
+    }
+
     /*
      * unsubscribing component
      */
