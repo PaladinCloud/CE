@@ -37,6 +37,7 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 import { TourService } from 'src/app/core/services/tour.service';
+import { ERROR } from 'src/app/shared/constants/global';
 
 @Component({
     selector: 'app-asset-groups',
@@ -274,30 +275,19 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
 
     processData() {
         try {
-            const typeObj = {
-                all: 'typeVal',
-                user: 'typeVal',
-                'recently viewed': 'typeVal',
-            };
-            const newTypeObj = {};
-            for (let i = 0; i < this.assetTiles.length; i++) {
-                if (this.assetTiles[i].type.toLowerCase() != 'user')
-                    newTypeObj[this.assetTiles[i].type] = 'typeVal';
-            }
-            delete typeObj[''];
-            delete newTypeObj[''];
-            let typeArr = [],
-                newTypeArr = [];
-            typeArr = Object.keys(typeObj);
-            newTypeArr = Object.keys(newTypeObj);
-            newTypeArr.sort();
-            typeArr = [...typeArr, ...newTypeArr];
-            this.assetTabNames = typeArr;
+            const defaultTypeKeys = ['all', 'recently viewed'];
+            const assetTypeMap = this.assetTiles.reduce((acc, tile) => {
+                acc[tile.type] = 'typeVal';
+                return acc;
+            }, {});
+            const assetTypeKeys = Object.keys(assetTypeMap).sort();
+            const combinedTypeKeys = [...defaultTypeKeys, ...assetTypeKeys];
+            this.assetTabNames = combinedTypeKeys;
             this.selectedTabName = this.assetTabNames[0];
             this.loaded = true;
         } catch (error) {
             this.errorHandlingService.handleJavascriptError(error);
-            this.logger.log('error', error);
+            this.logger.log(ERROR, error);
         }
     }
 
