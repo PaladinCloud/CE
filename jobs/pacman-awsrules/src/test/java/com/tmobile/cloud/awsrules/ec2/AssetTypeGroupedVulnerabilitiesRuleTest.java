@@ -32,7 +32,8 @@ public class AssetTypeGroupedVulnerabilitiesRuleTest {
     public void correctlyProcessCritical() throws Exception {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        String vulnerabilities = "{ \"instanceId\": \"iid-1\", \"critical\": [ { \"id\": \"CVE-2024-29986\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29986\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29986/\" }, { \"id\": \"CVE-2024-29987\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29987\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29987/\" } ] }";
+//        String vulnerabilities = "{ \"instanceId\": \"iid-1\", \"critical\": [ { \"id\": \"CVE-2024-29986\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29986\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29986/\" }, { \"id\": \"CVE-2024-29987\", \"severity\": \"severe\", \"title\": \"Microsoft Edge Chromium: CVE-2024-29987\", \"url\": \"https://example.com/microsoft-edge-cve-2024-29987/\" } ] }";
+        String vulnerabilities = "{\"instanceId\":\"iid-1\",\"critical\":[{\"severity\":\"critical\",\"vulnerabilities\":[{\"id\":\"CVE-2020-36330\",\"url\":\"https://nvd.nist.gov/vuln/detail/CVE-2020-36330\"},{\"id\":\"CVE-2018-25014\",\"url\":\"https://nvd.nist.gov/vuln/detail/CVE-2018-25014\"},{\"id\":\"CVE-2018-25013\",\"url\":\"https://nvd.nist.gov/vuln/detail/CVE-2018-25013\"},{\"id\":\"CVE-2020-36331\",\"url\":\"https://nvd.nist.gov/vuln/detail/CVE-2020-36331\"}],\"title\":\"libwebp 0.3.0-10.amzn2\",\"url\":\"https://example.com\",\"referenceUrl\":\"https://nvd.nist.gov/vuln/detail/CVE-2020-36330\"},{\"severity\":\"critical\",\"vulnerabilities\":[{\"id\":\"CVE-2015-8394\",\"url\":\"https://nvd.nist.gov/vuln/detail/CVE-2015-8394\"},{\"id\":\"CVE-2015-8390\",\"url\":\"https://nvd.nist.gov/vuln/detail/CVE-2015-8390\"}],\"title\":\"pcre 8.32-17.amzn2.0.2\",\"url\":\"https://example.com\",\"referenceUrl\":\"https://nvd.nist.gov/vuln/detail/CVE-2015-8394\"}]}";
         when(PacmanUtils.matchAssetAgainstSourceVulnIndex(anyString(), anyString(), anyString(), anyObject())).thenReturn(convertVulnerabilities(vulnerabilities));
         PolicyResult result = assetTypeGroupedVulnerabilitiesRule.execute(getRuleParams("critical"), getResourceAttributes());
         assertThat(result, is(notNullValue()));
@@ -64,16 +65,24 @@ public class AssetTypeGroupedVulnerabilitiesRuleTest {
 
     private VulnerabilityInfo[] getExpectedVulnerabilityInfo() {
         VulnerabilityInfo[] v = new VulnerabilityInfo[2];
-        CveDetails[] cveList1 = {new CveDetails("CVE-2024-29986", "https://nvd.nist.gov/vuln/detail/CVE-2024-29986")};
+        CveDetails[] cveList1 = {
+            new CveDetails("CVE-2020-36330", "https://nvd.nist.gov/vuln/detail/CVE-2020-36330"),
+            new CveDetails("CVE-2018-25014", "https://nvd.nist.gov/vuln/detail/CVE-2018-25014"),
+            new CveDetails("CVE-2018-25013", "https://nvd.nist.gov/vuln/detail/CVE-2018-25013"),
+            new CveDetails("CVE-2020-36331", "https://nvd.nist.gov/vuln/detail/CVE-2020-36331")
+        };
         v[0] = new VulnerabilityInfo();
-        v[0].setTitle("Microsoft Edge Chromium: CVE-2024-29986");
-        v[0].setVulnerabilityUrl("https://example.com/microsoft-edge-cve-2024-29986/");
+        v[0].setTitle("libwebp 0.3.0-10.amzn2");
+        v[0].setVulnerabilityUrl("https://example.com");
         v[0].setCveList(Arrays.asList(cveList1));
 
-        CveDetails[] cveList2 = {new CveDetails("CVE-2024-29987", "https://nvd.nist.gov/vuln/detail/CVE-2024-29987")};
+        CveDetails[] cveList2 = {
+            new CveDetails("CVE-2015-8394", "https://nvd.nist.gov/vuln/detail/CVE-2015-8394"),
+            new CveDetails("CVE-2015-8390", "https://nvd.nist.gov/vuln/detail/CVE-2015-8390")
+        };
         v[1] = new VulnerabilityInfo();
-        v[1].setTitle("Microsoft Edge Chromium: CVE-2024-29987");
-        v[1].setVulnerabilityUrl("https://example.com/microsoft-edge-cve-2024-29987/");
+        v[1].setTitle("pcre 8.32-17.amzn2.0.2");
+        v[1].setVulnerabilityUrl("https://example.com/");
         v[1].setCveList(Arrays.asList(cveList2));
         return v;
     }
