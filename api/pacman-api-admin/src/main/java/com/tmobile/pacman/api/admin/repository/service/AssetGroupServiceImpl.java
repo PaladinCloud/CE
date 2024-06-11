@@ -79,6 +79,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	private  static  final  String KEY="key";
 	private static final String ALIASES_ACTION_TEMPLATE = "{\"actions\":[%s]}";
 	private static final String ACTION_TEMPLATE = "{\"%s\":{\"index\":\"%s\",\"alias\":\"%s\"}}";
+	private static final String SYSTEM_GROUP_TYPE = "system";
 
 	@Autowired
 	private AssetGroupRepository assetGroupRepository;
@@ -863,7 +864,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			String assetGroupId = UUID.randomUUID().toString();
 			assetGroupDetails.setGroupId(assetGroupId);
 			assetGroupDetails.setGroupName(pluginType.toLowerCase());
-			assetGroupDetails.setGroupType("System");
+			assetGroupDetails.setGroupType(SYSTEM_GROUP_TYPE);
 			assetGroupDetails.setCreatedBy("admin@paladincloud.io");
 			assetGroupDetails.setDescription("Asset group for " + displayName);
 			assetGroupDetails.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC())));
