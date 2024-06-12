@@ -46,16 +46,16 @@ public class AssetGroupManager {
             "WHERE (agd.groupId NOT IN ( " +
             "    SELECT DISTINCT agcd.groupId " +
             "    FROM cf_AssetGroupCriteriaDetails AS agcd " +
-            "    WHERE agcd.attributeName = 'CloudType') AND agd.groupType <> 'user' AND agd.groupType <> 'System' " +
+            "    WHERE agcd.attributeName = 'CloudType') AND agd.groupType <> 'user' AND agd.groupType <> 'system' " +
             "AND agd.groupName <> '" + ASSET_GROUP_FOR_ALL_RESOURCES + "' and aliasQuery like '%s') " +
             //for all user asset groups
             "OR (agd.groupType = 'user') " +
             //for current data source
-            "OR (agd.groupName = '%s' AND agd.groupType = 'System') " +
+            "OR (agd.groupName = '%s' AND agd.groupType = 'system') " +
             //for all-sources
             "OR (agd.groupName = '" + ASSET_GROUP_FOR_ALL_RESOURCES + "') " +
             "OR (agd.groupType <> 'user' " +
-            "    AND agd.groupType <> 'System' AND agd.groupName <> '" + ASSET_GROUP_FOR_ALL_RESOURCES + "' and aliasQuery like '%s')";
+            "    AND agd.groupType <> 'system' AND agd.groupName <> '" + ASSET_GROUP_FOR_ALL_RESOURCES + "' and aliasQuery like '%s')";
     private static final String UPDATE_ES_ALIAS_TEMPLATE = "{\"actions\": [{\"add\": {%s \"index\": \"%s\"," +
             "\"alias\": \"%s\"}}]}";
     private static final String FILTER_TEMPLATE = "\"filter\": %s,";
