@@ -82,9 +82,6 @@ public class JobScheduler {
     private boolean tenableEnabled;
     
 
-    @Value("${scheduler.total.batches}")
-    private String noOfBatches;
-
     @Value("${base.region}")
     private String region;
 
@@ -237,7 +234,7 @@ public class JobScheduler {
         }
         eventBrClient.close();
     }
-    @Scheduled(initialDelayString =  "${vulnerability.shipper.initial.delay}", fixedDelayString = "${vulnerability.interval}")
+
     public void schedulePluginShipperJobs() {
         // print the current milliseconds
         logger.info(CURRENT_MILLISECONDS, System.currentTimeMillis());
