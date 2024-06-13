@@ -27,15 +27,13 @@
             [breadcrumbPresent]="breadcrumbPresent"
         ></app-breadcrumb>
     </div>
-    <div class="header flex">
+    <div class="header flex capitalize">
         <div class="header-text">
             <img
                 class="header-autofix-icon"
                 *ngIf="policyDetails?.autoFixAvailable === 'true'"
                 alt="Autofix state"
-                src="/assets/icons/{{
-                    policyDetails?.autoFixEnabled === 'true' ? '' : 'no-'
-                }}autofix.svg"
+                [src]="getImageSource(policyDetails)"
             />
             {{ policyDisplayName }}
         </div>
