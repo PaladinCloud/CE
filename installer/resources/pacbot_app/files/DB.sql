@@ -3362,3 +3362,5 @@ concat(@eshost,':',@esport,'/crowdstrike_mobile'),now(),null,'Infra & Platforms'
 
 update cf_Target set targetConfig='{"key":"externalAccountId,externalId","id":"externalId","name":"_resourcename"}' where targetName='workstation' and dataSourceName='crowdstrike';
 UPDATE cf_AssetGroupDetails SET groupType = 'system' where groupType = 'System';
+
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Governed','governed','/asset/v1/getGovernanceFilterValue',"boolean");
