@@ -3364,16 +3364,4 @@ concat(@eshost,':',@esport,'/crowdstrike_mobile'),now(),null,'Infra & Platforms'
 update cf_Target set targetConfig='{"key":"externalAccountId,externalId","id":"externalId","name":"_resourcename"}' where targetName='workstation' and dataSourceName='crowdstrike';
 UPDATE cf_AssetGroupDetails SET groupType = 'system' where groupType = 'System';
 
-
-DELIMITER $$
-DROP PROCEDURE IF EXISTS InsertIfGovernedFlagTrue $$
-CREATE PROCEDURE InsertIfGovernedFlagTrue(IN EXTERNAL_ID VARCHAR(10))
-BEGIN
-    IF EXTERNAL_ID = 'true'  THEN
-       INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Governed','governed','/asset/v1/getGovernanceFilterValue','boolean');
-    ELSEIF EXTERNAL_ID = 'false' THEN
-        DELETE FROM pac_v2_ui_options WHERE optionName = 'Governed';
-    END IF;
-END $$
-DELIMITER ;
-CALL InsertIfGovernedFlagTrue( @ASSET_GOVERNANCE_FEATURE_FLAG );
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Governed','governed','/asset/v1/getGovernanceFilterValue','boolean');
