@@ -19,8 +19,8 @@ public class CloudNotificationServiceImpl implements CloudNotificationService {
 	 private CloudNotificationsRepository repository;
 
 	@Override
-	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter,
-													  int size, int from, Map<String,Object> sortFilter, Date startDate, Date endDate) {
+	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String,List<String>>filter,
+													  int size, int from,Map<String,Object> sortFilter, Date startDate, Date endDate) {
 		return repository.getNotifications(assetGroup, filter, size, from,sortFilter,startDate,endDate);
 	}
 

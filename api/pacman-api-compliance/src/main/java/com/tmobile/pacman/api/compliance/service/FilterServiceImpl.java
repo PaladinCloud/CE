@@ -436,10 +436,10 @@ public class FilterServiceImpl implements FilterService, Constants {
      * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
      * )
      */
-    public List<Map<String, Object>> getNotificationTypes() throws ServiceException {
+    public List<Map<String, Object>> getNotificationTypes(Map<String,List<String>> filters) throws ServiceException {
         Map<String, Long> notificationMap;
         try {
-            notificationMap = repository.getNotificationTypesFromES();
+            notificationMap = repository.getNotificationTypesFromES(filters);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -454,10 +454,10 @@ public class FilterServiceImpl implements FilterService, Constants {
      * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
      * )
      */
-    public List<Map<String, Object>> getNotificationSource() throws ServiceException {
+    public List<Map<String, Object>> getNotificationSource(Map<String,List<String>> filters) throws ServiceException {
         Map<String, Long> sourceMap;
         try {
-            sourceMap = repository.getNotificationSourceFromES();
+            sourceMap = repository.getNotificationSourceFromES(filters);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -527,10 +527,10 @@ public class FilterServiceImpl implements FilterService, Constants {
         return valueList;
     }
 
-    public List<Map<String, Object>> getNotificationEventName() throws ServiceException {
+    public List<Map<String, Object>> getNotificationEventName(Map<String,List<String>> filter) throws ServiceException {
         Map<String, Long> sourceMap;
         try {
-            sourceMap = repository.getNotificationEventNamesFromES();
+            sourceMap = repository.getNotificationEventNamesFromES(filter);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -611,5 +611,29 @@ public class FilterServiceImpl implements FilterService, Constants {
         return rangeMap;
     }
 
+    @Override
+    public List<Map<String, Object>> getNotificationDate(Map<String,List<String>> filter) throws ServiceException {
+        Map<String, Long> sourceMap;
+        try {
+            sourceMap = repository.getNotificationDateFromES(filter);
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+
+        Map<String, Long> responseMap=new HashMap<>();
+        SortedMap<String, Long> sortedMap = new TreeMap<>(sourceMap);
+        if (!sortedMap.isEmpty()) {
+            // Minimum key and value
+            String minKey = sortedMap.firstKey();
+            Long minValue = sortedMap.get(minKey);
+            responseMap.put(minKey,minValue);
+
+            // Maximum key and value
+            String maxKey = sortedMap.lastKey();
+            Long maxValue = sortedMap.get(maxKey);
+            responseMap.put(maxKey,maxValue);
+        }
+        return convertESResponseToMap(responseMap);
+    }
 
 }
