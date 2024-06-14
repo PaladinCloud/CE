@@ -125,6 +125,7 @@ SET @VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY='$VULNERABILITY_SCHEDULE_COL
 SET @VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY='$VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY';
 SET @ENABLE_EXTERNAL_ID='$ENABLE_EXTERNAL_ID';
 SET @EXTERNAL_ID='$EXTERNAL_ID';
+SET @ASSET_GOVERNANCE_FEATURE_FLAG='$ASSET_GOVERNANCE_FEATURE_FLAG';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -3363,4 +3364,16 @@ concat(@eshost,':',@esport,'/crowdstrike_mobile'),now(),null,'Infra & Platforms'
 update cf_Target set targetConfig='{"key":"externalAccountId,externalId","id":"externalId","name":"_resourcename"}' where targetName='workstation' and dataSourceName='crowdstrike';
 UPDATE cf_AssetGroupDetails SET groupType = 'system' where groupType = 'System';
 
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Governed','governed','/asset/v1/getGovernanceFilterValue','boolean');
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS InsertIfGovernedFlagTrue $$
+CREATE PROCEDURE InsertIfGovernedFlagTrue(IN EXTERNAL_ID VARCHAR(10))
+BEGIN
+    IF EXTERNAL_ID = 'true'  THEN
+       INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Governed','governed','/asset/v1/getGovernanceFilterValue','boolean');
+    ELSEIF EXTERNAL_ID = 'false' THEN
+        DELETE FROM pac_v2_ui_options WHERE optionName = 'Governed';
+    END IF;
+END $$
+DELIMITER ;
+CALL InsertIfGovernedFlagTrue( @ASSET_GOVERNANCE_FEATURE_FLAG );
