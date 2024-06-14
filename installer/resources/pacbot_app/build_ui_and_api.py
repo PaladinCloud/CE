@@ -41,7 +41,8 @@ class BuildUiAndApis(NullResource):
                     'AWS_REGION': Settings.AWS_REGION,
                     'LAMBDA_PATH' : Settings.LAMBDA_PATH,
                     'GOOGLE_ANALYTICS' : Settings.GOOGLE_ANALYTICS,
-                    'JOB_SCHEDULE_INTERVAL' : Settings.JOB_SCHEDULE_INTERVAL
+                    'JOB_SCHEDULE_INTERVAL' : Settings.JOB_SCHEDULE_INTERVAL,
+                    'ENV_ASSET_GOVERNANCE_FEATURE_FLAG' : Settings.ASSET_GOVERNANCE_FEATURE_FLAG
                 },
                 'interpreter': [Settings.PYTHON_INTERPRETER]
             }

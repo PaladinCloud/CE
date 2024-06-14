@@ -185,8 +185,8 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_AQUA_ENABLED' : False,
                         'ENV_TENABLE_ENABLED' : False,
                         'ENV_ENABLE_EXTERNAL_ID' : False,
-                        'ENV_EXTERNAL_ID' : "XXX"
-
+                        'ENV_EXTERNAL_ID' : "XXX",
+                        'ASSET_GOVERNANCE_FEATURE_FLAG' : Settings.ASSET_GOVERNANCE_FEATURE_FLAG,
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }

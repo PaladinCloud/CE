@@ -94,6 +94,7 @@ export const CONFIGURATIONS = {
                 tenablePluginEnabled: true,
                 rapid7PluginEnabled: false,
             },
+            assetGovernanceFeatureFlag: false,
         },
     },
 };

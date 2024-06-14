@@ -100,3 +100,6 @@ METADATA_XML_FILE = ""
 
 #AutoFix Configuration
 DEFAULT_RESOURCE_OWNER = ""   #Enter Email ID, All AutoFix notification send to this mail ID.
+
+# ASSET GOVERNANCE FEATURE FLAG
+ASSET_GOVERNANCE_FEATURE_FLAG = False

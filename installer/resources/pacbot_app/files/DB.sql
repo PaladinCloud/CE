@@ -125,6 +125,7 @@ SET @VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY='$VULNERABILITY_SCHEDULE_COL
 SET @VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY='$VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY';
 SET @ENABLE_EXTERNAL_ID='$ENABLE_EXTERNAL_ID';
 SET @EXTERNAL_ID='$EXTERNAL_ID';
+SET @ASSET_GOVERNANCE_FEATURE_FLAG='$ASSET_GOVERNANCE_FEATURE_FLAG';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -3362,3 +3363,6 @@ concat(@eshost,':',@esport,'/crowdstrike_mobile'),now(),null,'Infra & Platforms'
 
 update cf_Target set targetConfig='{"key":"externalAccountId,externalId","id":"externalId","name":"_resourcename"}' where targetName='workstation' and dataSourceName='crowdstrike';
 UPDATE cf_AssetGroupDetails SET groupType = 'system' where groupType = 'System';
+
+DELETE IGNORE FROM pac_config_properties where cfkey  in ('aws.eventbridge.bus.details');
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.eventbridge.bus.details',concat(@ASSET_GOVERNANCE_FEATURE_FLAG,''),'application','prd','latest',System, now(), NULL, NULL);

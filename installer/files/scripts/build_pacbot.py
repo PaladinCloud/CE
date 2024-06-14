@@ -44,6 +44,7 @@ class Buildpacbot(object):
         self.lambda_path = lambda_path
         self.google_analytics = google_analytics
         self.jobinterval = jobinterval
+        self.asset_governance_enabled  = asset_governance_enabled
 
     def _clean_up_all(self):
         os.chdir(self.cwd)
@@ -226,7 +227,10 @@ class Buildpacbot(object):
                     lines[idx] = "logout: '" + self.domain_cognito_url + "/logout?" + "client_id=" + self.client_cognito_id + "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url + "',\n"
                 if "CloudformationTemplateUrl: '" in line:
                     lines[idx] = "CloudformationTemplateUrl:'" + self.cloudformation_template_url + "'\n"
-
+                if "assetGovernanceEnabled: false" in line:
+                    lines[idx] = lines[idx].replace("assetGovernanceEnabled: false",
+                            "assetGovernanceEnabled: " + self.asset_governance_enabled) 
+ 
         with open(config_file, 'w') as f:
             f.writelines(lines)
 
@@ -288,6 +292,7 @@ if __name__ == "__main__":
     lambda_path = os.getenv('LAMBDA_PATH')
     google_analytics = os.getenv('GOOGLE_ANALYTICS')
     jobinterval = os.getenv('JOB_SCHEDULE_INTERVAL')
+    asset_governance_enabled = os.getenv('ASSET_GOVERNANCE_FEATURE_FLAG')
     Buildpacbot(
         aws_details,
         api_domain_url,
