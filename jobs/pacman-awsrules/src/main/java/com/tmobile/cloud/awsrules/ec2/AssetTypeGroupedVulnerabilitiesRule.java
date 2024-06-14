@@ -116,16 +116,18 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
     private String getVMVulnerabilityDetails(List<JsonObject> vulnerabilityInfoList, String severity) {
         List<VulnerabilityInfo> vulnerabilityList = new ArrayList<>();
         for (JsonObject vulnerability : vulnerabilityInfoList) {
-            for (JsonElement cveDetails : vulnerability.get(severity).getAsJsonArray()) {
-                VulnerabilityInfo vul = new VulnerabilityInfo();
-                String cveId = cveDetails.getAsJsonObject().get("id").getAsString();
-                CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
-                List<CveDetails> cveList = new ArrayList<>();
-                cveList.add(cve);
-                vul.setCveList(cveList);
-                vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("url").getAsString());
-                vul.setTitle(cveDetails.getAsJsonObject().get("title").getAsString());
-                vulnerabilityList.add(vul);
+            if (vulnerability.get(severity) != null) {
+                for (JsonElement cveDetails : vulnerability.get(severity).getAsJsonArray()) {
+                    VulnerabilityInfo vul = new VulnerabilityInfo();
+                    String cveId = cveDetails.getAsJsonObject().get("id").getAsString();
+                    CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
+                    List<CveDetails> cveList = new ArrayList<>();
+                    cveList.add(cve);
+                    vul.setCveList(cveList);
+                    vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("url").getAsString());
+                    vul.setTitle(cveDetails.getAsJsonObject().get("title").getAsString());
+                    vulnerabilityList.add(vul);
+                }
             }
         }
         ObjectMapper objectMapper = new ObjectMapper();
