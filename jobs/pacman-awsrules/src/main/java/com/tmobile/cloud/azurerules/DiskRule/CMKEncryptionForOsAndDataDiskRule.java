@@ -44,13 +44,14 @@ public class CMKEncryptionForOsAndDataDiskRule extends BasePolicy {
         }
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         boolean isValid = false;
+        boolean isBasicEncryptionCheck = Boolean.parseBoolean(ruleParam.get("isBasicEncryptionCheck"));
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isValid = validateCMKEncryption(esUrl, mustFilter);
+                isValid = validateCMKEncryption(esUrl, mustFilter, isBasicEncryptionCheck);
 
             } catch (Exception e) {
                 logger.error("unable to determine", e);
@@ -77,14 +78,14 @@ public class CMKEncryptionForOsAndDataDiskRule extends BasePolicy {
             }
         }
 
-        logger.debug("Os and Data disks are encrypted using customer managed keys.");
+        logger.debug("OS and Data disks are encrypted using customer managed keys.");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 
-    private boolean validateCMKEncryption(String esUrl, Map<String, Object> mustFilter) throws Exception {
+    private boolean validateCMKEncryption(String esUrl, Map<String, Object> mustFilter, boolean isBasicEncryptionCheck) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
-        boolean validationResult = true;
+        boolean isValid = false;
         JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
@@ -111,8 +112,8 @@ public class CMKEncryptionForOsAndDataDiskRule extends BasePolicy {
                         String encryptionType=encryptionProperty.getAsJsonObject()
                                 .get(PacmanRuleConstants.TYPE).getAsString();
                         logger.debug("encryptionType"+encryptionType);
-                        if(encryptionType.equalsIgnoreCase("EncryptionAtRestWithPlatformKey")){
-                            validationResult=false;
+                        if(isBasicEncryptionCheck || !encryptionType.equalsIgnoreCase("EncryptionAtRestWithPlatformKey")){
+                            isValid = true;
                         }
                     }
                     else {
@@ -129,7 +130,7 @@ public class CMKEncryptionForOsAndDataDiskRule extends BasePolicy {
         } else {
             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }
-        return validationResult;
+        return isValid;
     }
 
     @Override
