@@ -170,6 +170,8 @@ public interface PacmanSdkConstants {
     /** The date format. */
     String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
+    String DATE_FORMAT_CURRENT = "yyyy-mm-dd";
+
     String NOTIFICATION_EMAIL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** The es uri env var name. */
