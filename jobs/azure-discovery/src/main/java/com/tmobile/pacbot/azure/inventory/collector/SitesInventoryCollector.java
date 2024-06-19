@@ -67,9 +67,11 @@ public class SitesInventoryCollector implements Collector {
                     sitesList.add(sitesVH);
                 }
             }
-        } catch (Exception e) {
-            log.error("Error Collecting sites", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error occurred while collecting SitesInventory for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in SitesInventory collector: {}", Util.eCount.get());
         }
 
         log.info("Target Type : {}  Total: {} ", "Site", sitesList.size());

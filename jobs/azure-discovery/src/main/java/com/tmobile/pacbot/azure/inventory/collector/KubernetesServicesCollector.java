@@ -96,10 +96,12 @@ public class KubernetesServicesCollector implements Collector {
                     kubernetesClustersVHList.add(kubernetesClustersVH);
                 }
 
-            } catch (Exception e) {
-                logger.error("Error while fetching kubernetes Cluster: {}",
-                        kubernetesCluster.name(), e);
+            } catch (Exception exception) {
+                String errorMessage = String.format("Error collecting KubernetesServices for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+                logger.error(errorMessage, exception);
                 Util.eCount.getAndIncrement();
+                logger.debug("Current error count after exception occurred in KubernetesServices Collector: {}", Util.eCount.get());
+
             }
         }
         return kubernetesClustersVHList;

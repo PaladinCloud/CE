@@ -66,9 +66,11 @@ public class BlobServiceInventoryCollector implements Collector {
                         }
                         blobServiceVHList.add(blobServiceVH);
                     }
-                } catch (Exception e) {
-                    log.error(" Error fetching blobService for storage account {} Cause : {}", storageAccount.name(), e.getMessage());
+                } catch (Exception exception) {
+                    String errorMessage = String.format("Error collecting BlobService for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+                    log.error(errorMessage, exception);
                     Util.eCount.getAndIncrement();
+                    log.debug("Current error count after exception occurred in BlobServiceInventory Collector: {}", Util.eCount.get());
                 }
             }
         }

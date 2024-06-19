@@ -67,9 +67,12 @@ public class WorkflowInventoryCollector implements Collector {
                     workflowList.add(workflowVH);
                 }
             }
-        } catch (Exception e) {
-            log.error("Error fetching Workflow", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error occurred while collecting WorkflowInventory for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in WorkflowInventory collector: {}", Util.eCount.get());
+
         }
 
         log.info("Target Type : {}  Total: {} ", "workflow", workflowList.size());

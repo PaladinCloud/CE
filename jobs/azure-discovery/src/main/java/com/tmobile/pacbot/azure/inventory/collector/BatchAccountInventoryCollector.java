@@ -77,9 +77,11 @@ public class BatchAccountInventoryCollector implements Collector {
                     batchAccountList.add(batchAccountVH);
                 }
             }
-        } catch (Exception e) {
-            log.error("Error fetching BatchAccount", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error collecting BatchAccount for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in BatchAccountInventory collector: {}", Util.eCount.get());
         }
 
         log.info("Target Type : {}  Total: {} ", "Batch Account", batchAccountList.size());

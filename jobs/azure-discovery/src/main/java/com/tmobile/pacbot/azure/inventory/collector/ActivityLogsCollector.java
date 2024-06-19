@@ -83,10 +83,11 @@ public final class ActivityLogsCollector implements Collector {
                     }
                     activityLogVHList.add(activityLogVH);
                 }
-            } catch (Exception e) {
-                logger.error("Error while fetching activity logs for alert: {}",
-                        activityLogAlert.name(), e);
+            } catch (Exception exception) {
+                String errorMessage = String.format("Error collecting ActivityLogs for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+                logger.error(errorMessage, exception);
                 Util.eCount.getAndIncrement();
+                logger.debug("Current error count after exception occurred in ActivityLogs collector: {}", Util.eCount.get());
             }
         }
 

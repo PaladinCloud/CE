@@ -107,9 +107,12 @@ public class PolicyStatesInventoryCollector implements Collector {
                 policyStatesVH.setResourceGroupName(policyStatesObject.get("resourceGroup").getAsString());
                 policyStatesList.add(policyStatesVH);
             }
-        } catch (Exception e) {
-            log.error("Error collecting Policy States", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error occurred while collecting PolicyStates for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception in PolicyStates collector: {}", Util.eCount.get());
+
         }
 
         log.info("Target Type : {}  Total: {} ", "Policy States", policyStatesList.size());

@@ -65,8 +65,10 @@ public class MySQLInventoryCollector implements Collector {
                 mySqlServerList.add(mySQLServerVH);
             }
         } catch (Exception e) {
-            log.error("Error Collecting mysqlserver", e);
+            String errorMessage = String.format("Error while collecting MySQL Server for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, e);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in MySQL collector: {}", Util.eCount.get());
         }
 
         log.info("Target Type : {}  Total: {} ", "MySQL Server", mySqlServerList.size());

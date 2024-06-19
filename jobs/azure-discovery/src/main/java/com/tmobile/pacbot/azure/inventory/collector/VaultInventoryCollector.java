@@ -106,9 +106,12 @@ public class VaultInventoryCollector implements Collector {
                 setKeyExpirationDate(azureVault, vaultVH);
                 setSecretExpirationDate(azureVault, vaultVH);
             }
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error occurred while collecting VaultInventory for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in VaultInventory collector: {}", Util.eCount.get());
+
         }
 
         return vaultVH;
