@@ -70,9 +70,11 @@ public class DatabricksInventoryCollector implements Collector {
                 }
                 databricksList.add(databricksVH);
             }
-        } catch (Exception e) {
-            log.info("Error Collecting Databricks", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error collecting Databricks for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in DatabricksInventory Collector: {}", Util.eCount.get());
         }
 
         log.info("Target Type : {}  Total: {} ", "Databrick", databricksList.size());

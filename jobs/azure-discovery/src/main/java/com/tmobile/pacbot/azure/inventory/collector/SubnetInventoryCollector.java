@@ -83,10 +83,11 @@ public class SubnetInventoryCollector implements Collector {
 
                     subnetList.add(subnetVH);
                 }
-            } catch (Exception e) {
-                log.error(" Error fetching subnets for network inventory  {} Cause : {}", network.name(),
-                        e.getMessage());
+            } catch (Exception exception) {
+                String errorMessage = String.format("Error occurred while collecting SubnetInventory for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+                log.error(errorMessage, exception);
                 Util.eCount.getAndIncrement();
+                log.debug("Current error count after exception occurred in SubnetInventory collector: {}", Util.eCount.get());
             }
         }
 

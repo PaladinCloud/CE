@@ -63,9 +63,11 @@ public class MariaDBInventoryCollector implements Collector {
                 }
                 mariaDBList.add(mariaDBVH);
             }
-        } catch (Exception e) {
-            log.error("Error Collecting MariaDB", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error while collecting MariaDB for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in MariaDBInventory Collector: {}", Util.eCount.get());
         }
 
         log.info("Target Type : {}  Total: {} ", "MariaDB", mariaDBList.size());

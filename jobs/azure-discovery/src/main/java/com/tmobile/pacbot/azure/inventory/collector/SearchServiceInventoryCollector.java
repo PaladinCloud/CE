@@ -68,9 +68,11 @@ public class SearchServiceInventoryCollector implements Collector {
                     searchServiceList.add(searchServiceVH);
                 }
             }
-        } catch (Exception e) {
-            log.error("Error collecting Search Service", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error occurred while collecting SearchService for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in SearchServiceInventory collector: {}", Util.eCount.get());
         }
 
         log.info("Target Type : {}  Total: {} ", "Search Service", searchServiceList.size());

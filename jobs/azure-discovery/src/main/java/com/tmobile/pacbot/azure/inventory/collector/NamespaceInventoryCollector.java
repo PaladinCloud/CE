@@ -73,9 +73,11 @@ public class NamespaceInventoryCollector implements Collector {
                     namespaceList.add(namespaceVH);
                 }
             }
-        } catch (Exception e) {
-            log.error("Error collecting namespace", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error while collecting NamespaceInventory for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in NamespaceInventory collector: {}", Util.eCount.get());
         }
 
         log.info("Target Type : {}  Total: {} ", "Namespace", namespaceList.size());

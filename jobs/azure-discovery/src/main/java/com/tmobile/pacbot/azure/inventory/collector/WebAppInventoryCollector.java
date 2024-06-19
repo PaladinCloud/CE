@@ -61,9 +61,12 @@ public class WebAppInventoryCollector implements Collector {
             } catch (DefaultErrorResponseException e) {
                 log.error("Error Collecting Web App info", e);
                 ErrorManageUtil.uploadError(webAppVH.getSubscription(), webAppVH.getRegion(), "webapp", e.getMessage());
-            } catch (Exception e) {
-                log.error("Error Collecting Web App info", e);
+            } catch (Exception exception) {
+                String errorMessage = String.format("Error occurred while collecting WebAppInventory for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+                log.error(errorMessage, exception);
                 Util.eCount.getAndIncrement();
+                log.debug("Current error count after exception occurred in WebAppInventory collector: {}", Util.eCount.get());
+
             }
         }
 

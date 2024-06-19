@@ -61,11 +61,15 @@ public class SecurityPricingsInventoryCollector implements Collector {
                 }
                 securityPricingsList.add(securityPricingsVH);
             }
-        } catch (Exception e) {
-            log.error("Error collecting Security Pricings", e);
-            ErrorManageUtil.uploadError(subscription.getSubscriptionId(), "all", "securitypricings", e.getMessage());
-            if (!e.getMessage().contains("Please register to Microsoft.Security in order to view your security status")) {
+        } catch (Exception exception) {
+            log.error("Error collecting Security Pricings", exception);
+            ErrorManageUtil.uploadError(subscription.getSubscriptionId(), "all", "securitypricings", exception.getMessage());
+            if (!exception.getMessage().contains("Please register to Microsoft.Security in order to view your security status")) {
+                String errorMessage = String.format("Error occurred while collecting SecurityPricing for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+                log.error(errorMessage, exception);
                 Util.eCount.getAndIncrement();
+                log.debug("Current error count after exception in SecurityPricingInventory collector: {}", Util.eCount.get());
+
             }
         }
 

@@ -70,9 +70,12 @@ public class PostgreSQLInventoryCollector implements Collector {
                 }
                 postgreSQLServerList.add(postgreSQLServerVH);
             }
-        } catch (Exception e) {
-            log.error("Error collecting Postgres", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error while collecting PostgresSQLInventory for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception in PostgresSQLInventory collector: {}", Util.eCount.get());
+
         }
 
         log.info("Target Type : {} Total: {} ", "Postgres DB", postgreSQLServerList.size());

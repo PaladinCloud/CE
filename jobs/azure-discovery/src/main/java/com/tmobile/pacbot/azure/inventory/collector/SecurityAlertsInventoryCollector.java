@@ -59,9 +59,11 @@ public class SecurityAlertsInventoryCollector implements Collector {
 
                 securityAlertsList.add(securityAlertsVH);
             }
-        } catch (Exception e) {
-            log.error("Error collecting Security Alerts", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error while collecting SecurityAlerts for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in SecurityAlertsInventory collector: {}", Util.eCount.get());
         }
 
         log.info("Target Type : {}  Total: {} ", "Security Alerts", securityAlertsList.size());

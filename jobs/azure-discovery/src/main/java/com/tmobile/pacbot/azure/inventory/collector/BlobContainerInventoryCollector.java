@@ -74,9 +74,12 @@ public class BlobContainerInventoryCollector implements Collector {
                         blobContainerList.add(blobContainerVH);
                     }
 
-                } catch (Exception e) {
-                    log.error(" Error fetching blob containers for storage account {} Cause : {}", storageAccount.name(), e.getMessage());
+                } catch (Exception exception) {
+                    String errorMessage = String.format("Error collecting BlobContainer for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+                    log.error(errorMessage, exception);
                     Util.eCount.getAndIncrement();
+                    log.debug("Current error count after exception occurred in BlobContainerInventory Collector: {}", Util.eCount.get());
+
                 }
             }
         }

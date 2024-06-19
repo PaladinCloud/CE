@@ -102,8 +102,9 @@ public class AssetFileGenerator {
                         FileManager.generateTargetTypeFile(assetDataFactory.getAssetData(subscription, tagMap, targetType), targetType);
                         longRunningTargetTypeList.remove(targetType);
                     } catch (Exception e) {
-                        log.error("Error fetching {} for {}", targetType, subscription, e);
+                        log.error("Error Occurred while fetching {} for {}", targetType, subscription, e);
                         Util.eCount.getAndIncrement();
+                        log.debug("Current Error Count {} after exception occurred, while fetching {} for {}", Util.eCount.get(), targetType, subscription);
                     }
                 });
             }

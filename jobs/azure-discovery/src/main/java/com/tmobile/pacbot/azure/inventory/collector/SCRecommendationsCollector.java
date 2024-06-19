@@ -37,9 +37,12 @@ public class SCRecommendationsCollector implements Collector {
         try {
             String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
             recommendations = filterRecommendationInfo(response, subscription);
-        } catch (Exception e) {
-            log.error("Error Collecting Security Center Info", e);
+        } catch (Exception exception) {
+            String errorMessage = String.format("Error occurred while collecting SCRecommendations for subscriptionId: %s, subscriptionName: %s", subscription.getSubscriptionId(), subscription.getSubscriptionName());
+            log.error(errorMessage, exception);
             Util.eCount.getAndIncrement();
+            log.debug("Current error count after exception occurred in SCRecommendations collector: {}", Util.eCount.get());
+
         }
 
         log.info("Target Type : {}  Total: {} ", "Security Center", recommendations.size());
