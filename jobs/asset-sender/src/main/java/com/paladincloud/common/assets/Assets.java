@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -85,7 +86,7 @@ public class Assets {
                 var filename = entry.getValue();
                 try {
                     var supportingTypes = fileTypes.supportingTypes.get(type);
-                    if (supportingTypes != null) {
+                    if (CollectionUtils.isNotEmpty(supportingTypes)) {
                         LOGGER.warn("Supporting types for {} are not being processed: {}", type,
                             supportingTypes);
                     }
@@ -378,7 +379,7 @@ public class Assets {
     private static void override(Map<String, Object> document,
         List<Map<String, String>> overrideList, List<Map<String, String>> overrideFields) {
 
-        if (overrideList != null && !overrideList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(overrideList)) {
             overrideList.forEach(obj -> {
                 String key = obj.get("fieldname");
                 String value = obj.get("fieldvalue");
@@ -390,7 +391,7 @@ public class Assets {
         }
 
         // Add override fields if not already populated
-        if (overrideFields != null && !overrideFields.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(overrideFields)){
             String strOverrideFields = overrideFields.getFirst().get("updatableFields");
             String[] _strOverrideFields = strOverrideFields.split(",");
             for (String _strOverrideField : _strOverrideFields) {

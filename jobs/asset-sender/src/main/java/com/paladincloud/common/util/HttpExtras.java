@@ -18,6 +18,7 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.amazon.awssdk.utils.CollectionUtils;
 
 public class HttpExtras {
 
@@ -34,7 +35,7 @@ public class HttpExtras {
 
     public static String get(String uri, Map<String, String> headers) throws IOException {
         HttpGet request = new HttpGet(uri);
-        if (headers != null && !headers.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(headers)) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 request.setHeader(entry.getKey(), entry.getValue());
             }

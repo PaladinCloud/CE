@@ -13,6 +13,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apache-commons.version>3.14.0</apache-commons.version>
+    <apache-collections.version>4.5.0-M2</apache-collections.version>
     <aws.java.sdk.version>2.26.4</aws.java.sdk.version>
     <elasticsearch.version>7.17.21</elasticsearch.version>
     <faster-xml-jackson.version>2.17.1</faster-xml-jackson.version>
@@ -46,6 +47,11 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>${apache-commons.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>${apache-collections.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

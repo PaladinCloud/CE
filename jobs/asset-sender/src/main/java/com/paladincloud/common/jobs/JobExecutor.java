@@ -60,6 +60,9 @@ public abstract class JobExecutor {
         var map = new HashMap<String, String>();
         for (String arg : args) {
             var tokens = arg.split("=");
+            if (tokens.length < 2) {
+                throw new JobException(STR."Argument format incorrect: \{arg}; should be '--name=value");
+            }
             var keyTokens = tokens[0].split("--");
             map.put(keyTokens[keyTokens.length - 1], tokens[1]);
         }
