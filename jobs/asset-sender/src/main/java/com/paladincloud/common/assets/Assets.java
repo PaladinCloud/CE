@@ -94,9 +94,9 @@ public class Assets {
                     var now = ZonedDateTime.now();
                     var loadDate = TimeFormatter.formatZeroSeconds(now);
                     Map<String, Object> stats = new java.util.HashMap<>(
-                        Map.ofEntries(entry("datasource", dataSource),
+                        Map.ofEntries(entry( DocumentFields.DATA_SOURCE, dataSource),
                             entry(DocumentFields.DOC_TYPE, type),
-                            entry("start_time", TimeFormatter.formatISO8601(now))));
+                            entry(DocumentFields.START_TIME, TimeFormatter.formatISO8601(now))));
 
                     var indexName = StringExtras.indexName(dataSource, type);
                     var existingDocuments = ElasticSearch.getExistingDocuments(indexName, filters);
@@ -129,9 +129,9 @@ public class Assets {
                             doc.get(DocumentFields.DOC_ID).toString(), doc)).toList());
                     }
 
-                    stats.put("total_docs", newDocuments.size());
-                    stats.put("end_time", TimeFormatter.formatNowISO8601());
-                    stats.put("newly_discovered", newDocuments.stream().filter(
+                    stats.put(DocumentFields.TOTAL_DOCS, newDocuments.size());
+                    stats.put(DocumentFields.END_TIME, TimeFormatter.formatNowISO8601());
+                    stats.put(DocumentFields.NEWLY_DISCOVERED, newDocuments.stream().filter(
                         (e -> e.get(DocumentFields.DISCOVERY_DATE)
                             .equals(e.get(DocumentFields.FIRST_DISCOVERED)))).count());
                     batchIndexer.add(
