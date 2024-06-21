@@ -32,13 +32,13 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    AssetTypes provideAssetTypes() {
-        return new AssetTypes(provideElasticSearch(), provideDatabase());
+    AssetTypes provideAssetTypes(ElasticSearch elasticSearch, Database database) {
+        return new AssetTypes(elasticSearch, database);
     }
 
     @Singleton
     @Provides
-    Assets provideAssets() {
-        return new Assets(provideElasticSearch(), provideAssetTypes(), provideS3(), provideDatabase());
+    Assets provideAssets(ElasticSearch elasticSearch, AssetTypes assetTypes, S3 s3, Database database) {
+        return new Assets(elasticSearch, assetTypes, s3, database);
     }
 }

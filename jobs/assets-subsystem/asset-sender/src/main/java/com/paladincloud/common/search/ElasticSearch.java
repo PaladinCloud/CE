@@ -118,6 +118,7 @@ public class ElasticSearch {
 
     public void createIndex(String indexName) throws IOException {
         if (indexMissing(indexName)) {
+            LOGGER.info("Creating index {}", indexName);
             var payload = """
                 { "settings": { "index": { "number_of_shards": 1, "number_of_replicas": 1, "mapping.ignore_malformed": true } } }
                 """;
