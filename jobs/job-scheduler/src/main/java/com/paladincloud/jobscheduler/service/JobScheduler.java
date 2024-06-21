@@ -80,7 +80,7 @@ public class JobScheduler {
     private boolean aquaEnabled;
 
     private boolean tenableEnabled;
-    
+
 
     @Value("${base.region}")
     private String region;
@@ -90,13 +90,13 @@ public class JobScheduler {
 
     @Value("${scheduler.role}")
     private String roleName;
-    
+
     @Value("${plugins.in.v1}")
     private String pluginUsingV1;
 
     @Value("#{'${composite.plugins:}'.split(',')}")
     private Set<String> compositePlugins;
-    
+
     @Autowired
     private DataCollectorSQSService dataCollectorSQSServic;
 
@@ -134,19 +134,19 @@ public class JobScheduler {
             }
 
             if (!putEventsRequestEntries.isEmpty()) {
-					PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries)
-							.build();
+                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries)
+                        .build();
 
-					PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
-					for (PutEventsResultEntry resultEntry : result.entries()) {
-						if (resultEntry.eventId() != null) {
-							logger.info(EVENT_ID, resultEntry.eventId());
-						} else {
-							logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
-						}
-					}
-				}
+                for (PutEventsResultEntry resultEntry : result.entries()) {
+                    if (resultEntry.eventId() != null) {
+                        logger.info(EVENT_ID, resultEntry.eventId());
+                    } else {
+                        logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
+                    }
+                }
+            }
 
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
