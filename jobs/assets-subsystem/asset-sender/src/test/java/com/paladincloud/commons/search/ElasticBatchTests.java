@@ -1,7 +1,9 @@
 package com.paladincloud.commons.search;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import com.paladincloud.common.errors.JobException;
 import com.paladincloud.common.search.ElasticBatch;
 import com.paladincloud.common.search.ElasticBatch.BatchItem;
 import com.paladincloud.common.search.ElasticSearch;
@@ -42,8 +44,31 @@ public class ElasticBatchTests {
         }
     }
 
+    @Test
+    public void failedInsertThrowsException() throws Exception {
+        var expectedPayload = """
+            { "index": { "_index": "testing", "_id": "id-1" } }
+            { "some": "data" }
+            """;
+        setBadParameterResponse();
+        when(elasticSearch.invoke(HttpMethod.POST, "/_bulk", expectedPayload)).thenReturn(
+            elasticResponse);
+        assertThrows(JobException.class, () -> {
+            try (var batch = new ElasticBatch(elasticSearch)) {
+                batch.add(new BatchItem("testing", "id-1", """
+                    { "some": "data" }
+                    """.trim()));
+            }
+        });
+    }
+
     private void setSuccessfulResponse() {
         when(elasticResponse.getStatusLine()).thenReturn(
             new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "OK"));
+    }
+
+    private void setBadParameterResponse() {
+        when(elasticResponse.getStatusLine()).thenReturn(
+            new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 400, "Bad Request"));
     }
 }

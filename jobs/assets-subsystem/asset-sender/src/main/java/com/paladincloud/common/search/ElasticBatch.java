@@ -69,7 +69,7 @@ public class ElasticBatch implements AutoCloseable {
                 .getStatusCode()} reason=\{response.getStatusLine().getReasonPhrase()}");
         }
         if (response.hasWarnings()) {
-            throw new JobException("ElasticSearch bulk insert has warnings");
+            throw new JobException(STR."ElasticSearch bulk insert has warnings \{response.getWarnings()}");
         }
         batchItems.clear();
     }
