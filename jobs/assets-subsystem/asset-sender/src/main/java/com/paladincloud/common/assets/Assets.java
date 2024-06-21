@@ -46,11 +46,15 @@ public class Assets {
 
     private final ElasticSearch elasticSearch;
     private final AssetTypes assetTypes;
+    private final S3 s3;
+    private final Database database;
 
     @Inject
-    public Assets(ElasticSearch elasticSearch, AssetTypes assetTypes) {
+    public Assets(ElasticSearch elasticSearch, AssetTypes assetTypes, S3 s3, Database database) {
         this.elasticSearch = elasticSearch;
         this.assetTypes = assetTypes;
+        this.s3 = s3;
+        this.database = database;
     }
 
     private static void setAssetDisplayName(Map<String, Object> doc) {
@@ -82,10 +86,10 @@ public class Assets {
 
     }
 
-    private static List<Map<String, Object>> fetchFromS3(String bucket, String path,
+    private List<Map<String, Object>> fetchFromS3(String bucket, String path,
         String dataSource, String type) {
         try {
-            return S3.fetchData(bucket, path);
+            return s3.fetchData(bucket, path);
         } catch (IOException e) {
             throw new JobException(
                 STR."Exception fetching asset data for \{dataSource} from \{type}; path=\{path}",
@@ -216,7 +220,7 @@ public class Assets {
         }
     }
 
-    private static void setMissingAccountName(Map<String, Object> newDocument,
+    private void setMissingAccountName(Map<String, Object> newDocument,
         Map<String, String> accountIdNameMap) {
         String accountId = Stream.of(newDocument.get(AssetDocumentFields.PROJECT_ID),
                 newDocument.get(AssetDocumentFields.ACCOUNT_ID)).filter(Objects::nonNull)
@@ -225,7 +229,7 @@ public class Assets {
             if (!accountIdNameMap.containsKey(accountId)) {
                 LOGGER.info("querying accountName for specific accountId");
                 String accountNameQueryStr = STR."SELECT accountName FROM pacmandata.cf_Accounts WHERE accountId = '\{accountId}'";
-                var accountNameMapList = Database.executeQuery(accountNameQueryStr);
+                var accountNameMapList = database.executeQuery(accountNameQueryStr);
                 if (!accountNameMapList.isEmpty()) {
                     accountIdNameMap.putIfAbsent(accountId,
                         accountNameMapList.getFirst().get("accountName"));
@@ -237,7 +241,7 @@ public class Assets {
 
     public void upload(String dataSource) {
         var bucket = ConfigService.get(ConfigConstants.S3.BUCKET_NAME);
-        var allFilenames = S3.listObjects(ConfigService.get(ConfigConstants.S3.BUCKET_NAME),
+        var allFilenames = s3.listObjects(ConfigService.get(ConfigConstants.S3.BUCKET_NAME),
             assetsPathPrefix(dataSource));
         var types = assetTypes.getTypesWithDisplayName(dataSource);
         // TODO: DON'T CHECK THIS DEV HACK IN!
@@ -305,9 +309,9 @@ public class Assets {
                         // ERROR condition - update elastic index, it looks like
                         throw new RuntimeException("Handle no discovered assets");
                     } else {
-                        var updatableFields = Database.executeQuery(
+                        var updatableFields = database.executeQuery(
                             STR."select updatableFields  from cf_pac_updatable_fields where resourceType ='\{type}'");
-                        var overrides = Database.executeQuery(
+                        var overrides = database.executeQuery(
                             STR."select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '\{type}'");
                         var overridesMap = overrides.parallelStream().collect(
                             Collectors.groupingBy(obj -> obj.get(AssetDocumentFields.RESOURCE_ID)));

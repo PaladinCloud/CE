@@ -25,10 +25,13 @@ public class AssetTypes {
     private static Map<String, Map<String, String>> typeInfo;
 
     private final ElasticSearch elasticSearch;
+    private final Database database;
+
 
     @Inject
-    public AssetTypes(ElasticSearch elasticSearch) {
+    public AssetTypes(ElasticSearch elasticSearch, Database database) {
         this.elasticSearch = elasticSearch;
+        this.database = database;
     }
 
     public Set<String> getTypes(String dataSource) {
@@ -73,7 +76,7 @@ public class AssetTypes {
 
             var query = ConfigService.get(Config.CONFIG_TYPES_QUERY)
                 + STR." and dataSourceName = '\{dataSource}'";
-            var typeList = Database.executeQuery(query);
+            var typeList = database.executeQuery(query);
             try {
                 for (var type : typeList) {
                     var typeName = type.get("targetName");

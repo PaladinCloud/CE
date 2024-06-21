@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
@@ -17,18 +19,20 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+@Singleton
 public class S3 {
 
     private static final Logger LOGGER = LogManager.getLogger(S3.class);
 
-    private S3() {
+    @Inject
+    public S3() {
     }
 
-    private static S3Client s3Client() {
+    private S3Client s3Client() {
         return S3Client.builder().httpClientBuilder(ApacheHttpClient.builder()).build();
     }
 
-    public static List<String> listObjects(String bucket, String prefix) {
+    public List<String> listObjects(String bucket, String prefix) {
         try (var s3Client = s3Client()) {
             List<String> result = new ArrayList<>();
             var pager = s3Client.listObjectsV2Paginator(
@@ -40,8 +44,7 @@ public class S3 {
         }
     }
 
-    public static <T> List<Map<String, T>> fetchData(String bucket, String path)
-        throws IOException {
+    public <T> List<Map<String, T>> fetchData(String bucket, String path) throws IOException {
         try (var s3Client = s3Client()) {
             if (!doesObjectExist(s3Client, bucket, path)) {
                 LOGGER.info("File '{}' does not exist in bucket '{}'", path, bucket);
@@ -55,7 +58,7 @@ public class S3 {
         }
     }
 
-    private static boolean doesObjectExist(S3Client s3Client, String bucket, String path) {
+    private boolean doesObjectExist(S3Client s3Client, String bucket, String path) {
         try {
             s3Client.headObject(HeadObjectRequest.builder().bucket(bucket).key(path).build());
             return true;

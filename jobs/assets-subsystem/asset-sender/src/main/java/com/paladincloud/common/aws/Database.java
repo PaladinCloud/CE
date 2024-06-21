@@ -13,13 +13,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class Database {
 
-    private Database() {
+    @Inject
+    public Database() {
     }
 
-    private static Connection getConnection() {
+    private Connection getConnection() {
         Properties props = new Properties();
 
         props.setProperty("user", ConfigService.get(ConfigConstants.RDS.USER));
@@ -32,7 +36,7 @@ public class Database {
         }
     }
 
-    public static List<Map<String, String>> executeQuery(String query) {
+    public List<Map<String, String>> executeQuery(String query) {
         var results = new ArrayList<Map<String, String>>();
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(
             query)) {
