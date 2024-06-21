@@ -3645,3 +3645,5 @@ INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `def
 INSERT IGNORE INTO `cf_PolicyParams` (`policyID`, `paramKey`, `paramValue`, `defaultVal`, `isEdit`, `isMandatory`, `encrypt`, `displayName`, `description`) VALUES ('encrypt_os_and_data_disk','isBasicEncryptionCheck','true','','false','false','false','','');
 
 UPDATE cf_PolicyTable SET severity = 'medium' WHERE policyId = 'Use_CMK_to_encrypt_OS_and_Data_disk';
+/* Remove entry for exiting customer */
+Delete from cf_PolicyTable where policyId= 'TaggingRule_version-1_SecuritycenterTaggingRule_securitycenter';
