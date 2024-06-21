@@ -1,7 +1,7 @@
 package com.paladincloud.common;
 
 /**
- * These are the fields in the ElasticSearch documents
+ * These are the fields in the ElasticSearch Asset documents
  */
 public interface AssetDocumentFields {
 
