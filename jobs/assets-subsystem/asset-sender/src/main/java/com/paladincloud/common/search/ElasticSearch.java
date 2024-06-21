@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.apache.http.HttpHost;
 import org.apache.http.ParseException;
 import org.apache.http.entity.ContentType;
@@ -21,17 +23,18 @@ import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 
+@Singleton
 public class ElasticSearch {
 
     private static final int MAX_RETURNED_RESULTS = 10000;
 
     private static final Logger LOGGER = LogManager.getLogger(ElasticSearch.class);
-    private static RestClient restClient;
+    private RestClient restClient;
 
-    private ElasticSearch() {
-    }
+    @Inject
+    public ElasticSearch() { }
 
-    public static boolean indexMissing(String indexName) {
+    public boolean indexMissing(String indexName) {
         try {
             var response = invoke(HttpMethod.HEAD, indexName, null);
             if (response != null) {
@@ -43,11 +46,10 @@ public class ElasticSearch {
         return true;
     }
 
-    public static Response invoke(HttpMethod method, String endpoint, String payLoad)
-        throws IOException {
+    public Response invoke(HttpMethod method, String endpoint, String payLoad) throws IOException {
         String uri = endpoint;
         if (!uri.startsWith("/")) {
-            uri = "/" + uri;
+            uri = STR."/\{uri}";
         }
 
         var request = new Request(method.name, uri);
@@ -64,10 +66,10 @@ public class ElasticSearch {
      * @param filters   the filters
      * @return the existing documents
      */
-    public static Map<String, Map<String, String>> getExistingDocuments(String indexName,
+    public Map<String, Map<String, String>> getExistingDocuments(String indexName,
         List<String> filters) {
         int totalDocumentCount = getDocumentCount(indexName);
-        boolean scroll = totalDocumentCount > MAX_RETURNED_RESULTS;
+        boolean scroll = totalDocumentCount > ElasticSearch.MAX_RETURNED_RESULTS;
 
         String keyField = filters.getFirst();
         StringBuilder filter_path = new StringBuilder("&filter_path=_scroll_id,");
@@ -77,7 +79,7 @@ public class ElasticSearch {
         filter_path.deleteCharAt(filter_path.length() - 1);
 
         String endPoint = STR."\{indexName}/_search?scroll=1m\{filter_path}&size=\{Math.min(
-            totalDocumentCount, MAX_RETURNED_RESULTS)}";
+            totalDocumentCount, ElasticSearch.MAX_RETURNED_RESULTS)}";
         if (totalDocumentCount == 0) {
             endPoint = STR."\{indexName}/_search?scroll=1m\{filter_path}";
         }
@@ -88,11 +90,11 @@ public class ElasticSearch {
         String scrollId = fetchDataAndScrollId(endPoint, results, keyField, payLoad);
 
         if (scroll) {
-            totalDocumentCount -= MAX_RETURNED_RESULTS;
+            totalDocumentCount -= ElasticSearch.MAX_RETURNED_RESULTS;
             do {
                 endPoint = STR."/_search/scroll?scroll=1m&scroll_id=\{scrollId}\{filter_path}";
                 scrollId = fetchDataAndScrollId(endPoint, results, keyField, null);
-                totalDocumentCount -= MAX_RETURNED_RESULTS;
+                totalDocumentCount -= ElasticSearch.MAX_RETURNED_RESULTS;
                 if (totalDocumentCount <= 0) {
                     scroll = false;
                 }
@@ -101,8 +103,8 @@ public class ElasticSearch {
         return results;
     }
 
-    public static ElasticQueryResponse invokeAndCheck(HttpMethod method, String endpoint,
-        String payLoad) throws IOException {
+    public ElasticQueryResponse invokeAndCheck(HttpMethod method, String endpoint, String payLoad)
+        throws IOException {
         var response = invoke(method, endpoint, payLoad);
         var statusCode = response.getStatusLine().getStatusCode();
         if (statusCode < 200 || statusCode > 299) {
@@ -114,15 +116,7 @@ public class ElasticSearch {
         return transformResponse(response);
     }
 
-    public static ElasticQueryResponse transformResponse(Response response) throws IOException {
-        var objectMapper = new ObjectMapper().configure(
-            DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        return objectMapper.readValue(EntityUtils.toString(response.getEntity()),
-            ElasticQueryResponse.class);
-    }
-
-    public static void createIndex(String indexName) throws IOException {
+    public void createIndex(String indexName) throws IOException {
         if (indexMissing(indexName)) {
             var payload = """
                 { "settings": { "index": { "number_of_shards": 1, "number_of_replicas": 1, "mapping.ignore_malformed": true } } }
@@ -131,7 +125,15 @@ public class ElasticSearch {
         }
     }
 
-    private static RestClient getRestClient() {
+    private ElasticQueryResponse transformResponse(Response response) throws IOException {
+        var objectMapper = new ObjectMapper().configure(
+            DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        return objectMapper.readValue(EntityUtils.toString(response.getEntity()),
+            ElasticQueryResponse.class);
+    }
+
+    private RestClient getRestClient() {
         if (restClient == null) {
             var host = ConfigService.get(Elastic.ELASTIC_HOST);
             var port = Integer.parseInt(ConfigService.get(Elastic.ELASTIC_PORT));
@@ -146,7 +148,7 @@ public class ElasticSearch {
      * @param indexName the index name
      * @return the type count
      */
-    private static int getDocumentCount(String indexName) {
+    private int getDocumentCount(String indexName) {
         try {
             Response response = invoke(HttpMethod.GET, STR."\{indexName}/_count?filter_path=count",
                 """
@@ -168,8 +170,8 @@ public class ElasticSearch {
      * @param payLoad  the pay load
      * @return the string
      */
-    private static String fetchDataAndScrollId(String endPoint,
-        Map<String, Map<String, String>> results, String keyField, String payLoad) {
+    private String fetchDataAndScrollId(String endPoint, Map<String, Map<String, String>> results,
+        String keyField, String payLoad) {
         try {
             var response = invokeAndCheck(HttpMethod.GET, endPoint, payLoad);
             if (response.hits != null && response.hits.hits != null) {

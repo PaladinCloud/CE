@@ -11,16 +11,22 @@
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
+    <maven-compiler-plugin-version>3.13.0</maven-compiler-plugin-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apache-commons.version>3.14.0</apache-commons.version>
     <apache-collections.version>4.5.0-M2</apache-collections.version>
     <aws.java.sdk.version>2.26.4</aws.java.sdk.version>
+    <dagger.version>2.51.1</dagger.version>
     <elasticsearch.version>7.17.21</elasticsearch.version>
     <faster-xml-jackson.version>2.17.1</faster-xml-jackson.version>
+    <junit.version>5.10.2</junit.version>
     <log4j2.version>2.17.1</log4j2.version>
     <log4j-slf4j.version>2.23.1</log4j-slf4j.version>
+    <maven-surefire.version>3.3.0</maven-surefire.version>
+    <mockito.version>5.12.0</mockito.version>
     <mysql-connector-j-version>8.4.0</mysql-connector-j-version>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -32,7 +38,23 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>    <dependency>
+      <groupId>com.google.dagger</groupId>
+      <artifactId>dagger</artifactId>
+      <version>${dagger.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
@@ -106,18 +128,47 @@
       <artifactId>mysql-connector-j</artifactId>
       <version>${mysql-connector-j-version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <version>${maven-surefire.version}</version>
+    </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin-version}</version>
         <configuration>
           <source>21</source>
           <target>21</target>
-          <compilerArgs>--enable-preview</compilerArgs>
+          <compilerArgs>
+            <arg>--enable-preview</arg>
+          </compilerArgs>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.dagger</groupId>
+              <artifactId>dagger-compiler</artifactId>
+              <version>${dagger.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>--enable-preview -XX:+EnableDynamicAgentLoading</argLine>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
 

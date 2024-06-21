@@ -3,7 +3,7 @@ package com.paladincloud.common;
 /**
  * These are the fields in the ElasticSearch documents
  */
-public interface DocumentFields {
+public interface AssetDocumentFields {
 
     String ACCOUNT_ID = "accountid";
     String ACCOUNT_NAME = "accountname";

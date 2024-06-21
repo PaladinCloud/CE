@@ -1,5 +1,8 @@
 package com.paladincloud.common.jobs;
 
+import com.paladincloud.common.ApplicationModule;
+import com.paladincloud.common.DaggerServerComponent;
+import com.paladincloud.common.ServerComponent;
 import com.paladincloud.common.config.ConfigService;
 import com.paladincloud.common.errors.JobException;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ public abstract class JobExecutor {
     private static final Logger LOGGER = LogManager.getLogger(JobExecutor.class);
     private static final List<String> executorRequiredFields = List.of(CONFIG_SERVICE_CREDENTIALS,
         CONFIG_SERVICE_URL);
+
     protected Map<String, String> params = new HashMap<>();
 
     public int run(String[] args) {
@@ -61,7 +65,8 @@ public abstract class JobExecutor {
         for (String arg : args) {
             var tokens = arg.split("=");
             if (tokens.length < 2) {
-                throw new JobException(STR."Argument format incorrect: \{arg}; should be '--name=value");
+                throw new JobException(
+                    STR."Argument format incorrect: \{arg}; should be '--name=value");
             }
             var keyTokens = tokens[0].split("--");
             map.put(keyTokens[keyTokens.length - 1], tokens[1]);

@@ -15,19 +15,27 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Types {
+public class AssetTypes {
 
-    private static final Logger LOGGER = LogManager.getLogger(Types.class);
+    private static final Logger LOGGER = LogManager.getLogger(AssetTypes.class);
     private static Map<String, Map<String, String>> typeInfo;
 
-    public static Set<String> getTypes(String dataSource) {
+    private final ElasticSearch elasticSearch;
+
+    @Inject
+    public AssetTypes(ElasticSearch elasticSearch) {
+        this.elasticSearch = elasticSearch;
+    }
+
+    public Set<String> getTypes(String dataSource) {
         return getTypeConfig(dataSource).keySet();
     }
 
-    public static Map<String, String> getTypesWithDisplayName(String dataSource) {
+    public Map<String, String> getTypesWithDisplayName(String dataSource) {
         var typeInfo = getTypeConfig(dataSource);
         var targetsWithName = new HashMap<String, String>();
         for (Map.Entry<String, Map<String, String>> typeEntry : typeInfo.entrySet()) {
@@ -41,20 +49,20 @@ public class Types {
         return targetsWithName;
     }
 
-    public static String getKeyForType(String ds, String type) {
+    public String getKeyForType(String ds, String type) {
         return getTypeConfig(ds).get(type).get("key");
     }
 
-    public static String getIdForType(String ds, String type) {
+    public String getIdForType(String ds, String type) {
         return getTypeConfig(ds).get(type).get("id");
     }
 
-    public static String getResourceNameType(String ds, String type) {
+    public String getResourceNameType(String ds, String type) {
         return getTypeConfig(ds).get(type).get("name");
 
     }
 
-    private static Map<String, Map<String, String>> getTypeConfig(String dataSource) {
+    private Map<String, Map<String, String>> getTypeConfig(String dataSource) {
         var targetTypesInclude = StringUtils.split(
             ConfigService.get(Config.CONFIG_TARGET_TYPE_INCLUDE), ",", true);
         var targetTypesExclude = StringUtils.split(
@@ -87,12 +95,12 @@ public class Types {
         return typeInfo;
     }
 
-    public static void setupIndexAndTypes(String dataSource) {
+    public void setupIndexAndTypes(String dataSource) {
         var newAssets = new HashSet<String>();
         var types = getTypes(dataSource);
         for (var type : types) {
             var indexName = StringExtras.indexName(dataSource, type);
-            if (ElasticSearch.indexMissing(indexName)) {
+            if (elasticSearch.indexMissing(indexName)) {
                 if (!indexName.equals("kvt_gcp_cloudfunction")) {
                     LOGGER.error("Skipping index creation for {}", indexName);
                     continue;
@@ -128,10 +136,10 @@ public class Types {
                     """;
 
                 try {
-                    ElasticSearch.invoke(HttpMethod.PUT, indexName, payload);
-                    ElasticSearch.invoke(HttpMethod.PUT, STR."/\{indexName}/_alias/\{dataSource}",
+                    elasticSearch.invoke(HttpMethod.PUT, indexName, payload);
+                    elasticSearch.invoke(HttpMethod.PUT, STR."/\{indexName}/_alias/\{dataSource}",
                         null);
-                    ElasticSearch.invoke(HttpMethod.PUT, STR."/\{indexName}/_alias/ds-all", null);
+                    elasticSearch.invoke(HttpMethod.PUT, STR."/\{indexName}/_alias/ds-all", null);
                 } catch (IOException e) {
                     throw new JobException(
                         STR."Error while creating the index '\{indexName}' using '\{payload}'", e);
@@ -143,7 +151,7 @@ public class Types {
         AssetGroups.updateImpactedAliases(newAssets.stream().toList(), dataSource);
 
         try {
-            ElasticSearch.createIndex("exceptions");
+            elasticSearch.createIndex("exceptions");
         } catch (IOException e) {
             throw new JobException("Error while creating the 'exceptions' index", e);
         }

@@ -1,23 +1,26 @@
 package com.paladincloud.common.search;
 
-import com.paladincloud.common.search.ElasticSearch.HttpMethod;
+import com.paladincloud.common.errors.JobException;
 import com.paladincloud.common.util.MapExtras;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
 
 public class ElasticBatch implements AutoCloseable {
 
     public static int DEFAULT_BATCH_SIZE = 5000;
-    private final int batchSize;
     private final List<BatchItem> batchItems = new ArrayList<>();
+    private final ElasticSearch elasticSearch;
+    private int batchSize = DEFAULT_BATCH_SIZE;
 
-    public ElasticBatch() {
-        this(DEFAULT_BATCH_SIZE);
+    @Inject
+    public ElasticBatch(ElasticSearch elasticSearch) {
+        this.elasticSearch = elasticSearch;
     }
 
-    public ElasticBatch(int batchSize) {
+    public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
 
@@ -59,7 +62,15 @@ public class ElasticBatch implements AutoCloseable {
             payload.append("\n");
         }
 
-        ElasticSearch.invoke(HttpMethod.POST, "/_bulk", payload.toString());
+        var response = elasticSearch.invoke(ElasticSearch.HttpMethod.POST, "/_bulk",
+            payload.toString());
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new JobException(STR."ElasticSearch bulk insert failed: code=\{response.getStatusLine()
+                .getStatusCode()} reason=\{response.getStatusLine().getReasonPhrase()}");
+        }
+        if (response.hasWarnings()) {
+            throw new JobException("ElasticSearch bulk inset has warnings");
+        }
         batchItems.clear();
     }
 
