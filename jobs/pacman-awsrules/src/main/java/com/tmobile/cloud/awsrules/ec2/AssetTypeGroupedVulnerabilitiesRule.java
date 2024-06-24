@@ -123,21 +123,24 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
                     vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("url").getAsString());
                     vul.setTitle(cveDetails.getAsJsonObject().get("title").getAsString());
                     /* If there is a list of cve IDs group it under this vulnerability info */
-                    if (cveDetails.getAsJsonObject().get("cves") != null && cveDetails.getAsJsonObject().get("cves").isJsonArray()) {
-                        JsonArray cveArray = cveDetails.getAsJsonObject().get("cves").getAsJsonArray();
-                        List<CveDetails> cveList = new ArrayList<>();
-                        for (JsonElement e : cveArray) {
-                            String cveId = e.getAsString();
+                    JsonElement cves = cveDetails.getAsJsonObject().get("cves");
+                    if (cves != null) {
+                        if (cves.isJsonArray()) {
+                            JsonArray cveArray = cves.getAsJsonArray();
+                            List<CveDetails> cveList = new ArrayList<>();
+                            for (JsonElement e : cveArray) {
+                                String cveId = e.getAsString();
+                                CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
+                                cveList.add(cve);
+                                vul.setCveList(cveList);
+                            }
+                        } else if (!StringUtils.isNullOrEmpty(cves.getAsString())) {
+                            String cveId = cves.getAsString();
                             CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
+                            List<CveDetails> cveList = new ArrayList<>(1);
                             cveList.add(cve);
                             vul.setCveList(cveList);
                         }
-                    } else {
-                        String cveId = cveDetails.getAsJsonObject().get("id").getAsString();
-                        CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
-                        List<CveDetails> cveList = new ArrayList<>(1);
-                        cveList.add(cve);
-                        vul.setCveList(cveList);
                     }
                     vulnerabilityList.add(vul);
                 }
