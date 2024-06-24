@@ -1,21 +1,30 @@
 package com.paladincloud.common.util;
 
+import com.paladincloud.common.config.ConfigConstants.Dev;
+import com.paladincloud.common.config.ConfigService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StringExtras {
 
     public static final String[] EMPTY_ARRAY = new String[0];
+    private static final Logger LOGGER = LogManager.getLogger(StringExtras.class);
 
     private StringExtras() {
     }
 
     public static String indexName(String dataSource, String type) {
-        System.out.println("!! DON'T FORGET TO REMOVE THIS INDEX NAME HACK KEVIN!!");
-        return STR."kvt_\{dataSource}_\{type}";
-//        return STR."\{dataSource}_\{type}";
+        var name = STR."\{dataSource}_\{type}";
+        var devPrefix = ConfigService.get(Dev.INDEX_PREFIX);
+        if (!StringUtils.isEmpty(devPrefix)) {
+            name = STR."\{devPrefix}-\{name}";
+            LOGGER.warn("Overriding index prefix with '{}' => {}", devPrefix, name);
+        }
+        return name;
     }
 
     /**

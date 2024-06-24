@@ -26,12 +26,14 @@ public class AssetTypes {
 
     private final ElasticSearch elasticSearch;
     private final Database database;
+    private final AssetGroups assetGroups;
 
 
     @Inject
-    public AssetTypes(ElasticSearch elasticSearch, Database database) {
+    public AssetTypes(ElasticSearch elasticSearch, Database database, AssetGroups assetGroups) {
         this.elasticSearch = elasticSearch;
         this.database = database;
+        this.assetGroups = assetGroups;
     }
 
     public Set<String> getTypes(String dataSource) {
@@ -66,16 +68,18 @@ public class AssetTypes {
     }
 
     private Map<String, Map<String, String>> getTypeConfig(String dataSource) {
-        var targetTypesInclude = StringUtils.split(
-            ConfigService.get(Config.CONFIG_TARGET_TYPE_INCLUDE), ",", true);
-        var targetTypesExclude = StringUtils.split(
-            ConfigService.get(Config.CONFIG_TARGET_TYPE_EXCLUDE), ",", true);
+        var assetTypeOverride = StringUtils.split(
+            ConfigService.get(ConfigConstants.Dev.ASSET_TYPE_OVERRIDE), ",", true);
+        var targetTypesInclude = StringUtils.split(ConfigService.get(Config.TARGET_TYPE_INCLUDE),
+            ",", true);
+        var targetTypesExclude = StringUtils.split(ConfigService.get(Config.TARGET_TYPE_EXCLUDE),
+            ",", true);
 
         if (typeInfo == null) {
             typeInfo = new HashMap<>();
 
-            var query = ConfigService.get(Config.CONFIG_TYPES_QUERY)
-                + STR." and dataSourceName = '\{dataSource}'";
+            var query =
+                ConfigService.get(Config.TYPES_QUERY) + STR." and dataSourceName = '\{dataSource}'";
             var typeList = database.executeQuery(query);
             try {
                 for (var type : typeList) {
@@ -85,8 +89,13 @@ public class AssetTypes {
                         new TypeReference<Map<String, String>>() {
                         });
                     config.put("displayName", displayName);
-                    if ((targetTypesInclude.isEmpty() || targetTypesInclude.contains(typeName))
-                        && (!targetTypesExclude.contains(typeName))) {
+                    if (!assetTypeOverride.isEmpty()) {
+                        if (assetTypeOverride.contains(typeName)) {
+                            typeInfo.put(typeName, config);
+                        }
+                    } else if (
+                        (targetTypesInclude.isEmpty() || targetTypesInclude.contains(typeName))
+                            && (!targetTypesExclude.contains(typeName))) {
                         typeInfo.put(typeName, config);
                     }
                 }
@@ -95,6 +104,10 @@ public class AssetTypes {
             }
         }
 
+        if (!assetTypeOverride.isEmpty()) {
+            LOGGER.warn("Asset types overridden (requested = {}); actual = {}", assetTypeOverride,
+                typeInfo.keySet());
+        }
         return typeInfo;
     }
 
@@ -104,10 +117,6 @@ public class AssetTypes {
         for (var type : types) {
             var indexName = StringExtras.indexName(dataSource, type);
             if (elasticSearch.indexMissing(indexName)) {
-                if (!indexName.equals("kvt_gcp_cloudfunction")) {
-                    LOGGER.error("Skipping index creation for {}", indexName);
-                    continue;
-                }
                 newAssets.add(indexName);
 
                 var payload = STR."""
@@ -150,8 +159,8 @@ public class AssetTypes {
             }
         }
 
-        AssetGroups.createDefaultGroup(dataSource);
-        AssetGroups.updateImpactedAliases(newAssets.stream().toList(), dataSource);
+        assetGroups.createDefaultGroup(dataSource);
+        assetGroups.updateImpactedAliases(newAssets.stream().toList(), dataSource);
 
         try {
             elasticSearch.createIndex("exceptions");

@@ -1,8 +1,5 @@
 package com.paladincloud.common.jobs;
 
-import com.paladincloud.common.ApplicationModule;
-import com.paladincloud.common.DaggerServerComponent;
-import com.paladincloud.common.ServerComponent;
 import com.paladincloud.common.config.ConfigService;
 import com.paladincloud.common.errors.JobException;
 import java.util.ArrayList;
@@ -16,6 +13,9 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class JobExecutor {
 
+    // In addition to these arguments, these are supported:
+    //      asset-type-override - A comma separated list of asset types to use, ignoring what's in the database
+    //      index-prefix -        The prefix to use for creating test ElasticSearch indexes
     private static final String CONFIG_SERVICE_URL = "config-url";
     private static final String CONFIG_SERVICE_CREDENTIALS = "config-credentials";
     private static final String CONFIG_SERVICE_QUERY = "config-query";

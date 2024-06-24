@@ -5,6 +5,7 @@ import com.paladincloud.common.config.ConfigService;
 import com.paladincloud.common.errors.JobException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -54,5 +56,20 @@ public class Database {
         }
 
         return results;
+    }
+
+    public void insert(String tableName, Map<String, String> row) {
+        var placeholders = String.join(",", Stream.generate(() -> "?").limit(row.size()).toList());
+        var columns = row.keySet().stream().toList();
+        var query = STR."INSERT INTO \{tableName} (\{String.join(",", columns)}) VALUES (\{placeholders})";
+        try (Connection conn = getConnection(); PreparedStatement statement = conn.prepareStatement(
+            query)) {
+            for (var index = 0; index < columns.size(); index++) {
+                statement.setString(index, row.get(columns.get(index)));
+            }
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new JobException("Error inserting row", e);
+        }
     }
 }

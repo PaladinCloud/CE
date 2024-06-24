@@ -83,18 +83,6 @@ public class Assets {
                 doc.put(STR."\{AssetDocumentFields.TAGS_PREFIX}\{firstChar}\{remainder}", value);
             });
         }
-
-    }
-
-    private List<Map<String, Object>> fetchFromS3(String bucket, String path,
-        String dataSource, String type) {
-        try {
-            return s3.fetchData(bucket, path);
-        } catch (IOException e) {
-            throw new JobException(
-                STR."Exception fetching asset data for \{dataSource} from \{type}; path=\{path}",
-                e);
-        }
     }
 
     private static String assetsPathPrefix(String dataSource) {
@@ -220,6 +208,17 @@ public class Assets {
         }
     }
 
+    private List<Map<String, Object>> fetchFromS3(String bucket, String path, String dataSource,
+        String type) {
+        try {
+            return s3.fetchData(bucket, path);
+        } catch (IOException e) {
+            throw new JobException(
+                STR."Exception fetching asset data for \{dataSource} from \{type}; path=\{path}",
+                e);
+        }
+    }
+
     private void setMissingAccountName(Map<String, Object> newDocument,
         Map<String, String> accountIdNameMap) {
         String accountId = Stream.of(newDocument.get(AssetDocumentFields.PROJECT_ID),
@@ -244,11 +243,6 @@ public class Assets {
         var allFilenames = s3.listObjects(ConfigService.get(ConfigConstants.S3.BUCKET_NAME),
             assetsPathPrefix(dataSource));
         var types = assetTypes.getTypesWithDisplayName(dataSource);
-        // TODO: DON'T CHECK THIS DEV HACK IN!
-        types = types.entrySet().stream().filter(e -> e.getKey().equals("cloudfunction"))
-            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        LOGGER.error("LIMITED TYPES TO {}", types);
-
         var fileTypes = FilesAndTypes.matchFilesAndTypes(allFilenames, types.keySet());
         if (!fileTypes.unknownFiles.isEmpty()) {
             LOGGER.warn("Unknown files: {}", fileTypes.unknownFiles);
@@ -307,10 +301,11 @@ public class Assets {
                         tags.size(), existingDocuments.size());
                     if (newDocuments.isEmpty()) {
                         // ERROR condition - update elastic index, it looks like
+                        // TODO: Properly handle no discovered assets
                         throw new RuntimeException("Handle no discovered assets");
                     } else {
                         var updatableFields = database.executeQuery(
-                            STR."select updatableFields  from cf_pac_updatable_fields where resourceType ='\{type}'");
+                            STR."select updatableFields from cf_pac_updatable_fields where resourceType ='\{type}'");
                         var overrides = database.executeQuery(
                             STR."select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '\{type}'");
                         var overridesMap = overrides.parallelStream().collect(

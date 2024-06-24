@@ -1,5 +1,6 @@
 package com.paladincloud.common;
 
+import com.paladincloud.common.assets.AssetGroups;
 import com.paladincloud.common.assets.Assets;
 import com.paladincloud.common.aws.Database;
 import com.paladincloud.common.aws.S3;
@@ -32,13 +33,19 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    AssetTypes provideAssetTypes(ElasticSearch elasticSearch, Database database) {
-        return new AssetTypes(elasticSearch, database);
+    AssetTypes provideAssetTypes(ElasticSearch elasticSearch, Database database, AssetGroups assetGroups) {
+        return new AssetTypes(elasticSearch, database, assetGroups);
     }
 
     @Singleton
     @Provides
     Assets provideAssets(ElasticSearch elasticSearch, AssetTypes assetTypes, S3 s3, Database database) {
         return new Assets(elasticSearch, assetTypes, s3, database);
+    }
+
+    @Singleton
+    @Provides
+    AssetGroups provideAssetGroups(ElasticSearch elasticSearch, Database database) {
+        return new AssetGroups(elasticSearch, database);
     }
 }

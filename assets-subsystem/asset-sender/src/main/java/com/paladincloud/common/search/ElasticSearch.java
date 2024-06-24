@@ -136,8 +136,8 @@ public class ElasticSearch {
 
     private RestClient getRestClient() {
         if (restClient == null) {
-            var host = ConfigService.get(Elastic.ELASTIC_HOST);
-            var port = Integer.parseInt(ConfigService.get(Elastic.ELASTIC_PORT));
+            var host = ConfigService.get(Elastic.HOST);
+            var port = Integer.parseInt(ConfigService.get(Elastic.PORT));
             restClient = RestClient.builder(new HttpHost(host, port)).build();
         }
         return restClient;

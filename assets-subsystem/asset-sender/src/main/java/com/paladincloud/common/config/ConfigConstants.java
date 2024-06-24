@@ -2,17 +2,22 @@ package com.paladincloud.common.config;
 
 public interface ConfigConstants {
 
+    interface Dev {
+        String INDEX_PREFIX = "param.index-prefix";
+        String ASSET_TYPE_OVERRIDE = "param.asset-type-override";
+    }
+
     interface Config {
 
-        String CONFIG_TYPES_QUERY = "param.config-query";
-        String CONFIG_TARGET_TYPE_INCLUDE = "param.target-type-include";
-        String CONFIG_TARGET_TYPE_EXCLUDE = "param.target-type-exclude";
+        String TYPES_QUERY = "param.config-query";
+        String TARGET_TYPE_INCLUDE = "param.target-type-include";
+        String TARGET_TYPE_EXCLUDE = "param.target-type-exclude";
     }
 
     interface Elastic {
 
-        String ELASTIC_HOST = "batch.elastic-search.host";
-        String ELASTIC_PORT = "batch.elastic-search.port";
+        String HOST = "batch.elastic-search.host";
+        String PORT = "batch.elastic-search.port";
     }
 
     interface RDS {
