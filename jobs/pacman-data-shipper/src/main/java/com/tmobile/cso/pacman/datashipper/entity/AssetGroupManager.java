@@ -168,10 +168,6 @@ public class AssetGroupManager {
             return;
         }
 
-
-
-
-
         LOGGER.info("Updating impacted Aliases for following indices {} and datasource {}", newIndices, datasource);
         List<Map<String, String>> assetGroupsList = RDSDBManager.executeQuery(String
                 .format(FETCH_IMPACTED_ALIAS_QUERY_TEMPLATE, "%_*%", datasource, "%" + datasource + "_*%"));
