@@ -3122,7 +3122,7 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 
 /* Plugin developed using PluginEngine V1 */
 INSERT INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
- VALUES ('plugins.in.v1','gcp,redhat,contrast,checkmarx,crowdstrike,rapid7,wiz,burpsuite','job-scheduler','prd','latest','System',now(),NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp,redhat,contrast,checkmarx,crowdstrike,rapid7,wiz,burpsuite', modifiedBy='System', modifiedDate=now();
+ VALUES ('plugins.in.v1','gcp','job-scheduler','prd','latest','System',now(),NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp', modifiedBy='System', modifiedDate=now();
 
 /* Contrast asset application, library */
   INSERT  INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`,displayName)
