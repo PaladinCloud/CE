@@ -1,9 +1,14 @@
 package com.paladincloud.common.assets;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.aws.Database;
 import com.paladincloud.common.errors.JobException;
+import com.paladincloud.common.search.ElasticAliasResponse;
 import com.paladincloud.common.search.ElasticSearch;
 import com.paladincloud.common.search.ElasticSearch.HttpMethod;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,10 +24,26 @@ public class AssetGroups {
     private static final Logger LOGGER = LogManager.getLogger(AssetGroups.class);
     private static final String ASSET_GROUP_FOR_ALL_SOURCES = "all-sources";
     private static final String ROW_EXISTS = "row_exists";
+    private static final String ES_ATTRIBUTE_TAG = "tags.";
+    private static final String ES_ATTRIBUTE_KEYWORD = ".keyword";
+    private static final String UPDATE_ALIAS_TEMPLATE = """
+        {
+            "actions": [{
+                "add":
+                    {
+                        %s "index": "%s",
+                        "alias": "%s"
+                    }
+                }
+            ]
+        }
+        """.trim();
     private static final Map<String, List<Map<String, String>>> databaseCache = new HashMap<>();
     private static final List<String> dataSourceCache = new ArrayList<>();
+    private static final Map<String, List<Map<String, String>>> assetGroupTagsCache = new HashMap<>();
     private final ElasticSearch elasticSearch;
     private final Database database;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Inject
     public AssetGroups(ElasticSearch elasticSearch, Database database) {
@@ -43,7 +64,7 @@ public class AssetGroups {
                 // Creates ASSET_GROUP_FOR_ALL_SOURCES if not present
                 String aliasQuery = generateDefaultAssetGroupAliasQuery(dataSource);
                 insertDefaultAssetGroup(aliasQuery);
-                elasticSearch.invoke(HttpMethod.POST, "_aliases/", aliasQuery);
+                elasticSearch.invokeCheckAndConvert(ElasticAliasResponse.class, HttpMethod.POST, "_aliases/", aliasQuery);
                 LOGGER.info("Created default asset group: {}", ASSET_GROUP_FOR_ALL_SOURCES);
             }
         } catch (Exception e) {
@@ -70,9 +91,114 @@ public class AssetGroups {
                 AND agd.groupType <> 'system' AND agd.groupName <> '\{ASSET_GROUP_FOR_ALL_SOURCES}' and aliasQuery like '\{dataSource}_*%')
             """.trim();
 
-//        var assetGroupsList = database.executeQuery()
+        var assetGroupsList = database.executeQuery(query);
+        LOGGER.info("Found {} asset groups", assetGroupsList.size());
+        if (assetGroupsList.isEmpty()) {
+            LOGGER.error("Unable to update due to no asset groups for dataSource: {}", dataSource);
+            return;
+        }
 
-        LOGGER.warn("Updating aliases for {}: {}", dataSource, aliases);
+        var updatedAssetGroups = new ArrayList<String>();
+        var actions = new ArrayList<String>();
+        var updatedAssetGroupsCount = 0;
+        for (var assetGroup : assetGroupsList) {
+            var alias = assetGroup.get("groupName");
+            var groupType = assetGroup.get("groupType");
+            var existingAliasQuery = assetGroup.get("aliasQuery");
+            var groupId = assetGroup.get("groupId");
+            if (alias == null || groupType == null || groupId == null) {
+                LOGGER.info(
+                    "Cannot update aliases due to a null field. alias={}, groupType={}, groupId={}",
+                    alias, groupType, groupId);
+                continue;
+            }
+
+            if ((existingAliasQuery == null || existingAliasQuery.equalsIgnoreCase("null"))
+                && groupType.equalsIgnoreCase("user")) {
+                var assetGroupTags = getCachedAssetGroupTagsOrFetch(groupId);
+                if (assetGroupTags.isEmpty()) {
+                    LOGGER.error("There are no asset group tags for groupId={}", groupId);
+                    continue;
+                }
+                actions.add(
+                    generateStakeholdersAssetGroupAliasQuery(alias, assetGroupTags, dataSource));
+                updatedAssetGroupsCount += 1;
+                updatedAssetGroups.add(alias);
+
+            } else if (alias.equalsIgnoreCase(ASSET_GROUP_FOR_ALL_SOURCES)
+                || alias.equalsIgnoreCase(dataSource)) {
+                actions.add(String.format(UPDATE_ALIAS_TEMPLATE, "", STR."\{dataSource}_*", alias));
+                updatedAssetGroupsCount += 1;
+                updatedAssetGroups.add(alias);
+            } else if (groupType.equalsIgnoreCase("user") && existingAliasQuery != null
+                && !existingAliasQuery.equalsIgnoreCase("null") && !alias.equalsIgnoreCase(
+                ASSET_GROUP_FOR_ALL_SOURCES) && !alias.equalsIgnoreCase(dataSource) || (
+                existingAliasQuery != null && existingAliasQuery.contains("_*"))) {
+                var filterContents = getFilterFromExistingAliasQuery(existingAliasQuery);
+                var filter = filterContents.isEmpty() ? "" : STR."\"filter\": \{filterContents},";
+                actions.add(
+                    String.format(UPDATE_ALIAS_TEMPLATE, filter, STR."\{dataSource}_*", alias));
+                updatedAssetGroupsCount += 1;
+                updatedAssetGroups.add(alias);
+            } else {
+                throw new JobException(
+                    STR."Unable to update alias \{alias} for existingAliasQuery \{existingAliasQuery}");
+            }
+        }
+
+        var combinedActions = mergeActions(actions);
+        if (combinedActions == null || combinedActions.toString().isEmpty()) {
+            throw new JobException(STR."Update failed, nothing to do for \{dataSource}");
+        }
+
+        var payload = STR."{ \"actions\": \{combinedActions} }";
+        try {
+            var response = elasticSearch.invokeCheckAndConvert(ElasticAliasResponse.class, HttpMethod.POST, "_aliases", payload);
+            if (!response.acknowledged || response.errors) {
+                throw new JobException(STR."Failed creating some aliases: \{response}");
+            }
+        } catch (IOException e) {
+            throw new JobException(STR."Error updating alias for \{dataSource}", e);
+        }
+        LOGGER.info("Finished updating impacted aliases for indices={} dataSource={}. "
+                + "Updated {} asset groups: {}", aliases, dataSource, updatedAssetGroupsCount,
+            updatedAssetGroups);
+    }
+
+    private String getFilterFromExistingAliasQuery(String existingAliasQuery) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(existingAliasQuery);
+            if (rootNode != null && rootNode.has("actions")) {
+                rootNode = rootNode.get("actions");
+                for (JsonNode actionNode : rootNode) {
+                    JsonNode addNode = actionNode.path("add");
+                    if (addNode.get("index").isMissingNode() || !addNode.get("index").toString()
+                        .contains("_*")) {
+                        continue;
+                    }
+                    JsonNode filterNode = addNode.get("filter");
+                    if (filterNode != null && !filterNode.isMissingNode()) {
+                        return filterNode.toString();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new JobException(
+                STR."Error while extracting filter from existingAliasQuery : \{existingAliasQuery}",
+                e);
+        }
+        return "";
+    }
+
+    private List<Map<String, String>> getCachedAssetGroupTagsOrFetch(String groupId) {
+        if (assetGroupTagsCache.containsKey(groupId)) {
+            return assetGroupTagsCache.get(groupId);
+        } else {
+            var result = database.executeQuery(
+                STR."SELECT attributeName, attributeValue FROM cf_AssetGroupCriteriaDetails WHERE groupId = '\{groupId}'");
+            assetGroupTagsCache.put(groupId, result);
+            return result;
+        }
     }
 
     private List<String> getCachedDataSourcesOrFetch(String dataSource) {
@@ -148,5 +274,96 @@ public class AssetGroups {
                 "actions": [\{String.join(",", actions.toList())}]
             }
             """.trim();
+    }
+
+    private String generateStakeholdersAssetGroupAliasQuery(String assetGroup,
+        List<Map<String, String>> assetGroupTags, String dataSource) {
+
+        var tagMap = generateQueryForUserAssetGroup(assetGroupTags);
+        var actions = getCachedDataSourcesOrFetch(dataSource).stream().map(sourceName -> STR."""
+            {
+                "add": {
+                    "index": "\{sourceName.toLowerCase().trim()}",
+                    "alias": "\{assetGroup}",
+                    "filter": {
+                        "bool": \{tagMap}
+                    }
+                }
+            }
+            """.trim());
+        return STR."""
+            {
+                "action": [\{String.join(",", actions.toList())}]
+            }
+            """.trim();
+    }
+
+    private String generateQueryForUserAssetGroup(
+        List<Map<String, String>> assetGroupTags) {
+        List<Object> mustList = new ArrayList<>();
+        Map<String, Object> mustObj = new HashMap<>();
+        Map<String, List<String>> groupedTags = assetGroupTags.stream().collect(
+            Collectors.groupingBy(map -> map.get("attributeName"),
+                Collectors.mapping(map -> map.get("attributeValue"), Collectors.toList())));
+        groupedTags.forEach((tagName, tags) -> mustList.add(
+            generateShouldMapForStakeholderAssetGroup(tagName, tags)));
+        mustObj.put("must", mustList);
+        try {
+            return objectMapper.writeValueAsString(mustObj);
+        } catch (JsonProcessingException e) {
+            throw new JobException("Failed converting JSON to string", e);
+        }
+    }
+
+    private Map<String, Object> generateShouldMapForStakeholderAssetGroup(String tagName,
+        List<String> tags) {
+        List<Object> matchList = new ArrayList<>();
+        Map<String, Object> shouldObj = new HashMap<>();
+        if (tags.size() == 1) {
+            Map<String, Object> attributeObj = new HashMap<>();
+            Map<String, Object> match = new HashMap<>();
+            attributeObj.put(ES_ATTRIBUTE_TAG + tagName + ES_ATTRIBUTE_KEYWORD, tags.getFirst());
+            match.put("match", attributeObj);
+            return match;
+        } else {
+            Map<String, Object> boolObj = new HashMap<>();
+            tags.forEach(value -> {
+                Map<String, Object> attributeObj = new HashMap<>();
+                Map<String, Object> match = new HashMap<>();
+                attributeObj.put(ES_ATTRIBUTE_TAG + tagName + ES_ATTRIBUTE_KEYWORD, value);
+                match.put("match", attributeObj);
+                matchList.add(match);
+            });
+            shouldObj.put("should", matchList);
+            shouldObj.put("minimum_should_match", 1);
+            boolObj.put("bool", shouldObj);
+            return boolObj;
+        }
+    }
+
+    private JsonNode mergeActions(List<String> jsonStrings) {
+        List<JsonNode> actionsList = new ArrayList<>();
+        for (String jsonString : jsonStrings) {
+            try {
+                JsonNode jsonObj = objectMapper.readTree(jsonString);
+                if (jsonObj.has("actions")) {
+                    JsonNode actions = jsonObj.get("actions");
+                    actionsList.addAll(convertToList(actions));
+                }
+            } catch (Exception e) {
+                throw new JobException(STR."Error merging actions (\{jsonString})", e);
+            }
+        }
+        return objectMapper.valueToTree(actionsList);
+    }
+
+    private List<JsonNode> convertToList(JsonNode node) {
+        List<JsonNode> list = new ArrayList<>();
+        if (node.isArray()) {
+            node.forEach(list::add);
+        } else {
+            list.add(node);
+        }
+        return list;
     }
 }

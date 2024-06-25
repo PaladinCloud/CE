@@ -62,12 +62,8 @@ public class ElasticBatch implements AutoCloseable {
             payload.append("\n");
         }
 
-        var response = elasticSearch.invoke(ElasticSearch.HttpMethod.POST, "/_bulk",
+        var response = elasticSearch.invokeAndCheck(ElasticSearch.HttpMethod.POST, "/_bulk",
             payload.toString());
-        if (response.getStatusLine().getStatusCode() != 200) {
-            throw new JobException(STR."ElasticSearch bulk insert failed: code=\{response.getStatusLine()
-                .getStatusCode()} reason=\{response.getStatusLine().getReasonPhrase()}");
-        }
         if (response.hasWarnings()) {
             throw new JobException(STR."ElasticSearch bulk insert has warnings \{response.getWarnings()}");
         }

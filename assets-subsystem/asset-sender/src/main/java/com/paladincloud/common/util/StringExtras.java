@@ -21,7 +21,7 @@ public class StringExtras {
         var name = STR."\{dataSource}_\{type}";
         var devPrefix = ConfigService.get(Dev.INDEX_PREFIX);
         if (!StringUtils.isEmpty(devPrefix)) {
-            name = STR."\{devPrefix}-\{name}";
+            name = STR."\{devPrefix}_\{name}";
             LOGGER.warn("Overriding index prefix with '{}' => {}", devPrefix, name);
         }
         return name;

@@ -32,7 +32,8 @@ public class ElasticSearch {
     private RestClient restClient;
 
     @Inject
-    public ElasticSearch() { }
+    public ElasticSearch() {
+    }
 
     public boolean indexMissing(String indexName) {
         try {
@@ -46,6 +47,17 @@ public class ElasticSearch {
         return true;
     }
 
+    /**
+     * Invokes the ElasticSearch API with the given method, endpoint and payload. NO validation is
+     * done on the response, that is the responsibility of the caller. Use
+     * {@link #invokeAndCheck(HttpMethod, String, String)} for HTTP status validation.
+     *
+     * @param method   - One of PUT, POST, etc.
+     * @param endpoint - The API to call, such as "_search"
+     * @param payLoad  - the payload for the call; can be null.
+     * @return - An ElasticSearch response, which will include the body of the response
+     * @throws IOException - Network failures
+     */
     public Response invoke(HttpMethod method, String endpoint, String payLoad) throws IOException {
         String uri = endpoint;
         if (!uri.startsWith("/")) {
@@ -103,7 +115,17 @@ public class ElasticSearch {
         return results;
     }
 
-    public ElasticQueryResponse invokeAndCheck(HttpMethod method, String endpoint, String payLoad)
+    /**
+     * Invokes the ElasticSearch API with the given method, endpoint and payload. The response is
+     * checked for HTTP errors and the ElasticSearch response is returned.
+     *
+     * @param method   - One of PUT, POST, etc.
+     * @param endpoint - The API to call, such as "_search"
+     * @param payLoad  - the payload for the call; can be null.
+     * @return - An ElasticSearch response, which will include the body of the response
+     * @throws IOException - Network failures as well as HTTP errors
+     */
+    public Response invokeAndCheck(HttpMethod method, String endpoint, String payLoad)
         throws IOException {
         var response = invoke(method, endpoint, payLoad);
         var statusCode = response.getStatusLine().getStatusCode();
@@ -112,8 +134,25 @@ public class ElasticSearch {
                 STR."Failed ElasticSearch request: \{statusCode}; \{response.getStatusLine()
                     .getReasonPhrase()}");
         }
+        return response;
+    }
 
-        return transformResponse(response);
+    /**
+     * Invokes the ElasticSearch API with the given method, endpoint and payload. The response is
+     * checked for HTTP errors and converted to a more convenient query response.
+     *
+     * @param clazz    - The class to transform the response body to
+     * @param method   - One of PUT, POST, etc.
+     * @param endpoint - The API to call, such as "_search"
+     * @param payLoad  - the payload for the call; can be null.
+     * @return - The converted response
+     * @throws IOException - Network failures as well as HTTP errors
+     */
+    // ElasticQueryResponse
+    public <T> T invokeCheckAndConvert(Class<T> clazz, HttpMethod method, String endpoint,
+        String payLoad) throws IOException {
+        var response = invokeAndCheck(method, endpoint, payLoad);
+        return transformResponse(clazz, response);
     }
 
     public void createIndex(String indexName) throws IOException {
@@ -126,12 +165,12 @@ public class ElasticSearch {
         }
     }
 
-    private ElasticQueryResponse transformResponse(Response response) throws IOException {
+    private <T> T transformResponse(Class<T> clazz, Response response) throws IOException {
         var objectMapper = new ObjectMapper().configure(
             DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        return objectMapper.readValue(EntityUtils.toString(response.getEntity()),
-            ElasticQueryResponse.class);
+        var x = EntityUtils.toString(response.getEntity());
+        return objectMapper.readValue(x, clazz);
     }
 
     private RestClient getRestClient() {
@@ -174,7 +213,8 @@ public class ElasticSearch {
     private String fetchDataAndScrollId(String endPoint, Map<String, Map<String, String>> results,
         String keyField, String payLoad) {
         try {
-            var response = invokeAndCheck(HttpMethod.GET, endPoint, payLoad);
+            var response = invokeCheckAndConvert(ElasticQueryResponse.class, HttpMethod.GET,
+                endPoint, payLoad);
             if (response.hits != null && response.hits.hits != null) {
                 for (var document : response.hits.hits) {
                     // Convert from <String, Object> to <String, String>

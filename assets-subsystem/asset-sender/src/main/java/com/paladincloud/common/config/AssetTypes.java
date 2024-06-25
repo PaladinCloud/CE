@@ -148,10 +148,10 @@ public class AssetTypes {
                     """;
 
                 try {
-                    elasticSearch.invoke(HttpMethod.PUT, indexName, payload);
-                    elasticSearch.invoke(HttpMethod.PUT, STR."/\{indexName}/_alias/\{dataSource}",
+                    elasticSearch.invokeAndCheck(HttpMethod.PUT, indexName, payload);
+                    elasticSearch.invokeAndCheck(HttpMethod.PUT, STR."/\{indexName}/_alias/\{dataSource}",
                         null);
-                    elasticSearch.invoke(HttpMethod.PUT, STR."/\{indexName}/_alias/ds-all", null);
+                    elasticSearch.invokeAndCheck(HttpMethod.PUT, STR."/\{indexName}/_alias/ds-all", null);
                 } catch (IOException e) {
                     throw new JobException(
                         STR."Error while creating the index '\{indexName}' using '\{payload}'", e);
