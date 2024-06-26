@@ -789,7 +789,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     processData(data) {
         try {
             this.outerArr = data;
-            let firsOpenAuditLog = false;
+            let firsOpenAuditLog = true;
             const { date, expirydate } = this.VIOLATION_CONSTANTS.AUDIT_LOG.COLUMNS_KEYS;
             let processedData = this.outerArr.reverse().filter((obj, index) => {
                 if (this.outerArr[index][date] && this.outerArr[index][date].valueText !== DASH) {
@@ -801,21 +801,15 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 ) {
                     this.outerArr[index][expirydate].isDate = true;
                 }
-                if (
-                    this.outerArr[index].Date.valueText >= this.issueBlocks['violationCreatedDate']
-                ) {
-                    if (!firsOpenAuditLog) {
-                        firsOpenAuditLog = true;
-                        return true;
-                    } else {
-                        return (
-                            index !== 0 &&
-                            this.outerArr[index - 1].Status.valueText.toLowerCase() !=
-                                obj.Status.valueText.toLowerCase()
-                        );
-                    }
+                if (firsOpenAuditLog) {
+                    firsOpenAuditLog = false;
+                    return true;
                 }
-                return false;
+                return (
+                    index &&
+                    this.outerArr[index - 1].Status.valueText.toLowerCase() !=
+                        obj.Status.valueText.toLowerCase()
+                );
             });
 
             processedData = processedData.reverse();
