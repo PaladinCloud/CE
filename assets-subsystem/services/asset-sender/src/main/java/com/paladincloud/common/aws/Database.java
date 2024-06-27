@@ -65,7 +65,7 @@ public class Database {
         try (Connection conn = getConnection(); PreparedStatement statement = conn.prepareStatement(
             query)) {
             for (var index = 0; index < columns.size(); index++) {
-                statement.setString(index, row.get(columns.get(index)));
+                statement.setString(index + 1, row.get(columns.get(index)));
             }
             statement.executeUpdate();
         } catch (SQLException e) {
