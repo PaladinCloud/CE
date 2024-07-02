@@ -1398,13 +1398,13 @@ INSERT IGNORE INTO `oauth_user_role_mapping`(`userRoleId`,`userId`,`roleId`,`cli
 /* Display and Update Fields */
 TRUNCATE TABLE cf_pac_updatable_fields;
 INSERT IGNORE INTO cf_pac_updatable_fields  (resourceType,displayFields,updatableFields) VALUES
- ('all_list','_resourceid,tags.Application,tags.Environment,_entitytype',null),
+ ('all_list','_docid,_resourceid,tags.Application,tags.Environment,_entitytype',null),
  ('all_taggable','_resourceid,tags.Application,tags.Environment,_entitytype,targetType,accountid,accountname,region',null),
  ('all_vulnerable','_resourceid,tags.Application,tags.Environment,_entitytype,accountid,accountname,region',null),
  ('all_patchable','_resourceid,tags.Application,tags.Environment,_entitytype',null);
 
-
-INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Assets','All','accountname,region,tags.Application,tags.Environment,tags.Stack,tags.Role','_resourceid,searchcategory,tags[],accountname,_entitytype');
+TRUNCATE table OmniSearch_Config;
+INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Assets','All','accountname,region,tags.Application,tags.Environment,tags.Stack,tags.Role','_docid,_resourceid,searchcategory,tags[],accountname,_entitytype');
 INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Assets','api','','region,name');
 INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Assets','appelb','scheme,vpcid,type','region,scheme,vpcid,type');
 INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Assets','asg','healthchecktype','region,healthchecktype');
@@ -1498,7 +1498,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 /* AssetList Filters */
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (29,8,'Account ID','accountid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountid&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (30,8,'Account Name','accountname.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountname&type=asset');
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (31,8,'Asset ID','_resourceid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (31,8,'Asset ID','_docid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (32,8,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_cloudType&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (33,8,'Region','region.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=region&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,'Asset Name','_resourcename.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourcename&type=asset');
@@ -2790,9 +2790,6 @@ Update cf_Target set displayName = 'Load Balancer (GCP)' where targetName = 'gcp
 Update cf_Target set status = 'finding' where targetName in ( 'checks','phd','securityhub','activitylogalert','policydefinitions','policyevaluationresults' );
 
 
-update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,tags.Environment,_entitytype,accountid,accountname,region,_cloudType,assetIdDisplayName' where resourceType='all_list';
-
-
 UPDATE `pacmandata`.`pac_config_properties` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
 
 update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category' and filterId not in (select filterId from pac_v2_ui_filters where filterName in ("policyComplianceFilter","policyknowledgebase")) ;
@@ -2843,7 +2840,7 @@ LOOP
 
 END LOOP;
 
-update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname") where resourceType='all_list';
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_docid,_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname") where resourceType='all_list';
 
 END $$
 
@@ -2946,7 +2943,7 @@ UPDATE cf_Target set targetConfig = '{\"key\":\"targetgrouparn\",\"id\":\"target
 
 
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (14,'assetlistFilter');
-INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Asset Id','_resourceid.keyword','/compliance/v1/filters/attribute',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Asset Id','_docid.keyword','/compliance/v1/filters/attribute',"String");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Asset Type','_entitytype.keyword','/compliance/v1/filters/attribute',"String");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'AccountId','accountid.keyword','/compliance/v1/filters/attribute',"String");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (14,'Account Name','accountname.keyword','/compliance/v1/filters/attribute',"String");
@@ -3365,3 +3362,46 @@ concat(@eshost,':',@esport,'/crowdstrike_mobile'),now(),null,'Infra & Platforms'
 
 update cf_Target set targetConfig='{"key":"externalAccountId,externalId","id":"externalId","name":"_resourcename"}' where targetName='workstation' and dataSourceName='crowdstrike';
 UPDATE cf_AssetGroupDetails SET groupType = 'system' where groupType = 'System';
+
+/* Create a table to store a flag for running any update procedure only once WITH PRIMARY KEY AS updateName */
+
+CREATE TABLE IF NOT EXISTS `cf_UpdateFlag` (
+  `updateName` varchar(255) NOT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`updateName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/* Insert a record to run the update procedure only once */
+INSERT IGNORE INTO `cf_UpdateFlag` (`updateName`, `status`) VALUES ('filter_update_2024_07_03', 'started');
+
+/* Procedure to update pac_v2_ui_options table for filterId 1,8,14 based on  cf_UpdateFlag */
+DELIMITER //
+DROP PROCEDURE IF EXISTS `update_filter_options_based_on_flag` //
+CREATE PROCEDURE `update_filter_options_based_on_flag`()
+BEGIN
+    DECLARE updateStatus VARCHAR(255);
+
+    SELECT status INTO updateStatus
+    FROM cf_UpdateFlag
+    WHERE updateName = 'filter_update_2024_07_03';
+
+    IF updateStatus = 'started' THEN
+        /* update optionValue for filterId 1 ,8  */
+        UPDATE pac_v2_ui_options
+        SET optionValue = '_docid.keyword', optionURL = '/compliance/v1/filters/attribute?ag=aws&attribute=_docid&type=issue'
+        WHERE optionId = 26
+        AND filterId = 1;
+
+        UPDATE pac_v2_ui_options
+        SET optionValue = '_docid.keyword', optionURL = '/compliance/v1/filters/attribute?ag=aws&attribute=_docid&type=asset'
+        WHERE optionId = 31
+        AND filterId = 8;
+
+        UPDATE cf_UpdateFlag
+        SET status = 'completed'
+        WHERE updateName = 'filter_update_2024_07_03';
+    END IF;
+END //
+
+DELIMITER ;
+call update_filter_options_based_on_flag();
