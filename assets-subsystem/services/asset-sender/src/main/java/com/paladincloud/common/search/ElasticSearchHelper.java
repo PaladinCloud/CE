@@ -1,10 +1,10 @@
 package com.paladincloud.common.search;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.config.ConfigConstants.Elastic;
 import com.paladincloud.common.config.ConfigService;
 import com.paladincloud.common.errors.JobException;
+import com.paladincloud.common.util.JsonHelper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.ParseException;
 import org.apache.http.entity.ContentType;
@@ -24,22 +25,22 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 
 @Singleton
-public class ElasticSearch {
+public class ElasticSearchHelper {
 
     private static final int MAX_RETURNED_RESULTS = 10000;
 
-    private static final Logger LOGGER = LogManager.getLogger(ElasticSearch.class);
+    private static final Logger LOGGER = LogManager.getLogger(ElasticSearchHelper.class);
     private RestClient restClient;
 
     @Inject
-    public ElasticSearch() {
+    public ElasticSearchHelper() {
     }
 
     public boolean indexMissing(String indexName) {
         try {
             var response = invoke(HttpMethod.HEAD, indexName, null);
             if (response != null) {
-                return response.getStatusLine().getStatusCode() != 200;
+                return response.getStatusCode() != 200;
             }
         } catch (IOException e) {
             throw new JobException("Failed ElasticSearch request", e);
@@ -62,7 +63,7 @@ public class ElasticSearch {
     public <T> T invokeCheckAndConvert(Class<T> clazz, HttpMethod method, String endpoint,
         String payLoad) throws IOException {
         var response = invokeAndCheck(method, endpoint, payLoad);
-        return transformResponse(clazz, response);
+        return JsonHelper.fromString(clazz, response.getBody());
     }
 
     /**
@@ -75,14 +76,12 @@ public class ElasticSearch {
      * @return - An ElasticSearch response, which will include the body of the response
      * @throws IOException - Network failures as well as HTTP errors
      */
-    public Response invokeAndCheck(HttpMethod method, String endpoint, String payLoad)
+    public ElasticResponse invokeAndCheck(HttpMethod method, String endpoint, String payLoad)
         throws IOException {
         var response = invoke(method, endpoint, payLoad);
-        var status = response.getStatusLine();
-        var statusCode = status.getStatusCode();
-        if (statusCode < 200 || statusCode > 299) {
+        if (response.getStatusCode() < 200 || response.getStatusCode() > 299) {
             throw new IOException(
-                STR."Failed ElasticSearch request: \{statusCode}; \{status.getReasonPhrase()}");
+                STR."Failed ElasticSearch request: \{response.getStatusCode()}; \{response.getStatusPhrase()}");
         }
         return response;
     }
@@ -98,7 +97,7 @@ public class ElasticSearch {
      * @return - An ElasticSearch response, which will include the body of the response
      * @throws IOException - Network failures
      */
-    public Response invoke(HttpMethod method, String endpoint, String payLoad) throws IOException {
+    public ElasticResponse invoke(HttpMethod method, String endpoint, String payLoad) throws IOException {
         String uri = endpoint;
         if (!uri.startsWith("/")) {
             uri = STR."/\{uri}";
@@ -108,7 +107,91 @@ public class ElasticSearch {
         if (payLoad != null) {
             request.setEntity(new NStringEntity(payLoad, ContentType.APPLICATION_JSON));
         }
-        return getRestClient().performRequest(request);
+        return new ElasticResponse(getRestClient().performRequest(request));
+    }
+
+    /**
+     * Deletes documents that do not match the value for the field/value pair. An optional docType
+     * can be specified to narrow the impacted documents.
+     *
+     * @param indexName  - the index to operate on
+     * @param docType    - an optional docType. If null/empty, it won't be part of the query
+     * @param fieldName  - the name of the field to check the value for
+     * @param fieldValue - the value of the field to KEEP (all other values will be deleted)
+     * @throws IOException - if the call fails
+     */
+    public void deleteDocumentsWithoutValue(String indexName, String docType, String fieldName,
+        String fieldValue) throws IOException {
+        var query = new StringBuilder(2048);
+        query.append(STR."""
+            {
+                "query": {
+                    "bool": {
+                        "must_not": [{
+                            "match":{
+                                "\{fieldName}": "\{fieldValue}"
+                            }
+                        }]
+            """.trim());
+        if (StringUtils.isNotEmpty(docType)) {
+            query.append(STR."""
+                ,
+                "must": [{
+                    "match": { "docType.keyword": "\{docType}" }}]
+                """.trim());
+        }
+        query.append("}}}");
+        var response = invokeCheckAndConvert(ElasticSearchDeleteByQueryResponse.class,
+            HttpMethod.POST, STR."\{indexName}/_delete_by_query", query.toString());
+        if (!response.failures.isEmpty()) {
+            LOGGER.error("ElasticSearch delete failed: {} (query={})", response.failures, query);
+            throw new JobException(STR."ElasticSearch delete failed: \{response.failures}");
+        }
+    }
+
+    /**
+     * Sets the 'latest' flag to false for documents that were NOT updated as part of this
+     * processing.
+     *
+     * @param indexName  - the index to operate on
+     * @param docType    - the docType to match on
+     * @param fieldName  - the name of the field to check the value for
+     * @param fieldValue - the value of the field to NOT MARK (all other values will be marked)
+     * @throws IOException - if the call fails
+     */
+    public void markStaleDocuments(String indexName, String docType, String fieldName,
+        String fieldValue) throws IOException {
+        var payload = STR."""
+            {
+                "script": {
+                    "inline": "ctx._source.latest=false"
+                },
+                "query": {
+                    "bool": {
+                        "must": [
+                            {
+                                "match": {
+                                    "latest": true
+                                }
+                            },
+                            {
+                                "match": {
+                                    "docType": "\{docType}"
+                                }
+                            }
+                        ],
+                        "must_not": [
+                            {
+                                "match": {
+                                    "\{fieldName}":"\{fieldValue}"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+            """.trim();
+        invokeAndCheck(HttpMethod.POST, STR."\{indexName}/_update_by_query", payload);
     }
 
     /**
@@ -121,7 +204,7 @@ public class ElasticSearch {
     public Map<String, Map<String, String>> getExistingDocuments(String indexName,
         List<String> filters) {
         int totalDocumentCount = getDocumentCount(indexName);
-        boolean scroll = totalDocumentCount > ElasticSearch.MAX_RETURNED_RESULTS;
+        boolean scroll = totalDocumentCount > ElasticSearchHelper.MAX_RETURNED_RESULTS;
 
         String keyField = filters.getFirst();
         StringBuilder filter_path = new StringBuilder("&filter_path=_scroll_id,");
@@ -131,7 +214,7 @@ public class ElasticSearch {
         filter_path.deleteCharAt(filter_path.length() - 1);
 
         String endPoint = STR."\{indexName}/_search?scroll=1m\{filter_path}&size=\{Math.min(
-            totalDocumentCount, ElasticSearch.MAX_RETURNED_RESULTS)}";
+            totalDocumentCount, ElasticSearchHelper.MAX_RETURNED_RESULTS)}";
         if (totalDocumentCount == 0) {
             endPoint = STR."\{indexName}/_search?scroll=1m\{filter_path}";
         }
@@ -142,11 +225,11 @@ public class ElasticSearch {
         String scrollId = fetchDataAndScrollId(endPoint, results, keyField, payLoad);
 
         if (scroll) {
-            totalDocumentCount -= ElasticSearch.MAX_RETURNED_RESULTS;
+            totalDocumentCount -= ElasticSearchHelper.MAX_RETURNED_RESULTS;
             do {
                 endPoint = STR."/_search/scroll?scroll=1m&scroll_id=\{scrollId}\{filter_path}";
                 scrollId = fetchDataAndScrollId(endPoint, results, keyField, null);
-                totalDocumentCount -= ElasticSearch.MAX_RETURNED_RESULTS;
+                totalDocumentCount -= ElasticSearchHelper.MAX_RETURNED_RESULTS;
                 if (totalDocumentCount <= 0) {
                     scroll = false;
                 }
@@ -165,12 +248,8 @@ public class ElasticSearch {
         }
     }
 
-    private <T> T transformResponse(Class<T> clazz, Response response) throws IOException {
-        var objectMapper = new ObjectMapper().configure(
-            DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        var x = EntityUtils.toString(response.getEntity());
-        return objectMapper.readValue(x, clazz);
+    public void refresh(String indexName) throws IOException {
+        invokeAndCheck(HttpMethod.POST, STR."\{indexName}/_refresh", null);
     }
 
     private RestClient getRestClient() {
@@ -190,12 +269,11 @@ public class ElasticSearch {
      */
     private int getDocumentCount(String indexName) {
         try {
-            Response response = invoke(HttpMethod.GET, STR."\{indexName}/_count?filter_path=count",
+            var response = invokeAndCheck(HttpMethod.GET, STR."\{indexName}/_count?filter_path=count",
                 """
                     {"query":{"match":{"latest":true}}}
                     """);
-            String rspJson = EntityUtils.toString(response.getEntity());
-            return new ObjectMapper().readTree(rspJson).at("/count").asInt();
+            return new ObjectMapper().readTree(response.getBody()).at("/count").asInt();
         } catch (IOException e) {
             throw new JobException(STR."Error getting document count in \{indexName}", e);
         }

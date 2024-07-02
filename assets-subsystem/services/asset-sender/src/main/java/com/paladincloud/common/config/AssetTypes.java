@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysql.cj.util.StringUtils;
 import com.paladincloud.common.assets.AssetGroups;
-import com.paladincloud.common.aws.Database;
+import com.paladincloud.common.aws.DatabaseHelper;
 import com.paladincloud.common.config.ConfigConstants.Config;
 import com.paladincloud.common.errors.JobException;
-import com.paladincloud.common.search.ElasticSearch;
-import com.paladincloud.common.search.ElasticSearch.HttpMethod;
-import com.paladincloud.common.util.StringExtras;
+import com.paladincloud.common.search.ElasticSearchHelper;
+import com.paladincloud.common.search.ElasticSearchHelper.HttpMethod;
+import com.paladincloud.common.util.StringHelper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,13 +24,14 @@ public class AssetTypes {
     private static final Logger LOGGER = LogManager.getLogger(AssetTypes.class);
     private static Map<String, Map<String, String>> typeInfo;
 
-    private final ElasticSearch elasticSearch;
-    private final Database database;
+    private final ElasticSearchHelper elasticSearch;
+    private final DatabaseHelper database;
     private final AssetGroups assetGroups;
+    private boolean hasWarnedTypeOverride = false;
 
 
     @Inject
-    public AssetTypes(ElasticSearch elasticSearch, Database database, AssetGroups assetGroups) {
+    public AssetTypes(ElasticSearchHelper elasticSearch, DatabaseHelper database, AssetGroups assetGroups) {
         this.elasticSearch = elasticSearch;
         this.database = database;
         this.assetGroups = assetGroups;
@@ -104,9 +105,10 @@ public class AssetTypes {
             }
         }
 
-        if (!assetTypeOverride.isEmpty()) {
+        if (!assetTypeOverride.isEmpty() && !hasWarnedTypeOverride) {
             LOGGER.warn("Asset types overridden (requested = {}); actual = {}", assetTypeOverride,
                 typeInfo.keySet());
+            hasWarnedTypeOverride = true;
         }
         return typeInfo;
     }
@@ -115,7 +117,7 @@ public class AssetTypes {
         var newAssets = new HashSet<String>();
         var types = getTypes(dataSource);
         for (var type : types) {
-            var indexName = StringExtras.indexName(dataSource, type);
+            var indexName = StringHelper.indexName(dataSource, type);
             if (elasticSearch.indexMissing(indexName)) {
                 newAssets.add(indexName);
 

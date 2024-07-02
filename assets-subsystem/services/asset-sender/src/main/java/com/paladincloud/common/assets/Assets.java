@@ -2,9 +2,11 @@ package com.paladincloud.common.assets;
 
 import static java.util.Map.entry;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.AssetDocumentFields;
-import com.paladincloud.common.aws.Database;
-import com.paladincloud.common.aws.S3;
+import com.paladincloud.common.assets.Assets.FilesAndTypes.SupportingType;
+import com.paladincloud.common.aws.DatabaseHelper;
+import com.paladincloud.common.aws.S3Helper;
 import com.paladincloud.common.config.AssetTypes;
 import com.paladincloud.common.config.ConfigConstants;
 import com.paladincloud.common.config.ConfigConstants.Sender;
@@ -12,10 +14,11 @@ import com.paladincloud.common.config.ConfigService;
 import com.paladincloud.common.errors.JobException;
 import com.paladincloud.common.search.ElasticBatch;
 import com.paladincloud.common.search.ElasticBatch.BatchItem;
-import com.paladincloud.common.search.ElasticSearch;
-import com.paladincloud.common.util.MapExtras;
-import com.paladincloud.common.util.StringExtras;
-import com.paladincloud.common.util.TimeFormatter;
+import com.paladincloud.common.search.ElasticSearchHelper;
+import com.paladincloud.common.search.ElasticSearchHelper.HttpMethod;
+import com.paladincloud.common.util.MapHelper;
+import com.paladincloud.common.util.StringHelper;
+import com.paladincloud.common.util.TimeHelper;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -25,7 +28,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -35,6 +37,7 @@ import javax.inject.Inject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,13 +47,14 @@ public class Assets {
     private static final String OVERRIDE_PREFIX = "pac_override_";
     private static final String TYPE_ON_PREM_SERVER = "onpremserver";
 
-    private final ElasticSearch elasticSearch;
+    private final ElasticSearchHelper elasticSearch;
     private final AssetTypes assetTypes;
-    private final S3 s3;
-    private final Database database;
+    private final S3Helper s3;
+    private final DatabaseHelper database;
 
     @Inject
-    public Assets(ElasticSearch elasticSearch, AssetTypes assetTypes, S3 s3, Database database) {
+    public Assets(ElasticSearchHelper elasticSearch, AssetTypes assetTypes, S3Helper s3,
+        DatabaseHelper database) {
         this.elasticSearch = elasticSearch;
         this.assetTypes = assetTypes;
         this.s3 = s3;
@@ -153,6 +157,26 @@ public class Assets {
         return path.substring(firstDash + 1, firstDash + lastDot + 1);
     }
 
+    /**
+     * Given a fullType ('ec2' or 'ec2-ssminfo'), return the supporting type. For ec2, null is
+     * returned and for ec2-ssminfo, ssminfo is returned.
+     *
+     * @param fullType - the value from @link #getFullTypeFromPath
+     * @return - either null or the supporting type
+     */
+    private static String getSupportingType(String fullType) {
+        if (fullType == null) {
+            return null;
+        }
+
+        var firstDash = fullType.indexOf('-');
+        if (firstDash < 0) {
+            return null;
+        }
+
+        return fullType.substring(firstDash + 1);
+    }
+
     private static void updateOnPremData(Map<String, Object> entity) {
         entity.put(AssetDocumentFields.TAGS_APPLICATION,
             entity.get(AssetDocumentFields.U_BUSINESS_SERVICE).toString().toLowerCase());
@@ -226,7 +250,6 @@ public class Assets {
             .map(String::valueOf).findFirst().orElse(null);
         if (StringUtils.isNotEmpty(accountId)) {
             if (!accountIdNameMap.containsKey(accountId)) {
-                LOGGER.info("querying accountName for specific accountId");
                 String accountNameQueryStr = STR."SELECT accountName FROM pacmandata.cf_Accounts WHERE accountId = '\{accountId}'";
                 var accountNameMapList = database.executeQuery(accountNameQueryStr);
                 if (!accountNameMapList.isEmpty()) {
@@ -256,80 +279,57 @@ public class Assets {
         List<String> filters = new ArrayList<>(
             Collections.singletonList(AssetDocumentFields.DOC_ID));
         var preservedAttributes = Arrays.stream(
-            StringExtras.split(ConfigService.get(Sender.ATTRIBUTES_TO_PRESERVE), ",",
-                StringExtras.EMPTY_ARRAY)).toList();
+            StringHelper.split(ConfigService.get(Sender.ATTRIBUTES_TO_PRESERVE), ",",
+                StringHelper.EMPTY_ARRAY)).toList();
         if (!preservedAttributes.isEmpty()) {
             filters.addAll(preservedAttributes);
         }
 
-        LOGGER.info("Start collecting Asset info");
-        // TODO: How are supporting types handled?
-        //      They're missing displayName
-        //      The associated ElasticSearch index needs to be created if it's missing (the earlier
-        //          index creation depends on types (from the ConfigService API).
-        //          Perhaps move index creation here? All missing ones could be created before
-        //          any indexing. Perhaps there's a way to batch check for existing indexes?
+        LOGGER.info("Start processing Asset info");
+        var loadErrorHandler = new LoadErrors(s3, elasticSearch, bucket, fileTypes.loadErrors);
         try (var batchIndexer = new ElasticBatch(elasticSearch)) {
             Map<String, String> accountIdNameMap = new HashMap<>();
-            // TODO: Currently, this does primary types & related tags only
             for (Map.Entry<String, String> entry : fileTypes.typeFiles.entrySet()) {
                 var type = entry.getKey();
                 var filename = entry.getValue();
                 try {
-                    var supportingTypes = fileTypes.supportingTypes.get(type);
-                    if (CollectionUtils.isNotEmpty(supportingTypes)) {
-                        LOGGER.warn("Supporting types for {} are not being processed: {}", type,
-                            supportingTypes);
-                    }
                     var displayName = types.get(type);
-                    var now = ZonedDateTime.now();
-                    var loadDate = TimeFormatter.formatZeroSeconds(now);
-                    Map<String, Object> stats = new java.util.HashMap<>(
-                        Map.ofEntries(entry(AssetDocumentFields.DATA_SOURCE, dataSource),
-                            entry(AssetDocumentFields.DOC_TYPE, type),
-                            entry(AssetDocumentFields.START_TIME,
-                                TimeFormatter.formatISO8601(now))));
+                    var startTime = ZonedDateTime.now();
+                    var loadDate = TimeHelper.formatZeroSeconds(startTime);
+                    var indexName = StringHelper.indexName(dataSource, type);
 
-                    var indexName = StringExtras.indexName(dataSource, type);
                     var existingDocuments = elasticSearch.getExistingDocuments(indexName, filters);
                     var newDocuments = fetchFromS3(bucket, filename, dataSource, type);
                     var tags = (fileTypes.tagFiles.containsKey(type)) ? fetchFromS3(bucket,
                         fileTypes.tagFiles.get(type), dataSource, type)
                         : new ArrayList<Map<String, Object>>();
+
                     LOGGER.info("For {}, {} assets and {} tags were fetched from S3 and {} "
                             + "assets were fetched from ElasticSearch", type, newDocuments.size(),
                         tags.size(), existingDocuments.size());
-                    if (newDocuments.isEmpty()) {
-                        // ERROR condition - update elastic index, it looks like
-                        // TODO: Properly handle no discovered assets
-                        throw new RuntimeException("Handle no discovered assets");
-                    } else {
-                        var updatableFields = database.executeQuery(
-                            STR."select updatableFields from cf_pac_updatable_fields where resourceType ='\{type}'");
-                        var overrides = database.executeQuery(
-                            STR."select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '\{type}'");
-                        var overridesMap = overrides.parallelStream().collect(
-                            Collectors.groupingBy(obj -> obj.get(AssetDocumentFields.RESOURCE_ID)));
 
-                        var keys = assetTypes.getKeyForType(dataSource, type).split(",");
-                        var idColumn = assetTypes.getIdForType(dataSource, type);
-
-                        prepareDocuments(existingDocuments, newDocuments, tags, loadDate,
-                            updatableFields, overridesMap, idColumn, keys, type, dataSource,
-                            displayName, accountIdNameMap);
-                        // TODO: ErrorManager handleError
-                        batchIndexer.add(newDocuments.stream().map(doc -> new BatchItem(indexName,
-                            doc.get(AssetDocumentFields.DOC_ID).toString(), doc)).toList());
+                    if (!newDocuments.isEmpty()) {
+                        indexDocuments(batchIndexer, indexName, existingDocuments, newDocuments,
+                            tags, loadDate, type, dataSource, displayName, accountIdNameMap);
                     }
 
-                    stats.put(AssetDocumentFields.TOTAL_DOCS, newDocuments.size());
-                    stats.put(AssetDocumentFields.END_TIME, TimeFormatter.formatNowISO8601());
-                    stats.put(AssetDocumentFields.NEWLY_DISCOVERED, newDocuments.stream().filter(
-                        (e -> e.get(AssetDocumentFields.DISCOVERY_DATE)
+                    var stats = generateStats(startTime, dataSource, type, newDocuments.size(),
+                        newDocuments.stream().filter((e -> e.get(AssetDocumentFields.DISCOVERY_DATE)
                             .equals(e.get(AssetDocumentFields.FIRST_DISCOVERED)))).count());
                     batchIndexer.add(
-                        new BatchItem("datashipper", UUID.randomUUID().toString(), stats));
+                        BatchItem.documentEntry("datashipper", UUID.randomUUID().toString(),
+                            stats));
 
+                    batchIndexer.flush();
+                    loadErrorHandler.process(indexName, type, loadDate);
+                    elasticSearch.refresh(indexName);
+                    elasticSearch.markStaleDocuments(indexName, type,
+                        AssetDocumentFields.LOAD_DATE_KEYWORD, loadDate);
+
+                    // TODO: ErrorManager handleError (processes collected errorList - it appears to update '_loaddate' for some AWS assets)
+
+                    uploadSupportingTypes(dataSource, indexName, bucket,
+                        fileTypes.supportingTypes.get(type), loadDate);
                 } catch (Exception e) {
                     throw new JobException(
                         STR."Failed uploading asset data for \{dataSource} and \{type}", e);
@@ -339,7 +339,138 @@ public class Assets {
             throw new JobException(STR."Exception inserting asset data for \{dataSource}", e);
         }
 
-        LOGGER.info("Finished collecting asset data for {}", dataSource);
+        LOGGER.info("Finished processing asset data for {}", dataSource);
+    }
+
+    private Map<String, Object> generateStats(ZonedDateTime startTime, String dataSource,
+        String type, long documentCount, long newlyDiscovered) {
+        return new HashMap<>(Map.ofEntries(entry(AssetDocumentFields.DATA_SOURCE, dataSource),
+            entry(AssetDocumentFields.DOC_TYPE, type),
+            entry(AssetDocumentFields.START_TIME, TimeHelper.formatISO8601(startTime)),
+            entry(AssetDocumentFields.END_TIME, TimeHelper.formatNowISO8601()),
+            entry(AssetDocumentFields.TOTAL_DOCS, documentCount),
+            entry(AssetDocumentFields.UPLOADED_DOC_COUNT, documentCount),
+            entry(AssetDocumentFields.NEWLY_DISCOVERED, newlyDiscovered)));
+    }
+
+    private void uploadSupportingTypes(String dataSource, String indexName, String bucket,
+        List<FilesAndTypes.SupportingType> supportingTypes, String loadDate) throws IOException {
+        if (supportingTypes.isEmpty()) {
+            return;
+        }
+
+        var firstSupportingType = supportingTypes.getFirst();
+        updateTypeRelations(indexName, firstSupportingType.parentType, supportingTypes);
+        var keys = Arrays.stream(
+                assetTypes.getKeyForType(dataSource, firstSupportingType.parentType).split(","))
+            .toList();
+        for (var supportingType : supportingTypes) {
+            var documents = fetchFromS3(bucket, supportingType.filePath, dataSource,
+                supportingType.fullType);
+
+            LOGGER.info("Processing supporting type: parent={} type={} path={} count={}",
+                supportingType.parentType, supportingType.supportingType, supportingType.filePath,
+                documents.size());
+
+            var ec2Type = STR."\{supportingType.parentType}_\{supportingType.supportingType}";
+
+            try (var batchIndexer = new ElasticBatch(elasticSearch)) {
+                for (var document : documents) {
+                    var parentId = String.join("_", MapHelper.getAllValues(document, keys));
+                    if ("aws".equalsIgnoreCase(dataSource)) {
+                        if (keys.contains(AssetDocumentFields.ACCOUNT_ID)) {
+                            parentId = STR."\{indexName}_\{supportingType.parentType}_\{parentId}";
+                        }
+                    }
+                    document.put(AssetDocumentFields.LOAD_DATE, loadDate);
+                    document.put(AssetDocumentFields.DOC_TYPE, ec2Type);
+                    var relations = new HashMap<>(
+                        Map.ofEntries(entry("name", ec2Type), entry("parent", parentId)));
+                    document.put(STR."\{supportingType.parentType}_relations", relations);
+
+                    batchIndexer.add(BatchItem.routingEntry(indexName, parentId, document));
+                }
+            } catch (Exception e) {
+                throw new JobException(
+                    STR."Error uploading data for \{dataSource} \{supportingType.fullType}", e);
+            }
+
+            elasticSearch.deleteDocumentsWithoutValue(indexName, ec2Type,
+                AssetDocumentFields.LOAD_DATE_KEYWORD, loadDate);
+        }
+    }
+
+    private void updateTypeRelations(String indexName, String parentType,
+        List<SupportingType> relatedTypes) throws IOException {
+        var relations = getTypeRelations(indexName, parentType);
+        var relationsList = new ArrayList<String>();
+        if (relations.containsKey(parentType)) {
+            var existing = relations.get(parentType);
+            if (existing instanceof String) {
+                relationsList.add((String) existing);
+            } else {
+                relationsList.addAll((List<String>) existing);
+            }
+        }
+
+        var needUpdate = false;
+        for (var relatedType : relatedTypes) {
+            var newType = STR."\{relatedType.parentType}_\{relatedType.supportingType}";
+            if (!relationsList.contains(newType)) {
+                needUpdate = true;
+                relationsList.add(newType);
+            }
+        }
+
+        // If an updated is needed, update only the '_relations' mapping
+        if (needUpdate) {
+            relations.put(parentType, relationsList);
+            var asString = new ObjectMapper().writeValueAsString(relations);
+            var payload = STR."""
+                {
+                    "properties": {
+                        "\{parentType}_relations": {
+                            "type": "join",
+                            "relations": \{asString}
+                        }
+                    }
+                }
+                """.trim();
+            LOGGER.info("Updating types relations for {} to {}", parentType, relationsList);
+            elasticSearch.invokeAndCheck(HttpMethod.PUT, STR."\{indexName}/_mapping", payload);
+        }
+    }
+
+    private Map<String, Object> getTypeRelations(String indexName, String parentType)
+        throws IOException {
+        var objectMapper = new ObjectMapper();
+        var response = elasticSearch.invokeAndCheck(HttpMethod.GET, STR."\{indexName}/_mapping",
+            null);
+        var document = objectMapper.readTree(response.getBody());
+        var relations = document.at(
+            STR."/\{indexName}/mappings/properties/\{parentType}_relations/relations");
+        return objectMapper.convertValue(relations, Map.class);
+    }
+
+    private void indexDocuments(ElasticBatch batchIndexer, String indexName,
+        Map<String, Map<String, String>> existingDocuments, List<Map<String, Object>> newDocuments,
+        List<Map<String, Object>> tags, String loadDate, String type, String dataSource,
+        String displayName, Map<String, String> accountIdNameMap) throws IOException {
+        var updatableFields = database.executeQuery(
+            STR."select updatableFields from cf_pac_updatable_fields where resourceType ='\{type}'");
+        var overrides = database.executeQuery(
+            STR."select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '\{type}'");
+        var overridesMap = overrides.parallelStream()
+            .collect(Collectors.groupingBy(obj -> obj.get(AssetDocumentFields.RESOURCE_ID)));
+
+        var keys = assetTypes.getKeyForType(dataSource, type).split(",");
+        var idColumn = assetTypes.getIdForType(dataSource, type);
+
+        prepareDocuments(existingDocuments, newDocuments, tags, loadDate, updatableFields,
+            overridesMap, idColumn, keys, type, dataSource, displayName, accountIdNameMap);
+        batchIndexer.add(newDocuments.stream().map(doc -> BatchItem.documentEntry(indexName,
+            doc.get(AssetDocumentFields.DOC_ID).toString(), doc)).toList());
+
     }
 
     private void prepareDocuments(Map<String, Map<String, String>> existingDocuments,
@@ -358,7 +489,7 @@ public class Assets {
             if (id == null) {
                 id = newDocument.get("id").toString();
             }
-            var docId = StringExtras.concatenate(newDocument, keys, "_");
+            var docId = StringHelper.concatenate(newDocument, keys, "_");
             var resourceName = assetTypes.getResourceNameType(dataSource, type);
             if (newDocument.containsKey(resourceName)) {
                 newDocument.put(AssetDocumentFields.RESOURCE_NAME,
@@ -369,7 +500,7 @@ public class Assets {
             newDocument.putIfAbsent(AssetDocumentFields.RESOURCE_ID, id);
             if ("aws".equalsIgnoreCase(dataSource)) {
                 if (Arrays.asList(keys).contains(AssetDocumentFields.ACCOUNT_ID)) {
-                    docId = STR."\{StringExtras.indexName(dataSource, type)}_\{docId}";
+                    docId = STR."\{StringHelper.indexName(dataSource, type)}_\{docId}";
                 }
             }
             newDocument.putIfAbsent(AssetDocumentFields.DOC_ID, docId);
@@ -417,7 +548,7 @@ public class Assets {
                     newDocument.get(AssetDocumentFields.DISCOVERY_DATE));
             }
 
-            tags.parallelStream().filter(tag -> MapExtras.containsAll(tag, newDocument, keys))
+            tags.parallelStream().filter(tag -> MapHelper.containsAll(tag, newDocument, keys))
                 .forEach(tag -> {
                     var key = tag.get("key").toString();
                     if (StringUtils.isNotBlank(key)) {
@@ -448,7 +579,7 @@ public class Assets {
         });
     }
 
-    private static class FilesAndTypes {
+    static class FilesAndTypes {
 
         Map<String, String> tagFiles = new HashMap<>();
         // The supporting files, by type (ec2-ssminfo)
@@ -458,12 +589,18 @@ public class Assets {
         // Files that are not expected or known
         Set<String> unknownFiles = new HashSet<>();
         // The supporting types for each primary type (ec2 -> ec2-ssminfo)
-        Map<String, List<String>> supportingTypes = new HashMap<>();
+        Map<String, List<SupportingType>> supportingTypes = new HashMap<>();
+        // Load error files
+        List<String> loadErrors = new ArrayList<>();
 
         static FilesAndTypes matchFilesAndTypes(List<String> allFilenames,
             Set<String> primaryTypes) {
             var ft = new FilesAndTypes();
             for (var filename : allFilenames) {
+                if (filename.toLowerCase().endsWith("-loaderror.data")) {
+                    ft.loadErrors.add(filename);
+                    continue;
+                }
                 var primaryType = getPrimaryTypeFromPath(filename);
                 var fullType = getFullTypeFromPath(filename);
                 if (isTagsFile(filename)) {
@@ -473,13 +610,30 @@ public class Assets {
                 } else if (isSupportingTypeFile(primaryType, filename, primaryTypes)) {
                     ft.supportingFiles.put(fullType, filename);
                     var list = ft.supportingTypes.getOrDefault(primaryType, new ArrayList<>());
-                    list.add(fullType);
+                    var supportingType = getSupportingType(fullType);
+                    list.add(new SupportingType(primaryType, supportingType, fullType, filename));
                     ft.supportingTypes.put(primaryType, list);
                 } else {
                     ft.unknownFiles.add(filename);
                 }
             }
             return ft;
+        }
+
+        static class SupportingType {
+
+            String parentType;
+            String supportingType;
+            String fullType;
+            String filePath;
+
+            SupportingType(String parentType, String supportingType, String fullType,
+                String filePath) {
+                this.parentType = parentType;
+                this.supportingType = supportingType;
+                this.fullType = fullType;
+                this.filePath = filePath;
+            }
         }
     }
 }

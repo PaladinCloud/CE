@@ -9,12 +9,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class StringExtras {
+public class StringHelper {
 
     public static final String[] EMPTY_ARRAY = new String[0];
-    private static final Logger LOGGER = LogManager.getLogger(StringExtras.class);
+    private static final Logger LOGGER = LogManager.getLogger(StringHelper.class);
+    private static boolean hasWarnedIndexOverride = false;
 
-    private StringExtras() {
+    private StringHelper() {
     }
 
     public static String indexName(String dataSource, String type) {
@@ -22,7 +23,10 @@ public class StringExtras {
         var devPrefix = ConfigService.get(Dev.INDEX_PREFIX);
         if (!StringUtils.isEmpty(devPrefix)) {
             name = STR."\{devPrefix}_\{name}";
-            LOGGER.warn("Overriding index prefix with '{}' => {}", devPrefix, name);
+            if (!hasWarnedIndexOverride) {
+                LOGGER.warn("Overriding index prefix with '{}' => {}", devPrefix, name);
+                hasWarnedIndexOverride = true;
+            }
         }
         return name;
     }

@@ -1,22 +1,28 @@
 package com.paladincloud.common.search;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.errors.JobException;
-import com.paladincloud.common.util.MapExtras;
+import com.paladincloud.common.util.JsonHelper;
+import com.paladincloud.common.util.MapHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ElasticBatch implements AutoCloseable {
 
+    private static final Logger LOGGER = LogManager.getLogger(ElasticBatch.class);
     public static int DEFAULT_BATCH_SIZE = 5000;
     private final List<BatchItem> batchItems = new ArrayList<>();
-    private final ElasticSearch elasticSearch;
+    private final ElasticSearchHelper elasticSearch;
     private int batchSize = DEFAULT_BATCH_SIZE;
 
     @Inject
-    public ElasticBatch(ElasticSearch elasticSearch) {
+    public ElasticBatch(ElasticSearchHelper elasticSearch) {
         this.elasticSearch = elasticSearch;
     }
 
@@ -32,6 +38,10 @@ public class ElasticBatch implements AutoCloseable {
     public void add(List<BatchItem> batchData) throws IOException {
         batchItems.addAll(batchData);
         checkForPush();
+    }
+
+    public void flush() throws IOException {
+        push();
     }
 
     @Override
@@ -54,36 +64,51 @@ public class ElasticBatch implements AutoCloseable {
         // and the second line is the document
         var payload = new StringBuilder(2048);
         for (var batchData : batchItems) {
-            payload.append(STR."""
-                { "index": { "_index": "\{batchData.indexName}", "_id": "\{batchData.docId}" } }
-                """.trim());
+            payload.append(batchData.actionMetaData);
             payload.append("\n");
             payload.append(batchData.document);
             payload.append("\n");
         }
 
-        var response = elasticSearch.invokeAndCheck(ElasticSearch.HttpMethod.POST, "/_bulk",
+        var response = elasticSearch.invokeCheckAndConvert(ElasticBulkResponse.class, ElasticSearchHelper.HttpMethod.POST, "/_bulk",
             payload.toString());
-        if (response.hasWarnings()) {
-            throw new JobException(STR."ElasticSearch bulk insert has warnings \{response.getWarnings()}");
+        if (response.errors) {
+            LOGGER.error("ElasticBulkResponse error: {} for {}", response.items, payload);
+            throw new JobException(STR."bulk insert failed");
         }
         batchItems.clear();
     }
 
     public static class BatchItem {
 
-        public String indexName;
-        public String docId;
+        public String actionMetaData;
         public String document;
 
-        public BatchItem(String indexName, String docId, String document) {
-            this.indexName = indexName;
-            this.docId = docId;
-            this.document = document;
+        static public BatchItem documentEntry(String indexName, String docId, Map<String, ?> document) {
+            return documentEntry(indexName, docId, MapHelper.toJsonString(document));
         }
 
-        public BatchItem(String indexName, String docId, Map<String, ?> document) {
-            this(indexName, docId, MapExtras.toJsonString(document));
+        static public BatchItem documentEntry(String indexName, String docId, String document) {
+            var actionInfo = STR."""
+                { "index": { "_index": "\{indexName}", "_id": "\{docId}" } }
+                """.trim();
+            return new BatchItem(actionInfo, document);
+        }
+
+        static public BatchItem routingEntry(String indexName, String routingInfo, Map<String, ?> document) {
+            return routingEntry(indexName, routingInfo, MapHelper.toJsonString(document));
+        }
+
+        static public BatchItem routingEntry(String indexName, String routingInfo, String document) {
+            var actionInfo = STR."""
+                { "index": { "_index": "\{indexName}", "routing": "\{routingInfo}" } }
+                """.trim();
+            return new BatchItem(actionInfo, document);
+        }
+
+        private BatchItem(String actionMetaData, String document) {
+            this.actionMetaData = actionMetaData;
+            this.document = document;
         }
     }
 }

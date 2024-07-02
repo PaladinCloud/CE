@@ -2,10 +2,10 @@ package com.paladincloud.common;
 
 import com.paladincloud.common.assets.AssetGroups;
 import com.paladincloud.common.assets.Assets;
-import com.paladincloud.common.aws.Database;
-import com.paladincloud.common.aws.S3;
+import com.paladincloud.common.aws.DatabaseHelper;
+import com.paladincloud.common.aws.S3Helper;
 import com.paladincloud.common.config.AssetTypes;
-import com.paladincloud.common.search.ElasticSearch;
+import com.paladincloud.common.search.ElasticSearchHelper;
 import dagger.Module;
 import dagger.Provides;
 import javax.inject.Singleton;
@@ -15,37 +15,37 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    ElasticSearch provideElasticSearch() {
-        return new ElasticSearch();
+    ElasticSearchHelper provideElasticSearch() {
+        return new ElasticSearchHelper();
     }
 
     @Singleton
     @Provides
-    Database provideDatabase() {
-        return new Database();
+    DatabaseHelper provideDatabase() {
+        return new DatabaseHelper();
     }
 
     @Singleton
     @Provides
-    S3 provideS3() {
-        return new S3();
+    S3Helper provideS3() {
+        return new S3Helper();
     }
 
     @Singleton
     @Provides
-    AssetTypes provideAssetTypes(ElasticSearch elasticSearch, Database database, AssetGroups assetGroups) {
+    AssetTypes provideAssetTypes(ElasticSearchHelper elasticSearch, DatabaseHelper database, AssetGroups assetGroups) {
         return new AssetTypes(elasticSearch, database, assetGroups);
     }
 
     @Singleton
     @Provides
-    Assets provideAssets(ElasticSearch elasticSearch, AssetTypes assetTypes, S3 s3, Database database) {
+    Assets provideAssets(ElasticSearchHelper elasticSearch, AssetTypes assetTypes, S3Helper s3, DatabaseHelper database) {
         return new Assets(elasticSearch, assetTypes, s3, database);
     }
 
     @Singleton
     @Provides
-    AssetGroups provideAssetGroups(ElasticSearch elasticSearch, Database database) {
+    AssetGroups provideAssetGroups(ElasticSearchHelper elasticSearch, DatabaseHelper database) {
         return new AssetGroups(elasticSearch, database);
     }
 }

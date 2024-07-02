@@ -20,9 +20,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.utils.CollectionUtils;
 
-public class HttpExtras {
+public class HttpHelper {
 
-    private static final Logger LOGGER = LogManager.getLogger(HttpExtras.class);
+    private static final Logger LOGGER = LogManager.getLogger(HttpHelper.class);
 
     public static Map<String, String> getBasicHeaders(String base64Credentials) {
         var headers = new HashMap<String, String>();

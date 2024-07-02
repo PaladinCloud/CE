@@ -3,7 +3,7 @@ package com.paladincloud.common.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.errors.JobException;
-import com.paladincloud.common.util.HttpExtras;
+import com.paladincloud.common.util.HttpHelper;
 import java.util.Map;
 import java.util.Properties;
 
@@ -47,9 +47,9 @@ public class ConfigService {
     }
 
     private static void fetchConfigProperties(String uri, String credentials) {
-        var headers = HttpExtras.getBasicHeaders(credentials);
+        var headers = HttpHelper.getBasicHeaders(credentials);
         try {
-            var configJson = HttpExtras.get(uri, headers);
+            var configJson = HttpHelper.get(uri, headers);
             var objectMapper = new ObjectMapper().configure(
                 DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             var configResponse = objectMapper.readValue(configJson, ConfigApiResponse.class);

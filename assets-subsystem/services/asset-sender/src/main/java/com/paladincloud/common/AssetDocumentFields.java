@@ -26,6 +26,7 @@ public interface AssetDocumentFields {
 
     String LATEST = "latest";
     String LOAD_DATE = "_loaddate";
+    String LOAD_DATE_KEYWORD = "_loaddate.keyword";
 
     String NAME = "name";
     String NEWLY_DISCOVERED = "newly_discovered";
@@ -51,5 +52,6 @@ public interface AssetDocumentFields {
     String TOTAL_DOCS = "total_docs";
 
     String U_BUSINESS_SERVICE = "u_business_service";
+    String UPLOADED_DOC_COUNT = "uploaded_docs";
     String USED_FOR = "used_for";
 }

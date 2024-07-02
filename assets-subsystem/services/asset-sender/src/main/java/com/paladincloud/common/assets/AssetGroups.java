@@ -3,11 +3,11 @@ package com.paladincloud.common.assets;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.paladincloud.common.aws.Database;
+import com.paladincloud.common.aws.DatabaseHelper;
 import com.paladincloud.common.errors.JobException;
 import com.paladincloud.common.search.ElasticAliasResponse;
-import com.paladincloud.common.search.ElasticSearch;
-import com.paladincloud.common.search.ElasticSearch.HttpMethod;
+import com.paladincloud.common.search.ElasticSearchHelper;
+import com.paladincloud.common.search.ElasticSearchHelper.HttpMethod;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,12 +41,12 @@ public class AssetGroups {
     private static final Map<String, List<Map<String, String>>> databaseCache = new HashMap<>();
     private static final List<String> dataSourceCache = new ArrayList<>();
     private static final Map<String, List<Map<String, String>>> assetGroupTagsCache = new HashMap<>();
-    private final ElasticSearch elasticSearch;
-    private final Database database;
+    private final ElasticSearchHelper elasticSearch;
+    private final DatabaseHelper database;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Inject
-    public AssetGroups(ElasticSearch elasticSearch, Database database) {
+    public AssetGroups(ElasticSearchHelper elasticSearch, DatabaseHelper database) {
         this.elasticSearch = elasticSearch;
         this.database = database;
     }

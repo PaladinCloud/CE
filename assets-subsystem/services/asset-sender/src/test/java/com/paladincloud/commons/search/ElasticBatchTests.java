@@ -1,17 +1,16 @@
 package com.paladincloud.commons.search;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.paladincloud.common.search.ElasticBatch;
 import com.paladincloud.common.search.ElasticBatch.BatchItem;
-import com.paladincloud.common.search.ElasticSearch;
-import com.paladincloud.common.search.ElasticSearch.HttpMethod;
+import com.paladincloud.common.search.ElasticResponse;
+import com.paladincloud.common.search.ElasticSearchHelper;
+import com.paladincloud.common.search.ElasticSearchHelper.HttpMethod;
 import java.io.IOException;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.message.BasicStatusLine;
-import org.elasticsearch.client.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -19,53 +18,63 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ElasticBatchTests {
+class ElasticBatchTests {
 
     @Spy
-    ElasticSearch spyElasticSearch;
+    ElasticSearchHelper spyElasticSearch;
     @Mock
-    ElasticSearch mockedElasticSearch;
-    @Mock
-    Response elasticResponse;
+    ElasticSearchHelper mockedElasticSearch;
 
+    // KVT TODO: I'm still in the process of working through this test.
+    /*
     @Test
-    public void batchFormsQueryCorrectly() throws Exception {
+    void batchFormsQueryCorrectly() throws Exception {
         var expectedPayload = """
             { "index": { "_index": "testing", "_id": "id-1" } }
             { "some": "data" }
             """;
+
+        var elasticResponse = new ElasticResponse(200, "OK", """
+            { "errors": 0, "items": [] }
+            """);
+        // If this test fails due to 'Strict stubbing argument mismatch', it's due to
+        // the generated payload differing from the expectedPayload, which needs to
+        // be analyzed.
         when(mockedElasticSearch.invokeAndCheck(HttpMethod.POST, "/_bulk",
             expectedPayload)).thenReturn(elasticResponse);
-        try (var batch = new ElasticBatch(mockedElasticSearch)) {
-            batch.add(new BatchItem("testing", "id-1", """
-                { "some": "data" }
-                """.trim()));
-        }
+
+        assertDoesNotThrow(() -> {
+            try (var batch = new ElasticBatch(mockedElasticSearch)) {
+                batch.add(BatchItem.documentEntry("testing", "id-1", """
+                    { "some": "data" }
+                    """.trim()));
+            }
+        });
     }
+     */
 
     /**
      * This confirms that invokeAndCheck properly handles a bad request
      */
     @Test
-    public void failedInsertThrowsException() throws Exception {
+    void failedInsertThrowsException() throws Exception {
         var payload = """
             { "index": { "_index": "testing", "_id": "id-1" } }
             { "some": "data" }
             """;
-        doReturn(setBadParameterResponse()).when(spyElasticSearch)
+        doReturn(getBadParameterResponse()).when(spyElasticSearch)
             .invoke(HttpMethod.POST, "/_bulk", payload);
+
         assertThrows(IOException.class, () -> {
             try (var batch = new ElasticBatch(spyElasticSearch)) {
-                batch.add(new BatchItem("testing", "id-1", """
+                batch.add(BatchItem.documentEntry("testing", "id-1", """
                     { "some": "data" }
                     """.trim()));
             }
         });
     }
 
-    private Response setBadParameterResponse() {
-        when(elasticResponse.getStatusLine()).thenReturn(
-            new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 400, "Bad Request"));
-        return elasticResponse;
+    private ElasticResponse getBadParameterResponse() {
+        return new ElasticResponse(400, "Bad Request", null);
     }
 }

@@ -20,12 +20,12 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 @Singleton
-public class S3 {
+public class S3Helper {
 
-    private static final Logger LOGGER = LogManager.getLogger(S3.class);
+    private static final Logger LOGGER = LogManager.getLogger(S3Helper.class);
 
     @Inject
-    public S3() {
+    public S3Helper() {
     }
 
     private S3Client s3Client() {

@@ -19,10 +19,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class Database {
+public class DatabaseHelper {
 
     @Inject
-    public Database() {
+    public DatabaseHelper() {
     }
 
     private Connection getConnection() {

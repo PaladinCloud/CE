@@ -3,14 +3,14 @@ package com.paladincloud.common.util;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class TimeFormatter {
+public class TimeHelper {
 
     private static final DateTimeFormatter zeroMinuteDateFormat = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd HH:mm:00Z");
     private static final DateTimeFormatter iso8601DateFormat = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd'T'HH:mm:ssZ");
 
-    private TimeFormatter() {
+    private TimeHelper() {
     }
 
     public static String formatZeroSeconds(ZonedDateTime time) {
