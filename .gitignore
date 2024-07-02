@@ -80,3 +80,4 @@ lambda-functions/notification-template-formatter-service/target/*
 lambda-functions/notification-send-email-service/target/*
 lambda-functions/notification-invoke-service/target/*
 lambda-functions/notification-es-logging-service/target/*
+/assets-subsystem/services/asset-sender/.aws-sam
