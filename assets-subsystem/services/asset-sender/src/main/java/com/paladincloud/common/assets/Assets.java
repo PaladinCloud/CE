@@ -375,7 +375,6 @@ public class Assets {
             try (var batchIndexer = new ElasticBatch(elasticSearch)) {
                 for (var document : documents) {
                     var parentId = StringHelper.concatenate(document, keys, "_");
-//                    var parentId = String.join("_", MapHelper.getAllValues(document, keys));
                     if ("aws".equalsIgnoreCase(dataSource)) {
                         if (keys.contains(AssetDocumentFields.ACCOUNT_ID)) {
                             parentId = STR."\{indexName}_\{supportingType.parentType}_\{parentId}";
