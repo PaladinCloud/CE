@@ -35,8 +35,16 @@ public class RecommendationCollector implements Constants {
     
     /** The Constant CURR_DATE. */
     private static final String CURR_DATE = new SimpleDateFormat(DATE_FORMAT).format(new java.util.Date());
+	private static final String NAME = "name";
+	private static final String PARENT = "parent";
+	private static final String RELATIONS = "_relations";
+	private static final String DOC_TYPE = "docType";
+	private static final String AWS = "aws_";
+	private static final String RESOURCE_ID = "_resourceid";
+	private static final String DOC_ID = "_docid";
+	private static final String UPLOADING = "Uploading {}";
 
-    /**
+	/**
      * Upload recommendation data.
      *
      * @return the list
@@ -81,14 +89,14 @@ public class RecommendationCollector implements Constants {
     	}
     	uploadRecommendationsWithResourceIds(recommendationsWithResourceId, parentInfo, errors);
     	uploadRecommendationsWithoutResourceIds(recommendationsWithoutResourceId, errors);
-    	
-    	for(String parentType : parentTypes.keySet()) {
-    		ESManager.deleteOldDocuments("aws_"+parentType, Constants.RECOMMENDATION, "_loaddate.keyword", CURR_DATE);
-    		ESManager.updateLatestStatus("aws_"+parentType, Constants.RECOMMENDATION, "_loaddate.keyword", CURR_DATE);
-    	}
-    	ESManager.deleteOldDocuments(Constants.GLOBAL_RECOMMENDATIONS,Constants.RECOMMENDATION, Constants.LOAD_DATE,CURR_DATE);
-    	ESManager.updateLatestStatus(Constants.GLOBAL_RECOMMENDATIONS,Constants.RECOMMENDATION, Constants.LOAD_DATE,CURR_DATE);
-    	return errorList;
+
+		for (String parentType : parentTypes.keySet()) {
+			ESManager.deleteOldDocuments(AWS + parentType, Constants.RECOMMENDATION, "_loaddate.keyword", CURR_DATE);
+			ESManager.updateLatestStatus(AWS + parentType, Constants.RECOMMENDATION, "_loaddate.keyword", CURR_DATE);
+		}
+		ESManager.deleteOldDocuments(Constants.GLOBAL_RECOMMENDATIONS, Constants.RECOMMENDATION, Constants.LOAD_DATE, CURR_DATE);
+		ESManager.updateLatestStatus(Constants.GLOBAL_RECOMMENDATIONS, Constants.RECOMMENDATION, Constants.LOAD_DATE, CURR_DATE);
+		return errorList;
     }
     
     /**
@@ -132,7 +140,7 @@ public class RecommendationCollector implements Constants {
     		recommendationObj.putAll(resource);
     		recommendationObj.remove(Constants.CHECKID);
     		recommendationObj.put(Constants.RESOURCE_INFO,resourceInfo);
-    		recommendationObj.put("_resourceid", resourceId);
+			recommendationObj.put(RESOURCE_ID, resourceId);
     		recommendationObj.put(Constants.LOAD_DATE,CURR_DATE);
     		recommendationObj.put("latest",false);
     		if(!Strings.isNullOrEmpty(recommendationMapping.get(Constants.MONTHLY_SAVINGS_FIELD)) && resourceInfo.containsKey(recommendationMapping.get(Constants.MONTHLY_SAVINGS_FIELD))) {
@@ -185,43 +193,42 @@ public class RecommendationCollector implements Constants {
      * @param parentInfo the parent info
      * @param errors the errors
      */
-    private void uploadRecommendationsWithResourceIds(List<Map<String,Object>> recommendationsWithResourceId, Map<String, String> parentInfo, List<String> errors) {
-    	
-    	LOGGER.info("Started Uploading for recommendations with resource id {} ",recommendationsWithResourceId.size());
-    	String createTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\", \"routing\" : \"%s\" } }%n";
-    	StringBuilder bulkRequest = new StringBuilder();
-    	int i=0;
-    	for(Map<String,Object> recommendationObj : recommendationsWithResourceId) {
-    		String type = recommendationObj.get("type").toString();
-    		String parentInfoId = recommendationObj.get("_resourceid")+"_"+recommendationObj.get(Constants.ACCOUNTID);
+	private void uploadRecommendationsWithResourceIds(List<Map<String, Object>> recommendationsWithResourceId, Map<String, String> parentInfo, List<String> errors) {
+
+		LOGGER.info("Started Uploading for recommendations with resource id {} ", recommendationsWithResourceId.size());
+		String createTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\", \"routing\" : \"%s\" } }%n";
+		StringBuilder bulkRequest = new StringBuilder();
+		int i = 0;
+		for (Map<String, Object> recommendationObj : recommendationsWithResourceId) {
+			String type = recommendationObj.get("type").toString();
+			String parentInfoId = recommendationObj.get(RESOURCE_ID) + "_" + recommendationObj.get(Constants.ACCOUNTID);
 			Map<String, Object> relMap = new HashMap<>();
-			relMap.put("name", Constants.RECOMMENDATION);
-			relMap.put("parent", parentInfo.get(parentInfoId));
-			recommendationObj.put(type + "_relations", relMap);
-			recommendationObj.put("docType",Constants.RECOMMENDATION);
-    		StringBuilder doc = new StringBuilder(ESManager.createESDoc(recommendationObj));
-    		if (doc != null) {
-    			if(!StringUtils.isNullOrEmpty(parentInfo.get(parentInfoId))) {
-    				ESManager.createType("aws_" + type, Constants.RECOMMENDATION, type);
-                    bulkRequest.append(String.format(createTemplate,"aws_"+type,parentInfo.get(parentInfoId)+"_"+recommendationObj.get(Constants.RECOMMENDATION_ID)+"_"+Math.random(),parentInfo.get(parentInfoId)));
-                    bulkRequest.append(doc + "\n");
-    			}
+			relMap.put(NAME, Constants.RECOMMENDATION);
+			relMap.put(PARENT, parentInfo.get(parentInfoId));
+			recommendationObj.put(type + RELATIONS, relMap);
+			recommendationObj.put(DOC_ID, parentInfo.get(parentInfoId));
+			recommendationObj.put(DOC_TYPE, Constants.RECOMMENDATION);
+			StringBuilder doc = new StringBuilder(ESManager.createESDoc(recommendationObj));
+			if (!StringUtils.isNullOrEmpty(parentInfo.get(parentInfoId))) {
+				ESManager.createType(AWS + type, Constants.RECOMMENDATION, type);
+				bulkRequest.append(String.format(createTemplate, AWS + type, parentInfo.get(parentInfoId) + "_" + recommendationObj.get(Constants.RECOMMENDATION_ID) + "_" + Math.random(), parentInfo.get(parentInfoId)));
+				bulkRequest.append(doc).append("\n");
             }
-    		i++;
-    		if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
-    			if (bulkRequest.length() > 0) {
-	    			LOGGER.info("Uploading {}", i);
-	                ESManager.bulkUpload(errors,bulkRequest.toString());
-	                bulkRequest = new StringBuilder();
-    			}
-            }
-    	}
-    	if (bulkRequest.length() > 0) {
-    		LOGGER.info("Uploading {}", i);
-            ESManager.bulkUpload(errors,bulkRequest.toString());
-        }
-    	LOGGER.info("Completed Uploading for recommendations with resource id");
-    }
+			i++;
+			if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
+				if (bulkRequest.length() > 0) {
+					LOGGER.info(UPLOADING, i);
+					ESManager.bulkUpload(errors, bulkRequest.toString());
+					bulkRequest = new StringBuilder();
+				}
+			}
+		}
+		if (bulkRequest.length() > 0) {
+			LOGGER.info(UPLOADING, i);
+			ESManager.bulkUpload(errors, bulkRequest.toString());
+		}
+		LOGGER.info("Completed Uploading for recommendations with resource id");
+	}
     
 	/**
 	 * Upload recommendations without resource ids.
@@ -240,23 +247,21 @@ public class RecommendationCollector implements Constants {
     	int i=0;
     	for(Map<String,Object> recommendationObj : recommendationsWithoutResourceId) {
     		String id = recommendationObj.get(Constants.ACCOUNTID).toString()+recommendationObj.get(Constants.RECOMMENDATION_ID)+Math.random();
-			recommendationObj.put("docType",Constants.RECOMMENDATION);
+			recommendationObj.put(DOC_TYPE, Constants.RECOMMENDATION);
     		StringBuilder doc = new StringBuilder(ESManager.createESDoc(recommendationObj));
-    		if (doc != null) {
-                bulkRequest.append(String.format(createTemplate,Constants.GLOBAL_RECOMMENDATIONS,Util.getUniqueID(id)));
-                bulkRequest.append(doc + "\n");
-            }
-    		i++;
+			bulkRequest.append(String.format(createTemplate, Constants.GLOBAL_RECOMMENDATIONS, Util.getUniqueID(id)));
+			bulkRequest.append(doc).append("\n");
+			i++;
     		if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
     			if (bulkRequest.length() > 0) {
-    				LOGGER.info("Uploading {}", i);
+					LOGGER.info(UPLOADING, i);
                     ESManager.bulkUpload(errors,bulkRequest.toString());
                     bulkRequest = new StringBuilder();
     			}
             }
     	}
     	if (bulkRequest.length() > 0) {
-    		LOGGER.info("Uploading {}", i);
+			LOGGER.info(UPLOADING, i);
             ESManager.bulkUpload(errors,bulkRequest.toString());
         }
     	LOGGER.info("Completed Uploading for recommendations without resource id");

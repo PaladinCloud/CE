@@ -81,7 +81,7 @@ public class NotificationUtils {
         request.setPolicyName(annotation.get(POLICY_NAME));
         request.setPolicyNameLink(hostName + POLICY_DETAILS_UI_PATH + annotation.get(POLICY_ID) + "/true?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
         request.setResourceId(annotation.get(RESOURCE_ID));
-        request.setResourceIdLink(hostName + ASSET_DETAILS_UI_PATH + annotation.get(TARGET_TYPE) + "/" + annotation.get(RESOURCE_ID) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
+        request.setResourceIdLink(hostName + ASSET_DETAILS_UI_PATH + annotation.get(TARGET_TYPE) + "/" + annotation.get(DOC_ID) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
         request.setDescription(annotation.get(PacmanSdkConstants.DESCRIPTION));
         request.setScanTime(CommonUtils.getCurrentDateStringWithFormat(
                 PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.NOTIFICATION_EMAIL_DATE_FORMAT));
