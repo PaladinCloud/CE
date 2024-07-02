@@ -23,6 +23,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 public class S3Helper {
 
     private static final Logger LOGGER = LogManager.getLogger(S3Helper.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Inject
     public S3Helper() {
@@ -52,9 +53,9 @@ public class S3Helper {
             }
             var response = s3Client.getObjectAsBytes(
                 GetObjectRequest.builder().bucket(bucket).key(path).build());
-            return new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
-                true).readValue(response.asUtf8String(), new TypeReference<List<Map<String, T>>>() {
-            });
+            return objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
+                .readValue(response.asUtf8String(), new TypeReference<List<Map<String, T>>>() {
+                });
         }
     }
 

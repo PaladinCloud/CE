@@ -13,7 +13,12 @@ public class ElasticResponse {
     public ElasticResponse(Response elasticResponse) throws IOException {
         this.statusCode = elasticResponse.getStatusLine().getStatusCode();
         this.statusPhrase = elasticResponse.getStatusLine().getReasonPhrase();
-        this.body = EntityUtils.toString(elasticResponse.getEntity());
+        var entity = elasticResponse.getEntity();
+        if (entity != null && entity.getContentLength() > 0) {
+            this.body = EntityUtils.toString(entity);
+        } else {
+            this.body = null;
+        }
     }
 
     public ElasticResponse(int statusCode, String statusPhrase, String body) {

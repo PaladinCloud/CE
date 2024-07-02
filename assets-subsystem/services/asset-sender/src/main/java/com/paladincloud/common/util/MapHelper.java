@@ -3,11 +3,11 @@ package com.paladincloud.common.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.errors.JobException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class MapHelper {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private MapHelper() {
     }
@@ -29,26 +29,9 @@ public class MapHelper {
         return true;
     }
 
-    /**
-     * Returns the list of non-null values that match the given keys
-     *
-     * @param map - the object to retrieve values from
-     * @param keys - the keys to retrieve
-     * @return - a list of non-null String values
-     */
-    public static List<String> getAllValues(Map<String, Object> map, List<String> keys) {
-        var values = new ArrayList<String>();
-        for (String key : keys) {
-            if (map.containsKey(key)) {
-                values.add(map.get(key).toString());
-            }
-        }
-        return values;
-    }
-
     public static String toJsonString(Map<String, ?> map) {
         try {
-            return new ObjectMapper().writeValueAsString(map);
+            return objectMapper.writeValueAsString(map);
         } catch (JsonProcessingException e) {
             throw new JobException("Error converting map to json string", e);
         }

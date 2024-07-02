@@ -286,7 +286,7 @@ public class Assets {
         }
 
         LOGGER.info("Start processing Asset info");
-        var loadErrorHandler = new LoadErrors(s3, elasticSearch, bucket, fileTypes.loadErrors);
+        var loadError = new LoadErrors(s3, elasticSearch, bucket, fileTypes.loadErrors);
         try (var batchIndexer = new ElasticBatch(elasticSearch)) {
             Map<String, String> accountIdNameMap = new HashMap<>();
             for (Map.Entry<String, String> entry : fileTypes.typeFiles.entrySet()) {
@@ -321,12 +321,10 @@ public class Assets {
                             stats));
 
                     batchIndexer.flush();
-                    loadErrorHandler.process(indexName, type, loadDate);
+                    loadError.process(indexName, type, loadDate);
                     elasticSearch.refresh(indexName);
                     elasticSearch.markStaleDocuments(indexName, type,
                         AssetDocumentFields.LOAD_DATE_KEYWORD, loadDate);
-
-                    // TODO: ErrorManager handleError (processes collected errorList - it appears to update '_loaddate' for some AWS assets)
 
                     uploadSupportingTypes(dataSource, indexName, bucket,
                         fileTypes.supportingTypes.get(type), loadDate);
@@ -376,7 +374,8 @@ public class Assets {
 
             try (var batchIndexer = new ElasticBatch(elasticSearch)) {
                 for (var document : documents) {
-                    var parentId = String.join("_", MapHelper.getAllValues(document, keys));
+                    var parentId = StringHelper.concatenate(document, keys, "_");
+//                    var parentId = String.join("_", MapHelper.getAllValues(document, keys));
                     if ("aws".equalsIgnoreCase(dataSource)) {
                         if (keys.contains(AssetDocumentFields.ACCOUNT_ID)) {
                             parentId = STR."\{indexName}_\{supportingType.parentType}_\{parentId}";
@@ -489,7 +488,7 @@ public class Assets {
             if (id == null) {
                 id = newDocument.get("id").toString();
             }
-            var docId = StringHelper.concatenate(newDocument, keys, "_");
+            var docId = StringHelper.concatenate(newDocument, Arrays.stream(keys).toList(), "_");
             var resourceName = assetTypes.getResourceNameType(dataSource, type);
             if (newDocument.containsKey(resourceName)) {
                 newDocument.put(AssetDocumentFields.RESOURCE_NAME,

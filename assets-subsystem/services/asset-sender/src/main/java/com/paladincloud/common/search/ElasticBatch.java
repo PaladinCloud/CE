@@ -1,22 +1,19 @@
 package com.paladincloud.common.search;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.errors.JobException;
-import com.paladincloud.common.util.JsonHelper;
 import com.paladincloud.common.util.MapHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ElasticBatch implements AutoCloseable {
 
     private static final Logger LOGGER = LogManager.getLogger(ElasticBatch.class);
-    public static int DEFAULT_BATCH_SIZE = 5000;
+    private static final int DEFAULT_BATCH_SIZE = 5000;
     private final List<BatchItem> batchItems = new ArrayList<>();
     private final ElasticSearchHelper elasticSearch;
     private int batchSize = DEFAULT_BATCH_SIZE;
@@ -70,11 +67,11 @@ public class ElasticBatch implements AutoCloseable {
             payload.append("\n");
         }
 
-        var response = elasticSearch.invokeCheckAndConvert(ElasticBulkResponse.class, ElasticSearchHelper.HttpMethod.POST, "/_bulk",
-            payload.toString());
+        var response = elasticSearch.invokeCheckAndConvert(ElasticBulkResponse.class,
+            ElasticSearchHelper.HttpMethod.POST, "/_bulk", payload.toString());
         if (response.errors) {
             LOGGER.error("ElasticBulkResponse error: {} for {}", response.items, payload);
-            throw new JobException(STR."bulk insert failed");
+            throw new JobException("bulk insert failed");
         }
         batchItems.clear();
     }
@@ -84,7 +81,13 @@ public class ElasticBatch implements AutoCloseable {
         public String actionMetaData;
         public String document;
 
-        static public BatchItem documentEntry(String indexName, String docId, Map<String, ?> document) {
+        private BatchItem(String actionMetaData, String document) {
+            this.actionMetaData = actionMetaData;
+            this.document = document;
+        }
+
+        static public BatchItem documentEntry(String indexName, String docId,
+            Map<String, ?> document) {
             return documentEntry(indexName, docId, MapHelper.toJsonString(document));
         }
 
@@ -95,20 +98,17 @@ public class ElasticBatch implements AutoCloseable {
             return new BatchItem(actionInfo, document);
         }
 
-        static public BatchItem routingEntry(String indexName, String routingInfo, Map<String, ?> document) {
+        static public BatchItem routingEntry(String indexName, String routingInfo,
+            Map<String, ?> document) {
             return routingEntry(indexName, routingInfo, MapHelper.toJsonString(document));
         }
 
-        static public BatchItem routingEntry(String indexName, String routingInfo, String document) {
+        static public BatchItem routingEntry(String indexName, String routingInfo,
+            String document) {
             var actionInfo = STR."""
                 { "index": { "_index": "\{indexName}", "routing": "\{routingInfo}" } }
                 """.trim();
             return new BatchItem(actionInfo, document);
-        }
-
-        private BatchItem(String actionMetaData, String document) {
-            this.actionMetaData = actionMetaData;
-            this.document = document;
         }
     }
 }
