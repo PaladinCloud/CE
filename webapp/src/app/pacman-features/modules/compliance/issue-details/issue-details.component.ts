@@ -32,6 +32,7 @@ import { NotificationObservableService } from 'src/app/shared/services/notificat
 import { EMAIL_PATTERN } from 'src/app/shared/constants/regex-constants';
 import { VIOLATION } from 'src/app/shared/constants/violation/violation';
 import {
+    API_RESPONSE_ERROR,
     DASH,
     ENFORCED,
     ERROR,
@@ -745,7 +746,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     },
                     (error) => {
                         this.errorValue = -1;
-                        this.tableErrorMessage = NO_DATA_AVAILABLE;
+                        this.tableErrorMessage = API_RESPONSE_ERROR;
+                        this.logger.log(API_RESPONSE_ERROR, error);
                     },
                 );
         } catch (e) {
@@ -758,18 +760,20 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.issueBlocks['violationModifiedDate'] = data[0].auditdate;
             this.issueBlocks['status'] =
                 data[0].status.toLowerCase() == ENFORCED ? EXEMPT : data[0].status;
-            const { date, reason, source, status, expirydate } =
+            const { date, reason, action, source, status, expirydate } =
                 this.VIOLATION_CONSTANTS.AUDIT_LOG.COLUMNS_KEYS;
             for (let i = 0; i < data.length; i++) {
-                data[i][date] = data[i].auditdate;
-                data[i][source] = data[i].createdBy?.split('@')[0];
-                data[i][status] = data[i].status;
-                data[i][reason] = data[i].exemptionReason ?? '-';
-                data[i][expirydate] = data[i].exemptionExpiryDate ?? '-';
+                data[i][date] = data[i]?.auditdate;
+                data[i][source] = data[i]?.createdBy?.split('@')[0];
+                data[i][action] = data[i]?.action;
+                data[i][status] = data[i]?.status;
+                data[i][reason] = data[i]?.exemptionReason;
+                data[i][expirydate] = data[i]?.exemptionExpiryDate;
 
                 delete data[i].auditdate;
                 delete data[i].datasource;
                 delete data[i].status;
+                delete data[i].action;
                 delete data[i]._id;
                 delete data[i].createdBy;
                 delete data[i].exemptionReason;

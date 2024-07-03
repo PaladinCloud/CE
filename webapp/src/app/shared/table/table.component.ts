@@ -4,7 +4,6 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    HostListener,
     Input,
     NgZone,
     OnChanges,
@@ -19,10 +18,10 @@ import { MatSelect } from '@angular/material/select';
 import { Sort, SortDirection } from '@angular/material/sort';
 import { Subject } from 'rxjs';
 import { debounceTime, filter, map, pairwise, takeUntil, throttleTime } from 'rxjs/operators';
-import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { OptionChange } from '../table-filters/table-filters.component';
 import { TableDataSource } from './table-data-source';
 import { IRowObj } from './interfaces/table-props.interface';
+import { DASH } from '../constants/global';
 
 export interface FilterItem {
     filterValue?: string[] | string | undefined;
@@ -39,6 +38,8 @@ export interface FilterItem {
     styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+    public readonly DASH = DASH;
+
     @Input() idColumn;
     @Input() selectedRowId;
     @Input() columnsAndFiltersToExcludeFromCasing = [];

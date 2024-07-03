@@ -1,11 +1,12 @@
 const keys = {
     date: 'Date',
     source: 'User',
+    action: 'Action',
     status: 'Status',
     reason: 'Reason',
     expirydate: 'Expiry Date',
 };
-const columns = [keys.date, keys.source, keys.status, keys.reason, keys.expirydate];
+const columns = [keys.date, keys.source, keys.action, keys.status, keys.reason, keys.expirydate];
 
 export const VIOLATION = {
     AUDIT_LOG: {
