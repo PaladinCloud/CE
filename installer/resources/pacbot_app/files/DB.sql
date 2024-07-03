@@ -3372,7 +3372,7 @@ CREATE TABLE IF NOT EXISTS `cf_UpdateFlag` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* Insert a record to run the update procedure only once */
-INSERT IGNORE INTO `cf_UpdateFlag` (`updateName`, `status`) VALUES ('filter_update_2024_07_03', 'started');
+INSERT IGNORE INTO `cf_UpdateFlag` (`updateName`, `status`) VALUES ('filters_and_fields_update_2024_07_03', 'started');
 
 /* Procedure to update pac_v2_ui_options table for filterId 1,8,14 based on  cf_UpdateFlag */
 DELIMITER //
@@ -3383,7 +3383,7 @@ BEGIN
 
     SELECT status INTO updateStatus
     FROM cf_UpdateFlag
-    WHERE updateName = 'filter_update_2024_07_03';
+    WHERE updateName = 'filters_and_fields_update_2024_07_03';
 
     IF updateStatus = 'started' THEN
         /* update optionValue for filterId 1 ,8  */
@@ -3397,9 +3397,13 @@ BEGIN
         WHERE optionId = 31
         AND filterId = 8;
 
+        UPDATE cf_pac_updatable_fields
+        SET displayFields = CONCAT(displayFields, ',_docid')
+        WHERE resourceType='all_list';
+
         UPDATE cf_UpdateFlag
         SET status = 'completed'
-        WHERE updateName = 'filter_update_2024_07_03';
+        WHERE updateName = 'filters_and_fields_update_2024_07_03';
     END IF;
 END //
 
