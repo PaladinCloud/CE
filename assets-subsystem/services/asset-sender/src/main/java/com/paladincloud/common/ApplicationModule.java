@@ -4,6 +4,7 @@ import com.paladincloud.common.assets.AssetGroups;
 import com.paladincloud.common.assets.Assets;
 import com.paladincloud.common.aws.DatabaseHelper;
 import com.paladincloud.common.aws.S3Helper;
+import com.paladincloud.common.aws.SQSHelper;
 import com.paladincloud.common.config.AssetTypes;
 import com.paladincloud.common.search.ElasticSearchHelper;
 import dagger.Module;
@@ -30,6 +31,10 @@ public class ApplicationModule {
     S3Helper provideS3() {
         return new S3Helper();
     }
+
+    @Singleton
+    @Provides
+    SQSHelper provideSQS() { return new SQSHelper(); }
 
     @Singleton
     @Provides

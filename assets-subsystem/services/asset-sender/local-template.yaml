@@ -8,16 +8,17 @@ Resources:
       CodeUri: target/asset-sender-1.0-SNAPSHOT.jar
       Handler: com.paladincloud.assetsender.AssetDoneHandler
       Runtime: java21
-      Description: Java function
-      MemorySize: 2048
       Timeout: 120
-      # Function's execution role
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AWSXrayWriteOnlyAccess
-        - AWSLambdaVPCAccessExecutionRole
       Tracing: Active
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: --enable-preview
+      Events:
+          AssetMappingDoneEvent:
+            Type: SQS
+            Properties:
+              Queue: ""
+              BatchSize: 10
+
+  AssetMappingDoneEvent:
+    Type: AWS::SQS::Queue

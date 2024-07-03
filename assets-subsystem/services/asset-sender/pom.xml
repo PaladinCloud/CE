@@ -131,6 +131,10 @@
       <artifactId>ssooidc</artifactId>
     </dependency>
     <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>sqs</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-core</artifactId>
       <version>${aws-lambda-java-core.version}</version>
@@ -139,11 +143,6 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
       <version>${aws-lambda-java-events.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-log4j2</artifactId>
-      <version>${aws-lambda-java-log4j2.version}</version>
     </dependency>
     <dependency>
       <groupId>com.mysql</groupId>

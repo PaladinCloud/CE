@@ -1,6 +1,8 @@
 package com.paladincloud.assetsender;
 
+import com.paladincloud.common.ProcessingDoneMessage;
 import com.paladincloud.common.assets.Assets;
+import com.paladincloud.common.aws.SQSHelper;
 import com.paladincloud.common.config.AssetTypes;
 import com.paladincloud.common.config.ConfigConstants;
 import com.paladincloud.common.config.ConfigService;
@@ -20,26 +22,35 @@ public class AssetSenderJob extends JobExecutor {
 
     private final AssetTypes assetTypes;
     private final Assets assets;
+    private final SQSHelper sqsHelper;
 
     @Inject
-    AssetSenderJob(AssetTypes assetTypes, Assets assets) {
+    AssetSenderJob(AssetTypes assetTypes, Assets assets, SQSHelper sqsHelper) {
         this.assetTypes = assetTypes;
         this.assets = assets;
+        this.sqsHelper = sqsHelper;
     }
 
 
     @Override
-    protected int execute() {
-
+    protected void execute() {
+        var dataSource = params.get(DATA_SOURCE);
+        var tenantId = params.get(TENANT_ID);
         LOGGER.info("Processing assets; bucket={} datasource={} path={} tenant={}",
-            ConfigService.get(ConfigConstants.S3.BUCKET_NAME), params.get(DATA_SOURCE),
-            params.get(S3_PATH), params.get(TENANT_ID));
+            ConfigService.get(ConfigConstants.S3.BUCKET_NAME), dataSource, params.get(S3_PATH),
+            tenantId);
         ConfigService.setProperties("batch.",
             Collections.singletonMap("s3.data", params.get(S3_PATH)));
-        assetTypes.setupIndexAndTypes(params.get(DATA_SOURCE));
-        assets.upload(params.get(DATA_SOURCE));
+        assetTypes.setupIndexAndTypes(dataSource);
+        assets.upload(dataSource);
 
-        return 0;
+        if ("true".equalsIgnoreCase(ConfigService.get(ConfigConstants.Dev.OMIT_DONE_EVENT))) {
+            LOGGER.warn("Omitting done event");
+        } else {
+            sqsHelper.sendMessage(params.get(JobExecutor.ASSET_SHIPPER_DONE_SQS_URL),
+                new ProcessingDoneMessage(STR."\{dataSource}-asset-shipper", tenantId, dataSource,
+                    null));
+        }
     }
 
     @Override

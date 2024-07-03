@@ -5,6 +5,7 @@ public interface ConfigConstants {
     interface Dev {
         String INDEX_PREFIX = "param.index-prefix";
         String ASSET_TYPE_OVERRIDE = "param.asset-type-override";
+        String OMIT_DONE_EVENT = "param.omit-done-event";
     }
 
     interface Config {
