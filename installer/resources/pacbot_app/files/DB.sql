@@ -2840,7 +2840,7 @@ LOOP
 
 END LOOP;
 
-update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_docid,_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname") where resourceType='all_list';
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname") where resourceType='all_list';
 
 END $$
 
