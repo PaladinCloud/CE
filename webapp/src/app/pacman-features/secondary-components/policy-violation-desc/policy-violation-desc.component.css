@@ -147,3 +147,23 @@
     height: 16px;
     width: 16px;
 }
+
+::ng-deep .mat-dialog-content {
+    max-height: 75vh;
+}
+
+::ng-deep .dialog-box {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+::ng-deep .mat-dialog-content {
+    flex-grow: 1;
+}
+
+::ng-deep app-dialog-box {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}

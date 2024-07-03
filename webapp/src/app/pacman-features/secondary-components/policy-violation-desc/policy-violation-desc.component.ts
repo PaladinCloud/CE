@@ -112,7 +112,8 @@ export class PolicyViolationDescComponent implements OnInit, OnChanges {
 
     openVulnerabilityDialog() {
         const dialogRef = this.dialog.open(DialogBoxComponent, {
-            width: '80%',
+            width: '50%',
+            height: '85%',
             data: {
                 title: 'Vulnerability Information',
                 template: this.vulnerabilityDialogRef,
