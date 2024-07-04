@@ -15,20 +15,16 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.config.S3ClientConfig;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,6 +180,7 @@ public class ViolationAssociationManager {
 					List<Map<String, Object>> violationList = policyEntry.getValue();
 					Map<String, Object> modifiedMap = new HashMap<>(violationList.get(0));
 					modifiedMap.put(PacmanSdkConstants.VULNERABILITY_DETAILS, getViolationStringFromViolationList(violationList));
+                    modifiedMap.remove(PacmanSdkConstants.CVE_LIST);
 					modifiedList.add(modifiedMap);
 				}
 		}
@@ -194,18 +191,21 @@ public class ViolationAssociationManager {
 		if(violationList == null || violationList.isEmpty()) {
 			return "";
 		}
-		List<Map<String, String>> violationDetailMap = new ArrayList<>();
-		violationList.stream().forEach(violation -> {
-			Map<String, String> violationMap = new HashMap<>();
+        List<Map<String, Object>> violationDetailMap = new ArrayList<>();
+        violationList.forEach(violation -> {
+            Map<String, Object> violationMap = new HashMap<>();
 			violationMap.put(PacmanSdkConstants.FILED_TITLE,(String)violation.get(PacmanSdkConstants.VULNERABILITY_DESC));
 			violationMap.put(PacmanSdkConstants.VULNERABILITY_URL,(String)violation.get(PacmanSdkConstants.FIELD_URL));
+            if (violation.containsKey(PacmanSdkConstants.CVE_LIST)) {
+                violationMap.put(PacmanSdkConstants.CVE_LIST, violation.get(PacmanSdkConstants.CVE_LIST));
+            }
 			violationDetailMap.add(violationMap);
 			});
 		return listToJsonString(violationDetailMap);
 		
 	}
 	
-	private static String listToJsonString(List<Map<String, String>> list) {
+	private static String listToJsonString(List<Map<String, Object>> list) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.writeValueAsString(list);

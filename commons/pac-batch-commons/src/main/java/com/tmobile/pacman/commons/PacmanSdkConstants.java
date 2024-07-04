@@ -82,6 +82,7 @@ public final class PacmanSdkConstants {
     public static final String VULNERABILITY_DETAILS = "vulnerabilityDetails";
     public static final String FILED_TITLE = "title";
     public static final String VULNERABILITY_URL = "vulnerabilityUrl";
+    public static final String CVE_LIST = "cveList";
     public static final String VULNERABILITY_DESC = "desc";
     public static final String FIELD_URL = "url";
     public static final String MULTIPLE_VIOLATION_MAPPING = "manyToOneViolationMapping";
