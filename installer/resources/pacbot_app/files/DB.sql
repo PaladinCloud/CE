@@ -1489,7 +1489,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 /* Violation Filters */
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (24,1,'AssetType','targetType.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=targetType&type=issue');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (25,1,'Policy','policyName.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=policyName&type=issue');
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (26,1,'Asset ID','_resourceid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=issue');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (26,1,'Asset ID','_docid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_docid&type=issue');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (27,1,'Violation ID','annotationid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=annotationid&type=issue');
 UPDATE pac_v2_ui_options set optionName='Asset Type' where optionId=24;
 DELETE IGNORE from pac_v2_ui_options where optionId=4;
@@ -1498,7 +1498,7 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 /* AssetList Filters */
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (29,8,'Account ID','accountid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountid&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (30,8,'Account Name','accountname.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountname&type=asset');
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (31,8,'Asset ID','_docid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (31,8,'Asset ID','_docid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_docid&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (32,8,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_cloudType&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (33,8,'Region','region.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=region&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,'Asset Name','_resourcename.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourcename&type=asset');
@@ -2840,7 +2840,7 @@ LOOP
 
 END LOOP;
 
-update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname") where resourceType='all_list';
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_docid,_resourceid,_resourcename,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId,assetIdDisplayName,targettypedisplayname") where resourceType='all_list';
 
 END $$
 
@@ -3396,10 +3396,6 @@ BEGIN
         SET optionValue = '_docid.keyword', optionURL = '/compliance/v1/filters/attribute?ag=aws&attribute=_docid&type=asset'
         WHERE optionId = 31
         AND filterId = 8;
-
-        UPDATE cf_pac_updatable_fields
-        SET displayFields = CONCAT(displayFields, ',_docid')
-        WHERE resourceType='all_list';
 
         UPDATE cf_UpdateFlag
         SET status = 'completed'
