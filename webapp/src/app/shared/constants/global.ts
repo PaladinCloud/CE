@@ -4,6 +4,7 @@ export const API_RESPONSE_ERROR = 'apiResponseError';
 export const JS_ERROR = 'jsError';
 export const ERROR = 'error';
 export const NO_DATA_AVAILABLE = 'noDataAvailable';
+export const NO_POLICY_FOUND = 'noPolicyFound';
 
 // === Common Labels ===
 

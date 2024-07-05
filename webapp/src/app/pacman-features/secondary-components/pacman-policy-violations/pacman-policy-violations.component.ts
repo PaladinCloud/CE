@@ -36,6 +36,7 @@ import {
     AssociatedPolicyStatusOrderMap,
     SeverityOrderMap,
 } from 'src/app/shared/constants/order-mapping';
+import { NO_POLICY_FOUND } from 'src/app/shared/constants/global';
 
 @Component({
     selector: 'app-pacman-policy-violations',
@@ -305,7 +306,8 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnChanges, OnDes
                         this.dataComing = true;
 
                         if (response.response.length === 0 && this.firstTimeLoad) {
-                            this.errorMessage = 'noPolicyFound';
+                            this.errorMessage = NO_POLICY_FOUND;
+                            this.policyTableDataLoaded = true;
                         }
                         this.firstTimeLoad = false;
                         this.totalRows = response.total;

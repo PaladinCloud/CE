@@ -440,10 +440,12 @@ export class AccountManagementComponent implements OnInit, AfterViewInit, OnDest
                         cellObj = {
                             ...cellObj,
                             imgSrc: this.tableImageDataMap[
-                                row[TABLE_COLUMN_NAMES.SOURCE]?.toLowerCase()
+                                row[TABLE_COLUMN_NAMES.SOURCE]?.toLowerCase()?.replace(/\s+/g, '')
                             ]
                                 ? this.tableImageDataMap[
-                                      row[TABLE_COLUMN_NAMES.SOURCE].toLowerCase()
+                                      row[TABLE_COLUMN_NAMES.SOURCE]
+                                          ?.toLowerCase()
+                                          .replace(/\s+/g, '')
                                   ].image
                                 : 'noImg',
                             isLink: true,

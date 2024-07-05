@@ -764,7 +764,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.VIOLATION_CONSTANTS.AUDIT_LOG.COLUMNS_KEYS;
             for (let i = 0; i < data.length; i++) {
                 data[i][date] = data[i]?.auditdate;
-                data[i][source] = data[i]?.createdBy?.split('@')[0];
+                data[i][source] = data[i]?.createdBy;
                 data[i][action] = data[i]?.action;
                 data[i][status] = data[i]?.status;
                 data[i][reason] = data[i]?.exemptionReason;
@@ -811,8 +811,9 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 }
                 return (
                     index &&
-                    this.outerArr[index - 1].Status.valueText.toLowerCase() !=
-                        obj.Status.valueText.toLowerCase()
+                    (this.outerArr[index - 1].Status.valueText.toLowerCase() !=
+                        obj.Status.valueText.toLowerCase() ||
+                        this.outerArr[index - 1].Action.valueText != obj.Action.valueText)
                 );
             });
 
