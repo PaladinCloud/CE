@@ -120,12 +120,13 @@ public class PolicyExecutor {
                     MDC.put("jobName", policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY));
                     if (policyExecutor.resources.isEmpty()
                             || PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(status)) {
+                        String reasonToClose = PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(status) ? "Policy has been disabled" : PacmanSdkConstants.REASON_TO_CLOSE_VALUE;
                         AnnotationPublisher annotationPublisher = new AnnotationPublisher();
                         annotationPublisher.populateExistingIssuesForType(policyParam);
                         annotationPublisher.closeDanglingIssues(
                                 policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY) + "_"
                                         + policyParam.get(PacmanSdkConstants.TARGET_TYPE),
-                                policyParam.get(PacmanSdkConstants.TARGET_TYPE));
+                                reasonToClose);
                     } else {
                         policyExecutor.run(policyParam, executionId);
                     }

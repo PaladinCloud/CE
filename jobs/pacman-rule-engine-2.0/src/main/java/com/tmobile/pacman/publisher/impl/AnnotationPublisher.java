@@ -408,7 +408,7 @@ public class AnnotationPublisher {
      * @return the int
      * @throws Exception the exception
      */
-    public int closeDanglingIssues(String _index, String _type) throws Exception {
+    public int closeDanglingIssues(String _index, String reason) throws Exception {
         String esUrl = ESUtils.getEsUrl();
         StringBuffer bulkRequestBody = new StringBuffer();
         String bulkIndexRequestTemplate = BULK_UPDATE_REQUEST_TEMPLATE;
@@ -437,7 +437,8 @@ public class AnnotationPublisher {
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
             issue.put(PacmanSdkConstants.MODIFIED_DATE, CommonUtils
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
-            issueToClose.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
+            issue.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, reason);
+            issueToClose.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, reason);
             issueToClose.put(PacmanSdkConstants.ISSUE_STATUS_KEY, PacmanSdkConstants.STATUS_CLOSE);
             issueToClose.put(PacmanSdkConstants.ISSUE_CLOSED_DATE, CommonUtils
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
