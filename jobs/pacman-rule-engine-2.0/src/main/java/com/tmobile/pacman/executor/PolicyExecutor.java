@@ -593,7 +593,7 @@ public class PolicyExecutor {
         NotificationUtils.triggerNotificationsForViolations(bulkUploadAnnotations, annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
         NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
 
-        Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation);
+        Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
         List<Annotation> allIssues = new ArrayList<>(bulkUploadAnnotations.size() + closedIssues.size());

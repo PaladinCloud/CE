@@ -393,11 +393,9 @@ public class AnnotationPublisher {
      * @return the int
      * @throws Exception the exception
      */
-    public int closeDanglingIssues(Annotation sampleAnnotation) throws Exception {
+    public int closeDanglingIssues(Annotation sampleAnnotation, String reason) throws Exception {
         String indexName = ESUtils.buildIndexNameFromAnnotation(sampleAnnotation);
-        String typeIssue = ESUtils.getIssueTypeFromAnnotation(sampleAnnotation);
-        return closeDanglingIssues(indexName, typeIssue);
-
+        return closeDanglingIssues(indexName, reason);
     }
 
     /**
