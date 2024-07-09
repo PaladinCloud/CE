@@ -15,23 +15,22 @@
  ******************************************************************************/
 package com.tmobile.pacman.publisher.impl;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.util.AuditUtils;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ESUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.gson.*;
-import com.tmobile.pacman.commons.dao.RDSDBManager;
-import com.tmobile.pacman.executor.PolicyExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.*;
@@ -458,6 +457,7 @@ public class AnnotationPublisher {
         if (bulkRequestBody.length() > 0) {
             CommonUtils.doHttpPost(bulkPostUrl, bulkRequestBody.toString(),new HashMap<>());
         }
+        AuditUtils.postAuditTrail(new ArrayList<>(getExistingIssuesMapWithAnnotationIdAsKey().values()), null);
         return totalClosed;
     }
 

@@ -46,13 +46,13 @@ public class AuditUtils {
      * @param annotations the annotations
      * @param status the status
      */
-    public static void postAuditTrail(List<Annotation> annotations, Map<String, Map<String, String>> existingIssues) {
+    public static void postAuditTrail(List<? extends Map<String, String>> annotations, Map<String, Map<String, String>> existingIssues) {
         String esUrl = ESUtils.getEsUrl();
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\" } }%n";
         StringBuilder requestBody = new StringBuilder();
         String requestUrl = esUrl + "/_bulk";
 
-        for (Annotation annotation : annotations) {
+        for (Map<String, String> annotation : annotations) {
             String datasource = annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
             String _id = CommonUtils.getUniqueAnnotationId(annotation);
             String type = annotation.get(TARGET_TYPE);
@@ -61,8 +61,8 @@ public class AuditUtils {
             String _type = "issue_" + type + "_audit";
 
             /** preAuditStatus will audit history/reason for the actual status, and can be either 'Request Expired' or 'Exemption Expired' **/
-            String preAuditStatus = getPreAuditStatus(annotation, existingIssues.get(_id));
-            if(preAuditStatus != null) {
+            String preAuditStatus = existingIssues != null ? getPreAuditStatus(annotation, existingIssues.get(_id)) : null;
+            if (preAuditStatus != null) {
                 requestBody.append(String.format(actionTemplate, _index, _id))
                         .append(createAuditTrail(datasource, type, preAuditStatus, _id) + "\n");
             }
@@ -71,7 +71,7 @@ public class AuditUtils {
                     .append(createAuditTrail(datasource, type, annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY), _id) + "\n");
             try {
                 if (requestBody.toString().getBytes("UTF-8").length >= 5 * 1024 * 1024) { // 5
-                                                                                          // MB
+                    // MB
                     try {
                         CommonUtils.doHttpPost(requestUrl, requestBody.toString());
                     } catch (Exception e) {
@@ -95,7 +95,7 @@ public class AuditUtils {
     }
 
     /** get the status which led to the actual audit status **/
-    private static String getPreAuditStatus(Annotation annotation, Map<String, String> originalIssue) {
+    private static String getPreAuditStatus(Map<String, String> annotation, Map<String, String> originalIssue) {
         if (originalIssue == null) {
             return null;
         }
