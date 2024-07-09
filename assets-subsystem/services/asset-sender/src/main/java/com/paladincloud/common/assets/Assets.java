@@ -37,7 +37,6 @@ import javax.inject.Inject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -84,7 +83,8 @@ public class Assets {
             tagMap.forEach((key, value) -> {
                 var firstChar = key.substring(0, 1).toUpperCase();
                 var remainder = key.substring(1);
-                doc.put(STR."\{AssetDocumentFields.TAGS_PREFIX}\{firstChar}\{remainder}", value);
+                var upperCaseStart = STR."\{firstChar}\{remainder}";
+                doc.put(STR."\{AssetDocumentFields.asTag(upperCaseStart)}", value);
             });
         }
     }
@@ -178,9 +178,9 @@ public class Assets {
     }
 
     private static void updateOnPremData(Map<String, Object> entity) {
-        entity.put(AssetDocumentFields.TAGS_APPLICATION,
+        entity.put(AssetDocumentFields.Tags.APPLICATION,
             entity.get(AssetDocumentFields.U_BUSINESS_SERVICE).toString().toLowerCase());
-        entity.put(AssetDocumentFields.TAGS_ENVIRONMENT, entity.get(AssetDocumentFields.USED_FOR));
+        entity.put(AssetDocumentFields.Tags.ENVIRONMENT, entity.get(AssetDocumentFields.USED_FOR));
         entity.put(AssetDocumentFields.IN_SCOPE, "true");
     }
 
@@ -324,10 +324,11 @@ public class Assets {
                     loadError.process(indexName, type, loadDate);
                     elasticSearch.refresh(indexName);
                     elasticSearch.markStaleDocuments(indexName, type,
-                        AssetDocumentFields.LOAD_DATE_KEYWORD, loadDate);
+                        AssetDocumentFields.asKeyword(AssetDocumentFields.LOAD_DATE), loadDate);
 
                     uploadSupportingTypes(dataSource, indexName, bucket,
-                        fileTypes.supportingTypes.getOrDefault(type, Collections.emptyList()), loadDate);
+                        fileTypes.supportingTypes.getOrDefault(type, Collections.emptyList()),
+                        loadDate);
                 } catch (Exception e) {
                     throw new JobException(
                         STR."Failed uploading asset data for \{dataSource} and \{type}", e);
@@ -394,7 +395,7 @@ public class Assets {
             }
 
             elasticSearch.deleteDocumentsWithoutValue(indexName, ec2Type,
-                AssetDocumentFields.LOAD_DATE_KEYWORD, loadDate);
+                AssetDocumentFields.asKeyword(AssetDocumentFields.LOAD_DATE), loadDate);
         }
     }
 

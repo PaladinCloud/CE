@@ -3,7 +3,6 @@ package com.paladincloud.common.aws;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.errors.JobException;
-import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import software.amazon.awssdk.services.sqs.SqsClient;
