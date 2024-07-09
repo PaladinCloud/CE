@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 public abstract class JobExecutor {
 
     public static final String ASSET_SHIPPER_DONE_SQS_URL = "ASSET_SHIPPER_DONE_SQS_URL";
+    private static final String ALERT_ERROR_PREFIX = "error occurred in";
+
     // These are expected environment variables which are made available in
     // ConfigService as under the 'param.' section.
     private static final String CONFIG_SERVICE_URL = "CONFIG_URL";
@@ -32,9 +34,9 @@ public abstract class JobExecutor {
 
     protected Map<String, String> params = new HashMap<>();
 
-    public int run(String[] args) {
-        LOGGER.info("Starting job executor");
-        int status;
+    public void run(String jobName, String[] args) {
+        LOGGER.info(STR."Starting \{jobName} \{String.join(" ", args)}");
+        var status = "";
         long startTime = System.nanoTime();
         try {
             setDefaultParams();
@@ -45,13 +47,10 @@ public abstract class JobExecutor {
                 params.get(CONFIG_SERVICE_CREDENTIALS));
             ConfigService.setProperties("param.", params);
             execute();
-            status = 0;
-        } catch (JobException je) {
-            status = 1;
-            LOGGER.error("Job failed", je);
+            status = "Succeeded";
         } catch (Throwable t) {
-            status = -1;
-            LOGGER.error("Unexpected job failure:", t);
+            status = "Failed";
+            LOGGER.error(STR."\{ALERT_ERROR_PREFIX} \{jobName}:", t);
         }
 
         long duration = System.nanoTime() - startTime;
@@ -61,7 +60,6 @@ public abstract class JobExecutor {
             duration - TimeUnit.MINUTES.toNanos(minutes) - TimeUnit.SECONDS.toNanos(seconds));
         LOGGER.info("Job status: {}; execution time {}", status,
             "%d:%02d.%04d".formatted(minutes, seconds, milliseconds));
-        return status;
     }
 
     protected abstract void execute();

@@ -327,7 +327,7 @@ public class Assets {
                         AssetDocumentFields.LOAD_DATE_KEYWORD, loadDate);
 
                     uploadSupportingTypes(dataSource, indexName, bucket,
-                        fileTypes.supportingTypes.get(type), loadDate);
+                        fileTypes.supportingTypes.getOrDefault(type, Collections.emptyList()), loadDate);
                 } catch (Exception e) {
                     throw new JobException(
                         STR."Failed uploading asset data for \{dataSource} and \{type}", e);
