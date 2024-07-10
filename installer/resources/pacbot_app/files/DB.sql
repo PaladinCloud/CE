@@ -1446,7 +1446,7 @@ INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FI
 INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Assets','vpngateway','state,type','region,state,type');
 INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Assets','elasticache','engine,nodetype,engineversion','region,engine');
 INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Assets','wafdomain','','');
-INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Policy Violations','All','severity,policyId','_id,issueid,resourceid,severity,_entitytype,_resourceid');
+INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Policy Violations','All','severity,policyId','_id,issueid,resourceid,severity,_entitytype,_docid,_resourceid');
 INSERT IGNORE INTO OmniSearch_Config (SEARCH_CATEGORY,RESOURCE_TYPE,REFINE_BY_FIELDS,RETURN_FIELDS) VALUES ('Vulnerabilities','All','severity,category,vulntype','qid,vulntype,category,_entitytype,_resourceid');
 
 
