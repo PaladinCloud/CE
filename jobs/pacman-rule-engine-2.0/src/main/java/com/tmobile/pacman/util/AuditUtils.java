@@ -126,6 +126,10 @@ public class AuditUtils {
                 PacmanSdkConstants.DATE_FORMAT);
         Map<String, Object> auditTrail = new LinkedHashMap<>();
         auditTrail.put(PacmanSdkConstants.DOC_TYPE,_type);
+        //We need to show status as "EXEMPT" in Audit log instead of "Exempted" for UI Consistency
+        if (status.equalsIgnoreCase(PacmanSdkConstants.STATUS_EXEMPTED)) {
+            status = PacmanSdkConstants.STATUS_EXEMPT;
+        }
         // add relations to annotation
         Map<String, Object> relMap = new HashMap<>();
         relMap.put("name",_type);
