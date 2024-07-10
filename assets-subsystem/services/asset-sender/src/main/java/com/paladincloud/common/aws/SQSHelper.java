@@ -17,20 +17,21 @@ public class SQSHelper {
     public SQSHelper() {
     }
 
-    public <T> String sendMessage(String queueUrl, T message) {
+    public <T> String sendMessage(String queueUrl, T message, String messageGroupId) {
         String sqsMessage;
         try {
             sqsMessage = objectMapper.writeValueAsString(message);
         } catch (JsonProcessingException e) {
             throw new JobException("Failed sending message: unable to transform message", e);
         }
-        return internalSendMessage(queueUrl, sqsMessage);
+        return internalSendMessage(queueUrl, sqsMessage, messageGroupId);
     }
 
-    private String internalSendMessage(String queueUrl, String message) {
+    private String internalSendMessage(String queueUrl, String message, String messageGroupId) {
         var request = SendMessageRequest.builder()
             .queueUrl(queueUrl)
             .messageBody(message)
+            .messageGroupId(messageGroupId)
             .build();
 
         try (var sqsClient = SqsClient.builder().build()) {

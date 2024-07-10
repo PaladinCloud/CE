@@ -9,6 +9,7 @@ import com.paladincloud.common.config.ConfigService;
 import com.paladincloud.common.jobs.JobExecutor;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import javax.inject.Inject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +50,8 @@ public class AssetSenderJob extends JobExecutor {
         } else {
             sqsHelper.sendMessage(params.get(JobExecutor.ASSET_SHIPPER_DONE_SQS_URL),
                 new ProcessingDoneMessage(STR."\{dataSource}-asset-shipper", tenantId, dataSource,
-                    null));
+                    null),
+                UUID.randomUUID().toString());
         }
     }
 
