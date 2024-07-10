@@ -514,7 +514,7 @@ public class CommonUtils {
      * @param annotation the annotation
      * @return the unique annotation id
      */
-    public static String getUniqueAnnotationId(Annotation annotation) {
+    public static String getUniqueAnnotationId(Map<String, String> annotation) {
         return getUniqueAnnotationId(annotation.get(PacmanSdkConstants.DOC_ID),
                 annotation.get(PacmanSdkConstants.POLICY_ID));
     }
