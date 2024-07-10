@@ -259,8 +259,13 @@ public interface PacmanSdkConstants {
 
     /** The status exempted. */
     String STATUS_EXEMPTED = "exempted";
-
-    /** The status success. */
+    /**
+     * Audit log status
+     */
+    String STATUS_EXEMPT = "exempt";
+    /**
+     * The status success.
+     */
     String STATUS_SUCCESS = "success";
 
     /** The status success. */
