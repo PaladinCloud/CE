@@ -18,6 +18,7 @@ package com.tmobile.pacman.util;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,13 +47,13 @@ public class AuditUtils {
      * @param annotations the annotations
      * @param status the status
      */
-    public static void postAuditTrail(List<Annotation> annotations, Map<String, Map<String, String>> existingIssues) {
+    public static void postAuditTrail(List<? extends Map<String, String>> annotations, Map<String, Map<String, String>> existingIssues) {
         String esUrl = ESUtils.getEsUrl();
         String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\" } }%n";
         StringBuilder requestBody = new StringBuilder();
         String requestUrl = esUrl + "/_bulk";
 
-        for (Annotation annotation : annotations) {
+        for (Map<String, String> annotation : annotations) {
             String datasource = annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
             String _id = CommonUtils.getUniqueAnnotationId(annotation);
             String type = annotation.get(TARGET_TYPE);
@@ -61,17 +62,17 @@ public class AuditUtils {
             String _type = "issue_" + type + "_audit";
 
             /** preAuditStatus will audit history/reason for the actual status, and can be either 'Request Expired' or 'Exemption Expired' **/
-            String preAuditStatus = getPreAuditStatus(annotation, existingIssues.get(_id));
-            if(preAuditStatus != null) {
+            String preAuditStatus = existingIssues != null ? getPreAuditStatus(annotation, existingIssues.get(_id)) : null;
+            if (preAuditStatus != null) {
                 requestBody.append(String.format(actionTemplate, _index, _id))
-                        .append(createAuditTrail(datasource, type, preAuditStatus, _id) + "\n");
+                        .append(createAuditTrail(annotation, preAuditStatus, _id) + "\n");
             }
 
             requestBody.append(String.format(actionTemplate, _index, _id))
-                    .append(createAuditTrail(datasource, type, annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY), _id) + "\n");
+                    .append(createAuditTrail(annotation, annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY), _id) + "\n");
             try {
                 if (requestBody.toString().getBytes("UTF-8").length >= 5 * 1024 * 1024) { // 5
-                                                                                          // MB
+                    // MB
                     try {
                         CommonUtils.doHttpPost(requestUrl, requestBody.toString());
                     } catch (Exception e) {
@@ -95,7 +96,7 @@ public class AuditUtils {
     }
 
     /** get the status which led to the actual audit status **/
-    private static String getPreAuditStatus(Annotation annotation, Map<String, String> originalIssue) {
+    private static String getPreAuditStatus(Map<String, String> annotation, Map<String, String> originalIssue) {
         if (originalIssue == null) {
             return null;
         }
@@ -120,7 +121,8 @@ public class AuditUtils {
      * @return the string
      */
 
-    private static String createAuditTrail(String ds, String type, String status, String id) {
+    private static String createAuditTrail(Map<String, String> annotation, String status, String id) {
+        String type = annotation.get(TARGET_TYPE);
         String _type = "issue_" + type + "_audit";
         String date = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
@@ -131,7 +133,7 @@ public class AuditUtils {
         relMap.put("name",_type);
         relMap.put("parent", id);
         auditTrail.put( type + "_relations", relMap);
-        auditTrail.put(PacmanSdkConstants.DATA_SOURCE_ATTR, ds);
+        auditTrail.put(PacmanSdkConstants.DATA_SOURCE_ATTR, annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
         auditTrail.put(TARGET_TYPE, type);
         auditTrail.put("_docid",id);
         auditTrail.put(PacmanSdkConstants.ANNOTATION_PK, id);
@@ -139,6 +141,9 @@ public class AuditUtils {
         auditTrail.put(PacmanSdkConstants.AUDIT_DATE, date);
         auditTrail.put(PacmanSdkConstants._AUDIT_DATE, date.substring(0, date.indexOf('T')));
         auditTrail.put(CREATED_BY, SYSTEM);
+        if (STATUS_CLOSE.equalsIgnoreCase(status) && StringUtils.isNotBlank(annotation.get(PacmanSdkConstants.REASON_TO_CLOSE_KEY))) {
+            auditTrail.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, annotation.get(PacmanSdkConstants.REASON_TO_CLOSE_KEY));
+        }
         String _auditTrail = null;
         try {
             _auditTrail = new ObjectMapper().writeValueAsString(auditTrail);

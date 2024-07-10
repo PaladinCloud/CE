@@ -15,23 +15,22 @@
  ******************************************************************************/
 package com.tmobile.pacman.publisher.impl;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.util.AuditUtils;
+import com.tmobile.pacman.util.CommonUtils;
+import com.tmobile.pacman.util.ESUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.gson.*;
-import com.tmobile.pacman.commons.dao.RDSDBManager;
-import com.tmobile.pacman.executor.PolicyExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.*;
@@ -394,11 +393,9 @@ public class AnnotationPublisher {
      * @return the int
      * @throws Exception the exception
      */
-    public int closeDanglingIssues(Annotation sampleAnnotation) throws Exception {
+    public int closeDanglingIssues(Annotation sampleAnnotation, String reason) throws Exception {
         String indexName = ESUtils.buildIndexNameFromAnnotation(sampleAnnotation);
-        String typeIssue = ESUtils.getIssueTypeFromAnnotation(sampleAnnotation);
-        return closeDanglingIssues(indexName, typeIssue);
-
+        return closeDanglingIssues(indexName, reason);
     }
 
     /**
@@ -409,7 +406,7 @@ public class AnnotationPublisher {
      * @return the int
      * @throws Exception the exception
      */
-    public int closeDanglingIssues(String _index, String _type) throws Exception {
+    public int closeDanglingIssues(String _index, String reason) throws Exception {
         String esUrl = ESUtils.getEsUrl();
         StringBuffer bulkRequestBody = new StringBuffer();
         String bulkIndexRequestTemplate = BULK_UPDATE_REQUEST_TEMPLATE;
@@ -438,7 +435,8 @@ public class AnnotationPublisher {
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
             issue.put(PacmanSdkConstants.MODIFIED_DATE, CommonUtils
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
-            issueToClose.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
+            issue.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, reason);
+            issueToClose.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, reason);
             issueToClose.put(PacmanSdkConstants.ISSUE_STATUS_KEY, PacmanSdkConstants.STATUS_CLOSE);
             issueToClose.put(PacmanSdkConstants.ISSUE_CLOSED_DATE, CommonUtils
                     .getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
@@ -458,6 +456,7 @@ public class AnnotationPublisher {
         if (bulkRequestBody.length() > 0) {
             CommonUtils.doHttpPost(bulkPostUrl, bulkRequestBody.toString(),new HashMap<>());
         }
+        AuditUtils.postAuditTrail(new ArrayList<>(getExistingIssuesMapWithAnnotationIdAsKey().values()), null);
         return totalClosed;
     }
 

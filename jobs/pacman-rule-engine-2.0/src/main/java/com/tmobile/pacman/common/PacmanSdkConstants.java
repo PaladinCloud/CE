@@ -693,4 +693,5 @@ public interface PacmanSdkConstants {
     String EXEMPTION_EXPIRED = "Exemption Expired";
     String SYSTEM = "System";
     String CREATED_BY = "createdBy";
+    String POLICY_DISABLED_MSG = "Policy has been disabled";
 }
