@@ -52,6 +52,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
+import static com.tmobile.pacman.common.PacmanSdkConstants.POLICY_DISABLED_MSG;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 
@@ -111,7 +112,7 @@ public class PolicyExecutor {
         ExecutorService executor = Executors.newFixedThreadPool(POLICY_THREAD_POOL_SIZE);
         for (Map<String, String> policyParam : policyExecutor.policyWiseParamsList) {
             String executionId = UUID.randomUUID().toString(); // this is the unique
-            String status = fetchLatestPolicyStatus(policyParam);
+            String policyStatus = fetchLatestPolicyStatus(policyParam);
             policyParam.put("pluginName",policyExecutor.enricherSource);
             //String status = "ENABLED";
             executor.execute(() -> {
@@ -119,8 +120,8 @@ public class PolicyExecutor {
                     MDC.put("executionId", executionId);
                     MDC.put("jobName", policyParam.get(PacmanSdkConstants.POLICY_UUID_KEY));
                     if (policyExecutor.resources.isEmpty()
-                            || PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(status)) {
-                        String reasonToClose = PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(status) ? "Policy has been disabled" : PacmanSdkConstants.REASON_TO_CLOSE_VALUE;
+                            || PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(policyStatus)) {
+                        String reasonToClose = policyExecutor.getReasonForIssueStatus(policyStatus);
                         AnnotationPublisher annotationPublisher = new AnnotationPublisher();
                         annotationPublisher.populateExistingIssuesForType(policyParam);
                         annotationPublisher.closeDanglingIssues(
@@ -142,6 +143,15 @@ public class PolicyExecutor {
         policyDoneSNS(args[0]);
         MDC.clear();
         ProgramExitUtils.exitSucessfully();
+    }
+
+    private String getReasonForIssueStatus(String policyStatus) {
+        if (PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(policyStatus)) {
+            return POLICY_DISABLED_MSG;
+        } else if (this.resources.isEmpty()) {
+            return PacmanSdkConstants.REASON_TO_CLOSE_VALUE;
+        }
+        return null;
     }
 
     private void fetchPolicyWiseParams(String requestJson) {
@@ -559,7 +569,6 @@ public class PolicyExecutor {
                 annotation.put(PacmanSdkConstants.MODIFIED_DATE, evalDate);
                 annotation.put(PacmanSdkConstants.POLICY_SEVERITY,  policyParam.get(PacmanSdkConstants.POLICY_SEVERITY));
                 annotation.put(PacmanSdkConstants.POLICY_CATEGORY,  policyParam.get(PacmanSdkConstants.POLICY_CATEGORY));
-                // annotationPublisher.publishAnnotationToEs(annotation);
                 annotationPublisher.submitToPublish(annotation);
                 issueFoundCounter++;
                 logger.info("submitted annotation to publisher");
@@ -568,24 +577,7 @@ public class PolicyExecutor {
         }
         metrics.put("totalExemptionAppliedForThisRun", exemptionCounter);
         annotationPublisher.setRuleParam(ImmutableMap.<String, String>builder().putAll(policyParam).build());
-        // annotation will contain the last annotation processed above
-
-        //  if (!isResourceFilterExists) {
-        annotationPublisher.setExistingResources(resources); // if resources
-        // are not
-        // filtered
-        // then no need
-        // to make
-        // another
-        // call.
-       /* }
-        // this will be used for closing issues if resources are filtered
-        // already this will prevent actual issues to close
-        else {
-            annotationPublisher
-                    .setExistingResources(ESUtils.getResourcesFromEs(CommonUtils.getIndexNameFromRuleParam(policyParam),
-                            policyParam.get(PacmanSdkConstants.TARGET_TYPE), null, null));
-        }*/
+        annotationPublisher.setExistingResources(resources);
         annotationPublisher.publish();
         metrics.put("total-issues-found", issueFoundCounter);
         List<Annotation> closedIssues = annotationPublisher.processClosureEx();
@@ -593,6 +585,7 @@ public class PolicyExecutor {
         NotificationUtils.triggerNotificationsForViolations(bulkUploadAnnotations, annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
         NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
 
+        // annotation will contain the last annotation processed above
         Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
