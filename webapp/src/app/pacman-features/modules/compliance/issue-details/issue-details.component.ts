@@ -65,8 +65,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     public users;
     public endDateValue: any;
     public grantedDateValue: any;
-    searchTxt = '';
-    today = new Date();
+    public searchTxt = '';
+    public nextDayMidnight = new Date(new Date().setHours(0, 0, 0, 0) + 86400000);
 
     @ViewChild('query') vc: ElementRef;
 

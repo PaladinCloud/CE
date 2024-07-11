@@ -275,7 +275,8 @@
                         <app-date-dropdown
                             (dataSent)="getDateData($event)"
                             [dataForm]="dataForm"
-                            [minDate]="today"
+                            [date]="nextDayMidnight"
+                            [minDate]="nextDayMidnight"
                         ></app-date-dropdown>
                         <div class="textarea-button">
                             <button
