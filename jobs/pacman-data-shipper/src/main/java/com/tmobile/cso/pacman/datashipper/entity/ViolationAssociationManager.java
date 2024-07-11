@@ -48,6 +48,7 @@ public class ViolationAssociationManager {
     private static final String DATA_PATH = System.getProperty("s3.data");
     private static final String DATE_FORMAT_SEC = "yyyy-MM-dd HH:mm:00Z";
     private static final String CREATED_DATE = "createdDate";
+    private static final String POLICY_REASON_TEMPLATE = "%s Found in %s";
 
     /**
      * Execute.
@@ -181,6 +182,13 @@ public class ViolationAssociationManager {
 					Map<String, Object> modifiedMap = new HashMap<>(violationList.get(0));
 					modifiedMap.put(PacmanSdkConstants.VULNERABILITY_DETAILS, getViolationStringFromViolationList(violationList));
                     modifiedMap.remove(PacmanSdkConstants.CVE_LIST);
+                    if (modifiedMap.get(PacmanSdkConstants.UPDATE_DESCRIPTION) != null &&
+                            modifiedMap.get(PacmanSdkConstants.RESOURCE_NAME) != null &&
+                            Boolean.parseBoolean(modifiedMap.get(PacmanSdkConstants.UPDATE_DESCRIPTION).toString())) {
+                        modifiedMap.put(PacmanSdkConstants.VULNERABILITY_DESC, String.format(POLICY_REASON_TEMPLATE,
+                                modifiedMap.get(PacmanSdkConstants.POLICY_NAME),
+                                modifiedMap.get(PacmanSdkConstants.RESOURCE_NAME)));
+                    }
 					modifiedList.add(modifiedMap);
 				}
 		}
