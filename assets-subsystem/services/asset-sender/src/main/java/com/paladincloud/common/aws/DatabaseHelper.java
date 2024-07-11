@@ -58,6 +58,14 @@ public class DatabaseHelper {
         return results;
     }
 
+    public int executeUpdate(String query) {
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
+            return stmt.executeUpdate(query);
+        } catch (Exception ex) {
+            throw new JobException("Error executing Update", ex);
+        }
+    }
+
     public void insert(String tableName, Map<String, String> row) {
         var placeholders = String.join(",", Stream.generate(() -> "?").limit(row.size()).toList());
         var columns = row.keySet().stream().toList();

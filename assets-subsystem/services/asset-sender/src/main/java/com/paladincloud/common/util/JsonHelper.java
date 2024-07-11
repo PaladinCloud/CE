@@ -1,8 +1,10 @@
 package com.paladincloud.common.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 
 public class JsonHelper {
 
@@ -21,5 +23,10 @@ public class JsonHelper {
      */
     public static <T> T fromString(Class<T> clazz, String json) throws JsonProcessingException {
         return objectMapper.readValue(json, clazz);
+    }
+
+    public static Map<String, Object> mapFromString(String json) throws JsonProcessingException {
+        return objectMapper.readValue(json, new TypeReference<>() {
+        });
     }
 }

@@ -10,7 +10,18 @@ public class TimeHelper {
     private static final DateTimeFormatter iso8601DateFormat = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd'T'HH:mm:ssZ");
 
+    private static final DateTimeFormatter yearMonthDayFormat = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd");
+
     private TimeHelper() {
+    }
+
+    public static String formatYearMonthDay() {
+        return yearMonthDayFormat.format(ZonedDateTime.now());
+    }
+
+    public static String formatYearMonthDay(ZonedDateTime time) {
+        return yearMonthDayFormat.format(time);
     }
 
     public static String formatZeroSeconds(ZonedDateTime time) {

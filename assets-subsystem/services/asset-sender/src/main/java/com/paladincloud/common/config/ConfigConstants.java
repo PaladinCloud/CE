@@ -21,6 +21,12 @@ public interface ConfigConstants {
         String PORT = "batch.elastic-search.port";
     }
 
+    interface PaladinCloud {
+        String API_AUTH_CREDENTIALS = "application.apiauthinfo";
+        String AUTH_API_URL = "environment.AUTH_API_URL";
+        String BASE_PALADIN_CLOUD_API_URI = "environment.BASE_PALADIN_CLOUD_API_URI";
+    }
+
     interface RDS {
 
         String DB_URL = "batch.spring.datasource.url";

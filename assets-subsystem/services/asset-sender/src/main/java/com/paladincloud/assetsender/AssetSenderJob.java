@@ -1,11 +1,15 @@
 package com.paladincloud.assetsender;
 
 import com.paladincloud.common.ProcessingDoneMessage;
+import com.paladincloud.common.assets.AssetGroupStatsCollector;
 import com.paladincloud.common.assets.Assets;
+import com.paladincloud.common.assets.AssetsCounts;
+import com.paladincloud.common.assets.DataSourceHelper;
 import com.paladincloud.common.aws.SQSHelper;
 import com.paladincloud.common.config.AssetTypes;
 import com.paladincloud.common.config.ConfigConstants;
 import com.paladincloud.common.config.ConfigService;
+import com.paladincloud.common.errors.JobException;
 import com.paladincloud.common.jobs.JobExecutor;
 import java.util.Collections;
 import java.util.List;
@@ -24,12 +28,18 @@ public class AssetSenderJob extends JobExecutor {
     private final AssetTypes assetTypes;
     private final Assets assets;
     private final SQSHelper sqsHelper;
+    private final DataSourceHelper dataSourceHelper;
+    private final AssetGroupStatsCollector assetGroupStatsCollector;
+    private final AssetsCounts assetsCounts;
 
     @Inject
-    AssetSenderJob(AssetTypes assetTypes, Assets assets, SQSHelper sqsHelper) {
+    AssetSenderJob(AssetTypes assetTypes, Assets assets, SQSHelper sqsHelper, DataSourceHelper dataSourceHelper, AssetGroupStatsCollector assetGroupStatsCollector, AssetsCounts assetsCounts) {
         this.assetTypes = assetTypes;
         this.assets = assets;
         this.sqsHelper = sqsHelper;
+        this.dataSourceHelper = dataSourceHelper;
+        this.assetGroupStatsCollector = assetGroupStatsCollector;
+        this.assetsCounts = assetsCounts;
     }
 
 
@@ -42,8 +52,17 @@ public class AssetSenderJob extends JobExecutor {
             tenantId);
         ConfigService.setProperties("batch.",
             Collections.singletonMap("s3.data", params.get(S3_PATH)));
+
         assetTypes.setupIndexAndTypes(dataSource);
         assets.upload(dataSource);
+
+        try {
+            var dataSourceInfo = dataSourceHelper.fetch(dataSource);
+            assetGroupStatsCollector.collectStats(dataSourceInfo.assetGroups());
+            assetsCounts.populate(dataSource, dataSourceInfo.accountIds());
+        } catch (Exception e) {
+            throw new JobException("Error fetching data source", e);
+        }
 
         if ("true".equalsIgnoreCase(ConfigService.get(ConfigConstants.Dev.OMIT_DONE_EVENT))) {
             LOGGER.warn("Omitting done event");

@@ -2,11 +2,14 @@ package com.paladincloud.common.util;
 
 import com.paladincloud.common.config.ConfigConstants.Dev;
 import com.paladincloud.common.config.ConfigService;
-import java.util.Arrays;
+import com.paladincloud.common.errors.JobException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,5 +66,19 @@ public class StringHelper {
             return StringUtils.split(str, delimiter);
         }
         return defaultValue;
+    }
+
+    /**
+     * Given a string, generate a signature for it
+     *
+     * @param doc - the string to process
+     * @return - a string with the signature for `doc`
+     */
+    public static String generateSignature(String doc) {
+        try {
+            return Hex.encodeHexString(MessageDigest.getInstance("MD5").digest(doc.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new JobException("Unable to generate unique ID", e);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.errors.JobException;
 import com.paladincloud.common.util.HttpHelper;
+import com.paladincloud.common.util.HttpHelper.AuthorizationType;
 import java.util.Map;
 import java.util.Properties;
 
@@ -47,7 +48,7 @@ public class ConfigService {
     }
 
     private static void fetchConfigProperties(String uri, String credentials) {
-        var headers = HttpHelper.getBasicHeaders(credentials);
+        var headers = HttpHelper.getBasicHeaders(AuthorizationType.BASIC, credentials);
         try {
             var configJson = HttpHelper.get(uri, headers);
             var objectMapper = new ObjectMapper().configure(

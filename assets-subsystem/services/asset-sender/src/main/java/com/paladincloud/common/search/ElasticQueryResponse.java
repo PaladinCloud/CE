@@ -1,6 +1,7 @@
 package com.paladincloud.common.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import java.util.Map;
 
 public class ElasticQueryResponse {
@@ -12,7 +13,7 @@ public class ElasticQueryResponse {
     public static class Hits {
 
         public HitsTotal total;
-        public HitsDoc[] hits;
+        public List<HitsDoc> hits;
 
         public static class HitsTotal {
 

@@ -12,17 +12,18 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class JobExecutor {
 
-    public static final String ASSET_SHIPPER_DONE_SQS_URL = "ASSET_SHIPPER_DONE_SQS_URL";
-    private static final String ALERT_ERROR_PREFIX = "error occurred in";
-
     // These are expected environment variables which are made available in
     // ConfigService as under the 'param.' section.
+    protected static final String ASSET_SHIPPER_DONE_SQS_URL = "ASSET_SHIPPER_DONE_SQS_URL";
+    private static final String AUTH_API_URL = "AUTH_API_URL";
+    private static final String ALERT_ERROR_PREFIX = "error occurred in";
+    private static final String BASE_PALADIN_CLOUD_API_URI = "BASE_PALADIN_CLOUD_API_URI";
     private static final String CONFIG_SERVICE_URL = "CONFIG_URL";
     private static final String CONFIG_SERVICE_CREDENTIALS = "CONFIG_CREDENTIALS";
-    private static final List<String> environmentVariables = List.of(CONFIG_SERVICE_URL,
-        CONFIG_SERVICE_CREDENTIALS, ASSET_SHIPPER_DONE_SQS_URL);
+    private static final List<String> environmentVariables = List.of(ASSET_SHIPPER_DONE_SQS_URL,
+        AUTH_API_URL, BASE_PALADIN_CLOUD_API_URI, CONFIG_SERVICE_URL, CONFIG_SERVICE_CREDENTIALS);
 
-    // In addition to these arguments, these are supported:
+    // These are additional arguments that are supported:
     //      asset-type-override - A comma separated list of asset types to use, ignoring what's in the database
     //      index-prefix -        The prefix to use for creating test ElasticSearch indexes
     //      omit-done-event -     if 'true', the final SQS done event will NOT be fired.
@@ -40,11 +41,12 @@ public abstract class JobExecutor {
         long startTime = System.nanoTime();
         try {
             setDefaultParams();
-            getEnvironmentVariables();
+            var envVars = getEnvironmentVariables();
             params.putAll(parseArgs(args));
             validateRequiredFields();
-            ConfigService.retrieveConfigProperties(params.get(CONFIG_SERVICE_URL),
-                params.get(CONFIG_SERVICE_CREDENTIALS));
+            ConfigService.retrieveConfigProperties(envVars.get(CONFIG_SERVICE_URL),
+                envVars.get(CONFIG_SERVICE_CREDENTIALS));
+            ConfigService.setProperties("environment.", envVars);
             ConfigService.setProperties("param.", params);
             execute();
             status = "Succeeded";
@@ -98,12 +100,14 @@ public abstract class JobExecutor {
         }
     }
 
-    private void getEnvironmentVariables() {
+    private Map<String, String> getEnvironmentVariables() {
+        var envVars = new HashMap<String, String>();
         for (var name : environmentVariables) {
             var value = System.getenv(name);
             if (value != null) {
-                params.put(name, value);
+                envVars.put(name, value);
             }
         }
+        return envVars;
     }
 }
