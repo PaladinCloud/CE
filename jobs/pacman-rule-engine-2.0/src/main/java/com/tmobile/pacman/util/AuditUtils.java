@@ -112,34 +112,26 @@ public class AuditUtils {
     }
 
     /**
-     * Creating the JSON for audit.
-     *
-     * @param ds the ds
-     * @param type the type
-     * @param status the status
-     * @param id the id
-     * @return the string
+     * @param annotation
+     * @param status
+     * @param id
+     * @return
      */
 
     private static String createAuditTrail(Map<String, String> annotation, String status, String id) {
         String type = annotation.get(TARGET_TYPE);
         String _type = "issue_" + type + "_audit";
-        String date = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
-                PacmanSdkConstants.DATE_FORMAT);
+        String date = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT);
         Map<String, Object> auditTrail = new LinkedHashMap<>();
-        auditTrail.put(PacmanSdkConstants.DOC_TYPE,_type);
-        //For System entries,We need to show status as "EXEMPT" in Audit log instead of "Exempted" for UI Consistency
-        if (status.equalsIgnoreCase(PacmanSdkConstants.STATUS_EXEMPTED)) {
-            status = PacmanSdkConstants.STATUS_EXEMPT;
-        }
+        auditTrail.put(PacmanSdkConstants.DOC_TYPE, _type);
         // add relations to annotation
         Map<String, Object> relMap = new HashMap<>();
-        relMap.put("name",_type);
+        relMap.put("name", _type);
         relMap.put("parent", id);
-        auditTrail.put( type + "_relations", relMap);
+        auditTrail.put(type + "_relations", relMap);
         auditTrail.put(PacmanSdkConstants.DATA_SOURCE_ATTR, annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
         auditTrail.put(TARGET_TYPE, type);
-        auditTrail.put("_docid",id);
+        auditTrail.put("_docid", id);
         auditTrail.put(PacmanSdkConstants.ANNOTATION_PK, id);
         auditTrail.put(PacmanSdkConstants.STATUS_KEY, status);
         auditTrail.put(PacmanSdkConstants.AUDIT_DATE, date);
