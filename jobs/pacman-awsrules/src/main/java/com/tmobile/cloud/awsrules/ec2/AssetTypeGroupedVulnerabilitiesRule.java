@@ -129,8 +129,8 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
                             JsonArray cveArray = cves.getAsJsonArray();
                             List<CveDetails> cveList = new ArrayList<>();
                             for (JsonElement e : cveArray) {
-                                String cveId = e.getAsString();
-                                CveDetails cve = new CveDetails(cveId, PacmanUtils.NIST_VULN_DETAILS_URL + cveId);
+                                JsonObject vulnInfo = e.getAsJsonObject();
+                                CveDetails cve = new CveDetails(vulnInfo.get("title").getAsString(), vulnInfo.get("url").getAsString());
                                 cveList.add(cve);
                                 vul.setCveList(cveList);
                             }
