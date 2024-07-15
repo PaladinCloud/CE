@@ -123,7 +123,11 @@ public class AuditUtils {
         String _type = "issue_" + type + "_audit";
         String date = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT);
         Map<String, Object> auditTrail = new LinkedHashMap<>();
-        auditTrail.put(PacmanSdkConstants.DOC_TYPE, _type);
+        auditTrail.put(PacmanSdkConstants.DOC_TYPE,_type);
+        //For Supporting old data with status as "exempted" we are having below condition
+        if (status.equalsIgnoreCase(PacmanSdkConstants.STATUS_EXEMPTED)) {
+            status = PacmanSdkConstants.STATUS_EXEMPT;
+        }
         // add relations to annotation
         Map<String, Object> relMap = new HashMap<>();
         relMap.put("name", _type);
