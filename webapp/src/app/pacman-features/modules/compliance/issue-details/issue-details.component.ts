@@ -810,8 +810,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 }
                 return (
                     index &&
-                    (this.outerArr[index - 1].Status.valueText.toLowerCase() !=
-                        obj.Status.valueText.toLowerCase() ||
+                    (this.outerArr[index - 1].Status.valueText?.toLowerCase() !=
+                        obj.Status.valueText?.toLowerCase() ||
                         this.outerArr[index - 1].Action.valueText != obj.Action.valueText)
                 );
             });
