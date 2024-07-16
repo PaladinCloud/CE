@@ -37,7 +37,6 @@ import {
     ENFORCED,
     ERROR,
     EXEMPT,
-    EXEMPTED,
     LEVEL_ZERO,
     NO_DATA_AVAILABLE,
     SUCCESS,
@@ -428,7 +427,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                                     }
                                     this.assetID = this.issueBlocks.resouceViolatedPolicy;
                                     if (this.issueBlocks.status !== undefined) {
-                                        this.exceptionAdded = this.issueBlocks.status === EXEMPTED;
+                                        this.exceptionAdded = this.issueBlocks.status === EXEMPT;
                                         if (this.exceptionAdded) {
                                             this.issueBlocks.status = EXEMPT;
                                             statusIcon = '../assets/icons/Lock-Closed.svg';
@@ -823,7 +822,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 this.issueBlocks['violationModifiedDate'] = this.violationAuditLogs[0].Date.valText;
                 this.tableErrorMessage = '';
             } else {
-                this.tableErrorMessage = 'noDataAvailable';
+                this.tableErrorMessage = NO_DATA_AVAILABLE;
             }
             this.totalRows = this.violationAuditLogs.length;
             if (this.lastPaginator > this.totalRows) {
