@@ -48,7 +48,7 @@ public class ViolationAssociationManager {
     private static final String DATA_PATH = System.getProperty("s3.data");
     private static final String DATE_FORMAT_SEC = "yyyy-MM-dd HH:mm:00Z";
     private static final String CREATED_DATE = "createdDate";
-    private static final String POLICY_REASON_TEMPLATE = "%s Found in %s";
+    private static final String POLICY_REASON_TEMPLATE = "%s found in %s";
 
     /**
      * Execute.
