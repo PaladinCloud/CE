@@ -624,7 +624,7 @@ public class PolicyExecutor {
         {
             exception = individuallyExcemptedIssues.get(CommonUtils.getUniqueAnnotationId(annotation));
             if (null != exception) {
-                return new Status(PacmanSdkConstants.STATUS_EXEMPT, exception.getExceptionReason(), exception.getId(), exception.getExpiryDate());
+                return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(), exception.getExpiryDate());
             } else {
                 return new Status(status); // return the same status as input
             }
@@ -633,7 +633,7 @@ public class PolicyExecutor {
 
     /**
      * in case any rule throws exception and it reaches main, this will make
-     * sure the VM is terminated gracefully close all clients here.
+     * sure the VM is terminated gracefully close all clients here.gti
      */
     private void setUncaughtExceptionHandler() {
         Thread.currentThread().setUncaughtExceptionHandler(new PolicyEngineUncaughtExceptionHandler());
