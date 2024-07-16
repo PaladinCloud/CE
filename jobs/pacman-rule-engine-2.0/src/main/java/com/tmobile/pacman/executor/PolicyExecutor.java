@@ -624,7 +624,7 @@ public class PolicyExecutor {
         {
             exception = individuallyExcemptedIssues.get(CommonUtils.getUniqueAnnotationId(annotation));
             if (null != exception) {
-                return new Status(PacmanSdkConstants.STATUS_EXEMPT, exception.getExceptionReason(), exception.getId(), exception.getExpiryDate());
+                return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(), exception.getExpiryDate());
             } else {
                 return new Status(status); // return the same status as input
             }
