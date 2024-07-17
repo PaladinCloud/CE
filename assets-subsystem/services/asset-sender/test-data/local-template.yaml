@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Asset shipper
+Resources:
+  function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/asset-sender-1.0-SNAPSHOT.jar
+      Handler: com.paladincloud.assetsender.AssetDoneHandler
+      Runtime: java21
+      Timeout: 120
+      Tracing: Active
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: --enable-preview
+      Events:
+          AssetMappingDoneEvent:
+            Type: SQS
+            Properties:
+              Queue: ""
+              BatchSize: 10
+
+  AssetMappingDoneEvent:
+    Type: AWS::SQS::Queue
