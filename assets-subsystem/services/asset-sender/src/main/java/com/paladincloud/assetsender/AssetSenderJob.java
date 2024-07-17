@@ -65,7 +65,7 @@ public class AssetSenderJob extends JobExecutor {
             assetGroupStatsCollector.collectStats(dataSourceInfo.assetGroups());
             assetsCounts.populate(dataSource, dataSourceInfo.accountIds());
         } catch (Exception e) {
-            throw new JobException("Error fetching data source", e);
+            throw new JobException("Error populating asset stats", e);
         }
 
         var shipperDoneEvent = new ProcessingDoneMessage(STR."\{dataSource}-asset-shipper",
