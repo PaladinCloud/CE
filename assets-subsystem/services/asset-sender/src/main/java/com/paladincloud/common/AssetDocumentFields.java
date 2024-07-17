@@ -45,10 +45,6 @@ public interface AssetDocumentFields {
     String USED_FOR = "used_for";
 
     String TAGS = "tags";
-    interface Tags {
-        String APPLICATION = "tags.Application";
-        String ENVIRONMENT = "tags.Environment";
-    }
 
     static String asKeyword(String field) {
         return STR."\{field}.keyword";

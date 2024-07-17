@@ -31,10 +31,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Inject;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,8 +41,6 @@ import org.apache.logging.log4j.Logger;
 public class Assets {
 
     private static final Logger LOGGER = LogManager.getLogger(Assets.class);
-    private static final String OVERRIDE_PREFIX = "pac_override_";
-    private static final String TYPE_ON_PREM_SERVER = "onpremserver";
 
     private final ElasticSearchHelper elasticSearch;
     private final AssetTypes assetTypes;
@@ -175,61 +171,6 @@ public class Assets {
         }
 
         return fullType.substring(firstDash + 1);
-    }
-
-    private static void updateOnPremData(Map<String, Object> entity) {
-        entity.put(AssetDocumentFields.Tags.APPLICATION,
-            entity.get(AssetDocumentFields.U_BUSINESS_SERVICE).toString().toLowerCase());
-        entity.put(AssetDocumentFields.Tags.ENVIRONMENT, entity.get(AssetDocumentFields.USED_FOR));
-        entity.put(AssetDocumentFields.IN_SCOPE, "true");
-    }
-
-    /**
-     * Override.
-     *
-     * @param document       the entity
-     * @param overrideList   the override list
-     * @param overrideFields the override fields
-     */
-    private static void override(Map<String, Object> document,
-        List<Map<String, String>> overrideList, List<Map<String, String>> overrideFields) {
-
-        if (CollectionUtils.isNotEmpty(overrideList)) {
-            overrideList.forEach(obj -> {
-                String key = obj.get("fieldname");
-                String value = obj.get("fieldvalue");
-                if (null == value) {
-                    value = "";
-                }
-                document.put(key, value);
-            });
-        }
-
-        // Add override fields if not already populated
-        if (CollectionUtils.isNotEmpty(overrideFields)) {
-            String strOverrideFields = overrideFields.getFirst().get("updatableFields");
-            String[] _strOverrideFields = strOverrideFields.split(",");
-            for (String _strOverrideField : _strOverrideFields) {
-                if (!document.containsKey(_strOverrideField)) {
-                    document.put(_strOverrideField, "");
-                }
-
-                String value = document.get(_strOverrideField).toString();
-                if (_strOverrideField.startsWith(OVERRIDE_PREFIX)) {
-                    String originalField = _strOverrideField.replace(OVERRIDE_PREFIX, "");
-                    String finalField = _strOverrideField.replace(OVERRIDE_PREFIX, "final_");
-                    if (document.containsKey(originalField)) {
-                        // Only if the field exists in source, we need to add
-                        String originalValue = document.get(originalField).toString();
-                        if ("".equals(value)) {
-                            document.put(finalField, originalValue);
-                        } else {
-                            document.put(finalField, value);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private List<Map<String, Object>> fetchFromS3(String bucket, String path, String dataSource,
@@ -455,18 +396,12 @@ public class Assets {
         Map<String, Map<String, String>> existingDocuments, List<Map<String, Object>> newDocuments,
         List<Map<String, Object>> tags, String loadDate, String type, String dataSource,
         String displayName, Map<String, String> accountIdNameMap) throws IOException {
-        var updatableFields = database.executeQuery(
-            STR."select updatableFields from cf_pac_updatable_fields where resourceType ='\{type}'");
-        var overrides = database.executeQuery(
-            STR."select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '\{type}'");
-        var overridesMap = overrides.parallelStream()
-            .collect(Collectors.groupingBy(obj -> obj.get(AssetDocumentFields.RESOURCE_ID)));
 
         var keys = assetTypes.getKeyForType(dataSource, type).split(",");
         var idColumn = assetTypes.getIdForType(dataSource, type);
 
-        prepareDocuments(existingDocuments, newDocuments, tags, loadDate, updatableFields,
-            overridesMap, idColumn, keys, type, dataSource, displayName, accountIdNameMap);
+        prepareDocuments(existingDocuments, newDocuments, tags, loadDate, idColumn, keys, type,
+            dataSource, displayName, accountIdNameMap);
         batchIndexer.add(newDocuments.stream().map(doc -> BatchItem.documentEntry(indexName,
             doc.get(AssetDocumentFields.DOC_ID).toString(), doc)).toList());
 
@@ -474,9 +409,8 @@ public class Assets {
 
     private void prepareDocuments(Map<String, Map<String, String>> existingDocuments,
         List<Map<String, Object>> newDocuments, List<Map<String, Object>> tags, String loadDate,
-        List<Map<String, String>> updatableFields,
-        Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] keys,
-        String type, String dataSource, String displayName, Map<String, String> accountIdNameMap) {
+        String idColumn, String[] keys, String type, String dataSource, String displayName,
+        Map<String, String> accountIdNameMap) {
 
         newDocuments.parallelStream().forEach(newDocument -> {
             var idColumnValue = newDocument.get(idColumn);
@@ -554,13 +488,6 @@ public class Assets {
                         newDocument.put(STR."tags.\{key}", tag.get("value"));
                     }
                 });
-
-            if (TYPE_ON_PREM_SERVER.equals(type)) {
-                updateOnPremData(newDocument);
-                if (overridesMap.containsKey(id) || !updatableFields.isEmpty()) {
-                    override(newDocument, overridesMap.get(id), updatableFields);
-                }
-            }
 
             if ("gcp".equalsIgnoreCase(newDocument.get(AssetDocumentFields.CLOUD_TYPE).toString())
                 && newDocument.containsKey(AssetDocumentFields.TAGS) && newDocument.get(
