@@ -1,5 +1,7 @@
 package com.paladincloud.assetsender;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladincloud.common.ProcessingDoneMessage;
 import com.paladincloud.common.assets.AssetGroupStatsCollector;
 import com.paladincloud.common.assets.Assets;
@@ -33,7 +35,9 @@ public class AssetSenderJob extends JobExecutor {
     private final AssetsCounts assetsCounts;
 
     @Inject
-    AssetSenderJob(AssetTypes assetTypes, Assets assets, SQSHelper sqsHelper, DataSourceHelper dataSourceHelper, AssetGroupStatsCollector assetGroupStatsCollector, AssetsCounts assetsCounts) {
+    AssetSenderJob(AssetTypes assetTypes, Assets assets, SQSHelper sqsHelper,
+        DataSourceHelper dataSourceHelper, AssetGroupStatsCollector assetGroupStatsCollector,
+        AssetsCounts assetsCounts) {
         this.assetTypes = assetTypes;
         this.assets = assets;
         this.sqsHelper = sqsHelper;
@@ -64,13 +68,18 @@ public class AssetSenderJob extends JobExecutor {
             throw new JobException("Error fetching data source", e);
         }
 
+        var shipperDoneEvent = new ProcessingDoneMessage(STR."\{dataSource}-asset-shipper",
+            tenantId, dataSource);
         if ("true".equalsIgnoreCase(ConfigService.get(ConfigConstants.Dev.OMIT_DONE_EVENT))) {
-            LOGGER.warn("Omitting done event");
+            try {
+                LOGGER.warn("Omitting done event: {}",
+                    new ObjectMapper().writeValueAsString(shipperDoneEvent));
+            } catch (JsonProcessingException e) {
+                throw new JobException("Failed serializing event", e);
+            }
         } else {
             sqsHelper.sendMessage(params.get(JobExecutor.ASSET_SHIPPER_DONE_SQS_URL),
-                new ProcessingDoneMessage(STR."\{dataSource}-asset-shipper", tenantId, dataSource,
-                    null),
-                UUID.randomUUID().toString());
+                shipperDoneEvent, UUID.randomUUID().toString());
         }
     }
 
