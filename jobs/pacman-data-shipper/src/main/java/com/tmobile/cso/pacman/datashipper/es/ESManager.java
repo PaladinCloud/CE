@@ -768,8 +768,11 @@ public class ESManager implements Constants {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
             for (Map<String, Object> doc : docs) {
-
-                String _id = (String) doc.remove("id");
+                if(!doc.containsKey("id") || doc.get("id") == null){
+                    LOGGER.error("doc id can't be null for index {}", index);
+                    continue;
+                }
+                String _id =  doc.remove("id").toString();
                 String _doc = new Gson().toJson(doc);
 
                 bulkRequest.append(String.format(actionTemplate, index, _id)).append("\n");
