@@ -40,7 +40,6 @@ public class JobScheduler {
     public static final String AWS_ENABLED = "aws.enabled";
     public static final String QUALYS_ENABLED = "qualys.enabled";
     public static final String AQUA_ENABLED = "aqua.enabled";
-    public static final String TENABLE_ENABLED = "tenable.enabled";
     public static final String CONTRAST_ENABLED = "contrast.enabled";
     public static final String PLUGIN_TYPE_TENABLE = "tenable";
     public static final String PLUGIN_TYPE_QUALYS = "qualys";
@@ -201,16 +200,13 @@ public class JobScheduler {
 
             qualysEnabled=Boolean.parseBoolean(env.getProperty(QUALYS_ENABLED));
             aquaEnabled=Boolean.parseBoolean(env.getProperty(AQUA_ENABLED));
-            tenableEnabled=Boolean.parseBoolean(env.getProperty(TENABLE_ENABLED));
             if (qualysEnabled) {
                 addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_QUALYS);
             }
             if (aquaEnabled) {
                 addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_AQUA);
             }
-            if (tenableEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_TENABLE);
-            }
+
 
             // check if events to put is > 0
             if (!putEventsRequestEntries.isEmpty()) {
