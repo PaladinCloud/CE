@@ -16,6 +16,8 @@ public class PolicyViolationNotificationRequest {
     private String scanTime;
     private String accountId;
     private Constants.Actions action;
+    private String policyId;
+    private String severity;
     private Map<String,Object> additionalInfo=new HashMap<>();
 
     public Map<String, Object> getAdditionalInfo() {
@@ -103,5 +105,21 @@ public class PolicyViolationNotificationRequest {
 
     public void setAccountId(String accountId) {
         this.accountId = accountId;
+    }
+
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
+    }
+
+    public String getPolicyId() {
+        return policyId;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
+    }
+
+    public String getSeverity() {
+        return severity;
     }
 }
