@@ -1,11 +1,10 @@
 package com.paladincloud.common.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paladincloud.common.assets.AssetDTO;
 import java.util.List;
-import java.util.Map;
 
-public class ElasticQueryResponse {
-
+public class ElasticQueryAssetResponse {
     @JsonProperty("_scroll_id")
     public String scrollId;
     public Hits hits;
@@ -30,7 +29,8 @@ public class ElasticQueryResponse {
             @JsonProperty("_score")
             public long score;
             @JsonProperty("_source")
-            public Map<String, Object> source;
+            public AssetDTO source;
         }
     }
+
 }

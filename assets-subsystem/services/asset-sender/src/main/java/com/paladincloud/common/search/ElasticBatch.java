@@ -1,5 +1,6 @@
 package com.paladincloud.common.search;
 
+import com.paladincloud.common.assets.AssetRepository;
 import com.paladincloud.common.errors.JobException;
 import com.paladincloud.common.util.MapHelper;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import javax.inject.Inject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ElasticBatch implements AutoCloseable {
+public class ElasticBatch implements AssetRepository.Batch {
 
     private static final Logger LOGGER = LogManager.getLogger(ElasticBatch.class);
     private static final int DEFAULT_BATCH_SIZE = 5000;
@@ -21,10 +22,6 @@ public class ElasticBatch implements AutoCloseable {
     @Inject
     public ElasticBatch(ElasticSearchHelper elasticSearch) {
         this.elasticSearch = elasticSearch;
-    }
-
-    public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
     }
 
     public void add(BatchItem batchData) throws IOException {

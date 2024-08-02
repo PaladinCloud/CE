@@ -10,6 +10,7 @@ import com.paladincloud.common.util.JsonHelper;
 import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,24 +54,18 @@ public class AuthHelper {
 
 class AccessToken {
 
+    @Getter
     @JsonProperty("access_token")
     private String token;
     @JsonProperty("expires_in")
     private int expiresInSeconds;
 
+    @Getter
     private long expiresAt = 0;
-
-    public String getToken() {
-        return token;
-    }
 
     public void initExpireTime() {
         // Give a short time buffer before the expiration
         expiresAt = System.currentTimeMillis() + (expiresInSeconds * 1000L) - (20L * 1000L);
-    }
-
-    public long getExpiresAt() {
-        return expiresAt;
     }
 
     public String toString() {

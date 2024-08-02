@@ -4,7 +4,7 @@ import com.paladincloud.common.AssetDocumentFields;
 import com.paladincloud.common.errors.JobException;
 import com.paladincloud.common.search.ElasticBatch;
 import com.paladincloud.common.search.ElasticBatch.BatchItem;
-import com.paladincloud.common.search.ElasticQueryResponse;
+import com.paladincloud.common.search.ElasticQueryMapResponse;
 import com.paladincloud.common.search.ElasticSearchHelper;
 import com.paladincloud.common.search.ElasticSearchHelper.HttpMethod;
 import com.paladincloud.common.util.StringHelper;
@@ -30,12 +30,12 @@ public class AssetGroupStatsCollector {
     private static final String ASSET_GROUP_STATS_INDEX = "assetgroup_stats";
     private final List<String> domains = Collections.singletonList("Infra & Platforms");
     private final ElasticSearchHelper elasticSearch;
-    private final AssetGroups assetGroupsInstance;
+    private final AssetCountsHelper assetCountsHelper;
 
     @Inject
-    public AssetGroupStatsCollector(ElasticSearchHelper elasticSearch, AssetGroups assetGroups) {
+    public AssetGroupStatsCollector(ElasticSearchHelper elasticSearch, AssetCountsHelper assetCountsHelper) {
         this.elasticSearch = elasticSearch;
-        this.assetGroupsInstance = assetGroups;
+        this.assetCountsHelper = assetCountsHelper;
     }
 
     public void collectStats(List<String> assetGroups) throws Exception {
@@ -114,7 +114,7 @@ public class AssetGroupStatsCollector {
 
         try (var batch = new ElasticBatch(elasticSearch)) {
             for (String assetGroup : assetGroups) {
-                var typeCounts = assetGroupsInstance.fetchTypeCounts(assetGroup);
+                var typeCounts = assetCountsHelper.fetchTypeCounts(assetGroup);
                 var current = currentInfo.get(assetGroup);
                 for (var typeCount : typeCounts) {
                     var type = typeCount.get("type").toString();
@@ -149,7 +149,7 @@ public class AssetGroupStatsCollector {
         throws Exception {
         try (var batch = new ElasticBatch(elasticSearch)) {
             for (String assetGroup : assetGroups) {
-                var docList = assetGroupsInstance.fetchPolicyCompliance(assetGroup, domains);
+                var docList = assetCountsHelper.fetchPolicyCompliance(assetGroup, domains);
                 docList.parallelStream().forEach(doc -> {
                     doc.put("ag", assetGroup);
                     doc.put("date", currentDate);
@@ -170,7 +170,7 @@ public class AssetGroupStatsCollector {
         throws Exception {
         try (var batch = new ElasticBatch(elasticSearch)) {
             for (String assetGroup : assetGroups) {
-                var docList = assetGroupsInstance.fetchCompliance(assetGroup, domains);
+                var docList = assetCountsHelper.fetchCompliance(assetGroup, domains);
                 docList.parallelStream().forEach(doc -> {
                     doc.put("ag", assetGroup);
                     doc.put("date", currentDate);
@@ -191,7 +191,7 @@ public class AssetGroupStatsCollector {
         try (var batch = new ElasticBatch(elasticSearch)) {
             var docList = new ArrayList<Map<String, Object>>();
             for (String assetGroup : assetGroups) {
-                var doc = assetGroupsInstance.fetchTaggingSummary(assetGroup);
+                var doc = assetCountsHelper.fetchTaggingSummary(assetGroup);
                 if (!doc.isEmpty()) {
                     doc.put("ag", assetGroup);
                     doc.put("date", currentDate);
@@ -212,7 +212,7 @@ public class AssetGroupStatsCollector {
         throws Exception {
         try (var batch = new ElasticBatch(elasticSearch)) {
             for (String assetGroup : assetGroups) {
-                var docList = assetGroupsInstance.fetchIssuesInfo(assetGroup, domains);
+                var docList = assetCountsHelper.fetchIssuesInfo(assetGroup, domains);
                 docList.parallelStream().forEach(doc -> {
                     doc.put("ag", assetGroup);
                     doc.put("date", currentDate);
@@ -229,10 +229,11 @@ public class AssetGroupStatsCollector {
         }
     }
 
-    private void uploadAssetListCountStats(String currentDate, List<String> assetGroups) throws Exception {
+    private void uploadAssetListCountStats(String currentDate, List<String> assetGroups)
+        throws Exception {
         try (var batch = new ElasticBatch(elasticSearch)) {
             for (String assetGroup : assetGroups) {
-                var assetCounts = assetGroupsInstance.fetchAssetCounts(assetGroup);
+                var assetCounts = assetCountsHelper.fetchAssetCounts(assetGroup);
                 var doc = new HashMap<String, Object>();
                 doc.put("ag", assetGroup);
                 doc.put("date", currentDate);
@@ -270,7 +271,7 @@ public class AssetGroupStatsCollector {
                 }
             }
             """.trim();
-        var response = elasticSearch.invokeCheckAndConvert(ElasticQueryResponse.class,
+        var response = elasticSearch.invokeCheckAndConvert(ElasticQueryMapResponse.class,
             HttpMethod.POST, STR."\{ASSET_GROUP_STATS_INDEX}/_search?size=10000", payload);
         Map<String, Map<String, Map<String, Object>>> infoList = new HashMap<>();
         var docs = response.hits.hits.stream().map(h -> h.source).toList();

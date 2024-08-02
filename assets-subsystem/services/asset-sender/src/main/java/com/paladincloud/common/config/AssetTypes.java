@@ -150,6 +150,7 @@ public class AssetTypes {
                     """;
 
                 try {
+
                     elasticSearch.invokeAndCheck(HttpMethod.PUT, indexName, payload);
                     elasticSearch.invokeAndCheck(HttpMethod.PUT, STR."/\{indexName}/_alias/\{dataSource}",
                         null);

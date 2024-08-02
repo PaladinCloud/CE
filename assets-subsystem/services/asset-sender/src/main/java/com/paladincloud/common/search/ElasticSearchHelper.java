@@ -1,6 +1,7 @@
 package com.paladincloud.common.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paladincloud.common.assets.AssetDTO;
 import com.paladincloud.common.config.ConfigConstants.Elastic;
 import com.paladincloud.common.config.ConfigService;
 import com.paladincloud.common.errors.JobException;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
@@ -95,7 +95,8 @@ public class ElasticSearchHelper {
      * @return - An ElasticSearch response, which will include the body of the response
      * @throws IOException - Network failures
      */
-    public ElasticResponse invoke(HttpMethod method, String endpoint, String payLoad) throws IOException {
+    public ElasticResponse invoke(HttpMethod method, String endpoint, String payLoad)
+        throws IOException {
         String uri = endpoint;
         if (!uri.startsWith("/")) {
             uri = STR."/\{uri}";
@@ -148,85 +149,38 @@ public class ElasticSearchHelper {
     }
 
     /**
-     * Sets the 'latest' flag to false for documents that were NOT updated as part of this
-     * processing.
-     *
-     * @param indexName  - the index to operate on
-     * @param docType    - the docType to match on
-     * @param fieldName  - the name of the field to check the value for
-     * @param fieldValue - the value of the field to NOT MARK (all other values will be marked)
-     * @throws IOException - if the call fails
-     */
-    public void markStaleDocuments(String indexName, String docType, String fieldName,
-        String fieldValue) throws IOException {
-        var payload = STR."""
-            {
-                "script": {
-                    "inline": "ctx._source.latest=false"
-                },
-                "query": {
-                    "bool": {
-                        "must": [
-                            {
-                                "match": {
-                                    "latest": true
-                                }
-                            },
-                            {
-                                "match": {
-                                    "docType": "\{docType}"
-                                }
-                            }
-                        ],
-                        "must_not": [
-                            {
-                                "match": {
-                                    "\{fieldName}":"\{fieldValue}"
-                                }
-                            }
-                        ]
-                    }
-                }
-            }
-            """.trim();
-        invokeAndCheck(HttpMethod.POST, STR."\{indexName}/_update_by_query", payload);
-    }
-
-    /**
-     * Gets the existing documents.
+     * Gets the assets with 'latest:true' in the given index
      *
      * @param indexName the index name
-     * @param filters   the filters
-     * @return the existing documents
+     * @return the asset documents
      */
-    public Map<String, Map<String, String>> getExistingDocuments(String indexName,
-        List<String> filters) {
+    public Map<String, AssetDTO> getLatestAssets(String indexName, List<String> filters) {
         int totalDocumentCount = getDocumentCount(indexName);
         boolean scroll = totalDocumentCount > ElasticSearchHelper.MAX_RETURNED_RESULTS;
 
-        String keyField = filters.getFirst();
-        StringBuilder filter_path = new StringBuilder("&filter_path=_scroll_id,");
+        StringBuilder filterPath = new StringBuilder("&filter_path=_scroll_id,");
         for (String _filter : filters) {
-            filter_path.append("hits.hits._source.").append(_filter).append(",");
+            filterPath.append("hits.hits._source.").append(_filter).append(",");
         }
-        filter_path.deleteCharAt(filter_path.length() - 1);
+        filterPath.deleteCharAt(filterPath.length() - 1);
 
-        String endPoint = STR."\{indexName}/_search?scroll=1m\{filter_path}&size=\{Math.min(
-            totalDocumentCount, ElasticSearchHelper.MAX_RETURNED_RESULTS)}";
+        String endPoint = STR."\{indexName}/_search?scroll=1m\{filterPath}&size=\{Math.min(totalDocumentCount,
+            ElasticSearchHelper.MAX_RETURNED_RESULTS)}";
         if (totalDocumentCount == 0) {
-            endPoint = STR."\{indexName}/_search?scroll=1m\{filter_path}";
+            endPoint = STR."\{indexName}/_search?scroll=1m";
         }
+
         String payLoad = """
             {"query":{"match":{"latest":true}}}
             """;
-        Map<String, Map<String, String>> results = new HashMap<>();
-        String scrollId = fetchDataAndScrollId(endPoint, results, keyField, payLoad);
+        Map<String, AssetDTO> results = new HashMap<>();
+        String scrollId = fetchAssetAndScrollId(endPoint, results, payLoad);
 
         if (scroll) {
             totalDocumentCount -= ElasticSearchHelper.MAX_RETURNED_RESULTS;
             do {
-                endPoint = STR."/_search/scroll?scroll=1m&scroll_id=\{scrollId}\{filter_path}";
-                scrollId = fetchDataAndScrollId(endPoint, results, keyField, null);
+                endPoint = STR."/_search/scroll?scroll=1m&scroll_id=\{scrollId}";
+                scrollId = fetchAssetAndScrollId(endPoint, results, null);
                 totalDocumentCount -= ElasticSearchHelper.MAX_RETURNED_RESULTS;
                 if (totalDocumentCount <= 0) {
                     scroll = false;
@@ -234,6 +188,31 @@ public class ElasticSearchHelper {
             } while (scroll);
         }
         return results;
+    }
+
+    /**
+     * Fetch assets using and return the scroll id.
+     *
+     * @param endPoint the end point
+     * @param results  the data from ElasticSearch
+     * @param payLoad  the pay load
+     * @return the string
+     */
+    private String fetchAssetAndScrollId(String endPoint, Map<String, AssetDTO> results,
+        String payLoad) {
+        try {
+            var response = invokeCheckAndConvert(ElasticQueryAssetResponse.class, HttpMethod.GET,
+                endPoint, payLoad);
+            if (response.hits != null && response.hits.hits != null) {
+                for (var hit : response.hits.hits) {
+                    results.put(hit.source.getDocId(), hit.source);
+                }
+            }
+            return response.scrollId;
+        } catch (ParseException | IOException e) {
+            LOGGER.error("Error in fetchDataAndScrollId", e);
+            throw new JobException("Failed fetching documents", e);
+        }
     }
 
     public void createIndex(String indexName) throws IOException {
@@ -244,10 +223,6 @@ public class ElasticSearchHelper {
                 """;
             invoke(HttpMethod.PUT, indexName, payload);
         }
-    }
-
-    public void refresh(String indexName) throws IOException {
-        invokeAndCheck(HttpMethod.POST, STR."\{indexName}/_refresh", null);
     }
 
     private RestClient getRestClient() {
@@ -267,44 +242,14 @@ public class ElasticSearchHelper {
      */
     private int getDocumentCount(String indexName) {
         try {
-            var response = invokeAndCheck(HttpMethod.GET, STR."\{indexName}/_count?filter_path=count",
-                """
+            var response = invokeAndCheck(HttpMethod.GET,
+                STR."\{indexName}/_count?filter_path=count", """
                     {"query":{"match":{"latest":true}}}
                     """);
             return new ObjectMapper().readTree(response.getBody()).at("/count").asInt();
         } catch (IOException e) {
             throw new JobException(STR."Error getting document count in \{indexName}", e);
         }
-    }
-
-    /**
-     * Fetch data and scroll id.
-     *
-     * @param endPoint the end point
-     * @param results  the data from ElasticSearch
-     * @param keyField the key field
-     * @param payLoad  the pay load
-     * @return the string
-     */
-    private String fetchDataAndScrollId(String endPoint, Map<String, Map<String, String>> results,
-        String keyField, String payLoad) {
-        try {
-            var response = invokeCheckAndConvert(ElasticQueryResponse.class, HttpMethod.GET,
-                endPoint, payLoad);
-            if (response.hits != null && response.hits.hits != null) {
-                for (var document : response.hits.hits) {
-                    // Convert from <String, Object> to <String, String>
-                    var docMap = document.source.entrySet().stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString()));
-                    results.put(docMap.get(keyField), docMap);
-                    docMap.remove(keyField);
-                }
-            }
-            return response.scrollId;
-        } catch (ParseException | IOException e) {
-            LOGGER.error("Error in fetchDataAndScrollId", e);
-        }
-        return "";
     }
 
     public enum HttpMethod {

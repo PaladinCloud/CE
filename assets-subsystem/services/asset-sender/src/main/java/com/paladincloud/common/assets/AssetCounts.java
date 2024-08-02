@@ -6,15 +6,17 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class AssetsCounts {
+public class AssetCounts {
 
     private final DatabaseHelper database;
     private final AssetGroups assetGroupsInstance;
+    private final AssetCountsHelper assetCountsHelper;
 
     @Inject
-    public AssetsCounts(DatabaseHelper database, AssetGroups assetGroupsInstance) {
+    public AssetCounts(DatabaseHelper database, AssetGroups assetGroupsInstance, AssetCountsHelper assetCountsHelper) {
         this.database = database;
         this.assetGroupsInstance = assetGroupsInstance;
+        this.assetCountsHelper = assetCountsHelper;
     }
 
     public void populate(String platform, List<String> accountIds) throws Exception {
@@ -24,14 +26,14 @@ public class AssetsCounts {
                 var subscriptions = getSubscriptionsForTenant(accountId);
                 int summedAssetCount = 0;
                 for (var subscription : subscriptions) {
-                    var count = assetGroupsInstance.fetchAccountAssetCount(platform, subscription);
+                    var count = assetCountsHelper.fetchAccountAssetCount(platform, subscription);
                     summedAssetCount += count;
                     database.executeUpdate(
                         STR."UPDATE cf_AzureTenantSubscription SET assets=\{count} WHERE subscription ='\{subscription}'");
                 }
                 assetCount = summedAssetCount;
             } else {
-                assetCount = assetGroupsInstance.fetchAccountAssetCount(platform, accountId);
+                assetCount = assetCountsHelper.fetchAccountAssetCount(platform, accountId);
             }
 
             database.executeUpdate(STR."UPDATE cf_Accounts SET assets=\{assetCount} WHERE accountId='\{accountId}'");

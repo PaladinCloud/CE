@@ -7,6 +7,8 @@ public class TimeHelper {
 
     private static final DateTimeFormatter zeroMinuteDateFormat = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd HH:mm:00Z");
+    private static final DateTimeFormatter discoveryDateFormat = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd HH:mm:ssZ");
     private static final DateTimeFormatter iso8601DateFormat = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd'T'HH:mm:ssZ");
 
@@ -22,6 +24,10 @@ public class TimeHelper {
 
     public static String formatYearMonthDay(ZonedDateTime time) {
         return yearMonthDayFormat.format(time);
+    }
+
+    public static ZonedDateTime parseDiscoveryDate(String time) {
+        return ZonedDateTime.parse(time, discoveryDateFormat);
     }
 
     public static String formatZeroSeconds(ZonedDateTime time) {

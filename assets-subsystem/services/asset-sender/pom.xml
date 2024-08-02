@@ -26,6 +26,7 @@
     <junit.version>5.10.2</junit.version>
     <log4j2.version>2.17.1</log4j2.version>
     <log4j-slf4j.version>2.23.1</log4j-slf4j.version>
+    <lombok.version>1.18.34</lombok.version>
     <maven-shade.version>3.6.0</maven-shade.version>
     <maven-surefire.version>3.3.0</maven-surefire.version>
     <mockito.version>5.12.0</mockito.version>
@@ -45,6 +46,12 @@
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -70,6 +77,11 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <version>${faster-xml-jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
       <version>${faster-xml-jackson.version}</version>
     </dependency>
     <dependency>
@@ -208,6 +220,11 @@
               <groupId>com.google.dagger</groupId>
               <artifactId>dagger-compiler</artifactId>
               <version>${dagger.version}</version>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>

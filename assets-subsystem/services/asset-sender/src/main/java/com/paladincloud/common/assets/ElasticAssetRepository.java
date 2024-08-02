@@ -1,43 +1,72 @@
 package com.paladincloud.common.assets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.paladincloud.common.aws.S3Helper;
-import com.paladincloud.common.errors.JobException;
+import com.paladincloud.common.search.ElasticBatch;
 import com.paladincloud.common.search.ElasticSearchHelper;
 import com.paladincloud.common.search.ElasticSearchHelper.HttpMethod;
 import com.paladincloud.common.search.ElasticSearchUpdateByQueryResponse;
+import com.paladincloud.common.util.JsonHelper;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LoadErrors {
+public class ElasticAssetRepository implements AssetRepository {
 
-    private static final Logger LOGGER = LogManager.getLogger(LoadErrors.class);
-    private final S3Helper s3;
+    private static final Logger LOGGER = LogManager.getLogger(ElasticAssetRepository.class);
     private final ElasticSearchHelper elasticSearch;
-    private final String bucket;
-    private final List<String> filenames;
-    private Map<String, List<Map<String, Object>>> typeToError = null;
 
-    @Inject
-    public LoadErrors(S3Helper s3, ElasticSearchHelper elasticSearch, String bucket,
-        List<String> filenames) {
-        this.s3 = s3;
+    public ElasticAssetRepository(ElasticSearchHelper elasticSearch) {
         this.elasticSearch = elasticSearch;
-        this.bucket = bucket;
-        this.filenames = filenames;
     }
 
-    public void process(String indexName, String type, String loadDate) throws IOException {
-        fetchLoadErrors();
+    @Override
+    public Map<String, AssetDTO> getLatestAssets(String indexName, List<String> filters) {
+        return elasticSearch.getLatestAssets(indexName, filters);
+    }
+
+    @Override
+    public void deleteAssetsWithoutValue(String indexName, String docType, String fieldName,
+        String fieldValue) throws IOException {
+        elasticSearch.deleteDocumentsWithoutValue(indexName, docType, fieldName, fieldValue);
+    }
+
+    @Override
+    public Map<String, Object> getTypeRelations(String indexName, String parentType)
+        throws IOException {
+        var response = elasticSearch.invokeAndCheck(HttpMethod.GET, STR."\{indexName}/_mapping",
+            null);
+        var document = JsonHelper.objectMapper.readTree(response.getBody());
+        var relations = document.at(
+            STR."/\{indexName}/mappings/properties/\{parentType}_relations/relations");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> result = JsonHelper.objectMapper.convertValue(relations, Map.class);
+        return result;
+    }
+
+    @Override
+    public void updateTypeRelations(String indexName, String parentType,
+        Map<String, Object> relations) throws IOException {
+        var asString = JsonHelper.toJson(relations);
+        var payload = STR."""
+                {
+                    "properties": {
+                        "\{parentType}_relations": {
+                            "type": "join",
+                            "relations": \{asString}
+                        }
+                    }
+                }
+                """.trim();
+        LOGGER.info("Updating types relations for {} to {}", parentType, relations);
+        elasticSearch.invokeAndCheck(HttpMethod.PUT, STR."\{indexName}/_mapping", payload);
+    }
+
+    public void processLoadErrors(String indexName, String type, String loadDate, Map<String, List<Map<String, Object>>> typeToError)
+        throws IOException {
         if (typeToError.containsKey(type) || typeToError.containsKey("all")) {
             var errors = typeToError.get(type);
             if (errors == null) {
@@ -103,19 +132,13 @@ public class LoadErrors {
         }
     }
 
-    private void fetchLoadErrors() throws IOException {
-        if (null == typeToError) {
-            if (filenames.size() > 1) {
-                throw new JobException(
-                    STR."Cannot handle more than one load error file: \{filenames}");
-            }
-            if (filenames.isEmpty()) {
-                typeToError = new HashMap<>();
-            } else {
-                var documents = s3.fetchData(bucket, filenames.getFirst());
-                typeToError = documents.parallelStream()
-                    .collect(Collectors.groupingBy(d -> d.get("type").toString()));
-            }
-        }
+    @Override
+    public Batch createBatch() {
+        return new ElasticBatch(elasticSearch);
+    }
+
+    @Override
+    public void createIndex(String index) throws IOException {
+        elasticSearch.createIndex(index);
     }
 }

@@ -54,7 +54,7 @@ public class S3Helper {
             var response = s3Client.getObjectAsBytes(
                 GetObjectRequest.builder().bucket(bucket).key(path).build());
             return objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
-                .readValue(response.asUtf8String(), new TypeReference<List<Map<String, T>>>() {
+                .readValue(response.asUtf8String(), new TypeReference<>() {
                 });
         }
     }
