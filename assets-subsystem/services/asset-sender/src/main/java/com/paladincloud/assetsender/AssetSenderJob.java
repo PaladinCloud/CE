@@ -51,6 +51,7 @@ public class AssetSenderJob extends JobExecutor {
     protected void execute() {
         var dataSource = params.get(DATA_SOURCE);
         var tenantId = params.get(TENANT_ID);
+
         LOGGER.info("Processing assets; bucket={} datasource={} path={} tenant={}",
             ConfigService.get(ConfigConstants.S3.BUCKET_NAME), dataSource, params.get(S3_PATH),
             tenantId);
@@ -78,7 +79,7 @@ public class AssetSenderJob extends JobExecutor {
                 throw new JobException("Failed serializing event", e);
             }
         } else {
-            sqsHelper.sendMessage(params.get(JobExecutor.ASSET_SHIPPER_DONE_SQS_URL),
+            sqsHelper.sendMessage(ConfigService.get(ConfigConstants.SQS.ASSET_SHIPPER_DONE_SQS_URL),
                 shipperDoneEvent, UUID.randomUUID().toString());
         }
     }

@@ -45,4 +45,8 @@ public interface ConfigConstants {
 
         String ATTRIBUTES_TO_PRESERVE = "batch.shipper.attributes.to.preserve";
     }
+
+    interface SQS {
+        String ASSET_SHIPPER_DONE_SQS_URL = "environment.ASSET_SHIPPER_DONE_SQS_URL";
+    }
 }

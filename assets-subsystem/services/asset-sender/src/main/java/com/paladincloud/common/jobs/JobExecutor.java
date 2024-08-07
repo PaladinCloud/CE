@@ -14,15 +14,16 @@ import org.apache.logging.log4j.Logger;
 public abstract class JobExecutor {
 
     // These are expected environment variables which are made available in
-    // ConfigService as under the 'param.' section.
-    protected static final String ASSET_SHIPPER_DONE_SQS_URL = "ASSET_SHIPPER_DONE_SQS_URL";
+    // ConfigService under the 'environment.' section.
+    private static final String ASSET_SHIPPER_DONE_SQS_URL = "ASSET_SHIPPER_DONE_SQS_URL";
     private static final String AUTH_API_URL = "AUTH_API_URL";
-    private static final String ALERT_ERROR_PREFIX = "error occurred in";
     private static final String BASE_PALADIN_CLOUD_API_URI = "BASE_PALADIN_CLOUD_API_URI";
     private static final String CONFIG_SERVICE_URL = "CONFIG_URL";
     private static final String CONFIG_SERVICE_CREDENTIALS = "CONFIG_CREDENTIALS";
     private static final List<String> environmentVariables = List.of(ASSET_SHIPPER_DONE_SQS_URL,
         AUTH_API_URL, BASE_PALADIN_CLOUD_API_URI, CONFIG_SERVICE_URL, CONFIG_SERVICE_CREDENTIALS);
+
+    private static final String ALERT_ERROR_PREFIX = "error occurred in";
 
     // These are additional arguments that are supported:
     //      asset-type-override - A comma separated list of asset types to use, ignoring what's in the database
