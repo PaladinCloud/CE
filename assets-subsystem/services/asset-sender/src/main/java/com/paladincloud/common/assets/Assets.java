@@ -111,7 +111,8 @@ public class Assets {
                     // Merge stored assets and mapped assets
                     var assetCreator = AssetDocumentHelper.builder().loadDate(startTime)
                         .idField(idColumn).docIdFields(docIdFields).dataSource(dataSource)
-                        .displayName(displayName).tags(tags).type(type).accountIdToNameFn(this::accountIdToName);
+                        .displayName(displayName).tags(tags).type(type)
+                        .accountIdToNameFn(this::accountIdToName);
                     var mergeResponse = MergeAssets.process(assetCreator.build(), existingAssets,
                         latestAssets);
                     LOGGER.info(
@@ -123,13 +124,15 @@ public class Assets {
                     // Each document needs to be updated, regardless of which state it is in
                     mergeResponse.getAllAssets().forEach((_, value) -> {
                         try {
-                            batchIndexer.add(BatchItem.documentEntry(indexName, value.getDocId(), JsonHelper.toJson(value)));
+                            batchIndexer.add(BatchItem.documentEntry(indexName,
+                                STR."\{dataSource}_\{value.getDocId()}", JsonHelper.toJson(value)));
                         } catch (IOException e) {
                             throw new JobException("Failed converting asset to JSON", e);
                         }
                     });
 
-                    var stats = generateStats(startTime, dataSource, type, latestAssets.size(), mergeResponse.getNewAssets().size());
+                    var stats = generateStats(startTime, dataSource, type, latestAssets.size(),
+                        mergeResponse.getNewAssets().size());
                     batchIndexer.add(
                         BatchItem.documentEntry(DATA_SHIPPER_INDEX, UUID.randomUUID().toString(),
                             JsonHelper.toJson(stats)));
@@ -160,7 +163,7 @@ public class Assets {
         if (!accountNameMapList.isEmpty()) {
             return accountNameMapList.getFirst().get("accountName");
         }
-        return  null;
+        return null;
     }
 
     private Map<String, List<Map<String, Object>>> loadTypeErrors(String bucket,
@@ -245,8 +248,7 @@ public class Assets {
             if (existing instanceof String) {
                 relationsList.add((String) existing);
             } else {
-                @SuppressWarnings("unchecked")
-                List<String> list = (List<String>) existing;
+                @SuppressWarnings("unchecked") List<String> list = (List<String>) existing;
                 relationsList.addAll(list);
             }
         }
