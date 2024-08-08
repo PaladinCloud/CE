@@ -36,7 +36,7 @@ public class ConfigService {
      */
     public static void retrieveConfigProperties(String configUrl, String configCredentials) {
         if (!properties.isEmpty()) {
-            throw new IllegalStateException("Do not retrieve config properties more than once");
+            return;
         }
         fetchConfigProperties(configUrl, configCredentials);
     }
