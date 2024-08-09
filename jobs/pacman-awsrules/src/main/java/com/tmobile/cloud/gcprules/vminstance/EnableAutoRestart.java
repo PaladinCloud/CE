@@ -27,6 +27,7 @@ public class EnableAutoRestart extends BasePolicy {
         logger.debug("========EnableAutoRestart started=========");
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        String accountId = ruleParam.get(PacmanRuleConstants.ACCOUNT_ID);
         if (Boolean.FALSE.equals(GCPUtils.validateRuleParam(ruleParam))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -39,7 +40,7 @@ public class EnableAutoRestart extends BasePolicy {
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             try {
-                boolean ifVmHas2FA = verifyAutoRestart(vmEsURL, resourceId);
+                boolean ifVmHas2FA = verifyAutoRestart(vmEsURL, resourceId, accountId);
                 if (!ifVmHas2FA) {
                     return GCPUtils.fetchPolicyResult(ruleParam, PacmanRuleDescriptionConstants.ENABLE_AUTO_RESTART,
                             PacmanRuleViolationReasonConstants.ENABLE_AUTO_RESTART);
@@ -52,9 +53,9 @@ public class EnableAutoRestart extends BasePolicy {
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean verifyAutoRestart(String vmEsURL, String resourceId) throws Exception {
+    private boolean verifyAutoRestart(String vmEsURL, String resourceId, String accountId) throws Exception {
         logger.debug("========verifyAutoRestart started=========");
-        JsonObject vmInstanceObject = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
+        JsonObject vmInstanceObject = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId, accountId);
         if(vmInstanceObject != null && vmInstanceObject.getAsJsonObject() != null &&
                 !vmInstanceObject.getAsJsonObject().get(PacmanRuleConstants.HAS_AUTO_RESTART).isJsonNull()){
             return vmInstanceObject.getAsJsonObject()

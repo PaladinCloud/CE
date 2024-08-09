@@ -40,9 +40,12 @@ public class GCPUtils {
         return hitsJsonArray;
     }
 
-    public static JsonObject getJsonObjFromSourceData(String esURL, String resourceId) throws Exception {
+    public static JsonObject getJsonObjFromSourceData(String esURL, String resourceId, String accountId) throws Exception {
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
+        if (!StringUtils.isNullOrEmpty(accountId)) {
+            mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.ACCOUNT_ID), accountId);
+        }
         mustFilter.put(PacmanRuleConstants.LATEST, true);
         JsonArray hitsJsonArray = getHitsArrayFromEs(esURL, mustFilter);
         JsonObject sourceData= null;

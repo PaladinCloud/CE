@@ -25,6 +25,7 @@ public class VpnConnectorRule extends BasePolicy {
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("Executing GCP Cloud Function not enabled with VPC connector rule for gcp cloud function");
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        String accountId = ruleParam.get(PacmanRuleConstants.ACCOUNT_ID);
         String esUrl = GCPUtils.getEsUrl(ruleParam);
         if (Boolean.FALSE.equals(GCPUtils.validateRuleParam(ruleParam))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -38,7 +39,7 @@ public class VpnConnectorRule extends BasePolicy {
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             logger.debug("========after url");
             try {
-                boolean isVpcConnector = checkIfVpcConnectorIsEnabled(esUrl, resourceId);
+                boolean isVpcConnector = checkIfVpcConnectorIsEnabled(esUrl, resourceId, accountId);
                 if (!isVpcConnector) {
                     return GCPUtils.fetchPolicyResult(ruleParam, PacmanRuleDescriptionConstants.VPC_CONNECTOR,
                             PacmanRuleViolationReasonConstants.VPC_CONNECTOR);
@@ -52,10 +53,10 @@ public class VpnConnectorRule extends BasePolicy {
 
     }
 
-    private boolean checkIfVpcConnectorIsEnabled(String vmEsURL, String resourceId) throws Exception {
+    private boolean checkIfVpcConnectorIsEnabled(String vmEsURL, String resourceId, String accountId) throws Exception {
         logger.debug("========checkIfVpcConnectorIsEnabled  started=========");
         boolean validationResult = false;
-        JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
+        JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId, accountId);
         if(sourceData != null){
             String vpcConnector = !sourceData.getAsJsonObject().get(PacmanRuleConstants.VPC_CONNECTOR).isJsonNull() ?
                     sourceData.getAsJsonObject().get(PacmanRuleConstants.VPC_CONNECTOR).getAsString() : "";

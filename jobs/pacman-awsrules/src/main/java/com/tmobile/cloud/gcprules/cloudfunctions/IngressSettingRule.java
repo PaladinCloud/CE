@@ -25,6 +25,7 @@ public class IngressSettingRule extends BasePolicy {
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("Executing GCP-Cloud-Function-configured-with-overly-permissive-Ingress-setting rule for gcp cloud function");
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        String accountId = ruleParam.get(PacmanRuleConstants.ACCOUNT_ID);
         String esUrl = GCPUtils.getEsUrl(ruleParam);
         if (Boolean.FALSE.equals(GCPUtils.validateRuleParam(ruleParam))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -38,7 +39,7 @@ public class IngressSettingRule extends BasePolicy {
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             logger.debug("========after url");
             try {
-                boolean isOverlyPermissiveIngress = checkIngressSettings(esUrl, resourceId);
+                boolean isOverlyPermissiveIngress = checkIngressSettings(esUrl, resourceId, accountId);
                 if (!isOverlyPermissiveIngress) {
                     return GCPUtils.fetchPolicyResult(ruleParam, PacmanRuleDescriptionConstants.INGRESS_SETTING,
                             PacmanRuleViolationReasonConstants.INGRESS_SETTING);
@@ -51,10 +52,10 @@ public class IngressSettingRule extends BasePolicy {
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
-    private boolean checkIngressSettings(String vmEsURL, String resourceId) throws Exception {
+    private boolean checkIngressSettings(String vmEsURL, String resourceId, String accountId) throws Exception {
         logger.debug("========checkIngressSettings  started=========");
         boolean validationResult = false;
-        JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
+        JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId, accountId);
         if(sourceData != null){
             String ingressSetting  = !sourceData.getAsJsonObject().get(PacmanRuleConstants.INGRESS_SETTING).isJsonNull() ?
                     sourceData.getAsJsonObject().get(PacmanRuleConstants.INGRESS_SETTING).getAsString() : "";
