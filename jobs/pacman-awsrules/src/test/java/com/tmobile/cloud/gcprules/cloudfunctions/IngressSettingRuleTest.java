@@ -53,7 +53,7 @@ public class IngressSettingRuleTest {
     public void executeSuccessTest() throws Exception {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
-        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getHitsJsonObjectForIngressSettingRule());
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject(), anyObject())).thenReturn(getHitsJsonObjectForIngressSettingRule());
         Map<String, String> map = getMapString("r_123 ");
         assertThat(ingressSettingRule.execute(map, map).getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
@@ -86,7 +86,7 @@ public class IngressSettingRuleTest {
     public void executeFailureTest() throws Exception {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
-        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getFailureHitsJsonObjForIngressSettingRule());
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject(), anyObject())).thenReturn(getFailureHitsJsonObjForIngressSettingRule());
         when(GCPUtils.fetchPolicyResult(anyObject(), anyObject(), anyObject())).thenReturn(new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                 anyObject()));
         assertThat(ingressSettingRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),

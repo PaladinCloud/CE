@@ -54,7 +54,7 @@ public class HttpTriggersTest {
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForEnableHttpsRule());
         //positive case when httpTrigger is 1
-        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getJsonObjectForEnableHttpsRule());
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject(), anyObject())).thenReturn(getJsonObjectForEnableHttpsRule());
         Map<String, String> map = getMapString("r_123");
         PolicyResult executedPolicyResult = httpTriggerRule.execute(map, map);
         assertThat(executedPolicyResult.getStatus(),
@@ -120,7 +120,7 @@ public class HttpTriggersTest {
     public void executeFailureTest() throws Exception {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
-        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getFailureHitsJsonObjForIngressSettingRule());
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject(), anyObject())).thenReturn(getFailureHitsJsonObjForIngressSettingRule());
         when(GCPUtils.fetchPolicyResult(anyObject(), anyObject(), anyObject())).thenReturn(new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                 anyObject()));
         assertThat(httpTriggerRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),

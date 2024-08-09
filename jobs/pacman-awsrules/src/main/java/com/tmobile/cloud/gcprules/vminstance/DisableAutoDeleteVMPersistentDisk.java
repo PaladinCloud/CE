@@ -28,6 +28,7 @@ public class DisableAutoDeleteVMPersistentDisk extends BasePolicy {
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========Disable auto delete for vm persistent disk started=========");
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        String accountId = ruleParam.get(PacmanRuleConstants.ACCOUNT_ID);
 
         if (Boolean.FALSE.equals(GCPUtils.validateRuleParam(ruleParam))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -41,7 +42,7 @@ public class DisableAutoDeleteVMPersistentDisk extends BasePolicy {
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             try {
-                boolean ifDiskHashAutoDelete = verifyAutoDeleteForPersistentDisk(vmEsURL, resourceId);
+                boolean ifDiskHashAutoDelete = verifyAutoDeleteForPersistentDisk(vmEsURL, resourceId, accountId);
                 if (!ifDiskHashAutoDelete) {
                     return GCPUtils.fetchPolicyResult(ruleParam, PacmanRuleDescriptionConstants.AUTO_DELETE_PERSISTENT_DISK,
                             PacmanRuleViolationReasonConstants.AUTO_DELETE_PERSISTENT_DISK);
@@ -54,10 +55,10 @@ public class DisableAutoDeleteVMPersistentDisk extends BasePolicy {
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean verifyAutoDeleteForPersistentDisk(String vmEsURL, String resourceId) throws Exception {
+    private boolean verifyAutoDeleteForPersistentDisk(String vmEsURL, String resourceId, String accountId) throws Exception {
         logger.debug("========verifyAutoRestart started=========");
         boolean validationResult = true;
-        JsonObject vmInstanceObject = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
+        JsonObject vmInstanceObject = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId, accountId);
         JsonArray disks = !vmInstanceObject.get(PacmanRuleConstants.DISKS).isJsonNull() ?
                 vmInstanceObject.get(PacmanRuleConstants.DISKS).getAsJsonArray() : null;
         for(JsonElement disk : disks){
