@@ -52,7 +52,7 @@ public class VpnConnectorRuleTest {
     public void executeSuccessTest() throws Exception {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
-        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getHitsJsonObjectForIngressSettingRule());
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject(), anyObject())).thenReturn(getHitsJsonObjectForIngressSettingRule());
         Map<String, String> map = getMapString("r_123 ");
         assertThat(vpnConnectorRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
@@ -96,7 +96,7 @@ public class VpnConnectorRuleTest {
     public void executeFailureTest() throws Exception {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
-        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getFailureHitsJsonObjForIngressSettingRule());
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject(), anyObject())).thenReturn(getFailureHitsJsonObjForIngressSettingRule());
         when(GCPUtils.fetchPolicyResult(anyObject(), anyObject(), anyObject())).thenReturn(new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                 anyObject()));
         Map<String, String> map = getMapString("r_123 ");
