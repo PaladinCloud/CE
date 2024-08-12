@@ -31,6 +31,7 @@ public class DenyUsageOfDefaultServiceAccount extends BasePolicy {
         Annotation annotation = null;
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        String accountId = ruleParam.get(PacmanRuleConstants.ACCOUNT_ID);
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
@@ -55,6 +56,9 @@ public class DenyUsageOfDefaultServiceAccount extends BasePolicy {
 
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
+            if (!StringUtils.isNullOrEmpty(accountId)) {
+                mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.ACCOUNT_ID), accountId);
+            }
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
             try {

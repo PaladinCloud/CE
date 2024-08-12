@@ -30,6 +30,7 @@ public class IPFowardingRule extends BasePolicy {
         logger.debug("======== IPFowarding Rule started=========");
         Annotation annotation = null;
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        String accountId = ruleParam.get(PacmanRuleConstants.ACCOUNT_ID);
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String vmEsURL = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
@@ -48,6 +49,9 @@ public class IPFowardingRule extends BasePolicy {
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
+            if (!StringUtils.isNullOrEmpty(accountId)) {
+                mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.ACCOUNT_ID), accountId);
+            }
             try {
                 isIPfowardRulePassed = checkIPForwardRule(vmEsURL, mustFilter);
                 if (!isIPfowardRulePassed) {

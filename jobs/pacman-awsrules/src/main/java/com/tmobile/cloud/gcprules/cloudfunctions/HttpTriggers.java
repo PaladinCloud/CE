@@ -26,6 +26,7 @@ public class HttpTriggers extends BasePolicy {
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("Executing https trigger rule for gcp cloud function");
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        String accountId = ruleParam.get(PacmanRuleConstants.ACCOUNT_ID);
         String esUrl = GCPUtils.getEsUrl(ruleParam);
         if (Boolean.FALSE.equals(GCPUtils.validateRuleParam(ruleParam))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -38,7 +39,7 @@ public class HttpTriggers extends BasePolicy {
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             logger.debug("========after url");
             try {
-                boolean isHTTPSEnabled = checkHTTPSEnabled(esUrl, resourceId);
+                boolean isHTTPSEnabled = checkHTTPSEnabled(esUrl, resourceId, accountId);
                 if (!isHTTPSEnabled) {
                     return GCPUtils.fetchPolicyResult(ruleParam, PacmanRuleDescriptionConstants.HTTP_TRIGGERS,
                             PacmanRuleViolationReasonConstants.HTTP_TRIGGERS);
@@ -52,10 +53,10 @@ public class HttpTriggers extends BasePolicy {
 
     }
 
-    private boolean checkHTTPSEnabled(String vmEsURL, String resourceId) throws Exception {
+    private boolean checkHTTPSEnabled(String vmEsURL, String resourceId, String accountId) throws Exception {
         logger.debug("========checkHTTPSEnabled  started=========");
         boolean validationResult = false;
-        JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
+        JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId, accountId);
         if(sourceData != null){
             Integer httpTrigger = !sourceData.getAsJsonObject().get(PacmanRuleConstants.HTTP_TRIGGER).isJsonNull() ?
                         sourceData.getAsJsonObject().get(PacmanRuleConstants.HTTP_TRIGGER).getAsInt() : 0;
