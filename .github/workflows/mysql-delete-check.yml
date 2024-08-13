@@ -34,10 +34,10 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            let reviewers = ['santhosh-challa', 'arunpaladin'];
+            let reviewers = ['ershad-paladin', 'arunpaladin'];
             const prOwner = context.payload.pull_request.user.login;
 
-            if (prOwner === 'santhosh-challa' || prOwner === 'arunpaladin') {
+            if (prOwner === 'ershad-paladin' || prOwner === 'arunpaladin') {
               reviewers = reviewers.filter(reviewer => reviewer !== prOwner);
             }
 
@@ -52,7 +52,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ DELETE statement found in the changes of SQL files. Requesting review from @santhosh and @arun.'
+              body: '⚠️ DELETE statement found in the changes of SQL files. Requesting review from @ershad-paladin and @arunpaladin.'
             })
 
       - name: Add label
