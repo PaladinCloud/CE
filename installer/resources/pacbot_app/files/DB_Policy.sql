@@ -3585,6 +3585,6 @@ UPDATE cf_PolicyTable SET policyDisplayName='Encrypt Unattached Disk Volumes wit
 DELETE IGNORE FROM cf_PolicyParams WHERE policyId='Enable_transparent_data_encryption_for_sql_db';
 DELETE IGNORE FROM cf_PolicyTable WHERE policyId='Enable_transparent_data_encryption_for_sql_db';
 
-UPDATE cf_PolicyTable SET policyDisplayName='Encrypt VM Boot Disk using Key Vault' where policyId='Azure_Enable_Encryption_for_Boot_Disk_Volumes_version-1_virtualmachine';
-UPDATE cf_PolicyTable SET policyDisplayName='Encrypt Unattached Disk Volumes with CMK' where policyId='Enable_Encryption_for_Unattached_Disk_Volumes';
 UPDATE cf_PolicyTable SET severity='medium' where policyId='Enable_Encryption_for_Unattached_Disk_Volumes';
+DELETE IGNORE FROM cf_PolicyParams WHERE policyId='Adaptive_App_Control_version-1_AAC_virtualmachine';
+DELETE IGNORE FROM cf_PolicyTable WHERE policyId='Adaptive_App_Control_version-1_AAC_virtualmachine';
