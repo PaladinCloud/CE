@@ -1,16 +1,14 @@
 package com.tmobile.cloud.azurerules.NSGRule;
 
-import java.util.*;
-
-import com.tmobile.pacman.commons.PacmanSdkConstants;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.amazonaws.util.StringUtils;
+import com.google.common.collect.HashMultimap;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
+import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
+import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.Annotation;
@@ -18,13 +16,11 @@ import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
-import com.google.common.collect.HashMultimap;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.nimbusds.jose.shaded.json.JSONArray;
-import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
+import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 @PacmanPolicy(key = "check-for-azure-nsg-rule", desc = "Deny unrestricted Access to Azure Resources", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
 public class PublicAccessforConfiguredPort extends BasePolicy {
@@ -59,7 +55,7 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isValid = validatePostgresqlServerAccess(esUrl, mustFilter, port, protocol);
+                isValid = validatePublicPorts(esUrl, mustFilter, port, protocol);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
@@ -91,7 +87,7 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean validatePostgresqlServerAccess(String esUrl, Map<String, Object> mustFilter, String[] validatePort,
+    private boolean validatePublicPorts(String esUrl, Map<String, Object> mustFilter, String[] validatePort,
                                                    String validateProtocol) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = true;
@@ -113,6 +109,8 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
                 JsonArray inBoundarySecurityJsonArray = jsonDataItem.getAsJsonObject()
                         .get(PacmanRuleConstants.AZURE_INBOUNDARYSECURITYRULES).getAsJsonArray();
                 if (inBoundarySecurityJsonArray.size() > 0) {
+                    /* higher the number lower the priority */
+                    int highestPrioritySoFar = Integer.MAX_VALUE;
                     for (int i = 0; i < inBoundarySecurityJsonArray.size(); i++) {
                         JsonObject nBoundarySecurityDataItem = ((JsonObject) inBoundarySecurityJsonArray
                                 .get(i));
@@ -123,9 +121,10 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
                         JsonArray destinationPortRanges=nBoundarySecurityDataItem.getAsJsonObject()
                                 .get(PacmanRuleConstants.DESTINATIONPORTRANGES).getAsJsonArray();
                         String access = nBoundarySecurityDataItem.getAsJsonObject().get("access").getAsString();
+                        int rulePriority = nBoundarySecurityDataItem.getAsJsonObject().get("priority").getAsInt();
 
-                        if (sourceAddressPrefixes != null && (protocol.equalsIgnoreCase(validateProtocol)||protocol.equalsIgnoreCase(PacmanRuleConstants.PORT_ANY))
-                                && checkDestinationPort(destinationPortRanges,validatePort)) {
+                        if (sourceAddressPrefixes != null && (protocol.equalsIgnoreCase(validateProtocol) || protocol.equalsIgnoreCase(PacmanRuleConstants.PORT_ANY))
+                                && checkDestinationPort(destinationPortRanges, validatePort) && rulePriority < highestPrioritySoFar) {
                             for (int srcAdsIndex = 0; srcAdsIndex < sourceAddressPrefixes.size(); srcAdsIndex++) {
                                 if (sourceAddressPrefixes.get(srcAdsIndex).getAsString()
                                         .equals(PacmanRuleConstants.PORT_ANY)
@@ -134,13 +133,14 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
                                         || sourceAddressPrefixes.get(srcAdsIndex).getAsString()
                                         .equals(PacmanRuleConstants.INTERNET)) {
                                     logger.info("Port: {} has unrestricted Access", ((Object[]) validatePort));
-                                    if(access.equalsIgnoreCase("allow")){
+                                    if (access.equalsIgnoreCase("allow")) {
                                         validationResult = false;
-                                        break;
                                     }
+                                } else {
+                                    validationResult = true;
                                 }
                             }
-
+                            highestPrioritySoFar = rulePriority;
                         } else {
                             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
 
@@ -167,7 +167,13 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
         logger.info("checkDestinationPort");
 
         for (int i = 0; i < destinationPorts.size(); i++) {
-            if (ArrayUtils.contains(validatePorts, destinationPorts.get(i).getAsString())
+            /* ports can also be configured in ranges e.g. 3000-3500. For range, check if the port to be validated falls between this range */
+            if (destinationPorts.get(i).getAsString().contains("-")) {
+                String[] portArr = destinationPorts.get(i).getAsString().split(PacmanRuleConstants.DELIMITER_MINUS);
+                int fromPort = Integer.valueOf(portArr[0]);
+                int toPort = Integer.valueOf(portArr[1]);
+                return Arrays.stream(validatePorts).map(Integer::valueOf).anyMatch(port -> fromPort <= port && port <= toPort);
+            } else if (ArrayUtils.contains(validatePorts, destinationPorts.get(i).getAsString())
                     || ArrayUtils.contains(validatePorts, PacmanRuleConstants.PORT_ANY)) {
                 return true;
             }
@@ -177,7 +183,7 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
 
     @Override
     public String getHelpText() {
-        return "This rule will check Postgre sql server has restricted Access ";
+        return "This rule checks if ports have restricted access.";
     }
 
 }
