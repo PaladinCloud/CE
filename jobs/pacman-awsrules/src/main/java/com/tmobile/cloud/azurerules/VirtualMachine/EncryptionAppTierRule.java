@@ -32,8 +32,10 @@ public class EncryptionAppTierRule extends BasePolicy {
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+        String appTireTag = ruleParam.get("appTireTag");
+        String appTireTagValue = ruleParam.get("appTireTagValue");
 
-        if (!PacmanUtils.doesAllHaveValue(severity, category)) {
+        if (!PacmanUtils.doesAllHaveValue(severity, category, appTireTag, appTireTagValue)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
@@ -46,10 +48,11 @@ public class EncryptionAppTierRule extends BasePolicy {
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
 
         boolean isValid = true;
-        if (!StringUtils.isNullOrEmpty(resourceId)) {
-
+        if (!StringUtils.isNullOrEmpty(resourceId) && resourceAttributes.containsKey("tags."+appTireTag ) &&
+                appTireTagValue.equalsIgnoreCase(resourceAttributes.get("tags."+appTireTag))) {
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
+            mustFilter.put("tags."+appTireTag+".keyword", appTireTagValue);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
                 isValid = checkIsAppTierAzureVmDiskEncryptionEnabled(esUrl, mustFilter);
