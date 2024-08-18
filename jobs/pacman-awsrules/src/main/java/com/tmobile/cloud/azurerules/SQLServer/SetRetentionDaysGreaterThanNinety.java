@@ -20,21 +20,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-@PacmanPolicy(key = "check-if-retention-days-is-greater-than-ninety", desc = "Retention days should be greater than 90 days", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+@PacmanPolicy(key = "check-if-retention-days-is-greater-than-n", desc = "Retention days should be greater than n days", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class SetRetentionDaysGreaterThanNinety extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(SetRetentionDaysGreaterThanNinety.class);
     private static final String RESOURCE_NOT_FOUND = "Resource data not found!!Skipping this validation";
+    private static final String RETENTION_DURATION = "retentionDuration";
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing SetRetentionDaysGreaterThanNinety for sql server");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+        String retentionDurationInStr = ruleParam.get(RETENTION_DURATION);
+        int retentionDuration = 0;
 
-        if (!PacmanUtils.doesAllHaveValue(severity, category)) {
+        if (!PacmanUtils.doesAllHaveValue(severity, category, retentionDurationInStr)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
+        }
+
+        try {
+             retentionDuration = Integer.parseInt(retentionDurationInStr);
+        } catch (NumberFormatException e) {
+            logger.error("The provided {} is not a valid number: {}",RETENTION_DURATION, retentionDurationInStr);
+            throw new IllegalArgumentException("The provided "+RETENTION_DURATION+" is not a valid number: "+ retentionDurationInStr);
         }
 
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
@@ -52,7 +62,7 @@ public class SetRetentionDaysGreaterThanNinety extends BasePolicy {
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isValid = isRetentionDaysGreaterThan90(esUrl, mustFilter);
+                isValid = isRetentionDaysGreaterThanNDays(esUrl, mustFilter,retentionDuration);
             } catch (Exception e) {
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
@@ -63,7 +73,7 @@ public class SetRetentionDaysGreaterThanNinety extends BasePolicy {
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "retention days is less than 90 days");
+                        "retention days is less than "+retentionDuration+" days");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
@@ -82,7 +92,7 @@ public class SetRetentionDaysGreaterThanNinety extends BasePolicy {
 
     }
 
-    private boolean isRetentionDaysGreaterThan90(String esUrl, Map<String, Object> mustFilter) throws Exception {
+    private boolean isRetentionDaysGreaterThanNDays(String esUrl, Map<String, Object> mustFilter, int retentionDuration) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = false;
         JsonParser parser = new JsonParser();
@@ -101,7 +111,7 @@ public class SetRetentionDaysGreaterThanNinety extends BasePolicy {
                         .get(PacmanRuleConstants.SOURCE);
                 logger.debug("Validating the data item: {}", jsonDataItem);
                 int retentionDays=jsonDataItem.get("retentionDays").getAsInt();
-                if(retentionDays>90)
+                if(retentionDays>retentionDuration)
                 {
                     validationResult=true;
 
