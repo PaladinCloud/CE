@@ -33,7 +33,7 @@ public class EncryptionAppTierRule extends BasePolicy {
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String appTireTag = ruleParam.get("appTireTag");
-        String appTireTagValue = ruleParam.get("appTireTagValue");
+        String appTireTagValue = ruleParam.get("_appTireTagValue");
 
         if (!PacmanUtils.doesAllHaveValue(severity, category, appTireTag, appTireTagValue)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
