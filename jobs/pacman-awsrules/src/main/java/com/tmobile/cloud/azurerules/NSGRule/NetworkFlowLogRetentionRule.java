@@ -21,20 +21,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;
 
-@PacmanPolicy(key = "Enforce-Network-Security-Group-Flow-Log-retention-for-more-than-90-days", desc = "Ensure Network Security Group Flow Log retention for more than 90 days", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+@PacmanPolicy(key = "Enforce-Network-Security-Group-Flow-Log-retention-for-more-than-n-days", desc = "Ensure Network Security Group Flow Log retention for more than n days", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class NetworkFlowLogRetentionRule extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(PublicAccessforConfiguredPort.class);
+    private static final String RETENTION_DURATION = "retentionDuration";
 
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("NSG flow log rule started");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+        String retentionDurationInStr = ruleParam.get(RETENTION_DURATION);
+        int retentionDuration = 0;
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
+        }
+        try {
+            retentionDuration = Integer.parseInt(retentionDurationInStr);
+        } catch (NumberFormatException e) {
+            logger.error("The provided {} is not a valid number: {}",RETENTION_DURATION, retentionDurationInStr);
+            throw new IllegalArgumentException("The provided "+RETENTION_DURATION+" is not a valid number: "+ retentionDurationInStr);
         }
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
@@ -42,25 +51,25 @@ public class NetworkFlowLogRetentionRule extends BasePolicy {
             esUrl = url + "/azure_nsg/_search";
         }
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
-        boolean isRetentionGreatherThan90 = false;
+        boolean isRetentionGreatherThanNdays = false;
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isRetentionGreatherThan90 = checkNSGFlowLogRetentionIsGreatherThan90(esUrl, mustFilter);
+                isRetentionGreatherThanNdays = checkNSGFlowLogRetentionIsGreatherThanNDays(esUrl, mustFilter, retentionDuration);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
 
-            if (!isRetentionGreatherThan90) {
+            if (!isRetentionGreatherThanNdays) {
                 List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                 LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION,"Ensure Network Security Group Flow Log retention for more than 90 days");
+                annotation.put(PacmanSdkConstants.DESCRIPTION,"Ensure Network Security Group Flow Log retention for more than "+retentionDuration+" days");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 annotation.put(PacmanRuleConstants.NAME,resourceAttributes.get(PacmanRuleConstants.NAME));
@@ -68,17 +77,17 @@ public class NetworkFlowLogRetentionRule extends BasePolicy {
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                logger.debug("Network Security Group Flow Log retention is less than 90 days");
+                logger.debug("Network Security Group Flow Log retention is less than {} days",retentionDuration);
                 return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
-        logger.debug(" Network Security Group Flow Log retention is more than 90 days");
+        logger.debug(" Network Security Group Flow Log retention is more than {} days",retentionDuration);
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean checkNSGFlowLogRetentionIsGreatherThan90(String esUrl, Map<String, Object> mustFilter) throws Exception {
+    private boolean checkNSGFlowLogRetentionIsGreatherThanNDays(String esUrl, Map<String, Object> mustFilter, int retentionDuration) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = false;
         JsonParser parser = new JsonParser();
@@ -98,7 +107,7 @@ public class NetworkFlowLogRetentionRule extends BasePolicy {
                 JsonArray networkWatcherList =source.get(PacmanRuleConstants.NETWORK_WATCHER).getAsJsonArray();
                 for (JsonElement networkWatcher:networkWatcherList) {
                     int retentionInDays=networkWatcher.getAsJsonObject().get(PacmanRuleConstants.RETENTION_IN_DAYS).getAsInt();
-                    if(retentionInDays>=90){
+                    if(retentionInDays>=retentionDuration){
                         validationResult=true;
                     }
 
@@ -114,7 +123,7 @@ public class NetworkFlowLogRetentionRule extends BasePolicy {
 
     @Override
     public String getHelpText() {
-        return "Ensure Network Security Group Flow Log retention for more than 90 days";
+        return "Ensure Network Security Group Flow Log retention for more than N days";
     }
 
 }
