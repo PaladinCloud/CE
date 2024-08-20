@@ -166,6 +166,9 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
     private boolean checkDestinationPort(JsonArray destinationPorts, String[] validatePorts) {
         logger.info("checkDestinationPort");
 
+        if (ArrayUtils.contains(validatePorts, PacmanRuleConstants.PORT_ANY)) {
+            return true;
+        }
         for (int i = 0; i < destinationPorts.size(); i++) {
             /* ports can also be configured in ranges e.g. 3000-3500. For range, check if the port to be validated falls between this range */
             if (destinationPorts.get(i).getAsString().contains("-")) {
@@ -173,8 +176,7 @@ public class PublicAccessforConfiguredPort extends BasePolicy {
                 int fromPort = Integer.valueOf(portArr[0]);
                 int toPort = Integer.valueOf(portArr[1]);
                 return Arrays.stream(validatePorts).map(Integer::valueOf).anyMatch(port -> fromPort <= port && port <= toPort);
-            } else if (ArrayUtils.contains(validatePorts, destinationPorts.get(i).getAsString())
-                    || ArrayUtils.contains(validatePorts, PacmanRuleConstants.PORT_ANY)) {
+            } else if (ArrayUtils.contains(validatePorts, destinationPorts.get(i).getAsString())) {
                 return true;
             }
         }
