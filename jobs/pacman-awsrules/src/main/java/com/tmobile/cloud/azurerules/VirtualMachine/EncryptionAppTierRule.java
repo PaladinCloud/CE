@@ -40,15 +40,12 @@ public class EncryptionAppTierRule extends BasePolicy {
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
-
         if (!StringUtils.isNullOrEmpty(esUrl)) {
             esUrl = esUrl + "/azure_virtualmachine/_search";
         }
-
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
-
         boolean isValid = true;
-        if (!StringUtils.isNullOrEmpty(resourceId) && PacmanUtils.doesAllHaveValue(appTireTag, appTireTagValue)
+        if (PacmanUtils.doesAllHaveValue(resourceId, appTireTag, appTireTagValue)
                 && resourceAttributes.containsKey("tags." + appTireTag)
                 && appTireTagValue.equals(resourceAttributes.get("tags." + appTireTag))) {
             Map<String, Object> mustFilter = new HashMap<>();
