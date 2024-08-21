@@ -35,21 +35,19 @@ public class EncryptionAppTierRule extends BasePolicy {
         String appTireTag = ruleParam.get("appTireTag");
         String appTireTagValue = ruleParam.get("_appTireTagValue");
 
-        if (!PacmanUtils.doesAllHaveValue(severity, category, appTireTag, appTireTagValue)) {
+        if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
-
         if (!StringUtils.isNullOrEmpty(esUrl)) {
             esUrl = esUrl + "/azure_virtualmachine/_search";
         }
-
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
-
         boolean isValid = true;
-        if (!StringUtils.isNullOrEmpty(resourceId) && resourceAttributes.containsKey("tags."+appTireTag ) &&
-                appTireTagValue.equalsIgnoreCase(resourceAttributes.get("tags."+appTireTag))) {
+        if (PacmanUtils.doesAllHaveValue(resourceId, appTireTag, appTireTagValue)
+                && resourceAttributes.containsKey("tags." + appTireTag)
+                && appTireTagValue.equals(resourceAttributes.get("tags." + appTireTag))) {
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put("tags."+appTireTag+".keyword", appTireTagValue);
@@ -132,8 +130,8 @@ public class EncryptionAppTierRule extends BasePolicy {
         } else {
             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }
-           return validationResult;
-        }
+        return validationResult;
+    }
 
     @Override
     public String getHelpText() {
