@@ -48,7 +48,7 @@ class ContainerDefinitions:
         Returns:
             container_definitions (dict): Container definitions
         """
-        memory = 1024 if container_name == "nginx"  else 3072
+        memory = 1024 if container_name == "nginx"  else  Settings.ECS_MEMORY
         return {
             'name': container_name,
             "image": self.ui_image if container_name == 'nginx' else self.api_image,
