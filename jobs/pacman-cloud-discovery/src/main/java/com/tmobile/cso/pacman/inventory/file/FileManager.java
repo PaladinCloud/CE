@@ -777,8 +777,8 @@ public class FileManager {
     public static void generateClassicElbFiles(Map<String, List<ClassicELBVH>> fileInfoMap) {
         String fieldNames;
         String keys;
-        fieldNames = "elb.DNSName`elb.AvailabilityZones`elb.CanonicalHostedZoneName`elb.CanonicalHostedZoneNameID`elb.CreatedTime`elb.LoadBalancerName`elb.Scheme`elb.VPCId`elb.subnets`accessLogBucketName`accessLog";
-        keys = "discoverydate`accountid`accountname`region`dnsname`availabilityzones`canonicalhostedzonename`canonicalhostedzonenameid`createdtime`loadbalancername`scheme`vpcid`subnets`accesslogbucketname`accesslog";
+        fieldNames = "elb.DNSName`elb.AvailabilityZones`elb.CanonicalHostedZoneName`elb.CanonicalHostedZoneNameID`elb.CreatedTime`elb.LoadBalancerName`elb.Scheme`elb.VPCId`elb.subnets`accessLogBucketName`accessLogBucketPrefix`accessLog";
+        keys = "discoverydate`accountid`accountname`region`dnsname`availabilityzones`canonicalhostedzonename`canonicalhostedzonenameid`createdtime`loadbalancername`scheme`vpcid`subnets`accesslogbucketname`accesslogbucketprefix`accesslog";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-classicelb.data", keys);
         fieldNames = "elb.LoadBalancerName`elb.Instances.InstanceId";
         keys = "discoverydate`accountid`accountname`region`loadbalancername`instanceid";
@@ -802,8 +802,8 @@ public class FileManager {
     public static void generateApplicationElbFiles(Map<String, List<LoadBalancerVH>> fileInfoMap) {
         String fieldNames;
         String keys;
-        fieldNames = "lb.LoadBalancerArn`lb.DNSName`lb.CanonicalHostedZoneID`lb.CreatedTime`lb.LoadBalancerName`lb.Scheme`lb.VPCId`AvailabilityZones`lb.type`subnets`accessLogBucketName`accessLog";
-        keys = "discoverydate`accountid`accountname`region`loadbalancerarn`dnsname`canonicalhostedzoneid`createdtime`loadbalancername`scheme`vpcid`availabilityzones`type`subnets`accesslogbucketname`accesslog";
+        fieldNames = "lb.LoadBalancerArn`lb.DNSName`lb.CanonicalHostedZoneID`lb.CreatedTime`lb.LoadBalancerName`lb.Scheme`lb.VPCId`AvailabilityZones`lb.type`subnets`accessLogBucketName`accessLogBucketPrefix`accessLog";
+        keys = "discoverydate`accountid`accountname`region`loadbalancerarn`dnsname`canonicalhostedzoneid`createdtime`loadbalancername`scheme`vpcid`availabilityzones`type`subnets`accesslogbucketname`accesslogbucketprefix`accesslog";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-appelb.data", keys);
         fieldNames = "lb.LoadBalancerName`tags.key`tags.value";
         keys = "discoverydate`accountid`accountname`region`loadbalancername`key`value";

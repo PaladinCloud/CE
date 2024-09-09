@@ -1280,6 +1280,7 @@ public class InventoryUtil {
                                 tags = tagsInfo.get(0);
                             //****** Changes For Federated Rules Start ******
                             String accessLogBucketName = "";
+                            String accessLogBucketPrefix = "";
                             boolean accessLog = false;
                             String name = elb.getLoadBalancerName();
                             if (name != null) {
@@ -1289,6 +1290,7 @@ public class InventoryUtil {
 
                                     com.amazonaws.services.elasticloadbalancing.model.DescribeLoadBalancerAttributesRequest classicELBDescReq = new com.amazonaws.services.elasticloadbalancing.model.DescribeLoadBalancerAttributesRequest().withLoadBalancerName(name);
                                     accessLogBucketName = classicElbClient.describeLoadBalancerAttributes(classicELBDescReq).getLoadBalancerAttributes().getAccessLog().getS3BucketName();
+                                    accessLogBucketPrefix = classicElbClient.describeLoadBalancerAttributes(classicELBDescReq).getLoadBalancerAttributes().getAccessLog().getS3BucketPrefix();
                                     accessLog = classicElbClient.describeLoadBalancerAttributes(classicELBDescReq).getLoadBalancerAttributes().getAccessLog().getEnabled();
                                 } catch (Exception e) {
                                     // Do nothing...
@@ -1297,7 +1299,7 @@ public class InventoryUtil {
                             }
                             //****** Changes For Federated Rules End ******
                             synchronized (classicElbList) {
-                                classicElbList.add(new ClassicELBVH(elb, tags, accessLogBucketName, accessLog));
+                                classicElbList.add(new ClassicELBVH(elb, tags, accessLogBucketName, accessLogBucketPrefix, accessLog));
                             }
                         });
                         elbList.put(accountId + delimiter + accountName + delimiter + region.getName(), classicElbList);
@@ -1366,6 +1368,7 @@ public class InventoryUtil {
                             //****** Changes For Federated Rules Start ******
                             String name = elb.getLoadBalancerArn();
                             String accessLogBucketName = "";
+                            String accessLogBucketPrefix = "";
                             boolean accessLog = false;
                             if (name != null) {
                                 com.amazonaws.services.elasticloadbalancingv2.AmazonElasticLoadBalancing appElbClient = com.amazonaws.services.elasticloadbalancingv2.AmazonElasticLoadBalancingClientBuilder
@@ -1387,6 +1390,10 @@ public class InventoryUtil {
                                             && attributeBucketValue != null)) {
                                         accessLogBucketName = attributeBucketValue;
                                     }
+                                    if ((attributeBucketKey.equalsIgnoreCase("access_logs.s3.prefix")
+                                            && attributeBucketValue != null)) {
+                                        accessLogBucketPrefix = attributeBucketValue;
+                                    }
                                 }
                                 List<com.amazonaws.services.elasticloadbalancingv2.model.Listener> listenersList = new ArrayList<>();
                                 listenersList = appElbClient.describeListeners(new com.amazonaws.services.elasticloadbalancingv2.model.DescribeListenersRequest().withLoadBalancerArn(name)).getListeners();
@@ -1397,7 +1404,7 @@ public class InventoryUtil {
                                 //****** Changes For Federated Rules End ******
                                 if (!tagsInfo.isEmpty())
                                     tags = tagsInfo.get(0);
-                                LoadBalancerVH elbTemp = new LoadBalancerVH(elb, tags, accessLogBucketName, accessLog, listenersList, rulesList);
+                                LoadBalancerVH elbTemp = new LoadBalancerVH(elb, tags, accessLogBucketName,accessLogBucketPrefix ,accessLog, listenersList, rulesList);
                                 synchronized (elbListTemp) {
                                     elbListTemp.add(elbTemp);
                                 }

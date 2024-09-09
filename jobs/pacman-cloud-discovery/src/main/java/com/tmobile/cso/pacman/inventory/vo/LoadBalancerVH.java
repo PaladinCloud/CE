@@ -34,6 +34,10 @@ public class LoadBalancerVH {
      */
     String accessLogBucketName;
     /**
+     * The accessLogBucketPrefix.
+     */
+    String accessLogBucketPrefix;
+    /**
      * The accessLog.
      */
     boolean accessLog;
@@ -86,12 +90,13 @@ public class LoadBalancerVH {
      * @param elb  the elb
      * @param tags the tags
      */
-    public LoadBalancerVH(LoadBalancer elb, List<Tag> tags, String accessLogBucketName, boolean accessLog,
+    public LoadBalancerVH(LoadBalancer elb, List<Tag> tags, String accessLogBucketName, String accessLogBucketPrefix, boolean accessLog,
                           List<Listener> listenersList, List<Rule> rules) {
         lb = elb;
         this.tags = tags;
         this.accessLog = accessLog;
         this.accessLogBucketName = accessLogBucketName;
+        this.accessLogBucketPrefix = accessLogBucketPrefix;
         availabilityZones = new ArrayList<>();
         subnets = new ArrayList<>();
         this.instances = new ArrayList<>();
