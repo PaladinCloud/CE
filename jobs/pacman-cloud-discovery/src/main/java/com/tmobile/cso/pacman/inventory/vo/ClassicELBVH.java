@@ -40,6 +40,10 @@ public class ClassicELBVH {
      * The accessLogBucketName.
      */
     String accessLogBucketName;
+    /**
+     * The accessLogBucketName Prefix.
+     */
+    String accessLogBucketPrefix;
 
     /**
      * The accessLog.
@@ -57,10 +61,11 @@ public class ClassicELBVH {
      * @param elb  the elb
      * @param tags the tags
      */
-    public ClassicELBVH(LoadBalancerDescription elb, List<Tag> tags, String accessLogBucketName, boolean accessLog) {
+    public ClassicELBVH(LoadBalancerDescription elb, List<Tag> tags, String accessLogBucketName, String accessLogBucketPrefix, boolean accessLog) {
         this.elb = elb;
         this.tags = tags;
         this.accessLogBucketName = accessLogBucketName;
+        this.accessLogBucketPrefix = accessLogBucketPrefix;
         this.accessLog = accessLog;
         if (elb != null) {
             this.listnerDesc = elb.getListenerDescriptions();
