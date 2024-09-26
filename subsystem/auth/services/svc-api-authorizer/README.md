@@ -1,4 +1,4 @@
-# svc-service-access
+# svc-api-authorizer
 
 ## Description
 
