@@ -62,7 +62,7 @@ jobs:
       notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service }}
       notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service }}
       notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service }}
-      subsystem-auth: ${{ steps.filter.outputs.subsystem.auth }}
+      subsystem-auth: ${{ steps.filter.outputs.subsystem-auth }}
       DB_Policy: ${{ steps.filter.outputs.DB_Policy }}
       DB: ${{ steps.filter.outputs.DB }}
     steps:
@@ -107,6 +107,8 @@ jobs:
               - 'lambda-functions/notification-send-email-service/**'
             notification-template-formatter-service:
               - 'lambda-functions/notification-template-formatter-service/**'
+            subsystem-auth:
+              - 'subsystem/auth/**'
             DB_Policy:
               - 'installer/resources/pacbot_app/files/DB_Policy.sql'
             DB:
@@ -1481,7 +1483,7 @@ jobs:
           name: auth-service-artifact
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp subsystem/auth/services/svc-api-authorizer/bin/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambdas/
+          aws s3 cp svc-api-authorizer.zip s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambdas/
   
   subsystem-auth-service-QA:
     name: Push auth service to s3 QA
@@ -1506,7 +1508,7 @@ jobs:
           name: auth-service-artifact
       - name: copy Jobs jars to S3 
         run: |
-          aws s3 cp subsystem/auth/services/svc-api-authorizer/bin/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/lambdas/
+          aws s3 cp svc-api-authorizer.zip s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/lambdas/
 
   push-sql-Dev:
     name: Push SQL files to s3 dev
