@@ -62,6 +62,7 @@ jobs:
       notification-invoke-service: ${{ steps.filter.outputs.notification-invoke-service }}
       notification-send-email-service: ${{ steps.filter.outputs.notification-send-email-service }}
       notification-template-formatter-service: ${{ steps.filter.outputs.notification-template-formatter-service }}
+      subsystem-auth: ${{ steps.filter.outputs.subsystem.auth }}
       DB_Policy: ${{ steps.filter.outputs.DB_Policy }}
       DB: ${{ steps.filter.outputs.DB }}
     steps:
@@ -1430,6 +1431,82 @@ jobs:
       - name: copy Jobs jars to S3 
         run: |
           aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/lambda  
+        
+  subsystem-auth-service:
+    name: subsystem-auth-service-Build
+    runs-on: ubuntu-latest
+    needs:
+      - filter
+      - check_branch
+    if: needs.filter.outputs.subsystem-auth == 'true' || needs.check_branch.outputs.is_release == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+    
+      - name: Execute Makefile
+        run: |
+          cd subsystem/auth/services/svc-api-authorizer
+          make build package
+
+      - name: Upload auth service artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: auth-service-artifact
+          path: subsystem/auth/services/svc-api-authorizer/bin/svc-api-authorizer.zip
+  
+  subsystem-auth-service-Dev:
+    name: Push auth service to s3 dev
+    runs-on: ubuntu-latest
+    environment: 'SaaSDEV'
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master'))
+    needs:
+      - subsystem-auth-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: auth-service-artifact
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp subsystem/auth/services/svc-api-authorizer/bin/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambdas/
+  
+  subsystem-auth-service-QA:
+    name: Push auth service to s3 QA
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-v') 
+    environment: 'SaaSQA'
+    needs:
+      - subsystem-auth-service
+      - extract_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for QA account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: auth-service-artifact
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp subsystem/auth/services/svc-api-authorizer/bin/ s3://${{ secrets.AWS_BUCKET_QA }}/${{ needs.extract_version.outputs.version }}/qa/lambdas/
 
   push-sql-Dev:
     name: Push SQL files to s3 dev
