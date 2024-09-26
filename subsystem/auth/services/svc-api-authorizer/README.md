@@ -15,4 +15,4 @@ It is also responsible to add the user information to the request context so tha
 
 ### Installing
 
-* run `make package` from root directory to build and package the lambda function
+* run `make build package` from root directory to build and package the lambda function
