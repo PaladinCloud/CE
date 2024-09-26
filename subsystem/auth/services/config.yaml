@@ -1,0 +1,20 @@
+---
+# TODO: Incomplete Template - Need to implement installer
+- serviceName: svc-service-auth
+  isCommon: false
+  serviceConfig:
+    environmentalVariables:
+      REGION: {REGION}
+      JWKS_URL: {JWKS_URL}
+      ISSUER: {ISSUER}
+      AUDIENCE: {AUDIENCE}
+    lambdaConfig:
+      handler: bootstrap
+      runtime: Amazon Linux 2
+      runtimeVersion: latest
+      timeout: 10
+      isArm64: true
+      permissions:
+        requireS3: false
+        requireDynamoDB: false
+        requireSecretsManager: false
