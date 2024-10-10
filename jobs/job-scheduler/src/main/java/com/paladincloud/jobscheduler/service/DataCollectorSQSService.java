@@ -51,13 +51,13 @@ public class DataCollectorSQSService {
     
     
     public void sendSQSMessage(String pluginType) {
-    	String tenantID = System.getenv(Constants.TENANT_ID);
-    	DataCollectorSQSMessageBody sqsMessageObject = generateSQSMessage( pluginType, tenantID);
+
+    	DataCollectorSQSMessageBody sqsMessageObject = generateSQSMessage( pluginType);
     	ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
     	try {
 			String messageBody = ow.writeValueAsString(sqsMessageObject);
 			
-			sendMessage(messageBody, tenantID);
+			sendMessage(messageBody, sqsMessageObject.getTenant_id());
     	} catch (JsonProcessingException e) {
 			logger.error(" error in parsing cqpayload {}", e);
 		}
@@ -66,14 +66,16 @@ public class DataCollectorSQSService {
     
     
     
-    private DataCollectorSQSMessageBody generateSQSMessage(String pluginType, String tenantID) {
+    private DataCollectorSQSMessageBody generateSQSMessage(String pluginType) {
+        String tenantID = System.getenv(Constants.TENANT_ID);
+        String tenantName = System.getenv(Constants.TENANT_NAME);
     	List<AccountDetails> accountDetailsList =  accountsRepository.findByAccountStatusAndPlatform(Constants.PLUGIN_STATUS, pluginType);
     	List< String> accountList  = new ArrayList<>(accountDetailsList.size());
     	accountDetailsList.forEach(accountObj -> {
     		accountList.add(accountObj.getAccountId());
     	});
     	DataCollectorSQSMessageBody cQLambdaPayLoad = new DataCollectorSQSMessageBody(pluginType+Constants.JOB_NAME_SUFFIX, 
-    			accountList,tenantID, pluginType);
+    			accountList,tenantID,tenantName, pluginType);
     	return cQLambdaPayLoad;
     }
     
