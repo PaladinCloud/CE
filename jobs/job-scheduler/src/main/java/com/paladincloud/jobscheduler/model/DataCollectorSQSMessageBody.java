@@ -16,7 +16,8 @@ import lombok.Setter;
 public class DataCollectorSQSMessageBody {
 	private String jobName;
 	private List<String> accounts;
-	private String paladinCloudTenantId;
+	private String tenant_id;
+	private String tenant_name;
 	private String source;
 
 }
