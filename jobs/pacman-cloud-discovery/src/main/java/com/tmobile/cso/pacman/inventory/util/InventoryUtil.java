@@ -2210,10 +2210,19 @@ public class InventoryUtil {
             roles.addAll(rslt.getRoles());
             marker = rslt.getMarker();
         } while (marker != null);
-
-        log.debug(InventoryConstants.ACCOUNT + accountId + " Type : IAM Roles >> " + roles.size());
+        // Fetch details for each role
+        List<Role> detailedRoles = new ArrayList<>();
+        for (Role role : roles) {
+            try {
+                GetRoleResult roleResult = iamClient.getRole(new GetRoleRequest().withRoleName(role.getRoleName()));
+                detailedRoles.add(roleResult.getRole());
+            } catch (Exception e) {
+                log.error("Failed to fetch details for role: " + role.getRoleName(), e);
+            }
+        }
+        log.debug(InventoryConstants.ACCOUNT + accountId + " Type : IAM Roles >> " + detailedRoles.size());
         Map<String, List<Role>> iamRoles = new HashMap<>();
-        iamRoles.put(accountId + delimiter + accountName + delimiter + REGION_GLOBAL, roles);
+        iamRoles.put(accountId + delimiter + accountName + delimiter + REGION_GLOBAL, detailedRoles);
         return iamRoles;
     }
 
