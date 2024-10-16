@@ -1217,8 +1217,8 @@ public class FileManager {
     public static void generateIamRoleFiles(Map<String, List<Role>> fileInfoMap) {
         String fieldNames;
         String keys;
-        fieldNames = "roleName`roleId`arn`description`path`createDate`assumeRolePolicyDocument";
-        keys = "discoverydate`accountid`accountname`region`rolename`roleid`rolearn`description`path`createdate`assumedpolicydoc";
+        fieldNames = "roleName`roleId`arn`description`path`createDate`assumeRolePolicyDocument`maxSessionDuration`roleLastUsed.lastUsedDate";
+        keys = "discoverydate`accountid`accountname`region`rolename`roleid`rolearn`description`path`createdate`assumedpolicydoc`maxsessionduration`lastuseddate";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-iamrole.data", keys);
     }
 
@@ -1903,8 +1903,8 @@ public class FileManager {
     public static void generateIamPolicyFiles(Map<String, List<Policy>> fileInfoMap) {
         String fieldNames;
         String keys;
-        fieldNames = "policyName`policyId`arn`defaultVersionId`createDate";
-        keys = "discoverydate`accountid`accountname`region`policyname`policyid`policyarn`defaultversionid`createdate";
+        fieldNames = "policyName`policyId`arn`defaultVersionId`createDate`path`attachmentCount`permissionsBoundaryUsageCount`isAttachable`updateDate";
+        keys = "discoverydate`accountid`accountname`region`policyname`policyid`policyarn`defaultversionid`createdate`path`attachmentcount`permissionsboundaryusagecount`isattachable`updatedate";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-iampolicies.data", keys);
     }
 
