@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
+import com.amazonaws.util.CollectionUtils;
 import com.amazonaws.util.StringUtils;
 import com.google.common.base.Strings;
 import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
@@ -43,6 +44,8 @@ public class EntityManager implements Constants {
     private final String dataPath = System.getProperty("s3.data");
     private final String attributesToPreserve = System.getProperty("shipper.attributes.to.preserve");
     private Map<String,String> accountIdNameMap   = new HashMap<>();
+    private static final String GET_MANAGED_TARGET_TYPES = "SELECT DISTINCT(targetType) FROM cf_PolicyTable WHERE STATUS='ENABLED'";
+    private Set<String> managedTargetTypes=null;
 
     /**
      * Update on prem data.
@@ -164,6 +167,12 @@ public class EntityManager implements Constants {
                     String keys = ConfigManager.getKeyForType(datasource, type);
                     String idColumn = ConfigManager.getIdForType(datasource, type);
                     String[] keysArray = keys.split(",");
+                    if (CollectionUtils.isNullOrEmpty(managedTargetTypes)) {
+                        List<String> targetTypes = RDSDBManager.executeStringQuery(GET_MANAGED_TARGET_TYPES);
+                        if (!CollectionUtils.isNullOrEmpty(targetTypes)) {
+                            managedTargetTypes = new HashSet<>(targetTypes);
+                        }
+                    }
 
                     prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type, datasource, displayName);
                     Map<String, Long> errUpdateInfo = ErrorManager.getInstance(datasource).handleError(indexName, type, loaddate, errorList, true);
@@ -282,6 +291,9 @@ public class EntityManager implements Constants {
             entityInfo.put("_entity", "true");
             entityInfo.put("_entitytype", _type);
             entityInfo.put("targettypedisplayname", displayName);
+            if (!CollectionUtils.isNullOrEmpty(managedTargetTypes)) {
+                entityInfo.put("_assetState", managedTargetTypes.contains(_type) ? "managed" : "unmanaged");
+            }
 
             if (entityInfo.containsKey("subscriptionName")) {
                 entityInfo.put("accountname", entityInfo.get("subscriptionName"));
