@@ -3404,3 +3404,7 @@ END //
 
 DELIMITER ;
 call update_filter_options_based_on_flag();
+
+delete from pac_v2_ui_options where filterId=8 and optionName='Managed Assets';
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Asset State','_assetState.keyword','/compliance/v1/filters/attribute','boolean');
+UPDATE cf_pac_updatable_fields SET displayFields = REPLACE(displayFields, 'assetState', '_assetState') WHERE resourceType='all_list';
