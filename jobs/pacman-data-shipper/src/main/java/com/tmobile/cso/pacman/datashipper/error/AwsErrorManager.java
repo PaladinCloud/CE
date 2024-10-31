@@ -17,13 +17,15 @@ package com.tmobile.cso.pacman.datashipper.error;
 
 import com.google.common.base.Strings;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AwsErrorManager extends ErrorManager {
-    protected AwsErrorManager() { }
+
+    protected AwsErrorManager() {
+    }
 
     /**
      * Handle error.
@@ -34,7 +36,8 @@ public class AwsErrorManager extends ErrorManager {
      * @param errorList   the error list
      * @param checkLatest the check latest
      */
-    public Map<String, Long> handleError(String index, String type, String loaddate, List<Map<String, String>> errorList, boolean checkLatest) {
+    public Map<String, Long> handleError(String index, String type, String loaddate,
+        List<Map<String, String>> errorList, boolean checkLatest) {
         Map<String, List<Map<String, String>>> errorInfo = getErrorInfo(errorList);
         String parentType = index.replace(dataSource + "_", "");
         Map<String, Long> errorUpdateInfo = new HashMap<>();
@@ -43,48 +46,64 @@ public class AwsErrorManager extends ErrorManager {
             if (errorByType == null) {
                 errorByType = errorInfo.get("all");
             }
-
-            StringBuilder updateJson = new StringBuilder("{\"script\":{\"inline\":\"ctx._source._loaddate= '");
-            updateJson.append(loaddate).append("'\"},\"query\":{\"bool\":{\"should\":[");
-            errorByType.forEach(errorData -> {
-                        String accountId = errorData.get("accountid");
-                        String region = errorData.get("region");
-                        if (!Strings.isNullOrEmpty(accountId) || !Strings.isNullOrEmpty(region)) {
-                            updateJson.append("{\r\n"
-                                    + "          \"bool\": {\r\n"
-                                    + "            \"must\": [\r\n"
-                                    + "              {\r\n"
-                                    + "                \"term\": {\r\n"
-                                    + "                  \"accountid.keyword\": \"" + accountId + "\"\r\n"
-                                    + "                }\r\n"
-                                    + "              },\r\n"
-                                    + "              {\r\n"
-                                    + "                \"term\": {\r\n"
-                                    + "                  \"region.keyword\": \"" + region + "\"\r\n"
-                                    + "                }\r\n"
-                                    + "              }\r\n"
-                                    + "            ]\r\n"
-                                    + "          }\r\n"
-                                    + "        },");
-                        }
-                    }
-            );
-            if (!Strings.isNullOrEmpty(type)) {
-                updateJson.deleteCharAt(updateJson.length() - 1);
-                updateJson.append("], \"minimum_should_match\": 1,\"must\":[{\"match\":{\"docType.keyword\":\"");
-                updateJson.append(type);
-                updateJson.append("\"}}");
+            if (!errorByType.isEmpty()) {
+                int processedCount = 0;
+                int maxItems = 100;
+                long updatedItems = 0L;
+                while (processedCount < errorByType.size()) {
+                    List<Map<String, String>> smallErrorList = errorByType.stream()
+                        .skip(processedCount).limit(maxItems).collect(Collectors.toList());
+                    updatedItems += batchErrors(index, type, loaddate, smallErrorList,
+                        checkLatest);
+                    processedCount += smallErrorList.size();
+                }
+                errorUpdateInfo.put("totalDocUpdated", updatedItems);
             }
+        }
+        return errorUpdateInfo;
+    }
 
-            if (checkLatest) {
-                updateJson.append(",{\"match\":{\"latest\":true }}");
+    private Long batchErrors(String index, String type, String loaddate,
+        List<Map<String, String>> errorList, boolean checkLatest) {
+        StringBuilder updateJson = new StringBuilder(
+            "{\"script\":{\"inline\":\"ctx._source._loaddate= '");
+        updateJson.append(loaddate).append("'\"},\"query\":{\"bool\":{\"should\":[");
+        errorList.forEach(errorData -> {
+                String accountId = errorData.get("accountid");
+                String region = errorData.get("region");
+                if (!Strings.isNullOrEmpty(accountId) || !Strings.isNullOrEmpty(region)) {
+                    updateJson.append("{\r\n"
+                        + "          \"bool\": {\r\n"
+                        + "            \"must\": [\r\n"
+                        + "              {\r\n"
+                        + "                \"term\": {\r\n"
+                        + "                  \"accountid.keyword\": \"" + accountId + "\"\r\n"
+                        + "                }\r\n"
+                        + "              },\r\n"
+                        + "              {\r\n"
+                        + "                \"term\": {\r\n"
+                        + "                  \"region.keyword\": \"" + region + "\"\r\n"
+                        + "                }\r\n"
+                        + "              }\r\n"
+                        + "            ]\r\n"
+                        + "          }\r\n"
+                        + "        },");
+                }
             }
-
-            updateJson.append("]}}}");
-            long updateCount = ESManager.updateLoadDate(index, updateJson.toString());
-            errorUpdateInfo.put("totalDocUpdated", updateCount);
+        );
+        if (!Strings.isNullOrEmpty(type)) {
+            updateJson.deleteCharAt(updateJson.length() - 1);
+            updateJson.append(
+                "], \"minimum_should_match\": 1,\"must\":[{\"match\":{\"docType.keyword\":\"");
+            updateJson.append(type);
+            updateJson.append("\"}}");
         }
 
-        return errorUpdateInfo;
+        if (checkLatest) {
+            updateJson.append(",{\"match\":{\"latest\":true }}");
+        }
+
+        updateJson.append("]}}}");
+        return ESManager.updateLoadDate(index, updateJson.toString());
     }
 }
