@@ -1715,13 +1715,13 @@ public class FileManager {
                 + "`securitygroups`parametergroup`vpc`subnets";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-elasticache.data", keys);
 
-        fieldNames = "clusterName`tags.key`tags.value";
-        keys = "discoverydate`accountid`accountname`region`clustername`key`value";
+        fieldNames = "arn`clusterName`tags.key`tags.value";
+        keys = "discoverydate`accountid`accountname`region`arn`clustername`key`value";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-elasticache-tags.data", keys);
 
-        fieldNames = "clusterName`nodes.nodeName`nodes.node.cacheNodeStatus`nodes.node.cacheNodeCreateTime`nodes.node.parameterGroupStatus"
+        fieldNames = "arn`clusterName`nodes.nodeName`nodes.node.cacheNodeStatus`nodes.node.cacheNodeCreateTime`nodes.node.parameterGroupStatus"
                 + "`nodes.node.endpoint.address`nodes.node.endpoint.port`nodes.node.customerAvailabilityZone`nodes.tags";
-        keys = "discoverydate`accountid`accountname`region`clustername`nodeName`status`createdOn`parameterGroupStatus`endPointAddress`endPointPort`availabilityZone`tagStr";
+        keys = "discoverydate`accountid`accountname`region`arn`clustername`nodeName`status`createdOn`parameterGroupStatus`endPointAddress`endPointPort`availabilityZone`tagStr";
         FileGenerator.generateJson(fileInfoMap, fieldNames, "aws-elasticache-nodes.data", keys);
 
     }
