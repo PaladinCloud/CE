@@ -397,11 +397,14 @@ public class RulesElasticSearchRepositoryUtil {
         } else {
             String endpoint=urlToQuery.substring(urlToQuery.indexOf(".com"));
             String extractIndex=endpoint.substring(endpoint.indexOf("/")+1,endpoint.indexOf("/_search"));
-            String extractType=extractIndex.substring(extractIndex.indexOf("/")+1);
-            if (extractIndex.contains(AWS_STRING)) {
-                urlToQuery=urlToQuery.replace("/"+extractType,"");
-                mustFilter.put(DOC_TYPE, extractType);
+            if( extractIndex.contains("/")  ){
+                String extractType=extractIndex.substring(extractIndex.indexOf("/")+1);
+                if (extractIndex.contains(AWS_STRING)) {
+                    urlToQuery=urlToQuery.replace("/"+extractType,"");
+                    mustFilter.put(DOC_TYPE, extractType);
+                }
             }
+
             matchFilters.putAll(mustFilter);
         }
         if (null != mustFilter) {
