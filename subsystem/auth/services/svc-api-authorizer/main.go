@@ -18,11 +18,12 @@ package main
 
 import (
 	"context"
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
 	"partner-access-auth/service"
 	"partner-access-auth/service/clients"
 	logger "partner-access-auth/service/logging"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
 var log *logger.Logger
@@ -35,7 +36,12 @@ func HandleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 	log.Info("Request received", request)
 	configuration := clients.LoadConfigurationDetails(ctx)
 
-	return service.HandleLambdaRequest(ctx, request, configuration)
+	response, err := service.HandleLambdaRequest(ctx, request, configuration)
+	if err != nil {
+		return events.APIGatewayV2CustomAuthorizerSimpleResponse{}, err
+	}
+
+	return *response, nil
 }
 
 func main() {

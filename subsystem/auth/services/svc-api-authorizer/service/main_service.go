@@ -18,11 +18,13 @@ package service
 
 import (
 	"context"
-	"github.com/aws/aws-lambda-go/events"
+	"fmt"
 	"partner-access-auth/service/clients"
 	logger "partner-access-auth/service/logging"
 	"partner-access-auth/utils/jwt"
 	"strings"
+
+	"github.com/aws/aws-lambda-go/events"
 )
 
 var log *logger.Logger
@@ -31,37 +33,37 @@ func init() {
 	log = logger.NewLogger("svc-api-authorizer - main_service")
 }
 
-func HandleLambdaRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest, config *clients.Configuration) (events.APIGatewayV2CustomAuthorizerSimpleResponse, error) {
+func HandleLambdaRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest, config *clients.Configuration) (*events.APIGatewayV2CustomAuthorizerSimpleResponse, error) {
 	// Extract the JWT token from the Authorization header
 	authorizationHeader := ExtractAuthorizationHeader(request)
 	if authorizationHeader == "" {
 		log.Error("Authorization header is missing")
-		return CreateDenyAllPolicy(), nil
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
 	// Split "Bearer <token>"
 	token := strings.TrimPrefix(authorizationHeader, "Bearer ")
 	if token == "" {
 		log.Error("Missing access token\n")
-		return CreateDenyAllPolicy(), nil
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
 	isValid, claims, err := jwt.ValidateToken(ctx, token, config.JwksURL, config.Audience, config.Issuer)
 	if err != nil {
 		log.Error("Error getting authorization:", err)
-		return CreateDenyAllPolicy(), nil
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
 	if !isValid {
 		log.Error("User is not authorized")
-		return CreateDenyAllPolicy(), nil
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
 	// to hide the tenantId from the client, we will use the accessId claim
 	tenantId, err := jwt.GetClaim(claims, "custom:accessId")
 	if tenantId == "" {
 		log.Error("Missing accessId")
-		return CreateDenyAllPolicy(), nil
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
 	log.Info("User is authorized")
@@ -80,7 +82,7 @@ func ExtractAuthorizationHeader(request events.APIGatewayV2HTTPRequest) string {
 	return ""
 }
 
-func CreateAllowAllPolicy(tenantId string) events.APIGatewayV2CustomAuthorizerSimpleResponse {
+func CreateAllowAllPolicy(tenantId string) *events.APIGatewayV2CustomAuthorizerSimpleResponse {
 	allowPolicyDocument := events.APIGatewayV2CustomAuthorizerSimpleResponse{
 		IsAuthorized: true,
 		Context: map[string]interface{}{
@@ -89,14 +91,5 @@ func CreateAllowAllPolicy(tenantId string) events.APIGatewayV2CustomAuthorizerSi
 	}
 
 	log.Info("Allowing access", allowPolicyDocument)
-	return allowPolicyDocument
-}
-
-func CreateDenyAllPolicy() events.APIGatewayV2CustomAuthorizerSimpleResponse {
-	denyPolicyDocument := events.APIGatewayV2CustomAuthorizerSimpleResponse{
-		IsAuthorized: false,
-	}
-
-	log.Info("Denying access", denyPolicyDocument)
-	return denyPolicyDocument
+	return &allowPolicyDocument
 }
