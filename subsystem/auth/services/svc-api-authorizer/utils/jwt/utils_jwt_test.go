@@ -17,7 +17,6 @@
 package jwt
 
 import (
-	"context"
 	"testing"
 )
 
@@ -29,9 +28,7 @@ const (
 )
 
 func TestValidateToken(t *testing.T) {
-	ctx := context.Background()
-
-	valid, _, err := ValidateToken(ctx, token, jwksURL, audience, issuer)
+	valid, _, err := ValidateToken(token, jwksURL, audience, issuer)
 	if err != nil {
 		t.Errorf("Expected error to be nil")
 	}

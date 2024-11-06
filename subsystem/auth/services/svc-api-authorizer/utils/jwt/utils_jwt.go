@@ -17,12 +17,10 @@
 package jwt
 
 import (
-	"context"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"io/ioutil"
@@ -49,23 +47,23 @@ type CognitoKey struct {
 func fetchCognitoJWKs(jwksURL string) (map[string]*rsa.PublicKey, error) {
 	resp, err := http.Get(jwksURL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch JWKS %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to fetch JWKS: %s", resp.Status)
+		return nil, fmt.Errorf("failed to fetch JWKS [%s]", resp.Status)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read JWKS response %w", err)
 	}
 
 	var jwks CognitoJWK
 	err = json.Unmarshal(body, &jwks)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to unmarshal JWKS %w", err)
 	}
 
 	keyMap := make(map[string]*rsa.PublicKey)
@@ -75,13 +73,13 @@ func fetchCognitoJWKs(jwksURL string) (map[string]*rsa.PublicKey, error) {
 		}
 
 		// Decode the base64 URL-encoded modulus and exponent
-		modulus, err := base64.RawURLEncoding.DecodeString(key.N)
-		if err != nil {
-			return nil, fmt.Errorf("failed to decode modulus: %v", err)
+		modulus, err2 := base64.RawURLEncoding.DecodeString(key.N)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to decode modulus %w", err2)
 		}
-		exponent, err := base64.RawURLEncoding.DecodeString(key.E)
-		if err != nil {
-			return nil, fmt.Errorf("failed to decode exponent: %v", err)
+		exponent, err2 := base64.RawURLEncoding.DecodeString(key.E)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to decode exponent: %w", err2)
 		}
 
 		// Convert modulus and exponent to big integers
@@ -101,51 +99,50 @@ func fetchCognitoJWKs(jwksURL string) (map[string]*rsa.PublicKey, error) {
 }
 
 // ValidateToken validates a Cognito token against the provided JWKS URL and audience
-func ValidateToken(ctx context.Context, tokenString, jwksURL, audience, issuer string) (bool, jwt.MapClaims, error) {
+func ValidateToken(tokenString, jwksURL, audience, issuer string) (bool, jwt.MapClaims, error) {
 	keys, err := fetchCognitoJWKs(jwksURL)
 	if err != nil {
-		return false, nil, err
+		return false, nil, fmt.Errorf("failed to fetch JWKS %w", err)
 	}
 
 	// Parse the JWT token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method %v", token.Header["alg"])
 		}
 
 		// Get the kid from the token header
 		kid, ok := token.Header["kid"].(string)
 		if !ok {
-			return nil, errors.New("kid header is missing or of wrong type")
+			return nil, fmt.Errorf("missing kid header")
 		}
 
 		// Look up the corresponding public key for the kid
 		pubKey, found := keys[kid]
 		if !found {
-			return nil, fmt.Errorf("could not find public key with kid: %s", kid)
+			return nil, fmt.Errorf("missing public key with kid [%s]", kid)
 		}
 
 		return pubKey, nil
 	})
-
 	if err != nil {
-		return false, nil, err
+		return false, nil, fmt.Errorf("failed to parse token %w", err)
 	}
 
 	// Validate claims
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return false, nil, errors.New("invalid token")
+		return false, nil, fmt.Errorf("invalid token")
 	}
 
 	// Check the issuer
 	if claims["iss"] != issuer {
-		return false, nil, fmt.Errorf("invalid issuer: %s", claims["iss"])
+		return false, nil, fmt.Errorf("invalid issuer [%s]", claims["iss"])
 	}
 
 	// Check the audience
 	if claims["aud"] != audience {
-		return false, nil, fmt.Errorf("invalid audience: %s", claims["aud"])
+		return false, nil, fmt.Errorf("invalid audience [%s]", claims["aud"])
 	}
 
 	return true, claims, nil

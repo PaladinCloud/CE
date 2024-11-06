@@ -1,6 +1,6 @@
 ---
 # TODO: Incomplete Template - Need to implement installer
-- serviceName: svc-service-auth
+- serviceName: svc-api-authorizer
   isCommon: false
   serviceConfig:
     environmentalVariables:

@@ -17,56 +17,48 @@
 package service
 
 import (
-	"context"
 	"fmt"
-	"partner-access-auth/service/clients"
-	logger "partner-access-auth/service/logging"
-	"partner-access-auth/utils/jwt"
-	"strings"
-
 	"github.com/aws/aws-lambda-go/events"
+	"strings"
+	"svc-api-authorizer/service/clients"
+	"svc-api-authorizer/utils/jwt"
 )
 
-var log *logger.Logger
+const (
+	UnauthorizedMessage    = "unauthorized"
+	customAccessIdClaim    = "custom:accessId"
+	authorizationHeaderKey = "authorization"
+	tenantIdClaim          = "tenantId"
+)
 
-func init() {
-	log = logger.NewLogger("svc-api-authorizer - main_service")
-}
-
-func HandleLambdaRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest, config *clients.Configuration) (*events.APIGatewayV2CustomAuthorizerSimpleResponse, error) {
+func HandleLambdaRequest(request events.APIGatewayV2HTTPRequest, config *clients.Configuration) (*events.APIGatewayV2CustomAuthorizerSimpleResponse, error) {
 	// Extract the JWT token from the Authorization header
 	authorizationHeader := ExtractAuthorizationHeader(request)
 	if authorizationHeader == "" {
-		log.Error("Authorization header is missing")
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, fmt.Errorf("missing authorization header")
 	}
 
 	// Split "Bearer <token>"
 	token := strings.TrimPrefix(authorizationHeader, "Bearer ")
 	if token == "" {
-		log.Error("Missing access token\n")
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, fmt.Errorf("missing Bearer token")
 	}
 
-	isValid, claims, err := jwt.ValidateToken(ctx, token, config.JwksURL, config.Audience, config.Issuer)
+	isValid, claims, err := jwt.ValidateToken(token, config.JwksURL, config.Audience, config.Issuer)
 	if err != nil {
-		log.Error("Error getting authorization:", err)
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, fmt.Errorf("error validating token %w", err)
 	}
 
 	if !isValid {
-		log.Error("User is not authorized")
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, fmt.Errorf(UnauthorizedMessage)
 	}
 
 	// to hide the tenantId from the client, we will use the accessId claim
-	tenantId, err := jwt.GetClaim(claims, "custom:accessId")
+	tenantId, err := jwt.GetClaim(claims, customAccessIdClaim)
 	if tenantId == "" {
-		log.Error("Missing accessId")
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, fmt.Errorf("missing claim [%s]", customAccessIdClaim)
 	}
 
-	log.Info("User is authorized")
 	return CreateAllowAllPolicy(tenantId), nil
 }
 
@@ -74,7 +66,7 @@ func HandleLambdaRequest(ctx context.Context, request events.APIGatewayV2HTTPReq
 func ExtractAuthorizationHeader(request events.APIGatewayV2HTTPRequest) string {
 	// Convert all header keys to lowercase and check for "authorization"
 	for key, value := range request.Headers {
-		if strings.ToLower(key) == "authorization" {
+		if strings.ToLower(key) == authorizationHeaderKey {
 			return value
 		}
 	}
@@ -86,10 +78,9 @@ func CreateAllowAllPolicy(tenantId string) *events.APIGatewayV2CustomAuthorizerS
 	allowPolicyDocument := events.APIGatewayV2CustomAuthorizerSimpleResponse{
 		IsAuthorized: true,
 		Context: map[string]interface{}{
-			"tenantId": tenantId,
+			tenantIdClaim: tenantId,
 		},
 	}
 
-	log.Info("Allowing access", allowPolicyDocument)
 	return &allowPolicyDocument
 }

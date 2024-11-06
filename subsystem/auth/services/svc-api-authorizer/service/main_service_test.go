@@ -17,9 +17,8 @@
 package service
 
 import (
-	"context"
 	"github.com/aws/aws-lambda-go/events"
-	"partner-access-auth/service/clients"
+	"svc-api-authorizer/service/clients"
 	"testing"
 )
 
@@ -29,18 +28,17 @@ func TestHandleLambdaRequest(t *testing.T) {
 		Headers: map[string]string{
 			"authorization": "Bearer {TOKEN}",
 		},
-		RouteKey: "GET /api/v2/plugins",
+		RouteKey: "GET /api/v2/routeKey",
 	}
 
 	configuration := &clients.Configuration{
 		Region:   "us-east-1",
 		JwksURL:  "https://cognito-idp.us-east-1.amazonaws.com/{userpool-id}/.well-known/jwks.json",
-		Audience: "6j05hol2qp4eqbqrlblsdc427m",
+		Audience: "{audience}",
 		Issuer:   "https://cognito-idp.us-east-1.amazonaws.com/{userpool-id}",
 	}
 
-	ctx := context.Background()
-	response, err := HandleLambdaRequest(ctx, request, configuration)
+	response, err := HandleLambdaRequest(request, configuration)
 	if err != nil {
 		t.Errorf("Expected response to be not nil")
 	}
