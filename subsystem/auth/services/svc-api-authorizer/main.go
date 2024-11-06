@@ -18,11 +18,12 @@ package main
 
 import (
 	"context"
+	"svc-api-authorizer/service"
+	"svc-api-authorizer/service/clients"
+	logger "svc-api-authorizer/service/logging"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"partner-access-auth/service"
-	"partner-access-auth/service/clients"
-	logger "partner-access-auth/service/logging"
 )
 
 var log *logger.Logger
@@ -32,10 +33,24 @@ func init() {
 }
 
 func HandleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2CustomAuthorizerSimpleResponse, error) {
-	log.Info("Request received", request)
+	log.Info("received request", request)
 	configuration := clients.LoadConfigurationDetails(ctx)
 
-	return service.HandleLambdaRequest(ctx, request, configuration)
+	response, err := service.HandleLambdaRequest(request, configuration)
+	if err != nil {
+		if err.Error() == service.UnauthorizedMessage {
+			log.Info("denying access")
+		} else {
+			log.Error("error authorizing user", err)
+		}
+
+		return events.APIGatewayV2CustomAuthorizerSimpleResponse{
+			IsAuthorized: false,
+		}, nil
+	}
+
+	log.Info("allowing access", response)
+	return *response, nil
 }
 
 func main() {
