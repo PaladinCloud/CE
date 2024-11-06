@@ -38,7 +38,11 @@ func HandleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 
 	response, err := service.HandleLambdaRequest(ctx, request, configuration)
 	if err != nil {
-		return events.APIGatewayV2CustomAuthorizerSimpleResponse{}, err
+		return events.APIGatewayV2CustomAuthorizerSimpleResponse{
+			IsAuthorized: false,
+			StatusCode:   401,
+			Body:        "Unauthorized",
+		}, nil
 	}
 
 	return *response, nil
