@@ -374,6 +374,8 @@ public class EntityManager implements Constants {
                 String stateValue = (String) entityInfo.get(stateKey);
                 boolean isActive = "running".equalsIgnoreCase(stateValue);
                 entityInfo.put("_isActive", isActive);
+            } else {
+                entityInfo.put("_isActive", true);
             }
         });
     }
