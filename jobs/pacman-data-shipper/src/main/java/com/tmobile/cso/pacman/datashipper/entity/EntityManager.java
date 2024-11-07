@@ -367,6 +367,16 @@ public class EntityManager implements Constants {
                     });
                 }
             }
+            // set _isActive for EC2, vm
+            Set<String> computeTypes = new HashSet<>(Arrays.asList("ec2", "virtualmachine"));
+            String stateKey = "ec2".equalsIgnoreCase(_type) ? "statename" : "status";
+            if (computeTypes.contains(_type)) {
+                String stateValue = (String) entityInfo.get(stateKey);
+                boolean isActive = "running".equalsIgnoreCase(stateValue);
+                entityInfo.put("_isActive", isActive);
+            } else {
+                entityInfo.put("_isActive", true);
+            }
         });
     }
 }

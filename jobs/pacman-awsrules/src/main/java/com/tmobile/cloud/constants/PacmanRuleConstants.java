@@ -692,4 +692,7 @@ public class PacmanRuleConstants {
     public static final String ACCOUNT_ID = "accountid";
     public static final String RESOURCE_INDEX = "resourceIndex";
     public static final String RESOURCE_KEY = "resourceKey";
+    public static final String IS_ACTIVE = "_isActive";
+    public static final String ASSET_OPINIONS = "opinions";
+    public static final String LAST_SCAN_DATE = "lastScanDate";
 }

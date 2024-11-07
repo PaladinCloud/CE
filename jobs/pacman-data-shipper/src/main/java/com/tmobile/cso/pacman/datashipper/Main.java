@@ -75,7 +75,6 @@ public class Main implements Constants {
         ESManager.configureIndexAndTypes(ds, errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
         errorList.addAll(new VulnerabilityAssociationManager().uploadVulnerabilityInfo(ds));
-        errorList.addAll(new AllAssetsAssociationManager().uploadAllAssets(ds));
         ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
         try {
             DatasourceData datasourceData = DatasourceDataFetcher.getInstance().fetchDatasourceData(ds);
