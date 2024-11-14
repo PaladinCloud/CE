@@ -108,8 +108,8 @@ public class AssetTypeScannedBySourceRule extends BasePolicy {
         return PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + source + "_" + targetType + "_opinions/_search";
     }
 
-    private String getDocID(Map<String, String> resourceAttributes, String srcAssetKey) {
-        return StringUtils.trim(ObjectUtils.firstNonNull(resourceAttributes.get(srcAssetKey), resourceAttributes.get("_docid")));
+    private String getDocID(Map<String, String> resourceAttributes) {
+        return StringUtils.trim(resourceAttributes.get("_docid"));
     }
 
     private String getInstanceID(Map<String, String> resourceAttributes, String srcAssetKey) {
@@ -125,8 +125,10 @@ public class AssetTypeScannedBySourceRule extends BasePolicy {
             String targetType = policyParam.get(PacmanSdkConstants.TARGET_TYPE);
             String source = policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY);
             String opinionURL = getElasticSearchURL(source, targetType);
-            String docID = getDocID(resourceAttributes, srcAssetKey);
-            String pluginService = policyParam.get("pluginServiceName");
+            String docID = getDocID(resourceAttributes);
+            // TODO: After adding the pluginServices field to the plugins table,
+            //  ensure that pluginServiceName is created as a policy parameter in the plugin creation API.
+            String pluginService = policyParam.getOrDefault("pluginServiceName","vulnerability_management");
             int scanDays = Integer.parseInt(policyParam.get(VUL_SCAN_DAYS));
             try {
                 Map<String, Object> mustFilter = createFilterMap(docID, policyParam.get(PacmanSdkConstants.TARGET_TYPE));
