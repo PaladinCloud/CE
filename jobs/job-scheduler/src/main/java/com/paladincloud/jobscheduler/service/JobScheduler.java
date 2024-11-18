@@ -38,11 +38,9 @@ public class JobScheduler {
     public static final String AZURE_ENABLED = "azure.enabled";
     public static final String GCP_ENABLED = "gcp.enabled";
     public static final String AWS_ENABLED = "aws.enabled";
-    public static final String QUALYS_ENABLED = "qualys.enabled";
     public static final String AQUA_ENABLED = "aqua.enabled";
     public static final String CONTRAST_ENABLED = "contrast.enabled";
     public static final String PLUGIN_TYPE_TENABLE = "tenable";
-    public static final String PLUGIN_TYPE_QUALYS = "qualys";
     public static final String PLUGIN_TYPE_AQUA = "aqua";
     public static final String PLUGIN_TYPE_CONTRAST = "contrast";
     public static final String REQUEST_ENTRY = "Request entry: {} ";
@@ -191,23 +189,14 @@ public class JobScheduler {
         // print the current milliseconds
         logger.info("Current milliseconds: {} ", System.currentTimeMillis());
         logger.info("Job Scheduler for custom plugin is running...");
-
         EventBridgeClient eventBrClient = getEventBridgeClient();
         List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
-
         try {
             ConfigUtil.setConfigProperties();
-
-            qualysEnabled=Boolean.parseBoolean(env.getProperty(QUALYS_ENABLED));
             aquaEnabled=Boolean.parseBoolean(env.getProperty(AQUA_ENABLED));
-            if (qualysEnabled) {
-                addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_QUALYS);
-            }
             if (aquaEnabled) {
                 addPluginCollectorEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_AQUA);
             }
-
-
             // check if events to put is > 0
             if (!putEventsRequestEntries.isEmpty()) {
                 PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
@@ -230,45 +219,6 @@ public class JobScheduler {
         }
         eventBrClient.close();
     }
-
-    public void schedulePluginShipperJobs() {
-        // print the current milliseconds
-        logger.info(CURRENT_MILLISECONDS, System.currentTimeMillis());
-        logger.info("Job Scheduler for plugin shipper is running...");
-
-        EventBridgeClient eventBrClient = getEventBridgeClient();
-        List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
-
-        try {
-            ConfigUtil.setConfigProperties();
-            qualysEnabled = Boolean.parseBoolean(System.getProperty(QUALYS_ENABLED));
-            if (qualysEnabled) {
-                addPluginShipperEvent(putEventsRequestEntries, vulnerabilityBusDetails, PLUGIN_TYPE_QUALYS);
-            }
-            if (!putEventsRequestEntries.isEmpty()) {
-                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
-
-                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
-
-                for (PutEventsResultEntry resultEntry : result.entries()) {
-                    if (resultEntry.eventId() != null) {
-                        logger.info(EVENT_ID, resultEntry.eventId());
-                    } else {
-                        logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
-                    }
-                }
-            }
-        } catch (EventBridgeException e) {
-            logger.error(e.awsErrorDetails().errorMessage());
-            System.exit(1);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            System.exit(1);
-        }
-        eventBrClient.close();
-    }
-
-
 
 
     private void addCollectorEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails) {
