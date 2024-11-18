@@ -3540,3 +3540,13 @@ DELETE IGNORE FROM cf_PolicyTable WHERE policyId='Adaptive_App_Control_version-1
 
 UPDATE cf_PolicyParams set paramValue ='check-if-retention-days-is-greater-than-n' where policyID='Set_Retention_Duration_inNDays' and paramKey='policyKey';
 UPDATE cf_PolicyParams set paramValue ='Enforce-Network-Security-Group-Flow-Log-retention-for-more-than-n-days' where policyID='Network_Security_Group_Flow_Log_retention_inNDays' and paramKey='policyKey';
+
+DELETE IGNORE FROM cf_PolicyTable WHERE policyId in ('Ec2WithSeverityVulnerability_version-1_Ec2WithS3Vulnerability_ec2',
+'Ec2WithSeverityVulnerability_version-1_Ec2WithS4Vulnerability_ec2',
+'Ec2WithSeverityVulnerability_version-1_Ec2WithS5Vulnerability_ec2',
+'Ec2PublicAccessPortWithS5Vulnerability_version-1_Ec2PublicAccessPortWithS5Vulnerability_ec2');
+
+DELETE IGNORE FROM cf_PolicyParams WHERE policyId in ('Ec2WithSeverityVulnerability_version-1_Ec2WithS3Vulnerability_ec2',
+'Ec2WithSeverityVulnerability_version-1_Ec2WithS4Vulnerability_ec2',
+'Ec2WithSeverityVulnerability_version-1_Ec2WithS5Vulnerability_ec2',
+'Ec2PublicAccessPortWithS5Vulnerability_version-1_Ec2PublicAccessPortWithS5Vulnerability_ec2');
