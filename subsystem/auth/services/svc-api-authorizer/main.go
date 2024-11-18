@@ -40,6 +40,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 	if err != nil {
 		if err.Error() == service.UnauthorizedMessage {
 			log.Info("denying access")
+			return events.APIGatewayV2CustomAuthorizerSimpleResponse{}, err
 		} else {
 			log.Error("error authorizing user", err)
 		}

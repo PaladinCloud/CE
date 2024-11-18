@@ -18,17 +18,19 @@ package service
 
 import (
 	"fmt"
-	"github.com/aws/aws-lambda-go/events"
 	"strings"
 	"svc-api-authorizer/service/clients"
 	"svc-api-authorizer/utils/jwt"
+
+	"github.com/aws/aws-lambda-go/events"
 )
 
 const (
-	UnauthorizedMessage    = "unauthorized"
+	UnauthorizedMessage    = "Unauthorized"
 	customAccessIdClaim    = "custom:accessId"
 	authorizationHeaderKey = "authorization"
 	tenantIdClaim          = "tenantId"
+	tokenExpiredMessage    = "token is expired"
 )
 
 func HandleLambdaRequest(request events.APIGatewayV2HTTPRequest, config *clients.Configuration) (*events.APIGatewayV2CustomAuthorizerSimpleResponse, error) {
@@ -46,6 +48,9 @@ func HandleLambdaRequest(request events.APIGatewayV2HTTPRequest, config *clients
 
 	isValid, claims, err := jwt.ValidateToken(token, config.JwksURL, config.Audience, config.Issuer)
 	if err != nil {
+		if strings.Contains(err.Error(), tokenExpiredMessage) {
+			return nil, fmt.Errorf(UnauthorizedMessage)
+		}
 		return nil, fmt.Errorf("error validating token %w", err)
 	}
 
