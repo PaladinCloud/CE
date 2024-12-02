@@ -22,7 +22,6 @@ import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.ErrorManageUtil;
 import com.tmobile.pacman.commons.aws.sqs.SQSManager;
-import com.tmobile.pacman.commons.dto.AssetStateStartEvent;
 import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
 import java.util.*;
@@ -118,11 +117,11 @@ public class Main implements Constants {
         if (isAsset) {
             List<String> assetTypes = new ArrayList<>(ConfigManager.getTypesWithDisplayName(ds).keySet());
             Collections.sort(assetTypes);
-            AssetStateStartEvent assetStateStartEvent =
-              new AssetStateStartEvent(tenantId, ds, assetTypes.toArray(new String[0]), false);
+            JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId,
+                ds, null, null, assetTypes.toArray(new String[0]));
             String sqsMessageID =
-                sqsManager.sendMessage(assetStateStartEvent, System.getenv("ASSET_STATE_QUEUE_URL"));
-            LOGGER.debug("AssetState Start SQS message ID: {}", sqsMessageID);
+                sqsManager.sendSQSMessage(jobDoneMessage, System.getenv("ASSET_STATE_QUEUE_URL"));
+            LOGGER.debug("Done SQS message ID: {}", sqsMessageID);
         } else {
             JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId, ds, null);
             String sqsMessageID =

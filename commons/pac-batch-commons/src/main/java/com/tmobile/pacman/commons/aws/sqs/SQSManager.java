@@ -23,7 +23,6 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.pacman.commons.aws.CredentialProvider;
-import com.tmobile.pacman.commons.dto.AssetStateStartEvent;
 import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +39,6 @@ public class SQSManager {
 
     public static SQSManager getInstance() {
         return InstanceHolder.instance;
-    }
-
-    public String sendMessage(AssetStateStartEvent message, String url) {
-        return sendMessage(message.toCommandLine(), url);
     }
 
     public String sendSQSMessage(JobDoneMessage jobDoneMessage, String url) {
