@@ -104,9 +104,6 @@ public class AssetTypeScannedBySourceRule extends BasePolicy {
         }
     }
 
-    private String getElasticSearchURL(String source, String targetType) {
-        return PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + source + "_" + targetType + "_opinions/_search";
-    }
 
     private String getDocID(Map<String, String> resourceAttributes) {
         return StringUtils.trim(resourceAttributes.get("_docid"));
@@ -124,7 +121,7 @@ public class AssetTypeScannedBySourceRule extends BasePolicy {
         if (PacmanRuleConstants.QUALYS.equalsIgnoreCase(plugin)) {
             String targetType = policyParam.get(PacmanSdkConstants.TARGET_TYPE);
             String source = policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY);
-            String opinionURL = getElasticSearchURL(source, targetType);
+            String opinionURL = getElasticSearchURLForOpinions(source, targetType);
             String docID = getDocID(resourceAttributes);
             // TODO: After adding the pluginServices field to the plugins table,
             //  ensure that pluginServiceName is created as a policy parameter in the plugin creation API.
@@ -147,7 +144,7 @@ public class AssetTypeScannedBySourceRule extends BasePolicy {
                 throw new RuleExecutionFailedExeption("Unable to determine: " + e.getMessage(), e);
             }
         } else {
-            String assetLookupIndex = policyParam.get(ASSET_LOOKUP_INDEX);
+            String assetLookupIndex = getElasticSearchURLForVul(policyParam.get(ASSET_LOOKUP_INDEX));
             String instanceID = getInstanceID(resourceAttributes, srcAssetKey);
             String vulnAssetLookupKey = policyParam.get(VULN_ASSET_LOOKUP_KEY);
             return processNonQualysPlugin(instanceID, assetLookupIndex, vulnAssetLookupKey, policyParam);
@@ -156,6 +153,13 @@ public class AssetTypeScannedBySourceRule extends BasePolicy {
         return agentStatusMessage != null ? createFailureResult(policyParam, agentStatusMessage) : null;
     }
 
+    private String getElasticSearchURLForOpinions(String source, String targetType) {
+        return PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + source + "_" + targetType + "_opinions/_search";
+    }
+
+    private String getElasticSearchURLForVul(String vulIndex) {
+        return PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI) + "/" + vulIndex + "/_search";
+    }
     private Map<String, Object> createFilterMap(String docID, String targetType) {
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put("_docId.keyword", docID);
