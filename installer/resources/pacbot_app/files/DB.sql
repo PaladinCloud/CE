@@ -3408,3 +3408,6 @@ call update_filter_options_based_on_flag();
 delete from pac_v2_ui_options where filterId=8 and optionName='Managed Assets';
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Asset State','_assetState.keyword','/compliance/v1/filters/attribute','boolean');
 UPDATE cf_pac_updatable_fields SET displayFields = CONCAT(displayFields, ',_assetState') WHERE resourceType='all_list';
+
+update pac_v2_ui_options set optionURL='/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=issue', optionValue='_resourceid.keyword' where filterId=1 and optionName ="Asset ID";
+update pac_v2_ui_options set optionURL='/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset', optionValue='_resourceid.keyword' where filterId=8 and optionName ="Asset ID";
