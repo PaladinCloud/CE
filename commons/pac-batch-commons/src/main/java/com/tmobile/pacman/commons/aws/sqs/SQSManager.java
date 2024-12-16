@@ -24,6 +24,7 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.pacman.commons.aws.CredentialProvider;
 import com.tmobile.pacman.commons.dto.JobDoneMessage;
+import com.tmobile.pacman.commons.dto.SQSBaseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,17 @@ public class SQSManager {
         }
         return null;
     }
+
+    public String sendSQSMessage(SQSBaseMessage sqsMessage, String url) {
+        try {
+            String message = objectMapper.writeValueAsString(sqsMessage);
+            return sendMessage(message, url);
+        } catch (Exception e) {
+            LOGGER.error("Unable to send SQS message", e);
+        }
+        return null;
+    }
+
     private String sendMessage(String messageBody, String url) {
 
         SendMessageRequest request = new SendMessageRequest()
