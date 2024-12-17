@@ -117,14 +117,18 @@ public class PolicyExecutor {
             logger.error("can't get the temp credentials");
         }
 
-        try {
-            amazonDynamoDB = AmazonDynamoDBClientBuilder
-                    .standard()
-                    .withRegion(region)
-                    .withCredentials(new AWSStaticCredentialsProvider(tempCredentials))
-                    .build();
-        } catch (Exception e) {
-            logger.error("Error initializing dynamoDb client for account {} , cause : {}", baseAccount, e.getMessage(), e);
+        if (tempCredentials != null) {
+            try {
+                amazonDynamoDB = AmazonDynamoDBClientBuilder
+                        .standard()
+                        .withRegion(region)
+                        .withCredentials(new AWSStaticCredentialsProvider(tempCredentials))
+                        .build();
+            } catch (Exception e) {
+                logger.error("Error initializing dynamoDb client for account {} , cause : {}", baseAccount, e.getMessage(), e);
+            }
+        } else {
+            logger.error("Cannot initialize AmazonDynamoDB client because tempCredentials is null");
         }
     }
 
@@ -195,6 +199,10 @@ public class PolicyExecutor {
     }
 
     private boolean isAssetStateSvcEnabled(String tenantId) {
+        if (amazonDynamoDB == null) {
+            logger.error("not able to fetch feature flag since, AmazonDynamoDB client is not initialized");
+            return false;
+        }
         Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
         expressionAttributeValues.put(":tenantId", new AttributeValue().withS(tenantId));
         QueryRequest queryRequest = new QueryRequest()
@@ -218,7 +226,7 @@ public class PolicyExecutor {
 
     private void sendAssetStateEvent(String source, String targetType) {
         logger.info("sending asset state event for source: {} and target type: {}");
-        String queueUrl = System.getenv(ASSET_STATE_SQS_QUEUE_URL);
+        String queueUrl = System.getenv(ASSET_STATE_TRIGGER_EVENT);
         String tenantId = System.getenv(TENANT_ID);
         String tenantName = System.getenv(TENANT_NAME);
         SQSManager sqsManager = SQSManager.getInstance();

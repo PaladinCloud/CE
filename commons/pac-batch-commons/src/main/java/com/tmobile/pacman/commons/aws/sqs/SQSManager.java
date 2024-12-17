@@ -57,7 +57,7 @@ public class SQSManager {
             String message = objectMapper.writeValueAsString(sqsMessage);
             return sendMessage(message, url);
         } catch (Exception e) {
-            LOGGER.error("Unable to send SQS message", e);
+            LOGGER.error("Unable to send SQS message to URL {}: {}", url, e.getMessage(), e);
         }
         return null;
     }

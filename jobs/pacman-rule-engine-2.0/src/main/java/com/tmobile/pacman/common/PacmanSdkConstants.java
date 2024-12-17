@@ -701,7 +701,7 @@ public interface PacmanSdkConstants {
     String POLICY_DISABLED_MSG = "Policy has been disabled";
     String TENANT_ID = "TENANT_ID";
     String TENANT_NAME = "TENANT_NAME";
-    String ASSET_STATE_SQS_QUEUE_URL = "ASSET_STATE_SQS_URL";
+    String ASSET_STATE_TRIGGER_EVENT = "ASSET_STATE_TRIGGER_EVENT";
     String API_FEATURE_FLAGS = "api_feature_flags";
     String ENABLE_ASSET_STATE_SERVICE_FLAG_NAME = "enableAssetStateService";
     String ASSET_STATE_JOB = "asset-state-job";
