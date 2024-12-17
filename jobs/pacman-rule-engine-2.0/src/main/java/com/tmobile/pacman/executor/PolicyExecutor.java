@@ -18,6 +18,13 @@
 package com.tmobile.pacman.executor;
 
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
@@ -26,6 +33,10 @@ import com.google.common.collect.ImmutableMap;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
 import com.tmobile.pacman.commons.autofix.manager.IAutofixManger;
+import com.tmobile.pacman.commons.aws.CredentialProvider;
+import com.tmobile.pacman.commons.aws.sqs.SQSManager;
+import com.tmobile.pacman.commons.dto.AssetStateSQSMessage;
+import com.tmobile.pacman.commons.dto.SQSBaseMessage;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.Constants;
@@ -51,8 +62,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
-import static com.tmobile.pacman.common.PacmanSdkConstants.POLICY_DISABLED_MSG;
+import static com.tmobile.pacman.common.PacmanSdkConstants.*;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.DATA_ALERT_ERROR_STRING;
 
 
@@ -80,6 +90,8 @@ public class PolicyExecutor {
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
     private static final String UTC = "UTC";
 
+    private AmazonDynamoDB amazonDynamoDB;
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public PolicyExecutor (String jsonString) {
@@ -90,6 +102,33 @@ public class PolicyExecutor {
             enricherSource = jsonNode.get("enricherSource")  != null ? jsonNode.get("enricherSource").asText(): "";
         } catch (Exception e) {
             logger.error("error in getting Policy arguments -> {}", jsonString, e);
+        }
+        BasicSessionCredentials tempCredentials = null;
+        String baseAccount = System.getenv("BASE_AWS_ACCOUNT");
+        String roleName = System.getenv("PALADINCLOUD_RO");
+        String region = System.getenv("REGION");
+
+        try {
+            tempCredentials = new CredentialProvider().getCredentials(baseAccount, roleName);
+        } catch (Exception e) {
+            logger.error("Error getting credentials for account {} , cause : {}", baseAccount, e.getMessage(), e);
+        }
+        if (tempCredentials == null) {
+            logger.error("can't get the temp credentials");
+        }
+
+        if (tempCredentials != null) {
+            try {
+                amazonDynamoDB = AmazonDynamoDBClientBuilder
+                        .standard()
+                        .withRegion(region)
+                        .withCredentials(new AWSStaticCredentialsProvider(tempCredentials))
+                        .build();
+            } catch (Exception e) {
+                logger.error("Error initializing dynamoDb client for account {} , cause : {}", baseAccount, e.getMessage(), e);
+            }
+        } else {
+            logger.error("Cannot initialize AmazonDynamoDB client because tempCredentials is null");
         }
     }
 
@@ -110,9 +149,14 @@ public class PolicyExecutor {
         policyExecutor.setResourcesList(args[0]);
         policyExecutor.fetchPolicyWiseParams(args[0]);
         ExecutorService executor = Executors.newFixedThreadPool(POLICY_THREAD_POOL_SIZE);
+        boolean policyStatusChanged = false;
         for (Map<String, String> policyParam : policyExecutor.policyWiseParamsList) {
             String executionId = UUID.randomUUID().toString(); // this is the unique
+            String existingPolicyStatus = policyParam.getOrDefault(PacmanSdkConstants.STATUS_KEY, EMPTY);
             String policyStatus = fetchLatestPolicyStatus(policyParam);
+            if (!existingPolicyStatus.equalsIgnoreCase(policyStatus)) {
+                policyStatusChanged = true;
+            }
             policyParam.put("pluginName",policyExecutor.enricherSource);
             //String status = "ENABLED";
             executor.execute(() -> {
@@ -135,7 +179,16 @@ public class PolicyExecutor {
                     logger.error(e.getMessage(), e);
                 }
             });
+        }
 
+        if (policyStatusChanged) {
+            logger.info("Policy status changed during evaluation.");
+            String tenantId = System.getenv(PacmanSdkConstants.TENANT_ID);
+            boolean assetStateSvcEnabled = policyExecutor.isAssetStateSvcEnabled(tenantId);
+            if (assetStateSvcEnabled) {
+                logger.info("Triggering asset state event.");
+                policyExecutor.sendAssetStateEvent(policyExecutor.source, policyExecutor.targetType);
+            }
         }
         executor.shutdown();
         while (!executor.isTerminated()) {
@@ -143,6 +196,42 @@ public class PolicyExecutor {
         policyDoneSNS(args[0]);
         MDC.clear();
         ProgramExitUtils.exitSucessfully();
+    }
+
+    private boolean isAssetStateSvcEnabled(String tenantId) {
+        if (amazonDynamoDB == null) {
+            logger.error("not able to fetch feature flag since, AmazonDynamoDB client is not initialized");
+            return false;
+        }
+        Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+        expressionAttributeValues.put(":tenantId", new AttributeValue().withS(tenantId));
+        QueryRequest queryRequest = new QueryRequest()
+                .withTableName("tenant-config")
+                .withKeyConditionExpression("tenant_id = :tenantId")
+                .withExpressionAttributeValues(expressionAttributeValues);
+        QueryResult queryResult = amazonDynamoDB.query(queryRequest);
+        List<Map<String, AttributeValue>> items = queryResult.getItems();
+        if (items != null && items.size() > 0) {
+            Map<String, AttributeValue> item = items.get(0);
+            if (item.containsKey(API_FEATURE_FLAGS)) {
+                Map<String, AttributeValue> apiFeatureFlags = item.get(API_FEATURE_FLAGS).getM();
+                return apiFeatureFlags.containsKey(ENABLE_ASSET_STATE_SERVICE_FLAG_NAME) ? apiFeatureFlags.get(ENABLE_ASSET_STATE_SERVICE_FLAG_NAME).getBOOL() : false;
+            }
+        } else {
+            logger.error("Unable to fetch tenant config flags");
+            return false;
+        }
+        return false;
+    }
+
+    private void sendAssetStateEvent(String source, String targetType) {
+        logger.info("sending asset state event for source: {} and target type: {}");
+        String queueUrl = System.getenv(ASSET_STATE_TRIGGER_EVENT);
+        String tenantId = System.getenv(TENANT_ID);
+        String tenantName = System.getenv(TENANT_NAME);
+        SQSManager sqsManager = SQSManager.getInstance();
+        SQSBaseMessage assetStateMessage = new AssetStateSQSMessage(tenantId, tenantName, source, Arrays.asList(targetType), true, ASSET_STATE_JOB);
+        sqsManager.sendSQSMessage(assetStateMessage, queueUrl);
     }
 
     private String getReasonForIssueStatus(String policyStatus) {
