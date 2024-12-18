@@ -702,7 +702,9 @@ public interface PacmanSdkConstants {
     String TENANT_ID = "TENANT_ID";
     String TENANT_NAME = "TENANT_NAME";
     String ASSET_STATE_TRIGGER_EVENT = "ASSET_STATE_TRIGGER_EVENT";
-    String API_FEATURE_FLAGS = "api_feature_flags";
+    String TENANT_FEATURE_FLAGS = "tenant_feature_flags";
     String ENABLE_ASSET_STATE_SERVICE_FLAG_NAME = "enableAssetStateService";
     String ASSET_STATE_JOB = "asset-state-job";
+    String TENANT_CONFIG_TABLE = "tenant-config";
+    String STATUS = "status";
 }
