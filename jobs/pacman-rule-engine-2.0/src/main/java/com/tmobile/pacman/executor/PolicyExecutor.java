@@ -199,29 +199,27 @@ public class PolicyExecutor {
     }
 
     private boolean isAssetStateSvcEnabled(String tenantId) {
-        if (amazonDynamoDB == null) {
-            logger.error("not able to fetch feature flag since, AmazonDynamoDB client is not initialized");
-            return false;
-        }
+        boolean assetStateFeatureEnabled = false;
         Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
         expressionAttributeValues.put(":tenantId", new AttributeValue().withS(tenantId));
         QueryRequest queryRequest = new QueryRequest()
-                .withTableName("tenant-config")
+                .withTableName(TENANT_CONFIG_TABLE)
                 .withKeyConditionExpression("tenant_id = :tenantId")
                 .withExpressionAttributeValues(expressionAttributeValues);
         QueryResult queryResult = amazonDynamoDB.query(queryRequest);
         List<Map<String, AttributeValue>> items = queryResult.getItems();
         if (items != null && items.size() > 0) {
             Map<String, AttributeValue> item = items.get(0);
-            if (item.containsKey(API_FEATURE_FLAGS)) {
-                Map<String, AttributeValue> apiFeatureFlags = item.get(API_FEATURE_FLAGS).getM();
-                return apiFeatureFlags.containsKey(ENABLE_ASSET_STATE_SERVICE_FLAG_NAME) ? apiFeatureFlags.get(ENABLE_ASSET_STATE_SERVICE_FLAG_NAME).getBOOL() : false;
+            if (item.containsKey(TENANT_FEATURE_FLAGS)) {
+                Map<String, AttributeValue> tenantFeatureFlags = item.get(TENANT_FEATURE_FLAGS).getM();
+                if (tenantFeatureFlags.get(ENABLE_ASSET_STATE_SERVICE_FLAG_NAME) != null && tenantFeatureFlags.get(ENABLE_ASSET_STATE_SERVICE_FLAG_NAME).getM().get(STATUS) != null) {
+                    assetStateFeatureEnabled = tenantFeatureFlags.get(ENABLE_ASSET_STATE_SERVICE_FLAG_NAME).getM().get(STATUS).getBOOL();
+                }
             }
         } else {
             logger.error("Unable to fetch tenant config flags");
-            return false;
         }
-        return false;
+        return assetStateFeatureEnabled;
     }
 
     private void sendAssetStateEvent(String source, String targetType) {
