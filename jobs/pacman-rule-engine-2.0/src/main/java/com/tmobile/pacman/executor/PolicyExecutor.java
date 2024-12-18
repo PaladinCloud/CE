@@ -223,7 +223,7 @@ public class PolicyExecutor {
     }
 
     private void sendAssetStateEvent(String source, String targetType) {
-        logger.info("sending asset state event for source: {} and target type: {}");
+        logger.info("sending asset state event for source: {} and target type: {}", source, targetType);
         String queueUrl = System.getenv(ASSET_STATE_TRIGGER_EVENT);
         String tenantId = System.getenv(TENANT_ID);
         String tenantName = System.getenv(TENANT_NAME);

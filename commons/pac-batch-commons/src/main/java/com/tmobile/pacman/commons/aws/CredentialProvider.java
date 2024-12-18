@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 public class CredentialProvider {
 
-    String baseaccount = System.getenv("COGNITO_ACCOUNT");
+    String baseaccount = System.getenv("BASE_AWS_ACCOUNT");
     String baseregion = System.getenv("REGION");
     String rolename = System.getenv("PALADINCLOUD_RO");
 
