@@ -31,7 +31,7 @@ class AppSyncNotification(AppSync):
 
 class AppSyncIdKey(AppSyncId):
     api_id = AppSyncNotification.get_output_attr('id')
-    expires = "2025-01-03T04:00:00Z"
+    expires = "2026-01-03T04:00:00Z"
     DEPENDS_ON = [AppSyncNotification]
 class AppSyncDataSource(AppSyncDataSource):
     api_id      = AppSyncNotification.get_output_attr('id')
