@@ -55,24 +55,14 @@ public class JobScheduler {
     @Autowired
     CredentialProvider credentialProvider;
 
-    @Value("${aws.eventbridge.bus.details}")
-    private String awsBusDetails;
-
     @Value("${gcp.eventbridge.bus.details}")
     private String gcpBusDetails;
-
-    @Value("${azure.eventbridge.bus.details}")
-    private String azureBusDetails;
 
     @Value("${vulnerability.eventbridge.bus.details}")
     private String vulnerabilityBusDetails;
 
 
-    private boolean azureEnabled;
     private boolean gcpEnabled;
-
-    private boolean awsEnabled;
-
     private boolean qualysEnabled;
     private boolean aquaEnabled;
 
@@ -106,20 +96,10 @@ public class JobScheduler {
         logger.info("Current milliseconds: {} ", System.currentTimeMillis());
         logger.info("Job Scheduler for collector is running...");
 
-        EventBridgeClient eventBrClient = getEventBridgeClient();
-        List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
-
         try {
             ConfigUtil.setConfigProperties();
-            azureEnabled = Boolean.parseBoolean(env.getProperty(AZURE_ENABLED));
-            awsEnabled = Boolean.parseBoolean(env.getProperty(AWS_ENABLED));
             boolean compositePluginEnabled = isCompositeEnabled();
-            if (!compositePluginEnabled && awsEnabled) {
-                addCollectorEvent(putEventsRequestEntries, awsBusDetails);
-            }
-            if (!compositePluginEnabled && azureEnabled) {
-                addCollectorEvent(putEventsRequestEntries, azureBusDetails);
-            }
+
             // Sending SQS message to trigger Data-Collector
             String[] plugins = pluginUsingV1.split(",");
             List<String> configuredPlugins = dataCollectorSQSServic.pluginsUsingVersion1AndConfigured(plugins);
@@ -130,29 +110,10 @@ public class JobScheduler {
                 dataCollectorSQSServic.sendSQSMessage(plugin);
             }
 
-            if (!putEventsRequestEntries.isEmpty()) {
-					PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries)
-							.build();
-
-					PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
-
-					for (PutEventsResultEntry resultEntry : result.entries()) {
-						if (resultEntry.eventId() != null) {
-							logger.info(EVENT_ID, resultEntry.eventId());
-						} else {
-							logger.info(FAILED_WITH_ERROR_CODE, resultEntry.errorCode());
-						}
-					}
-				}
-
-        } catch (EventBridgeException e) {
-            logger.error(e.awsErrorDetails().errorMessage());
-            System.exit(1);
         } catch (Exception e) {
             logger.error(e.getMessage());
             System.exit(1);
         }
-        eventBrClient.close();
     }
 
     private void putPluginRuleRequestEntries(int batchNo, String busDetails, List<PutEventsRequestEntry> reqEntryList, String pluginType) {
@@ -218,26 +179,6 @@ public class JobScheduler {
             System.exit(1);
         }
         eventBrClient.close();
-    }
-
-
-    private void addCollectorEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails) {
-        String detailString = null;
-
-        // populate events for each event bus
-        String[] busDetailsArray = busDetails.split(",");
-        for (String busDetail : busDetailsArray) {
-            String cloudName = busDetail.split(":")[0].split("-")[1];
-            Event event = populateEventForCollector(cloudName);
-            detailString = getMarshalledEvent(detailString, event);
-            PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(busDetail.split(":")[0]).build();
-
-            // Add the PutEventsRequestEntry to a putEventsRequestEntries
-            putEventsRequestEntries.add(reqEntry);
-
-            // print the request entry
-            logger.info(REQUEST_ENTRY, reqEntry);
-        }
     }
 
     private void addPluginCollectorEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails, String pluginType) {
