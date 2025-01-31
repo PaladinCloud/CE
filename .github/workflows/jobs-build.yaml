@@ -1503,7 +1503,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_QA }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Download Jobs artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: auth-service-artifact
       - name: copy Jobs jars to S3 
