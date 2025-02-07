@@ -1456,7 +1456,7 @@ jobs:
           make build package
 
       - name: Upload auth service artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: auth-service-artifact
           path: subsystem/auth/services/svc-api-authorizer/bin/svc-api-authorizer.zip
