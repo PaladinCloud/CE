@@ -12,6 +12,9 @@ public class Constants {
     public static final String DATAMAPPER_SQS_QUEUE_URL = "SCHEDULER_SQS_URL";
     public static final String TENANT_ID = "TENANT_ID";
     public static final String TENANT_NAME = "TENANT_NAME";
-
-
+    public static final String REGION = "REGION";
+    public static final String TENANT_OUTPUT = "tenant-output";
+    public static final String TENANT_ID_DYNAMODB = "tenant_id";
+    public static final String S3_BUCKET_NAME = "s3_bucket_BucketStorage";
+    public static final String ID = "id";
 }

@@ -1,10 +1,15 @@
 package com.paladincloud.jobscheduler.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,7 @@ import com.paladincloud.jobscheduler.model.DataCollectorSQSMessageBody;
 import com.paladincloud.jobscheduler.repository.AccountsRepository;
 import com.paladincloud.jobscheduler.repository.model.AccountDetails;
 import com.paladincloud.jobscheduler.util.Constants;
+import org.springframework.util.StringUtils;
 
 
 @Service
@@ -74,8 +80,16 @@ public class DataCollectorSQSService {
     	accountDetailsList.forEach(accountObj -> {
     		accountList.add(accountObj.getAccountId());
     	});
-    	DataCollectorSQSMessageBody cQLambdaPayLoad = new DataCollectorSQSMessageBody(pluginType+Constants.JOB_NAME_SUFFIX, 
-    			accountList,tenantID,tenantName, pluginType);
+        String s3BucketName = null;
+        Map<String, AttributeValue> tenantOutputDetails = fetchTenantOutputDetails(tenantID);
+        if (tenantOutputDetails != null && tenantOutputDetails.containsKey(Constants.S3_BUCKET_NAME) && tenantOutputDetails.get(Constants.S3_BUCKET_NAME).getM().containsKey(Constants.ID)) {
+            s3BucketName = tenantOutputDetails.get(Constants.S3_BUCKET_NAME).getM().get(Constants.ID).getS();
+        }
+        if(StringUtils.isEmpty(s3BucketName)) {
+            throw new NoSuchElementException("unable to send SQS event since required param s3 bucket name is absent");
+        }
+        DataCollectorSQSMessageBody cQLambdaPayLoad = new DataCollectorSQSMessageBody(pluginType+Constants.JOB_NAME_SUFFIX,
+    			accountList,tenantID,tenantName, pluginType, s3BucketName);
     	return cQLambdaPayLoad;
     }
     
@@ -122,5 +136,28 @@ public class DataCollectorSQSService {
         List<String> pluginConfigList = Arrays.stream(pluginsUsingV1).map(plugin -> plugin + ".enabled")
                 .collect(Collectors.toList());
         return accountsRepository.getEnabledAccountNameByConfig(pluginConfigList);
+    }
+
+    private Map<String, AttributeValue> fetchTenantOutputDetails(String tenantId) {
+        Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+        expressionAttributeValues.put(":tenantId", new AttributeValue().withS(tenantId));
+        QueryRequest queryRequest = new QueryRequest()
+                .withTableName(Constants.TENANT_OUTPUT)
+                .withKeyConditionExpression(Constants.TENANT_ID_DYNAMODB + " = :tenantId")
+                .withExpressionAttributeValues(expressionAttributeValues)
+                .withProjectionExpression(Constants.S3_BUCKET_NAME);
+        QueryResult queryResult = buildAmazonDynamoDB().query(queryRequest);
+        List<Map<String, AttributeValue>> items = queryResult.getItems();
+        if (items != null && items.size() > 0) {
+            return items.get(0);
+        }
+        return null;
+    }
+
+    private AmazonDynamoDB buildAmazonDynamoDB() {
+        return AmazonDynamoDBClientBuilder
+                .standard()
+                .withRegion(Regions.fromName(System.getenv(Constants.REGION)))
+                .build();
     }
 }
