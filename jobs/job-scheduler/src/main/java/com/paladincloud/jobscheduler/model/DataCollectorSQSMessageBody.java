@@ -19,5 +19,5 @@ public class DataCollectorSQSMessageBody {
 	private String tenant_id;
 	private String tenant_name;
 	private String source;
-
+	private String s3Bucket;
 }
