@@ -120,8 +120,12 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
             if (vulnerability.get(severity) != null) {
                 for (JsonElement cveDetails : vulnerability.get(severity).getAsJsonArray()) {
                     VulnerabilityInfo vul = new VulnerabilityInfo();
-                    vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("url").getAsString());
-                    vul.setTitle(cveDetails.getAsJsonObject().get("title").getAsString());
+                    if (cveDetails.getAsJsonObject().get("url") != null) {
+                        vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("url").toString());
+                    }
+                    if (cveDetails.getAsJsonObject().get("title") != null) {
+                        vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("title").toString());
+                    }
                     /* If there is a list of cve IDs group it under this vulnerability info */
                     JsonElement cves = cveDetails.getAsJsonObject().get("cves");
                     if (cves != null) {
