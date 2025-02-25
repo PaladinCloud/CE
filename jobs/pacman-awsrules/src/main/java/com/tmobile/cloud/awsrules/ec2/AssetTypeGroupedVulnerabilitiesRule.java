@@ -124,7 +124,7 @@ public class AssetTypeGroupedVulnerabilitiesRule extends BasePolicy {
                         vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("url").getAsString());
                     }
                     if (cveDetails.getAsJsonObject().get("title") != null) {
-                        vul.setVulnerabilityUrl(cveDetails.getAsJsonObject().get("title").getAsString());
+                        vul.setTitle(cveDetails.getAsJsonObject().get("title").getAsString());
                     }
                     /* If there is a list of cve IDs group it under this vulnerability info */
                     JsonElement cves = cveDetails.getAsJsonObject().get("cves");
