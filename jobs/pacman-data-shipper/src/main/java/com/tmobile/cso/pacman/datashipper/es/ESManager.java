@@ -851,27 +851,57 @@ public class ESManager implements Constants {
     }
 
     /**
-     * Delete old documents.
+     * Deletes old documents based on the provided parameters.
+     *
+     * @param index       the index
+     * @param type        the type (can be null or empty)
+     * @param field       the field
+     * @param value       the value
+     * @param policyType  the policy type (null for general deletion, "external" for external violations)
+     */
+    public static void deleteDocuments(String index, String type, String field, String value, String policyType) {
+        StringBuilder deleteQuery = new StringBuilder();
+        deleteQuery.append("{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"")
+                .append(field)
+                .append("\":\"")
+                .append(value)
+                .append("\"}}]");
+
+        if (type != null  || policyType != null) {
+            deleteQuery.append(",\"must\":[");
+            if (type != null) {
+                deleteQuery.append("{\"match\":{\"docType.keyword\":\"").append(type).append("\"}}");
+            }
+            if (policyType != null) {
+                if (type != null) {
+                    deleteQuery.append(",");
+                }
+                deleteQuery.append("{\"match\":{\"policyType.keyword\":\"").append(policyType).append("\"}}");
+            }
+            deleteQuery.append("]");
+        }
+
+        deleteQuery.append("}}}");
+
+        try {
+            invokeAPI("POST", index + "/" + "_delete_by_query", deleteQuery.toString());
+        } catch (IOException e) {
+            LOGGER.error("Error deleting documents for index: {}, type: {}, field: {}, value: {}, policyType: {}",
+                    index, type, field, value, policyType, e);
+        }
+    }
+
+    /**
+     * Deletes old documents.
      *
      * @param index the index
-     * @param type  the type
+     * @param type  the document type (can be null or empty)
      * @param field the field
      * @param value the value
      */
     public static void deleteOldDocuments(String index, String type, String field, String value) {
-        StringBuilder deleteQuery = new StringBuilder();
-        deleteQuery.append("{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"" + field + "\":\"" + value + "\"}}]");
-        if (!StringUtils.isNullOrEmpty(type)) {
-            deleteQuery.append(",\"must\":[{\"match\":{\"docType.keyword\":\"" + type + "\"}}]");
-        }
-        deleteQuery.append("}}}");
-        try {
-            invokeAPI("POST", index + "/" + "_delete_by_query", deleteQuery.toString());
-        } catch (IOException e) {
-            LOGGER.error("Error deleteOldDocuments ", e);
-        }
+        deleteDocuments(index, type, field, value, null);
     }
-
     /**
      * Update load date.
      *

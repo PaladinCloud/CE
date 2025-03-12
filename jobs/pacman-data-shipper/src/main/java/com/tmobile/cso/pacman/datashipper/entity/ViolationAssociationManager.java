@@ -88,6 +88,7 @@ public class ViolationAssociationManager {
 			entities.parallelStream().forEach((obj) -> {
 				obj.put("_loaddate", loaddate);
 				obj.put("docType", docType);
+
 				obj.putIfAbsent("_docid", obj.get("_resourceid"));
 				obj.put("targetType", type);
 				Map<String, Object> relMap = new HashMap<>();
@@ -97,7 +98,7 @@ public class ViolationAssociationManager {
 			});
 			LOGGER.info("Collected : {}", entities.size());
 			ESManager.uploadData(indexName, entities);
-			ESManager.deleteOldDocuments(indexName, docType, "_loaddate.keyword", loaddate);
+			ESManager.deleteDocuments(indexName, docType, "_loaddate.keyword", loaddate,"external");
 			String auditDocType = "issue_" + type + "_audit";
 			List<Map<String, Object>> auditLogEntites = createAuditLog(dataSource, type, entities);
 			ESManager.deleteOldDocuments(indexName, auditDocType, "auditdate.keyword", "*");
