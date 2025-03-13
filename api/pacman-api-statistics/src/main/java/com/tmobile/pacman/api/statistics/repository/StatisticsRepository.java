@@ -60,6 +60,7 @@ public interface StatisticsRepository {
      */
     public JsonArray getNumberOfAccounts() throws DataException;
 
+    public JsonArray getNumberOfRedhatAccounts() throws DataException;
     /**
      * Gets the number of policies evaluated.
      *
