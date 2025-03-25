@@ -1,4 +1,4 @@
-name: CE-Dev-S3
+name: PUSH-CE-BUILD-TO-S3
 
 on:
   push:
