@@ -106,7 +106,7 @@ public class ForTestUtils {
 
 	@SuppressWarnings("rawtypes")
 	public boolean getAllDatesBetweenDates() throws ParseException {
-		String currentDate = "01-March-2016";
+		String currentDate = "05-May-2024";
 	    SimpleDateFormat f = new SimpleDateFormat("dd-MMM-yyyy");
 	    Date begin = f.parse(currentDate);
 		List response = DateUtils.getAllDatesBetweenDates(begin, new Date(), "dd/MM/yyyy");
