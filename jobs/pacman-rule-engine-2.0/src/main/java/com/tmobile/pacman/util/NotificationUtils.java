@@ -33,7 +33,7 @@ public class NotificationUtils {
     private static PaladinAccessToken accessToken;
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationUtils.class);
 
-    public static void triggerNotificationsForViolations(List<Annotation> annotations, Map<String, Map<String, String>> existingIssuesMap, boolean isOpen) {
+    public static void triggerNotificationsForViolations(String tenantId, List<Annotation> annotations, Map<String, Map<String, String>> existingIssuesMap, boolean isOpen) {
         try {
             Gson gson = new Gson();
             String hostName = CommonUtils.getPropValue(HOSTNAME);
@@ -47,10 +47,10 @@ public class NotificationUtils {
                 Map<String, String> issueAttributes = existingIssuesMap.get(annotationId);
 
                 if (isOpen && null == issueAttributes && PacmanSdkConstants.STATUS_OPEN.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
-                    notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, true, CREATE_VIOLATION_EVENT_NAME));
+                    notificationDetailsList.add(getNotificationBaseRequest(tenantId, annotation, hostName, true, CREATE_VIOLATION_EVENT_NAME));
                 } else if (!isOpen && existingIssuesMap.containsKey(annotationId)
                         && PacmanSdkConstants.STATUS_CLOSE.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
-                        notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, false, CLOSE_VIOLATION_EVENT_NAME));
+                        notificationDetailsList.add(getNotificationBaseRequest(tenantId, annotation, hostName, false, CLOSE_VIOLATION_EVENT_NAME));
                 }
             }
             if (!notificationDetailsList.isEmpty()) {
@@ -66,13 +66,14 @@ public class NotificationUtils {
         }
     }
 
-    private static NotificationBaseRequest getNotificationBaseRequest(Annotation annotation, String hostName, boolean isOpen, String violationEventName) {
+    private static NotificationBaseRequest getNotificationBaseRequest(String tenantId, Annotation annotation, String hostName, boolean isOpen, String violationEventName) {
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
         notificationBaseRequest.setEventCategory(Constants.NotificationTypes.VIOLATION);
         notificationBaseRequest.setSubject(isOpen?OPEN_VIOLATIONS_SUBJECT:CLOSE_VIOLATIONS_SUBJECT);
         notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.VIOLATION.getValue());
         notificationBaseRequest.setEventName(String.format(String.format(violationEventName,annotation.get(POLICY_NAME))));
         notificationBaseRequest.setEventDescription(String.format(String.format(violationEventName,annotation.get(POLICY_NAME))));
+        notificationBaseRequest.setTenantId(tenantId);
 
         PolicyViolationNotificationRequest request = new PolicyViolationNotificationRequest();
         request.setIssueId(annotation.get(PacmanSdkConstants.ANNOTATION_PK));
