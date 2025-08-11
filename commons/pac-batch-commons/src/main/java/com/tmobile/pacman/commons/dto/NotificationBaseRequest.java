@@ -32,6 +32,7 @@ public class NotificationBaseRequest {
     private String eventDescription;
     private String subject;
     private Object payload;
+    private String tenantId;
 
     public NotificationBaseRequest(){
 
@@ -112,5 +113,13 @@ public class NotificationBaseRequest {
 
     public void setEventCategory(Constants.NotificationTypes eventCategory) {
         this.eventCategory = eventCategory;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 }

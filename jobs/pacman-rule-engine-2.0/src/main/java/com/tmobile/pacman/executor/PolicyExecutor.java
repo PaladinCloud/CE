@@ -158,6 +158,15 @@ public class PolicyExecutor {
                 policyStatusChanged = true;
             }
             policyParam.put("pluginName",policyExecutor.enricherSource);
+
+            // If it's not passed in as a parameter, grab it from the environment
+            if (!policyParam.containsKey("tenantId")) {
+                String tenantId = System.getenv("TENANT_ID");
+                if (tenantId == null) {
+                    tenantId = "";
+                }
+                policyParam.put("tenantId", tenantId);
+            }
             //String status = "ENABLED";
             executor.execute(() -> {
                 try {
@@ -669,8 +678,9 @@ public class PolicyExecutor {
         metrics.put("total-issues-found", issueFoundCounter);
         List<Annotation> closedIssues = annotationPublisher.processClosureEx();
         List<Annotation> bulkUploadAnnotations = annotationPublisher.getBulkUploadBucket();
-        NotificationUtils.triggerNotificationsForViolations(bulkUploadAnnotations, annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
-        NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
+        String tenantId = policyParam.getOrDefault("tenantId", "");
+        NotificationUtils.triggerNotificationsForViolations(tenantId, bulkUploadAnnotations, annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
+        NotificationUtils.triggerNotificationsForViolations(tenantId, annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
 
         // annotation will contain the last annotation processed above
         Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
