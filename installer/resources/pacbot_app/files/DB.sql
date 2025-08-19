@@ -3137,6 +3137,10 @@ VALUES('library','Library','Application','contrast','{\"key\":\"id\",\"id\":\"id
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Policy ID','policyId.keyword','/compliance/v1/filters/policyList',"String");
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (8,'Compliant','compliant','/asset/v1/getCompliantFilterValue',"String");
 
+INSERT INTO `cf_Target` (`targetName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`, `displayName`)
+VALUES ('cloudresource', 'Wiz Cloud Resource', 'Cloud Resource', 'wiz', '{\"key\":\"id\",\"id\":\"id\",\"name\":\"name\"}', 'enabled', 'admin@paladincloud.io',
+        concat(@eshost,':',@esport,'/wiz_cloudresource'), '2024-01-24', '2024-01-024', 'Infra & Platforms', 'Wiz Cloud Resource');
+
 /* Below procedure will change data type of createdTime column of cf_Accounts table from varchar to timestamp.
  Inorder not to loose the existing data of that column, update the values of createdTime to timestamp format and then alter the table. */
 
