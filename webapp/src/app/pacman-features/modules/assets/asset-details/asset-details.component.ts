@@ -679,7 +679,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 this.policyAvailable[0] = true;
                                 this.showLoader[0] = true;
                             } else {
-                                this.violationErrorMessage = 'noDataAvailable';
+                                this.violationErrorMessage = 'noViolationsForAsset';
                                 this.policyValue = false;
                                 this.showLoader[0] = true;
                                 this.summary.violation = true;
