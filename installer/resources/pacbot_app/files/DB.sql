@@ -3118,6 +3118,10 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Type','groupType','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Number of assets','assetCount','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Created By','createdBy','/admin/asset-group/filter');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'Exemption Reason','reason-to-exempt.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=reason-to-exempt&type=issue');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'ExemptionStatus ChangedOn','exemption-status-change.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=exemption-status-change&type=issue');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,'Exemption ExpiryDate','exemption-expiry-date.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=exemption-expiry-date&type=issue');
+
 
 /* Plugin developed using PluginEngine V1 */
 INSERT INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
