@@ -47,6 +47,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	private static final String _SEARCH = "_search";
 	private static final String HITS = "hits";
 	private static final String ERROR_IN_US = "error retrieving inventory from ES";
+	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	private final int  ES_PAGE_SIZE=10000;
 	@Value("${elastic-search.host}")
 	private String esHost;
@@ -76,7 +77,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	}
 
 	@Override
-	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter, int size,
+	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String,List<String>>filter, int size,
 													  int from, Map<String,Object> sortFilter, Date startDate, Date endDate) {
 		LOGGER.info("Inside getNotifications");
 		notifications = new ArrayList<>();
@@ -402,7 +403,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	 * CloudNotificationsRepositoryImpl# getGlobalNotifications(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> getCloudNotifications(String index, String type, Map<String, String> filter,
+	public List<Map<String, Object>> getCloudNotifications(String index, String type, Map<String,List<String>>filter,
 			int size, int from,Map<String,Object> sortFilter, Date startDate, Date endDate) throws DataException {
 		Map<String, Object> eventMap = new HashMap<>();
 		int docSize=0;
@@ -430,14 +431,21 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 				body = body + ",{\"terms\":{\"eventName.keyword\":" + eventName + "}}";
 			}
 
+			/*
+			gte stands for Greater than or equal to
+			 */
 			String gte = null;
+
+			/*
+			lte stands for Less than or equal to
+			 */
 			String lte = null;
 
 			if ( startDate!= null) {
-				gte = "\"gte\": \"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate) + "\"";
+				gte = "\"gte\": \"" + new SimpleDateFormat(DATE_FORMAT).format(startDate) + "\"";
 			}
 			if ( endDate != null) {
-				lte = "\"lte\": \"" + new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\"";
+				lte = "\"lte\": \"" + new SimpleDateFormat(DATE_FORMAT).format(endDate) + "\"";
 			}
 
 			if (gte != null && lte != null) {
@@ -712,11 +720,11 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		return autofixPlanDet;
 	}
 
-	private String filterkey(Map<String, String> filter, String keyText) {
+	private String filterkey( Map<String, List<String>> filter, String keyText) {
 		String searchterm = "";
-		if (filter.containsKey(keyText) && StringUtils.isNotBlank(filter.get(keyText))) {
+		if (filter.containsKey(keyText) && StringUtils.isNotBlank(filter.get(keyText).toString())) {
 			searchterm = "[";
-			String[] splitted = filter.get(keyText).split(",");
+			List<String>splitted = filter.get(keyText);
 			for (String _categoryList : splitted) {
 				searchterm = searchterm + "\"" + _categoryList + "\",";
 			}
