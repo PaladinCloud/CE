@@ -49,7 +49,6 @@
 		<module>commons</module>
         <module>api</module>
 		<module>jobs</module>
-		<module>webapp</module>
         <module>lambda-functions</module>
     </modules>
 
