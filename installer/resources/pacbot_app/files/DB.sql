@@ -1541,7 +1541,7 @@ INSERT IGNORE INTO pac_v2_ui_download_filters (serviceId,serviceName,serviceEndp
  (16,'Recommendation','/api/asset/v1/recommendations'),
  (17,'CloudNotificationsWithOutGlobal','/api/asset/v1/cloud/notifications?global=false'),
  (18,'CloudNotificationsWithGlobal','/api/asset/v1/cloud/notifications?global=true');
-
+INSERT IGNORE INTO pac_v2_ui_download_filters(serviceId,serviceName,serviceEndpoint) value(19,'AdminPolicies','/api/admin/policy/list');
 
 INSERT IGNORE INTO pac_config_relation (`application`,`parent`) VALUES ('application','root');
 INSERT IGNORE INTO pac_config_relation (`application`,`parent`) VALUES ('batch','application');
@@ -3118,7 +3118,9 @@ INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL)
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Type','groupType','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Number of assets','assetCount','/admin/asset-group/filter');
 INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (19,'Created By','createdBy','/admin/asset-group/filter');
-
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'DisabledReason','DisabledReason','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'DisabledOn','DisabledOn','/compliance/v1/filters/policy');
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (17,'DisableExpiredOn','DisableExpiredOn','/compliance/v1/filters/policy');
 /* Plugin developed using PluginEngine V1 */
 INSERT INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
  VALUES ('plugins.in.v1','gcp','job-scheduler','prd','latest','System',now(),NULL,NULL) ON DUPLICATE KEY UPDATE value = 'gcp', modifiedBy='System', modifiedDate=now();
