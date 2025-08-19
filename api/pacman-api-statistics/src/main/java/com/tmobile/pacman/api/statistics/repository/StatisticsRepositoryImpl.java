@@ -156,7 +156,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AWS).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
-                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType.keyword\":\"account\"}}]}},\"aggs\":{\"accounts\":{\"terms\":{\"field\":\"accountname.keyword\",\"size\":10000}}}}");
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}}]}},\"aggs\":{\"accounts\":{\"terms\":{\"field\":\"accountid.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
@@ -164,6 +164,25 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
         } catch (Exception e) {
         	LOGGER.error("Error while processing the aws accounts",e.getMessage());
         	return new JsonArray();
+        }
+
+    }
+
+    @Override
+    public JsonArray getNumberOfRedhatAccounts() throws DataException {
+        try {
+            JsonParser parser = new JsonParser();
+            StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(REDHAT).append("/")
+                    .append(SEARCH);
+            StringBuilder requestBody = new StringBuilder(
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}}]}},\"aggs\":{\"accounts\":{\"terms\":{\"field\":\"accountid.keyword\",\"size\":10000}}}}");
+            String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
+            JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
+            JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
+            return aggsJson.getAsJsonObject("accounts").getAsJsonArray(BUCKETS);
+        } catch (Exception e) {
+            LOGGER.error("Error while processing the aws accounts",e.getMessage());
+            return new JsonArray();
         }
 
     }
@@ -285,7 +304,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AZURE).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
-                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType.keyword\":\"subscription\"}}]}},\"aggs\":{\"subscriptions\":{\"terms\":{\"field\":\"subscriptionId.keyword\",\"size\":10000}}}}");
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}}]}},\"aggs\":{\"subscriptions\":{\"terms\":{\"field\":\"subscriptionId.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
@@ -303,7 +322,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(GCP).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
-                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType.keyword\":\"project\"}}]}},\"aggs\":{\"projects\":{\"terms\":{\"field\":\"projectId.keyword\",\"size\":10000}}}}");
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}}]}},\"aggs\":{\"projects\":{\"terms\":{\"field\":\"projectId.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());

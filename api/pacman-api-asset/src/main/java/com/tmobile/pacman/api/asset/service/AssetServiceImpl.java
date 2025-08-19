@@ -368,7 +368,7 @@ public class AssetServiceImpl implements AssetService {
         for (String field : fields) {
             Map<String, Object> attribute = new LinkedHashMap<>();
             attribute.put(Constants.NAME, field);
-            String strValue = data.get(field).toString();
+            String strValue = data.get(field) != null ? data.get(field).toString() : "";
             attribute.put(Constants.VALUE, strValue );
             attribute.put(Constants.CATEGORY, category);
             if (StringUtils.isNotEmpty(strValue) && StringUtils.isNotBlank(strValue)) {
