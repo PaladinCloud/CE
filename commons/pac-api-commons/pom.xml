@@ -54,6 +54,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx.base</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 
 		 <dependency>
