@@ -42,7 +42,7 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
           export SONAR_SCANNER_OPTS="-Xmx4000m"
-          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -Dsonar.skip=true 
+          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -Dsonar.skip=true clean verify
 
       - name: Build and analyze push
         if: ${{ github.event_name == 'push' }}
@@ -52,4 +52,4 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
           export SONAR_SCANNER_OPTS="-Xmx4000m"
-          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -Dsonar.skip=true 
+          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -Dsonar.skip=true clean verify
