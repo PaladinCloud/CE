@@ -12,11 +12,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 17
+      - name: Set up JDK 8
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
-          java-version: 17
+          java-version: 8
       - name: running update
         run: sudo apt update
       - name: Install maven
@@ -42,7 +42,7 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
           export SONAR_SCANNER_OPTS="-Xmx4000m"
-          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar  -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  -Dsonar.pullrequest.base=master  -Dsonar.pullrequest.key=${{github.event.number}} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=PaladinCloud/CE 
+          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -Dsonar.skip=true clean verify
 
       - name: Build and analyze push
         if: ${{ github.event_name == 'push' }}
@@ -52,4 +52,4 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
           export SONAR_SCANNER_OPTS="-Xmx4000m"
-          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  
+          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -Dsonar.skip=true clean verify

@@ -25,6 +25,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
@@ -89,6 +90,7 @@ public class PolicyExecutor {
     private static final String POLICY_DONE_SNS_TOPIC_ARN = "POLICY_DONE_SNS_TOPIC_ARN";
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
     private static final String UTC = "UTC";
+    private static final String DANGLING_VIOLATIONS_FOR_OUTBOUND_PLUGIN_SNS_TOPIC_ARN = "DANGLING_VIOLATIONS_FOR_OUTBOUND_PLUGIN_SNS_TOPIC_ARN";
 
     private AmazonDynamoDB amazonDynamoDB;
 
@@ -181,6 +183,7 @@ public class PolicyExecutor {
                                 policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY) + "_"
                                         + policyParam.get(PacmanSdkConstants.TARGET_TYPE),
                                 reasonToClose);
+                        danglingViolationsForOutBoundPluginSNS(System.getenv("TENANT_ID"), annotationPublisher);
                     } else {
                         policyExecutor.run(policyParam, executionId);
                     }
@@ -329,6 +332,59 @@ public class PolicyExecutor {
         // Close the SNS client
         snsClient.close();
     }
+
+    private static void danglingViolationsForOutBoundPluginSNS(String tenantID, AnnotationPublisher annotationPublisher) {
+        String region = System.getProperty(Constants.BASE_REGION);
+        String topicArn = System.getenv(DANGLING_VIOLATIONS_FOR_OUTBOUND_PLUGIN_SNS_TOPIC_ARN);
+
+        // Create an SNS client
+        SnsClient snsClient = SnsClient.builder()
+                .region(Region.of(region))
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
+
+        for (String issueID : annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey()
+                .keySet()) {
+            // Publish the message to the specified topic
+            PublishResponse response = snsClient.publish(
+                    PublishRequest.builder()
+                            .topicArn(topicArn)
+                            .message(generatePayloadMessageForDanglingViolationSNS(tenantID, issueID))
+                            .build());
+            logger.debug("Dangling Violations SNS published. Message ID: {}",response.messageId());
+        }
+        // Print the message ID returned by the publish operation
+        // logger.debug("Dangling Violations SNS published. Message ID: {}",response.messageId());
+
+        // Close the SNS client
+        snsClient.close();
+    }
+
+
+    public static String generatePayloadMessageForDanglingViolationSNS( String tenantId, String issueID){
+        ObjectMapper mapper = new ObjectMapper();
+
+        // Build inner payload object
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("issueId", issueID);
+        payload.put("action", "close");
+
+        // Build outer object
+        Map<String, Object> message = new HashMap<>();
+        message.put("tenantId", tenantId);
+        message.put("eventCategory", "violation");
+        message.put("payload", payload);
+
+        // Convert to JSON string
+        String jsonString = null;
+        try {
+            jsonString = mapper.writeValueAsString(message);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonString;
+    }
+
 
     /**
      * Run.
@@ -684,6 +740,7 @@ public class PolicyExecutor {
 
         // annotation will contain the last annotation processed above
         Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
+        danglingViolationsForOutBoundPluginSNS(System.getenv("TENANT_ID"), annotationPublisher);
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
         List<Annotation> allIssues = new ArrayList<>(bulkUploadAnnotations.size() + closedIssues.size());
