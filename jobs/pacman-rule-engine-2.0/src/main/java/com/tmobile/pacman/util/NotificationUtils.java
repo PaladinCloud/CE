@@ -12,6 +12,8 @@ import com.tmobile.pacman.dto.AutofixNotificationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -77,13 +79,25 @@ public class NotificationUtils {
 
         PolicyViolationNotificationRequest request = new PolicyViolationNotificationRequest();
         request.setIssueId(annotation.get(PacmanSdkConstants.ANNOTATION_PK));
-        request.setIssueIdLink(hostName + ISSUE_ID_UI_PATH + annotation.get(ANNOTATION_PK) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
-        request.setAction(isOpen? Constants.Actions.CREATE:Constants.Actions.CLOSE);
+        String issueLink = hostName + ISSUE_ID_UI_PATH + annotation.get(ANNOTATION_PK) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
+        try {
+            request.setIssueIdLink(URLEncoder.encode(issueLink, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error("ViolationLink  link encoding failed {}", e.getMessage());
+            request.setIssueIdLink("");
+
+        }        request.setAction(isOpen? Constants.Actions.CREATE:Constants.Actions.CLOSE);
         request.setPolicyName(annotation.get(POLICY_NAME));
         request.setPolicyNameLink(hostName + POLICY_DETAILS_UI_PATH + annotation.get(POLICY_ID) + "/true?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
         request.setResourceId(annotation.get(RESOURCE_ID));
-        request.setResourceIdLink(hostName + ASSET_DETAILS_UI_PATH + annotation.get(TARGET_TYPE) + "/" + annotation.get(DOC_ID) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
-        request.setDescription(annotation.get(PacmanSdkConstants.DESCRIPTION));
+        String resourceLink = hostName + ASSET_DETAILS_UI_PATH + annotation.get(TARGET_TYPE) + "/" + annotation.get(DOC_ID) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
+        try {
+            request.setResourceIdLink(URLEncoder.encode(resourceLink, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error("Resource link encoding failed {}", e.getMessage());
+            request.setResourceIdLink("");
+
+        }        request.setDescription(annotation.get(PacmanSdkConstants.DESCRIPTION));
         request.setScanTime(CommonUtils.getCurrentDateStringWithFormat(
                 PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.NOTIFICATION_EMAIL_DATE_FORMAT));
         request.setAccountId(annotation.get(ACCOUNT_ID));
