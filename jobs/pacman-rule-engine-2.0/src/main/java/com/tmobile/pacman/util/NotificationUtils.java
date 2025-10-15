@@ -49,10 +49,10 @@ public class NotificationUtils {
                 Map<String, String> issueAttributes = existingIssuesMap.get(annotationId);
 
                 if (isOpen && null == issueAttributes && PacmanSdkConstants.STATUS_OPEN.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
-                    notificationDetailsList.add(getNotificationBaseRequest(tenantId, annotation, hostName, true, CREATE_VIOLATION_EVENT_NAME));
+                    notificationDetailsList.add(getNotificationBaseRequest(tenantId, annotation, hostName, Constants.Actions.CREATE));
                 } else if (!isOpen && existingIssuesMap.containsKey(annotationId)
                         && PacmanSdkConstants.STATUS_CLOSE.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
-                        notificationDetailsList.add(getNotificationBaseRequest(tenantId, annotation, hostName, false, CLOSE_VIOLATION_EVENT_NAME));
+                        notificationDetailsList.add(getNotificationBaseRequest(tenantId, annotation, hostName, Constants.Actions.CLOSE));
                 }
             }
             if (!notificationDetailsList.isEmpty()) {
@@ -68,31 +68,60 @@ public class NotificationUtils {
         }
     }
 
-    private static NotificationBaseRequest getNotificationBaseRequest(String tenantId, Annotation annotation, String hostName, boolean isOpen, String violationEventName) {
+    public static void triggerNotificationsForDanglingIssue(String tenantId, List<Annotation> annotations, Constants.Actions action) {
+        try {
+            Gson gson = new Gson();
+            String hostName = CommonUtils.getPropValue(HOSTNAME);
+            List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
+            for (Annotation annotation : annotations) {
+                if(("update".equals(action.toString()) && "open".equalsIgnoreCase(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY)) ) ||
+                        ("close".equals(action.toString()) && "closed".equalsIgnoreCase(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY)) )) {
+                    notificationDetailsList.add(getNotificationBaseRequest(tenantId, annotation, hostName, action));
+                }
+
+            }
+            if (!notificationDetailsList.isEmpty()) {
+                String notificationDetailsStr = gson.toJson(notificationDetailsList);
+                invokeNotificationUrl(notificationDetailsStr);
+                if(LOGGER.isInfoEnabled()){
+                    LOGGER.info("{} Notifications sent for violations of policy \"{}\" ",notificationDetailsList.size(),annotations.get(0).get(POLICY_NAME));
+                }
+            }
+        }
+        catch (Exception e) {
+            LOGGER.error(DATA_ALERT_ERROR_STRING + annotations.get(0).get(POLICY_ID) + ERROR_MESSAGE + "Error triggering lambda function url, notification request not sent" + ENDING_QUOTES, e);
+        }
+    }
+
+    private static NotificationBaseRequest getNotificationBaseRequest(String tenantId, Annotation annotation, String hostName, Constants.Actions action) {
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
         notificationBaseRequest.setEventCategory(Constants.NotificationTypes.VIOLATION);
-        notificationBaseRequest.setSubject(isOpen?OPEN_VIOLATIONS_SUBJECT:CLOSE_VIOLATIONS_SUBJECT);
+        notificationBaseRequest.setSubject(Constants.Actions.getPolicyMessage(action));
         notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.VIOLATION.getValue());
-        notificationBaseRequest.setEventName(String.format(String.format(violationEventName,annotation.get(POLICY_NAME))));
-        notificationBaseRequest.setEventDescription(String.format(String.format(violationEventName,annotation.get(POLICY_NAME))));
+        notificationBaseRequest.setEventName(String.format(String.format(Constants.Actions.getViolationEvent(action),annotation.get(POLICY_NAME))));
+        notificationBaseRequest.setEventDescription(String.format(String.format(Constants.Actions.getViolationEvent(action),annotation.get(POLICY_NAME))));
         notificationBaseRequest.setTenantId(tenantId);
 
         PolicyViolationNotificationRequest request = new PolicyViolationNotificationRequest();
         request.setIssueId(annotation.get(PacmanSdkConstants.ANNOTATION_PK));
-        String issueLink = hostName + ISSUE_ID_UI_PATH + annotation.get(ANNOTATION_PK) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
+
         try {
-            request.setIssueIdLink(URLEncoder.encode(issueLink, "UTF-8"));
+            String annotationid = URLEncoder.encode(annotation.get(ANNOTATION_PK), "UTF-8");
+            String issueLink = hostName + ISSUE_ID_UI_PATH + annotationid + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
+            request.setIssueIdLink(issueLink);
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("ViolationLink  link encoding failed {}", e.getMessage());
             request.setIssueIdLink("");
 
-        }        request.setAction(isOpen? Constants.Actions.CREATE:Constants.Actions.CLOSE);
+        }        request.setAction(action);
         request.setPolicyName(annotation.get(POLICY_NAME));
         request.setPolicyNameLink(hostName + POLICY_DETAILS_UI_PATH + annotation.get(POLICY_ID) + "/true?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
         request.setResourceId(annotation.get(RESOURCE_ID));
-        String resourceLink = hostName + ASSET_DETAILS_UI_PATH + annotation.get(TARGET_TYPE) + "/" + annotation.get(DOC_ID) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
+
         try {
-            request.setResourceIdLink(URLEncoder.encode(resourceLink, "UTF-8"));
+            String docid = URLEncoder.encode(annotation.get(DOC_ID), "UTF-8");
+            String resourceLink = hostName + ASSET_DETAILS_UI_PATH + annotation.get(TARGET_TYPE) + "/" + docid + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
+            request.setResourceIdLink(resourceLink);
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("Resource link encoding failed {}", e.getMessage());
             request.setResourceIdLink("");

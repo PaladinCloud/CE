@@ -434,7 +434,7 @@ public class PacmanUtils {
                         && (sourceJson.get(PacmanRuleConstants.INSTANCEID) != null && !sourceJson.get(
                                 PacmanRuleConstants.INSTANCEID).isJsonNull())) {
                     String instanceId = sourceJson.get(PacmanRuleConstants.INSTANCEID).getAsString();
-                    if (!org.apache.commons.lang.StringUtils.isEmpty(instanceId)) {
+                    if (!org.apache.commons.lang3.StringUtils.isEmpty(instanceId)) {
                         return true;
                     }
                 }
@@ -806,7 +806,7 @@ public class PacmanUtils {
         annotation.put(PacmanRuleConstants.SEVERITY, severity);
         annotation.put(PacmanRuleConstants.CATEGORY, category);
         for (String tag : mandatoryTagsList) {
-            if (org.apache.commons.lang.StringUtils.contains(missingTagsStr, tag)) {
+            if (org.apache.commons.lang3.StringUtils.contains(missingTagsStr, tag)) {
                 annotation.put(tag, PacmanRuleConstants.NOTFOUND);
                 tagsMap.put(tag, PacmanRuleConstants.NOTFOUND);
             } else {
