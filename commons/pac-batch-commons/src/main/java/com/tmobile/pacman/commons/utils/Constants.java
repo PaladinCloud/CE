@@ -80,6 +80,40 @@ public final class Constants {
         public String toString() {
             return super.toString().toLowerCase();
         }
+
+        public static String getPolicyMessage(Actions action) {
+            switch (action) {
+                case CREATE:
+                    return "Policy Violation Created";
+                case CLOSE:
+                    return "Policy Violation Closed";
+                case DELETE:
+                    return "Policy Violation Deleted";
+                case UPDATE:
+                    return "Policy Violation Updated";
+                case REVOKE:
+                    return "Policy Violation Revoked";
+                default:
+                    return "Unknown Policy Action";
+            }
+        }
+
+        public static String getViolationEvent(Actions action) {
+            switch (action) {
+                case CREATE:
+                    return "Violation for policy - %s";
+                case CLOSE:
+                    return "Violation Closed for policy - %s";
+                case DELETE:
+                    return "Violation Deleted for policy - %s";
+                case UPDATE:
+                    return "Violation Updated for policy - %s";
+                case REVOKE:
+                    return "Violation Revoked for policy - %s";
+                default:
+                    return "Unknown Violation Event";
+            }
+        }
     }
 
 }

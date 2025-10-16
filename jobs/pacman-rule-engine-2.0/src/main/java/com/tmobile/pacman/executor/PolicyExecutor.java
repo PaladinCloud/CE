@@ -183,7 +183,8 @@ public class PolicyExecutor {
                                 policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY) + "_"
                                         + policyParam.get(PacmanSdkConstants.TARGET_TYPE),
                                 reasonToClose);
-                        danglingViolationsForOutBoundPluginSNS(System.getenv("TENANT_ID"), annotationPublisher);
+                        NotificationUtils.triggerNotificationsForDanglingIssue(System.getenv("TENANT_ID"),
+                                policyExecutor.convertMapToAnnotation(annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey()), Constants.Actions.CLOSE);
                     } else {
                         policyExecutor.run(policyParam, executionId);
                     }
@@ -336,7 +337,7 @@ public class PolicyExecutor {
     private static void danglingViolationsForOutBoundPluginSNS(String tenantID, AnnotationPublisher annotationPublisher) {
         String region = System.getProperty(Constants.BASE_REGION);
         String topicArn = System.getenv(DANGLING_VIOLATIONS_FOR_OUTBOUND_PLUGIN_SNS_TOPIC_ARN);
-
+        NotificationUtils.triggerNotificationsForViolations(tenantID, annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
         // Create an SNS client
         SnsClient snsClient = SnsClient.builder()
                 .region(Region.of(region))
@@ -740,7 +741,10 @@ public class PolicyExecutor {
 
         // annotation will contain the last annotation processed above
         Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation, PacmanSdkConstants.REASON_TO_CLOSE_VALUE);
-        danglingViolationsForOutBoundPluginSNS(System.getenv("TENANT_ID"), annotationPublisher);
+        NotificationUtils.triggerNotificationsForDanglingIssue(tenantId, convertMapToAnnotation(annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey()), Constants.Actions.CLOSE);
+        // this need to executed after closedIssues and danglingIssues.
+        List<Annotation> updatedIssues = getViolationUpdatedIssuesList(bulkUploadAnnotations,closedIssues, annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey() );
+        NotificationUtils.triggerNotificationsForDanglingIssue(tenantId, updatedIssues, Constants.Actions.UPDATE);
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
         List<Annotation> allIssues = new ArrayList<>(bulkUploadAnnotations.size() + closedIssues.size());
@@ -751,6 +755,48 @@ public class PolicyExecutor {
         AuditUtils.postAuditTrail(allIssues, originalIssueStatuses);
 
         return metrics;
+    }
+
+
+    private List<Annotation> getViolationUpdatedIssuesList(
+            List<Annotation> bulkUploadAnnotations,
+            List<Annotation> closedIssues,
+            Map<String, Map<String, String>> danglingIssues) {
+
+        if (bulkUploadAnnotations == null || bulkUploadAnnotations.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Set<String> excludeIds = new HashSet<>();
+
+        if (closedIssues != null) {
+            closedIssues.stream()
+                    .map(a -> String.valueOf(a.get(PacmanSdkConstants.ANNOTATION_PK)))
+                    .filter(Objects::nonNull)
+                    .forEach(excludeIds::add);
+        }
+
+        if (danglingIssues != null && !danglingIssues.isEmpty()) {
+            excludeIds.addAll(danglingIssues.keySet());
+        }
+        return bulkUploadAnnotations.stream()
+                .filter(a -> {
+                    Object id = a.get(PacmanSdkConstants.ANNOTATION_PK);
+                    return id != null && !excludeIds.contains(id.toString());
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<Annotation> convertMapToAnnotation (Map<String, Map<String, String>> existingIssuesMap) {
+        List<Annotation> annotations = new ArrayList<>();
+        for (Map.Entry<String, Map<String, String>> entry : existingIssuesMap.entrySet()) {
+            Annotation annotation = new Annotation();
+            annotation.putAll(entry.getValue());
+            logger.info("annotation policy -- " + annotation.get(POLICY_NAME) + " docid -- " + annotation.get(DOC_ID));
+            String annotationId = CommonUtils.getUniqueAnnotationId(annotation);
+            annotation.put(PacmanSdkConstants.ANNOTATION_PK, annotationId);
+            annotations.add(annotation);
+        }
+        return annotations;
     }
 
     /**

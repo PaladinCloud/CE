@@ -24,7 +24,7 @@ import com.tmobile.pacman.api.auth.domain.UserClientCredentials;
 import com.tmobile.pacman.api.auth.domain.UserLoginCredentials;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
