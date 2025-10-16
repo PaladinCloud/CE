@@ -79,6 +79,16 @@ public class LogNotificationToOpenSearch implements RequestHandler<SNSEvent, Voi
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
 				Map<String, Object> eventMap = objectMapper.readValue(message, new TypeReference<Map<String,Object>>(){});
+				if ("violation".equals(eventMap.get("eventCategory"))) {
+					Object payloadObj = eventMap.get("payload");
+					if (payloadObj instanceof Map) {
+						Map<String, Object> payloadMap = (Map<String, Object>) payloadObj;
+						String action = (String) payloadMap.get("action");
+						if ("update".equalsIgnoreCase(action)) {
+							return;
+						}
+					}
+				}
 				String loaddate = new SimpleDateFormat(DEFAULT_DATE_FORMAT).format(new java.util.Date());
 				UUID uuid = UUID.randomUUID();
 				String strUUID = uuid.toString();
