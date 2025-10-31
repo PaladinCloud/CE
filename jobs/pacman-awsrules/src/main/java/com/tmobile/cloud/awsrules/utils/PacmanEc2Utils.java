@@ -148,8 +148,8 @@ public class PacmanEc2Utils {
                 logger.info(fromPort);
                 logger.info(toPort);
                 logger.info(ipprotocol);
-                if (!org.apache.commons.lang.StringUtils.isEmpty(fromPort)
-                        && !org.apache.commons.lang.StringUtils.isEmpty(toPort)) {
+                if (!org.apache.commons.lang3.StringUtils.isEmpty(fromPort)
+                        && !org.apache.commons.lang3.StringUtils.isEmpty(toPort)) {
                     String fPort = "FromPort_" + fromPort + "_" + ipprotocol;
                     String tPort = "ToPort_" + toPort + "_" + ipprotocol;
                     openPorts.put(fPort + "-" + tPort, true);

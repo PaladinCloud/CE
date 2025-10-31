@@ -142,7 +142,7 @@ public class PacmanUtils {
         annotation.put(PacmanRuleConstants.SEVERITY, severity);
         annotation.put(PacmanRuleConstants.CATEGORY, category);
         for (String tag : mandatoryTagsList) {
-            if (org.apache.commons.lang.StringUtils.contains(missingTagsStr, tag)) {
+            if (org.apache.commons.lang3.StringUtils.contains(missingTagsStr, tag)) {
                 annotation.put(tag, PacmanRuleConstants.NOTFOUND);
             } else {
                 annotation.put(tag, PacmanRuleConstants.FOUND);
@@ -988,7 +988,7 @@ public class PacmanUtils {
 
         String resourceinfo = getQueryDataForCheckid(checkId, esUrl, resourceInfo, null, accountId);
 
-        if (org.apache.commons.lang.StringUtils.isNotEmpty(resourceinfo)) {
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(resourceinfo)) {
 
             resourceInfoJson = (JsonObject) jsonParser.parse(resourceinfo);
             policyAllowsAccess = resourceInfoJson.get("Policy Allows Access").getAsString();
@@ -2104,7 +2104,7 @@ public class PacmanUtils {
                 JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
                         .getAsJsonObject();
                 routetableid = source.get(PacmanRuleConstants.ROUTE_TABLE_ID).getAsString();
-                if (!org.apache.commons.lang.StringUtils.isEmpty(routetableid)) {
+                if (!org.apache.commons.lang3.StringUtils.isEmpty(routetableid)) {
                     routeTableIdList.add(routetableid);
                    // return routetableid;
                 }
@@ -2134,7 +2134,7 @@ public class PacmanUtils {
                 JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
                         .getAsJsonObject();
                 gatewayid = source.get(PacmanRuleConstants.GATE_WAY_ID).getAsString();
-                if (!org.apache.commons.lang.StringUtils.isEmpty(gatewayid)
+                if (!org.apache.commons.lang3.StringUtils.isEmpty(gatewayid)
                         && gatewayid.toLowerCase().startsWith(internetGateWay)) {
                     routeTableIdList.add(source.get(PacmanRuleConstants.ROUTE_TABLE_ID).getAsString());
                     return true;
@@ -2166,7 +2166,7 @@ public class PacmanUtils {
                 JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
                         .getAsJsonObject();
                 resourceid = source.get(PacmanSdkConstants.RESOURCE_ID).getAsString();
-                if (!org.apache.commons.lang.StringUtils.isEmpty(resourceid)) {
+                if (!org.apache.commons.lang3.StringUtils.isEmpty(resourceid)) {
                     return true;
                 }
             }
@@ -2367,8 +2367,8 @@ public class PacmanUtils {
                     logger.info(fromPort);
                     logger.info(toPort);
                     logger.info(ipprotocol);
-                    if (!org.apache.commons.lang.StringUtils.isEmpty(fromPort)
-                            && !org.apache.commons.lang.StringUtils.isEmpty(toPort)) {
+                    if (!org.apache.commons.lang3.StringUtils.isEmpty(fromPort)
+                            && !org.apache.commons.lang3.StringUtils.isEmpty(toPort)) {
 
                         if (!"All".equalsIgnoreCase(fromPort)) {
 
@@ -2467,7 +2467,7 @@ public class PacmanUtils {
 
         JsonElement managedBy = sourceJson.get(PacmanRuleConstants.MANAGED_BY);
 
-        return (org.apache.commons.lang.StringUtils.isEmpty(managedBy.getAsString()) || managedBy.isJsonNull() || managedBy
+        return (org.apache.commons.lang3.StringUtils.isEmpty(managedBy.getAsString()) || managedBy.isJsonNull() || managedBy
                 .getAsString().equals(PacmanRuleConstants.SVC_ADDS_UNOWNED));
 
     }
@@ -2572,7 +2572,7 @@ public class PacmanUtils {
                             return resourceVerified;
                         } else {
 
-                            if (!org.apache.commons.lang.StringUtils.isEmpty(instanceId)) {
+                            if (!org.apache.commons.lang3.StringUtils.isEmpty(instanceId)) {
                                 String lastVulnScan = sourceJson.get(PacmanRuleConstants.LAST_VULN_SCAN).getAsString();
                                 if (calculateDuration(lastVulnScan) < Long.parseLong(target)) {
                                     return resourceVerified;
@@ -2868,7 +2868,7 @@ public class PacmanUtils {
                                 }.getType();
 
                                 List<String> conditionList = new Gson().fromJson(cJson, listType);
-                                if (!org.apache.commons.lang.StringUtils.isEmpty(actionString)) {
+                                if (!org.apache.commons.lang3.StringUtils.isEmpty(actionString)) {
                                     map = getReadWriteAccess(actionString, accessType, effect, conditionJsonObject,
                                             conditionList, conditionStr, map);
                                 }
@@ -3327,7 +3327,7 @@ public class PacmanUtils {
                 JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
                         .getAsJsonObject();
                 gatewayid = source.get(PacmanRuleConstants.GATE_WAY_ID).getAsString();
-                if (!org.apache.commons.lang.StringUtils.isEmpty(gatewayid)
+                if (!org.apache.commons.lang3.StringUtils.isEmpty(gatewayid)
                         && gatewayid.toLowerCase().startsWith(internetGateWay)) {
                     routeTableIdList.add(source.get(PacmanRuleConstants.ROUTE_TABLE_ID).getAsString());
                     return true;
@@ -3368,7 +3368,7 @@ public class PacmanUtils {
                 logger.info(toPort);
                 logger.info(ipprotocol);
 
-                if ((!org.apache.commons.lang.StringUtils.isEmpty(fromPort) && !org.apache.commons.lang.StringUtils
+                if ((!org.apache.commons.lang3.StringUtils.isEmpty(fromPort) && !org.apache.commons.lang3.StringUtils
                         .isEmpty(toPort) && !"icmp".equalsIgnoreCase(ipprotocol))) {
                 	if(StringUtils.isEmpty(target)){
                     if (!"All".equalsIgnoreCase(toPort) && !"All".equalsIgnoreCase(fromPort)) {
@@ -3787,7 +3787,7 @@ public class PacmanUtils {
                 if (sourceJson != null
                         && (sourceJson.get(fieldKey) != null && !sourceJson.get(fieldKey).isJsonNull())) {
                     String fieldValue = sourceJson.get(fieldKey).getAsString();
-                    if (!org.apache.commons.lang.StringUtils.isEmpty(fieldValue)) {
+                    if (!org.apache.commons.lang3.StringUtils.isEmpty(fieldValue)) {
                     	fieldValueList.add(fieldValue);
                     	
                     }
@@ -3903,7 +3903,7 @@ public class PacmanUtils {
                 if (sourceJson != null
                         && (sourceJson.get(fieldKey) != null && !sourceJson.get(fieldKey).isJsonNull())) {
                     String fieldValue = sourceJson.get(fieldKey).getAsString();
-                    if (!org.apache.commons.lang.StringUtils.isEmpty(fieldValue)) {
+                    if (!org.apache.commons.lang3.StringUtils.isEmpty(fieldValue)) {
                         return fieldValue;
                     }
                 }
@@ -3959,7 +3959,7 @@ public class PacmanUtils {
 				JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
 						.getAsJsonObject();
 				resourceid = source.get(PacmanSdkConstants.RESOURCE_ID).getAsString();
-				if (!org.apache.commons.lang.StringUtils.isEmpty(resourceid)) {
+				if (!org.apache.commons.lang3.StringUtils.isEmpty(resourceid)) {
 					return true;
 				}
 			}

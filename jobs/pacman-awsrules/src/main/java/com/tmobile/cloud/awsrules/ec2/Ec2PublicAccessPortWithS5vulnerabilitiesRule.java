@@ -121,7 +121,7 @@ public class Ec2PublicAccessPortWithS5vulnerabilitiesRule extends BasePolicy {
 						annotation.put(PacmanRuleConstants.CATEGORY, category);
 						annotation.put("vulnerabilityDetails", severityDetails);
 						issue.put(PacmanRuleConstants.VIOLATION_REASON, "ResourceId " + instanceId + " remotely exploitable vulnerability (S5) is open to internet found");
-						if(!org.apache.commons.lang.StringUtils.isEmpty(publicIp)){
+						if(!org.apache.commons.lang3.StringUtils.isEmpty(publicIp)){
 							issue.put("public_ip", publicIp);
 						}else{
 							issue.put("public_ip", "Not found");

@@ -185,7 +185,7 @@ public class S3PacbotUtils {
                             }.getType();
 
                             conditionList = new Gson().fromJson(cJson, listType);
-                            if (!org.apache.commons.lang.StringUtils.isEmpty(actionString)) {
+                            if (!org.apache.commons.lang3.StringUtils.isEmpty(actionString)) {
                                 map = getReadWriteAccess(actionString, accessType, effect, conditionJsonObject,
                                         conditionList, conditionStr, map);
                             }
@@ -256,7 +256,7 @@ public class S3PacbotUtils {
                                                             String accountId, String esUrl, String resourceId) throws Exception {
         Map<String, Boolean> publicAccess = new HashMap<>();
         String resourceinfo = PacmanUtils.getQueryDataForCheckid(checkId, esUrl, resourceId, null, accountId);
-        if (org.apache.commons.lang.StringUtils.isNotEmpty(resourceinfo)) {
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(resourceinfo)) {
             resourceinfo = resourceinfo.substring(1, resourceinfo.length() - 1);
 
             Map<String, Object> resourceinfoMap = new HashMap<>();
