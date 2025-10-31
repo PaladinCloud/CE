@@ -36,7 +36,7 @@ public class EntityManagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void uploadEntityDataTest() {
+    public void uploadEntityDataTest() throws Exception {
 
         PowerMockito.mockStatic(ConfigManager.class);
         List<String> types = new ArrayList<>();

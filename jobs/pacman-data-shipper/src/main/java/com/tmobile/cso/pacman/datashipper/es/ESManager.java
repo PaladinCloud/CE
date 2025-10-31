@@ -452,7 +452,7 @@ public class ESManager implements Constants {
      * @param filters   the filters
      * @return the existing info
      */
-    public static Map<String, Map<String, String>> getExistingInfo(String indexName, String type, List<String> filters) {
+    public static Map<String, Map<String, String>> getExistingInfo(String indexName, String type, List<String> filters) throws Exception {
         int count = getTypeCount(indexName, type);
         int _count = count;
         boolean scroll = false;
@@ -499,7 +499,7 @@ public class ESManager implements Constants {
      * @return the string
      */
     private static String fetchDataAndScrollId(String endPoint, Map<String, Map<String, String>> _data, String keyField,
-                                               String payLoad) {
+                                               String payLoad) throws Exception {
         try {
             ObjectMapper objMapper = new ObjectMapper();
             Response response = invokeAPI("GET", endPoint, payLoad);
@@ -519,8 +519,9 @@ public class ESManager implements Constants {
             return scrollId;
         } catch (ParseException | IOException e) {
             LOGGER.error("Error in fetchDataAndScrollId", e);
+            throw new Exception("Error in Fetching existing data from ES "+e);
+
         }
-        return "";
     }
 
     /**
