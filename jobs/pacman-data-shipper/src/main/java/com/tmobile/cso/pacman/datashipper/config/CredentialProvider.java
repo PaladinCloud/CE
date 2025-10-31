@@ -42,7 +42,7 @@ public class CredentialProvider {
         }
         AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(baseAccntCreds)).withRegion(baseRegion);
         AWSSecurityTokenService stsClient = stsBuilder.build();
-        AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account, roleName)).withRoleSessionName("pic-ro-" + account);
+        AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account, roleName)).withRoleSessionName("pic-ro-" + account).withDurationSeconds(7200);
         AssumeRoleResult assumeResult = stsClient.assumeRole(assumeRequest);
         return new BasicSessionCredentials(
                 assumeResult.getCredentials()
@@ -63,7 +63,7 @@ public class CredentialProvider {
             BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
             AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).withRegion(baseRegion);
             AWSSecurityTokenService sts = stsBuilder.build();
-            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro").withDurationSeconds(3600);
+            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro").withDurationSeconds(7200);
             AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
             return new BasicSessionCredentials(
                     assumeResult.getCredentials().getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
@@ -71,7 +71,7 @@ public class CredentialProvider {
 
         } else {
             AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.defaultClient();
-            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro").withDurationSeconds(3600);
+            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro").withDurationSeconds(14400);
             AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
             return new BasicSessionCredentials(
                     assumeResult.getCredentials().getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),

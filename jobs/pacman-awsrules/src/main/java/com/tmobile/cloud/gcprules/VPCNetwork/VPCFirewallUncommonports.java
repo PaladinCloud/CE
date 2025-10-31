@@ -11,7 +11,7 @@ import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -47,7 +47,7 @@ public class VPCFirewallUncommonports extends BasePolicy {
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
 
-        if (org.apache.commons.lang.StringUtils.isNotEmpty(vmEsURL)) {
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(vmEsURL)) {
             vmEsURL = vmEsURL + VM_ES_URL;
         }
         logger.debug("========gcp_vpcfirewall URL after concatenation param {}  =========", vmEsURL);
