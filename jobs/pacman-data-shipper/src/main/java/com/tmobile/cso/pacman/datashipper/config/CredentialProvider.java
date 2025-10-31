@@ -71,7 +71,7 @@ public class CredentialProvider {
 
         } else {
             AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.defaultClient();
-            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro").withDurationSeconds(14400);
+            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro").withDurationSeconds(7200);
             AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
             return new BasicSessionCredentials(
                     assumeResult.getCredentials().getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
