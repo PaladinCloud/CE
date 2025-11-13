@@ -3411,3 +3411,6 @@ UPDATE cf_pac_updatable_fields SET displayFields = CONCAT(displayFields, ',_asse
 
 update pac_v2_ui_options set optionURL='/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=issue', optionValue='_resourceid.keyword' where filterId=1 and optionName ="Asset ID";
 update pac_v2_ui_options set optionURL='/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset', optionValue='_resourceid.keyword' where filterId=8 and optionName ="Asset ID";
+
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (16,'Policy Type','policyType','/compliance/v1/filters/policyCompliance',"String");
+INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL,optionType) VALUES (17,'Policy Type','policyType','/compliance/v1/filters/policy',"String");
