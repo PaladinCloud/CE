@@ -161,7 +161,7 @@ public class EntityManager implements Constants {
                     List<Map<String, String>> overrides = RDSDBManager.executeQuery(
                             "select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '"
                                     + type + "'");
-                    Map<String, List<Map<String, String>>> overridesMap = overrides.parallelStream()
+                    Map<String, List<Map<String, String>>> overridesMap = overrides.stream()
                             .collect(Collectors.groupingBy(obj -> obj.get("_resourceid")));
 
                     String keys = ConfigManager.getKeyForType(datasource, type);
@@ -265,7 +265,7 @@ public class EntityManager implements Constants {
     private void prepareDocs(Map<String, Map<String, String>> currentInfo, List<Map<String, Object>> entities,
                              List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
                              Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource, String displayName) {
-        entities.parallelStream().forEach(entityInfo -> {
+        entities.stream().forEach(entityInfo -> {
             Object idColumnValue = entityInfo.get(idColumn);
             if (idColumnValue == null) {
                 return;
@@ -345,7 +345,7 @@ public class EntityManager implements Constants {
                 entityInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE));
             }
 
-            tags.parallelStream().filter(tag -> Util.contains(tag, entityInfo, _keys)).forEach(_tag -> {
+            tags.stream().filter(tag -> Util.contains(tag, entityInfo, _keys)).forEach(_tag -> {
                 String key = _tag.get("key");
                 if (key != null && !"".equals(key)) {
                     entityInfo.put("tags." + key, _tag.get("value"));
