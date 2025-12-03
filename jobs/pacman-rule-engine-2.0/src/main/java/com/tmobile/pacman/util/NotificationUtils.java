@@ -130,6 +130,8 @@ public class NotificationUtils {
         request.setScanTime(CommonUtils.getCurrentDateStringWithFormat(
                 PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.NOTIFICATION_EMAIL_DATE_FORMAT));
         request.setAccountId(annotation.get(ACCOUNT_ID));
+        request.setPolicyId(annotation.get(POLICY_ID));
+        request.setSeverity(annotation.get("severity"));
 
         //populate tags information into additionalInfo field.
         Map<String,String> tagsKeyAndValueMap = new HashMap<>();
