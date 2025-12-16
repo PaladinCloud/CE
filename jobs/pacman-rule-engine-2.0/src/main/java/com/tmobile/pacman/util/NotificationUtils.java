@@ -75,7 +75,8 @@ public class NotificationUtils {
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
             for (Annotation annotation : annotations) {
                 if(("update".equals(action.toString()) && "open".equalsIgnoreCase(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY)) ) ||
-                        ("close".equals(action.toString()) && "closed".equalsIgnoreCase(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY)) )) {
+                        ("close".equals(action.toString()) && "closed".equalsIgnoreCase(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY)) ) ||
+                        ("revoke".equals(action.toString()) && "open".equalsIgnoreCase(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY)) )) {
                     notificationDetailsList.add(getNotificationBaseRequest(tenantId, annotation, hostName, action));
                 }
 

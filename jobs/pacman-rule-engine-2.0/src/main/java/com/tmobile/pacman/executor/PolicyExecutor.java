@@ -653,6 +653,7 @@ public class PolicyExecutor {
         SimpleDateFormat sdf = new SimpleDateFormat(YYYY_MM_DD, Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone(UTC));
         Annotation annotation = null;
+        List<Annotation> revokedExemptions = new ArrayList<>();
         AnnotationPublisher annotationPublisher = new AnnotationPublisher();
         long exemptionCounter = 0;
         try {
@@ -726,6 +727,16 @@ public class PolicyExecutor {
                 issueFoundCounter++;
                 logger.info("submitted annotation to publisher");
             }
+            /*  collect all revoked exemptions to create ticket for JIRA / ServiceNow for MTN */
+            if(originalIssue != null && PacmanSdkConstants.STATUS_EXEMPTED.equals(originalIssue.get(PacmanSdkConstants.ISSUE_STATUS_KEY) )){
+                Status currentStatus = adjustStatus(PacmanSdkConstants.STATUS_OPEN, exemptedResourcesForPolicy,
+                        individuallyExcemptedIssues, annotation);
+                if( currentStatus.status.equalsIgnoreCase(PacmanSdkConstants.STATUS_OPEN))
+                {
+                    revokedExemptions.add(annotation);
+                }
+
+            }
 
         }
         metrics.put("totalExemptionAppliedForThisRun", exemptionCounter);
@@ -745,6 +756,10 @@ public class PolicyExecutor {
         // this need to executed after closedIssues and danglingIssues.
         List<Annotation> updatedIssues = getViolationUpdatedIssuesList(bulkUploadAnnotations,closedIssues, annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey() );
         NotificationUtils.triggerNotificationsForDanglingIssue(tenantId, updatedIssues, Constants.Actions.UPDATE);
+        if( !revokedExemptions.isEmpty() ){
+            NotificationUtils.triggerNotificationsForDanglingIssue(tenantId, revokedExemptions, Constants.Actions.REVOKE);
+        }
+
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
         List<Annotation> allIssues = new ArrayList<>(bulkUploadAnnotations.size() + closedIssues.size());
