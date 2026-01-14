@@ -56,6 +56,7 @@ import com.amazonaws.services.cloudtrail.model.Trail;
 import com.amazonaws.services.cloudtrail.model.*;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
+import com.amazonaws.services.cloudwatch.model.DescribeAlarmsRequest;
 import com.amazonaws.services.cloudwatch.model.DescribeAlarmsResult;
 import com.amazonaws.services.cloudwatch.model.MetricAlarm;
 import com.amazonaws.services.comprehend.AmazonComprehend;
@@ -174,6 +175,8 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
 import com.amazonaws.services.sqs.model.ListQueueTagsRequest;
+import com.amazonaws.services.sqs.model.ListQueuesRequest;
+import com.amazonaws.services.sqs.model.ListQueuesResult;
 import com.amazonaws.services.support.AWSSupport;
 import com.amazonaws.services.support.AWSSupportClientBuilder;
 import com.amazonaws.services.support.model.*;
@@ -502,18 +505,23 @@ public class InventoryUtil {
         for (Region region : RegionUtils.getRegions()) {
             try {
                 if (!skipRegions.contains(region.getName())) {
-                    AmazonDocDB awsDocDBClient = AmazonDocDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+                    AmazonDocDB awsDocDBClient = AmazonDocDBClientBuilder.standard().
+                            withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+                            .withRegion(region.getName()).build();
                     String marker = null;
                     List<com.amazonaws.services.docdb.model.DBCluster> clusters = new ArrayList<>();
                     do {
-                        com.amazonaws.services.docdb.model.DescribeDBClustersRequest dbClustersRequest = new com.amazonaws.services.docdb.model.DescribeDBClustersRequest();
+                        com.amazonaws.services.docdb.model.DescribeDBClustersRequest dbClustersRequest =
+                                new com.amazonaws.services.docdb.model.DescribeDBClustersRequest()
+                                        .withMarker(marker);
                         com.amazonaws.services.docdb.model.Filter filter = new com.amazonaws.services.docdb.model.Filter();
                         filter.setName("engine");
                         filter.setValues(Collections.singletonList("docdb"));
                         dbClustersRequest.setFilters(Collections.singletonList(filter));
-                        com.amazonaws.services.docdb.model.DescribeDBClustersResult describeDBClusters = awsDocDBClient.describeDBClusters(dbClustersRequest).withMarker(marker);
-                        marker = describeDBClusters.getMarker();
+                        com.amazonaws.services.docdb.model.DescribeDBClustersResult describeDBClusters =
+                                awsDocDBClient.describeDBClusters(dbClustersRequest);
                         clusters.addAll(describeDBClusters.getDBClusters());
+                        marker = describeDBClusters.getMarker();
                     } while (marker != null);
 
                     if (!clusters.isEmpty()) {
@@ -548,13 +556,20 @@ public class InventoryUtil {
         for (Region region : RegionUtils.getRegions()) {
             try {
                 if (!skipRegions.contains(region.getName())) {
-                    AWSDatabaseMigrationService awsDBMigrationClient = AWSDatabaseMigrationServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+                    AWSDatabaseMigrationService awsDBMigrationClient =
+                            AWSDatabaseMigrationServiceClientBuilder.standard()
+                                    .withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+                                    .withRegion(region.getName()).build();
                     String marker = null;
                     List<ReplicationInstance> replicationInstanceList = new ArrayList<>();
                     do {
-                        DescribeReplicationInstancesResult replicationInsacesResult = awsDBMigrationClient.describeReplicationInstances(new DescribeReplicationInstancesRequest()).withMarker(marker);
-                        marker = replicationInsacesResult.getMarker();
+                        DescribeReplicationInstancesRequest req =
+                                new DescribeReplicationInstancesRequest().withMarker(marker);
+                        DescribeReplicationInstancesResult replicationInsacesResult =
+                                awsDBMigrationClient.describeReplicationInstances(
+                                        req);
                         replicationInstanceList.addAll(replicationInsacesResult.getReplicationInstances());
+                        marker = replicationInsacesResult.getMarker();
                     } while (marker != null);
 
                     if (!replicationInstanceList.isEmpty()) {
@@ -692,7 +707,8 @@ public class InventoryUtil {
                     List<String> queryExeIDList = new ArrayList<>();
                     String token = null;
                     do {
-                        ListQueryExecutionsResult queryExeResult = athenaClient.listQueryExecutions(new ListQueryExecutionsRequest()).withNextToken(token);
+                        ListQueryExecutionsRequest req = new ListQueryExecutionsRequest().withNextToken(token);
+                        ListQueryExecutionsResult queryExeResult = athenaClient.listQueryExecutions(req);
                         queryExeIDList.addAll(queryExeResult.getQueryExecutionIds());
                         token = queryExeResult.getNextToken();
                     } while (token != null);
@@ -740,7 +756,8 @@ public class InventoryUtil {
                     List<EntitiesDetectionJobProperties> entitiesDetectionJobsList = new ArrayList<>();
                     String token = null;
                     do {
-                        ListEntitiesDetectionJobsResult entitiesJobs = comprehendClient.listEntitiesDetectionJobs(new ListEntitiesDetectionJobsRequest().withNextToken(token));
+                        ListEntitiesDetectionJobsResult entitiesJobs =
+                                comprehendClient.listEntitiesDetectionJobs(new ListEntitiesDetectionJobsRequest().withNextToken(token));
                         entitiesDetectionJobsList.addAll(entitiesJobs.getEntitiesDetectionJobPropertiesList());
                         token = entitiesJobs.getNextToken();
                     } while (token != null);
@@ -782,7 +799,10 @@ public class InventoryUtil {
                     List<com.amazonaws.services.dax.model.Cluster> daxClusters = new ArrayList<>();
                     String token = null;
                     do {
-                        com.amazonaws.services.dax.model.DescribeClustersResult daxResult = daxClient.describeClusters(new com.amazonaws.services.dax.model.DescribeClustersRequest()).withNextToken(token);
+                        com.amazonaws.services.dax.model.DescribeClustersResult daxResult =
+                                daxClient.describeClusters(
+                                        new com.amazonaws.services.dax.model.DescribeClustersRequest()
+                                                .withNextToken(token));
                         daxClusters.addAll(daxResult.getClusters());
                         token = daxResult.getNextToken();
                     } while (token != null);
@@ -827,7 +847,7 @@ public class InventoryUtil {
                     List<FlowDefinition> appFlowList = new ArrayList<>();
                     String token = null;
                     do {
-                        ListFlowsResult appList = appflow.listFlows(new ListFlowsRequest()).withNextToken(token);
+                        ListFlowsResult appList = appflow.listFlows(new ListFlowsRequest().withNextToken(token));
                         appFlowList.addAll(appList.getFlows());
                         token = appList.getNextToken();
                     } while (token != null);
@@ -881,7 +901,7 @@ public class InventoryUtil {
                     String token = null;
                     do {
                         ListTaskDefinitionsResult taskDefinRes = ecsClient
-                                .listTaskDefinitions(new ListTaskDefinitionsRequest()).withNextToken(token);
+                                .listTaskDefinitions(new ListTaskDefinitionsRequest().withNextToken(token));
                         taskDefArnList.addAll(taskDefinRes.getTaskDefinitionArns());
                         token = taskDefinRes.getNextToken();
                     } while (token != null);
@@ -939,8 +959,7 @@ public class InventoryUtil {
                     String token = null;
                     do {
                         com.amazonaws.services.ecs.model.ListClustersResult clusterRes = ecsClient
-                                .listClusters(new com.amazonaws.services.ecs.model.ListClustersRequest())
-                                .withNextToken(token);
+                                .listClusters(new com.amazonaws.services.ecs.model.ListClustersRequest().withNextToken(token));
                         clusterArnList.addAll(clusterRes.getClusterArns());
                         token = clusterRes.getNextToken();
                     } while (token != null);
@@ -1137,7 +1156,7 @@ public class InventoryUtil {
                     String token = null;
                     do {
                         ListBackupVaultsResult backupValuResult = backupClient
-                                .listBackupVaults(new ListBackupVaultsRequest()).withNextToken(token);
+                                .listBackupVaults(new ListBackupVaultsRequest().withNextToken(token));
                         backupVaultList.addAll(backupValuResult.getBackupVaultList());
                         token = backupValuResult.getNextToken();
                     } while (token != null);
@@ -1445,11 +1464,15 @@ public class InventoryUtil {
                     List<EKSVH> eksList = new ArrayList<>();
                     String nextNotken = null;
                     do {
-                        com.amazonaws.services.eks.model.ListClustersResult listEKSClusters = eksClient.listClusters(new com.amazonaws.services.eks.model.ListClustersRequest().withNextToken(nextNotken));
+                        com.amazonaws.services.eks.model.ListClustersResult listEKSClusters =
+                                eksClient.listClusters(new com.amazonaws.services.eks.model.ListClustersRequest()
+                                        .withNextToken(nextNotken));
                         clusters = listEKSClusters.getClusters();
                         if (!clusters.isEmpty()) {
                             clusters.forEach(clustername -> {
-                                com.amazonaws.services.eks.model.DescribeClusterResult describeCluster = eksClient.describeCluster(new com.amazonaws.services.eks.model.DescribeClusterRequest().withName(clustername));
+                                com.amazonaws.services.eks.model.DescribeClusterResult describeCluster =
+                                        eksClient.describeCluster(new com.amazonaws.services.eks.model.DescribeClusterRequest()
+                                                .withName(clustername));
                                 com.amazonaws.services.eks.model.Cluster cluster = describeCluster.getCluster();
                                 EKSVH eksVH = new EKSVH(cluster);
                                 eksList.add(eksVH);
@@ -1973,19 +1996,26 @@ public class InventoryUtil {
                     AmazonEC2 ec2Client = AmazonEC2ClientBuilder.standard()
                             .withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
                             .withRegion(region.getName()).build();
-                    List<Snapshot> snapShotsList = ec2Client
-                            .describeSnapshots(new DescribeSnapshotsRequest().withOwnerIds(accountId)).getSnapshots();
-                    if (!snapShotsList.isEmpty()) {
-                        List<SnapshotVH> snapShotVHList = snapShotsList.stream()
-                                .map(snapshot -> buildSnapshotVH(ec2Client, snapshot))
-                                .filter(Objects::nonNull)
-                                .collect(Collectors.toList());
+                    List<Snapshot> snapShotsList = new ArrayList<>();
+                    String nextToken = null;
+                    do {
+                        DescribeSnapshotsResult result = ec2Client
+                                .describeSnapshots(new DescribeSnapshotsRequest().withOwnerIds(accountId)
+                                        .withNextToken(nextToken));
+                        snapShotsList.addAll(result.getSnapshots());
+                        if (!snapShotsList.isEmpty()) {
+                            List<SnapshotVH> snapShotVHList = snapShotsList.stream()
+                                    .map(snapshot -> buildSnapshotVH(ec2Client, snapshot))
+                                    .filter(Objects::nonNull)
+                                    .collect(Collectors.toList());
 
-                        log.debug(InventoryConstants.ACCOUNT + accountId + " Type : Snapshot " + region.getName()
-                                + " >> " + snapShotVHList.size());
-                        snapShots.put(accountId + delimiter + accountName + delimiter + region.getName(),
-                                snapShotVHList);
-                    }
+                            log.debug(InventoryConstants.ACCOUNT + accountId + " Type : Snapshot " + region.getName()
+                                    + " >> " + snapShotVHList.size());
+                            snapShots.put(accountId + delimiter + accountName + delimiter + region.getName(),
+                                    snapShotVHList);
+                        }
+                        nextToken = result.getNextToken();
+                    } while (nextToken != null);
                 }
 
             } catch (Exception e) {
@@ -2517,11 +2547,14 @@ public class InventoryUtil {
                     List<EventDetails> successfulEventDetails = awsHealth.describeEventDetails(new DescribeEventDetailsRequest().withEventArns(eventArnsTemp)).getSuccessfulSet();
                     List<AffectedEntity> affectedEntities = new ArrayList<>();
                     do {
-                        DescribeAffectedEntitiesRequest affectedEntitiesRequest = new DescribeAffectedEntitiesRequest().withMaxResults(100);
+                        DescribeAffectedEntitiesRequest affectedEntitiesRequest =
+                                new DescribeAffectedEntitiesRequest().withMaxResults(100);
                         if (!StringUtils.isEmpty(nextToken)) {
                             affectedEntitiesRequest.withNextToken(nextToken);
                         }
-                        DescribeAffectedEntitiesResult affectedEntitiesResult = awsHealth.describeAffectedEntities(affectedEntitiesRequest.withFilter(new EntityFilter().withEventArns(eventArnsTemp)));
+                        DescribeAffectedEntitiesResult affectedEntitiesResult =
+                                awsHealth.describeAffectedEntities(affectedEntitiesRequest.withFilter(
+                                        new EntityFilter().withEventArns(eventArnsTemp)));
                         nextToken = affectedEntitiesResult.getNextToken();
                         affectedEntities.addAll(affectedEntitiesResult.getEntities());
                     } while (!StringUtils.isEmpty(nextToken));
@@ -2563,9 +2596,20 @@ public class InventoryUtil {
         String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId + "\",\"Message\": \"Exception in fetching info for resource\" ,\"type\": \"sqs\"";
         for (Region region : RegionUtils.getRegions()) {
             try {
+                amazonSQS = AmazonSQSClientBuilder.standard()
+                        .withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+                        .withRegion(region.getName())
+                        .build();
                 if (!skipRegions.contains(region.getName())) {
-                    amazonSQS = AmazonSQSClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
-                    List<String> sqsUrls = amazonSQS.listQueues().getQueueUrls();
+                    List<String> sqsUrls = new ArrayList<>();
+                    String nextToken = null;
+                    do {
+                        ListQueuesRequest request = new ListQueuesRequest()
+                                .withNextToken(nextToken);
+                        ListQueuesResult result = amazonSQS.listQueues(request);
+                        sqsUrls.addAll(result.getQueueUrls());
+                        nextToken = result.getNextToken();
+                    } while (nextToken != null);
                     List<SQSVH> sqsList = new ArrayList<>();
                     for (String queueUrl : sqsUrls) {
                         try {
@@ -2610,40 +2654,46 @@ public class InventoryUtil {
     public static Map<String, List<SSLCertificateVH>> fetchACMCertficateInfo(BasicSessionCredentials temporaryCredentials, String skipRegions, String account, String accountName) {
         log.info("ACM cert method Entry");
         Map<String, List<SSLCertificateVH>> sslVH = new LinkedHashMap<>();
-        List<CertificateSummary> listCertificateSummary = new ArrayList<>();
-        List<SSLCertificateVH> sslCertList = new ArrayList<>();
-        DescribeCertificateResult describeCertificateResult = new DescribeCertificateResult();
-        Date expiryDate = null;
-        String certificateARN = null;
-        String domainName = null;
-        List<String> issuerDetails = null;
         String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + account + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ACM Certificate \" , \"region\":\"";
         for (Region region : RegionUtils.getRegions()) {
             try {
                 if (!skipRegions.contains(region.getName())) {
-                    AWSCertificateManager awsCertifcateManagerClient = AWSCertificateManagerClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
-                    listCertificateSummary = awsCertifcateManagerClient.listCertificates(new ListCertificatesRequest()).getCertificateSummaryList();
-                    if (!CollectionUtils.isEmpty(listCertificateSummary)) {
-                        for (CertificateSummary certSummary : listCertificateSummary) {
-                            String certArn = certSummary.getCertificateArn();
-                            DescribeCertificateRequest describeCertificateRequest = new DescribeCertificateRequest().withCertificateArn(certArn);
-                            describeCertificateResult = awsCertifcateManagerClient.describeCertificate(describeCertificateRequest);
-                            CertificateDetail certificateDetail = describeCertificateResult.getCertificate();
-                            domainName = certificateDetail.getDomainName();
-                            certificateARN = certificateDetail.getCertificateArn();
-                            expiryDate = certificateDetail.getNotAfter();
+                    AWSCertificateManager acm = AWSCertificateManagerClientBuilder.standard()
+                            .withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+                            .withRegion(region.getName())
+                            .build();
+                    List<SSLCertificateVH> sslCertList = new ArrayList<>();
+                    String nextToken = null;
+                    do {
+                        ListCertificatesRequest req = new ListCertificatesRequest()
+                                .withNextToken(nextToken);
+                        ListCertificatesResult res = acm.listCertificates(req);
+                        List<CertificateSummary> summaries = res.getCertificateSummaryList();
+                        if (summaries != null) {
+                            for (CertificateSummary certSummary : summaries) {
+                                String certArn = certSummary.getCertificateArn();
 
-                            SSLCertificateVH sslCertificate = new SSLCertificateVH();
-                            sslCertificate.setDomainName(domainName);
-                            sslCertificate.setCertificateARN(certificateARN);
-                            sslCertificate.setExpiryDate(expiryDate);
-                            sslCertificate.setIssuerDetails(issuerDetails);
-                            sslCertificate.setStatus(certificateDetail.getStatus());
-                            sslCertList.add(sslCertificate);
+                                DescribeCertificateResult describeRes = acm.describeCertificate(
+                                        new DescribeCertificateRequest().withCertificateArn(certArn)
+                                );
+                                CertificateDetail detail = describeRes.getCertificate();
+                                SSLCertificateVH vh = new SSLCertificateVH();
+                                vh.setDomainName(detail.getDomainName());
+                                vh.setCertificateARN(detail.getCertificateArn());
+                                vh.setExpiryDate(detail.getNotAfter());
+                                vh.setStatus(detail.getStatus());
+                                vh.setIssuerDetails(Collections.singletonList(detail.getIssuer()));
+                                sslCertList.add(vh);
+                            }
                         }
+
+                        nextToken = res.getNextToken();
+                    } while (nextToken != null);
+
+                    if (!sslCertList.isEmpty()) {
                         sslVH.put(account + delimiter + accountName + delimiter + region.getName(), sslCertList);
                     } else {
-                        log.info("List is empty");
+                        log.info("No ACM certs in region {}", region.getName());
                     }
                 }
             } catch (Exception e) {
@@ -2651,6 +2701,7 @@ public class InventoryUtil {
                 ErrorManageUtil.uploadError(account, region.getName(), "acmcertificate", e.getMessage());
             }
         }
+
         return sslVH;
     }
 
@@ -2923,7 +2974,9 @@ public class InventoryUtil {
                     List<CloudWatchLogsVH> cloudWatchLogslist = new ArrayList<>();
                     String token = null;
                     do {
-                        DescribeLogGroupsResult logGroupResult = logClinet.describeLogGroups().withNextToken(token);
+                        DescribeLogGroupsRequest req = new DescribeLogGroupsRequest()
+                                .withNextToken(token);
+                        DescribeLogGroupsResult logGroupResult = logClinet.describeLogGroups(req);
                         logGroups.addAll(logGroupResult.getLogGroups());
 
                         token = logGroupResult.getNextToken();
@@ -2934,8 +2987,8 @@ public class InventoryUtil {
                         List<MetricFilter> metricFilters = new ArrayList<>();
                         do {
                             DescribeMetricFiltersResult metrixFilterResult = logClinet
-                                    .describeMetricFilters(new DescribeMetricFiltersRequest(logGroup.getLogGroupName()))
-                                    .withNextToken(metrixToken);
+                                    .describeMetricFilters(new DescribeMetricFiltersRequest(logGroup.getLogGroupName())
+                                            .withNextToken(metrixToken));
                             metricFilters.addAll(metrixFilterResult.getMetricFilters());
                             metrixToken = metrixFilterResult.getNextToken();
                         } while (metrixToken != null);
@@ -2981,7 +3034,9 @@ public class InventoryUtil {
                     List<MetricAlarm> metricAlarms = new ArrayList<>();
                     String token = null;
                     do {
-                        DescribeAlarmsResult describeAlarms = cloudWatchClient.describeAlarms().withNextToken(token);
+                        DescribeAlarmsRequest request = new DescribeAlarmsRequest()
+                                .withNextToken(token);
+                        DescribeAlarmsResult describeAlarms = cloudWatchClient.describeAlarms(request);
                         metricAlarms.addAll(describeAlarms.getMetricAlarms());
                         token = describeAlarms.getNextToken();
                     } while (token != null);
@@ -3043,29 +3098,33 @@ public class InventoryUtil {
             try {
                 if (!skipRegions.contains(region.getName())) {
                     ec2Client = AmazonEC2ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
-                    DescribeLaunchTemplatesRequest request = new DescribeLaunchTemplatesRequest();
-                    DescribeLaunchTemplatesResult descLaunchTempResult;
-                    descLaunchTempResult = ec2Client.describeLaunchTemplates(request);
-                    final AmazonEC2 finalEc2Client = ec2Client;
-                    descLaunchTempResult.getLaunchTemplates().forEach(template -> {
-                        try {
-                            DescribeLaunchTemplateVersionsRequest versionsRequest = new DescribeLaunchTemplateVersionsRequest()
-                                    .withLaunchTemplateId(template.getLaunchTemplateId());
+                    String token = null;
+                    do {
+                        DescribeLaunchTemplatesRequest request = new DescribeLaunchTemplatesRequest().withNextToken(token);
+                        DescribeLaunchTemplatesResult descLaunchTempResult;
+                        descLaunchTempResult = ec2Client.describeLaunchTemplates(request);
+                        final AmazonEC2 finalEc2Client = ec2Client;
+                        descLaunchTempResult.getLaunchTemplates().forEach(template -> {
+                            try {
+                                DescribeLaunchTemplateVersionsRequest versionsRequest = new DescribeLaunchTemplateVersionsRequest()
+                                        .withLaunchTemplateId(template.getLaunchTemplateId());
 
-                            DescribeLaunchTemplateVersionsResult describeVersionsResult = finalEc2Client.describeLaunchTemplateVersions(versionsRequest);
+                                DescribeLaunchTemplateVersionsResult describeVersionsResult = finalEc2Client.describeLaunchTemplateVersions(versionsRequest);
 
-                            describeVersionsResult.getLaunchTemplateVersions().forEach(version -> {
-                                LaunchTemplateVH launchTemplateVH = new LaunchTemplateVH();
-                                launchTemplateVH.setLaunchTemplateId(template.getLaunchTemplateId());
-                                launchTemplateVH.setLaunchTemplateName(template.getLaunchTemplateName());
-                                launchTemplateVH.setImageId(version.getLaunchTemplateData().getImageId());
-                                launchTemplateVH.setSecurityGroupIds(version.getLaunchTemplateData().getSecurityGroupIds());
-                                launchTemplateVHList.add(launchTemplateVH);
-                            });
-                        } catch (Exception e) {
-                            log.warn("Error fetching versions for Launch Template: " + template.getLaunchTemplateName());
-                        }
-                    });
+                                describeVersionsResult.getLaunchTemplateVersions().forEach(version -> {
+                                    LaunchTemplateVH launchTemplateVH = new LaunchTemplateVH();
+                                    launchTemplateVH.setLaunchTemplateId(template.getLaunchTemplateId());
+                                    launchTemplateVH.setLaunchTemplateName(template.getLaunchTemplateName());
+                                    launchTemplateVH.setImageId(version.getLaunchTemplateData().getImageId());
+                                    launchTemplateVH.setSecurityGroupIds(version.getLaunchTemplateData().getSecurityGroupIds());
+                                    launchTemplateVHList.add(launchTemplateVH);
+                                });
+                            } catch (Exception e) {
+                                log.warn("Error fetching versions for Launch Template: " + template.getLaunchTemplateName());
+                            }
+                        });
+                        token = descLaunchTempResult.getNextToken();
+                    }while (token != null);
 
                     if (!launchTemplateVHList.isEmpty()) {
                         log.debug(InventoryConstants.ACCOUNT + accountId + " Type: Launch Template " + region.getName() + " >> " + launchTemplateVHList.size());
@@ -3146,6 +3205,7 @@ public class InventoryUtil {
                             RegistryVH registryVH = new RegistryVH(repo, data);
                             repositories.add(registryVH);
                         }
+                        nextToken = describeRepositoriesResult.getNextToken();
                     } while (nextToken != null);
                     if (!repositories.isEmpty()) {
                         log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ECR " + region.getName() + " >> " + repositories.size());
