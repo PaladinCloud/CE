@@ -2596,11 +2596,11 @@ public class InventoryUtil {
         String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId + "\",\"Message\": \"Exception in fetching info for resource\" ,\"type\": \"sqs\"";
         for (Region region : RegionUtils.getRegions()) {
             try {
-                amazonSQS = AmazonSQSClientBuilder.standard()
-                        .withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
-                        .withRegion(region.getName())
-                        .build();
                 if (!skipRegions.contains(region.getName())) {
+                    amazonSQS = AmazonSQSClientBuilder.standard()
+                            .withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+                            .withRegion(region.getName())
+                            .build();
                     List<String> sqsUrls = new ArrayList<>();
                     String nextToken = null;
                     do {
