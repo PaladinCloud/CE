@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 public class SendNotification implements RequestHandler<Map<String, Object>, String> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SendNotification.class);
+    private static final String NOTIFICATION_INVOKE_SVC = "notification-invoke-svc";
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final int maxDescriptionLength = 1000;
 
     /**
      * Below method places all incoming notification requests into topic which are consumed by
@@ -30,9 +32,10 @@ public class SendNotification implements RequestHandler<Map<String, Object>, Str
     @Override
     public String handleRequest(Map<String, Object> event, Context context) {
         String response = "hello paladin cloud";
-        LOGGER.info("EVENT: {}", gson.toJson(event));
+        PaladinMetrics.initialize("component", "invoke-svc");
         AmazonSNS client = AmazonSNSClientBuilder.standard().build();
         try {
+            PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-invoke");
             String snsTopicArn = System.getenv("SNS_TOPIC_ARN");
             String payloadString = (String) event.get("body");
             if (payloadString == null || payloadString.isEmpty()) {
@@ -50,9 +53,15 @@ public class SendNotification implements RequestHandler<Map<String, Object>, Str
             } else {
                 sendPayload(payloadString, client, snsTopicArn);
             }
-        } catch (Exception e) {
+            PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-invoke-success");
+        } catch (Throwable e) {
+            LOGGER.error("Error sending to SNS", e);
+            PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-invoke-error");
             throw new RuntimeException(e);
+        } finally {
+            PaladinMetrics.close();
         }
+
         return response;
     }
 
@@ -62,24 +71,48 @@ public class SendNotification implements RequestHandler<Map<String, Object>, Str
             List<Object> notificationRequestList = gson.fromJson(payloadString, List.class);
             notificationRequestList.stream().forEach(obj -> {
                 try {
-                    String notificationRequestStr = gson.toJson(obj);
+                    PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-send");
+                    String notificationRequestStr = trimDescription(gson.toJson(obj));
                     LOGGER.info("notificationsrequeststr for list---{}", notificationRequestStr);
                     PublishRequest request = new PublishRequest(snsTopicArn, notificationRequestStr);
                     PublishResult result = client.publish(request);
+                    PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-send-success");
                     LOGGER.info("message sent with id {}", result.getMessageId());
                 } catch (Exception ex) {
-                    LOGGER.error("Failed sending message: {}", obj, ex);
+                    PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-send-error");
+                    LOGGER.error("Failed sending message: length={}; {}", obj.toString().length(), obj, ex);
                 }
             });
         } else {
             try {
+                PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-send");
+                payloadString = trimDescription(payloadString);
                 LOGGER.info("notificationsrequeststr for single event---{}", payloadString);
                 PublishRequest request = new PublishRequest(snsTopicArn, payloadString);
                 PublishResult result = client.publish(request);
+                PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-send-success");
                 LOGGER.info("message sent with id {}", result.getMessageId());
             } catch (Exception ex) {
-                LOGGER.error("Failed sending message: {}", payloadString, ex);
+                PaladinMetrics.incrementCount(NOTIFICATION_INVOKE_SVC + "-send-error");
+                LOGGER.error("Failed sending message: length={}; {}", payloadString.length(), payloadString, ex);
             }
         }
+    }
+
+    private String trimDescription(String jsonStr) {
+        JsonObject jo = (JsonObject) JsonParser.parseString(jsonStr);
+        JsonObject payloadObj = (JsonObject) jo.get("payload");
+        if (payloadObj != null) {
+            JsonElement descObj = payloadObj.get("description");
+            if (descObj != null && descObj.getAsJsonPrimitive().isString()) {
+                String description = descObj.getAsString();
+                if (description.length() > maxDescriptionLength) {
+                    LOGGER.warn("Truncating description length={}", description.length());
+                    payloadObj.addProperty("description", description.substring(0, maxDescriptionLength));
+                    return jo.toString();
+                }
+            }
+        }
+        return jsonStr;
     }
 }
