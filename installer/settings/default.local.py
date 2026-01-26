@@ -85,6 +85,8 @@ JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules
 
 #mandatory tags for tagging polices
 MANDATORY_TAGS = "Application,Environment"
+#optinal tags for violation details.
+OPTIONAL_TAGS = "Name,Env"
 
 
 #BATCH CONFIGURATION 

@@ -54,12 +54,12 @@ public interface PolicyRunner {
                 break;
         }
     }
-    default Map<String,String> getMandatoryTagsForAnnotation(String mandatoryTags, Map<String,String> resourceData){
-        if(mandatoryTags==null || mandatoryTags.isEmpty()){
+    default Map<String,String> getTagsForAnnotation(String tags, Map<String,String> resourceData){
+        if(tags==null || tags.isEmpty()){
             return Collections.emptyMap();
         }
         Map<String,String> annotationMap=new HashMap<>();
-        Set<String> mandatoryTagSet = Arrays.stream(mandatoryTags.split(",")).map(String::trim).collect(Collectors.toSet());
+        Set<String> mandatoryTagSet = Arrays.stream(tags.split(",")).map(String::trim).collect(Collectors.toSet());
         mandatoryTagSet.stream().forEach(element->{
             String tag="tags."+element;
             if(resourceData.containsKey(tag)){

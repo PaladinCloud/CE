@@ -405,8 +405,10 @@ public class PolicyExecutor {
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
         final String mandatoryTags = CommonUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
+        final String optionalTags = CommonUtils.getPropValue(PacmanSdkConstants.TAGGING_OPTIONAL_TAGS);
         policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
         policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS, mandatoryTags);
+        policyParam.put(PacmanSdkConstants.TAGGING_OPTIONAL_TAGS, optionalTags);
         policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, PacmanSdkConstants.ROLE_PREFIX +
                 PacmanSdkConstants.INTEGRAION_ROLE);
         if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {

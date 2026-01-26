@@ -25,7 +25,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.google.common.base.Strings;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -174,7 +173,9 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
                 // FINDING NON EVALUATED RESOURCES
             }
             String tagMandatory = policyParam.get(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
-            Map<String, String> mandatoryTags = getMandatoryTagsForAnnotation(tagMandatory,resource);
+            String tagOptional = policyParam.get(PacmanSdkConstants.TAGGING_OPTIONAL_TAGS);
+            Map<String, String> mandatoryTags = getTagsForAnnotation(tagMandatory,resource);
+            Map<String, String> optionalTags = getTagsForAnnotation(tagOptional,resource);
             // if fail issue will get logged to database, hence update the
             // category and severity
             if (PacmanSdkConstants.STATUS_FAILURE.equalsIgnoreCase(result.getStatus())
@@ -202,6 +203,7 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
                 result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanRuleConstants.ACCOUNTID));
                 result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
                 mandatoryTags.forEach(result.getAnnotation()::putIfAbsent);
+                optionalTags.forEach(result.getAnnotation()::putIfAbsent);
 
             } else if (PacmanSdkConstants.STATUS_SUCCESS.equalsIgnoreCase(result.getStatus())) {
 
@@ -235,6 +237,7 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
                     annotation.put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID));
                     annotation.put(PacmanSdkConstants.REGION, resource.get("region"));
                     mandatoryTags.forEach(annotation::putIfAbsent);
+                    optionalTags.forEach(annotation::putIfAbsent);
                 }
 
                 result.setAnnotation(annotation);

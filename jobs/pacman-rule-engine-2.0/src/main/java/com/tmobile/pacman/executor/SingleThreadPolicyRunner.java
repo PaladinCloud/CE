@@ -22,9 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Strings;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
-import com.tmobile.pacman.util.CommonUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.slf4j.Logger;
@@ -38,7 +36,6 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.util.ReflectionUtils;
 import com.tmobile.pacman.util.PolicyExecutionUtils;
 
-import static com.tmobile.pacman.common.PacmanSdkConstants.JOB_NAME;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.*;
 
 // TODO: Auto-generated Javadoc
@@ -123,7 +120,9 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                 // if fail issue will get logged to database, hence update the
                 // category and severity
                 String tagsMandatory = policyParam.get(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
-                Map<String, String> mandatoryTag = getMandatoryTagsForAnnotation(tagsMandatory,resource);
+                String tagOptional = policyParam.get(PacmanSdkConstants.TAGGING_OPTIONAL_TAGS);
+                Map<String, String> mandatoryTag = getTagsForAnnotation(tagsMandatory,resource);
+                Map<String, String> optionalTags = getTagsForAnnotation(tagOptional,resource);
                 if (result!= null && (PacmanSdkConstants.STATUS_FAILURE.equalsIgnoreCase(result.getStatus())
                         || PacmanSdkConstants.STATUS_UNKNOWN.equalsIgnoreCase(result.getStatus()))) {
                     if (policyParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
@@ -151,6 +150,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                     result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
                     result.getAnnotation().put(PacmanRuleConstants.ACCOUNTID,resource.get(PacmanRuleConstants.ACCOUNTID));
                     mandatoryTag.forEach(result.getAnnotation()::putIfAbsent);
+                    optionalTags.forEach(result.getAnnotation()::putIfAbsent);
                 } else {
                     Annotation annotation = Annotation.buildAnnotation(policyParam, Annotation.Type.ISSUE);
                     annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY,
@@ -170,6 +170,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                     annotation.put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
                     annotation.put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID)); // this is important to close the issue
                     mandatoryTag.forEach(annotation::putIfAbsent);
+                    optionalTags.forEach(annotation::putIfAbsent);
                     if (null != result) {
                         result.setAnnotation(annotation);
                     } else {

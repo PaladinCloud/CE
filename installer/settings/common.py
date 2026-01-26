@@ -162,6 +162,7 @@ DB_USERNAME = "paladin"
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
 MANDATORY_TAGS = "Application,Environment"
+OPTIONAL_TAGS = "Name,env"
 # Add your first ACCOUNT_ID,ACCOUNT_NAME and ACCOUNT_PLATFORM here
 ACCOUNT_ID = ""
 ACCOUNT_NAME = ""
