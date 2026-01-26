@@ -125,6 +125,7 @@ SET @VULNERABILITY_SCHEDULE_COLLECTOR_INITIAL_DELAY='$VULNERABILITY_SCHEDULE_COL
 SET @VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY='$VULNERABILITY_SCHEDULE_SHIPPER_INITIAL_DELAY';
 SET @ENABLE_EXTERNAL_ID='$ENABLE_EXTERNAL_ID';
 SET @EXTERNAL_ID='$EXTERNAL_ID';
+SET @OPTIONAL_TAGS='$OPTIONAL_TAGS';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -3411,3 +3412,4 @@ UPDATE cf_pac_updatable_fields SET displayFields = CONCAT(displayFields, ',_asse
 
 update pac_v2_ui_options set optionURL='/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=issue', optionValue='_resourceid.keyword' where filterId=1 and optionName ="Asset ID";
 update pac_v2_ui_options set optionURL='/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset', optionValue='_resourceid.keyword' where filterId=8 and optionName ="Asset ID";
+INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('tagging.optionalTags',concat(@OPTIONAL_TAGS,''),'application','prd','latest',NULL,NULL,NULL,NULL);

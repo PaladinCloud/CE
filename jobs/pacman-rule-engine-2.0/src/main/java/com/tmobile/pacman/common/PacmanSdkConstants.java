@@ -707,4 +707,5 @@ public interface PacmanSdkConstants {
     String ASSET_STATE_JOB = "asset-state-job";
     String TENANT_CONFIG_TABLE = "tenant-config";
     String STATUS = "status";
+    String TAGGING_OPTIONAL_TAGS = "tagging.optionalTags";
 }
