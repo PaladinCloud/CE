@@ -3000,8 +3000,7 @@ END $$
 
 DELIMITER ;
 
-CALL update_filter_for_tag(@MANDATORY_TAGS);
-CALL update_filter_for_tag(@OPTIONAL_TAGS);
+CALL update_filter_for_tag(CONCAT_WS(',', `@MANDATORY_TAGS`, `@OPTIONAL_TAGS`));
 
 
 /* Updating resourceName for Azure target Type */
