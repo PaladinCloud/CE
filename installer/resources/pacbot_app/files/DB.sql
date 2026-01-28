@@ -2846,7 +2846,7 @@ END $$
 
 DELIMITER ;
 
-CALL update_displayFields_for_azure_gcp(CONCAT_WS(',', @MANDATORY_TAGS, @OPTIONAL_TAGS));
+CALL update_displayFields_for_azure_gcp(CONCAT_WS(',', NULLIF(TRIM(@MANDATORY_TAGS),''), NULLIF(TRIM(@OPTIONAL_TAGS),'')));
 
 
 
@@ -3000,7 +3000,7 @@ END $$
 
 DELIMITER ;
 
-CALL update_filter_for_tag(CONCAT_WS(',', @MANDATORY_TAGS, @OPTIONAL_TAGS));
+CALL update_filter_for_tag(CONCAT_WS(',', NULLIF(TRIM(@MANDATORY_TAGS),''), NULLIF(TRIM(@OPTIONAL_TAGS),'')));
 
 
 
