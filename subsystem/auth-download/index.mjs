@@ -3,10 +3,13 @@ import jwkToPem from 'jwk-to-pem'
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb"
 
 let cachedKeys = {}
+let cacheTimestamp = 0
+const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
 
 // CONFIG 
 const CONFIG  = {
     region: "",
+    audience: "",
     jwksURL: "",
     issuer: "",
     tableName: "",
@@ -16,12 +19,22 @@ const CONFIG  = {
 // Fetch Cognito JWKS
 async function getPublicKeys(jwksURL) {
 
-    if (cachedKeys[jwksURL]) {
+    const now = Date.now()
+    if (cachedKeys[jwksURL] && (now - cacheTimestamp) < CACHE_TTL_MS) {
         return cachedKeys[jwksURL]
     }
 
     const res = await fetch(jwksURL)
-    const { keys } = await res.json()
+    if (!res.ok) {
+        throw new Error(`Failed to fetch JWKS: ${res.status}`)
+    }
+    
+    const data = await res.json()
+    const keys = data.keys
+    
+    if (!keys || !Array.isArray(keys)) {
+        throw new Error("Invalid JWKS response: missing keys array")
+    }
 
     const pems = {}
 
@@ -48,7 +61,7 @@ const validateToken = async (token, jwksURL) => {
         const pem = pems[header.kid]
         if (!pem) return null
 
-        const decoded = jwt.verify(token, pem, { algorithms: ['RS256'], issuer: CONFIG.issuer })
+        const decoded = jwt.verify(token, pem, { algorithms: ['RS256'], issuer: CONFIG.issuer, audience: CONFIG.audience })
 
         if (decoded.token_use !== 'id') return null
 
