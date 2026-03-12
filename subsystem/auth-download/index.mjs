@@ -6,9 +6,9 @@ let cachedKeys = {}
 
 // CONFIG 
 const CONFIG  = {
-    region: "us-east-1",
-    jwksURL: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_KlnlwpCxN/.well-known/jwks.json",
-    tableName: "tenant-config",
+    region: "",
+    jwksURL: "",
+    tableName: "",
     accessClaim: "custom:accessId"
 }
 

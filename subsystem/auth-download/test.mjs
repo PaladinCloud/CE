@@ -15,7 +15,7 @@ const event = {
                         host: [
                             {
                                 key: "Host",
-                                value: "d1cnyug3yb2tp8.cloudfront.net"
+                                value: ""
                             }
                         ],
                         authorization: [
