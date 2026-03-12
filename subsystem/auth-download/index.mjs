@@ -8,6 +8,7 @@ let cachedKeys = {}
 const CONFIG  = {
     region: "",
     jwksURL: "",
+    issuer: "",
     tableName: "",
     accessClaim: "custom:accessId"
 }
@@ -47,7 +48,7 @@ const validateToken = async (token, jwksURL) => {
         const pem = pems[header.kid]
         if (!pem) return null
 
-        const decoded = jwt.verify(token, pem, { algorithms: ['RS256'] })
+        const decoded = jwt.verify(token, pem, { algorithms: ['RS256'], issuer: CONFIG.issuer })
 
         if (decoded.token_use !== 'id') return null
 
