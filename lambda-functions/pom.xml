@@ -49,6 +49,7 @@
 		<module>notification-send-email-service</module>
 		<module>notification-template-formatter-service</module>
 		<module>notification-invoke-service</module>
+        <module>download-report-service</module>
     </modules>
 
 </project>

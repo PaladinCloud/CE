@@ -15,14 +15,17 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.couchbase.client.deps.io.netty.util.internal.StringUtil;
+import com.google.common.base.Strings;
+import com.google.gson.*;
+import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.commons.utils.ResponseUtils;
 import com.tmobile.pacman.api.compliance.domain.DownloadRequest;
+import com.tmobile.pacman.api.compliance.repository.DownloadRepository;
+import com.tmobile.pacman.api.compliance.service.*;
+import com.tmobile.pacman.api.compliance.util.PacHttpUtils;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,32 +35,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.couchbase.client.deps.io.netty.util.internal.StringUtil;
-import com.google.common.base.Strings;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.tmobile.pacman.api.commons.Constants;
-import com.tmobile.pacman.api.commons.utils.ResponseUtils;
-import com.tmobile.pacman.api.compliance.domain.Request;
-import com.tmobile.pacman.api.compliance.repository.DownloadRepository;
-import com.tmobile.pacman.api.compliance.service.ComplianceService;
-import com.tmobile.pacman.api.compliance.service.ComplianceServiceImpl;
-import com.tmobile.pacman.api.compliance.service.DownloadFileService;
-import com.tmobile.pacman.api.compliance.service.PatchingService;
-import com.tmobile.pacman.api.compliance.service.TaggingService;
-import com.tmobile.pacman.api.compliance.util.PacHttpUtils;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Class DownloadController.
@@ -65,6 +51,25 @@ import io.swagger.annotations.ApiParam;
 @RestController
 @PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 public class DownloadController implements Constants {
+
+    /**
+     * The es url.
+     */
+    private String esUrl;
+    /**
+     * The Constant PROTOCOL.
+     */
+    static final String PROTOCOL = "http";
+    /**
+     * The es host.
+     */
+    @Value("${elastic-search.host}")
+    private String esHost;
+    /**
+     * The es port.
+     */
+    @Value("${elastic-search.port}")
+    private int esPort;
 
     /** The download file service. */
     @Autowired
@@ -77,6 +82,10 @@ public class DownloadController implements Constants {
     /** The compliance service impl. */
     @Autowired
     private ComplianceServiceImpl complianceServiceImpl;
+
+    /** The compliance service impl. */
+    @Autowired
+    private NotificationServiceImpl notificationServiceImpl;
 
     /** The download repository. */
     @Autowired
@@ -110,6 +119,11 @@ public class DownloadController implements Constants {
     private String serviceDnsName;
     /** The logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(DownloadController.class);
+
+    @PostConstruct
+    void init() {
+        esUrl = PROTOCOL + "://" + esHost + ":" + esPort;
+    }
 
     /**
      * API to download the data either in CSV or excel format,serviceId is the
@@ -216,6 +230,73 @@ public class DownloadController implements Constants {
         Map<String,String> authToken = new HashMap<>();
         authToken.put(AUTHORIZATION, "Bearer "+token);
         return authToken;
+    }
+
+    /**
+     * API to download the data either in CSV or excel format,serviceId is the
+     * number which is configured in the database for a particular API. Pass the
+     * request params based on the API you want to download for.
+     *
+     * @param servletResponse
+     *            the servlet response
+     * @param fileFormat
+     *            the file format
+     * @param serviceId
+     *            the service id
+     * @param request
+     *            the request
+     * @return ResponseEntity<Object>
+     * @throws Exception
+     *             the exception
+     */
+
+
+    @ApiOperation(httpMethod = "POST", value = "Download Service Details in CSV or Excel")
+    @RequestMapping(path = "/v2/download/services", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<Object> getIssuesDownloadV2(final HttpServletRequest servletRequest,
+                                                      final HttpServletResponse servletResponse,
+                                                    @ApiParam(value = "Provide Download File Format (excel or csv). Default is csv", required = false) @RequestParam(name = "fileFormat", required = false) String fileFormat,
+                                                    @ApiParam(value = "Provide serviceId 1-policyViolationList,2-policyOverviewList,3-patchingList,4-taggingList,5-certificateList,6-vulnerabilitiesList", required = false) @RequestParam("serviceId") int serviceId,
+                                                    @ApiParam(value = "Provide Service Search Filter", required = false) @RequestBody(required = false) DownloadRequest request)
+            throws Exception {
+        try {
+            String assetGroup = request.getAg();
+            JsonArray responseArray = null;
+
+            String serviceName = null;
+            String serviceEndpoint = null;
+            if (Strings.isNullOrEmpty(assetGroup)) {
+                return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));
+            }
+
+            JsonObject jsonObject = null;
+            String authHeader = servletRequest.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                String[] parts = token.split("\\.");
+                if (parts.length > 1) {
+                    String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
+                    jsonObject = JsonParser.parseString(payloadJson).getAsJsonObject();
+                }
+            }
+            assert jsonObject != null;
+            String username = jsonObject.has("email") ? jsonObject.get("email").getAsString() : null;
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            String searchFilter = gson.toJson(request);
+
+            List<Map<String, Object>> filterMap = downloadRepository.getFiltersFromDb(serviceId);
+            String filterMapJson = gson.toJson(filterMap);
+            System.out.println(filterMapJson);
+
+            notificationServiceImpl.createDownloadReportRecordEntryInES(esUrl, username, searchFilter);
+
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            LOGGER.error(e.toString());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
 }

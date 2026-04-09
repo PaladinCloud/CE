@@ -8,6 +8,7 @@ import com.tmobile.pacman.api.compliance.dto.IndividualExNotificationRequest;
 import com.tmobile.pacman.api.commons.dto.NotificationBaseRequest;
 import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import com.tmobile.pacman.api.compliance.dto.NotificationPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,10 @@ public class NotificationServiceImpl implements NotificationService{
     /** The ui host. */
     @Value("${pacman.host}")
     private String hostName;
+
+    /** The ui host. */
+    @Value("${cloudfront.uri}")
+    private String cloudfrontUri;
 
     @Autowired
     private CredentialProvider credentialProvider;
@@ -214,6 +219,55 @@ public class NotificationServiceImpl implements NotificationService{
                     LOGGER.info("{} Notifications sent for revoke exemption for issueIds - {}",notificationDetailsList.size(),issueDetails.stream().map(obj -> (String)obj.get(ES_DOC_ID_KEY)).filter(obj -> !failedIssueIds.contains(obj)).collect(Collectors.joining(",")));
                 }
             }
+        }
+        catch (Exception e) {
+            LOGGER.error("Error triggering lambda function url, notification request not sent for revoke exemption. Error - {}",e.getMessage());
+        }
+    }
+
+
+    private NotificationBaseRequest getNotifyBaseReqForDownload(String username, String searchFilter){
+        NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
+        notificationBaseRequest.setEventCategory(NotificationTypes.DOWNLOAD);
+        notificationBaseRequest.setEventCategoryName(NotificationTypes.DOWNLOAD.getValue());
+
+        notificationBaseRequest.setEventName(DOWNLOAD_REPORT_EVENT_NAME);
+        notificationBaseRequest.setEventDescription(DOWNLOAD_REPORT_EVENT_NAME);
+        notificationBaseRequest.setSubject(DOWNLOAD_REPORT_EVENT_NAME);
+        notificationBaseRequest.setEventDescription(DOWNLOAD_REPORT_EVENT_NAME);
+
+
+        NotificationPayload notificationPayload = new NotificationPayload();
+
+        notificationPayload.setUrl(cloudfrontUri);
+        notificationPayload.setStatus(StatusTypes.INPROGRESS.getValue());
+        notificationPayload.setIntiatedBy(username);
+        notificationPayload.setIntiatedDate("");
+        notificationPayload.setSearchFilter(searchFilter);
+
+        notificationBaseRequest.setPayload(notificationPayload);
+
+        System.out.println("notificationBaseRequest : "+notificationBaseRequest.toString());
+
+        return notificationBaseRequest;
+    }
+
+
+
+    public void createDownloadReportRecordEntryInES(String esUrl, String username, String searchFilter){
+        try {
+            Gson gson = new Gson();
+            NotificationBaseRequest notificationBaseRequest = getNotifyBaseReqForDownload(username, searchFilter);
+
+            UUID uuid = UUID.randomUUID();
+            String indexName = "notification";
+            String url = new StringBuilder(esUrl).append("/").append(indexName).append("/_doc/").append(uuid).toString();
+            String notificationDetailsStr = gson.toJson(notificationBaseRequest);
+            System.out.printf("\n cloudfrontUri : "+cloudfrontUri);
+            System.out.printf("\n url : "+url);
+            System.out.printf("\n notificationDetailsStr : "+notificationDetailsStr);
+
+//            invokeNotificationUrl(notificationDetailsStr);
         }
         catch (Exception e) {
             LOGGER.error("Error triggering lambda function url, notification request not sent for revoke exemption. Error - {}",e.getMessage());

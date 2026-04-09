@@ -469,7 +469,9 @@ public interface Constants {
         @SerializedName("policy")
         POLICY("policy"),
         @SerializedName("plugin")
-        PLUGIN("plugin");
+        PLUGIN("plugin"),
+        @SerializedName("download")
+        DOWNLOAD("download");
         
         String value;
         @Override
@@ -480,6 +482,27 @@ public interface Constants {
             return this.value;
         }
         NotificationTypes(String value){
+            this.value=value;
+        }
+    }
+
+    enum StatusTypes {
+        @SerializedName("inprogress")
+        INPROGRESS("inprogress"),
+        @SerializedName("failed")
+        FAILED("failed"),
+        @SerializedName("completed")
+        COMPLETED("completed");
+
+        String value;
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+        public String getValue() {
+            return this.value;
+        }
+        StatusTypes(String value){
             this.value=value;
         }
     }

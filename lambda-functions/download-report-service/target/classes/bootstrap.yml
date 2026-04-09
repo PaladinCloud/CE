@@ -1,0 +1,3 @@
+service:
+  dns:
+    name: ${PACMAN_HOST_NAME}:https://saasdev.paladincloud.io

@@ -29,3 +29,6 @@ query:
   assetGroupQuery: SELECT groupName, targetType, attributeName, attributeValue, dataSource, aliasQuery FROM cf_AssetGroups
 
 spring.jpa.hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+cloudfront:
+  uri: https://d1cnyug3yb2tp8.cloudfront.net
