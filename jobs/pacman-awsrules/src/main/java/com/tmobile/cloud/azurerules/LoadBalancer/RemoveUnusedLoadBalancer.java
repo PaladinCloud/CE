@@ -3,6 +3,7 @@ package com.tmobile.cloud.azurerules.LoadBalancer;
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
@@ -20,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.StreamSupport;
+
 @PacmanPolicy(key = "check-for-Unused-Load-Balancers", desc = "Every Unused load balancer should be deleted for cost optimization and better management of your cloud resources.", severity = PacmanSdkConstants.SEV_LOW, category = PacmanSdkConstants.SECURITY)
 public class RemoveUnusedLoadBalancer extends BasePolicy {
     private static final Logger logger = LoggerFactory
@@ -79,27 +82,40 @@ public class RemoveUnusedLoadBalancer extends BasePolicy {
 
     private boolean checkForUnusedLoadBalancer(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
-        boolean validationResult = false;
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
                 HashMultimap.create(), null, 0, new HashMap<>(), null, null);
         logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson);
 
-        if (resultJson.has(PacmanRuleConstants.HITS)) {
-            String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
-            logger.debug("hit content in result json: {}", hitsString);
-            JsonObject hitsJson = JsonParser.parseString(hitsString).getAsJsonObject();
-            JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
-            if (hitsJsonArray.size() > 0) {
-                JsonObject source = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                        .get(PacmanRuleConstants.SOURCE);
-                JsonArray backendPoolInstances =source.get("backendPoolInstances").getAsJsonArray();
-                if(backendPoolInstances==null || backendPoolInstances.isEmpty()){
-                    validationResult=true;
-                }
-            }
+        if (!resultJson.has(PacmanRuleConstants.HITS)) {
+            return false;
         }
-        return validationResult;
+
+        String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
+        logger.debug("hit content in result json: {}", hitsString);
+        JsonObject hitsJson = JsonParser.parseString(hitsString).getAsJsonObject();
+        JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
+
+        if (hitsJsonArray.isEmpty()) {
+            return false;
+        }
+
+        JsonObject source = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                .get(PacmanRuleConstants.SOURCE);
+
+        JsonElement poolsElement = source.get("backendAddressPools");
+        if (poolsElement == null || !poolsElement.isJsonArray()) {
+            return true;
+        }
+
+        boolean hasInstances = StreamSupport.stream(poolsElement.getAsJsonArray().spliterator(), false)
+                .map(JsonElement::getAsJsonObject)
+                .map(pool -> pool.getAsJsonObject("properties"))
+                .filter(Objects::nonNull)
+                .map(props -> props.getAsJsonArray("backendIPConfigurations"))
+                .anyMatch(configs -> configs != null && !configs.isEmpty());
+
+        return !hasInstances;
     }
 
 

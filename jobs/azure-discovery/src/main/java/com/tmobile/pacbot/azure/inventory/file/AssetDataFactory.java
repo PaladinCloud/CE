@@ -141,8 +141,8 @@ public class AssetDataFactory {
                 return diskInventoryCollector.collect(subscription, tagMap);
             case FUNCTION_APP:
                 return functionAppInventoryCollector.collect(subscription);
-            case LOADBALANCER:
-                return loadBalancerInventoryCollector.collect(subscription, tagMap);
+            /*case LOADBALANCER:
+                return loadBalancerInventoryCollector.collect(subscription, tagMap);*/
             case MARIADB:
                 return mariaDBInventoryCollector.collect(subscription);
             case MYSQL_FLEXIBLE:
