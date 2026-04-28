@@ -77,7 +77,7 @@ public class TargetTypesConstants {
             DIAGNOSTIC_SETTING, // done
             DISK, // done
             FUNCTION_APP, // done
-            LOADBALANCER, // done
+//            LOADBALANCER, // done
             MARIADB, // done
             MYSQL_FLEXIBLE, // done
             MYSQLSERVER, // done
