@@ -153,9 +153,11 @@ public class PacmanUtils {
         Map<String, String> lowerCaseAttributes = new HashMap<>();
 
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
-            lowerCaseAttributes.put(
-                    entry.getKey().toLowerCase(),
-                    entry.getValue());
+            String lowerKey = entry.getKey().toLowerCase();
+            String existingValue = lowerCaseAttributes.get(lowerKey);
+            if (existingValue == null || existingValue.trim().isEmpty()) {
+                lowerCaseAttributes.put(lowerKey, entry.getValue());
+            }
         }
         for (String tag : caseInsensitiveTags) {
             String expectedKey = getTagKey(tag).toLowerCase();
