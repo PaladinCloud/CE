@@ -22,10 +22,7 @@
  **/
 package com.tmobile.cloud.awsrules.ec2;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,54 +65,75 @@ public class TaggingRule extends BasePolicy {
 	 *
 	 */
 	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+            logger.debug("========TaggingRule started=========");
+            Set<String> missingTags = new HashSet<>();
+            String tagsSplitter = ruleParam.get(PacmanSdkConstants.SPLITTER_CHAR);
+            String entityId = ruleParam.get(PacmanSdkConstants.RESOURCE_ID);
 
-		logger.debug("========TaggingRule started=========");
-		Set<String> missingTags = new HashSet<>();
-		String mandatoryTags = ConfigUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
-		String tagsSplitter = ruleParam.get(PacmanSdkConstants.SPLITTER_CHAR);
-		String entityId = ruleParam.get(PacmanSdkConstants.RESOURCE_ID);
+            String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
+            String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+            String targetType = ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
 
-		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
-		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-		String targetType = ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
+            String caseSensitiveTagsFromParam = ruleParam.get(PacmanRuleConstants.MANDATORY_TAGS);
+            String caseInsensitiveTagsFromParam = ruleParam.get(PacmanRuleConstants.MANDATORY_TAGS_IGNORE_CASE);
 
-		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
+            MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
+            MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
+            // if either of the tags parameters are provided, then we consider that the user has provided custom tags else pick from config
+            boolean hasCustomTags = (caseSensitiveTagsFromParam != null && !caseSensitiveTagsFromParam.trim().isEmpty())
+                    || (caseInsensitiveTagsFromParam != null && !caseInsensitiveTagsFromParam.trim().isEmpty());
 
+            List<String> caseSensitiveTagsList;
+            List<String> caseInsensitiveTagsList;
 
-		if (!PacmanUtils.doesAllHaveValue(mandatoryTags,tagsSplitter,severity,category,targetType)) {
-			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
-			throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
-		}
+            if (hasCustomTags) {
+                caseSensitiveTagsList = (caseSensitiveTagsFromParam != null && !caseSensitiveTagsFromParam.trim().isEmpty())
+                        ? PacmanUtils.splitStringToAList(caseSensitiveTagsFromParam, tagsSplitter)
+                        : new ArrayList<>();
+                caseInsensitiveTagsList = (caseInsensitiveTagsFromParam != null && !caseInsensitiveTagsFromParam.trim().isEmpty())
+                        ? PacmanUtils.splitStringToAList(caseInsensitiveTagsFromParam, tagsSplitter)
+                        : new ArrayList<>();
+            } else {
+                String mandatoryTags = ConfigUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
+                if (!PacmanUtils.doesAllHaveValue(mandatoryTags, tagsSplitter, severity, category, targetType)) {
+                    logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
+                    throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
+                }
+                caseSensitiveTagsList = new ArrayList<>();
+                caseInsensitiveTagsList = PacmanUtils.splitStringToAList(mandatoryTags, tagsSplitter);
+            }
+            List<String> allMandatoryTags = new ArrayList<>();
+            allMandatoryTags.addAll(caseSensitiveTagsList);
+            allMandatoryTags.addAll(caseInsensitiveTagsList);
 
-		String missingTagsStr = null;
+            if (resourceAttributes != null) {
+                if (targetType.equalsIgnoreCase(PacmanRuleConstants.TARGET_TYPE_EC2)) {
+                    if (resourceAttributes.get(PacmanRuleConstants.STATE_NAME).equalsIgnoreCase(PacmanRuleConstants.RUNNING_STATE)
+                            || resourceAttributes.get(PacmanRuleConstants.STATE_NAME).equalsIgnoreCase(PacmanRuleConstants.STOPPED_STATE)) {
+                        missingTags = PacmanUtils.getMissingTagsfromResourceAttributeWithCase(
+                                caseSensitiveTagsList, caseInsensitiveTagsList, resourceAttributes);
+                    }
+                } else {
+                    missingTags = PacmanUtils.getMissingTagsfromResourceAttributeWithCase(
+                            caseSensitiveTagsList, caseInsensitiveTagsList, resourceAttributes);
+                }
+            }
 
+            String missingTagsStr = Joiner.on(", ").join(missingTags);
+            if (!missingTags.isEmpty()) {
+                String description = "Missed tags for " + targetType + " are " + missingTagsStr;
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                        PacmanUtils.createAnnotaion(ruleParam, missingTagsStr, allMandatoryTags, description, severity, category, targetType));
+            } else {
+                logger.info(targetType, " ", entityId, " has all manadatory tags");
+            }
+            logger.debug("========TaggingRule ended=========");
+            return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
-		List<String> mandatoryTagsList = PacmanUtils.splitStringToAList(mandatoryTags, tagsSplitter);
-
-		if (resourceAttributes!=null) {
-
-			if(targetType.equalsIgnoreCase(PacmanRuleConstants.TARGET_TYPE_EC2)){
-				if(resourceAttributes.get(PacmanRuleConstants.STATE_NAME).equalsIgnoreCase(PacmanRuleConstants.RUNNING_STATE)||resourceAttributes.get(PacmanRuleConstants.STATE_NAME).equalsIgnoreCase(PacmanRuleConstants.STOPPED_STATE)){
-				missingTags = PacmanUtils.getMissingTagsfromResourceAttribute(mandatoryTagsList,resourceAttributes);
-				}
-			}else{
-				missingTags = PacmanUtils.getMissingTagsfromResourceAttribute(mandatoryTagsList,resourceAttributes);
-			}
-		}
-		missingTagsStr = Joiner.on(", ").join(missingTags);
-		if (!missingTags.isEmpty()) {
-			String description = "Missed tags for "+targetType+" are "+ missingTagsStr;
-			return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, PacmanUtils.createAnnotaion(ruleParam, missingTagsStr, mandatoryTagsList, description,severity,category,targetType));
-
-		} else {
-			logger.info(targetType ," ", entityId , " has all manadatory tags");
-		}
-		logger.debug("========TaggingRule ended=========");
-		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
-	}
+    }
 
 	public String getHelpText() {
 		return "This rule checks for the missing tags of services";
 	}
 }
+

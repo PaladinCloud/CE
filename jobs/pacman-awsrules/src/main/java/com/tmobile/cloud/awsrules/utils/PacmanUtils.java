@@ -133,6 +133,40 @@ public class PacmanUtils {
         return mandatoryTagSet;
     }
 
+    public static Set<String> getMissingTagsfromResourceAttributeWithCase(
+            List<String> caseSensitiveTags, List<String> caseInsensitiveTags,
+            Map<String, String> attributes) {
+
+        Set<String> missingTags = new LinkedHashSet<>();
+
+        // Check case-sensitive tags — exact key match required
+        for (String tag : caseSensitiveTags) {
+            String expectedKey = getTagKey(tag);
+            String value = attributes.get(expectedKey);
+            if (value == null || value.trim().isEmpty()) {
+                missingTags.add(tag);
+            }
+        }
+
+        // Check case-insensitive tags
+
+        Map<String, String> lowerCaseAttributes = new HashMap<>();
+
+        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+            lowerCaseAttributes.put(
+                    entry.getKey().toLowerCase(),
+                    entry.getValue());
+        }
+        for (String tag : caseInsensitiveTags) {
+            String expectedKey = getTagKey(tag).toLowerCase();
+            String value = lowerCaseAttributes.get(expectedKey);
+            if (value == null || value.trim().isEmpty()) {
+                missingTags.add(tag);
+            }
+        }
+        return missingTags;
+    }
+
     public static Annotation createAnnotaion(Map<String, String> ruleParam, String missingTagsStr,
             List<String> mandatoryTagsList, String description, String severity, String category) {
         Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
@@ -238,6 +272,10 @@ public class PacmanUtils {
             newList.add(tagsDot + tag);
         }
         return newList;
+    }
+
+    private static String getTagKey(String tag) {
+        return "tags." + tag;
     }
 
     public static Boolean checkIsCompliant(String version, Set<String> criteriaMapkeys,
