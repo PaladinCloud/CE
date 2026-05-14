@@ -80,6 +80,11 @@ public class TaggingRule extends BasePolicy {
             MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
             MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
             // if either of the tags parameters are provided, then we consider that the user has provided custom tags else pick from config
+
+            if (!PacmanUtils.doesAllHaveValue(tagsSplitter, severity, category, targetType)) {
+                logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
+                throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
+            }
             boolean hasCustomTags = (caseSensitiveTagsFromParam != null && !caseSensitiveTagsFromParam.trim().isEmpty())
                     || (caseInsensitiveTagsFromParam != null && !caseInsensitiveTagsFromParam.trim().isEmpty());
 
@@ -95,7 +100,7 @@ public class TaggingRule extends BasePolicy {
                         : new ArrayList<>();
             } else {
                 String mandatoryTags = ConfigUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
-                if (!PacmanUtils.doesAllHaveValue(mandatoryTags, tagsSplitter, severity, category, targetType)) {
+                if (!PacmanUtils.doesAllHaveValue(mandatoryTags)) {
                     logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
                     throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
                 }
@@ -108,8 +113,9 @@ public class TaggingRule extends BasePolicy {
 
             if (resourceAttributes != null) {
                 if (targetType.equalsIgnoreCase(PacmanRuleConstants.TARGET_TYPE_EC2)) {
-                    if (resourceAttributes.get(PacmanRuleConstants.STATE_NAME).equalsIgnoreCase(PacmanRuleConstants.RUNNING_STATE)
-                            || resourceAttributes.get(PacmanRuleConstants.STATE_NAME).equalsIgnoreCase(PacmanRuleConstants.STOPPED_STATE)) {
+                    String stateName = resourceAttributes.get(PacmanRuleConstants.STATE_NAME);
+                    if (stateName != null && (stateName.equalsIgnoreCase(PacmanRuleConstants.RUNNING_STATE)
+                            || stateName.equalsIgnoreCase(PacmanRuleConstants.STOPPED_STATE))){
                         missingTags = PacmanUtils.getMissingTagsfromResourceAttributeWithCase(
                                 caseSensitiveTagsList, caseInsensitiveTagsList, resourceAttributes);
                     }
