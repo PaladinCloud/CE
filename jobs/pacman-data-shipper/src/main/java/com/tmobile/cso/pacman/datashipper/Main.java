@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper;
 
+import com.tmobile.cso.pacman.datashipper.config.ConfigManager;
 import com.tmobile.cso.pacman.datashipper.dto.DatasourceData;
 import com.tmobile.cso.pacman.datashipper.entity.*;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
@@ -23,10 +24,9 @@ import com.tmobile.cso.pacman.datashipper.util.ErrorManageUtil;
 import com.tmobile.pacman.commons.aws.sqs.SQSManager;
 import com.tmobile.pacman.commons.dto.JobDoneMessage;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 @PacmanJob(methodToexecute = "shipData", jobName = "data-shipper", desc = "Job to load data from s3 to OP", priority = 5)
 public class Main implements Constants {
@@ -107,10 +107,28 @@ public class Main implements Constants {
             errorList.add(errorMap);
             LOGGER.error("Error while updating stats", e);
         }
+
+        // Route all assets through the asset state service, which will route to the policy engine
+        // once it's done processing.
         SQSManager sqsManager = SQSManager.getInstance();
-        JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId, ds, null);
-        String sqsMessageID = sqsManager.sendSQSMessage(jobDoneMessage, System.getenv("SHIPPER_SQS_QUEUE_URL"));
-        LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
+        boolean isAsset = ds.equalsIgnoreCase("azure")
+            || ds.equalsIgnoreCase("aws")
+            || ds.equalsIgnoreCase("gcp");
+        if (isAsset) {
+            List<String> assetTypes = new ArrayList<>(ConfigManager.getTypesWithDisplayName(ds).keySet());
+            Collections.sort(assetTypes);
+            JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId,
+                ds, null, null, assetTypes.toArray(new String[0]));
+            String sqsMessageID =
+                sqsManager.sendSQSMessage(jobDoneMessage, System.getenv("ASSET_STATE_QUEUE_URL"));
+            LOGGER.debug("Done SQS message ID: {}", sqsMessageID);
+        } else {
+            JobDoneMessage jobDoneMessage = new JobDoneMessage(ds + "-Shipper-Job", tenantId, ds, null);
+            String sqsMessageID =
+                sqsManager.sendSQSMessage(jobDoneMessage, System.getenv("SHIPPER_SQS_QUEUE_URL"));
+            LOGGER.debug("Shipper done SQS message ID: {}", sqsMessageID);
+        }
+
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ", status);
         return status;
