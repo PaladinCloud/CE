@@ -76,6 +76,7 @@ public class Main implements Constants {
         errorList.addAll(new EntityManager().uploadEntityData(ds));
         errorList.addAll(new VulnerabilityAssociationManager().uploadVulnerabilityInfo(ds));
         ExternalPolicies.getInstance().uploadPolicyDefinition(ds);
+        errorList.addAll(new VulnerabilityAssociationManager().uploadVulnerabilityInfo(ds));
         try {
             DatasourceData datasourceData = DatasourceDataFetcher.getInstance().fetchDatasourceData(ds);
             if (datasourceData != null) {
