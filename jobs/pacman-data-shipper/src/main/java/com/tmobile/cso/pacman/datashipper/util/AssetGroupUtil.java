@@ -329,10 +329,10 @@ public class AssetGroupUtil {
             JsonObject dataObj = distributionJson.getAsJsonObject("data");
 
             Map<String, Object> summaryInfo = new HashMap<>();
-            summaryInfo.put("totalAssets", dataObj.get("totalAssets").getAsInt());
+            summaryInfo.put("totalAssets", dataObj.get("totalAssets").getAsLong());
             summaryInfo.put("overallCompliancePercentage", dataObj.get("overallCompliancePercentage").getAsDouble());
-            summaryInfo.put("overallTaggedCount", dataObj.get("overallTaggedCount").getAsInt());
-            summaryInfo.put("overallAssetCount", dataObj.get("overallAssetCount").getAsInt());
+            summaryInfo.put("overallTaggedCount", dataObj.get("overallTaggedCount").getAsLong());
+            summaryInfo.put("overallAssetCount", dataObj.get("overallAssetCount").getAsLong());
             summaryInfo.put("description", dataObj.get("description").getAsString());
 
             JsonArray assetTypesArray = dataObj.getAsJsonArray("assetTypes");
@@ -343,9 +343,9 @@ public class AssetGroupUtil {
 
                 Map<String, Object> assetTypeInfo = new HashMap<>();
                 assetTypeInfo.put("targetType", assetTypeObj.get("targetType").getAsString());
-                assetTypeInfo.put("assetCount", assetTypeObj.get("assetCount").getAsInt());
-                assetTypeInfo.put("taggedCount", assetTypeObj.get("taggedCount").getAsInt());
-                assetTypeInfo.put("untaggedCount", assetTypeObj.get("untaggedCount").getAsInt());
+                assetTypeInfo.put("assetCount", assetTypeObj.get("assetCount").getAsLong());
+                assetTypeInfo.put("taggedCount", assetTypeObj.get("taggedCount").getAsLong());
+                assetTypeInfo.put("untaggedCount", assetTypeObj.get("untaggedCount").getAsLong());
                 assetTypeInfo.put("compliancePercentage", assetTypeObj.get("compliancePercentage").getAsDouble());
 
                 JsonArray tagDetailsArray = assetTypeObj.getAsJsonArray("tagDetails");
@@ -356,7 +356,7 @@ public class AssetGroupUtil {
 
                     Map<String, Object> tagInfo = new HashMap<>();
                     tagInfo.put("tagName", tagDetailObj.get("tagName").getAsString());
-                    tagInfo.put("count", tagDetailObj.get("count").getAsInt());
+                    tagInfo.put("count", tagDetailObj.get("count").getAsLong());
                     tagInfo.put("tagCompliancePercentage", tagDetailObj.get("tagCompliancePercentage").getAsDouble());
 
                     tagDetailsList.add(tagInfo);

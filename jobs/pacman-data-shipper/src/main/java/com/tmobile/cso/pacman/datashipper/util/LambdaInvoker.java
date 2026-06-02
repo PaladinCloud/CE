@@ -114,7 +114,8 @@ public class LambdaInvoker {
                 .withPayload(payload.toString());
 
         InvokeResult result = getLambdaClient().invoke(invokeRequest);
-        String rawResponse = new String(result.getPayload().array(), StandardCharsets.UTF_8);
+        java.nio.ByteBuffer payloadBuffer = result.getPayload();
+        String rawResponse = new String(payloadBuffer.array(), payloadBuffer.position(), payloadBuffer.remaining(), StandardCharsets.UTF_8);
 
         if (result.getFunctionError() != null) {
             LOGGER.error("Lambda function error: {}, response: {}", result.getFunctionError(), rawResponse);
