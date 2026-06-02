@@ -327,7 +327,10 @@ public class AssetGroupUtil {
             }
             JsonObject distributionJson = JsonParser.parseString(distributionResponse).getAsJsonObject();
             JsonObject dataObj = distributionJson.getAsJsonObject("data");
-
+            if (dataObj == null || dataObj.isJsonNull()) {
+                LOGGER.warn("No data found in tagging summary response for ag: {}", ag);
+                return issueInfoList;
+            }
             Map<String, Object> summaryInfo = new HashMap<>();
             summaryInfo.put("totalAssets", dataObj.get("totalAssets").getAsLong());
             summaryInfo.put("overallCompliancePercentage", dataObj.get("overallCompliancePercentage").getAsDouble());

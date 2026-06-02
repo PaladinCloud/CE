@@ -127,8 +127,7 @@ public class LambdaInvoker {
         JsonObject responseObj = JsonParser.parseString(rawResponse).getAsJsonObject();
         int statusCode = responseObj.get("statusCode").getAsInt();
         if (statusCode != 200) {
-            LOGGER.error("Lambda returned non-200 status: {}, response: {}", statusCode, rawResponse);
-            throw new Exception("Lambda returned status " + statusCode + " for " + lambdaName);
+            LOGGER.warn("Lambda returned non-200 status: {}, response: {}", statusCode, rawResponse);
         }
 
         return responseObj.get("body").getAsString();
