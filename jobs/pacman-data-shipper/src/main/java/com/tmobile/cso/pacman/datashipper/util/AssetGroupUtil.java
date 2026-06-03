@@ -315,4 +315,66 @@ public class AssetGroupUtil {
         LOGGER.info("Asset data not found from API, setting count as 0");
         return "0";
     }
+
+    public static List<Map<String, Object>> fetchTaggingSummaryForAssetGroup(String ag) throws Exception {
+        List<Map<String, Object>> issueInfoList = new ArrayList<>();
+        try {
+
+            String distributionResponse = LambdaInvoker.invokeTaggingSummaryLambda(ag);
+            if (distributionResponse == null || distributionResponse.isEmpty()) {
+                LOGGER.warn("Empty response from tagging summary API for ag: {}", ag);
+                return issueInfoList;
+            }
+            JsonObject distributionJson = JsonParser.parseString(distributionResponse).getAsJsonObject();
+            JsonObject dataObj = distributionJson.getAsJsonObject("data");
+            if (dataObj == null || dataObj.isJsonNull()) {
+                LOGGER.warn("No data found in tagging summary response for ag: {}", ag);
+                return issueInfoList;
+            }
+            Map<String, Object> summaryInfo = new HashMap<>();
+            summaryInfo.put("totalAssets", dataObj.get("totalAssets").getAsLong());
+            summaryInfo.put("overallCompliancePercentage", dataObj.get("overallCompliancePercentage").getAsDouble());
+            summaryInfo.put("overallTaggedCount", dataObj.get("overallTaggedCount").getAsLong());
+            summaryInfo.put("overallAssetCount", dataObj.get("overallAssetCount").getAsLong());
+            summaryInfo.put("description", dataObj.get("description").getAsString());
+
+            JsonArray assetTypesArray = dataObj.getAsJsonArray("assetTypes");
+            List<Map<String, Object>> assetTypesList = new ArrayList<>();
+
+            for (int i = 0; i < assetTypesArray.size(); i++) {
+                JsonObject assetTypeObj = assetTypesArray.get(i).getAsJsonObject();
+
+                Map<String, Object> assetTypeInfo = new HashMap<>();
+                assetTypeInfo.put("targetType", assetTypeObj.get("targetType").getAsString());
+                assetTypeInfo.put("assetCount", assetTypeObj.get("assetCount").getAsLong());
+                assetTypeInfo.put("taggedCount", assetTypeObj.get("taggedCount").getAsLong());
+                assetTypeInfo.put("untaggedCount", assetTypeObj.get("untaggedCount").getAsLong());
+                assetTypeInfo.put("compliancePercentage", assetTypeObj.get("compliancePercentage").getAsDouble());
+
+                JsonArray tagDetailsArray = assetTypeObj.getAsJsonArray("tagDetails");
+                List<Map<String, Object>> tagDetailsList = new ArrayList<>();
+
+                for (int j = 0; j < tagDetailsArray.size(); j++) {
+                    JsonObject tagDetailObj = tagDetailsArray.get(j).getAsJsonObject();
+
+                    Map<String, Object> tagInfo = new HashMap<>();
+                    tagInfo.put("tagName", tagDetailObj.get("tagName").getAsString());
+                    tagInfo.put("count", tagDetailObj.get("count").getAsLong());
+                    tagInfo.put("tagCompliancePercentage", tagDetailObj.get("tagCompliancePercentage").getAsDouble());
+
+                    tagDetailsList.add(tagInfo);
+                }
+
+                assetTypeInfo.put("tagDetails", tagDetailsList);
+                assetTypesList.add(assetTypeInfo);
+            }
+
+            summaryInfo.put("assetTypes", assetTypesList);
+            issueInfoList.add(summaryInfo);
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving tagging summary data", e);
+            throw e;
+        }
+        return issueInfoList;
+    }
 }

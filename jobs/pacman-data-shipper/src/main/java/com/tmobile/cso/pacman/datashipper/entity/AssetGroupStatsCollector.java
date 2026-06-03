@@ -47,7 +47,6 @@ public class AssetGroupStatsCollector implements Constants {
         log.info("Start Collecting asset group stats");
         ESManager.createIndex(AG_STATS, errorList);
         List<String> assetGroups = datasourceData.getAssetGroups();
-
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.execute(() -> {
             try {
@@ -131,6 +130,21 @@ public class AssetGroupStatsCollector implements Constants {
                 log.error("Exception in uploadAssetListCountStats ", e);
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put(ERROR, "Exception in uploadAssetListCountStats");
+                errorMap.put(ERROR_TYPE, WARN);
+                errorMap.put(EXCEPTION, e.getMessage());
+                synchronized (errorList) {
+                    errorList.add(errorMap);
+                }
+            }
+        });
+
+        executor.execute(() -> {
+            try {
+                uploadAssetGroupTaggingSummaryStats(assetGroups);
+            } catch (Exception e) {
+                log.error("Exception in uploadAssetGroupTaggingSummaryStats ", e);
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Exception in uploadAssetGroupTaggingSummaryStats");
                 errorMap.put(ERROR_TYPE, WARN);
                 errorMap.put(EXCEPTION, e.getMessage());
                 synchronized (errorList) {
@@ -377,4 +391,35 @@ public class AssetGroupStatsCollector implements Constants {
         ESManager.uploadData(AG_STATS, "count_asset", docs, "@id", false);
         log.info("End of collecting total asset list count");
     }
+
+    public void uploadAssetGroupTaggingSummaryStats(List<String> assetGroups) {
+        log.info("Collecting tagging summary data for all asset groups");
+        List<Map<String, Object>> docs = new ArrayList<>();
+        for (String ag : assetGroups) {
+            log.info("Collecting tagging summary data for asset group: {}", ag);
+            try {
+                List<Map<String, Object>> docList = AssetGroupUtil.fetchTaggingSummaryForAssetGroup(ag);
+                log.info("Response from tagging summary API: {}", docList);
+                docList.forEach(doc -> {
+                    doc.put("ag", ag);
+                    doc.put("date", CURR_DATE);
+                    doc.put("@id", Util.getUniqueID(ag + CURR_DATE + "tagging_summary"));
+                });
+                docs.addAll(docList);
+            } catch (Exception e) {
+                log.error("Exception in uploadAssetGroupTaggingSummaryStats", e);
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Exception in uploadAssetGroupTaggingSummaryStats for Asset Group" + ag);
+                errorMap.put(ERROR_TYPE, WARN);
+                errorMap.put(EXCEPTION, e.getMessage());
+                synchronized (errorList) {
+                    errorList.add(errorMap);
+                }
+            }
+        }
+
+        ESManager.uploadData(AG_STATS, "tagging_summary", docs, "@id", false);
+        log.info("End of collecting total asset list count");
+    }
+
 }
