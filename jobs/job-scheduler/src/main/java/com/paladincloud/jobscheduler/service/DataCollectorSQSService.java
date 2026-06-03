@@ -63,9 +63,9 @@ public class DataCollectorSQSService {
     	try {
 			String messageBody = ow.writeValueAsString(sqsMessageObject);
 			
-			sendMessage(messageBody, sqsMessageObject.getTenant_id());
+			sendMessage(messageBody, sqsMessageObject.getTenant_id()+pluginType);
     	} catch (JsonProcessingException e) {
-			logger.error(" error in parsing cqpayload {}", e);
+			logger.error(" error in parsing sqs message {}", e.getMessage());
 		}
     	
     }
