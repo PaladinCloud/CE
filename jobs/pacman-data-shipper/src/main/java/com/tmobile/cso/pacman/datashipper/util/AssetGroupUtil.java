@@ -346,6 +346,7 @@ public class AssetGroupUtil {
 
                 Map<String, Object> assetTypeInfo = new HashMap<>();
                 assetTypeInfo.put("targetType", assetTypeObj.get("targetType").getAsString());
+                assetTypeInfo.put("displayName", assetTypeObj.get("displayName").getAsString());
                 assetTypeInfo.put("assetCount", assetTypeObj.get("assetCount").getAsLong());
                 assetTypeInfo.put("taggedCount", assetTypeObj.get("taggedCount").getAsLong());
                 assetTypeInfo.put("untaggedCount", assetTypeObj.get("untaggedCount").getAsLong());
