@@ -15,10 +15,9 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.util;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.*;
 import com.tmobile.cso.pacman.datashipper.dao.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +65,7 @@ public class AssetGroupUtil {
         String url = ASSET_SVC_BASE_URL + "/count?ag=" + ag;
         String typeCountJson = HttpUtil.get(url, AuthManager.getToken());
         Map<String, Object> typeCountMap = Util.parseJson(typeCountJson);
-        return  (List<Map<String, Object>>) ((Map<String, Object>) typeCountMap.get("data")).get("assetcount");
+        return (List<Map<String, Object>>) ((Map<String, Object>) typeCountMap.get("data")).get("assetcount");
     }
 
     /**
@@ -317,65 +316,29 @@ public class AssetGroupUtil {
     }
 
     public static List<Map<String, Object>> fetchTaggingSummaryForAssetGroup(String ag) throws Exception {
-        List<Map<String, Object>> issueInfoList = new ArrayList<>();
+        List<Map<String, Object>> resultList = new ArrayList<>();
         try {
-
-            String distributionResponse = LambdaInvoker.invokeTaggingSummaryLambda(ag);
-            if (distributionResponse == null || distributionResponse.isEmpty()) {
+            String response = LambdaInvoker.invokeTaggingSummaryLambda(ag);
+            if (response == null || response.isEmpty()) {
                 LOGGER.warn("Empty response from tagging summary API for ag: {}", ag);
-                return issueInfoList;
+                return resultList;
             }
-            JsonObject distributionJson = JsonParser.parseString(distributionResponse).getAsJsonObject();
-            JsonObject dataObj = distributionJson.getAsJsonObject("data");
-            if (dataObj == null || dataObj.isJsonNull()) {
+            TaggingSummaryResponse summaryResponse = new Gson().fromJson(response,
+                    TaggingSummaryResponse.class);
+
+            if (summaryResponse.data == null) {
                 LOGGER.warn("No data found in tagging summary response for ag: {}", ag);
-                return issueInfoList;
-            }
-            Map<String, Object> summaryInfo = new HashMap<>();
-            summaryInfo.put("totalAssets", dataObj.get("totalAssets").getAsLong());
-            summaryInfo.put("overallCompliancePercentage", dataObj.get("overallCompliancePercentage").getAsDouble());
-            summaryInfo.put("overallTaggedCount", dataObj.get("overallTaggedCount").getAsLong());
-            summaryInfo.put("overallAssetCount", dataObj.get("overallAssetCount").getAsLong());
-            summaryInfo.put("description", dataObj.get("description").getAsString());
-
-            JsonArray assetTypesArray = dataObj.getAsJsonArray("assetTypes");
-            List<Map<String, Object>> assetTypesList = new ArrayList<>();
-
-            for (int i = 0; i < assetTypesArray.size(); i++) {
-                JsonObject assetTypeObj = assetTypesArray.get(i).getAsJsonObject();
-
-                Map<String, Object> assetTypeInfo = new HashMap<>();
-                assetTypeInfo.put("targetType", assetTypeObj.get("targetType").getAsString());
-                assetTypeInfo.put("displayName", assetTypeObj.get("displayName").getAsString());
-                assetTypeInfo.put("assetCount", assetTypeObj.get("assetCount").getAsLong());
-                assetTypeInfo.put("taggedCount", assetTypeObj.get("taggedCount").getAsLong());
-                assetTypeInfo.put("untaggedCount", assetTypeObj.get("untaggedCount").getAsLong());
-                assetTypeInfo.put("compliancePercentage", assetTypeObj.get("compliancePercentage").getAsDouble());
-
-                JsonArray tagDetailsArray = assetTypeObj.getAsJsonArray("tagDetails");
-                List<Map<String, Object>> tagDetailsList = new ArrayList<>();
-
-                for (int j = 0; j < tagDetailsArray.size(); j++) {
-                    JsonObject tagDetailObj = tagDetailsArray.get(j).getAsJsonObject();
-
-                    Map<String, Object> tagInfo = new HashMap<>();
-                    tagInfo.put("tagName", tagDetailObj.get("tagName").getAsString());
-                    tagInfo.put("count", tagDetailObj.get("count").getAsLong());
-                    tagInfo.put("tagCompliancePercentage", tagDetailObj.get("tagCompliancePercentage").getAsDouble());
-
-                    tagDetailsList.add(tagInfo);
-                }
-
-                assetTypeInfo.put("tagDetails", tagDetailsList);
-                assetTypesList.add(assetTypeInfo);
+                return resultList;
             }
 
-            summaryInfo.put("assetTypes", assetTypesList);
-            issueInfoList.add(summaryInfo);
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> summaryInfo = mapper.convertValue(
+                    summaryResponse.data, new TypeReference<Map<String, Object>>() {
+                    });
+            resultList.add(summaryInfo);
         } catch (Exception e) {
-            LOGGER.error("Error retrieving tagging summary data", e);
-            throw e;
+            LOGGER.error("Error retrieving tagging summary data for ag: {}", ag, e);
         }
-        return issueInfoList;
+        return resultList;
     }
 }
