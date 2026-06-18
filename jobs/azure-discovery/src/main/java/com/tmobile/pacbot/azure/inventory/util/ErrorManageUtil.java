@@ -133,7 +133,7 @@ public class ErrorManageUtil {
 
     public static void triggerNotificationPermissionDenied() {
         List<CollectorIssuesVH> permissionIssue = new ArrayList<>();
-        List<String> exceptionList = Arrays.asList("DeniedWithNoValidRBAC", "ForbiddenByFirewall", "AuthorizationFailed");
+        List<String> exceptionList = Arrays.asList("DeniedWithNoValidRBAC", "ForbiddenByFirewall", "AuthorizationFailed", "Unauthorized", "Forbidden", "ForbiddenByRbac");
         List<String> misconfiguredExceptionList = Arrays.asList("AuthenticationException","Please register to Microsoft.Security in order to view your security status");
         for (Map.Entry<String, List<ErrorVH>> entry : errorMap.entrySet()) {
             Map<String, List<String>> assetPermissionMapping = new HashMap<>();
