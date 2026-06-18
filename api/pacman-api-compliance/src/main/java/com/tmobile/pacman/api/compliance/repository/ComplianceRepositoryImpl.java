@@ -35,7 +35,10 @@ import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.ArrayList;
@@ -53,6 +56,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -417,6 +421,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         fields.add(POLICYID);
         fields.add(AUTOFIX_PLANNED);
         fields.add(TARGET_TYPE_DISPLAY_NAME);
+        fields.add(CLOSED_DATE);
         fields.addAll(Arrays.stream(mandatoryTags.split(",")).map(String::trim).map(str -> "tags." + str).collect(Collectors.toList()));
         // for sox domain
 
@@ -1612,7 +1617,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             if (domain.equals(SOX)) {
                 issue.put(ENV, sourceMap.get(ENV));
             }
-
+            issue.put(AGE, calculateViolationAge((String) sourceMap.get(CREATED_DATE), (String) sourceMap.get(CLOSED_DATE), (String) sourceMap.get(ISSUE_STATUS)));
             if(mandatoryTags!=null && !mandatoryTags.isEmpty()){
                 List<String> mandatoryTagList = Arrays.stream(mandatoryTags.split(",")).map(String::trim).collect(Collectors.toList());
                 for(String mandatoryTag:mandatoryTagList){
@@ -1627,6 +1632,45 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return issueList;
     }
 
+
+    private String calculateViolationAge(String createdDate, String closedDate, String status) {
+        try {
+            long currentTime = Instant.now().toEpochMilli();
+            long diffInMilliseconds;
+            ZonedDateTime zCreatedDate = LocalDateTime.parse(createdDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).atZone(ZoneId.of("UTC"));
+            if (!Strings.isNullOrEmpty(status) && CLOSED.equalsIgnoreCase(status) && !Strings.isNullOrEmpty(closedDate)) {
+                ZonedDateTime zClosedDate = LocalDateTime.parse(closedDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                        .atZone(ZoneId.of("UTC"));
+                diffInMilliseconds = Math.abs(zClosedDate.toInstant().toEpochMilli() - zCreatedDate.toInstant().toEpochMilli());
+            } else {
+                diffInMilliseconds = Math.abs(currentTime - zCreatedDate.toInstant().toEpochMilli());
+            }
+            long diff = TimeUnit.DAYS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
+            if (diff > 0) {
+                return diff + " Days";
+            } else {
+                //Violation age less than a day, send age in hours
+                diff = TimeUnit.HOURS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
+                if (diff > 0) {
+                    return diff + " Hours";
+                } else {
+                    //Violation age less than an hour, send age in minutes
+                    diff = TimeUnit.MINUTES.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
+                    if (diff > 0) {
+                        return diff + " Minutes";
+                    } else {
+                        //Violation age less than a minute, send age in seconds
+                        diff = TimeUnit.SECONDS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
+                        return diff + " Seconds";
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return null;
+    }
+    
     /*
      * (non-Javadoc)
      *
@@ -1936,7 +1980,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         .get(EXEMPTION_REQUEST_APPROVED_BY)) ||
                         source.get(EXEMPTION_REQUEST_APPROVED_BY).isJsonNull() ?
                         StringUtils.EMPTY : source.get(EXEMPTION_REQUEST_APPROVED_BY).getAsString()));
-
+                issueDetails.put(AGE, calculateViolationAge(source.get(CREATED_DATE).getAsString(), source.get(CLOSED_DATE) != null ? source.get(CLOSED_DATE).getAsString() : null, source.get(ISSUE_STATUS).getAsString()));
                 if (source.has("desc")) {
                     issueDetails.put(ISSUE_REASON, source.get("desc").getAsString());
                 } else if (source.has(STATUS_REASON)) {
