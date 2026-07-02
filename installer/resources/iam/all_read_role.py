@@ -8,7 +8,10 @@ class LambdaPolicyDocument(iam.IAMPolicyDocumentData):
             'actions': ["sts:AssumeRole"],
             'principals': {
                 'type': "AWS",
-                'identifiers': [ECSRole.get_output_attr('arn')]
+                'identifiers': [
+                    ECSRole.get_output_attr('arn'),
+                    "arn:aws:iam::" + Settings.ACCOUNT_ID + ":role/" + Settings.STACK_ENV + "-svc-plugin-k8s-containers-role"
+                ]
             }
         }
     ]
