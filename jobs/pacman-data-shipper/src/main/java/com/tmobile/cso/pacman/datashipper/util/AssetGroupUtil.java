@@ -41,6 +41,10 @@ public class AssetGroupUtil {
     public static final String ASSET_SVC_BASE_URL = API_URL + "/asset/v1";
     public static final String COMPLIANCE_SVC_BASE_URL = API_URL + "/compliance/v1";
     public static final Map<String, Integer> categoryWeightageMap = new HashMap<>();
+    private static final String TAGGING_SUMMARY_LAMBDA_NAME_SUFFIX = "-svc-tagging-compliance-summary-lambda";
+    private static final String TAGGING_OVERVIEW_LAMBDA_NAME_SUFFIX = "-svc-tagging-compliance-overview-lambda";
+    private static final String TAGGING_OVERVIEW_URL = "api/v2/compliance/tagging-overview";
+    private static final String TAGGING_SUMMARY_URL= "api/v2/compliance/tagging-summary";
 
     private AssetGroupUtil() {
         throw new IllegalStateException("AssetGroupUtil is a utility class");
@@ -318,7 +322,7 @@ public class AssetGroupUtil {
     public static List<Map<String, Object>> fetchTaggingSummaryForAssetGroup(String ag) throws Exception {
         List<Map<String, Object>> resultList = new ArrayList<>();
         try {
-            String response = LambdaInvoker.invokeTaggingSummaryLambda(ag);
+            String response = LambdaInvoker.invokeTaggingLambda(ag,TAGGING_SUMMARY_LAMBDA_NAME_SUFFIX,TAGGING_SUMMARY_URL);
             if (response == null || response.isEmpty()) {
                 LOGGER.warn("Empty response from tagging summary API for ag: {}", ag);
                 return resultList;
@@ -338,6 +342,33 @@ public class AssetGroupUtil {
             resultList.add(summaryInfo);
         } catch (Exception e) {
             LOGGER.error("Error retrieving tagging summary data for ag: {}", ag, e);
+        }
+        return resultList;
+    }
+
+    public static List<Map<String, Object>> fetchTaggingOverviewForAssetGroup(String ag) throws Exception {
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        try {
+            String response = LambdaInvoker.invokeTaggingLambda(ag,TAGGING_OVERVIEW_LAMBDA_NAME_SUFFIX,TAGGING_OVERVIEW_URL);
+            if (response == null || response.isEmpty()) {
+                LOGGER.warn("Empty response from tagging overview API for ag: {}", ag);
+                return resultList;
+            }
+            TaggingOverviewResponse overviewResponse = new Gson().fromJson(response,
+                    TaggingOverviewResponse.class);
+
+            if (overviewResponse.data == null) {
+                LOGGER.warn("No data found in tagging overview response for ag: {}", ag);
+                return resultList;
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> overviewInfo = mapper.convertValue(
+                    overviewResponse.data, new TypeReference<Map<String, Object>>() {
+                    });
+            resultList.add(overviewInfo);
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving tagging overview data for ag: {}", ag, e);
         }
         return resultList;
     }
