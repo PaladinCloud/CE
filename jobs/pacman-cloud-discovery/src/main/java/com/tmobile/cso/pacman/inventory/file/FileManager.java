@@ -229,7 +229,6 @@ public class FileManager {
         FileGenerator.writeToFile("aws-iampolicies.data", InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-cloudwatchlogs.data", InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-cloudwatchlogs-metric.data", InventoryConstants.OPEN_ARRAY, false);
-        FileGenerator.writeToFile("aws-cloudwatchalarm.data", InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-ecr.data", InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-vpc-cidrblock-association.data", InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-launchtemplate.data", InventoryConstants.OPEN_ARRAY, false);
@@ -400,7 +399,6 @@ public class FileManager {
         FileGenerator.writeToFile("aws-iampolicies.data", InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-cloudwatchlogs.data", InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-cloudwatchlogs-metric.data", InventoryConstants.CLOSE_ARRAY, true);
-        FileGenerator.writeToFile("aws-cloudwatchalarm.data", InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-ecr.data", InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-vpc-cidrblock-association.data", InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-launchtemplate.data", InventoryConstants.CLOSE_ARRAY, true);
