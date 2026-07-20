@@ -151,7 +151,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20180130</version>
+      <version>20231013</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -218,7 +218,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.3</version>
+      <version>1.2.13</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
     <dependency>
