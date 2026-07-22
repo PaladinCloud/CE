@@ -23,6 +23,14 @@ public class AutoExemptionsTest {
     }
 
     @Test
+    public void testAccountWithSpaceIsExempted() throws Exception {
+        Map<String, String> asset = mapOf("accountid", "234");
+        AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("true", null, "goldfish", "123, 234 ,345 "));
+        boolean check = rule.isExempted(asset);
+        assertTrue(check);
+    }
+
+    @Test
     public void testDisabledIsNotExempted() throws Exception {
         Map<String, String> asset = mapOf("accountid", "345");
         AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("false", null, "guppies", "123,234,345"));

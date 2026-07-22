@@ -831,10 +831,11 @@ public class PolicyExecutor {
      */
     private Status adjustStatus(String status, Map<String, List<IssueException>> excemptedResourcesForPolicy,
                                 Map<String, IssueException> individuallyExcemptedIssues,
-                                AutoExemptions.Rule rule,
+                                AutoExemptions.Rule autoExemptionRule,
                                 Annotation annotation,
                                 Map<String, String> asset) {
 
+logger.info("adjustStatus for asset {}", asset.get("_resourceid"));
         List<IssueException> stickyExceptions = excemptedResourcesForPolicy
                 .get(annotation.get(PacmanSdkConstants.RESOURCE_ID));
         if (null != stickyExceptions) {
@@ -850,14 +851,15 @@ public class PolicyExecutor {
             return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(), exception.getExpiryDate());
         }
 
-        if (rule != null) {
-            if (rule.isExempted(asset)) {
+        if (autoExemptionRule != null) {
+            if (autoExemptionRule.isExempted(asset)) {
                 return new Status(
                         PacmanSdkConstants.STATUS_EXEMPTED,
-                        rule.getReason(),
+                        "Auto-exempted: " + autoExemptionRule.getReason(),
                         // TODO: Figure out what this id really is
+                        // USE THE POLICY ID ?
                         "1",
-                        rule.getExpireDate());
+                        autoExemptionRule.getExpireDate());
             }
         }
         return new Status(status);
