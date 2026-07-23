@@ -1576,6 +1576,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     .exemptionApprovedBy(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_REQUEST_APPROVED_BY)) ?
                             StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
                             .get(EXEMPTION_REQUEST_APPROVED_BY)))
+                    .exemptionType(Objects.isNull(policyViolationByIssueId.get(EXEMPTION_TYPE)) ?
+                            StringUtils.EMPTY : String.valueOf(policyViolationByIssueId
+                            .get(EXEMPTION_TYPE)))
                     .build();
             return new PolicyViolationDetails(policyViolationByIssueId.get(TARGET_TYPE).toString(),
                     policyViolationByIssueId.get(ISSUE_STATUS).toString(), policyViolationByIssueId.get(SEVERITY)

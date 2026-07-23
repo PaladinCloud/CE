@@ -56,6 +56,7 @@ public interface Constants {
     String EXEMPTION_RAISED_ON = "exemption-raised-on";
     String EXEMPTION_EXPIRING_ON = "exemption-expiring-on";
     String EXEMPTION_RAISED_EXPIRING_ON = "exemption-raised-expiring-on";
+    String EXEMPTION_TYPE = "exemptionType";
 
     String REASON_TO_EXEMPT_KEY = "reason-to-exempt";
 
