@@ -704,6 +704,7 @@ public class PolicyExecutor {
                         annotation.put(PacmanSdkConstants.EXEMPTION_EXPIRING_ON, status.getExemptionExpiryDate());
                         annotation.put(PacmanSdkConstants.REASON_TO_EXEMPT_KEY, status.getReason());
                         annotation.put(PacmanSdkConstants.EXEMPTION_ID, status.getExceptionId());
+                        annotation.put(PacmanSdkConstants.EXEMPTION_TYPE, status.getExemptionType());
                     }
 
                     /** close expired exemption request made by user **/
@@ -835,7 +836,6 @@ public class PolicyExecutor {
                                 Annotation annotation,
                                 Map<String, String> asset) {
 
-logger.info("adjustStatus for asset {}", asset.get("_resourceid"));
         List<IssueException> stickyExceptions = excemptedResourcesForPolicy
                 .get(annotation.get(PacmanSdkConstants.RESOURCE_ID));
         if (null != stickyExceptions) {
@@ -843,12 +843,13 @@ logger.info("adjustStatus for asset {}", asset.get("_resourceid"));
             // now taking from 0 index
             IssueException exception = stickyExceptions.get(0);
             return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(),
-                    exception.getExpiryDate());
+                    exception.getExpiryDate(), PacmanSdkConstants.EXEMPTION_TYPE_STICKY);
         }
 
         IssueException exception = individuallyExcemptedIssues.get(CommonUtils.getUniqueAnnotationId(annotation));
         if (null != exception) {
-            return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(), exception.getExpiryDate());
+            return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(),
+                    exception.getExpiryDate(), PacmanSdkConstants.EXEMPTION_TYPE_INDIVIDUAL);
         }
 
         if (autoExemptionRule != null) {
@@ -856,10 +857,9 @@ logger.info("adjustStatus for asset {}", asset.get("_resourceid"));
                 return new Status(
                         PacmanSdkConstants.STATUS_EXEMPTED,
                         "Auto-exempted: " + autoExemptionRule.getReason(),
-                        // TODO: Figure out what this id really is
-                        // USE THE POLICY ID ?
-                        "1",
-                        autoExemptionRule.getExpireDate());
+                        annotation.get(PacmanSdkConstants.POLICY_ID),
+                        autoExemptionRule.getExpireDate(),
+                        PacmanSdkConstants.EXEMPTION_TYPE_AUTOMATIC);
             }
         }
         return new Status(status);
@@ -890,6 +890,8 @@ logger.info("adjustStatus for asset {}", asset.get("_resourceid"));
         /** The exemption expiry date. */
         String exemptionExpiryDate;
 
+        String exemptionType;
+
         /**
          * Instantiates a new status.
          *
@@ -898,12 +900,13 @@ logger.info("adjustStatus for asset {}", asset.get("_resourceid"));
          * @param exemptionId the exemption id
          * @param exemptionExpiryDate the exemption expiry date
          */
-        public Status(String status, String reason, String exemptionId, String exemptionExpiryDate) {
+        public Status(String status, String reason, String exemptionId, String exemptionExpiryDate, String exemptionType) {
             super();
             this.status = status;
             this.reason = reason;
             this.exemptionId = exemptionId;
             this.exemptionExpiryDate = exemptionExpiryDate;
+            this.exemptionType = exemptionType;
         }
 
         /**
@@ -1003,6 +1006,10 @@ logger.info("adjustStatus for asset {}", asset.get("_resourceid"));
          */
         public void setExemptionExpiryDate(String exemptionExpiryDate) {
             this.exemptionExpiryDate = exemptionExpiryDate;
+        }
+
+        public String getExemptionType() {
+            return this.exemptionType;
         }
     }
 

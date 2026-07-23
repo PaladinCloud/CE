@@ -113,6 +113,9 @@ public interface PacmanSdkConstants {
     /** The exemption id. */
     String EXEMPTION_ID = "exemptionId";
 
+    /** The exemption type. */
+    String EXEMPTION_TYPE = "exemptionType";
+
     /** The sev high. */
     String SEV_HIGH = "high";
 
@@ -282,6 +285,10 @@ public interface PacmanSdkConstants {
 
     /** The status unknown message. */
     String STATUS_UNKNOWN_MESSAGE = "unable to determine for this resource";
+
+    String EXEMPTION_TYPE_STICKY = "sticky";
+    String EXEMPTION_TYPE_INDIVIDUAL = "individual";
+    String EXEMPTION_TYPE_AUTOMATIC = "automatic";
 
     /** The max policy executor threads. */
     Integer MAX_POLICY_EXECUTOR_THREADS = 100;

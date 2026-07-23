@@ -21,4 +21,5 @@ public class ExemptionDTO {
     private String exemptionCancelledOn;
     private String exemptionApprovedBy;
     private String exemptionApprovedOn;
+    private String exemptionType;
 }
