@@ -15,7 +15,7 @@ permissions:
 jobs:
   extract_version:
     name : extract_version
-    if : contains('["arunpaladin","kevin-paladin"]', github.actor)
+    if : contains('["arunpaladin","kevin-paladin","its-pravinkhot"]', github.actor)
     outputs:
       version: ${{ steps.extract_version.outputs.version }}   
     runs-on: ubuntu-latest
