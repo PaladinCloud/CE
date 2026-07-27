@@ -34,10 +34,10 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            let reviewers = ['ershad-paladin', 'arunpaladin', 'its-pravinkhot'];
+            let reviewers = ['arunpaladin', 'its-pravinkhot', 'nkeerthana111'];
             const prOwner = context.payload.pull_request.user.login;
 
-            if (prOwner === 'ershad-paladin' || prOwner === 'arunpaladin' || prOwner === 'its-pravinkhot') {
+            if (prOwner === 'arunpaladin' || prOwner === 'its-pravinkhot' || prOwner === 'nkeerthana111') {
               reviewers = reviewers.filter(reviewer => reviewer !== prOwner);
             }
 
