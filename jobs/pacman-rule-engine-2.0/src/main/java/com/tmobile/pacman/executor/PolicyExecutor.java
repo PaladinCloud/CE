@@ -44,6 +44,7 @@ import com.tmobile.pacman.commons.utils.Constants;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
+import com.tmobile.pacman.service.AutoExemptions;
 import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
 import com.tmobile.pacman.util.*;
@@ -531,7 +532,6 @@ public class PolicyExecutor {
         // process rule evaluations the annotations based on result
         try {
             if (evaluations.size() > 0) {
-
                 ExceptionManager exceptionManager = new ExceptionManagerImpl();
                 Map<String, List<IssueException>> exemptedResourcesForPolicy = exceptionManager.getStickyExceptions(
                         policyParam.get(PacmanSdkConstants.POLICY_ID), policyParam.get(PacmanSdkConstants.TARGET_TYPE));
@@ -539,7 +539,7 @@ public class PolicyExecutor {
                         .getIndividualExceptions(policyParam.get(PacmanSdkConstants.TARGET_TYPE));
 
                 policyEngineStats.putAll(processPolicyEvaluations(resources, evaluations, policyParam,
-                        exemptedResourcesForPolicy, individuallyExemptedIssues));
+                        exemptedResourcesForPolicy, individuallyExemptedIssues, resourceIdToResourceMap));
                 try {
                     if (policyParam.containsKey(PacmanSdkConstants.POLICY_PARAM_AUTO_FIX_KEY_NAME) && Boolean
                             .parseBoolean(policyParam.get(PacmanSdkConstants.POLICY_PARAM_AUTO_FIX_KEY_NAME))) {
@@ -646,7 +646,8 @@ public class PolicyExecutor {
     private Map<String, Object> processPolicyEvaluations(List<Map<String, String>> resources,
                                                          List<PolicyResult> evaluations, Map<String, String> policyParam,
                                                          Map<String, List<IssueException>> exemptedResourcesForPolicy,
-                                                         Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
+                                                         Map<String, IssueException> individuallyExcemptedIssues,
+                                                         Map<String, Map<String, String>> resourceIdToAsset) throws Exception {
 
         Map<String, Object> metrics = new HashMap();
         metrics.put("totalResourcesEvalauted", evaluations.size());
@@ -658,23 +659,26 @@ public class PolicyExecutor {
         List<Annotation> revokedExemptions = new ArrayList<>();
         AnnotationPublisher annotationPublisher = new AnnotationPublisher();
         long exemptionCounter = 0;
+
         try {
-
             metrics.put("max-exemptible-resource-count", exemptedResourcesForPolicy.size());
-
             metrics.put("individual-exception-count-for-this-policy", individuallyExcemptedIssues.size());
         } catch (Exception e) {
-            logger.error("unable to fetch exceptions", e);
+            logger.error("unable to update exception metrics", e);
         }
+
         Status status;
         int issueFoundCounter = 0;
         //Pre populate the existing issues
         annotationPublisher.populateExistingIssuesForType(policyParam);
 
+        AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(policyParam);
+
         /** collect previous status of issues to determine audit statuses **/
         Map<String, Map<String, String>> originalIssueStatuses = new HashMap<>(evaluations.size());
         for (PolicyResult result : evaluations) {
             annotation = result.getAnnotation();
+            Map<String, String> asset = resourceIdToAsset.get(annotation.get("_docid"));
             String _id = CommonUtils.getUniqueAnnotationId(annotation);
             Map<String, String> originalIssue = annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey().get(_id);
             if (originalIssue != null) {
@@ -691,7 +695,7 @@ public class PolicyExecutor {
                 if (PacmanSdkConstants.STATUS_FAILURE.equals(result.getStatus())) {
 
                     status = adjustStatus(PacmanSdkConstants.STATUS_OPEN, exemptedResourcesForPolicy,
-                            individuallyExcemptedIssues, annotation);
+                            individuallyExcemptedIssues, rule, annotation, asset);
                     annotation.put(PacmanSdkConstants.ISSUE_STATUS_KEY, status.getStatus());
 
                     // if exempted add additional details
@@ -700,6 +704,7 @@ public class PolicyExecutor {
                         annotation.put(PacmanSdkConstants.EXEMPTION_EXPIRING_ON, status.getExemptionExpiryDate());
                         annotation.put(PacmanSdkConstants.REASON_TO_EXEMPT_KEY, status.getReason());
                         annotation.put(PacmanSdkConstants.EXEMPTION_ID, status.getExceptionId());
+                        annotation.put(PacmanSdkConstants.EXEMPTION_TYPE, status.getExemptionType());
                     }
 
                     /** close expired exemption request made by user **/
@@ -732,7 +737,7 @@ public class PolicyExecutor {
             /*  collect all revoked exemptions to create ticket for JIRA / ServiceNow for MTN */
             if(originalIssue != null && PacmanSdkConstants.STATUS_EXEMPTED.equals(originalIssue.get(PacmanSdkConstants.ISSUE_STATUS_KEY) )){
                 Status currentStatus = adjustStatus(PacmanSdkConstants.STATUS_OPEN, exemptedResourcesForPolicy,
-                        individuallyExcemptedIssues, annotation);
+                        individuallyExcemptedIssues, rule, annotation, asset);
                 if( currentStatus.status.equalsIgnoreCase(PacmanSdkConstants.STATUS_OPEN))
                 {
                     revokedExemptions.add(annotation);
@@ -826,26 +831,38 @@ public class PolicyExecutor {
      * @return the status
      */
     private Status adjustStatus(String status, Map<String, List<IssueException>> excemptedResourcesForPolicy,
-                                Map<String, IssueException> individuallyExcemptedIssues, Annotation annotation) {
+                                Map<String, IssueException> individuallyExcemptedIssues,
+                                AutoExemptions.Rule autoExemptionRule,
+                                Annotation annotation,
+                                Map<String, String> asset) {
 
         List<IssueException> stickyExceptions = excemptedResourcesForPolicy
                 .get(annotation.get(PacmanSdkConstants.RESOURCE_ID));
-        IssueException exception;
         if (null != stickyExceptions) {
             // get the exemption with min expiry date and create the status for
             // now taking from 0 index
-            exception = stickyExceptions.get(0);
+            IssueException exception = stickyExceptions.get(0);
             return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(),
-                    exception.getExpiryDate());
-        } else // check individual exception
-        {
-            exception = individuallyExcemptedIssues.get(CommonUtils.getUniqueAnnotationId(annotation));
-            if (null != exception) {
-                return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(), exception.getExpiryDate());
-            } else {
-                return new Status(status); // return the same status as input
+                    exception.getExpiryDate(), PacmanSdkConstants.EXEMPTION_TYPE_STICKY);
+        }
+
+        IssueException exception = individuallyExcemptedIssues.get(CommonUtils.getUniqueAnnotationId(annotation));
+        if (null != exception) {
+            return new Status(PacmanSdkConstants.STATUS_EXEMPTED, exception.getExceptionReason(), exception.getId(),
+                    exception.getExpiryDate(), PacmanSdkConstants.EXEMPTION_TYPE_INDIVIDUAL);
+        }
+
+        if (autoExemptionRule != null) {
+            if (autoExemptionRule.isExempted(asset)) {
+                return new Status(
+                        PacmanSdkConstants.STATUS_EXEMPTED,
+                        "Auto-exempted: " + autoExemptionRule.getReason(),
+                        annotation.get(PacmanSdkConstants.POLICY_ID),
+                        autoExemptionRule.getExpireDate(),
+                        PacmanSdkConstants.EXEMPTION_TYPE_AUTOMATIC);
             }
         }
+        return new Status(status);
     }
 
     /**
@@ -873,6 +890,8 @@ public class PolicyExecutor {
         /** The exemption expiry date. */
         String exemptionExpiryDate;
 
+        String exemptionType;
+
         /**
          * Instantiates a new status.
          *
@@ -881,12 +900,13 @@ public class PolicyExecutor {
          * @param exemptionId the exemption id
          * @param exemptionExpiryDate the exemption expiry date
          */
-        public Status(String status, String reason, String exemptionId, String exemptionExpiryDate) {
+        public Status(String status, String reason, String exemptionId, String exemptionExpiryDate, String exemptionType) {
             super();
             this.status = status;
             this.reason = reason;
             this.exemptionId = exemptionId;
             this.exemptionExpiryDate = exemptionExpiryDate;
+            this.exemptionType = exemptionType;
         }
 
         /**
@@ -986,6 +1006,10 @@ public class PolicyExecutor {
          */
         public void setExemptionExpiryDate(String exemptionExpiryDate) {
             this.exemptionExpiryDate = exemptionExpiryDate;
+        }
+
+        public String getExemptionType() {
+            return this.exemptionType;
         }
     }
 
