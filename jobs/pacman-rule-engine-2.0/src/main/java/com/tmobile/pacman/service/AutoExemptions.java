@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public class AutoExemptions {
     static public final String PARAMS_ENABLED_FIELD = "isExemptionEnabled";
-    static public final String PARAMS_EXPIRE_DATE_FIELD = "exemptionexpireddate";
+    static public final String PARAMS_EXPIRE_DATE_FIELD = "exemptionExpireDate";
     static public final String PARAMS_REASON_FIELD = "exemptionReason";
     static public final String PARAMS_ACCOUNTS_FIELD = "exemptionAccounts";
 
