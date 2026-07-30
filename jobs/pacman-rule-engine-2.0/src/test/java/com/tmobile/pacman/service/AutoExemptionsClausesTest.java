@@ -23,6 +23,17 @@ public class AutoExemptionsClausesTest {
     }
 
     @Test
+    public void testTwoTagsIsExempted() throws Exception {
+        Map<String, String> asset = mapOf("tags.component", "EFS", "tags.app", "Purchase", "account_id", "345");
+        List<Map<String, Object>> clauses = Arrays.asList(
+                clauseOf("tags.app", "Purchase", "tags.component", "EFS"));
+
+        AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("true", null, "goldfish", toJson(clauses)));
+        boolean check = rule.isExempted(asset);
+        assertTrue(check);
+        assertEquals("Matches clause #1", rule.getMatchExplanation());
+    }
+    @Test
     public void testOneClause2FieldsIsExempted() throws Exception {
         Map<String, String> asset = mapOf("accountid", "345", "tags.component", "EFS");
         List<Map<String, Object>> clauses = Arrays.asList(
@@ -117,5 +128,10 @@ public class AutoExemptionsClausesTest {
         return map;
     }
 
+    private Map<String, String> mapOf(String key1, String value1, String key2, String value2, String key3, String value3) {
+        Map<String, String> map = mapOf(key1, value1, key2, value2);
+        map.put(key3, value3);
+        return map;
+    }
 
 }

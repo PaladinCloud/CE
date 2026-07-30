@@ -1,6 +1,7 @@
 package com.tmobile.pacman.service;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +28,7 @@ public class AutoExemptions {
             // json array, each entry is a clause - any clause that's true is a match.
             // within a clause, each property must be true
             Gson gson = new Gson();
-            List<Map<String, Object>> clauses = gson.fromJson(rulesStr, List.class);
+            List<Map<String, Object>> clauses = gson.fromJson(rulesStr,new TypeToken<List<Map<String, Object>>>(){}.getType());
             return Rule.createRulesWithClauses(
                     Boolean.parseBoolean(enabledStr),
                     expireDate,
