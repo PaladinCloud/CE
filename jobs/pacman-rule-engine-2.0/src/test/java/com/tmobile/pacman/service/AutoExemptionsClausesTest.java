@@ -11,6 +11,15 @@ import static org.junit.Assert.assertTrue;
 
 public class AutoExemptionsClausesTest {
     @Test
+    public void testOEmptyRuleNotExempted() throws Exception {
+        Map<String, String> asset = mapOf("account_id", "345", "tags.component", "EFS");
+        List<Map<String, Object>> clauses = Arrays.asList();
+        AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("true", null, "goldfish", toJson(clauses)));
+        boolean check = rule.isExempted(asset);
+        assertFalse(check);
+        assertEquals("No clauses matched", rule.getMatchExplanation());
+    }
+    @Test
     public void testOneClauseOneFieldIsExempted() throws Exception {
         Map<String, String> asset = mapOf("account_id", "345", "tags.component", "EFS");
         List<Map<String, Object>> clauses = Arrays.asList(

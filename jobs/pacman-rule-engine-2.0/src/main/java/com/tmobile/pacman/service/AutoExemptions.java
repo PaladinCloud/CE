@@ -24,7 +24,7 @@ public class AutoExemptions {
 
         // If both accounts and rules field are set, default to using the rules
         String rulesStr = params.getOrDefault(PARAMS_RULES_FIELD, null);
-        if (rulesStr != null) {
+        if (rulesStr != null && !rulesStr.isEmpty()) {
             // json array, each entry is a clause - any clause that's true is a match.
             // within a clause, each property must be true
             Gson gson = new Gson();
@@ -109,8 +109,8 @@ public class AutoExemptions {
                         matchExplanation = String.format("Matches clause #%d", idx + 1);
                         return true;
                     }
-                    matchExplanation = "No clauses matched";
                 }
+                matchExplanation = "No clauses matched";
             } else if (accounts != null) {
                 String accountId = getAccountId(asset);
                 if (accounts.contains(accountId)) {
