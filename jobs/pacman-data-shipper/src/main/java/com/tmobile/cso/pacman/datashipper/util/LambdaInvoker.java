@@ -43,7 +43,7 @@ public class LambdaInvoker {
             String role = System.getProperty("s3.role");
 
             lambdaClient = AWSLambdaClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(
+                    .withCredentials((
                             new CredentialProvider().getCredentials(account, role)))
                     .withRegion(getRegion())
                     .build();

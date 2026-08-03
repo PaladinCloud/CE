@@ -34,8 +34,7 @@ public class DynamoDBHelper {
 
         LOGGER.info("Querying '{}' for item: {}", tableName, request);
         AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(
-                        new CredentialProvider().getCredentials(account, role)))
+                .withCredentials(new CredentialProvider().getCredentials(account, role))
                 .withRegion(region)
                 .build();
         try {
