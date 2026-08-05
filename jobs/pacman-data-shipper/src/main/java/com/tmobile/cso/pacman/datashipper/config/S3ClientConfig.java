@@ -16,8 +16,9 @@ public class S3ClientConfig {
         String s3Role = System.getProperty("s3.role");
         objectMapper = new ObjectMapper();
         s3Client = AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(new CredentialProvider()
-                        .getCredentials(s3Account, s3Role))).withRegion(s3Region).build();
+                .withCredentials(new CredentialProvider()
+                        .getCredentials(s3Account, s3Role)).withRegion(s3Region).build();
+
     }
 
     private static class InstanceHolder {
