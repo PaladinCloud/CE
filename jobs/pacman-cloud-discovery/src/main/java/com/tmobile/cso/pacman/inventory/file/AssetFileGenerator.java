@@ -1047,7 +1047,7 @@ public class AssetFileGenerator {
                 }
             });
 
-            executor.execute(() ->
+           /* executor.execute(() ->
             {
                 if (!(isTypeInScope("cloudwatchalarm"))) {
                     return;
@@ -1060,7 +1060,7 @@ public class AssetFileGenerator {
                     log.error(expPrefix + "Cloud Watch alarm\", \"cause\":\"" + e.getMessage() + "\"}");
                     ErrorManageUtil.uploadError(accountId, "", "cloudwatchalarm", e.getMessage());
                 }
-            });
+            });*/
             //****** Changes For Federated Rules End ******
 
             executor.execute(() ->

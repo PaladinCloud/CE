@@ -15,9 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.config;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.auth.*;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
@@ -35,20 +33,21 @@ public class CredentialProvider {
      * @param roleName the role name
      * @return the credentials
      */
-    public BasicSessionCredentials getCredentials(String account, String roleName) {
-        BasicSessionCredentials baseAccntCreds = getBaseAccountCredentials(roleName);
+    public AWSCredentialsProvider getCredentials(String account, String roleName) {
+        AWSCredentialsProvider baseProvider = getBaseAccountCredentials(roleName);
         if (baseAccount.equals(account)) {
-            return baseAccntCreds;
+            return baseProvider;
         }
-        AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(baseAccntCreds)).withRegion(baseRegion);
-        AWSSecurityTokenService stsClient = stsBuilder.build();
-        AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account, roleName)).withRoleSessionName("pic-ro-" + account).withDurationSeconds(7200);
-        AssumeRoleResult assumeResult = stsClient.assumeRole(assumeRequest);
-        return new BasicSessionCredentials(
-                assumeResult.getCredentials()
-                        .getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
-                assumeResult.getCredentials().getSessionToken());
+        AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
+                .withCredentials(baseProvider)
+                .withRegion(baseRegion)
+                .build();
+        return new STSAssumeRoleSessionCredentialsProvider.Builder(
+                getRoleArn(account, roleName), "pic-ro-" + account)
+                .withStsClient(stsClient)
+                .build();
     }
+
 
     /**
      * Gets the base account credentials.
@@ -56,26 +55,25 @@ public class CredentialProvider {
      * @param roleName the role name
      * @return the base account credentials
      */
-    private BasicSessionCredentials getBaseAccountCredentials(String roleName) {
+    private AWSCredentialsProvider getBaseAccountCredentials(String roleName) {
         if (devMode) {
             String accessKey = System.getProperty("ACCESS_KEY");
             String secretKey = System.getProperty("SECRET_KEY");
-            BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
-            AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).withRegion(baseRegion);
-            AWSSecurityTokenService sts = stsBuilder.build();
-            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro").withDurationSeconds(7200);
-            AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
-            return new BasicSessionCredentials(
-                    assumeResult.getCredentials().getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
-                    assumeResult.getCredentials().getSessionToken());
-
+            AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(
+                            new BasicAWSCredentials(accessKey, secretKey)))
+                    .withRegion(baseRegion)
+                    .build();
+            return new STSAssumeRoleSessionCredentialsProvider.Builder(
+                    getRoleArn(baseAccount, roleName), "pic-base-ro")
+                    .withStsClient(sts)
+                    .build();
         } else {
             AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.defaultClient();
-            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro").withDurationSeconds(7200);
-            AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
-            return new BasicSessionCredentials(
-                    assumeResult.getCredentials().getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
-                    assumeResult.getCredentials().getSessionToken());
+            return new STSAssumeRoleSessionCredentialsProvider.Builder(
+                    getRoleArn(baseAccount, roleName), "pic-base-ro")
+                    .withStsClient(sts)
+                    .build();
         }
     }
 
