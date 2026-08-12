@@ -4,12 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-public class AutoExemptionsTest {
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+import static org.junit.Assert.*;
+
+public class AutoExemptionsAccountsTest {
+    static private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
@@ -20,6 +19,7 @@ public class AutoExemptionsTest {
         AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("true", null, "goldfish", "123,234,345"));
         boolean check = rule.isExempted(asset);
         assertTrue(check);
+        assertEquals("Matches account 345", rule.getMatchExplanation());
     }
 
     @Test
@@ -27,6 +27,7 @@ public class AutoExemptionsTest {
         Map<String, String> asset = mapOf("accountid", "234");
         AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("true", null, "goldfish", "123, 234 ,345 "));
         boolean check = rule.isExempted(asset);
+        assertEquals("Matches account 234", rule.getMatchExplanation());
         assertTrue(check);
     }
 
@@ -36,6 +37,7 @@ public class AutoExemptionsTest {
         AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("false", null, "guppies", "123,234,345"));
         boolean check = rule.isExempted(asset);
         assertFalse(check);
+        assertEquals("Rule is disabled", rule.getMatchExplanation());
     }
 
     @Test
@@ -44,6 +46,7 @@ public class AutoExemptionsTest {
         AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("true", null, "toads", "123,234,345"));
         boolean check = rule.isExempted(asset);
         assertFalse(check);
+        assertEquals("No accounts match", rule.getMatchExplanation());
     }
 
     @Test
@@ -68,6 +71,7 @@ public class AutoExemptionsTest {
         AutoExemptions.Rule rule = AutoExemptions.ruleFromPolicyParams(params("true", adjustDate(new Date(), -1), "frogs", "123,234,345"));
         boolean check = rule.isExempted(asset);
         assertFalse(check);
+        assertEquals("Rule has expired", rule.getMatchExplanation());
     }
 
     @Test
@@ -79,13 +83,13 @@ public class AutoExemptionsTest {
     }
 
     private Map<String, String> mapOf(String key, String value) {
-        Map<String, String> map = new HashMap();
+        Map<String, String> map = new HashMap<>();
         map.put(key, value);
         return map;
     }
 
     private Map<String, String> params(String enabled, String date, String reason, String accounts) {
-        Map<String, String> map = new HashMap();
+        Map<String, String> map = new HashMap<>();
         map.put(AutoExemptions.PARAMS_ENABLED_FIELD, enabled);
         map.put(AutoExemptions.PARAMS_EXPIRE_DATE_FIELD, date);
         map.put(AutoExemptions.PARAMS_REASON_FIELD, reason);
