@@ -288,7 +288,7 @@ public interface PacmanSdkConstants {
 
     String EXEMPTION_TYPE_STICKY = "sticky";
     String EXEMPTION_TYPE_INDIVIDUAL = "individual";
-    String EXEMPTION_TYPE_AUTOMATIC = "automatic";
+    String EXEMPTION_TYPE_POLICY_LEVEL = "policy-level";
 
     /** The max policy executor threads. */
     Integer MAX_POLICY_EXECUTOR_THREADS = 100;

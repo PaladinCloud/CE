@@ -859,7 +859,7 @@ public class PolicyExecutor {
                         "Auto-exempted: " + autoExemptionRule.getReason(),
                         annotation.get(PacmanSdkConstants.POLICY_ID),
                         autoExemptionRule.getExpireDate(),
-                        PacmanSdkConstants.EXEMPTION_TYPE_AUTOMATIC);
+                        PacmanSdkConstants.EXEMPTION_TYPE_POLICY_LEVEL);
             }
         }
         return new Status(status);
