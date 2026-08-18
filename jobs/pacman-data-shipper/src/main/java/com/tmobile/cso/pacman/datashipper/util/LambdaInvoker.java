@@ -20,7 +20,6 @@ public class LambdaInvoker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LambdaInvoker.class);
     private static final String TENANT_CONFIG_TABLE = "tenant-config";
-    private static final String LAMBDA_NAME_SUFFIX = "-svc-tagging-compliance-summary-lambda";
 
     private static String cachedInternalStackName;
     private static AWSLambda lambdaClient;
@@ -74,10 +73,10 @@ public class LambdaInvoker {
         return cachedInternalStackName;
     }
 
-    public static String invokeTaggingSummaryLambda(String ag) throws Exception {
+    public static String invokeTaggingLambda(String ag,String suffix,String url) throws Exception {
         String tenantId = getTenantId();
         String internalStackName = getInternalStackName();
-        String lambdaName = internalStackName + LAMBDA_NAME_SUFFIX;
+        String lambdaName = internalStackName + suffix;
 
         JsonObject http = new JsonObject();
         http.addProperty("method", "POST");
@@ -102,7 +101,7 @@ public class LambdaInvoker {
 
         JsonObject payload = new JsonObject();
         payload.add("requestContext", requestContext);
-        payload.addProperty("rawPath", "api/v2/compliance/tagging-summary");
+        payload.addProperty("rawPath", url);
         payload.add("queryStringParameters", new JsonObject());
         payload.add("headers", headers);
         payload.addProperty("body", body.toString());
