@@ -610,6 +610,9 @@ public class ElasticSearchRepository implements Constants {
 			else if(entry.getKey().equalsIgnoreCase("tagged") || entry.getKey().equalsIgnoreCase("exempted") || entry.getKey().equalsIgnoreCase("untagged") ){
 				continue;
 			}
+			else if(entry.getKey().equalsIgnoreCase("eventCategoryName.keyword") || entry.getKey().equalsIgnoreCase("eventSourceName.keyword") || entry.getKey().equalsIgnoreCase("eventName.keyword") ){
+				continue;
+			}
 			else {
 				term.put(TERM, termDetails);
 			}
