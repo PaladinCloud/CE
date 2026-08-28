@@ -59,18 +59,15 @@ public class PolicyViolationDetails {
     /** The violation modified date. */
     String violationModifiedDate;
 
-
     /** The asset group. */
     String assetGroup;
 
     /** The policy id. */
     String policyId;
-
     /** The violation details. */
     List<Map<String, Object>> violationDetails;
-
     List<Map<String,Object>> vulnerabilityDetails;
-
+    String age;
     private ExemptionDTO exemption;
 
     /**
@@ -79,7 +76,6 @@ public class PolicyViolationDetails {
      * @param resourceType the resource type
      * @param status the status
      * @param severity the severity
-     * @param ruleCategory the rule category
      * @param resouceViolatedPolicy the resouce violated policy
      * @param policyViolated the policy violated
      * @param policyDescription the policy description
@@ -97,7 +93,8 @@ public class PolicyViolationDetails {
                                   String violationModifiedDate, String ruleId,
                                   String assetGroup,
                                   List<Map<String, Object>> violationDetails,List<Map<String, Object>> vulnerabilityDetails,
-                                  ExemptionDTO exemption) {
+                                  ExemptionDTO exemption, String age) {
+
         super();
         this.resourceType = resourceType;
         this.status = status;
@@ -114,8 +111,8 @@ public class PolicyViolationDetails {
         this.vulnerabilityDetails = vulnerabilityDetails ;
         this.assetGroup = assetGroup;
         this.exemption = exemption;
+        this.age = age;
     }
-
       /**
      * Gets the asset Group
      *
@@ -372,5 +369,13 @@ public class PolicyViolationDetails {
 
     public void setExemption(ExemptionDTO exemption) {
         this.exemption = exemption;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
     }
 }
