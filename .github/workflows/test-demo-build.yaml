@@ -1,0 +1,859 @@
+name: PUSH-CE-BUILD-TO-TESTDEMO
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  AzureBuild:
+    name: Azure-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/azure-discovery/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-azure-artifact
+          path: ./dist/jobs
+  Push-azure-TestDemo:
+    name: Push azure-discovery to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - AzureBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-azure-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  AwsrulesBuild:
+    name: Awsrules-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-awsrules/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-awsrules-artifact
+          path: ./dist/jobs
+  Push-awsrules-TestDemo:
+    name: Push awsrules to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - AwsrulesBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-awsrules-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  QualysBuild:
+    name: qualys-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-qualys-enricher/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-qualys-artifact
+          path: ./dist/jobs
+  Push-Qualys-TestDemo:
+    name: Push qualys to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - QualysBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-qualys-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  RecommendationBuild:
+    name: Recommendation-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/recommendation-enricher/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-recommendation-artifact
+          path: ./dist/jobs
+  Push-recommendation-TestDemo:
+    name: Push recommendation-enricher to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - RecommendationBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-recommendation-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  Cloud-Discovery-Build:
+    name: Cloud-Discovery-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-cloud-discovery/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-cloud-artifact
+          path: ./dist/jobs
+  Push-Cloud-Discovery-TestDemo:
+    name: Push Cloud-discovery to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - Cloud-Discovery-Build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-cloud-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  RuleEngineBuild:
+    name: Rule-engine-2.0-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building awsrules jar
+        run: |
+          cd jobs/pacman-awsrules/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-rule-engine-2.0/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-RE2.0-artifact
+          path: ./dist/jobs
+  Push-RuleEngineBuild-TestDemo:
+    name: Push Rule-engine-2.0 to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - RuleEngineBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-RE2.0-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  SchedulerBuild:
+    name: Scheduler-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/job-scheduler/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-scheduler-artifact
+          path: ./dist/jobs
+  Push-SchedulerBuild-TestDemo:
+    name: Push SchedulerBuild to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - SchedulerBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-scheduler-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/api
+  NotificationBuild:
+    name: Notification-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-cloud-notifications/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-notification-artifact
+          path: ./dist/jobs
+  Push-Notification-TestDemo:
+    name: Push Notification to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - NotificationBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-notification-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  TenableBuild:
+    name: Tenable-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-tenable-enricher/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-Tenable-artifact
+          path: ./dist/jobs
+  Push-Tenable-TestDemo:
+    name: Push Tenable to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - TenableBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-Tenable-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  AquaBuild:
+    name: Aqua-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-aqua-enricher/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-aqua-artifact
+          path: ./dist/jobs
+  Push-Aqua-TestDemo:
+    name: Push Aqua to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - AquaBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-aqua-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  ShipperBuild:
+    name: Shipper-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd jobs/pacman-data-shipper/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-shipper-artifact
+          path: ./dist/jobs
+  Push-Shipper-TestDemo:
+    name: Push Shipper to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - ShipperBuild
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jobs-shipper-artifact
+          path: ./dist/jobs
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/jobs/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/jobs
+  Es-logging:
+    name: es-logging-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd lambda-functions/notification-es-logging-service/
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: es-logging-artifact
+          path: ./dist/lambda
+  Es-logging-TestDemo:
+    name: Push es log lambda to s3 test-demo
+    environment: 'SaaSTestDemo'
+    runs-on: ubuntu-latest
+    needs:
+      - Es-logging
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: es-logging-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
+  Invoke-Service:
+    name: invoke-service-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd lambda-functions/notification-invoke-service
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: invoke-service-artifact
+          path: ./dist/lambda
+  InvokeService-TestDemo:
+    name: Push invoke service lambda to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - Invoke-Service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: invoke-service-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
+  Send-Email-Service:
+    name: Send-Email-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd lambda-functions/notification-send-email-service
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: send-email-artifact
+          path: ./dist/lambda
+  Send-Email-TestDemo:
+    name: Push send mail lambda to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - Send-Email-Service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: send-email-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
+  Template-formatter-Service:
+    name: Template-formatter-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: running update
+        run: sudo apt update
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.7.0
+        with:
+          checkout-fetch-depth: 0
+          java-version: 8
+          java-distribution: temurin
+          maven-version: 3.6.3
+      - name: Building commons jar
+        run: |
+          cd commons
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Building Jobs jar
+        run: |
+          cd lambda-functions/notification-template-formatter-service
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Upload Jobs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-formatter-artifact
+          path: ./dist/lambda
+  Template-formatter-TestDemo:
+    name: Push template formatter to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - Template-formatter-Service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: template-formatter-artifact
+          path: ./dist/lambda
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp --recursive ./dist/lambda/ s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda
+  subsystem-auth-service:
+    name: subsystem-auth-service-Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+    
+      - name: Execute Makefile
+        run: |
+          cd subsystem/auth/services/svc-api-authorizer
+          make build package
+
+      - name: Upload auth service artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-service-artifact
+          path: subsystem/auth/services/svc-api-authorizer/bin/svc-api-authorizer.zip
+  
+  subsystem-auth-service-TestDemo:
+    name: Push auth service to s3 test-demo
+    runs-on: ubuntu-latest
+    environment: 'SaaSTestDemo'
+    needs:
+      - subsystem-auth-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Download Jobs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: auth-service-artifact
+      - name: copy Jobs jars to S3 
+        run: |
+          aws s3 cp svc-api-authorizer.zip s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/lambda/
+  
+  push-sql-TestDemo:
+    name: Push SQL files to s3 test-demo
+    runs-on: ubuntu-latest  
+    environment: 'SaaSTestDemo'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials for Test-Demo account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_DEV }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: sql files to dev S3
+        run: |
+          cd ./installer/resources/pacbot_app/files/
+          aws s3 cp  DB_Policy.sql s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/sql/
+          aws s3 cp  DB.sql s3://${{ secrets.AWS_BUCKET_DEV }}/vlatest/dev/sql/
