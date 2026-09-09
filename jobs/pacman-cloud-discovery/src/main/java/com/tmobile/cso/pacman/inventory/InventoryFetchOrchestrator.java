@@ -102,7 +102,7 @@ public class InventoryFetchOrchestrator {
             s3Uploader.uploadFiles(s3Bucket, s3Data, s3Region, filePath);
             log.info("End : Upload Files to S3");
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error(ERROR_PREFIX + "Asset Discovery Failed" + ENDING_QUOTES, e);
             System.exit(1);
         }
