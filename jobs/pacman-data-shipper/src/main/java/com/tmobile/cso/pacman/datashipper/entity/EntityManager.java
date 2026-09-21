@@ -265,6 +265,12 @@ public class EntityManager implements Constants {
     private void prepareDocs(Map<String, Map<String, String>> currentInfo, List<Map<String, Object>> entities,
                              List<Map<String, String>> tags, List<Map<String, String>> overridableInfo,
                              Map<String, List<Map<String, String>>> overridesMap, String idColumn, String[] _keys, String _type, String dataSource, String displayName) {
+        // Group the tags by owning asset in a single pass. Each asset then looks its tags up
+        // directly, instead of re-scanning the whole tag list.
+        Map<String, List<Map<String, String>>> tagsByOwner = new HashMap<>();
+        for (Map<String, String> tag : tags) {
+            tagsByOwner.computeIfAbsent(Util.matchKey(tag, _keys), k -> new ArrayList<>()).add(tag);
+        }
         entities.stream().forEach(entityInfo -> {
             Object idColumnValue = entityInfo.get(idColumn);
             if (idColumnValue == null) {
@@ -345,12 +351,15 @@ public class EntityManager implements Constants {
                 entityInfo.put(FIRST_DISCOVERED, entityInfo.get(DISCOVERY_DATE));
             }
 
-            tags.stream().filter(tag -> Util.contains(tag, entityInfo, _keys)).forEach(_tag -> {
-                String key = _tag.get("key");
-                if (key != null && !"".equals(key)) {
-                    entityInfo.put("tags." + key, _tag.get("value"));
+            List<Map<String, String>> ownTags = tagsByOwner.get(Util.matchKey(entityInfo, _keys));
+            if (ownTags != null) {
+                for (Map<String, String> _tag : ownTags) {
+                    String key = _tag.get("key");
+                    if (key != null && !"".equals(key)) {
+                        entityInfo.put("tags." + key, _tag.get("value"));
+                    }
                 }
-            });
+            }
             if ("onpremserver".equals(_type)) {
                 updateOnPremData(entityInfo);
 

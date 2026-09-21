@@ -41,6 +41,9 @@ import java.util.stream.Collectors;
 public class Util {
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
 
+    /** Delimiter used when building match keys, matching the _docid convention. */
+    private static final char KEY_DELIMITER = '_';
+
     private Util() {
         throw new IllegalStateException("Util is a utility class");
     }
@@ -59,6 +62,18 @@ public class Util {
                 return false;
         }
         return true;
+    }
+
+    public static String matchKey(Map<String, ?> map, String[] keys) {
+        StringBuilder matchKey = new StringBuilder();
+        for (String key : keys) {
+            if (matchKey.length() > 0) {
+                matchKey.append(KEY_DELIMITER);
+            }
+            Object value = map.get(key);
+            matchKey.append(value == null ? "" : value.toString());
+        }
+        return matchKey.toString();
     }
 
     /**
