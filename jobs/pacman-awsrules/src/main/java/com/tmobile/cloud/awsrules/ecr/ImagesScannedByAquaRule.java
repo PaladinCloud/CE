@@ -71,7 +71,14 @@ public class ImagesScannedByAquaRule extends BasePolicy {
     Gson gson = new Gson();
     if (resourceAttributes != null) {
       imageId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
-      String imageName = buildImageNameFromResourceId(imageId);
+      // New AWS plugin ecr docs carry a digest-based resource id; the repository
+      // name is in the "name" attribute. Legacy docs fall back to the ARN format.
+      String imageName = resourceAttributes.get("name");
+      if (!StringUtils.isNullOrEmpty(imageName)) {
+        imageName = imageName.concat(":latest");
+      } else {
+        imageName = buildImageNameFromResourceId(imageId);
+      }
       String entityType = resourceAttributes.get(PacmanRuleConstants.AQUA_ENTITY_TYPE);
       List<JsonObject> vulnerabilityInfoList = new ArrayList<>();
       if (PacmanUtils.calculateLaunchedDuration(discoveryDate) > Long.parseLong(discoveredDaysRange)) {

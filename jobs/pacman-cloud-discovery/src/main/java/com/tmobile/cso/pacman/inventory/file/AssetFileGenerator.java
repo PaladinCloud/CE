@@ -129,7 +129,7 @@ public class AssetFileGenerator {
                 }
             });
 
-            executor.execute(() ->
+           /* executor.execute(() ->
             {
                 if (!(isTypeInScope("ecr"))) {
                     return;
@@ -141,7 +141,7 @@ public class AssetFileGenerator {
                     log.error(expPrefix + "ECR\", \"cause\":\"" + e.getMessage() + "\"}");
                     ErrorManageUtil.uploadError(accountId, "", "ecr", e.getMessage());
                 }
-            });
+            });*/
 
             executor.execute(() ->
             {
