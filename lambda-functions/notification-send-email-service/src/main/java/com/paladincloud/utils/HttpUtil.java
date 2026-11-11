@@ -45,6 +45,11 @@ public class HttpUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
     private static final String API_READ_SCOPE = "API_OPERATION/READ";
+    private static final long TOKEN_EXPIRY_BUFFER_SECONDS = 60;
+
+    // Reused across invocations of the same warm Lambda container
+    private static String cachedToken;
+    private static long tokenExpiryTime;
 
     private HttpUtil() {
     }
@@ -149,13 +154,27 @@ public class HttpUtil {
         return new HashMap<>();
     }
 
-    public static String  getToken() throws Exception {
+    public static synchronized String getToken() throws Exception {
+        long currentTime = System.currentTimeMillis();
+        if (cachedToken != null && currentTime < tokenExpiryTime) {
+            return cachedToken;
+        }
+
         String authapiurl = System.getenv("AUTH_API_URL");
         String credentials = getAuthInfoCredentials();
         String response = HttpUtil.post(authapiurl+"/oauth2/token?grant_type=client_credentials&scope="+API_READ_SCOPE,"",credentials,"Basic");
         Map<String,Object> authInfo = parseJson(response);
         Object token = authInfo.get("access_token");
-        return token.toString();
+        if (token == null) {
+            throw new Exception("access_token missing from auth response");
+        }
+
+        Object expiresIn = authInfo.get("expires_in");
+        long expiresInSeconds = expiresIn instanceof Number ? ((Number) expiresIn).longValue() : 0;
+        cachedToken = token.toString();
+        tokenExpiryTime = currentTime + Math.max(expiresInSeconds - TOKEN_EXPIRY_BUFFER_SECONDS, 0) * 1000L;
+        LOGGER.info("Fetched new Cognito token, expires_in={}s", expiresInSeconds);
+        return cachedToken;
     }
 
     public static String getAuthInfoCredentials() throws Exception {

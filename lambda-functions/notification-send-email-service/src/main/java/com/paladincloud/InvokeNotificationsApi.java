@@ -35,7 +35,6 @@ public class InvokeNotificationsApi {
         try {
             String invokeNotificationUrl = System.getenv("INVOKE_NOTIFICATION_URL");
             String token = HttpUtil.getToken();
-            LOGGER.info(" token -"+token);
             String notificationSettingsJson = HttpUtil.post(invokeNotificationUrl,payload,token,"Bearer");
             LOGGER.info("notification settings response -"+notificationSettingsJson);
 
