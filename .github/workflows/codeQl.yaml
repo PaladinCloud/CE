@@ -42,7 +42,7 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '8'
+        java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
         distribution: 'temurin'
 
     # Initializes the CodeQL tools for scanning.
