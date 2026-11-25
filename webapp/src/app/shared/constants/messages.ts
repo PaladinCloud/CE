@@ -115,9 +115,7 @@ export const MESSAGES = {
             image: '/assets/images/empty-state.svg',
         },
         noPolicyFound: {
-            title: '',
             description: 'There are no active Policies for this Asset Type.',
-            image: '/assets/images/empty-state.svg',
         },
         noSearchFound: {
             title: 'No Search Found!!',
@@ -132,6 +130,9 @@ export const MESSAGES = {
         waitForData: {
             description: 'The trend graph requires upto two days to display data.',
             image: '/assets/images/glass-timer.svg',
+        },
+        noViolationsForAsset: {
+            description: 'There are no violations for this asset.',
         },
     },
 };
