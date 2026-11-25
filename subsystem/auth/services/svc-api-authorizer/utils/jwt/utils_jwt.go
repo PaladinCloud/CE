@@ -26,6 +26,7 @@ import (
 	"io/ioutil"
 	"math/big"
 	"net/http"
+	"strings"
 )
 
 // CognitoJWK represents a JSON Web Key as provided by AWS Cognito
@@ -98,7 +99,34 @@ func fetchCognitoJWKs(jwksURL string) (map[string]*rsa.PublicKey, error) {
 	return keyMap, nil
 }
 
-// ValidateToken validates a Cognito token against the provided JWKS URL and audience
+// isAllowedAudience reports whether the token "aud" claim matches one of the allowed
+// audiences. allowedAudiences is a comma-separated list of Cognito app client IDs
+// (e.g. "legacyClientId,webClientId"), so more than one app client can be accepted
+// while clients are being migrated. A single value behaves exactly as before.
+func isAllowedAudience(aud interface{}, allowedAudiences string) bool {
+	allowed := map[string]bool{}
+	for _, a := range strings.Split(allowedAudiences, ",") {
+		if a = strings.TrimSpace(a); a != "" {
+			allowed[a] = true
+		}
+	}
+
+	switch v := aud.(type) {
+	case string:
+		return allowed[v]
+	case []interface{}:
+		for _, item := range v {
+			if str, ok := item.(string); ok && allowed[str] {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// ValidateToken validates a Cognito token against the provided JWKS URL and audience.
+// audience may contain several comma-separated app client IDs.
 func ValidateToken(tokenString, jwksURL, audience, issuer string) (bool, jwt.MapClaims, error) {
 	keys, err := fetchCognitoJWKs(jwksURL)
 	if err != nil {
@@ -141,7 +169,7 @@ func ValidateToken(tokenString, jwksURL, audience, issuer string) (bool, jwt.Map
 	}
 
 	// Check the audience
-	if claims["aud"] != audience {
+	if !isAllowedAudience(claims["aud"], audience) {
 		return false, nil, fmt.Errorf("invalid audience [%s]", claims["aud"])
 	}
 
