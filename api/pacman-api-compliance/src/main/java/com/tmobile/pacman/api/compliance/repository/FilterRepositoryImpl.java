@@ -43,6 +43,7 @@ import com.tmobile.pacman.api.compliance.domain.AssetCountDTO;
 import java.util.stream.Collectors;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -71,6 +72,8 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
     protected final Log logger = LogFactory.getLog(getClass());
 
     private static final String UNDERSCORE_ENTITY="_entity";
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /*
      * (non-Javadoc)
@@ -297,15 +300,38 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
      * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
      * getRegionsFromES(java.lang.String)
      */
-    public Map<String, Long> getNotificationTypesFromES()
+    public Map<String, Long> getNotificationTypesFromES(Map<String, List<String>> filter)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+
+        List<String> eventSource = filter.get(NOTIFICATION_SOURCE_NAME);
+        List<String> eventName = filter.get(NOTIFICATION_EVENT_NAME);
+
+        if (eventSource != null && !eventSource.isEmpty()) {
+            mustFilter.put("eventSourceName.keyword", eventSource);
+        }
+
+        if (eventName != null && !eventName.isEmpty()) {
+            mustFilter.put("eventName.keyword", eventName);
+        }
+
+        if (!mustFilter.isEmpty()) {
+            mustTermsFilter.putAll(mustFilter);
+        }
+
+        Map<String, Object> dateFilterMap = getDateFilter(filter);
+
+        if (dateFilterMap != null && !dateFilterMap.isEmpty()) {
+            mustFilter.put("range", dateFilterMap);
+        }
+
         String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_CATEGEORY_NAME);
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
                     NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
-                    THOUSAND, null);
+                    THOUSAND, mustTermsFilter);
         } catch (Exception e) {
             throw new DataException(e);
         }
@@ -317,15 +343,37 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
      * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
      * getRegionsFromES(java.lang.String)
      */
-    public Map<String, Long> getNotificationSourceFromES()
+    public Map<String, Long> getNotificationSourceFromES(Map<String, List<String>> filter)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+
+        List<String> eventCategory = filter.get(NOTIFICATION_CATEGEORY_NAME);
+        List<String> eventName = filter.get(NOTIFICATION_EVENT_NAME);
+
+        if (eventCategory != null && !eventCategory.isEmpty()) {
+            mustFilter.put("eventCategoryName.keyword", eventCategory);
+        }
+
+        if (eventName != null && !eventName.isEmpty()) {
+            mustFilter.put("eventName.keyword", eventName);
+        }
+
+        if (!mustFilter.isEmpty()) {
+            mustTermsFilter.putAll(mustFilter);
+        }
+
+        Map<String, Object> dateFilterMap = getDateFilter(filter);
+
+        if (dateFilterMap != null && !dateFilterMap.isEmpty()) {
+            mustFilter.put("range", dateFilterMap);
+        }
         String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_SOURCE_NAME);
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
                     NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
-                    THOUSAND, null);
+                    THOUSAND,  mustTermsFilter);
         } catch (Exception e) {
             throw new DataException(e);
         }
@@ -557,15 +605,37 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         totalDistributionForIndexAndType.putAll(tempMap);
     }
 
-    public Map<String, Long> getNotificationEventNamesFromES()
+    public Map<String, Long> getNotificationEventNamesFromES(Map<String, List<String>> filter)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+
+        List<String> eventCategory = filter.get(NOTIFICATION_CATEGEORY_NAME);
+        List<String>  eventSource = filter.get( NOTIFICATION_SOURCE_NAME);
+
+        if (eventCategory != null && !eventCategory.isEmpty()) {
+            mustFilter.put("eventCategoryName.keyword", eventCategory);
+        }
+
+        if (eventSource != null && !eventSource.isEmpty()) {
+            mustFilter.put("eventSourceName.keyword", eventSource);
+        }
+
+        if (!mustFilter.isEmpty()) {
+            mustTermsFilter.putAll(mustFilter);
+        }
+
+        Map<String, Object> dateFilterMap = getDateFilter(filter);
+
+        if (dateFilterMap != null && !dateFilterMap.isEmpty()) {
+            mustFilter.put("range", dateFilterMap);
+        }
         String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_EVENT_NAME);
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
                     NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
-                    THOUSAND, null);
+                    THOUSAND, mustTermsFilter);
         } catch (Exception e) {
             throw new DataException(e);
         }
@@ -603,4 +673,97 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         List<Map<String, Object>> untaggedAssetList= elasticSearchRepository.getDataFromES(assetGroup, null, mustFilter,null, null,Arrays.asList(RESOURCEID), null);
         return untaggedAssetList.stream().map(obj -> (String)obj.get(RESOURCEID)).collect(Collectors.toList());
     }
+
+    private Map<String ,Object> getDateFilter(Map<String, List<String>> filter){
+        Map<String ,Object> dateFilterMap=new HashMap<>();
+
+        Date startDate=null;
+        Date endDate=null;
+
+        List<String> dateFilter=filter.get("_loaddate");
+        if(dateFilter!=null && !dateFilter.isEmpty()){
+            List<String> dateRangeList = filter.get("_loaddate");
+            StringBuilder dateRange= new StringBuilder();
+            for(String range:dateRangeList){
+                dateRange.append(range);
+            }
+            String[] dates = dateRange.toString().split(" - ");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+            try {
+                startDate = dateFormat.parse(dates[0]);
+                endDate = dateFormat.parse(dates[1]);
+
+            } catch (ParseException e) {
+                logger.error("Error in Date Format");
+            }
+        }
+        /*
+		   gte stands for Greater than or equal to
+		*/
+        String gte = null;
+        /*
+			lte stands for Less than or equal to
+	    */
+        String lte = null;
+
+        if (startDate != null) {
+            gte = new SimpleDateFormat(DATE_FORMAT).format(startDate);
+        }
+        if (endDate != null) {
+            lte = new SimpleDateFormat(DATE_FORMAT).format(endDate);
+        }
+        Map<String, Object> loaddateMap = new HashMap<>();
+
+        if (gte != null) {
+            loaddateMap.put("gte", gte);
+        }
+
+        if (lte != null) {
+            loaddateMap.put("lte", lte);
+        }
+        if (loaddateMap != null && !loaddateMap.isEmpty()) {
+            dateFilterMap.put("_loaddate.keyword", loaddateMap);
+        }
+
+        return dateFilterMap;
+    }
+
+    public Map<String, Long> getNotificationDateFromES(Map<String, List<String>> filter)
+            throws DataException {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+
+        List<String> eventCategory = filter.get(NOTIFICATION_CATEGEORY_NAME);
+        List<String> eventSource = filter.get(NOTIFICATION_SOURCE_NAME);
+        List<String> eventName = filter.get(NOTIFICATION_EVENT_NAME);
+
+        if (eventCategory != null && !eventCategory.isEmpty()) {
+            mustFilter.put("eventCategoryName.keyword", eventCategory);
+        }
+
+        if (eventSource != null && !eventSource.isEmpty()) {
+            mustFilter.put("eventSourceName.keyword", eventSource);
+        }
+
+        if (eventName != null && !eventName.isEmpty()) {
+            mustFilter.put("eventName.keyword", eventName);
+        }
+
+        if (!mustFilter.isEmpty()) {
+            mustTermsFilter.putAll(mustFilter);
+        }
+
+        String aggsFilter = CommonUtils.convertAttributetoKeyword("_loaddate");
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+                    NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
+                    THOUSAND, mustTermsFilter);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
+
+
+
 }

@@ -16,6 +16,7 @@
 package com.tmobile.pacman.api.compliance.controller;
 
 import com.tmobile.pacman.api.compliance.domain.FilterRequest;
+import com.tmobile.pacman.api.compliance.domain.NotificationFilterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +32,7 @@ import com.tmobile.pacman.api.compliance.service.FilterService;
 
 import io.swagger.annotations.ApiParam;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -308,12 +310,13 @@ public class FilterController implements Constants {
      *
      * @return ResponseEntity<Object>
      */
-    
-    @RequestMapping(path = "/v1/filters/eventtype", method = RequestMethod.GET)
-    public ResponseEntity<Object> getEventType() {
+
+    @PostMapping(path = "/v1/filters/eventtype")
+    public ResponseEntity<Object> getEventType(@RequestBody NotificationFilterRequest filterRequest) {
         ResponseData response = null;
+        Map<String, List<String>> filter=filterRequest.getApiFilter();
         try {
-            response = new ResponseData(filterService.getNotificationTypes());
+            response = new ResponseData(filterService.getNotificationTypes(filter));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
@@ -325,23 +328,25 @@ public class FilterController implements Constants {
      *
      * @return ResponseEntity<Object>
      */
-    
-    @RequestMapping(path = "/v1/filters/eventsource", method = RequestMethod.GET)
-    public ResponseEntity<Object> getEventSource() {
+
+    @PostMapping(path = "/v1/filters/eventsource")
+    public ResponseEntity<Object> getEventSource(@RequestBody NotificationFilterRequest filterRequest) {
         ResponseData response = null;
+        Map<String, List<String>> filter=filterRequest.getApiFilter();
         try {
-            response = new ResponseData(filterService.getNotificationSource());
+            response = new ResponseData(filterService.getNotificationSource(filter));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
         return ResponseUtils.buildSucessResponse(response);
     }
 
-    @GetMapping(value = "/v1/filters/eventname")
-    public ResponseEntity<Object> getEventName() {
+    @PostMapping(value = "/v1/filters/eventname")
+    public ResponseEntity<Object> getEventName(@RequestBody NotificationFilterRequest filterRequest) {
         ResponseData response = null;
+        Map<String, List<String>> filter=filterRequest.getApiFilter();
         try {
-            response = new ResponseData(filterService.getNotificationEventName());
+            response = new ResponseData(filterService.getNotificationEventName(filter));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
@@ -406,5 +411,17 @@ public class FilterController implements Constants {
             return complianceService.formatException(e);
         }
         return ResponseUtils.buildSucessResponse(response.getRes());
+    }
+
+    @PostMapping(path = "/v1/filters/eventdate")
+    public ResponseEntity<Object> getEventDate(@RequestBody NotificationFilterRequest filterRequest) {
+        ResponseData response = null;
+        Map<String, List<String>> filter=filterRequest.getApiFilter();
+        try {
+            response = new ResponseData(filterService.getNotificationDate(filter));
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
     }
 }
