@@ -50,7 +50,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -105,7 +105,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -160,7 +160,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -215,7 +215,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -271,7 +271,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -326,7 +326,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -385,7 +385,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -440,7 +440,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -495,7 +495,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -550,7 +550,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -605,7 +605,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -681,7 +681,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -736,7 +736,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -791,7 +791,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
@@ -846,7 +846,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.1
         with:
           checkout-fetch-depth: 0
-          java-version: 8
+          java-version: '8.0.512+9'  # pinned: Temurin 8u514-b01 linux x64 asset upstream is corrupt
           java-distribution: temurin
           maven-version: 3.6.3
       - name: Building commons jar
