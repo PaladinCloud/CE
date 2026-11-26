@@ -1102,6 +1102,7 @@ INSERT IGNORE INTO `task`(`id`,`index`,`mappings`,`data`) values (1,'exceptions'
 INSERT IGNORE INTO `cf_Datasource`(`dataSourceId`,`dataSourceName`,`dataSourceDesc`,`config`,`createdDate`,`modifiedDate`) VALUES (1,'aws','Amazon WebService','N/A','2017-08-01','2018-03-09');
 INSERT IGNORE INTO `cf_Datasource` (dataSourceId,dataSourceName,dataSourceDesc,config,createdDate,modifiedDate) VALUES (2,'azure','Azure','N/A',{d '2019-11-13'},{d '2019-11-13'});
 INSERT IGNORE INTO `cf_Datasource` (dataSourceId,dataSourceName,dataSourceDesc,config,createdDate,modifiedDate) VALUES (3,'gcp','GCP','N/A',{d '2022-05-18'},{d '2022-05-18'});
+INSERT IGNORE INTO `cf_Datasource` (dataSourceId,dataSourceName,dataSourceDesc,config,createdDate,modifiedDate) VALUES (4,'oci','Oracle Cloud Infrastructure','N/A',{d '2026-11-25'},{d '2026-11-25'});
 
 
 /*Insert Target data in required table*/
